@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShadowStep();
             SilentStride();
             GhostProtocol();
+            ForceDecoy();
+            CloudMind();
+            SharedPresence();
 
             Poisoncraft();
             Trapcraft();
@@ -47,28 +50,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds and blocks all STM recovery while hidden, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.ActiveStealthBonus, 5)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds and blocks all STM recovery while hidden, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.ActiveStealthBonus, 10)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds and blocks all STM recovery while hidden, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.ActiveStealthBonus, 15)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds and blocks all STM recovery while hidden, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.ActiveStealthBonus, 20)
                 .TriggerPurchase(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange)
                 .TriggerRefund(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange);
@@ -84,14 +83,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 3)
 
                 .AddPerkLevel()
                 .Description("Weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 18)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 5)
                 .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 3)
 
@@ -99,7 +96,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 38)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 8)
                 .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 5);
         }
@@ -113,30 +109,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SlicingTrait)
                 .Description("Can slice tier 1 lockboxes and terminals.")
                 .Price(2)
-                .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 2))
-                .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 3))
-                .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 4))
-                .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(4)
-                .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 5));
         }
 
@@ -190,7 +181,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("While stealthed, increases Movement Speed by 30% and reduces STM drain by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds. Stealth still prevents running at full speed.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.StealthMovementSpeedPercentAdjustment, 30)
                 .IncreasesStat(StatType.StealthStaminaDrainReductionPercent, 20);
         }
@@ -205,6 +195,61 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.")
                 .Price(6)
                 .RequirementCharacterType(CharacterType.Standard)
+                .RequirementMustHavePerk(PerkType.Stealth)
+                .RequirementSkill(SkillType.Espionage, 50);
+        }
+
+        private void ForceDecoy()
+        {
+            _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.ForceDecoy)
+                .Name("Force Decoy")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceDecoy1)
+                .Description("Reduces your enmity by 35%. Organic enemies targeting you suffer Decoy for 30 seconds, reducing their Accuracy against you by 8%. Breaks stealth.")
+                .Price(3)
+                .RequirementSkill(SkillType.Espionage, 12)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceDecoy2)
+                .Description("Reduces your enmity by 60% and removes negative movement-speed effects. Organic enemies targeting you suffer Decoy for 30 seconds, reducing their Accuracy against you by 12%. Breaks stealth.")
+                .Price(3)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementSkill(SkillType.Espionage, 35);
+        }
+
+        private void CloudMind()
+        {
+            _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.CloudMind)
+                .Name("Cloud Mind")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CloudMind1)
+                .Description("For 30 seconds, one organic enemy within 15m can't spot anyone in stealth, including you and your allies. It still sees anyone who isn't in stealth. Caster Willpower increases the duration, and Mind Resistance reduces it. Doesn't break stealth; ends early if the target takes damage. Clouded enemies give no stealth bypass XP to anyone. A clouded player can still spot stealthers on a natural 20.")
+                .Price(4)
+                .RequirementSkill(SkillType.Espionage, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CloudMind2)
+                .Description("Clouds the selected organic enemy and one other organic enemy within 5m of it, so neither can spot anyone in stealth for 30 seconds. Otherwise the same as Cloud Mind I.")
+                .Price(4)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementSkill(SkillType.Espionage, 45);
+        }
+
+        private void SharedPresence()
+        {
+            _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.SharedPresence)
+                .Name("Shared Presence")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SharedPresence)
+                .Description("Out of combat only. You and party members within 5m when you use it enter stealth for up to 30 seconds, then can move freely; nobody has to stay together. Members don't need the Stealth perk. Each member uses their own Stealth plus your Stealth perk bonus, pays no upkeep, and is revealed by their own hostile action or by being spotted. Members earn no stealth bypass XP from it.")
+                .Price(6)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementMustHavePerk(PerkType.Stealth)
                 .RequirementSkill(SkillType.Espionage, 50);
         }
 
@@ -391,21 +436,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the number of disguises you may keep on file to 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 10)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.AdditionalDisguiseSlots, 1)
 
                 .AddPerkLevel()
                 .Description("Increases the number of disguises you may keep on file to 3.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.AdditionalDisguiseSlots, 2)
 
                 .AddPerkLevel()
                 .Description("Increases the number of disguises you may keep on file to 4.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 44)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.AdditionalDisguiseSlots, 3);
         }
 
@@ -419,14 +461,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Reduces the delay between disguise activations by 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 20)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.DisguiseSwapCooldownReductionPercent, 40)
 
                 .AddPerkLevel()
                 .Description("Reduces the delay between disguise activations by 70%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.DisguiseSwapCooldownReductionPercent, 70);
         }
     }

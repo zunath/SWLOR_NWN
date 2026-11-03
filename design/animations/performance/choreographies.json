@@ -1,0 +1,39 @@
+[
+  {
+    "Id": "Dance",
+    "Description": "Drop onto the beat, take one small side step with the leading arm sweeping out, close the step with a loose arm flourish, and settle into the relaxed dance stance that the routine loops start from",
+    "Duration": 1.5,
+    "Beats": [
+      { "Time": 0, "Label": "Neutral entry", "SourceAnimation": "pause1", "SourceTime": 0 },
+      { "Time": 0.25, "Label": "Drop onto the beat", "SourceAnimation": "pausewalkl", "SourceTime": 0,
+        "RootOffset": [0, 0, -0.04], "TorsoDegrees": [0, 0, -3] },
+      { "Time": 0.6, "Label": "Small side step", "SourceAnimation": "pausewalkl", "SourceTime": 0.3,
+        "RightHand": [0.42, 0.26, 1.2], "LeftHand": [-0.27, 0.22, 1.08],
+        "RootOffset": [-0.03, 0, -0.04], "TorsoDegrees": [0, 0, 5] },
+      { "Time": 0.95, "Label": "Close the step with a flourish", "SourceAnimation": "pausewalkl", "SourceTime": 0.85,
+        "RightHand": [0.36, 0.3, 1.38], "LeftHand": [-0.36, 0.2, 1.14],
+        "RootOffset": [0, 0, -0.04], "TorsoDegrees": [0, 0, -3] },
+      { "Time": 1.25, "Label": "Settle into the dance stance", "SourceAnimation": "pause1", "SourceTime": 0,
+        "RightHand": [0.28, 0.21, 1.1], "LeftHand": [-0.28, 0.21, 1.1],
+        "RootOffset": [0, 0, -0.04], "TorsoDegrees": [-2, 0, 0] },
+      { "Time": 1.5, "Label": "Neutral recovery", "SourceAnimation": "pause1", "SourceTime": 0 }
+    ]
+  },
+  {
+    "Id": "PlayInstrument",
+    "Description": "Lift a held instrument from the hip, bring it across the chest with the left hand sliding to the neck, and settle into the playing grip",
+    "Duration": 1.5,
+    "Beats": [
+      { "Time": 0, "Label": "Neutral entry", "SourceAnimation": "pause1", "SourceTime": 0 },
+      { "Time": 0.35, "Label": "Lift the instrument from the hip", "SourceAnimation": "pause1", "SourceTime": 0,
+        "RightHand": [0.3, 0.18, 0.98], "LeftHand": [-0.22, 0.2, 1.0], "RootOffset": [0, 0, -0.02] },
+      { "Time": 0.8, "Label": "Bring it across the chest", "SourceAnimation": "pause1", "SourceTime": 0,
+        "RightHand": [0.2, 0.22, 1.12], "LeftHand": [-0.02, 0.38, 1.36],
+        "RootOffset": [0, 0, -0.03], "TorsoDegrees": [-2, 0, -4] },
+      { "Time": 1.1, "Label": "Settle into the playing grip", "SourceAnimation": "pause1", "SourceTime": 0,
+        "RightHand": [0.18, 0.2, 1.1], "LeftHand": [-0.06, 0.34, 1.38],
+        "RootOffset": [0, 0, -0.04], "TorsoDegrees": [-3, 0, -8] },
+      { "Time": 1.5, "Label": "Neutral recovery", "SourceAnimation": "pause1", "SourceTime": 0 }
+    ]
+  }
+]

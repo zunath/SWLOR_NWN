@@ -38,6 +38,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Prices = new[] { 2, 3, 4 },
                     GrantedFeats = new[] { FeatType.AlertnessTrait },
                 },
+                new()
+                {
+                    Perk = PerkType.TreasureHunter,
+                    MaxLevel = 3,
+                    Prices = new[] { 3, 3, 4 },
+                    GrantedFeats = new[] { FeatType.TreasureHunterTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.CreditFinder,
+                    MaxLevel = 3,
+                    Prices = new[] { 3, 3, 4 },
+                    GrantedFeats = new[] { FeatType.CreditFinderTrait },
+                },
             };
         }
     }

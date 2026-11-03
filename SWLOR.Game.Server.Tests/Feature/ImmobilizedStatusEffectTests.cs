@@ -39,10 +39,10 @@ public class ImmobilizedStatusEffectTests
         var holoCom = File.ReadAllText(Path.Combine(server, "Service", "HoloCom.cs"));
         var craft = File.ReadAllText(Path.Combine(
             server,
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "CraftViewModel.cs"));
+            "Service",
+            "CraftService",
+            "Minigame",
+            "NwnCraftSessionWorld.cs"));
         var temporaryEffects = File.ReadAllText(Path.Combine(server, "Feature", "PlayerTemporaryEffects.cs"));
 
         holoCom.Should().Contain(
@@ -53,13 +53,13 @@ public class ImmobilizedStatusEffectTests
 
         craft.Should().Contain(
             "var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);");
-        craft.Should().Contain("PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(Player);",
+        craft.Should().Contain("PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(player);",
             "other creatures must walk through a crafter instead of bumping them away from the station");
         craft.Should().NotContain("TagEffect(SupernaturalEffect(EffectCutsceneGhost())",
             "a tagged crafting ghost left by a disconnect would block the login ghost and then be stripped by login cleanup");
         craft.Should().NotContain("EffectLinkEffects(EffectCutsceneImmobilize()",
             "the engine rejects a ghost on an already ghosted player, which would take a linked immobilize with it");
-        craft.Should().Contain("RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);");
+        craft.Should().Contain("RemoveEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize);");
         craft.Should().NotContain("GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize");
 
         temporaryEffects.Should().Contain("RemoveStaleActivityImmobility(player);");

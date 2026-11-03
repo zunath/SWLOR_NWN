@@ -167,9 +167,11 @@ public class BeastStableQuestTests
             .ToArray();
         actions.Should().BeEquivalentTo(new[]
         {
-            ("action-accept-quest", TrialOne), ("action-advance-quest", TrialOne),
-            ("action-accept-quest", TrialTwo), ("action-advance-quest", TrialTwo),
-        });
+            ("action-accept-quest", TrialOne), ("action-advance-quest", TrialOne), ("action-advance-quest", TrialOne),
+            ("action-accept-quest", TrialTwo), ("action-advance-quest", TrialTwo), ("action-advance-quest", TrialTwo),
+        }, "each trial has an accept, a turn-in and the state-1 re-check");
+        graph.Choices.Values.Where(choice => choice.Actions.Any(action => action.Key == "action-advance-quest") && choice.IsAutomatic)
+            .Select(choice => choice.Id).Should().BeEquivalentTo("reply-t1-recheck-advance", "reply-t2-recheck-advance");
 
         var allText = string.Join("\n", graph.Nodes.Values.SelectMany(node => node.Text.Select(text => text.Text))
             .Concat(graph.Choices.Values.Select(choice => choice.Text.Text)));
@@ -188,6 +190,128 @@ public class BeastStableQuestTests
         placed[0]["Conversation"]!["value"]!.Value<string>().Should().Be("dorra_vesk");
         placed[0]["ScriptDialogue"]!["value"]!.Value<string>().Should().Be("dialog_start");
         placed[0]["Tag"]!["value"]!.Value<string>().Should().Be("dorra_vesk");
+    }
+
+    [TestCase(TrialOne, 1)]
+    [TestCase(TrialTwo, 2)]
+    public void Recheck_MovesAStuckTrialToTheTurnInWithoutCompletingIt(string questId, int trial)
+    {
+        // Objectives can finish while the player is dead, and the quest refuses to advance for a dead player, so the
+        // trial stays on state 1 with nothing left to credit. Dorra's re-check must move it to the turn-in state and
+        // nothing more.
+        var harness = new DorraHarness(questId, trial);
+        harness.State = 1;
+        harness.ObjectivesComplete = true;
+
+        var session = harness.Start();
+        session.CurrentNode.Id.Should().Be($"entry-t{trial}-remind");
+        session.VisibleChoices.Should().NotContain(choice => choice.Actions.Any(),
+            "the reminder itself never runs a quest action");
+        Choose(session, $"reply-t{trial}-recheck");
+
+        harness.State.Should().Be(2);
+        harness.Completed.Should().BeFalse("the re-check never completes the trial or pays its rewards");
+        session.HasEnded.Should().BeFalse();
+        session.CurrentNode.Id.Should().Be($"entry-t{trial}-ready");
+        session.VisibleChoices.Select(choice => choice.Id).Should().Contain($"reply-t{trial}-turnin");
+
+        Choose(session, $"reply-t{trial}-turnin");
+        harness.Completed.Should().BeTrue("completion still comes from the explicit turn-in reply");
+    }
+
+    [TestCase(TrialOne, 1)]
+    [TestCase(TrialTwo, 2)]
+    public void Recheck_ChangesNothingWhileObjectivesAreIncomplete(string questId, int trial)
+    {
+        var harness = new DorraHarness(questId, trial);
+        harness.State = 1;
+        harness.ObjectivesComplete = false;
+
+        var session = harness.Start();
+        Choose(session, $"reply-t{trial}-recheck");
+
+        harness.State.Should().Be(1);
+        harness.Completed.Should().BeFalse();
+        session.HasEnded.Should().BeTrue("the refused advance closes the conversation without changing the trial");
+    }
+
+    [TestCase(TrialOne, 1)]
+    [TestCase(TrialTwo, 2)]
+    public void Recheck_NeverAdvancesATrialThatReachedTheTurnInWhileTheReminderWasOpen(string questId, int trial)
+    {
+        var harness = new DorraHarness(questId, trial);
+        harness.State = 1;
+        harness.ObjectivesComplete = false;
+        var session = harness.Start();
+
+        // The last objective lands while the reminder is on screen, and the quest moves itself to state 2.
+        harness.State = 2;
+        harness.ObjectivesComplete = true;
+        Choose(session, $"reply-t{trial}-recheck");
+
+        harness.AdvanceCalls.Should().Be(0, "an advance on state 2 would complete the trial without the turn-in reply");
+        session.VisibleChoices.Select(choice => choice.Id).Should().Equal($"reply-t{trial}-recheck-continue");
+        Choose(session, $"reply-t{trial}-recheck-continue");
+        session.CurrentNode.Id.Should().Be($"entry-t{trial}-ready");
+        harness.Completed.Should().BeFalse();
+    }
+
+    private static void Choose(ConversationSession session, string choiceId)
+    {
+        var index = session.VisibleChoices.Select(choice => choice.Id).ToList().IndexOf(choiceId);
+        index.Should().BeGreaterThanOrEqualTo(0, $"'{choiceId}' should be offered on '{session.CurrentNode.Id}'");
+        session.SelectChoice(index);
+    }
+
+    private sealed class DorraHarness
+    {
+        private readonly string _questId;
+        private readonly int _trial;
+        private readonly ConversationGraph _graph;
+        private readonly ConversationRuntime _runtime = new();
+
+        public int State { get; set; }
+        public bool ObjectivesComplete { get; set; }
+        public bool Completed { get; private set; }
+        public int AdvanceCalls { get; private set; }
+
+        public DorraHarness(string questId, int trial)
+        {
+            _questId = questId;
+            _trial = trial;
+            _graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(FindRoot(),
+                "SWLOR.Game.Server", "ConversationData", "dorra_vesk.conversation.json")))!;
+
+            bool Active(string id) => id == _questId && State > 0 && !Completed;
+            bool Done(string id) => (id == _questId && Completed) || (id == TrialOne && _trial == 2);
+            _runtime.RegisterCondition("condition-has-quest", (_, args) => Active(args[0]));
+            _runtime.RegisterCondition("condition-on-quest-state", (_, args) =>
+                Active(args[0]) && args.Skip(1).Contains(State.ToString()));
+            _runtime.RegisterCondition("condition-completed-quest", (_, args) => args.All(Done));
+            _runtime.RegisterCondition("condition-can-accept-quest", (_, _) => false);
+            _runtime.RegisterAction("action-accept-quest", (_, _) => false);
+            // Mirrors QuestDetail.Advance: refuse while objectives are incomplete, move to the next state, and
+            // complete with rewards when called on the last state.
+            _runtime.RegisterAction("action-advance-quest", (_, args) =>
+            {
+                args[0].Should().Be(_questId);
+                AdvanceCalls++;
+                if (!ObjectivesComplete || Completed)
+                    return false;
+                if (State == 2)
+                    Completed = true;
+                else
+                    State++;
+                return true;
+            });
+        }
+
+        public ConversationSession Start()
+        {
+            var session = new ConversationSession(_graph, new ConversationContext(1, 2), _runtime);
+            session.Start().Should().BeTrue();
+            return session;
+        }
     }
 
     private static string FindRoot()

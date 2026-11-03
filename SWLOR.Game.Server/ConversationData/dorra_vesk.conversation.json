@@ -383,6 +383,10 @@
           "Conditions": []
         },
         {
+          "ChoiceId": "reply-t1-recheck",
+          "Conditions": []
+        },
+        {
           "ChoiceId": "reply-onit",
           "Conditions": []
         }
@@ -683,6 +687,10 @@
           "Conditions": []
         },
         {
+          "ChoiceId": "reply-t2-recheck",
+          "Conditions": []
+        },
+        {
           "ChoiceId": "reply-onit",
           "Conditions": []
         }
@@ -766,6 +774,128 @@
       "Choices": [
         {
           "ChoiceId": "reply-thanks",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-recheck": {
+      "Id": "entry-t1-recheck",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hold still. Let me look that beast over again, and your extractor log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-recheck-advance",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-t1-recheck-continue",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "1"
+              ],
+              "IsNegated": true
+            }
+          ]
+        }
+      ]
+    },
+    "entry-t2-recheck": {
+      "Id": "entry-t2-recheck",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hold still. Let me look that beast over again, and your extractor log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-recheck-advance",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-t2-recheck-continue",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "1"
+              ],
+              "IsNegated": true
+            }
+          ]
+        }
+      ]
+    },
+    "entry-recheck-later": {
+      "Id": "entry-recheck-later",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Something's changed since you started talking. Come back and ask me again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
           "Conditions": []
         }
       ]
@@ -1214,6 +1344,210 @@
       "Next": [
         {
           "TargetNodeId": "entry-t2-complete",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-recheck": {
+      "Id": "reply-t1-recheck",
+      "Text": {
+        "Text": "I have everything. Check again.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-recheck",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-recheck-advance": {
+      "Id": "reply-t1-recheck-advance",
+      "Text": {
+        "Text": "[Wait while she checks.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-t1-remind",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": true
+    },
+    "reply-t1-recheck-continue": {
+      "Id": "reply-t1-recheck-continue",
+      "Text": {
+        "Text": "Well?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-recheck-later",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-recheck": {
+      "Id": "reply-t2-recheck",
+      "Text": {
+        "Text": "I have everything. Check again.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-recheck",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-recheck-advance": {
+      "Id": "reply-t2-recheck-advance",
+      "Text": {
+        "Text": "[Wait while she checks.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-t2-remind",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": true
+    },
+    "reply-t2-recheck-continue": {
+      "Id": "reply-t2-recheck-continue",
+      "Text": {
+        "Text": "Well?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-recheck-later",
           "Conditions": []
         }
       ],

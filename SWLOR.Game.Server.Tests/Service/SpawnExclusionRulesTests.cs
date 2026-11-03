@@ -13,6 +13,27 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class SpawnExclusionRulesTests
 {
+    [Test]
+    public void AnExcludedSpawn_WaitsForItsNextRespawn_AtLeastAMinuteAway()
+    {
+        var now = new System.DateTime(2026, 11, 3, 12, 0, 0, System.DateTimeKind.Utc);
+
+        SpawnExclusionRules.GetExcludedRetryTime(now, 10).Should().Be(now.AddMinutes(10));
+        SpawnExclusionRules.GetExcludedRetryTime(now, 0).Should().Be(now.AddMinutes(1), "a spawn with no delay must not retry every heartbeat");
+    }
+
+    [Test]
+    public void AnExcludedSpawn_StaysQueuedInsteadOfCountingAsAFailure()
+    {
+        var spawn = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Spawn.cs"));
+        var excluded = spawn.IndexOf("if (spawnResult.WasExcluded)", System.StringComparison.Ordinal);
+        var failure = spawn.IndexOf("queuedSpawn.FailureCount++;", System.StringComparison.Ordinal);
+
+        excluded.Should().BeGreaterThan(0);
+        excluded.Should().BeLessThan(failure, "exclusion retries at the next respawn before any failure is counted, so the spawn is never dropped");
+        spawn.Substring(excluded, failure - excluded).Should().Contain("SpawnExclusionRules.GetExcludedRetryTime(now, detail.RespawnDelayMinutes)");
+    }
+
     private static Func<Vector3> Sequence(params Vector3[] candidates)
     {
         var queue = new Queue<Vector3>(candidates);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -13,6 +14,15 @@ namespace SWLOR.Game.Server.Service.SpawnService
     /// </summary>
     public static class SpawnExclusionRules
     {
+        /// <summary>
+        /// When a spawn a player city kept off its buildings tries again: at its next respawn, at least a minute away. Exclusion is
+        /// never a failure, so the spawn stays queued and returns once a building moves or the city shrinks.
+        /// </summary>
+        public static DateTime GetExcludedRetryTime(DateTime now, int respawnDelayMinutes)
+        {
+            return now.AddMinutes(Math.Max(1, respawnDelayMinutes));
+        }
+
         /// <summary>
         /// The Hostile faction in Module/fac/repute.fac.json, numbered as <c>CreaturePlugin.GetFaction</c> reports it.
         /// It is the only faction that dislikes the player faction (reputation 0, where the rest sit at 50).

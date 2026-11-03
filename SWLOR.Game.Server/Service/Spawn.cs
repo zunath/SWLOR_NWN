@@ -588,14 +588,20 @@ namespace SWLOR.Game.Server.Service
                     // Either the table is configured wrong or the requirements for that specific table weren't met.
                     if (spawnResult.SpawnObject == OBJECT_INVALID)
                     {
+                        // A spawn a player city kept off its buildings is skipped until its next respawn. It is not a configuration
+                        // failure, so it stays queued and comes back once the building moves or the city's zones shrink.
+                        if (spawnResult.WasExcluded)
+                        {
+                            queuedSpawn.RespawnTime = SpawnExclusionRules.GetExcludedRetryTime(now, detail.RespawnDelayMinutes);
+                            continue;
+                        }
+
                         queuedSpawn.FailureCount++;
 
                         // If we've failed too many times (10 attempts), remove this spawn to prevent infinite loops.
-                        // A spawn a player city kept off its buildings is not a configuration problem, so it is not logged.
                         if (queuedSpawn.FailureCount >= 10)
                         {
-                            if (!spawnResult.WasExcluded)
-                                Log.Write(LogGroup.Error, $"Spawn {queuedSpawn.SpawnDetailId} failed 10 times consecutively. Removing from queue to prevent infinite spawning. Check spawn table configuration.");
+                            Log.Write(LogGroup.Error, $"Spawn {queuedSpawn.SpawnDetailId} failed 10 times consecutively. Removing from queue to prevent infinite spawning. Check spawn table configuration.");
                             RemoveQueuedSpawn(queuedSpawn);
                             continue;
                         }

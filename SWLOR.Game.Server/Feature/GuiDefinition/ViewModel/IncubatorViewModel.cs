@@ -83,6 +83,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string EnzymeTotalsText { get => Get<string>(); set => Set(value); }
 
         public string EnzymeSectionTitle { get => Get<string>(); set => Set(value); }
+        public string HydrolaseTitle { get => Get<string>(); set => Set(value); }
+        public string LyaseTitle { get => Get<string>(); set => Set(value); }
+        public string IsomeraseTitle { get => Get<string>(); set => Set(value); }
         public string HydrolaseDetail { get => Get<string>(); set => Set(value); }
         public string LyaseDetail { get => Get<string>(); set => Set(value); }
         public string IsomeraseDetail { get => Get<string>(); set => Set(value); }
@@ -545,7 +548,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     colors.Add(outcome.Type == job.BeastDNAType ? GuiColor.White : MetColor);
                 }
 
-                OutcomeHeader = $"Possible outcomes if you complete now ({now.DayOfWeek}, UTC)";
+                OutcomeHeader = $"Outcomes if completed now ({now.DayOfWeek} UTC)";
             }
             else
             {
@@ -589,7 +592,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hydrolaseItem = string.Empty;
                 _hydrolaseColor = EnzymeColorType.Invalid;
                 HydrolaseItemResref = _blank;
-                HydrolaseDetail = "Empty";
+                HydrolaseTitle = "Hydrolase";
+            HydrolaseDetail = "Empty";
             }
             if (!string.IsNullOrWhiteSpace(_lyaseItem) &&
                 Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_lyaseItem)))
@@ -598,7 +602,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _lyaseItem = string.Empty;
                 _lyaseColor = EnzymeColorType.Invalid;
                 LyaseItemResref = _blank;
-                LyaseDetail = "Empty";
+                LyaseTitle = "Lyase";
+            LyaseDetail = "Empty";
             }
             if (!string.IsNullOrWhiteSpace(_isomeraseItem) &&
                 Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_isomeraseItem)))
@@ -607,7 +612,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _isomeraseItem = string.Empty;
                 _isomeraseColor = EnzymeColorType.Invalid;
                 IsomeraseItemResref = _blank;
-                IsomeraseDetail = "Empty";
+                IsomeraseTitle = "Isomerase";
+            IsomeraseDetail = "Empty";
             }
 
             var enzymesReturned = string.IsNullOrWhiteSpace(_hydrolaseItem) &&
@@ -661,6 +667,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HydrolaseDetail = "Empty";
             LyaseDetail = "Empty";
             IsomeraseDetail = "Empty";
+            HydrolaseTitle = "Hydrolase";
+            LyaseTitle = "Lyase";
+            IsomeraseTitle = "Isomerase";
 
             if (!string.IsNullOrWhiteSpace(_dnaItem))
             {
@@ -674,6 +683,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_hydrolaseItem);
                 _hydrolaseColor = AddItemStats(item);
                 HydrolaseItemResref = Item.GetIconResref(item);
+                HydrolaseTitle = EnzymeTitle("Hydrolase", _hydrolaseColor);
                 HydrolaseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
@@ -682,6 +692,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_lyaseItem);
                 _lyaseColor = AddItemStats(item);
                 LyaseItemResref = Item.GetIconResref(item);
+                LyaseTitle = EnzymeTitle("Lyase", _lyaseColor);
                 LyaseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
@@ -690,6 +701,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_isomeraseItem);
                 _isomeraseColor = AddItemStats(item);
                 IsomeraseItemResref = Item.GetIconResref(item);
+                IsomeraseTitle = EnzymeTitle("Isomerase", _isomeraseColor);
                 IsomeraseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
@@ -842,12 +854,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var stat = (IncubationStatType)GetItemPropertySubType(ip);
                     var value = GetItemPropertyCostTableValue(ip) / 10f;
-                    stats.Add($"{IncubationProjection.GetShortStatName(stat)} +{value:0.0}%");
+                    stats.Add($"{IncubationProjection.GetShortStatName(stat)}+{value:0.0}");
                 }
             }
 
-            var colorText = color == EnzymeColorType.Invalid ? "Unknown" : color.ToString();
-            return stats.Count == 0 ? colorText : $"{colorText}: {string.Join(", ", stats)}";
+            return stats.Count == 0 ? "No stats" : string.Join(" ", stats);
+        }
+
+        /// <summary>Names a filled enzyme slot by its color, for example "Blue hydrolase".</summary>
+        private static string EnzymeTitle(string name, EnzymeColorType color)
+        {
+            return color == EnzymeColorType.Invalid ? name : $"{color} {name.ToLower()}";
         }
 
         private delegate void EnzymeSlotSetter(string serialized, EnzymeColorType color, string icon, string detail);
@@ -917,6 +934,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hydrolaseItem = serialized;
                 _hydrolaseColor = color;
                 HydrolaseItemResref = icon;
+                HydrolaseTitle = EnzymeTitle("Hydrolase", color);
                 HydrolaseDetail = detail;
             });
 
@@ -927,6 +945,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _lyaseItem = serialized;
                 _lyaseColor = color;
                 LyaseItemResref = icon;
+                LyaseTitle = EnzymeTitle("Lyase", color);
                 LyaseDetail = detail;
             });
 
@@ -937,6 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _isomeraseItem = serialized;
                 _isomeraseColor = color;
                 IsomeraseItemResref = icon;
+                IsomeraseTitle = EnzymeTitle("Isomerase", color);
                 IsomeraseDetail = detail;
             });
 

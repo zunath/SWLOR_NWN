@@ -137,7 +137,7 @@ public class TournamentWiringTests
         var source = ReadServerSource("Service", "Tournaments.cs");
 
         source.Should().Contain("AssignCommand(player, () => CompleteSignUp(player, tournamentId));");
-        var take = source.IndexOf("CreditPayments.Take(player, mark);", StringComparison.Ordinal);
+        var take = source.IndexOf("CreditPayments.TryTakeSaved(player, mark)", StringComparison.Ordinal);
         var entrant = source.IndexOf("DB.Set(tournament);", take, StringComparison.Ordinal);
         var escrow = source.IndexOf("CityTreasury.AddEntryFee(", entrant, StringComparison.Ordinal);
         var retire = source.IndexOf("CreditPayments.Retire(player);", escrow, StringComparison.Ordinal);

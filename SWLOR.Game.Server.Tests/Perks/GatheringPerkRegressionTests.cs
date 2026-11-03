@@ -91,30 +91,11 @@ public class GatheringPerkRegressionTests
     [Test]
     public void TreasureHunterAndCreditfinder_PreserveCreatureLootBonuses()
     {
-        var loot = ReadSource("Service", "Loot.cs");
-        var itemHit = ExtractMethod(loot, "public static void MarkCreditfinderAndTreasureHunterOnTarget()");
-        itemHit.Should().Contain("RecordWeaponHitFindBonuses(OBJECT_SELF, GetSpellTargetObject());");
-        var markTarget = ExtractMethod(loot, "public static void RecordWeaponHitFindBonuses(uint attacker, uint target)");
-        var spawnLoot = ExtractMethod(
-            loot,
-            "private static List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)");
+        // How a creature is marked by a hit and how its loot is spawned with the marks (the credit finder gold
+        // bonus, the rare find bonus on the drop chance and on the weights) is tested as behaviour in
+        // Domain/Items/LootServiceTests; this keeps the loot table side of the rare weight.
         var lootTable = ReadSource("Service", "LootService", "LootTable.cs");
         var chooseItem = ExtractMethod(lootTable, "public LootTableItem GetRandomItemWithRareBonus(int rareBonusChance)");
-
-        markTarget.Should().Contain("Perk.GetPerkLevel(attacker, PerkType.CreditFinder)");
-        markTarget.Should().Contain("Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10");
-        markTarget.Should().Contain("var rareBonusChance = Math.Max(");
-        markTarget.Should().Contain("Stat.GetStatAdjustment(attacker, StatType.RareItemFindChance)");
-        markTarget.Should().Contain("if (creditFinderLevel > currentCreditFinder)");
-        markTarget.Should().Contain("SetLocalInt(target, \"CREDITFINDER_LEVEL\", creditFinderLevel)");
-        markTarget.Should().Contain("if (rareBonusChance > currentTreasureHunter)");
-        markTarget.Should().Contain("SetLocalInt(target, \"RARE_BONUS_CHANCE\", rareBonusChance)");
-
-        spawnLoot.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
-        spawnLoot.Should().Contain("if (rareBonusChance > 0 && table.IsRare)");
-        spawnLoot.Should().Contain("chance += table.GetRareChanceBonus(rareBonusChance);");
-        spawnLoot.Should().Contain("table.GetRandomItemWithRareBonus(rareBonusChance)");
-        spawnLoot.Should().Contain("quantity += (int)(quantity * creditPercentIncrease);");
 
         chooseItem.Should().Contain("if (rareBonusChance > 0 && item.IsRare)");
         chooseItem.Should().Contain("weight += rareBonusChance;");

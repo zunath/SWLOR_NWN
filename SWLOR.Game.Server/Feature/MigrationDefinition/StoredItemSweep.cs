@@ -37,6 +37,17 @@ internal static class StoredItemSweep
         Log.Write(LogGroup.Migration, $"Migration #{version}: Consolidated pelvis appearances in {changed} stored records.", true);
     }
 
+    internal static void MigrateEnzymes(int version)
+    {
+        var sections = CountSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
+        var progress = new ServerMigrationProgress(version, sections);
+        var pass = new ParallelStoredItemPass(progress);
+        var converter = EnzymeStoredItemConverter.Instance;
+        var changed = Sweep(pass, converter);
+        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Moved incubation enzymes to the 1x1 enzyme item in {changed} stored records.", true);
+    }
+
     private static (string Name, int Count)[] CountSections() => new[]
     {
         ServerMigrationProgress.CountRecords<InventoryItem>(),
@@ -54,7 +65,7 @@ internal static class StoredItemSweep
     /// <summary>Every stored item record and the fields holding its items.</summary>
     private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter)
     {
-        var legacyMetadata = converter is not PelvisStoredItemConverter;
+        var legacyMetadata = IsLegacySweep(converter);
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>
             MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
@@ -81,7 +92,7 @@ internal static class StoredItemSweep
         changed += pass.Process<PlayerOutfit>(outfit =>
             MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
             MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value) |
-            (!legacyMetadata && PelvisAppearanceMigration.MigrateOutfitListing(outfit)));
+            (converter is PelvisStoredItemConverter && PelvisAppearanceMigration.MigrateOutfitListing(outfit)));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value));
         changed += pass.Process<PlayerShip>(ship =>
         {
@@ -96,6 +107,10 @@ internal static class StoredItemSweep
         return changed;
     }
 
+    /// <summary>The combined item sweep also updates listing artwork and renamed furniture; the single-purpose sweeps do not.</summary>
+    private static bool IsLegacySweep(IStoredItemConverter converter) =>
+        converter is SavedDataStoredItemConverter or EngineStoredItemConverter;
+
     private static bool MigrateItem(IStoredItemConverter converter, string resref, string data, Action<string> setData,
         string icon, Action<string> setIcon, Action<RootListing> rootChanged = null)
     {
@@ -105,7 +120,9 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
-        if (converter is PelvisStoredItemConverter)
+        if (converter is EnzymeStoredItemConverter)
+            return changed | EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
+        if (!IsLegacySweep(converter))
             return changed;
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
@@ -130,7 +147,7 @@ internal static class StoredItemSweep
         if (items != null)
             foreach (var item in items)
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                    | (converter is not PelvisStoredItemConverter && RenameListing(item.Resref, item.Name, value => item.Name = value));
+                    | (IsLegacySweep(converter) && RenameListing(item.Resref, item.Name, value => item.Name = value));
         return changed;
     }
 

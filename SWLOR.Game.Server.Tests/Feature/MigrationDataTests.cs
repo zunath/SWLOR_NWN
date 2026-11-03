@@ -25,10 +25,14 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") });
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
+                CharacterMigrations.Named("_28_ShrinkEnzymes") });
+        // 25 is master's next release; 26 and 27 belong to the crafting and space revamps' branches, and the enzyme change takes 28.
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") }, "the next release must receive one combined player-item pass");
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"), CharacterMigrations.Named("_28_ShrinkEnzymes") },
+                "each unreleased release receives one combined player-item pass");
         CharacterMigrations.VersionOf("_25_ConsolidatePelvisAppearance").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_28_ShrinkEnzymes").Should().Be(ReleasedPlayerVersion + 4);
     }
 
     [Test]
@@ -119,8 +123,9 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance) },
-            "the next release must receive one combined stored-item pass");
+        // 31 and 32 belong to the space and city revamps' branches, and the enzyme change takes 33.
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance), typeof(_33_ShrinkEnzymes) },
+            "each unreleased release receives one combined stored-item pass");
         new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
     }

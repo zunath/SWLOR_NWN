@@ -4488,14 +4488,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
-    "Line": 57,
+    "Line": 61,
     "Member": "Donate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(CityProjectDonationRules.BuildReturnedText(donation, CityProjectRules.GetName(project), CityProjects.GetItemName(resref))))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
-    "Line": 102,
+    "Line": 106,
     "Member": "Tell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -4866,14 +4866,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 728,
+    "Line": 743,
     "Member": "Notify",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 748,
+    "Line": 763,
     "Member": "DeliverNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
@@ -4943,21 +4943,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 97,
+    "Line": 120,
     "Member": "PayStationFounding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have the credits, so the station was not founded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 157,
+    "Line": 180,
     "Member": "SettlePendingFoundings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    \"A restart stopped your station's founding before its price was paid, so the station was not founded. You keep the Station Core and your credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 188,
+    "Line": 211,
     "Member": "SettleInterruptedPayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.\"))"
@@ -5370,28 +5370,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 224,
+    "Line": 289,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} now works {(farmhand.TargetType == FarmhandTargetType.House ? \"your crops here\" : \"the corral\")}. It handles tier 1 to {farmhand.DroidTier}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 247,
+    "Line": 312,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{farmhand.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 254,
+    "Line": 319,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 263,
+    "Line": 338,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} returns to you.\"))"
@@ -5937,7 +5937,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PendingCredits.cs",
-    "Line": 123,
+    "Line": 142,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{record.Reason} ({record.Credits} credits)\"))"
@@ -8863,14 +8863,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Tournaments.cs",
-    "Line": 214,
+    "Line": 200,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your entry fee could not be saved, so you were not signed up. Please try again.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 222,
     "Member": "CompleteSignUp",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You signed up for the tournament{paid}. The entry fee is returned only if the tournament is cancelled.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Tournaments.cs",
-    "Line": 247,
+    "Line": 255,
     "Member": "Begin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(online, ColorToken.Green(\"The tournament has begun. Stay near the Dueling Ring: you have 5 minutes to reach it once your match is called.\"))"
@@ -9220,14 +9227,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
-    "Line": 138,
+    "Line": 154,
     "Member": "Report",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TransferJournalRules.DescribeOverflow(entry)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
-    "Line": 181,
+    "Line": 197,
     "Member": "Tell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

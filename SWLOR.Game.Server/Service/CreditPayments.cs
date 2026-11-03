@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TournamentService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -36,6 +37,28 @@ namespace SWLOR.Game.Server.Service
             TakeGoldFromCreature(mark.Credits, player, true);
             ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
             ExportSingleCharacter(player);
+        }
+
+        /// <summary>
+        /// Takes the credits with the mark and saves the character file at once (<see cref="CharacterCheckpoint"/>), for a payment
+        /// whose record is saved right after. When the file cannot be saved the credits and the mark are put back and nothing is paid.
+        /// </summary>
+        /// <returns>True when the file holds the payment.</returns>
+        public static bool TryTakeSaved(uint player, CreditPaymentMark mark)
+        {
+            return CheckpointedChange.Run(
+                () =>
+                {
+                    TakeGoldFromCreature(mark.Credits, player, true);
+                    ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    GiveGoldToCreature(player, mark.Credits);
+                    ObjectPlugin.DeleteString(player, MarkVariable);
+                });
         }
 
         /// <summary>Records the payment on the ship it changed, to be saved with the change (<see cref="PlayerShip.PaymentIds"/>).</summary>

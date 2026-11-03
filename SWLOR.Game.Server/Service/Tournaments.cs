@@ -192,7 +192,15 @@ namespace SWLOR.Game.Server.Service
             if (fee > 0)
             {
                 mark = CreditPayments.NewMark(CreditPaymentKind.TournamentEntry, tournament.Id, (int)fee);
-                CreditPayments.Take(player, mark);
+
+                // The fee reaches the character file before the entrant and the escrow are saved, so a restart can't refund a fee
+                // the restored character still holds.
+                if (!CreditPayments.TryTakeSaved(player, mark))
+                {
+                    SendMessageToPC(player, ColorToken.Red("Your entry fee could not be saved, so you were not signed up. Please try again."));
+                    return;
+                }
+
                 entrant.PaymentId = mark.Id;
             }
 

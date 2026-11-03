@@ -39,6 +39,20 @@ public class CityCatchUpOrderTests
             "only a city whose Edicts were not replaced by a platform bills the resumed ones");
     }
 
+    [Test]
+    public void ATournamentEntryFee_IsSavedInTheCharacterFileBeforeTheEntrantIsRecorded()
+    {
+        var tournaments = ReadServer("Service", "Tournaments.cs");
+        Index(tournaments, "CreditPayments.TryTakeSaved(player, mark)").Should().BeLessThan(Index(tournaments, "tournament.Entrants.Add(entrant);"),
+            "the fee is checkpointed before the entrant and escrow are saved");
+        tournaments.Should().NotContain("CreditPayments.Take(player, mark);");
+
+        var payments = ReadServer("Service", "CreditPayments.cs");
+        var take = Between(payments, "public static bool TryTakeSaved(", "public static void RecordOn(");
+        take.Should().Contain("CharacterCheckpoint.Save(player)");
+        take.Should().Contain("GiveGoldToCreature(player, mark.Credits);", "a failed save puts the credits back");
+    }
+
     private static string ReadServer(params string[] parts)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

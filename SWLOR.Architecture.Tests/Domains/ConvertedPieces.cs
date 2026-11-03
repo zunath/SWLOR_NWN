@@ -3,29 +3,28 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
-/// One static facade of a converted service with the interface and the instance class behind it. A converted service
-/// always has one (the main facade <c>Service.&lt;Name&gt;</c>) and may have more (the extra facades its
-/// <c>ConvertedServices.json</c> entry lists).
+/// One class of a converted service with the interface behind it, and the static facade in front of it when it has
+/// one. A converted service always has the main piece (the facade <c>Service.&lt;Name&gt;</c>, the interface
+/// <c>I&lt;Name&gt;Service</c> and the instance class <c>&lt;Name&gt;Service</c>) and may have more (the extras its
+/// <c>ConvertedServices.json</c> entry lists): an extra facade or a part (<see cref="ExtraPiece"/>).
 /// </summary>
-/// <param name="Label">Names the pieces in a failure message: the service name, or the service name and the extra facade.</param>
-/// <param name="Facade">The static class content code and handlers keep calling.</param>
+/// <param name="Label">Names the pieces in a failure message: the service name, or the service name and the extra.</param>
+/// <param name="Facade">The static class content code and handlers keep calling, or null for a part, which has none.</param>
 /// <param name="Interface">The interface in <c>Domain.&lt;Domain&gt;</c>.</param>
 /// <param name="Instance">The instance class in <c>Domain.&lt;Domain&gt;</c>.</param>
-internal sealed record ConvertedPieces(string Label, TypeKey Facade, TypeKey Interface, TypeKey Instance)
+internal sealed record ConvertedPieces(string Label, TypeKey? Facade, TypeKey Interface, TypeKey Instance)
 {
     /// <summary>
-    /// The pieces of an extra facade, from its name relative to <c>SWLOR.Game.Server.Service</c>
-    /// (<c>QuestService.QuestEncounter</c> is the type <c>Service.QuestService.QuestEncounter</c>). The interface and the
-    /// instance class are named after the type, in the domain of the service: <c>IQuestEncounterService</c> and
-    /// <c>QuestEncounterService</c>.
+    /// The pieces of an extra, named after the type it stands for: <c>QuestService.QuestEncounter</c> is the facade
+    /// <c>Service.QuestService.QuestEncounter</c>, a part <c>PropertyCatalog</c> has no facade, and both have the
+    /// interface <c>I&lt;Type&gt;Service</c> and the instance class <c>&lt;Type&gt;Service</c> in the domain of the service.
     /// </summary>
-    public static ConvertedPieces ForExtraFacade(ConvertedService service, string facade)
+    public static ConvertedPieces ForExtra(ConvertedService service, ExtraPiece extra)
     {
-        var typeName = TypeNameOf(facade);
-        var key = FacadeKey(facade);
+        var typeName = extra.TypeName;
         return new ConvertedPieces(
-            $"{service.Name} (extra facade {facade})",
-            key,
+            $"{service.Name} ({extra.Describe()})",
+            extra.HasFacade ? FacadeKey(extra.Name) : null,
             new TypeKey(service.DomainNamespace, "I" + typeName + "Service"),
             new TypeKey(service.DomainNamespace, typeName + "Service"));
     }
@@ -35,7 +34,7 @@ internal sealed record ConvertedPieces(string Label, TypeKey Facade, TypeKey Int
     {
         var dot = facade.LastIndexOf('.');
         var parent = dot < 0 ? string.Empty : "." + facade[..dot];
-        return new TypeKey(ConvertedService.ServerNamespace + ".Service" + parent, TypeNameOf(facade));
+        return new TypeKey(ConvertedService.ServerNamespace + ".Service" + parent, ExtraPiece.TypeNameOf(facade));
     }
 
     /// <summary>True when every dot-separated part of the name is a plain identifier.</summary>
@@ -44,6 +43,4 @@ internal sealed record ConvertedPieces(string Label, TypeKey Facade, TypeKey Int
         var parts = facade.Split('.');
         return parts.All(part => part.Length > 0 && char.IsLetter(part[0]) && part.All(c => char.IsLetterOrDigit(c) || c == '_'));
     }
-
-    private static string TypeNameOf(string facade) => facade[(facade.LastIndexOf('.') + 1)..];
 }

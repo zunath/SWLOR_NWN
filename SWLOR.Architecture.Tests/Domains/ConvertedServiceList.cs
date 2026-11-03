@@ -47,46 +47,75 @@ internal sealed class ConvertedServiceList
                 list._problems.Add($"{name} is out of order: keep the list sorted by name so pull requests that add services do not conflict.");
 
             previous = name;
-            list._services.Add(new ConvertedService(name, domain) { ExtraFacades = list.ReadExtraFacades(name, element) });
+            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element) });
         }
 
         return list;
     }
 
     /// <summary>
-    /// The optional <c>facades</c> list of a service entry: names relative to <c>SWLOR.Game.Server.Service</c>, sorted,
-    /// without duplicates. A name that is not made of plain identifiers is reported and left out.
+    /// The optional <c>extras</c> list of a service entry: objects with a <c>facade</c> (a type name relative to
+    /// <c>SWLOR.Game.Server.Service</c>) or a <c>part</c> (a plain name), sorted by name and without duplicates. An entry
+    /// that is not one of those is reported and left out.
     /// </summary>
-    private IReadOnlyList<string> ReadExtraFacades(string service, JsonElement element)
+    private IReadOnlyList<ExtraPiece> ReadExtras(string service, JsonElement element)
     {
-        if (!element.TryGetProperty("facades", out var facades))
-            return Array.Empty<string>();
+        if (!element.TryGetProperty("extras", out var extras))
+            return Array.Empty<ExtraPiece>();
 
-        var result = new List<string>();
+        var result = new List<ExtraPiece>();
         string? previous = null;
-        foreach (var entry in facades.EnumerateArray())
+        foreach (var entry in extras.EnumerateArray())
         {
-            var facade = entry.GetString() ?? string.Empty;
-            if (!ConvertedPieces.IsPlainFacadeName(facade))
+            var extra = ReadExtra(service, entry);
+            if (extra is null)
+                continue;
+
+            if (result.Any(known => known.Name == extra.Name))
             {
-                _problems.Add($"'{facade}' (an extra facade of {service}) is not a plain type name relative to SWLOR.Game.Server.Service, such as QuestService.QuestEncounter.");
+                _problems.Add($"{service} lists the {extra.Describe()} twice.");
                 continue;
             }
 
-            if (result.Contains(facade))
-            {
-                _problems.Add($"{service} lists the extra facade {facade} twice.");
-                continue;
-            }
+            if (previous is not null && string.CompareOrdinal(previous, extra.Name) > 0)
+                _problems.Add($"The {extra.Describe()} of {service} is out of order: keep the extras sorted by name so pull requests that add them do not conflict.");
 
-            if (previous is not null && string.CompareOrdinal(previous, facade) > 0)
-                _problems.Add($"The extra facade {facade} of {service} is out of order: keep the facades sorted so pull requests that add facades do not conflict.");
-
-            previous = facade;
-            result.Add(facade);
+            previous = extra.Name;
+            result.Add(extra);
         }
 
         return result;
+    }
+
+    private ExtraPiece? ReadExtra(string service, JsonElement entry)
+    {
+        var facade = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("facade", out var facadeName) ? facadeName.GetString() : null;
+        var part = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("part", out var partName) ? partName.GetString() : null;
+
+        if (facade is null == part is null)
+        {
+            _problems.Add($"An extra of {service} must be an object with either a \"facade\" or a \"part\", such as {{ \"facade\": \"QuestService.QuestEncounter\" }} or {{ \"part\": \"PropertyCatalog\" }}.");
+            return null;
+        }
+
+        if (facade is not null)
+        {
+            if (!ConvertedPieces.IsPlainFacadeName(facade))
+            {
+                _problems.Add($"'{facade}' (an extra facade of {service}) is not a plain type name relative to SWLOR.Game.Server.Service, such as QuestService.QuestEncounter.");
+                return null;
+            }
+
+            return ExtraPiece.Facade(facade);
+        }
+
+        if (!IsPlainName(part!))
+        {
+            _problems.Add($"'{part}' (a part of {service}) is not a plain class name, such as PropertyCatalog.");
+            return null;
+        }
+
+        return ExtraPiece.Part(part!);
     }
 
     private static bool IsPlainName(string name) =>

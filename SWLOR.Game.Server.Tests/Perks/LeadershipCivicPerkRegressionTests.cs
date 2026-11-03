@@ -139,10 +139,10 @@ public class LeadershipCivicPerkRegressionTests
         calculateGP.Should().Contain("(perkBonus * baseAmount)");
         calculateGP.Should().Contain("return (int)amount;");
 
-        var quest = ReadSource("Service", "Quest.cs");
+        var quest = ReadSource("Domain", "Quests", "QuestService.cs");
         var calculateCredits = ExtractMethod(
             quest,
-            "public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
+            "public int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
         calculateCredits.Should().Contain("if (isGuildQuest)");
         calculateCredits.Should().Contain("Perk.GetPerkLevel(player, PerkType.GuildRelations)");
         calculateCredits.Should().Contain("guildRelations = perkLevel * 0.05f;");

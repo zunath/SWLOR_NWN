@@ -50,7 +50,7 @@ public class ConvertedServicesTests
         var map = Map;
         var services = List.Services;
 
-        Fail(ConvertedServiceRules.HandlersOffTheFacade(ArchitectureProject.Facts, type => ServiceOf(type, map, services)?.Facade),
+        Fail(ConvertedServiceRules.HandlersOffTheFacade(ArchitectureProject.Facts, type => ServiceOf(type, map, services)?.Facades),
             "Event handlers of converted services stay on the static facade");
     }
 
@@ -63,7 +63,7 @@ public class ConvertedServicesTests
     [Test]
     public void Nothing_locates_a_service_outside_composition_and_the_facades_of_converted_services()
     {
-        var facades = List.Services.Select(service => service.Facade).ToHashSet();
+        var facades = List.Services.SelectMany(service => service.Facades).ToHashSet();
 
         var problems = ServiceLocationRule.Find(
             ArchitectureProject.Graph,

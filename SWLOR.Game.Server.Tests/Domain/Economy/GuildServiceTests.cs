@@ -23,9 +23,20 @@ public class GuildServiceTests
     private InMemoryDBService _db = null!;
     private GuildService _service = null!;
 
+    // The guild tasks come from the quest service behind the static Quest class, so the fixture installs a container of its own.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
         _service = new GuildService(_db);
@@ -36,6 +47,7 @@ public class GuildServiceTests
     public void TearDown()
     {
         _engine.Dispose();
+        _facadeScope.Dispose();
     }
 
     private static IEnumerable<GuildType> ActiveGuilds() =>

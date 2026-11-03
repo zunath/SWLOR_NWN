@@ -348,6 +348,11 @@ After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
 It writes MDLs in place of its existing redirects, so then run
 `ModelLodAssets.py --apply --game-data` and `CloakTintAssets.py --game-data` in that order.
+The manifest records each HAK cloak source's digest and the compiler. `--check` fails
+when a source changes or, for sources still stored as ASCII (the female Cathar
+`pfo0_cloak_001` to `007`), when CleanModels changes, because the generator compiles
+those on every run. Before this guard the Cathar robe cloaks kept their pre-CleanModels
+compile from October 11 until November 2026.
 The build rejects a cloak source recorded as unavailable once a HAK provides it.
 Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
 `.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,

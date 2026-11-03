@@ -50,7 +50,7 @@ class CatalogTests(unittest.TestCase):
             for kind_id in c.signature_recipe_ids(si):
                 self.assertTrue(8100 <= kind_id <= 8119, kind_id)
             for pi, _ in enumerate(entry["decor"]):
-                self.assertTrue(5130 <= c.structure_id(si, pi) <= 5199)
+                self.assertTrue(5130 <= c.structure_id(si, pi) <= 5189)
                 self.assertTrue(8120 <= c.decor_recipe_id(si, pi) <= 8199)
                 self.assertEqual(c.decor_recipe_id(si, pi), c.structure_id(si, pi) - 5130 + 8120)
 

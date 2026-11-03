@@ -16,7 +16,7 @@ recipe tier bands (1-10, 11-20, 21-30, 31-40, 41-50): Viscara 18 (tier 2), Mon C
 Tatooine 44, Dantooine 46 and Dathomir 47 (tier 5). A station is tier 5, because a Station Core is a level 50 recipe.
 """
 
-# Structure ids: one block of 8 for each set, inside the City Revamp's 5130-5199. Recipe ids: dish and drink pairs from 8100, decor from
+# Structure ids: one block of 8 for each set, inside the City Revamp's 5130-5189 (5190-5199 belong to the city-exclusive store decor). Recipe ids: dish and drink pairs from 8100, decor from
 # 8120, so a decor piece's RecipeType is its StructureType - 5130 + 8120. Both ranges are inside the City Revamp's 8100-8199.
 STRUCTURE_START = 5130
 STRUCTURE_BLOCK = 8

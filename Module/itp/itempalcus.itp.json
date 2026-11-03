@@ -23972,6 +23972,116 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "City Banner, Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5190"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Banner, Gold"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5191"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Civic Wall Crest"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5192"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Archive Crest"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5193"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clinic Display Panel"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5194"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clinic Bacta Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5195"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Spaceport Signpost"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5196"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Spaceport Wall Sign"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5197"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pavilion Banner"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5198"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Artisans' Guild Banner"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5199"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {
@@ -63155,6 +63265,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "House Citrus Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_citrus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "House Reserve Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_reserve"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "House Sunrise Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_sunrise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hydroponic Spacer Stew"
                     },
                     "RESREF": {
@@ -64128,6 +64271,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "soy_ramen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stallkeeper's Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stall_pie"
                     }
                   },
                   {

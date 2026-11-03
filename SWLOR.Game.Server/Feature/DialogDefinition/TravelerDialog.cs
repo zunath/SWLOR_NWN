@@ -7,8 +7,8 @@ using Random = SWLOR.Game.Server.Service.Random;
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     /// <summary>
-    /// The conversation of a traveler: browse the wares, hear who they are, and for the information broker hear a rumor,
-    /// hear where the other travelers are, and open the contract board. <see cref="Travelers"/> makes the traveler and
+    /// The conversation of a traveler: browse the wares (for those who sell any), hear who they are, and for the information
+    /// broker, who sells nothing, hear a rumor, hear where the other travelers are, and open the contract board. <see cref="Travelers"/> makes the traveler and
     /// <see cref="CityStores"/> opens the store, with the host city's Sales tax.
     /// </summary>
     public class TravelerDialog : ConversationMenuDefinition
@@ -45,11 +45,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = $"{traveler.Name}\n{traveler.Title}\n\n{traveler.Greeting}";
 
-            page.AddResponse("Browse the wares", () =>
+            // A traveler with nothing to sell (the information broker) has no wares to browse.
+            if (traveler.Groups.Count > 0)
             {
-                Close();
-                Travelers.OpenStore(Player, Owner);
-            });
+                page.AddResponse("Browse the wares", () =>
+                {
+                    Close();
+                    Travelers.OpenStore(Player, Owner);
+                });
+            }
 
             if (traveler.Type == TravelerType.InformationBroker)
             {

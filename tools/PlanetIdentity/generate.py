@@ -188,7 +188,7 @@ def cs_string(text):
 def structure_block():
     lines = [STRUCTURE_BEGIN,
              "        // Player City Revamp: planet and station decor (slice 5g). One block of 8 ids for each set, in the order",
-             "        // Viscara, Mon Cala, Korriban, Hutlar, Tatooine, Dantooine, Dathomir, station, inside the reserved 5130-5199."]
+             "        // Viscara, Mon Cala, Korriban, Hutlar, Tatooine, Dantooine, Dathomir, station, inside the reserved 5130-5189."]
     for si, entry in enumerate(c.SETS):
         for pi, piece in enumerate(entry["decor"]):
             lines += [f"        [Structure({cs_string(piece['name'])},",

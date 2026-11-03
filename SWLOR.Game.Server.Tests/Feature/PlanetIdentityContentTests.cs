@@ -124,7 +124,7 @@ public class PlanetIdentityContentTests
         Dishes.Keys.Select(type => (int)type).Should().OnlyContain(id => id >= 8100 && id <= 8119, "dish and drink pairs start at 8100");
         Decor.Keys.Select(type => (int)type).Should().OnlyContain(id => id >= 8120 && id <= 8199, "decor starts at 8120");
 
-        var decorStructures = Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5199).ToList();
+        var decorStructures = Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5189).ToList();
         decorStructures.Should().HaveCount(32);
         Decor.Keys.Select(type => (int)type).Order().Should().Equal(decorStructures.Select(type => (int)type - 5130 + 8120).Order(),
             "a decor piece's recipe is its structure's id - 5130 + 8120");
@@ -240,7 +240,7 @@ public class PlanetIdentityContentTests
     public void EveryDecorStructureIsActiveFurnitureThatPlacesAnExistingPlaceableNoOtherStructureUses()
     {
         var all = Enum.GetValues<StructureType>().Select(type => (Type: type, Detail: type.GetAttribute<StructureType, StructureAttribute>())).ToList();
-        var decor = all.Where(entry => (int)entry.Type is >= 5130 and <= 5199).ToList();
+        var decor = all.Where(entry => (int)entry.Type is >= 5130 and <= 5189).ToList();
         var others = all.Where(entry => !decor.Contains(entry)).Select(entry => entry.Detail?.Resref).ToHashSet();
 
         decor.Should().HaveCount(32);
@@ -265,7 +265,7 @@ public class PlanetIdentityContentTests
     [Test]
     public void EveryDecorPlaceableIsStaticAndHasNoInventory()
     {
-        foreach (var type in Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5199))
+        foreach (var type in Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5189))
         {
             var detail = type.GetAttribute<StructureType, StructureAttribute>();
             using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "Module", "utp", detail.Resref + ".utp.json")));
@@ -278,7 +278,7 @@ public class PlanetIdentityContentTests
     [Test]
     public void EveryDecorItemIsAStructureItemOfItsIdWithTheStructuresNameAndText()
     {
-        foreach (var type in Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5199))
+        foreach (var type in Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5189))
         {
             var detail = type.GetAttribute<StructureType, StructureAttribute>();
             var resref = $"structure_{(int)type}";
@@ -335,7 +335,7 @@ public class PlanetIdentityContentTests
     [Test]
     public void EverySignatureAndDecorNameAvoidsCurlyQuotesAndDashes()
     {
-        var names = Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5199)
+        var names = Enum.GetValues<StructureType>().Where(type => (int)type is >= 5130 and <= 5189)
             .SelectMany(type => new[] { type.GetAttribute<StructureType, StructureAttribute>().Name, type.GetAttribute<StructureType, StructureAttribute>().Description });
 
         names.Should().OnlyContain(text => text.All(character => character >= 0x20 && character <= 0x7E));

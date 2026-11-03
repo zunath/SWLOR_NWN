@@ -62,7 +62,7 @@ public class TravelerWiringTests
     }
 
     [Test]
-    public void TheLodgesItem_IsTheStructureItemOfItsId_AndNpcOnlyForTheEconomy()
+    public void TheLodgesItem_IsTheStructureItemOfItsId_AndAPlayerItemBecauseARecipeMakesIt()
     {
         var path = Path.Combine(Root, "Module", "uti", $"structure_{LodgeId}.uti.json");
         File.Exists(path).Should().BeTrue();
@@ -74,9 +74,7 @@ public class TravelerWiringTests
         item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be("Traveler's Lodge");
         item.GetProperty("Description").GetProperty("value").GetProperty("0").GetString().Should().MatchRegex("^[\\x20-\\x7E]+$");
 
-        var locals = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
-            .ToDictionary(local => Text(local, "Name"), local => local.GetProperty("Value").GetProperty("value").GetInt32());
-        locals["NO_ECONOMY"].Should().Be(1, "like the ring, the item has no source yet: the recipe is a content follow-up");
+        item.TryGetProperty("VarTable", out _).Should().BeFalse("a Fabrication recipe makes the lodge, so it is a player item (no NO_ECONOMY flag)");
 
         File.ReadAllText(Path.Combine(Root, "Module", "itp", "itempalcus.itp.json")).Should().Contain($"\"structure_{LodgeId}\"");
     }
@@ -228,7 +226,6 @@ public class TravelerWiringTests
     {
         foreach (var traveler in TravelerCatalog.All.Values)
         {
-            traveler.Groups.Should().NotBeEmpty();
             foreach (var group in traveler.Groups)
             {
                 group.Name.Should().NotBeNullOrWhiteSpace();
@@ -306,15 +303,27 @@ public class TravelerWiringTests
     }
 
     [Test]
-    public void TheBrokersMaps_AreAreaMapsNoStoreSells()
+    public void TheInformationBroker_SellsNothing_AndNoPoolSellsAreaMaps()
     {
-        var sold = Directory.EnumerateFiles(Path.Combine(Root, "Module", "utm"), "*.utm.json")
-            .SelectMany(path => Regex.Matches(File.ReadAllText(path), "\"InventoryRes\":\\s*\\{\\s*\"type\":\\s*\"resref\",\\s*\"value\":\\s*\"([^\"]+)\"").Select(match => match.Groups[1].Value))
-            .ToHashSet();
-        var maps = TravelerCatalog.Get(TravelerType.InformationBroker).Groups.Single().Items;
+        // The owner took the area maps out of the broker's pool because they made map drops less rare.
+        var broker = TravelerCatalog.Get(TravelerType.InformationBroker);
+        broker.Groups.Should().BeEmpty("the broker offers rumors, the whereabouts of the other travelers and the contract board");
+        broker.Rumors.Should().NotBeEmpty();
+        broker.Greeting.Should().NotContainEquivalentOf("map");
 
-        maps.Should().OnlyContain(item => item.Resref.StartsWith("map_"));
-        maps.Select(item => item.Resref).Where(sold.Contains).Should().BeEmpty("a traveler sells what no store does");
+        foreach (var traveler in TravelerCatalog.All.Values.Where(traveler => traveler.Type != TravelerType.InformationBroker))
+            traveler.Groups.Should().NotBeEmpty($"{traveler.Key} sells stock");
+
+        AllItems().Select(x => x.Item.Resref).Should().NotContain(resref => resref.StartsWith("map_"));
+    }
+
+    [Test]
+    public void TheTravelerDialog_OnlyOffersWaresToTravelersWhoSellSome()
+    {
+        var dialog = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Feature", "DialogDefinition", "TravelerDialog.cs"));
+
+        dialog.Should().Contain("traveler.Groups.Count > 0");
+        dialog.Should().Contain("Look at the contract board").And.Contain("Ask for a rumor");
     }
 
     [Test]

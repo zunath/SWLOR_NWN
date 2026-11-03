@@ -260,7 +260,8 @@ namespace SWLOR.Toolset.Tests.Items
                 [541] = ItemFamily.MeleeWeapon, // powerglove
                 // Generated off hands are internal items the editor never offers for authoring.
                 [542] = ItemFamily.Miscellaneous, // companionpistol
-                [543] = ItemFamily.Miscellaneous // companionpowerglove
+                [543] = ItemFamily.Miscellaneous, // companionpowerglove
+                [544] = ItemFamily.Miscellaneous // enzyme
             };
 
         private static readonly ItemFamily[] EquipmentFamilies =

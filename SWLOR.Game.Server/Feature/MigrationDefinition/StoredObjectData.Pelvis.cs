@@ -87,6 +87,7 @@ internal sealed partial class StoredObjectData
         }
         if (isItem)
         {
+            changed |= ConvertEnzyme(node);
             var droid = FindLocal(node, ConstructedDroidVariable, 3);
             if (droid != null)
             {

@@ -34,7 +34,7 @@ internal static class StoredItemSweep
         var converter = PelvisStoredItemConverter.Instance;
         var changed = Sweep(pass, converter);
         changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Consolidated pelvis appearances in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Consolidated pelvis appearances and moved enzymes to their 1x1 item in {changed} stored records.", true);
     }
 
     private static (string Name, int Count)[] CountSections() => new[]
@@ -106,7 +106,7 @@ internal static class StoredItemSweep
             rootChanged?.Invoke(listing);
         });
         if (converter is PelvisStoredItemConverter)
-            return changed;
+            return changed | EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;

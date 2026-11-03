@@ -9,7 +9,8 @@ using SWLOR.Game.Server.Service.MigrationService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// Consolidates pelvis appearances in stored items, and moves quest kill progress of the renamed capstone NPC groups
+/// Consolidates pelvis appearances in stored items, moves incubation enzymes to the 1x1 enzyme item
+/// (<see cref="EnzymeBaseItemMigration"/>), and moves quest kill progress of the renamed capstone NPC groups
 /// (<see cref="CapstoneNpcGroupRenameMigration"/>) to their new names in one pass over raw Player JSON.
 /// </summary>
 public sealed class _30_ConsolidatePelvisAppearance : IServerMigration

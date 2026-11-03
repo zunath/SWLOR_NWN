@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (SelectedTargetIndex < 0 || SelectedTargetIndex >= _bountyTargets.Count)
             {
-                TargetStatusText = "Only a player who shows the PvP flag in the Player List and accepted the bounty notice can be given a bounty.";
+                TargetStatusText = "A target must show the PvP flag and have accepted the bounty notice.";
                 TargetStatusColor = GuiColor.White;
                 return;
             }

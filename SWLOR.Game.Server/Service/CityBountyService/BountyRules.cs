@@ -97,10 +97,10 @@ namespace SWLOR.Game.Server.Service.CityBountyService
                 return "You cannot post a bounty on yourself.";
 
             if (!request.TargetFlagged)
-                return "Only someone who shows the PvP flag in the Player List can be given a bounty.";
+                return "Only someone who shows the PvP flag can be given a bounty.";
 
             if (!request.TargetAccepted)
-                return "That player has not accepted the bounty notice, so no city can post a bounty on them yet.";
+                return "That player has not accepted the bounty notice yet.";
 
             if (request.TargetHasActiveBounty)
                 return "That player already has a bounty on them.";

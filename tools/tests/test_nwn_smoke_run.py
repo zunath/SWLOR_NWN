@@ -18,7 +18,8 @@ def options(**overrides):
     values = dict(
         name='smoke-test', results_root=None, repeat=1, server_only=True, character='agantarn.bic',
         public_cdkey=None, cdkey=None, dotnet=None, configuration='Release', module=None, hak_dir=None,
-        tlk_dir=None, client_install=None, server_timeout=900.0, max_minutes=120.0, settle=45.0)
+        tlk_dir=None, client_install=None, server_timeout=900.0, max_minutes=120.0, settle=45.0,
+        client_timeout=300.0)
     values.update(overrides)
     return smoke.argparse.Namespace(**values)
 
@@ -39,10 +40,10 @@ class ScenarioTests(unittest.TestCase):
                          [definition.id for definition in smoke.SCENARIO])
         self.assertEqual(len(smoke.SCENARIO), len({definition.id for definition in smoke.SCENARIO}))
 
-    def test_unautomated_steps_carry_a_reason_and_automated_ones_do_not(self):
-        automated = {'boot', 'login', 'logout'}
+    def test_every_step_is_automated_and_only_the_boot_works_without_a_client(self):
         for definition in smoke.SCENARIO:
-            self.assertEqual(definition.id not in automated, definition.manual_reason is not None, definition.id)
+            self.assertIsNone(definition.manual_reason, definition.id)
+            self.assertEqual(definition.id != 'boot', definition.needs_client, definition.id)
 
     def test_screenshot_labels_sort_in_scenario_order_and_are_valid_capture_labels(self):
         labels = [smoke.screenshot_label(definition.id, 'shot') for definition in smoke.SCENARIO]
@@ -116,6 +117,27 @@ class ResultsTests(unittest.TestCase):
         passing = [smoke.StepResult(d.id, d.title, smoke.PASS) for d in smoke.SCENARIO]
         self.assertFalse(smoke.RunResults('smoke', 'full', 'now', passing[:-1], teardown={'clean': True}).complete)
         self.assertFalse(smoke.RunResults('smoke', 'full', 'now', passing, teardown={'clean': False}).complete)
+
+
+class AttachTests(unittest.TestCase):
+    def test_steps_are_listed_in_the_order_given_and_blanks_are_ignored(self):
+        self.assertEqual(['combat', 'ability'], smoke.attach_steps('combat, ability,,'))
+
+    def test_an_empty_selection_is_refused_so_nothing_can_pass_by_running_nothing(self):
+        for selection in ('', ' , ,', ','):
+            with self.assertRaises(LiveStackError, msg=repr(selection)):
+                smoke.attach_steps(selection)
+
+    def test_boot_cannot_be_attached_because_it_starts_the_stack(self):
+        with self.assertRaises(LiveStackError) as caught:
+            smoke.attach_steps('login,boot')
+        self.assertIn('starts the stack', str(caught.exception))
+
+    def test_an_unknown_step_is_refused_before_anything_runs(self):
+        run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(tempfile.gettempdir()))
+        stack = SimpleNamespace(state={'inputs': {}})
+        with self.assertRaises(LiveStackError):
+            run.attach(stack, ['nonsense'])
 
 
 class ErrorLogTests(unittest.TestCase):
@@ -259,9 +281,9 @@ class ClientStepTests(unittest.TestCase):
 
 
 class RunStepTests(unittest.TestCase):
-    def run_one(self, step_id, action, server_only=False):
+    def run_one(self, step_id, action, server_only=False, definition=None):
         run = smoke.SmokeRun(options(server_only=server_only), 'smoke-test', Path(tempfile.gettempdir()))
-        definition = next(d for d in smoke.SCENARIO if d.id == step_id)
+        definition = definition or next(d for d in smoke.SCENARIO if d.id == step_id)
         return run.run_step(definition, action)
 
     def test_checks_decide_the_status_of_an_automated_step(self):
@@ -277,9 +299,16 @@ class RunStepTests(unittest.TestCase):
         self.assertEqual((smoke.FAIL, 'the container stopped'), (step.status, step.detail))
 
     def test_a_step_without_automation_is_manual_with_its_reason_and_never_runs(self):
-        step = self.run_one('combat', lambda step: self.fail('a manual step must not run'))
-        self.assertEqual(smoke.MANUAL, step.status)
-        self.assertTrue(step.detail)
+        manual = smoke.StepDefinition('combat', 'Needs a person', 'A person has to click the target.')
+        step = self.run_one('combat', lambda step: self.fail('a manual step must not run'), definition=manual)
+        self.assertEqual((smoke.MANUAL, 'A person has to click the target.'), (step.status, step.detail))
+
+    def test_any_exception_in_a_step_is_that_steps_failure_not_the_runs(self):
+        def action(step):
+            raise KeyError('Quests')
+        step = self.run_one('quest', action)
+        self.assertEqual(smoke.FAIL, step.status)
+        self.assertIn('KeyError', step.detail)
 
     def test_client_steps_are_blocked_in_a_server_only_run(self):
         step = self.run_one('login', lambda step: self.fail('no client is attached'), server_only=True)
@@ -306,6 +335,16 @@ class RunTests(unittest.TestCase):
         self.assertEqual('C:/m/a.mod', up.module)
         self.assertEqual(str(Path(folder) / 'run'), up.run_dir)
         self.assertFalse(up.play)
+
+    def test_the_watchdog_outlasts_the_wait_for_the_module(self):
+        self.assertEqual(20, smoke.watchdog_threshold(0), 'never below the server default')
+        self.assertEqual(40, smoke.watchdog_threshold(900))
+        self.assertEqual(90, smoke.watchdog_threshold(2400))
+        with tempfile.TemporaryDirectory() as folder:
+            run = smoke.SmokeRun(options(server_timeout=2400), 'smoke-test', Path(folder))
+            up = run.up_options()
+        self.assertIn('NWNX_THREADWATCHDOG_KILL_THRESHOLD=90', up.server_env)
+        self.assertIn(f'SWLOR_ENVIRONMENT={smoke.SMOKE_ENVIRONMENT}', up.server_env)
 
     def test_a_server_only_run_reads_no_cd_key(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(smoke.live, 'create') as create:
@@ -336,11 +375,15 @@ class RunTests(unittest.TestCase):
                 raise LiveStackError('no server')
             run.create_stack = lambda: None
             run.step_boot, run.step_login, run.step_logout = boot_fails, boot_fails, boot_fails
-            results = run.execute()
+            manual = tuple(smoke.StepDefinition(d.id, d.title, 'by hand') if d.id == 'combat' else d
+                           for d in smoke.SCENARIO)
+            with patch.object(smoke, 'SCENARIO', manual):
+                results = run.execute()
             statuses = {step.id: step.status for step in results.steps}
             self.assertEqual(smoke.FAIL, statuses['boot'])
             self.assertEqual(smoke.SKIPPED, statuses['login'])
             self.assertEqual(smoke.SKIPPED, statuses['logout'])
+            self.assertEqual(smoke.SKIPPED, statuses['quest'])
             self.assertEqual(smoke.MANUAL, statuses['combat'])
             written = json.loads((Path(folder) / 'results.json').read_text('utf-8'))
             self.assertEqual(9, len(written['steps']))
@@ -391,6 +434,16 @@ class RunTests(unittest.TestCase):
                 with self.assertRaises(LiveStackError, msg=name):
                     smoke.run_command(options(name=name, results_root=root))
             self.assertFalse(root.exists())
+
+    def test_a_full_run_needs_pillow_and_says_how_to_install_it(self):
+        with patch.dict(sys.modules, {'PIL': None}):
+            with self.assertRaises(LiveStackError) as caught:
+                smoke.run_command(options(server_only=False))
+        self.assertIn('pip install -r tools/nwn_visual_check/requirements.txt', str(caught.exception))
+
+    def test_a_server_only_run_does_not_need_pillow(self):
+        with patch.dict(sys.modules, {'PIL': None}), tempfile.TemporaryDirectory() as folder,                 patch.object(smoke.live, 'create', side_effect=LiveStackError('docker is not on PATH.')),                 patch.object(smoke.live, 'log'):
+            self.assertEqual(2, smoke.run_command(options(server_only=True, results_root=Path(folder))))
 
     def test_repeat_must_be_positive(self):
         with self.assertRaises(LiveStackError):

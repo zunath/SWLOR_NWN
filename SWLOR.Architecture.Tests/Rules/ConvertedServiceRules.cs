@@ -11,7 +11,7 @@ internal static class ConvertedServiceRules
 {
     /// <summary>
     /// The list must be well formed, and each service must be in the domain the domain map puts it in. Each extra
-    /// facade must belong to the service it is listed on.
+    /// (a further static facade or a part) must belong to the service it is listed on.
     /// </summary>
     public static IReadOnlyList<string> ListProblems(ConvertedServiceList list, DomainMap map)
     {
@@ -24,8 +24,14 @@ internal static class ConvertedServiceRules
             else if (mapped != service.Domain)
                 problems.Add($"{service.Name} is listed in the {service.Domain} domain but DomainMap.json puts it in {mapped}.");
 
-            foreach (var pieces in service.Pieces.Skip(1))
-                problems.AddRange(ExtraFacadeProblems(service, pieces, map));
+            var instances = new HashSet<TypeKey>();
+            foreach (var extra in service.Extras)
+            {
+                var pieces = ConvertedPieces.ForExtra(service, extra);
+                problems.AddRange(ExtraProblems(service, extra, pieces, map));
+                if (!instances.Add(pieces.Instance))
+                    problems.Add($"{pieces.Label}: {pieces.Instance} is already the instance class of another class of {service.Name}: give each extra a type name of its own.");
+            }
         }
 
         return problems;
@@ -34,7 +40,7 @@ internal static class ConvertedServiceRules
     /// <summary>
     /// Each converted service has its three pieces: a static facade class, an interface, and a class that implements
     /// the interface. The same holds for each extra facade the service lists, with the interface and the instance class
-    /// named after the facade type.
+    /// named after the facade type. A part has the interface and the class that implements it, and no facade.
     /// </summary>
     public static IReadOnlyList<string> MissingPieces(ConvertedServiceList list, AssemblyFacts facts)
     {
@@ -48,10 +54,13 @@ internal static class ConvertedServiceRules
         {
             foreach (var pieces in service.Pieces)
             {
-                if (!byKey.TryGetValue(pieces.Facade, out var facade))
-                    problems.Add($"{pieces.Label}: the static facade {pieces.Facade} does not exist.");
-                else if (!facade.IsStatic)
-                    problems.Add($"{pieces.Label}: {pieces.Facade} must be a static class.");
+                if (pieces.Facade is { } facadeKey)
+                {
+                    if (!byKey.TryGetValue(facadeKey, out var facade))
+                        problems.Add($"{pieces.Label}: the static facade {facadeKey} does not exist.");
+                    else if (!facade.IsStatic)
+                        problems.Add($"{pieces.Label}: {facadeKey} must be a static class.");
+                }
 
                 if (!byKey.TryGetValue(pieces.Interface, out var contract))
                     problems.Add($"{pieces.Label}: the interface {pieces.Interface} does not exist.");
@@ -113,19 +122,20 @@ internal static class ConvertedServiceRules
     /// The instance class and its interface never use the facade they belong to: the facade forwards to the instance,
     /// never the other way, or the call would loop back through the container. Each facade has its own instance class,
     /// so an instance may call another facade of the same service (the way one piece reaches a piece that cannot be
-    /// injected without a construction cycle).
+    /// injected without a construction cycle). A part has no facade of its own, so there is nothing to check for it.
     /// </summary>
     public static IReadOnlyList<string> InstanceUsesItsFacade(TypeReferenceGraph graph, ConvertedServiceList list)
     {
         var problems = new List<string>();
         foreach (var service in list.Services)
         {
-            foreach (var pieces in service.Pieces)
+            foreach (var pieces in service.Pieces.Where(pieces => pieces.Facade is not null))
             {
+                var facade = pieces.Facade!.Value;
                 foreach (var instanceType in new[] { pieces.Instance, pieces.Interface })
                 {
-                    if (graph.References.TryGetValue((instanceType, pieces.Facade), out var members))
-                        problems.Add($"{instanceType} uses its own facade {pieces.Facade} ({string.Join(", ", members.OrderBy(m => m, StringComparer.Ordinal))}): call the instance members directly.");
+                    if (graph.References.TryGetValue((instanceType, facade), out var members))
+                        problems.Add($"{instanceType} uses its own facade {facade} ({string.Join(", ", members.OrderBy(m => m, StringComparer.Ordinal))}): call the instance members directly.");
                 }
             }
         }
@@ -134,23 +144,31 @@ internal static class ConvertedServiceRules
     }
 
     /// <summary>
-    /// An extra facade must belong to the service it is listed on: the facade lives in the service's own namespace
-    /// (<c>Service.&lt;Name&gt;Service</c>), and its interface and instance class are named after the service so the
-    /// cross-domain guard counts them as the same unit.
+    /// An extra must belong to the service it is listed on. A further facade lives in the service's own namespace
+    /// (<c>Service.&lt;Name&gt;Service</c>); the interface and instance class of any extra are named after the service
+    /// so the cross-domain guard counts them as the same unit (a part is only these two classes).
     /// </summary>
-    private static IEnumerable<string> ExtraFacadeProblems(ConvertedService service, ConvertedPieces pieces, DomainMap map)
+    private static IEnumerable<string> ExtraProblems(ConvertedService service, ExtraPiece extra, ConvertedPieces pieces, DomainMap map)
     {
-        if (pieces.Facade == service.Facade)
+        if (pieces.Facade is { } facade)
         {
-            yield return $"{pieces.Label} is the main facade of {service.Name}: list only the further static classes of its namespace.";
-            yield break;
-        }
+            if (facade == service.Facade)
+            {
+                yield return $"{pieces.Label} is the main facade of {service.Name}: list only the further static classes of its namespace.";
+                yield break;
+            }
 
-        var owner = UnitClassifier.Classify(pieces.Facade, map);
-        if (owner != service.Unit)
+            var owner = UnitClassifier.Classify(facade, map);
+            if (owner != service.Unit)
+            {
+                yield return $"{pieces.Label}: {facade} belongs to {Describe(owner)}, not to {service.Name}. " +
+                             $"An extra facade lives in the namespace {ConvertedService.ServerNamespace}.Service.{service.Name}Service of the service it is listed on.";
+            }
+        }
+        else if (pieces.Instance == service.Instance)
         {
-            yield return $"{pieces.Label}: {pieces.Facade} belongs to {Describe(owner)}, not to {service.Name}. " +
-                         $"An extra facade lives in the namespace {ConvertedService.ServerNamespace}.Service.{service.Name}Service of the service it is listed on.";
+            yield return $"{pieces.Label} is the main class of {service.Name} ({service.Instance}): give the part a name of its own.";
+            yield break;
         }
 
         foreach (var type in new[] { pieces.Interface, pieces.Instance })
@@ -159,7 +177,7 @@ internal static class ConvertedServiceRules
             if (typeOwner != service.Unit)
             {
                 yield return $"{pieces.Label}: {type} would count as {Describe(typeOwner)}, not as {service.Name}. " +
-                             $"Name the facade type so that its service class starts with {service.Name} (for example {service.Name}Encounter).";
+                             $"Name the {extra.Kind} so that its service class starts with {service.Name} (for example {service.Name}Encounter).";
             }
         }
     }

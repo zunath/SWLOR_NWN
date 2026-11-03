@@ -440,10 +440,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
             var created = new List<EntityBase>();
             var layout = Space.GetShipDetailByItemTag(ShipItemTag).Layout;
-            var entrances = (Dictionary<PropertyLayoutType, Vector4>)typeof(Property)
-                .GetField("_entrancesByLayout", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var instances = (Dictionary<string, PropertyInstance>)typeof(Property)
-                .GetField("_propertyInstances", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var entrances = PropertyCaches.EntrancesByLayout;
+            var instances = PropertyCaches.Instances;
             var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
                 .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
             var originalEntrance = entrances[layout];

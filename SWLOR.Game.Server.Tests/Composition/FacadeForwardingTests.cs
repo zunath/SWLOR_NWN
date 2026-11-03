@@ -16,7 +16,10 @@ namespace SWLOR.Game.Server.Tests.Composition;
 [TestFixture]
 public class FacadeForwardingTests
 {
+    // Every class of every converted service (the main one, extra facades and parts), and those that have a static facade.
     private static IEnumerable<TestCaseData> Services() => ConvertedServiceFixtures.AsTestCases();
+
+    private static IEnumerable<TestCaseData> Facades() => ConvertedServiceFixtures.AsFacadeTestCases();
 
     // The facade's methods and the getters of its static properties (the interface lists a property as its get_ method),
     // plus the internal static methods that code inside the server (a native hook, say) calls. Private members are the
@@ -30,10 +33,10 @@ public class FacadeForwardingTests
         contract.GetMethod(facadeMethod.Name, facadeMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray())
         ?? throw new AssertionException($"{contract.Name} has no member {facadeMethod.Name}({string.Join(", ", facadeMethod.GetParameters().Select(p => p.ParameterType.Name))}).");
 
-    [TestCaseSource(nameof(Services))]
+    [TestCaseSource(nameof(Facades))]
     public void The_facade_and_the_interface_have_the_same_members(ConvertedServiceTypes service)
     {
-        var facadeMembers = FacadeMethods(service.Facade)
+        var facadeMembers = FacadeMethods(service.Facade!)
             .Select(method => $"{method.ReturnType.Name} {method.Name}({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})")
             .OrderBy(text => text, StringComparer.Ordinal);
         var contractMembers = service.Contract.GetMethods()
@@ -43,10 +46,10 @@ public class FacadeForwardingTests
         facadeMembers.Should().Equal(contractMembers, "the facade is the interface's members as static methods, so no caller changes");
     }
 
-    [TestCaseSource(nameof(Services))]
+    [TestCaseSource(nameof(Facades))]
     public void Every_facade_member_forwards_to_the_instance_with_the_same_arguments_and_returns_its_result(ConvertedServiceTypes service)
     {
-        foreach (var method in FacadeMethods(service.Facade))
+        foreach (var method in FacadeMethods(service.Facade!))
         {
             var proxyInstance = RecordingProxy.Create(service.Contract, out var proxy);
             var provider = ContainerHost.Create(new ServiceCollection().AddSingleton(service.Contract, proxyInstance));
@@ -58,13 +61,13 @@ public class FacadeForwardingTests
                 result = method.Invoke(null, arguments);
             }
 
-            var call = proxy.Calls.Should().ContainSingle($"{service.Facade.Name}.{method.Name} makes exactly one call").Subject;
+            var call = proxy.Calls.Should().ContainSingle($"{service.Facade!.Name}.{method.Name} makes exactly one call").Subject;
             call.Method.Name.Should().Be(method.Name);
-            call.Arguments.Should().Equal(arguments, $"{service.Facade.Name}.{method.Name} passes its arguments through");
+            call.Arguments.Should().Equal(arguments, $"{service.Facade!.Name}.{method.Name} passes its arguments through");
             if (method.ReturnType != typeof(void))
             {
                 var returned = proxy.ReturnedBy(call.Method);
-                var because = $"{service.Facade.Name}.{method.Name} returns what the instance returned";
+                var because = $"{service.Facade!.Name}.{method.Name} returns what the instance returned";
                 if (method.ReturnType.IsValueType)
                     result.Should().Be(returned, because);
                 else
@@ -94,6 +97,9 @@ public class FacadeForwardingTests
 
         service.Instance.GetMethods().Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().BeEmpty("the script registry binds handlers as static methods of the facade");
+        if (service.Facade is null)
+            return;
+
         FacadeMethods(service.Facade).Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().OnlyContain(method => method.ReturnType == typeof(void) && method.GetParameters().Length == 0,
                 "the script registry binds a handler as an Action");

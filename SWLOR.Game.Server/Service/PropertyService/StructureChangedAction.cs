@@ -8,63 +8,67 @@ namespace SWLOR.Game.Server.Service.PropertyService
 {
     public static class StructureChangedAction
     {
-        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
-
         /// <summary>
         /// Builds the actions which are run when certain structures are changed in the game world.
         /// </summary>
         /// <returns>A dictionary of spawn actions.</returns>
         public static Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> BuildSpawnActions()
         {
+            var actions = new Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>>();
+
             // Structure position changed actions
-            Assign(StructureType.CityHall, StructureChangeType.PositionChanged, ChangeCityHall());
-            Assign(StructureType.Bank, StructureChangeType.PositionChanged, ChangeBank());
-            Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, ChangeMedicalCenter());
-            Assign(StructureType.Starport, StructureChangeType.PositionChanged, ChangeStarport());
-            Assign(StructureType.Cantina, StructureChangeType.PositionChanged, ChangeCantina());
-            Assign(StructureType.SmallHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.SmallHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.SmallHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.SmallHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.MediumHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.MediumHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.MediumHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.MediumHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.LargeHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.LargeHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
-            Assign(StructureType.LabStyle1, StructureChangeType.PositionChanged, ChangeLab());
+            Assign(actions, StructureType.CityHall, StructureChangeType.PositionChanged, ChangeCityHall());
+            Assign(actions, StructureType.Bank, StructureChangeType.PositionChanged, ChangeBank());
+            Assign(actions, StructureType.MedicalCenter, StructureChangeType.PositionChanged, ChangeMedicalCenter());
+            Assign(actions, StructureType.Starport, StructureChangeType.PositionChanged, ChangeStarport());
+            Assign(actions, StructureType.Cantina, StructureChangeType.PositionChanged, ChangeCantina());
+            Assign(actions, StructureType.SmallHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.SmallHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.SmallHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.SmallHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.MediumHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.MediumHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.MediumHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.MediumHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.LargeHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.LargeHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(actions, StructureType.LabStyle1, StructureChangeType.PositionChanged, ChangeLab());
 
             // Structure retrieved actions
-            Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.Bank, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
-            Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.SmallHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.SmallHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.SmallHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.MediumHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.MediumHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.MediumHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.MediumHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.LargeHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.LargeHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.LabStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.Bank, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
+            Assign(actions, StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.SmallHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.SmallHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.SmallHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.MediumHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.MediumHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.MediumHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.MediumHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.LargeHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.LargeHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(actions, StructureType.LabStyle1, StructureChangeType.Retrieved, ClearDoor());
 
-            return _actions;
+            return actions;
         }
 
-        private static void Assign(StructureType structureType, StructureChangeType changeType, Action<WorldProperty, uint> action)
+        private static void Assign(
+            Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> actions,
+            StructureType structureType,
+            StructureChangeType changeType,
+            Action<WorldProperty, uint> action)
         {
-            if (!_actions.ContainsKey(structureType))
-                _actions[structureType] = new Dictionary<StructureChangeType, Action<WorldProperty, uint>>();
+            if (!actions.ContainsKey(structureType))
+                actions[structureType] = new Dictionary<StructureChangeType, Action<WorldProperty, uint>>();
 
-            _actions[structureType][changeType] = action;
+            actions[structureType][changeType] = action;
         }
 
         private static Location GetDoorLocation(uint building, float orientationAdjustment, float sqrtAdjustment)

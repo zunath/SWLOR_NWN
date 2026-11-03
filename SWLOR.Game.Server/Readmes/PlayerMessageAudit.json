@@ -2297,42 +2297,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 172,
+    "Line": 177,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Your Pazaak match continues. Use /pazaak to return to the table.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 204,
+    "Line": 209,
     "Member": "PromptPendingChallenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 335,
+    "Line": 347,
     "Member": "PlayHandCard",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 384,
+    "Line": 396,
     "Member": "OnClickEndTurn",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 391,
+    "Line": 403,
     "Member": "OnClickStand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 407,
+    "Line": 419,
     "Member": "OnClickChallenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
@@ -2945,6 +2945,13 @@
     "Member": "Lockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ItemDefinition/PazaakCardItemDefinition.cs",
+    "Line": 47,
+    "Member": "PazaakCard",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Green($\"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/RecipeItemDefinition.cs",
@@ -5055,49 +5062,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 112,
+    "Line": 135,
     "Member": "Challenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(challenger, ColorToken.Green($\"You challenge {targetName} to a game of Pazaak.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 113,
+    "Line": 136,
     "Member": "Challenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Green($\"{PlayerName.GetDisplayName(target, challenger)} challenges you to a game of Pazaak.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 131,
+    "Line": 154,
     "Member": "DeclineChallenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(challenger, ColorToken.Red($\"{PlayerName.GetDisplayName(challenger, target)} declines your Pazaak challenge.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 162,
+    "Line": 185,
     "Member": "AcceptChallenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(seat.Player, ColorToken.Green($\"Your Pazaak match with {PlayerName.GetDisplayName(seat.Player, opponent)} begins.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 249,
+    "Line": 272,
     "Member": "AnnounceSetResult",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(\"Pazaak: \") + DescribeSetResult(match, seatIndex, player))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 302,
+    "Line": 325,
     "Member": "AnnounceMatchEnd",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 316,
+    "Line": 339,
     "Member": "ScheduleTurnTimeout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You took too long, so you stand.\"))"

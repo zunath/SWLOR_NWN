@@ -286,7 +286,8 @@ public class AbandonedStationTests
     {
         var tables = new AbandonedStationSpawnDefinition().BuildSpawnTables();
         var loot = new AbandonedStationLootTableDefinition().BuildLootTables().Keys
-            .Concat(new MusicLootTableDefinition().BuildLootTables().Keys).ToHashSet();
+            .Concat(new MusicLootTableDefinition().BuildLootTables().Keys)
+            .Concat(new PazaakLootTableDefinition().BuildLootTables().Keys).ToHashSet();
 
         foreach (var (table, area, minPoints, minLevel, maxLevel) in Floors)
         {

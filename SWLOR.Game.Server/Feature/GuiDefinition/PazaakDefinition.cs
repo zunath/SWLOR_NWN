@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddLabel()
-                        .SetText("Click a card below to add it to your side deck.")
+                        .SetText("Use Pazaak card items to collect more copies.")
                         .SetHeight(20f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 });
@@ -265,6 +265,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindIsEnabled(model => model.CardAddEnabled)
                                 .BindOnClicked(model => model.OnClickAddCard())
                                 .SetWidth(DeckCardWidth);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(40f);
+                            cell.AddLabel()
+                                .BindText(model => model.CardOwnedCounts)
+                                .SetTooltip("Copies in your side deck / copies you own.")
+                                .SetHorizontalAlign(NuiHorizontalAlign.Center);
                         });
                         template.AddCell(cell =>
                         {

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiToggleGroupSync TabToggles = new(TableTabId, SideDeckTabId);
 
         private readonly List<PazaakCardType> _deck = new();
+        private IReadOnlyDictionary<PazaakCardType, int> _collection = new Dictionary<PazaakCardType, int>();
         private bool _playNegative;
         private bool _isModalOpen;
         private uint _promptedChallenger = OBJECT_INVALID;
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsSaveEnabled { get => Get<bool>(); set => Set(value); }
         public GuiBindingList<string> CardNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> CardDescriptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> CardOwnedCounts { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> CardAddEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         public string OpponentSlot0 { get => Get<string>(); set => Set(value); }
@@ -126,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _deck.Clear();
             _deck.AddRange(Pazaak.GetSideDeck(Player));
+            _collection = Pazaak.GetCollection(Player);
             _playNegative = false;
             _isModalOpen = false;
             _promptedChallenger = OBJECT_INVALID;
@@ -162,7 +165,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SelectTab(TableTabId);
             }
 
+            _collection = Pazaak.GetCollection(Player);
             RefreshTable();
+            RefreshSideDeck();
             PromptPendingChallenge();
         }
 
@@ -316,17 +321,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DeckSlotSetters[index](index < _deck.Count ? PazaakCards.Get(_deck[index]).Label : string.Empty);
             }
 
-            var isFull = _deck.Count >= PazaakCards.SideDeckSize;
             var cardAddEnabled = new GuiBindingList<bool>();
-            foreach (var _ in PazaakCards.All)
+            var cardOwnedCounts = new GuiBindingList<string>();
+            foreach (var card in PazaakCards.All)
             {
-                cardAddEnabled.Add(!isFull);
+                var owned = PazaakCards.GetOwnedCopies(card.Type, _collection);
+                cardAddEnabled.Add(CanAddCard(card.Type));
+                cardOwnedCounts.Add($"{_deck.Count(x => x == card.Type)}/{owned}");
             }
             CardAddEnabled = cardAddEnabled;
+            CardOwnedCounts = cardOwnedCounts;
 
             DeckHeader = $"Your side deck ({_deck.Count}/{PazaakCards.SideDeckSize})";
             IsSaveEnabled = _deck.Count == PazaakCards.SideDeckSize;
         }
+
+        private bool CanAddCard(PazaakCardType type) =>
+            _deck.Count < PazaakCards.SideDeckSize &&
+            _deck.Count(x => x == type) < PazaakCards.GetOwnedCopies(type, _collection);
 
         private void PlayHandCard(int handIndex)
         {
@@ -348,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickAddCard() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= PazaakCards.All.Count || _deck.Count >= PazaakCards.SideDeckSize)
+            if (index < 0 || index >= PazaakCards.All.Count || !CanAddCard(PazaakCards.All[index].Type))
                 return;
 
             _deck.Add(PazaakCards.All[index].Type);
@@ -360,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             DeckStatusText = Pazaak.SaveSideDeck(Player, _deck)
                 ? "Side deck saved. It is used in your next match."
-                : $"Your side deck needs exactly {PazaakCards.SideDeckSize} cards.";
+                : $"Your side deck needs exactly {PazaakCards.SideDeckSize} cards you own.";
         };
 
         public Action OnClickDefaultDeck() => () =>

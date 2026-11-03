@@ -301,8 +301,8 @@ public class PazaakMatchTests
     {
         PazaakCards.All.Should().HaveCount(22);
         PazaakCards.All.Select(x => x.Type).Should().OnlyHaveUniqueItems();
-        PazaakCards.IsValidSideDeck(PazaakCards.DefaultSideDeck.ToList()).Should().BeTrue();
-        PazaakCards.IsValidSideDeck(Deck.Take(9).ToList()).Should().BeFalse();
-        PazaakCards.IsValidSideDeck(Deck.Take(9).Append(PazaakCardType.Invalid).ToList()).Should().BeFalse();
+        PazaakCards.IsValidSideDeck(PazaakCards.DefaultSideDeck.ToList(), null).Should().BeTrue();
+        PazaakCards.IsValidSideDeck(Deck.Take(9).ToList(), null).Should().BeFalse();
+        PazaakCards.IsValidSideDeck(Deck.Take(9).Append(PazaakCardType.Invalid).ToList(), null).Should().BeFalse();
     }
 }

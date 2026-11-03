@@ -211,6 +211,11 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public List<PazaakCardType> PazaakSideDeck { get; set; } = new();
 
+        /// <summary>
+        /// Pazaak side cards collected from card items, by number of copies. Free default deck copies are not counted here.
+        /// </summary>
+        public Dictionary<PazaakCardType, int> PazaakCardCollection { get; set; } = new();
+
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }

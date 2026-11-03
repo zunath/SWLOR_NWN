@@ -24,25 +24,48 @@ namespace SWLOR.Game.Server.Service.PazaakService
         public static IReadOnlyList<PazaakCardType> GetSideDeck(uint player)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer != null && PazaakCards.IsValidSideDeck(dbPlayer.PazaakSideDeck))
+            if (dbPlayer != null && PazaakCards.IsValidSideDeck(dbPlayer.PazaakSideDeck, dbPlayer.PazaakCardCollection))
                 return dbPlayer.PazaakSideDeck;
 
             return PazaakCards.DefaultSideDeck;
         }
 
+        /// <summary>
+        /// Side cards the player collected from card items, by number of copies.
+        /// </summary>
+        public static IReadOnlyDictionary<PazaakCardType, int> GetCollection(uint player)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            return dbPlayer?.PazaakCardCollection ?? new Dictionary<PazaakCardType, int>();
+        }
+
         public static bool SaveSideDeck(uint player, IReadOnlyCollection<PazaakCardType> deck)
         {
-            if (!PazaakCards.IsValidSideDeck(deck))
-                return false;
-
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
+            if (dbPlayer == null || !PazaakCards.IsValidSideDeck(deck, dbPlayer.PazaakCardCollection))
                 return false;
 
             dbPlayer.PazaakSideDeck = deck.ToList();
             DB.Set(dbPlayer);
             return true;
+        }
+
+        /// <summary>
+        /// Adds one copy of a side card to the player's collection and returns how many copies they now own.
+        /// </summary>
+        public static int AddCardToCollection(uint player, PazaakCardType type)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            dbPlayer.PazaakCardCollection.TryGetValue(type, out var count);
+            dbPlayer.PazaakCardCollection[type] = count + 1;
+            DB.Set(dbPlayer);
+
+            if (Gui.IsWindowOpen(player, GuiWindowType.Pazaak))
+                Gui.PublishRefreshEvent(player, new PazaakRefreshEvent());
+
+            return PazaakCards.GetOwnedCopies(type, dbPlayer.PazaakCardCollection);
         }
 
         /// <summary>

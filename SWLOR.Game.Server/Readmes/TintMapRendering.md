@@ -491,6 +491,18 @@ must preserve the full ordered animation inventory and common geometry. This
 avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
+
+Each body keeps one bank name across animation changes. When a family's clips change
+(a new or revised body animation), the generator rewrites its installed bank under the
+same name, provided every model that inherits from the bank is a wearer it rebuilds in
+the same run. Those wearers then compile to the same bytes unless the bank's part IDs
+changed, so an animation release ships only the changed banks, and the neck and shoulder
+manifests that record root hashes stay current. The bank may gain or lose tail parts;
+the generator deletes tails the head no longer chains to. If anything else still
+inherits from the bank (a retired phenotype's root, or the unselected wearers of a
+`--model` build), the family gets a new name and the old bank stays unchanged for those
+models until `PruneRobeAnimationBridges.py` removes it. Retired names are never reassigned.
+The report's `banks_revised_in_place` and `stale_banks` list what happened.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
 with approximately 121 minutes for the preceding full rebuild. This is a no-op
 measurement, not a changed-build benchmark. All 3,256 compiled outputs remained

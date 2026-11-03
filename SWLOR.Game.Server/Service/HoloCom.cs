@@ -269,7 +269,8 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(receiver, message);
             if (GetCallAttempt(sender) % 5 == 0)
             {
-                FloatingTextStringOnCreature(message, receiver);
+                // Over a hidden receiver the buzz would show everyone nearby where they are.
+                FloatingTextStringOnCreature(message, receiver, !Stealth.IsConcealed(receiver));
             }
 
             if (GetCallAttempt(sender) <= 15)

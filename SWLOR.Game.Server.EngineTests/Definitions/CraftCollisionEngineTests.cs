@@ -3,8 +3,11 @@ using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 
@@ -18,13 +21,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const string Walker = "nw_bandit001";
         private const float WalkerLane = 0.1f;
+        private const RecipeType ForgeRecipe = RecipeType.TwinElectroblade1;
 
         [EngineTest("Creatures walk through a crafter who had lost the login ghost", Category = "CraftCollision", TimeoutSeconds = 90f)]
         public static async Task CrafterIsGhosted(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var payload = new CraftPayload(RecipeType.TwinElectroblade1, OBJECT_INVALID);
+            fixture.Update(record => record.Skills[SkillType.Smithery].Rank = 10);
+            var payload = new CraftPayload(ForgeRecipe, OBJECT_INVALID);
 
             // Death and space mode strip a player's login ghost, leaving them solid until they log in again.
             SetGhostFlag(player, false);
@@ -33,11 +38,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var (solidApproach, solidPassed) = await WalkPast(ctx, player);
                 ctx.Log($"Walk past a solid player: closest approach {solidApproach:F2}, reached the far side {solidPassed}");
 
-                CraftViewModel craft = null;
+                ForgeViewModel craft = null;
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    craft = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, payload);
-                    Call(craft, "SwitchToCraftMode");
+                    GiveComponents(player);
+                    craft = OpenWindow<ForgeViewModel>(fixture, GuiWindowType.Forge, payload);
+                    craft.OnClickCraft()();
+                    ctx.Assert(CraftSessionService.IsCrafting(player), "The craft starts");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneImmobilize, PlayerActivityEffectTag.CraftingImmobilize),
                         "Crafting holds the crafter in place");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneGhost, string.Empty),
@@ -55,7 +62,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     craft.OnWindowClosed()();
-                    ctx.Assert(!craft.IsInCraftMode, "Closing the window ends the craft");
+                    ctx.Assert(!CraftSessionService.IsCrafting(player), "Closing the window ends the craft");
                     ctx.Assert(!HasEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize), "Ending the craft releases the crafter");
                 });
 
@@ -75,7 +82,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var payload = new CraftPayload(RecipeType.TwinElectroblade1, OBJECT_INVALID);
+            fixture.Update(record => record.Skills[SkillType.Smithery].Rank = 10);
+            var payload = new CraftPayload(ForgeRecipe, OBJECT_INVALID);
             SetGhostFlag(player, false);
             try
             {
@@ -86,8 +94,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(GetGhostFlag(player), "The login ghost applies");
 
                     // The engine rejects a second ghost, so the crafting immobilize must not depend on it.
-                    var craft = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, payload);
-                    Call(craft, "SwitchToCraftMode");
+                    GiveComponents(player);
+                    var craft = OpenWindow<ForgeViewModel>(fixture, GuiWindowType.Forge, payload);
+                    craft.OnClickCraft()();
+                    ctx.Assert(CraftSessionService.IsCrafting(player), "The craft starts");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneImmobilize, PlayerActivityEffectTag.CraftingImmobilize),
                         "An already ghosted crafter is still held in place");
 
@@ -103,6 +113,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 CloseWindows(fixture);
             }
+        }
+
+        private static void GiveComponents(uint player)
+        {
+            foreach (var (resref, quantity) in Craft.GetRecipe(ForgeRecipe).Components)
+                CreateItemOnObject(resref, player, quantity);
         }
 
         /// <summary>

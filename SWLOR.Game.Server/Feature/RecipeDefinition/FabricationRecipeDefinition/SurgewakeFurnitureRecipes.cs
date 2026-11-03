@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 56, shellSizePercent: 27, frameQualityPercent: 56, shellQualityPercent: 26, wearRate: 5);
 
             // Surgewake Signal Lamp
             _builder.Create(RecipeType.SurgewakeSignalLamp, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_high", 8)
                 .Component("ref_arkoxit", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 19, shellSizePercent: 32, frameQualityPercent: 15, shellQualityPercent: 36, wearRate: 8);
 
             // Surgewake Trophy Stand
             _builder.Create(RecipeType.SurgewakeTrophyStand, SkillType.Fabrication)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_arkoxit", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 24, frameQualityPercent: 32, shellQualityPercent: 29, wearRate: 7);
 
             // Surgewake Low Table
             _builder.Create(RecipeType.SurgewakeLowTable, SkillType.Fabrication)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_arkoxit", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 43, frameQualityPercent: 35, shellQualityPercent: 45, wearRate: 9);
 
             // Surgewake Wall Banner
             _builder.Create(RecipeType.SurgewakeWallBanner, SkillType.Fabrication)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_high", 8)
                 .Component("lth_flawed", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 45, frameQualityPercent: 27, shellQualityPercent: 56, wearRate: 6);
 
             // Surgewake Supply Locker
             _builder.Create(RecipeType.SurgewakeSupplyLocker, SkillType.Fabrication)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_arkoxit", 8)
                 .Component("elec_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 32, frameQualityPercent: 31, shellQualityPercent: 29, wearRate: 7);
 
             // Surgewake Floor Mat
             _builder.Create(RecipeType.SurgewakeFloorMat, SkillType.Fabrication)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 55, frameQualityPercent: 25, shellQualityPercent: 59, wearRate: 6);
 
             // Surgewake Data Console
             _builder.Create(RecipeType.SurgewakeDataConsole, SkillType.Fabrication)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_high", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 22, frameQualityPercent: 17, shellQualityPercent: 22, wearRate: 7);
 
             // Surgewake Holo Projector
             _builder.Create(RecipeType.SurgewakeHoloProjector, SkillType.Fabrication)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_arkoxit", 8)
                 .Component("fiberp_high", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 52, frameQualityPercent: 24, shellQualityPercent: 59, wearRate: 8);
 
             // Surgewake Work Stool
             _builder.Create(RecipeType.SurgewakeWorkStool, SkillType.Fabrication)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_arkoxit", 8)
                 .Component("lth_flawed", 4)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 35, frameQualityPercent: 41, shellQualityPercent: 37, wearRate: 8);
         }
     }
 }

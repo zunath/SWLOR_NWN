@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 25 and server migration 30. The next release adds player migration
-    // NextPlayerVersion and server migration NextServerVersion; update these at each post-release cleanup.
+    // Production has run player migration 25 and server migration 30. The crafting revamp's release adds player
+    // migration NextPlayerVersion (the crafting perk conversion); update these at each post-release cleanup.
     private const int ReleasedPlayerVersion = 25;
     private const int ReleasedServerVersion = 30;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
@@ -27,11 +27,13 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") });
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion)
-            .Should().BeEmpty($"the next release adds one combined player-item pass as player migration {NextPlayerVersion}; " +
-                "when you add it, expect exactly that class here");
-        CharacterMigrations.LatestVersion.Should().Be(ReleasedPlayerVersion);
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
+                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") },
+                "the crafting revamp's release receives one player pass, the crafting perk conversion");
+        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(NextPlayerVersion);
+        CharacterMigrations.LatestVersion.Should().Be(NextPlayerVersion);
     }
 
     [Test]

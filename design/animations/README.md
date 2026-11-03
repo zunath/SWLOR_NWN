@@ -12,8 +12,10 @@ Beast abilities are excluded because their models have separate animation sets; 
 Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
 `animation-plan.csv` now retains all 119 image references and documents every entry's
 internal name, base motion, source project, and review status.
-The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
-clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
+The installed registry and tester also include the activity clips: Fishing6, Fishing7, Fishing8,
+the crafting-revamp fishing Line, station and gathering clips (see
+[Crafting and gathering work clips](#crafting-and-gathering-work-clips)) and TwinPistolCycle. These activity
+clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have
 273 individual choreography recipes; Provoke uses stock NWN Taunt, while Throw Lightsaber
 uses the master branch's custom throw through its original animation slot in game and in the
@@ -336,6 +338,149 @@ ability definition. Generate and install with the same commands below, substitut
 The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, using the
 bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
 playback. After installing, compile the banks and regenerate the clothing bridges as below.
+
+### Performance clips
+
+`performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
+(`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
+recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
+they end in native idle like every inventory clip. The other 22 clips are activity clips like
+Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
+`performance/recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+
+| Group | Clips (project Id = internal name) | Length |
+|---|---|---|
+| Routine loops | CantinaShuffle `sw_dn_shufl`, LightFeet `sw_dn_light`, PowerStep `sw_dn_power`, Quickstep `sw_dn_quick`, VigorReel `sw_dn_vigor` | See source table below |
+| Dance steps | DanceStepLeft/Up/Down/Right `sw_dn_stepl/u/d/r` | 0.6 s |
+| Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
+| Strings | StringsLoop `sw_str_loop` (5.2 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
+| Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
+
+Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
+strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain
+without a seam; the installer's `_in` and `_out` phases blend to and from native idle. Strings hold
+a right-hand instrument in the engine's polearm carry grip; the free left hand plays near the
+upper soundboard or lower harp strings. The imported string loop evaluates that native carry
+layer when fitting hand contact. `NativeCarry` records the four right-arm orientation controllers
+from the reference `a_ba.plpause1` at time zero; the client still plays its native carry animation.
+Horns hold the instrument at the mouth with the bell forward and down. Both use the item
+attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
+The horn recipe uses the existing `shield` facing control to set left-forearm roll, even
+without a shield equipped. `[-120, 165, 30]` keeps the left hand upright in the note and
+flourish holds; the imported saxophone loop inherits that hold. Rotate the forearm along
+its elbow-to-wrist axis so the hand follows it without moving the wrist or instrument.
+
+The slitherhorn mouthpiece is fitted in item-local coordinates from close male and female
+client views. The lower stem, grips and bell keep their original coordinates (vertices at or
+below original Y=0.04). The editable model is
+`SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to
+`SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
+`python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
+
+`SlitherhornFit` adds a separate middle-part Z offset for normal Human bodies:
+0.035 m for males and -0.028 m for females, including their robe variants. Equipment
+and appearance refreshes rebase against the saved fit delta, preserving cosmetic
+transforms and removing only this offset on unequip. Other body families retain their
+authored attachment until they have a measured profile. The saved delta belongs to the
+item's UUID, so a native `CopyItem` with copied locals and reset transforms starts unfitted.
+
+The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
+the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`
+and its net drift is removed, so it does not move the game object. Instrument tracks are mirrored
+and calibrated to the existing playing holds; the left hand stays on the strings or horn, and
+the horn's mouth contact is fitted from the existing horn accents. Native carry layers remain unchanged.
+
+| SWLOR clip | SWG performance | Source animation | Length |
+|---|---|---|---|
+| Cantina Shuffle | Basic 2 | `all_b_dnc_goofy_base_loop.ans` | 6.0 s |
+| Light Feet | Popular 2 | `all_f_dnc_f_gogo_loop.ans` | 6.8 s |
+| Power Step | Poplock 2 | `all_m_dnc_m_poplock_base_loop.ans` | 8.2 s |
+| Quickstep | Footloose 2 | `all_m_dnc_m_african_base_loop.ans` | 155/30 s |
+| Vigor Reel | Jazzy 2 | `all_b_dnc_tatooine_jazz_loop.ans` | 202/30 s |
+| Strings Loop | Guitar | `all_b_dnc_musician_guitar_loop.ans` | 5.2 s |
+| Horn Loop | Saxophone | `all_b_dnc_musician_sax_loop.ans` | 5.2 s |
+
+The original dance names come from SWG's [performance table](https://github.com/SWG-Source/dsrc/blob/master/sku.0/sys.shared/compiled/game/datatables/performance/performance.tab)
+and [logical animation table](https://github.com/SWG-Source/clientdata_OLD/blob/e345de3e1f963be3b70f99add04e14e660122ead/appearance/lat/all_m.lat).
+The importer reads CKAT 0001 and KFAT 0003 tracks and the common `all_b.skt` skeleton. Source file
+and skeleton hashes are mandatory; supply the provided `appearance.zip`, or a directory with the
+same `appearance/` resources. Source archives stay outside the repository.
+
+Generate the authored activity clips with the Fishing command, import the SWG loops, and install the whole group with
+`install-active` so each clip keeps its assigned internal name. The batch file only needs `Id`,
+`InternalName`, `Category` (`Performance`), `Type` and `Description`, and stays in the ignored
+`artifacts/animations/` folder:
+
+```powershell
+python -m pip install -r tools/requirements-swg-animation.txt
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/performance/recipe.json design/animations/performance --overwrite
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . artifacts/animations/performance-batch.json a_ba a_fa
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --finalize-installed --overwrite
+python -B SWLOR_Haks/tools/CompileModels.py --since HEAD --apply
+python -B SWLOR_Haks/tools/GenerateRobeRgbModels.py --game-data "C:/path/to/Neverwinter Nights/data" --apply
+python -B SWLOR_Haks/tools/PruneRobeAnimationBridges.py --apply
+```
+
+Finalization verifies float32 installation values, ignoring quaternion noise below 1e-12, before
+refreshing portable provenance hashes. Use the normal versioned robe rebuild for these clips; retained bridge
+families are immutable. The cue and flourish lengths remain 0.6/0.5/1.5 seconds.
+
+A recipe pose may add `rootYaw` (degrees): the root and every hand, foot and blade target turn together
+about the vertical axis through the root, so `DanceSpin` is authored unturned and rotated by one field.
+Poses without it generate byte-identical projects. `DanceSpin` pivots on the left foot, which sits
+under the root, and turns a full revolution.
+
+### Crafting and gathering work clips
+
+The crafting revamp adds fifteen activity clips for the playable species on the normal phenotype. They install into
+the same `a_ba` and `a_fa` chains as every other clip, have no ability definition, and appear in `/animations` under
+**Other**. The lookups that choose them are in `WorkAnimation` (`SWLOR.Game.Server/Service/AnimationService/`).
+
+| Group (folder) | Id | Internal name | Seconds | Plays |
+|---|---|---|---:|---|
+| `crafting-stations/` | `ForgeWork` | `sw_forgework` | 3.40 | Smithery: loop for the whole Plasma Forge session and quick craft |
+| | `Circuitry` | `sw_circuitry` | 2.90 | Engineering: loop for the Circuit and quick craft |
+| | `Fabricate` | `sw_fabricate` | 3.60 | Fabrication: loop for the Fabricator and quick craft |
+| | `Cooking` | `sw_cooking` | 3.20 | Cooking (Agriculture): loop for the Kitchen and quick craft |
+| | `Compound` | `sw_compound` | 3.30 | Espionage: loop for the Reaction and quick craft |
+| `gathering/` | `Survey` | `sw_survey` | 3.00 | Prospecting Survey |
+| | `Strike` | `sw_strike` | 1.90 | Prospecting Strike |
+| | `HvyStrike` | `sw_hvystrike` | 2.70 | Prospecting Heavy Strike |
+| | `Extract` | `sw_extract` | 2.80 | Prospecting Extract |
+| | `Search` | `sw_search` | 3.00 | Search: Search a spot (and Sift) |
+| | `Dig` | `sw_dig` | 3.20 | Search: Dig Deeper |
+| `fishing/` | `Reel` | `sw_reel` | 3.05 | Line: Reel |
+| | `GiveLine` | `sw_giveline` | 2.40 | Line: Give Line |
+| | `HoldRod` | `sw_holdrod` | 3.50 | Line: Hold |
+| | `LandFish` | `sw_landfish` | 3.40 | Line: the action that lands the fish |
+
+Station clips are closed loops (`"loop": true` in the recipe: the last pose equals the first, with no idle blend). The
+station session starts the clip with a ten-minute duration, so the engine repeats it natively, and the end of the station
+work stops it; a rifle or cannon holder keeps the native pose because their hold layer plays through a one-shot carrier
+(`NamedAnimation.CanLoop`). Every other clip is a one-shot that blends out of and back into the native idle, like the
+fishing cast. Set Hook has no clip.
+
+Recipes name `"activity": "Crafting"`, `"Gathering"` or `"Fishing"`. `Fishing` is an `ActivityStatusType`; the other two
+are not busy states, so the generator accepts them from `PreviewWriter.WorkActivities`. Author, install and compile
+exactly like the fishing clips:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/gathering/recipe.json design/animations/gathering --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/gathering/Strike.swlanim a_ba a_fa
+# from SWLOR_Haks:
+python -B tools/CompileModels.py --since HEAD --apply
+python -B tools/TestInheritedBoneProportions.py
+```
+
+`design/animations/verification/crafting-revamp/` holds the robe bridge audit notes and scripts. The offline renders of the installed banks
+(male and female rigs, key beats of every clip) are generated, not committed, and are regenerated from the installed banks. They are not NWN client evidence: the live-client check, with real equipment, is outstanding
+until the Closeout joint pass. The robe bridges (`sw_anim_m`, `sw_anim_f`) were regenerated with the workflow in
+[Clothing animation bridges](#clothing-animation-bridges) (HAK PR #584), so every shared robe family owns all 15 clips and
+the garment attachment joints follow them. `robe-bridges.md` in the same folder records the coverage audit
+(`robe_bridge_audit.py`) and the skeleton contact sheets (`render_robe_sheet.py`); both run from `SWLOR_Haks`. Regenerate
+the bridges again whenever a clip in the a_ba or a_fa chain changes, and deploy the male and female bridge HAKs together.
 
 ### Library layout
 

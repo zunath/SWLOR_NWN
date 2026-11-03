@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("diag_circuit3", 1)
                 .Component("diag_circuit2", 2)
-                .Component("diag_circuit1", 3);
+                .Component("diag_circuit1", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 45);
 
             // Ocular Filter I
             _builder.Create(RecipeType.OcularFilter1, SkillType.Engineering)
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("d_sensor3", 1)
                 .Component("d_sensor2", 2)
-                .Component("d_sensor1", 3);
+                .Component("d_sensor1", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44);
 
             // Verve I
             _builder.Create(RecipeType.Verve1, SkillType.Engineering)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 1)
                 .Component("dmotive_sys2", 2)
-                .Component("dmotive_sys1", 3);
+                .Component("dmotive_sys1", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 36);
 
             // Neural Boost I
             _builder.Create(RecipeType.NeuralBoost1, SkillType.Engineering)
@@ -62,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("l_unit3", 1)
                 .Component("l_unit2", 2)
-                .Component("l_unit1", 3);
+                .Component("l_unit1", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 43);
 
             // Mobility Boost I
             _builder.Create(RecipeType.MobilityBoost1, SkillType.Engineering)
@@ -73,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 1)
                 .Component("dmotive_sys2", 2)
-                .Component("dmotive_sys1", 3);
+                .Component("dmotive_sys1", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 41);
 
             // Social Adaption I
             _builder.Create(RecipeType.SocialAdaption1, SkillType.Engineering)
@@ -84,7 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("ca_unit3", 1)
                 .Component("ca_unit2", 2)
-                .Component("ca_unit1", 3);
+                .Component("ca_unit1", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 42);
 
             // Sturdiness II
             _builder.Create(RecipeType.Sturdiness2, SkillType.Engineering)
@@ -95,7 +101,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("diag_circuit5", 3)
                 .Component("diag_circuit4", 2)
-                .Component("diag_circuit3", 1);
+                .Component("diag_circuit3", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 40);
 
             // Ocular Filter II
             _builder.Create(RecipeType.OcularFilter2, SkillType.Engineering)
@@ -106,7 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("d_sensor5", 3)
                 .Component("d_sensor4", 2)
-                .Component("d_sensor3", 1);
+                .Component("d_sensor3", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 39);
 
             // Verve II
             _builder.Create(RecipeType.Verve2, SkillType.Engineering)
@@ -117,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("dmotive_sys4", 2)
-                .Component("dmotive_sys3", 1);
+                .Component("dmotive_sys3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 35);
 
             // Neural Boost II
             _builder.Create(RecipeType.NeuralBoost2, SkillType.Engineering)
@@ -128,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("l_unit5", 3)
                 .Component("l_unit4", 2)
-                .Component("l_unit3", 1);
+                .Component("l_unit3", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 43);
 
             // Mobility Boost II
             _builder.Create(RecipeType.MobilityBoost2, SkillType.Engineering)
@@ -139,7 +149,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("dmotive_sys4", 2)
-                .Component("dmotive_sys3", 1);
+                .Component("dmotive_sys3", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 44);
 
             // Social Adaption II
             _builder.Create(RecipeType.SocialAdaption2, SkillType.Engineering)
@@ -150,7 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("ca_unit5", 3)
                 .Component("ca_unit4", 2)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 44);
         }
 
         private void MemoryAugmentations()
@@ -164,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("l_unit1", 2)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 36);
 
             // Memory Augmentation II
             _builder.Create(RecipeType.MemoryAugmentation2, SkillType.Engineering)
@@ -174,7 +187,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("l_unit2", 2)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 44);
 
             // Memory Augmentation III
             _builder.Create(RecipeType.MemoryAugmentation3, SkillType.Engineering)
@@ -184,7 +198,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("l_unit3", 2)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 43);
 
             // Memory Augmentation IV
             _builder.Create(RecipeType.MemoryAugmentation4, SkillType.Engineering)
@@ -194,7 +209,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("l_unit4", 2)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 44);
 
             // Memory Augmentation V
             _builder.Create(RecipeType.MemoryAugmentation5, SkillType.Engineering)
@@ -204,28 +220,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("l_unit5", 2)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 36);
         }
 
         private void ResistanceEnhancements()
         {
-            CreateResistanceEnhancement(RecipeType.DroidResistanceFire1, "de_res_fir1", 31, "diag_circuit3", "d_sensor3");
-            CreateResistanceEnhancement(RecipeType.DroidResistancePoison1, "de_res_psn1", 31, "diag_circuit3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical1, "de_res_elec1", 32, "d_sensor3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceIce1, "de_res_ice1", 32, "dmotive_sys3", "d_sensor3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMind1, "de_res_mnd1", 33, "l_unit3", "ca_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility1, "de_res_mob1", 33, "dmotive_sys3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma1, "de_res_tra1", 34, "diag_circuit3", "dmotive_sys3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption1, "de_res_dis1", 34, "l_unit3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire1, "de_res_fir1", 31, "diag_circuit3", "d_sensor3", parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 37));
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison1, "de_res_psn1", 31, "diag_circuit3", "l_unit3", parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 39));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical1, "de_res_elec1", 32, "d_sensor3", "l_unit3", parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 42));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce1, "de_res_ice1", 32, "dmotive_sys3", "d_sensor3", parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 38));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind1, "de_res_mnd1", 33, "l_unit3", "ca_unit3", parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility1, "de_res_mob1", 33, "dmotive_sys3", "l_unit3", parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 43));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma1, "de_res_tra1", 34, "diag_circuit3", "dmotive_sys3", parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 36));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption1, "de_res_dis1", 34, "l_unit3", "d_sensor3", parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 41));
 
-            CreateResistanceEnhancement(RecipeType.DroidResistanceFire2, "de_res_fir2", 47, "diag_circuit5", "d_sensor5");
-            CreateResistanceEnhancement(RecipeType.DroidResistancePoison2, "de_res_psn2", 47, "diag_circuit5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical2, "de_res_elec2", 48, "d_sensor5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceIce2, "de_res_ice2", 48, "dmotive_sys5", "d_sensor5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMind2, "de_res_mnd2", 49, "l_unit5", "ca_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility2, "de_res_mob2", 49, "dmotive_sys5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma2, "de_res_tra2", 50, "diag_circuit5", "dmotive_sys5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption2, "de_res_dis2", 50, "l_unit5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire2, "de_res_fir2", 47, "diag_circuit5", "d_sensor5", parameters: new CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 44));
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison2, "de_res_psn2", 47, "diag_circuit5", "l_unit5", parameters: new CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 35));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical2, "de_res_elec2", 48, "d_sensor5", "l_unit5", parameters: new CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 41));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce2, "de_res_ice2", 48, "dmotive_sys5", "d_sensor5", parameters: new CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 40));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind2, "de_res_mnd2", 49, "l_unit5", "ca_unit5", parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility2, "de_res_mob2", 49, "dmotive_sys5", "l_unit5", parameters: new CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 43));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma2, "de_res_tra2", 50, "diag_circuit5", "dmotive_sys5", parameters: new CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 45));
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption2, "de_res_dis2", 50, "l_unit5", "d_sensor5", parameters: new CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 45));
         }
 
         private void CreateResistanceEnhancement(
@@ -233,7 +250,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             string resref,
             int level,
             string component1,
-            string component2)
+            string component2,
+            RecipeMinigameParameters parameters = null)
         {
             _builder.Create(recipeType, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
@@ -242,7 +260,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component(component1, 3)
-                .Component(component2, 2);
+                .Component(component2, 2)
+                .MinigameParameters(parameters);
         }
 
         private void SkillEnhancements()
@@ -255,7 +274,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 35);
 
             // Droid Vibroknife Boost I
             _builder.Create(RecipeType.DroidVibroknifeBoost1, SkillType.Engineering)
@@ -265,7 +285,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 44);
 
             // Droid Lightsaber Boost I
             _builder.Create(RecipeType.DroidLightsaberBoost1, SkillType.Engineering)
@@ -275,7 +296,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 40);
 
             // Droid Heavy Vibroblade Boost I
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost1, SkillType.Engineering)
@@ -285,7 +307,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 37);
 
             // Droid Spear Boost I
             _builder.Create(RecipeType.DroidSpearBoost1, SkillType.Engineering)
@@ -295,7 +318,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 35);
 
             // Droid Twin Blade Boost I
             _builder.Create(RecipeType.DroidTwinBladeBoost1, SkillType.Engineering)
@@ -305,7 +329,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36);
 
             // Droid Saberstaff Boost I
             _builder.Create(RecipeType.DroidSaberstaffBoost1, SkillType.Engineering)
@@ -315,7 +340,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35);
 
             // Droid Katar Boost I
             _builder.Create(RecipeType.DroidKatarBoost1, SkillType.Engineering)
@@ -325,7 +351,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 35);
 
             // Droid Staff Boost I
             _builder.Create(RecipeType.DroidStaffBoost1, SkillType.Engineering)
@@ -335,7 +362,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 42);
 
             // Droid Pistol Boost I
             _builder.Create(RecipeType.DroidPistolBoost1, SkillType.Engineering)
@@ -345,7 +373,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 42);
 
             // Droid Rifle Boost I
             _builder.Create(RecipeType.DroidRifleBoost1, SkillType.Engineering)
@@ -355,7 +384,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 44);
 
             // Droid Throwing Boost I
             _builder.Create(RecipeType.DroidThrowingBoost1, SkillType.Engineering)
@@ -365,7 +395,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44);
 
             // Droid Unarmed Boost I
             _builder.Create(RecipeType.DroidUnarmedBoost1, SkillType.Engineering)
@@ -375,7 +406,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 42);
 
             // Droid Twin Pistol Boost I
             _builder.Create(RecipeType.DroidTwinPistolBoost1, SkillType.Engineering)
@@ -385,7 +417,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 44);
 
             // Droid Vibroblade Boost II
             _builder.Create(RecipeType.DroidVibrobladeBoost2, SkillType.Engineering)
@@ -395,7 +428,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 38);
 
             // Droid Vibroknife Boost II
             _builder.Create(RecipeType.DroidVibroknifeBoost2, SkillType.Engineering)
@@ -405,7 +439,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 39);
 
             // Droid Lightsaber Boost II
             _builder.Create(RecipeType.DroidLightsaberBoost2, SkillType.Engineering)
@@ -415,7 +450,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 42);
 
             // Droid Heavy Vibroblade Boost II
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost2, SkillType.Engineering)
@@ -425,7 +461,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 35);
 
             // Droid Spear Boost II
             _builder.Create(RecipeType.DroidSpearBoost2, SkillType.Engineering)
@@ -435,7 +472,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 40);
 
             // Droid Twin Blade Boost II
             _builder.Create(RecipeType.DroidTwinBladeBoost2, SkillType.Engineering)
@@ -445,7 +483,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 44);
 
             // Droid Saberstaff Boost II
             _builder.Create(RecipeType.DroidSaberstaffBoost2, SkillType.Engineering)
@@ -455,7 +494,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38);
 
             // Droid Katar Boost II
             _builder.Create(RecipeType.DroidKatarBoost2, SkillType.Engineering)
@@ -465,7 +505,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 41);
 
             // Droid Staff Boost II
             _builder.Create(RecipeType.DroidStaffBoost2, SkillType.Engineering)
@@ -475,7 +516,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 35);
 
             // Droid Pistol Boost II
             _builder.Create(RecipeType.DroidPistolBoost2, SkillType.Engineering)
@@ -485,7 +527,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 42);
 
             // Droid Rifle Boost II
             _builder.Create(RecipeType.DroidRifleBoost2, SkillType.Engineering)
@@ -495,7 +538,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 37);
 
             // Droid Throwing Boost II
             _builder.Create(RecipeType.DroidThrowingBoost2, SkillType.Engineering)
@@ -505,7 +549,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 37);
 
             // Droid Unarmed Boost II
             _builder.Create(RecipeType.DroidUnarmedBoost2, SkillType.Engineering)
@@ -515,7 +560,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 37);
 
             // Droid Twin Pistol Boost II
             _builder.Create(RecipeType.DroidTwinPistolBoost2, SkillType.Engineering)
@@ -525,7 +571,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 40);
         }
     }
 }

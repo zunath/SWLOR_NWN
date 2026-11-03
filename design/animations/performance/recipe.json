@@ -1,0 +1,2505 @@
+{
+  "workbook": "",
+  "model": "a_ba",
+  "readyShield": {
+    "root": [0.0, 0.0, 1.17],
+    "chest": [2.0, 0.0, 0.0],
+    "hips": [0.0, 0.0, 0.0],
+    "leftHand": [-0.28, 0.21, 1.1],
+    "rightHand": [0.28, 0.21, 1.1],
+    "blade": [0.1, 0.597, -0.796],
+    "leftFoot": [-0.2, 0.03, 0.14],
+    "rightFoot": [0.2, -0.03, 0.14],
+    "shield": [0, 0, 0]
+  },
+  "readyBlade": {
+    "root": [0.0, 0.0, 1.17],
+    "chest": [2.0, 0.0, 0.0],
+    "hips": [0.0, 0.0, 0.0],
+    "leftHand": [-0.28, 0.21, 1.1],
+    "rightHand": [0.28, 0.21, 1.1],
+    "blade": [0.1, 0.597, -0.796],
+    "leftFoot": [-0.2, 0.03, 0.14],
+    "rightFoot": [0.2, -0.03, 0.14],
+    "shield": [0, 0, 0]
+  },
+  "motions": [
+    {
+      "id": "DanceStepLeft",
+      "name": "Dance Step Left",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A clear step to the left from the dance stance, with a hand accent.",
+      "interpretation": "The weight rolls left, the left foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Step out",
+          "pose": {
+            "root": [-0.0, 0.0, 1.17],
+            "chest": [2.0, -0.0, -0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Step out",
+          "pose": {
+            "root": [-0.021, 0.0, 1.165],
+            "chest": [2.0, -2.074, -1.556],
+            "hips": [0.0, 1.037, 0.0],
+            "leftHand": [-0.316, 0.21, 1.116],
+            "rightHand": [0.272, 0.21, 1.095],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.257, 0.04, 0.193],
+            "rightFoot": [0.2, -0.03, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Step out",
+          "pose": {
+            "root": [-0.059, 0.0, 1.155],
+            "chest": [2.0, -5.926, -4.444],
+            "hips": [0.0, 2.963, 0.0],
+            "leftHand": [-0.384, 0.21, 1.144],
+            "rightHand": [0.258, 0.21, 1.085],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.363, 0.06, 0.193],
+            "rightFoot": [0.2, -0.03, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Step out",
+          "pose": {
+            "root": [-0.08, 0.0, 1.15],
+            "chest": [2.0, -8.0, -6.0],
+            "hips": [0.0, 4.0, 0.0],
+            "leftHand": [-0.42, 0.21, 1.16],
+            "rightHand": [0.25, 0.21, 1.08],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.42, 0.07, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Return",
+          "pose": {
+            "root": [-0.059, 0.0, 1.155],
+            "chest": [2.0, -5.926, -4.444],
+            "hips": [0.0, 2.963, 0.0],
+            "leftHand": [-0.384, 0.21, 1.144],
+            "rightHand": [0.258, 0.21, 1.085],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.363, 0.06, 0.193],
+            "rightFoot": [0.2, -0.03, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [-0.021, 0.0, 1.165],
+            "chest": [2.0, -2.074, -1.556],
+            "hips": [0.0, 1.037, 0.0],
+            "leftHand": [-0.316, 0.21, 1.116],
+            "rightHand": [0.272, 0.21, 1.095],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.257, 0.04, 0.193],
+            "rightFoot": [0.2, -0.03, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Return",
+          "pose": {
+            "root": [-0.0, 0.0, 1.17],
+            "chest": [2.0, -0.0, -0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "DanceStepUp",
+      "name": "Dance Step Up",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A forward hop-step with the hands lifting in front, from the dance stance.",
+      "interpretation": "Both feet hop a hand-span forward, the hands lift in front of the chest and the shoulders lean in, then everything returns to the dance stance in six-tenths of a second.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Hop forward",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.21, 1.1],
+            "rightHand": [0.27, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Hop forward",
+          "pose": {
+            "root": [0.0, 0.016, 1.171],
+            "chest": [4.074, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.251, 1.141],
+            "rightHand": [0.27, 0.251, 1.141],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.077, 0.141],
+            "rightFoot": [0.2, 0.017, 0.141]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Hop forward",
+          "pose": {
+            "root": [0.0, 0.044, 1.209],
+            "chest": [7.926, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.329, 1.219],
+            "rightHand": [0.27, 0.329, 1.219],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.163, 0.209],
+            "rightFoot": [0.2, 0.103, 0.209]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Hop forward",
+          "pose": {
+            "root": [0.0, 0.06, 1.176],
+            "chest": [10.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.37, 1.26],
+            "rightHand": [0.27, 0.37, 1.26],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.21, 0.15],
+            "rightFoot": [0.2, 0.15, 0.15]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.044, 1.17],
+            "chest": [7.926, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.329, 1.219],
+            "rightHand": [0.27, 0.329, 1.219],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.163, 0.14],
+            "rightFoot": [0.2, 0.103, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.016, 1.17],
+            "chest": [4.074, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.251, 1.141],
+            "rightHand": [0.27, 0.251, 1.141],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.077, 0.14],
+            "rightFoot": [0.2, 0.017, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.27, 0.21, 1.1],
+            "rightHand": [0.27, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "DanceStepDown",
+      "name": "Dance Step Down",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A dip back from the dance stance: the knees bend, the weight sits back and the hands sweep low.",
+      "interpretation": "The hips sink and slide back, the chest leans away and both feet step back a short way while the hands sweep down and out, then the stance recovers in six-tenths of a second.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Dip back",
+          "pose": {
+            "root": [0.0, -0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [-0.0, 0.0, 0.0],
+            "leftHand": [-0.36, 0.16, 1.1],
+            "rightHand": [0.36, 0.16, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Dip back",
+          "pose": {
+            "root": [0.0, -0.021, 1.147],
+            "chest": [-0.074, 0.0, 0.0],
+            "hips": [-0.778, 0.0, 0.0],
+            "leftHand": [-0.376, 0.144, 1.064],
+            "rightHand": [0.376, 0.144, 1.064],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.208, 0.004, 0.148],
+            "rightFoot": [0.208, -0.056, 0.148]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Dip back",
+          "pose": {
+            "root": [0.0, -0.059, 1.103],
+            "chest": [-3.926, 0.0, 0.0],
+            "hips": [-2.222, 0.0, 0.0],
+            "leftHand": [-0.404, 0.116, 0.996],
+            "rightHand": [0.404, 0.116, 0.996],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.222, -0.044, 0.162],
+            "rightFoot": [0.222, -0.104, 0.162]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Dip back",
+          "pose": {
+            "root": [0.0, -0.08, 1.08],
+            "chest": [-6.0, 0.0, 0.0],
+            "hips": [-3.0, 0.0, 0.0],
+            "leftHand": [-0.42, 0.1, 0.96],
+            "rightHand": [0.42, 0.1, 0.96],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.23, -0.07, 0.17],
+            "rightFoot": [0.23, -0.13, 0.17]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, -0.059, 1.103],
+            "chest": [-3.926, 0.0, 0.0],
+            "hips": [-2.222, 0.0, 0.0],
+            "leftHand": [-0.404, 0.116, 0.996],
+            "rightHand": [0.404, 0.116, 0.996],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.222, -0.044, 0.162],
+            "rightFoot": [0.222, -0.104, 0.162]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, -0.021, 1.147],
+            "chest": [-0.074, 0.0, 0.0],
+            "hips": [-0.778, 0.0, 0.0],
+            "leftHand": [-0.376, 0.144, 1.064],
+            "rightHand": [0.376, 0.144, 1.064],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.208, 0.004, 0.148],
+            "rightFoot": [0.208, -0.056, 0.148]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, -0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [-0.0, 0.0, 0.0],
+            "leftHand": [-0.36, 0.16, 1.1],
+            "rightHand": [0.36, 0.16, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "DanceStepRight",
+      "name": "Dance Step Right",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A clear step to the right from the dance stance, with a hand accent.",
+      "interpretation": "The weight rolls right, the right foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Step out",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, -0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.2, 0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Step out",
+          "pose": {
+            "root": [0.021, 0.0, 1.165],
+            "chest": [2.0, 2.074, 1.556],
+            "hips": [0.0, -1.037, 0.0],
+            "leftHand": [-0.272, 0.21, 1.095],
+            "rightHand": [0.316, 0.21, 1.116],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.257, 0.04, 0.193]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Step out",
+          "pose": {
+            "root": [0.059, 0.0, 1.155],
+            "chest": [2.0, 5.926, 4.444],
+            "hips": [0.0, -2.963, 0.0],
+            "leftHand": [-0.258, 0.21, 1.085],
+            "rightHand": [0.384, 0.21, 1.144],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.363, 0.06, 0.193]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Step out",
+          "pose": {
+            "root": [0.08, 0.0, 1.15],
+            "chest": [2.0, 8.0, 6.0],
+            "hips": [0.0, -4.0, 0.0],
+            "leftHand": [-0.25, 0.21, 1.08],
+            "rightHand": [0.42, 0.21, 1.16],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.42, 0.07, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Return",
+          "pose": {
+            "root": [0.059, 0.0, 1.155],
+            "chest": [2.0, 5.926, 4.444],
+            "hips": [0.0, -2.963, 0.0],
+            "leftHand": [-0.258, 0.21, 1.085],
+            "rightHand": [0.384, 0.21, 1.144],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.363, 0.06, 0.193]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.021, 0.0, 1.165],
+            "chest": [2.0, 2.074, 1.556],
+            "hips": [0.0, -1.037, 0.0],
+            "leftHand": [-0.272, 0.21, 1.095],
+            "rightHand": [0.316, 0.21, 1.116],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.257, 0.04, 0.193]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, -0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, -0.03, 0.14],
+            "rightFoot": [0.2, 0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "DanceDip",
+      "name": "Dance Dip",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A low, dramatic dip and a sweeping rise.",
+      "interpretation": "The hips sink about twenty centimetres with the chest folding forward and the arms spread low, the pose holds a moment, then the body rises through a long upward arm sweep with a slight lean back before settling in the dance stance.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.0, 1.169],
+            "chest": [2.101, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.281, 0.211, 1.099],
+            "rightHand": [0.281, 0.211, 1.099],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.201, 0.03, 0.14],
+            "rightFoot": [0.201, -0.031, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.003, 1.148],
+            "chest": [4.242, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.309, 0.221, 1.089],
+            "rightHand": [0.309, 0.221, 1.089],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.211, 0.036, 0.14],
+            "rightFoot": [0.211, -0.043, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.009, 1.107],
+            "chest": [8.328, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.362, 0.242, 1.068],
+            "rightHand": [0.362, 0.242, 1.068],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.232, 0.046, 0.14],
+            "rightFoot": [0.232, -0.068, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.017, 1.058],
+            "chest": [13.247, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.426, 0.266, 1.044],
+            "rightHand": [0.426, 0.266, 1.044],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.256, 0.058, 0.14],
+            "rightFoot": [0.256, -0.097, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.024, 1.011],
+            "chest": [17.888, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.487, 0.289, 1.021],
+            "rightHand": [0.487, 0.289, 1.021],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.279, 0.07, 0.14],
+            "rightFoot": [0.279, -0.125, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.029, 0.979],
+            "chest": [21.141, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.529, 0.306, 1.004],
+            "rightHand": [0.529, 0.306, 1.004],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.296, 0.078, 0.14],
+            "rightFoot": [0.296, -0.145, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Dip",
+          "pose": {
+            "root": [0.0, 0.03, 0.97],
+            "chest": [22.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.54, 0.31, 1.0],
+            "rightHand": [0.54, 0.31, 1.0],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.3, 0.08, 0.14],
+            "rightFoot": [0.3, -0.15, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.8,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.03, 0.97],
+            "chest": [22.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.54, 0.31, 1.0],
+            "rightHand": [0.54, 0.31, 1.0],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.3, 0.08, 0.14],
+            "rightFoot": [0.3, -0.15, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.9,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.03, 0.97],
+            "chest": [22.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.54, 0.31, 1.0],
+            "rightHand": [0.54, 0.31, 1.0],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.3, 0.08, 0.14],
+            "rightFoot": [0.3, -0.15, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.0,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.03, 0.972],
+            "chest": [21.546, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.54, 0.309, 1.009],
+            "rightHand": [0.54, 0.309, 1.009],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.299, 0.08, 0.14],
+            "rightFoot": [0.299, -0.149, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.024, 1.008],
+            "chest": [12.962, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.536, 0.291, 1.169],
+            "rightHand": [0.536, 0.291, 1.169],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.281, 0.071, 0.14],
+            "rightFoot": [0.281, -0.127, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.2,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.015, 1.07],
+            "chest": [0.188, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.511, 0.26, 1.387],
+            "rightHand": [0.511, 0.26, 1.387],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.25, 0.055, 0.14],
+            "rightFoot": [0.25, -0.09, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.3,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.006, 1.132],
+            "chest": [-7.748, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.445, 0.229, 1.467],
+            "rightHand": [0.445, 0.229, 1.467],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.219, 0.039, 0.14],
+            "rightFoot": [0.219, -0.053, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.4,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.0, 1.168],
+            "chest": [-3.66, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.332, 0.211, 1.266],
+            "rightHand": [0.332, 0.211, 1.266],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.201, 0.03, 0.14],
+            "rightFoot": [0.201, -0.031, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.5,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "DanceSpin",
+      "name": "Dance Spin",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A full turn on one foot with both arms held out.",
+      "interpretation": "The performer shifts onto the left foot, throws both arms out to the sides and turns a full revolution with the right knee drawn up, then lowers the arms and steps back into the dance stance.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Wind up",
+          "pose": {
+            "root": [-0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Wind up",
+          "pose": {
+            "root": [-0.016, 0.0, 1.178],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.301, 0.209, 1.106],
+            "rightHand": [0.27, 0.209, 1.106],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.152, 0.022, 0.145],
+            "rightFoot": [0.175, -0.048, 0.181]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Wind up",
+          "pose": {
+            "root": [-0.044, 0.0, 1.192],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.426, 0.184, 1.213],
+            "rightHand": [0.337, 0.184, 1.213],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.085, 0.008, 0.155],
+            "rightFoot": [0.108, -0.082, 0.259]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.568, 0.151, 1.353],
+            "rightHand": [0.448, 0.151, 1.353],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 4.15
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 27.51
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 75.56
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 142.81
+          },
+          "through": true
+        },
+        {
+          "time": 0.8,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 217.19
+          },
+          "through": true
+        },
+        {
+          "time": 0.9,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 284.44
+          },
+          "through": true
+        },
+        {
+          "time": 1.0,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 332.49
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Turn",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 355.85
+          },
+          "through": true
+        },
+        {
+          "time": 1.2,
+          "label": "Settle",
+          "pose": {
+            "root": [-0.06, 0.0, 1.2],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.61, 0.14, 1.4],
+            "rightHand": [0.49, 0.14, 1.4],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.06, 0.0, 0.16],
+            "rightFoot": [0.06, -0.1, 0.3],
+            "rootYaw": 360.0
+          },
+          "through": true
+        },
+        {
+          "time": 1.3,
+          "label": "Settle",
+          "pose": {
+            "root": [-0.058, 0.0, 1.199],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.495, 0.169, 1.275],
+            "rightHand": [0.379, 0.169, 1.275],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.063, 0.001, 0.159],
+            "rightFoot": [0.067, -0.098, 0.295],
+            "rootYaw": 360.0
+          },
+          "through": true
+        },
+        {
+          "time": 1.4,
+          "label": "Settle",
+          "pose": {
+            "root": [-0.025, 0.0, 1.183],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.314, 0.208, 1.11],
+            "rightHand": [0.264, 0.208, 1.11],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.127, 0.017, 0.148],
+            "rightFoot": [0.156, -0.059, 0.207],
+            "rootYaw": 360.0
+          },
+          "through": true
+        },
+        {
+          "time": 1.5,
+          "label": "Settle",
+          "pose": {
+            "root": [-0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14],
+            "rootYaw": 360.0
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "StringsLow",
+      "name": "Strings Low",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A low string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        },
+        {
+          "time": 0.062,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.108, 0.284, 1.369],
+            "rightHand": [0.18, 0.2, 1.16],
+            "blade": [-0.611, 0.356, 0.707],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.125,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.152, 0.258, 1.371],
+            "rightHand": [0.18, 0.2, 1.22],
+            "blade": [-0.622, 0.363, 0.694],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.188,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.139],
+            "chest": [7.102, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.169, 0.234, 1.246],
+            "rightHand": [0.18, 0.186, 1.09],
+            "blade": [-0.578, 0.337, 0.744],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.25,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.131],
+            "chest": [8.86, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.174, 0.226, 1.192],
+            "rightHand": [0.18, 0.18, 1.032],
+            "blade": [-0.559, 0.326, 0.762],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.312,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.137],
+            "chest": [7.564, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.172, 0.231, 1.205],
+            "rightHand": [0.18, 0.185, 1.047],
+            "blade": [-0.568, 0.331, 0.753],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.147],
+            "chest": [5.592, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.162, 0.243, 1.232],
+            "rightHand": [0.18, 0.191, 1.07],
+            "blade": [-0.581, 0.339, 0.74],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.438,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.156],
+            "chest": [3.789, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.114, 0.278, 1.305],
+            "rightHand": [0.18, 0.197, 1.091],
+            "blade": [-0.594, 0.347, 0.726],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "StringsMid",
+      "name": "Strings Mid",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A mid string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        },
+        {
+          "time": 0.062,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.076, 0.302, 1.406],
+            "rightHand": [0.18, 0.2, 1.16],
+            "blade": [-0.611, 0.356, 0.707],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.125,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.072, 0.305, 1.461],
+            "rightHand": [0.18, 0.2, 1.22],
+            "blade": [-0.622, 0.363, 0.694],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.188,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.139],
+            "chest": [6.418, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.089, 0.281, 1.35],
+            "rightHand": [0.18, 0.186, 1.09],
+            "blade": [-0.578, 0.337, 0.744],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.25,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.131],
+            "chest": [7.884, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.095, 0.271, 1.298],
+            "rightHand": [0.18, 0.18, 1.032],
+            "blade": [-0.559, 0.326, 0.762],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.312,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.137],
+            "chest": [6.804, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.092, 0.278, 1.31],
+            "rightHand": [0.18, 0.185, 1.047],
+            "blade": [-0.568, 0.331, 0.753],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.147],
+            "chest": [5.16, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.087, 0.287, 1.328],
+            "rightHand": [0.18, 0.191, 1.07],
+            "blade": [-0.581, 0.339, 0.74],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.438,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.156],
+            "chest": [3.657, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.082, 0.296, 1.344],
+            "rightHand": [0.18, 0.197, 1.091],
+            "blade": [-0.594, 0.347, 0.726],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "StringsHigh",
+      "name": "Strings High",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A high string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        },
+        {
+          "time": 0.062,
+          "label": "Lift",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.039, 0.324, 1.448],
+            "rightHand": [0.18, 0.2, 1.16],
+            "blade": [-0.611, 0.356, 0.707],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.125,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.02, 0.359, 1.564],
+            "rightHand": [0.18, 0.2, 1.22],
+            "blade": [-0.622, 0.363, 0.694],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.188,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.139],
+            "chest": [5.734, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.004, 0.335, 1.469],
+            "rightHand": [0.18, 0.186, 1.09],
+            "blade": [-0.578, 0.337, 0.744],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.25,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.131],
+            "chest": [6.907, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.006, 0.324, 1.42],
+            "rightHand": [0.18, 0.18, 1.032],
+            "blade": [-0.559, 0.326, 0.762],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.312,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.137],
+            "chest": [6.043, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.001, 0.331, 1.431],
+            "rightHand": [0.18, 0.185, 1.047],
+            "blade": [-0.568, 0.331, 0.753],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.147],
+            "chest": [4.728, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.001, 0.337, 1.437],
+            "rightHand": [0.18, 0.191, 1.07],
+            "blade": [-0.581, 0.339, 0.74],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.438,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.156],
+            "chest": [3.526, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.046, 0.317, 1.387],
+            "rightHand": [0.18, 0.197, 1.091],
+            "blade": [-0.594, 0.347, 0.726],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "StringsFlourish",
+      "name": "Strings Flourish",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A flourish string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "interpretation": "The body opens back and the free left hand sweeps across the strings, then settles into the shared playing hold. The right hand keeps the native carry grip.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [2.947, -7.96, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0809, 0.30045, 1.3509],
+            "rightHand": [0.181, 0.201, 1.102],
+            "blade": [-0.597, 0.351, 0.721],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.163],
+            "chest": [1.855, -7.142, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0989, 0.30675, 1.368],
+            "rightHand": [0.194, 0.211, 1.143],
+            "blade": [-0.551, 0.377, 0.745],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.168],
+            "chest": [-0.149, -5.638, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.1304, 0.31665, 1.39725],
+            "rightHand": [0.219, 0.231, 1.218],
+            "blade": [-0.467, 0.417, 0.78],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.174],
+            "chest": [-2.402, -3.949, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.16235, 0.32565, 1.42695],
+            "rightHand": [0.248, 0.254, 1.303],
+            "blade": [-0.377, 0.454, 0.807],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Raise",
+          "pose": {
+            "root": [0.0, 0.0, 1.178],
+            "chest": [-4.24, -2.57, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.17585, 0.3189, 1.4481],
+            "rightHand": [0.27, 0.272, 1.371],
+            "blade": [-0.31, 0.478, 0.822],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.18],
+            "chest": [-5.0, -2.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.1781, 0.31305, 1.4553],
+            "rightHand": [0.28, 0.28, 1.4],
+            "blade": [-0.284, 0.486, 0.827],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.147],
+            "chest": [4.174, -4.502, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.1448, 0.33105, 1.3671],
+            "rightHand": [0.238, 0.247, 1.183],
+            "blade": [-0.458, 0.5, 0.735],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.8,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.103],
+            "chest": [16.246, -7.794, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0548, 0.3198, 1.2114],
+            "rightHand": [0.184, 0.202, 0.901],
+            "blade": [-0.766, 0.464, 0.445],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 0.9,
+          "label": "Strum",
+          "pose": {
+            "root": [0.0, 0.0, 1.103],
+            "chest": [16.224, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0503, 0.31755, 1.20915],
+            "rightHand": [0.18, 0.197, 0.9],
+            "blade": [-0.775, 0.452, 0.442],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.0,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.116],
+            "chest": [13.37, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0566, 0.3135, 1.2429],
+            "rightHand": [0.18, 0.2, 0.937],
+            "blade": [-0.737, 0.43, 0.521],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.132],
+            "chest": [9.5, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0656, 0.30855, 1.28565],
+            "rightHand": [0.18, 0.2, 0.998],
+            "blade": [-0.685, 0.399, 0.61],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.2,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.148],
+            "chest": [5.776, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.07415, 0.3036, 1.32345],
+            "rightHand": [0.18, 0.2, 1.056],
+            "blade": [-0.635, 0.37, 0.678],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.3,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.158],
+            "chest": [3.357, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.0791, 0.30045, 1.34685],
+            "rightHand": [0.18, 0.2, 1.094],
+            "blade": [-0.604, 0.352, 0.715],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.4,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          },
+          "through": true
+        },
+        {
+          "time": 1.5,
+          "label": "Settle",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [3.0, -8.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [0.08, 0.3, 1.35],
+            "rightHand": [0.18, 0.2, 1.1],
+            "blade": [-0.6, 0.35, 0.72],
+            "leftFoot": [-0.2, 0.06, 0.14],
+            "rightFoot": [0.2, -0.06, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "HornLow",
+      "name": "Horn Low",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "The chest sinks and the bell dips into a low note. Starts and ends at the held-to-the-mouth hold.",
+      "interpretation": "The chest sinks forward, the knees ease down, the bell dips and the left hand slides down the horn for a low note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.0625,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.166],
+            "chest": [0.732, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.059, 0.272, 1.497],
+            "rightHand": [0.114, 0.316, 1.378],
+            "blade": [0.176, -0.691, 0.701],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.125,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.155],
+            "chest": [2.5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.061, 0.282, 1.46],
+            "rightHand": [0.113, 0.302, 1.347],
+            "blade": [0.182, -0.612, 0.77],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.1875,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.144],
+            "chest": [4.268, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.063, 0.289, 1.424],
+            "rightHand": [0.111, 0.287, 1.318],
+            "blade": [0.187, -0.526, 0.829],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.25,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.14],
+            "chest": [5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.064, 0.291, 1.408],
+            "rightHand": [0.111, 0.281, 1.307],
+            "blade": [0.19, -0.489, 0.851],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.3125,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.144],
+            "chest": [4.268, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.063, 0.289, 1.424],
+            "rightHand": [0.111, 0.287, 1.318],
+            "blade": [0.187, -0.526, 0.83],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.155],
+            "chest": [2.5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.061, 0.282, 1.46],
+            "rightHand": [0.113, 0.302, 1.347],
+            "blade": [0.182, -0.612, 0.77],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.4375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.166],
+            "chest": [0.732, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.059, 0.272, 1.496],
+            "rightHand": [0.114, 0.316, 1.378],
+            "blade": [0.176, -0.691, 0.701],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "HornMid",
+      "name": "Horn Mid",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A neutral accent: a small sway into a note held level. Starts and ends at the held-to-the-mouth hold.",
+      "interpretation": "A neutral accent: a small sway of the shoulders as the bell swings slightly to the side and the left hand shifts a touch up the horn, then back to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.0625,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0.22, 0.732, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.065, 0.266, 1.512],
+            "rightHand": [0.104, 0.326, 1.391],
+            "blade": [0.2, -0.717, 0.667],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.125,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0.75, 2.5, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.081, 0.263, 1.516],
+            "rightHand": [0.08, 0.337, 1.389],
+            "blade": [0.263, -0.706, 0.658],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.1875,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [1.28, 4.268, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.096, 0.26, 1.519],
+            "rightHand": [0.055, 0.346, 1.387],
+            "blade": [0.324, -0.689, 0.648],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.25,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [1.5, 5, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.101, 0.258, 1.52],
+            "rightHand": [0.044, 0.349, 1.386],
+            "blade": [0.349, -0.681, 0.644],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.3125,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [1.28, 4.268, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.096, 0.26, 1.519],
+            "rightHand": [0.055, 0.346, 1.387],
+            "blade": [0.324, -0.689, 0.648],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0.75, 2.5, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.081, 0.263, 1.516],
+            "rightHand": [0.08, 0.337, 1.389],
+            "blade": [0.263, -0.706, 0.658],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.4375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0.22, 0.732, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.065, 0.266, 1.512],
+            "rightHand": [0.104, 0.326, 1.391],
+            "blade": [0.2, -0.717, 0.667],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "HornHigh",
+      "name": "Horn High",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "The bell lifts high into a bright note with the chest opening. Starts and ends at the held-to-the-mouth hold.",
+      "interpretation": "The chest opens back, the knees straighten, the bell lifts and the left hand slides up the horn for a bright note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.0625,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.172],
+            "chest": [-0.732, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.057, 0.262, 1.527],
+            "rightHand": [0.115, 0.33, 1.407],
+            "blade": [0.171, -0.76, 0.627],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.125,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.178],
+            "chest": [-2.5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.056, 0.246, 1.563],
+            "rightHand": [0.115, 0.349, 1.449],
+            "blade": [0.166, -0.843, 0.511],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.1875,
+          "label": "Accent",
+          "pose": {
+            "root": [0, 0, 1.183],
+            "chest": [-4.268, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.055, 0.226, 1.596],
+            "rightHand": [0.116, 0.363, 1.495],
+            "blade": [0.162, -0.908, 0.386],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.25,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.185],
+            "chest": [-5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.054, 0.216, 1.609],
+            "rightHand": [0.116, 0.367, 1.515],
+            "blade": [0.161, -0.929, 0.332],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.3125,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.183],
+            "chest": [-4.268, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.055, 0.226, 1.596],
+            "rightHand": [0.116, 0.363, 1.495],
+            "blade": [0.162, -0.908, 0.386],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.178],
+            "chest": [-2.5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.056, 0.246, 1.563],
+            "rightHand": [0.115, 0.349, 1.449],
+            "blade": [0.166, -0.843, 0.512],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.4375,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.172],
+            "chest": [-0.732, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.057, 0.262, 1.527],
+            "rightHand": [0.115, 0.33, 1.407],
+            "blade": [0.171, -0.76, 0.627],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.5,
+          "label": "Return",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "HornFlourish",
+      "name": "Horn Flourish",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "The horn swings up toward the ceiling for a long, ringing note.",
+      "interpretation": "The bell sweeps up and out while the chest opens back, the mouthpiece stays at the lips and the note holds at the top, then the horn lowers to the playing hold.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.171],
+            "chest": [-0.741, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.053, 0.27, 1.527],
+            "rightHand": [0.118, 0.335, 1.413],
+            "blade": [0.162, -0.777, 0.608],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.2,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.174],
+            "chest": [-2.593, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.04, 0.274, 1.569],
+            "rightHand": [0.129, 0.364, 1.474],
+            "blade": [0.13, -0.892, 0.433],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.3,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.178],
+            "chest": [-5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.025, 0.265, 1.629],
+            "rightHand": [0.143, 0.383, 1.565],
+            "blade": [0.09, -0.979, 0.181],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.4,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.181],
+            "chest": [-7.407, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.013, 0.242, 1.69],
+            "rightHand": [0.154, 0.377, 1.665],
+            "blade": [0.06, -0.995, -0.084],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.5,
+          "label": "Raise",
+          "pose": {
+            "root": [0, 0, 1.184],
+            "chest": [-9.259, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.007, 0.214, 1.735],
+            "rightHand": [0.16, 0.356, 1.743],
+            "blade": [0.048, -0.958, -0.283],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.6,
+          "label": "Hold",
+          "pose": {
+            "root": [0, 0, 1.185],
+            "chest": [-10, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.006, 0.2, 1.752],
+            "rightHand": [0.161, 0.343, 1.774],
+            "blade": [0.047, -0.932, -0.359],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.7,
+          "label": "Hold",
+          "pose": {
+            "root": [0, 0, 1.185],
+            "chest": [-10, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.006, 0.2, 1.752],
+            "rightHand": [0.16, 0.343, 1.774],
+            "blade": [0.048, -0.932, -0.359],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.8,
+          "label": "Hold",
+          "pose": {
+            "root": [0, 0, 1.185],
+            "chest": [-10, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.006, 0.2, 1.752],
+            "rightHand": [0.161, 0.343, 1.774],
+            "blade": [0.047, -0.932, -0.359],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 0.9,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.185],
+            "chest": [-10, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.006, 0.2, 1.752],
+            "rightHand": [0.16, 0.343, 1.774],
+            "blade": [0.048, -0.932, -0.359],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.184],
+            "chest": [-9.259, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.007, 0.214, 1.735],
+            "rightHand": [0.16, 0.356, 1.743],
+            "blade": [0.048, -0.958, -0.283],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1.1,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.181],
+            "chest": [-7.407, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.013, 0.242, 1.69],
+            "rightHand": [0.154, 0.377, 1.665],
+            "blade": [0.06, -0.995, -0.084],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1.2,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.178],
+            "chest": [-5, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.025, 0.265, 1.629],
+            "rightHand": [0.143, 0.383, 1.565],
+            "blade": [0.09, -0.979, 0.181],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1.3,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.174],
+            "chest": [-2.593, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.04, 0.274, 1.569],
+            "rightHand": [0.129, 0.364, 1.474],
+            "blade": [0.13, -0.892, 0.433],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1.4,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.171],
+            "chest": [-0.741, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.053, 0.27, 1.527],
+            "rightHand": [0.118, 0.335, 1.413],
+            "blade": [0.162, -0.777, 0.608],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        },
+        {
+          "time": 1.5,
+          "label": "Lower",
+          "pose": {
+            "root": [0, 0, 1.17],
+            "chest": [0, 0, 0],
+            "hips": [0, 0, 0],
+            "leftHand": [-0.058, 0.266, 1.511],
+            "rightHand": [0.114, 0.321, 1.392],
+            "blade": [0.174, -0.721, 0.671],
+            "leftFoot": [-0.2, 0.05, 0.14],
+            "rightFoot": [0.2, -0.05, 0.14],
+            "shield": [-120, 165, 30]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": true
+    },
+    {
+      "id": "PerformanceBow",
+      "name": "Performance Bow",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A courteous finale bow with one hand across the chest.",
+      "interpretation": "The performer gathers a hand to the chest, sweeps the other arm out and folds forward from the waist, holds the bow for a beat, then rises and releases to the dance stance.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Dance stance",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.35,
+          "label": "Gather",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [0.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.5, 0.14, 1.1],
+            "rightHand": [0.14, 0.28, 1.32],
+            "blade": [0.206, 0.309, -0.928],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 0.75,
+          "label": "Bow",
+          "pose": {
+            "root": [0.0, -0.03, 1.12],
+            "chest": [34.0, 0.0, 0.0],
+            "hips": [6.0, 0.0, 0.0],
+            "leftHand": [-0.516, 0.297, 0.987],
+            "rightHand": [0.14, 0.48, 1.0],
+            "blade": [0.199, 0.398, -0.896],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 1.05,
+          "label": "Hold the bow",
+          "pose": {
+            "root": [0.0, -0.03, 1.12],
+            "chest": [36.0, 0.0, 0.0],
+            "hips": [6.0, 0.0, 0.0],
+            "leftHand": [-0.511, 0.295, 0.974],
+            "rightHand": [0.141, 0.493, 0.989],
+            "blade": [0.199, 0.398, -0.896],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 1.3,
+          "label": "Rise",
+          "pose": {
+            "root": [0.0, 0.0, 1.16],
+            "chest": [0.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.5, 0.14, 1.1],
+            "rightHand": [0.14, 0.28, 1.32],
+            "blade": [0.206, 0.309, -0.928],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        },
+        {
+          "time": 1.5,
+          "label": "Dance stance",
+          "pose": {
+            "root": [0.0, 0.0, 1.17],
+            "chest": [2.0, 0.0, 0.0],
+            "hips": [0.0, 0.0, 0.0],
+            "leftHand": [-0.28, 0.21, 1.1],
+            "rightHand": [0.28, 0.21, 1.1],
+            "blade": [0.1, 0.597, -0.796],
+            "leftFoot": [-0.2, 0.03, 0.14],
+            "rightFoot": [0.2, -0.03, 0.14]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Performing",
+      "loop": false
+    }
+  ],
+  "externalImports": "swg-imports.json"
+}

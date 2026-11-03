@@ -868,6 +868,31 @@ namespace SWLOR.Game.Server.Service.PerkService
         CloudMind = 939,
         SharedPresence = 940,
 
-        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 941+ are free.
+        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 941+ are free.,
+        Dance = 950,
+        LightFeet = 951,
+        CrowdPleaser = 952,
+        PowerStep = 953,
+        Encore = 954,
+        Quickstep = 955,
+        VigorReel = 956,
+        PartnerDance = 957,
+        StandingOvation = 958,
+        PeakForm = 959,
+        Showstopper = 960,
+        PlayInstrument = 961,
+        PerformanceSteadyHands = 962,
+        Harmony = 963,
+        KeenEar = 964,
+        Resonance = 965,
+        AnglersLullaby = 966,
+        StillWaters = 967,
+        Duet = 968,
+        Requiem = 969,
+        SilverTongue = 970,
+        PerfectPitch = 971,
+        Virtuoso = 972,
+
+        // IDs 650, 844-949, and 973+ are free.
     }
 }

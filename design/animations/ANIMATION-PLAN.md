@@ -39,6 +39,7 @@ Generated gameplay animation is restricted to player creatures. Native equipment
 | Leadership | 12 |
 | Lightsaber | 11 |
 | Mimicry | 68 |
+| Performance | 2 |
 | Pistol | 10 |
 | Rifle | 10 |
 | Saberstaff | 10 |

@@ -1701,5 +1701,22 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CrossfireStance = 1767,
         FinalSalvo = 1768,
 
+        Dance1 = 1119,
+        Dance2 = 1315,
+        Dance3 = 1601,
+        Dance4 = 1605,
+        PlayInstrument1 = 1607,
+        PlayInstrument2 = 1617,
+        PlayInstrument3 = 1830,
+        PlayInstrument4 = 1831,
+        PerformanceStepLeft = 1832,
+        PerformanceStepUp = 1833,
+        PerformanceStepDown = 1834,
+        PerformanceStepRight = 1835,
+        PerformanceNoteLow = 1836,
+        PerformanceNoteMid = 1837,
+        PerformanceNoteHigh = 1838,
+        PerformanceFlourish = 1839,
+        PerformanceOptions = 1840,
     }
 }

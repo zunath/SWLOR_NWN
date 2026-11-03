@@ -5118,6 +5118,40 @@
       "Status": "Draft: in-game visual review required",
       "Reference": "",
       "ProjectSha256": "e6f6e8c0e770e80f2e918d978ce8044aea380d110dd8febc712f1b0e0bc179d7"
+    },
+    {
+      "Id": "Dance",
+      "InternalName": "sw_pf_dance",
+      "Category": "Performance",
+      "Duration": 1.5,
+      "Project": "performance/Dance.swlanim",
+      "SourceModel": "a_ba",
+      "SourceAnimation": "pause1 \u002B pausewalkl",
+      "Profile": "Authored choreography: Drop onto the beat, take one small side step with the leading arm sweeping out, close the step with a loose arm flourish, and settle into the relaxed dance stance that the routine loops start from",
+      "ChoreographyPath": "performance/choreographies.json",
+      "ChoreographySha256": "47caeb08871b1510457e2e4e2c2a57abf7a64f47ffde56ed23bf8239e58cfa0b",
+      "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "Procedural": false,
+      "Status": "Draft: in-game visual review required",
+      "Reference": "",
+      "ProjectSha256": "e42cbf2724426297b9b44365bcada6c18e4b33ad2d493ee89b7d4a8bde69aa6b"
+    },
+    {
+      "Id": "PlayInstrument",
+      "InternalName": "sw_pf_play",
+      "Category": "Performance",
+      "Duration": 1.5,
+      "Project": "performance/PlayInstrument.swlanim",
+      "SourceModel": "a_ba",
+      "SourceAnimation": "pause1",
+      "Profile": "Authored choreography: Lift a held instrument from the hip, bring it across the chest with the left hand sliding to the neck, and settle into the playing grip",
+      "ChoreographyPath": "performance/choreographies.json",
+      "ChoreographySha256": "8e0810f45ccb8344a9848cac1775b5b23f546d8c8fb5b651184ad20340e47706",
+      "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "Procedural": false,
+      "Status": "Draft: in-game visual review required",
+      "Reference": "",
+      "ProjectSha256": "50c702cf6a286fbdaa7b11658627d5b48a9f135df0d9b167277deaad189d6fd6"
     }
   ]
 }

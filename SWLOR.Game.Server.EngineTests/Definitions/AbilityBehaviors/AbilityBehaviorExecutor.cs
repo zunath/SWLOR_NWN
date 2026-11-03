@@ -168,6 +168,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 await PlayerBeastAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);
                 return;
             }
+            if (behaviorCase.RequiresPlayerPerformanceFixture)
+            {
+                await PerformanceAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);
+                return;
+            }
             ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
             var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
             var requiresPlayerTechniqueLoadout = ability.IsMimicryTechnique;

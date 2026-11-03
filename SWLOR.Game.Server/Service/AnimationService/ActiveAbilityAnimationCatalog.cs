@@ -309,5 +309,7 @@ public static class ActiveAbilityAnimationCatalog
         new("LowKick", "Low Kick", "Unarmed", AuthoredAnimation.LowKick, new FeatType[] { FeatType.LowKick1, FeatType.LowKick2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("BruiserStance", "Bruiser Stance", "Unarmed", AuthoredAnimation.BruiserStance, new FeatType[] { FeatType.BruiserStance1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("Haymaker", "Haymaker", "Unarmed", AuthoredAnimation.Haymaker, new FeatType[] { FeatType.Haymaker1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("Dance", "Dance", "Performance", AuthoredAnimation.Dance, new FeatType[] { FeatType.Dance1, FeatType.Dance2, FeatType.Dance3, FeatType.Dance4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
+        new("PlayInstrument", "Play Instrument", "Performance", AuthoredAnimation.PlayInstrument, new FeatType[] { FeatType.PlayInstrument1, FeatType.PlayInstrument2, FeatType.PlayInstrument3, FeatType.PlayInstrument4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
     };
 }

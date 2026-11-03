@@ -11,6 +11,23 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class NamedAnimationPlaybackTests
 {
     [Test]
+    public void LiftingTheShoulderHoldInPlaceKeepsTheLoopingCarrierAndRestoresTheHoldAfterwards()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var token = playback.Begin(1, new AnimationClip("sw_hrn_loop", 4f), 600f, liftShoulderHoldInPlace: true);
+
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_hrn_loop");
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().BeEmpty("the loop must stay on the looping carrier");
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+
+        playback.Complete(1, token);
+        runtime.Callbacks[^1]();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+
+    [Test]
     public void RifleCarrierClearsTheExistingHoldAndSuppressesFutureHoldRefreshes()
     {
         ((int)Animation.FireForgetDodgeSide).Should().Be(global::NWN.Core.NWScript.ANIMATION_FIREFORGET_DODGE_SIDE);

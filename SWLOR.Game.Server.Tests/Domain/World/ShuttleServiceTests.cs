@@ -624,10 +624,106 @@ public class ShuttleServiceTests
         Service.Tick!();
         _bench.Locals.ClearCalls();
 
+        // A passenger who missed the departure hears the next call only once they are back at the terminal.
+        _passenger.Position = new Vector3(10f, 12f, 0f);
         Service.Now = FirstDeparture.AddSeconds(100);
         Service.Tick!();
 
         _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Now boarding: shuttle to Tatooine departs in 20 seconds");
+    }
+
+    /// <summary>A ticket holder away from the terminal at the first departure: the shuttle leaves without them.</summary>
+    private void MissTheFirstDeparture()
+    {
+        AddShuttleTemplate();
+        Purchase();
+        Service.LoadShuttleFlights();
+        _passenger.Position = new Vector3(10f, 40f, 0f);
+        Service.Now = FirstDeparture.AddSeconds(1);
+        Service.Tick!();
+    }
+
+    [Test]
+    public void The_tick_tells_a_passenger_who_stays_away_about_the_missed_shuttle_only_once()
+    {
+        MissTheFirstDeparture();
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("You missed your shuttle to Tatooine!");
+
+        var second = ShuttleSchedule.GetNextDepartureUtc(Origin, Destination, Service.Now);
+        Service.Now = second.AddSeconds(1);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle(message => message.Contains("You missed your shuttle"),
+            "later departures stay silent until the passenger returns to the terminal");
+        Service.GetRide(PassengerId).Status.Should().Be(ShuttleRideStatus.Ticketed, "the ticket stays valid");
+    }
+
+    [Test]
+    public void The_tick_stops_the_boarding_calls_for_a_passenger_who_missed_a_departure()
+    {
+        MissTheFirstDeparture();
+        _bench.Locals.ClearCalls();
+
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().BeEmpty();
+    }
+
+    [Test]
+    public void The_tick_calls_boarding_again_once_the_passenger_who_missed_a_departure_is_back_at_the_terminal()
+    {
+        MissTheFirstDeparture();
+        _bench.Locals.ClearCalls();
+        _passenger.Position = new Vector3(10f, 12f, 0f);
+
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Now boarding: shuttle to Tatooine departs in 20 seconds");
+    }
+
+    [Test]
+    public void The_tick_replays_a_boarding_call_that_was_announced_before_the_passenger_came_back()
+    {
+        MissTheFirstDeparture();
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+        _bench.Locals.ClearCalls();
+        _passenger.Position = new Vector3(10f, 12f, 0f);
+
+        Service.Now = FirstDeparture.AddSeconds(101);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Now boarding: shuttle to Tatooine departs in 19 seconds");
+    }
+
+    [Test]
+    public void The_tick_forgets_a_missed_departure_when_the_ticket_is_refunded_and_buys_again()
+    {
+        MissTheFirstDeparture();
+        Service.RefundTicket(_passenger.Id).Should().BeTrue();
+        _passenger.Position = new Vector3(10f, 12f, 0f);
+        Purchase();
+        _bench.Locals.ClearCalls();
+
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Now boarding: shuttle to Tatooine departs in 20 seconds");
+    }
+
+    [Test]
+    public void The_tick_boards_a_passenger_who_missed_a_departure_on_the_next_one_once_back_at_the_terminal()
+    {
+        MissTheFirstDeparture();
+        _passenger.Position = new Vector3(10f, 12f, 0f);
+        var second = ShuttleSchedule.GetNextDepartureUtc(Origin, Destination, Service.Now);
+
+        Service.Now = second.AddSeconds(1);
+        Service.Tick!();
+
+        Service.GetRide(PassengerId).Status.Should().Be(ShuttleRideStatus.InTransit, "back at the terminal, the passenger boards the next flight");
     }
 
     [Test]
@@ -1035,6 +1131,42 @@ public class ShuttleServiceTests
             .Contain("You still have a shuttle ticket from Viscara to Tatooine.")
             .And.Contain($"Automatic boarding resumes in {Wait(next - Service.Now)} if you are within 15 meters of a flights terminal at Viscara.");
         Service.GetNextDepartureUtc(Origin, Destination, PassengerId).Should().Be(next);
+    }
+
+    [Test]
+    public void EnterServer_keeps_the_boarding_calls_quiet_for_a_ticket_holder_who_logs_in_away_from_the_terminal()
+    {
+        Ticketed();
+        Service.LoadShuttleFlights();
+        _passenger.Position = new Vector3(10f, 40f, 0f);
+        Enters(_passenger);
+        Service.EnterServer();
+        Service.Scheduled.Single().Task();
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("You still have a shuttle ticket");
+        _bench.Locals.ClearCalls();
+
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().BeEmpty("the reminder covered this session");
+    }
+
+    [Test]
+    public void EnterServer_lets_the_boarding_calls_start_once_a_ticket_holder_who_logged_in_away_reaches_the_terminal()
+    {
+        Ticketed();
+        Service.LoadShuttleFlights();
+        _passenger.Position = new Vector3(10f, 40f, 0f);
+        Enters(_passenger);
+        Service.EnterServer();
+        Service.Scheduled.Single().Task();
+        _bench.Locals.ClearCalls();
+        _passenger.Position = new Vector3(10f, 12f, 0f);
+
+        Service.Now = FirstDeparture.AddSeconds(100);
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Now boarding: shuttle to Tatooine departs in 20 seconds");
     }
 
     [Test]

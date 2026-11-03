@@ -247,6 +247,23 @@ class ClientActionTests(unittest.TestCase):
         self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_small_dim_icon_such_as_the_knife_counts_as_moved(self):
+        client, calls = self.client()
+        before_icon, after_icon = blank(), blank()
+        # 4 x 6 = 24 changed pixels at each end, far fewer than a rifle's.
+        ImageDraw.Draw(before_icon).rectangle((178, 390, 181, 395), fill=(90, 90, 90))
+        ImageDraw.Draw(after_icon).rectangle((28, 110, 31, 115), fill=(90, 90, 90))
+        screens = iter([before_icon, after_icon])
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertTrue(client.move_item((180, 394), (30, 120), polls=1))
+        # A handful of noisy pixels (a flicker behind the panel) is not a move.
+        noisy = blank()
+        ImageDraw.Draw(noisy).rectangle((180, 394, 182, 396), fill=(90, 90, 90))
+        screens = iter([blank(), noisy] * 2)
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertFalse(client.move_item((180, 394), (30, 120), attempts=2, polls=1))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_a_slow_server_is_waited_for_instead_of_dragging_again(self):
         client, calls = self.client()
         before_icon, after_icon = blank(), blank()

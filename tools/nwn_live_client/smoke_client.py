@@ -25,6 +25,8 @@ NEUTRAL_POINT = (1200, 560)
 SELF_POINT = (642, 378)
 # Inventory panel: the item grid, the main-hand slot and an empty top-row cell to drop items on.
 INVENTORY_GRID = (0, 218, 335, 418)
+# Pixels that must change at each end of a dragged icon: the knife's icon is small and dim.
+MOVED_ICON_PIXELS = 12
 MAIN_HAND_SLOT = (30, 120)
 EMPTY_GRID_CELL = (100, 240)
 # Hotbar buttons F1 to F12 run along the bottom edge; a bought active ability takes the next free one.
@@ -340,8 +342,10 @@ class GameClient:
         that moved makes both its source and its target look different. Use it only in a quiet scene,
         where nothing else changes behind the inventory panel. The server answers a move late on a
         busy machine, so the screen is checked every 2 seconds, up to polls times, before the drag is
-        taken as dropped: a second drag after a slow success would move something else.
+        taken as dropped: a second drag after a slow success would move something else. A small icon
+        (the knife) is only a few dozen dim pixels, so a dozen changed pixels at each end count.
         """
+        before = after = None
         for _ in range(attempts):
             before = self.snapshot()
             self.drag(*source, *target)
@@ -350,10 +354,20 @@ class GameClient:
             for _ in range(polls):
                 time.sleep(2)
                 after = self.snapshot()
-                if (region_changed(before, after, source, threshold=25, minimum=40)
-                        and region_changed(before, after, target, threshold=25, minimum=40)):
+                if (region_changed(before, after, source, threshold=25, minimum=MOVED_ICON_PIXELS)
+                        and region_changed(before, after, target, threshold=25, minimum=MOVED_ICON_PIXELS)):
                     return True
+        self.save_failed_move(source, target, before, after)
         return False
+
+    def save_failed_move(self, source, target, before, after) -> None:
+        """Keep the two screens of a drag that never showed its effect, so the evidence can be read."""
+        folder = getattr(self.stack, 'evidence', None)
+        if folder is None or before is None or after is None:
+            return
+        stamp = f'{source[0]}-{source[1]}-to-{target[0]}-{target[1]}'
+        for name, image in (('before', before), ('after', after)):
+            image.save(Path(folder) / f'move-failed-{stamp}-{name}.png')
 
     def locate_new_item(self, create, polls: int = 8) -> tuple[int, int] | None:
         """Run create() (which adds an item) and return where the new icon appeared in the grid.

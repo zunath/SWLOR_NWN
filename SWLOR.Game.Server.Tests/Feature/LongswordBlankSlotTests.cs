@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// Vibroblades and electroblades share the wswls part models. Top 1.6 and Middle 1.6 are blank parts, and
-/// Middle 5.5 and 9.6 are the legacy full blades players paired with the blank top before haks #534 gave
-/// Middle 5.1 and 9.1 new designs. A part with no model renders as the base item's bag.
+/// Middle 5.5 and 9.6 are full blades meant to pair with the blank top. A part with no model renders as
+/// the base item's bag.
 /// </summary>
 public class LongswordBlankSlotTests
 {
@@ -38,10 +38,10 @@ public class LongswordBlankSlotTests
     public void TheBlankAndLegacyWholeBladeChoicesStayInTheCatalog(WeaponAppearanceBaseDefinition appearance)
     {
         // The editor refuses a weapon whose current part is missing from its catalog, so a blade built
-        // as blank top + legacy middle can only be edited while these stay listed (color * 100 + model).
+        // as blank top + full-blade middle can only be edited while these stay listed (color * 100 + model).
         appearance.TopParts.Should().Contain(601, "Top 1.6 is the blank top");
         appearance.MiddleParts.Should().Contain(new[] { 601, 505, 609, 105 },
-            "Middle 1.6 is blank, 5.5 and 9.6 are the legacy full blades and 5.1 is the reported middle");
+            "Middle 1.6 is blank, 5.5 and 9.6 are full blades and 5.1 is a guard players pair with the blank top");
     }
 
     [TestCaseSource(nameof(Definitions))]
@@ -87,9 +87,9 @@ public class LongswordBlankSlotTests
         foreach (var (file, sha256) in LegacyWholeBladeMiddles)
         {
             var path = Path.Combine(WeaponRoot(), file);
-            File.Exists(path).Should().BeTrue($"{file} restores a legacy look players chose");
+            File.Exists(path).Should().BeTrue($"{file} is a full blade players pair with the blank top");
             Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant().Should().Be(sha256,
-                $"{file} restores the pre-haks-#534 look players paired with the blank top; give a new design a free part ID instead");
+                $"{file} is a look players already use with the blank top; give a new design a free part ID instead");
         }
     }
 

@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             201, 202, 203, 204, 205, 206, 207, 208, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 222, 223, 224, 225, // Color #2
             301, 302, 303, 304, 305, 306, 307, 308, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 322, 323, 324, 325, // Color #3
             401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 422, 423, 424, 425, // Color #4
-            501, 505, // Color #5 (505: legacy katana, a full blade for the blank top)
-            601, 609, // Color #6 (601: blank; 609: legacy full sword)
+            501, 505, // Color #5 (505: katana, a full blade for the blank top)
+            601, 609, // Color #6 (601: blank; 609: full sword)
             // Color #7
             // Color #8
             801, 802, 803, 804, 805, 806, 807, 808, // Color #8

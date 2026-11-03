@@ -170,55 +170,11 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "City Starport Ship Supplies (Level 1)"
+                "value": "City Starport Ship Supplies"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "cs_port_1"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "City Starport Ship Supplies (Level 2)"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "cs_port_2"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "City Starport Ship Supplies (Level 3)"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "cs_port_3"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "City Starport Ship Supplies (Level 4)"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "cs_port_4"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "City Starport Ship Supplies (Level 5)"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "cs_port_5"
               }
             },
             {

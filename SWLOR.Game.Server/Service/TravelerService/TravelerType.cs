@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.TravelerService
         /// <summary>Sells outfits.</summary>
         FashionMerchant = 3,
 
-        /// <summary>Sells maps, tells rumors, and opens the contract board.</summary>
+        /// <summary>Sells nothing: tells rumors, says where the other travelers are, and opens the contract board.</summary>
         InformationBroker = 4
     }
 }

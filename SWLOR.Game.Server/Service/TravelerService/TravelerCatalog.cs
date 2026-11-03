@@ -128,50 +128,22 @@ namespace SWLOR.Game.Server.Service.TravelerService
                 .AddItem("musicianoutfit1", 3);
         }
 
-        // PROPOSAL: the stock is area maps that no NPC store sells (several drop as rare finds). The rumors are placeholder
-        // lines that name no established place or person.
+        // PROPOSAL: the broker sells nothing. The owner took the area maps out of the pool because they made map drops less
+        // rare, so the broker offers rumors, the whereabouts of the other travelers and the contract board. The rumors are
+        // placeholder lines that name no established place or person.
         private static void InformationBroker(TravelerBuilder builder)
         {
             builder.Create(TravelerType.InformationBroker)
                 .Name("Orla Vass")
                 .Title("information broker")
                 .Story("Orla Vass trades in what other people would rather keep quiet. A Bothan, she never carries anything on paper that she can carry in her head.")
-                .Greeting("Everything has a price, and everyone has something to sell. Maps, news, contracts. Which is it?")
+                .Greeting("Everything has a price, and everyone has something to sell. Rumors, news, contracts. Which is it?")
                 .Look("colonistbothan")
                 .Rumor("They say a shipment went missing between two ports, and the people who lost it are paying well to hear nothing about it.")
                 .Rumor("A quiet buyer has been asking after old claim maps. Whoever it is does not want the owners to know.")
                 .Rumor("The best work is never posted on a board. It goes to whoever happens to be standing in the right cantina.")
                 .Rumor("Something large has been seen moving at night outside the settlements. Nobody agrees on what it is, and nobody goes to look.")
-                .Rumor("Credits change hands faster on a high-tax street than on a low-tax one. Draw your own conclusions.")
-                .Group("Maps", 4)
-                .AddItem("map_025", 2)
-                .AddItem("map_026", 2)
-                .AddItem("map_027", 2)
-                .AddItem("map_028", 2)
-                .AddItem("map_029", 2)
-                .AddItem("map_036", 2)
-                .AddItem("map_038", 2)
-                .AddItem("map_039", 2)
-                .AddItem("map_041", 2)
-                .AddItem("map_042", 2)
-                .AddItem("map_045", 2)
-                .AddItem("map_048", 2)
-                .AddItem("map_049", 2)
-                .AddItem("map_052", 2)
-                .AddItem("map_053", 2)
-                .AddItem("map_56", 2)
-                .AddItem("map_58", 2)
-                .AddItem("map_59", 2)
-                .AddItem("map_60", 2)
-                .AddItem("map_61", 2)
-                .AddItem("map_62", 2)
-                .AddItem("map_63", 2)
-                .AddItem("map_64", 2)
-                .AddItem("map_65", 2)
-                .AddItem("map_66", 2)
-                .AddItem("map_67", 2)
-                .AddItem("map_68", 2)
-                .AddItem("map_69", 2);
+                .Rumor("Credits change hands faster on a high-tax street than on a low-tax one. Draw your own conclusions.");
         }
     }
 }

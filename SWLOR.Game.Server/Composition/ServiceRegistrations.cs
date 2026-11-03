@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAchievementService, AchievementService>();
 
             // Companions
+            services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
 

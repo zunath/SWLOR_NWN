@@ -21,6 +21,83 @@
     "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName)"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 371,
+    "Member": "SpawnBeast",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, companionSlotError)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 379,
+    "Member": "SpawnBeast",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Unable to locate beast in DB. Notify an admin.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 319,
+    "Member": "AddXP",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 340,
+    "Member": "AddXP",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 604,
+    "Member": "OnAcquireItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 715,
+    "Member": "OpenStablesMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 943,
+    "Member": "UseIncubator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Perk 'DNA Manipulation I' is required to use incubators.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 951,
+    "Member": "UseIncubator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"This incubator cannot be used.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 966,
+    "Member": "UseIncubator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 970,
+    "Member": "UseIncubator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job has completed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+    "Line": 1159,
+    "Member": "UseExtractDNAObject",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
     "Line": 109,
     "Member": "GiveGuildPoints",
@@ -4688,83 +4765,6 @@
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 253,
-    "Member": "SpawnBeast",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, companionSlotError)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 261,
-    "Member": "SpawnBeast",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Unable to locate beast in DB. Notify an admin.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 268,
-    "Member": "AddXP",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 289,
-    "Member": "AddXP",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 460,
-    "Member": "OnAcquireItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 575,
-    "Member": "OpenStablesMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 724,
-    "Member": "UseIncubator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Perk 'DNA Manipulation I' is required to use incubators.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 732,
-    "Member": "UseIncubator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"This incubator cannot be used.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 747,
-    "Member": "UseIncubator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 751,
-    "Member": "UseIncubator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job has completed.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 942,
-    "Member": "UseExtractDNAObject",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CasinoSlot.cs",

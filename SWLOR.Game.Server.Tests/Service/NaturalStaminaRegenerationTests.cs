@@ -89,18 +89,13 @@ public class NaturalStaminaRegenerationTests
     public void BeastHeartbeat_UsesDelayedStaminaRegenerationWithoutCombatGating()
     {
         var root = FindRepositoryRoot();
-        var beastMastery = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
         var stat = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
             "Service",
             "Stat.cs"));
 
-        beastMastery.Should().Contain("Stat.RestoreBeastStats();");
+        // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
         stat.Should().Contain("RestoreNPCStats(false, true);");
         stat.Should().Contain("BeastMastery.IsPlayerBeast(creature)");
 

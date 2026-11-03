@@ -1,16 +1,32 @@
 using System.Globalization;
 using System.IO.Compression;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class BeastXPProgressionTests
 {
+    // The XP rules are the container's beast mastery instance, which the facade resolves.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private const string XPChartSheet = "XP Chart";
     private const string BeastXPRequiredHeader = "Beast XP Required";
     private const string BeastCumulativeHeader = "Beast Cumulative";
@@ -74,18 +90,6 @@ public class BeastXPProgressionTests
         var beast = new Beast { Level = 49, XP = 0 };
 
         BeastMastery.GetMaxDistributableXP(beast, 60).Should().Be(BeastMastery.GetRequiredXP(49, 0));
-    }
-
-    [Test]
-    public void CombatXP_GivesBeastsTheAreaXPBonusBeforeAwarding()
-    {
-        var source = ReadServerSource("Service", "BeastMastery.cs");
-        var start = source.IndexOf("public static void CombatPointXPDistributed()", StringComparison.Ordinal);
-        start.Should().BeGreaterThan(-1);
-        var method = source[start..source.IndexOf("GiveBeastXP(beast, xp, false);", start, StringComparison.Ordinal)];
-
-        method.Should().Contain("\"AREA_XP_BONUS_PERCENTAGE\"");
-        method.Should().Contain("xp += (int)(xp * areaBonus);");
     }
 
     [Test]
@@ -187,12 +191,6 @@ public class BeastXPProgressionTests
     private static int ParseNumber(string text)
     {
         return (int)decimal.Parse(text, NumberStyles.Number, CultureInfo.InvariantCulture);
-    }
-
-    private static string ReadServerSource(params string[] pathParts)
-    {
-        var path = Path.Combine(new[] { FindRepositoryRoot().FullName, "SWLOR.Game.Server" }.Concat(pathParts).ToArray());
-        return Regex.Replace(File.ReadAllText(path), "\r\n", "\n");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

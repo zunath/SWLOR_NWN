@@ -776,6 +776,10 @@ available clips and are explicitly recorded; they never retain the old unsafe
 robe-as-body inheritance path. Regeneration retains validated roots, empty
 attachments and animation parents for retired phenotypes so saved creatures
 keep their complete dependency chain. Retired bridge names remain reserved.
+A body whose base root (`p<gender><race>0`) exists in neither the HAKs nor the base
+game cannot be worn, so regeneration deletes that body's generated roots,
+attachments and banks after verifying each one. The unused `b` race letter was
+removed this way in November 2026: no `appearance.2da` row used it.
 Bridge identities include the generated hierarchy, bind transforms and animation
 controllers, so removing one member of a shared family cannot overwrite tracks
 still used by a retained root. Legacy names are reused only after their compiled

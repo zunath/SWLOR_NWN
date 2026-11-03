@@ -48,6 +48,12 @@ def grid_points(center: tuple[int, int], reach_x: int, reach_y: int, step_x: int
 
 
 CHARACTER_POINT = (640, 385)
+# With Tab held the client labels every creature; the hostile one's name is bright red text. The
+# creature stands below the middle of its name, about (-40, +30) from it: the guesses are that point
+# and a grid around it, nearest first.
+LABEL_GUESSES = sorted(((dx, dy) for dx in (-60, -50, -40, -30, -20) for dy in (20, 30, 40, 50)),
+                       key=lambda guess: ((guess[0] + 40) ** 2 + (guess[1] - 30) ** 2, guess))
+LABEL_SCAN_ANSWER = re.compile(r'\s*(\d+) (\d+) (\d+)\s*')
 # A creature fighting the character stands next to it. A mynock is small and moves about, so the
 # search is a quick pass over the 20-pixel grid beside the character, repeated, with a wide pass
 # over the rest of the surroundings as a fallback.
@@ -219,10 +225,16 @@ class GameClient:
         time.sleep(1)
         self.click(x, y)
 
-    def nui_click(self, x: int, y: int) -> None:
-        """Click a NUI control or any other widget that has a tooltip."""
+    def nui_click(self, x: int, y: int, slow: bool = False) -> None:
+        """Click a NUI control or any other widget that has a tooltip.
+
+        The pointer first leaves for a neutral point, so no tooltip is showing. A slow click (ui.sh
+        nui-click) then rests on the control for 2 seconds and holds the button for one: the perks
+        window ignored every quick click on a busy machine. It is not the default because some
+        controls, such as the hotbar's cooldown refusal and the crafting buttons, ignore a held click.
+        """
         self.move(*NEUTRAL_POINT)
-        self.click(x, y)
+        self.stack.ui('nui-click' if slow else 'click', str(x), str(y))
 
     def drag(self, x1: int, y1: int, x2: int, y2: int) -> None:
         """Press at one point and release at another with intermediate moves (windows, equipment)."""
@@ -321,7 +333,8 @@ class GameClient:
         time.sleep(2)
         return not self.inventory_open()
 
-    def close_window(self, x: int, y: int, title_box: tuple[int, int, int, int], attempts: int = 3) -> bool:
+    def close_window(self, x: int, y: int, title_box: tuple[int, int, int, int], attempts: int = 3,
+                     slow: bool = False) -> bool:
         """Click a window's close button until its title text is gone from the screen.
 
         A click can be dropped without a trace, and an open window swallows later clicks meant for
@@ -331,7 +344,7 @@ class GameClient:
         for _ in range(attempts):
             if bright_pixels(self.snapshot(), title_box) < 40:
                 return True
-            self.nui_click(x, y)
+            self.nui_click(x, y, slow)
             time.sleep(2)
         return bright_pixels(self.snapshot(), title_box) < 40
 
@@ -409,6 +422,21 @@ class GameClient:
             found = re.fullmatch(r'\s*(\d+)\s+(\d+)\s*', line)
             if found:
                 return int(found.group(1)), int(found.group(2))
+        return None
+
+    def find_hostile_by_label(self) -> tuple[int, int] | None:
+        """A point on a hostile creature, found from its name label instead of a blind grid.
+
+        One call holds Tab and reports where the red name text is (ui.sh label-scan); the creature is
+        then looked for in a few points beneath it by hovering, which confirms it is the one clicked.
+        """
+        for line in self.stack.ui('label-scan', timeout=60).splitlines():
+            found = LABEL_SCAN_ANSWER.fullmatch(line)
+            if found:
+                x, y = int(found.group(1)), int(found.group(2))
+                guesses = [(x + dx, y + dy) for dx, dy in LABEL_GUESSES]
+                points = [(px, py) for px, py in guesses if 0 <= px < SCREEN[0] and 0 <= py < SCREEN[1]]
+                return self.find_hostile(points) if points else None
         return None
 
     def loading_screens(self) -> int:

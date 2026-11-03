@@ -128,14 +128,18 @@ def attack_target(client: GameClient, name: str, victim: str, attempts: int = 6)
     """Find a hostile next to the character, click it and wait until the character attacks it.
 
     name is the character's name and victim a regular expression for the target's name. Each
-    attempt is a quick pass over the points beside the character; every third one also covers the
-    wider surroundings, whether the nearby pass found nothing or its click started no attack.
+    attempt looks for the hostile's name label first (the creature moves about, so a point scan alone
+    often misses it), then makes a quick pass over the points beside the character; every third
+    attempt also covers the wider surroundings, whether the earlier passes found nothing or their
+    click started no attack.
     """
     for attempt in range(attempts):
         client.ensure_alive()
-        scans = [NEAR_SCAN, WIDE_SCAN] if attempt % 3 == 2 else [NEAR_SCAN]
-        for scan in scans:
-            point = client.find_hostile(scan)
+        finders = [client.find_hostile_by_label, lambda: client.find_hostile(NEAR_SCAN)]
+        if attempt % 3 == 2:
+            finders.append(lambda: client.find_hostile(WIDE_SCAN))
+        for find in finders:
+            point = find()
             if point is None:
                 continue
             mark = client.mark()
@@ -234,20 +238,36 @@ def ability(run, step) -> None:
     reset_windows(client)
     step.check('the inventory panel is closed', client.ensure_inventory_closed())
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
-    mark = client.mark()
     hotbar_before = client.snapshot()
     client.say('/perks')
-    time.sleep(5)
-    client.nui_click(*PERKS_FIRST_ROW)
-    time.sleep(2)
-    client.nui_click(*PERKS_BUY)
-    time.sleep(2)
-    client.nui_click(*PERKS_YES)
-    expect(step, 'the perk is bought', client.wait_for(r"You purchase 'Adrenal Stim' rank 1\.", mark, 20))
+    opened = False
+    for _ in range(10):
+        time.sleep(2)
+        if bright_pixels(client.snapshot(), PERKS_TITLE) >= 40:
+            opened = True
+            break
+    step.check('the perks window opens', opened)
+    if not opened:
+        return
+    bought = None
+    for _ in range(3):
+        mark = client.mark()
+        client.nui_click(*PERKS_FIRST_ROW, slow=True)
+        time.sleep(2)
+        client.nui_click(*PERKS_BUY, slow=True)
+        time.sleep(2)
+        client.nui_click(*PERKS_YES, slow=True)
+        bought = client.wait_for(r"You purchase 'Adrenal Stim' rank 1\.", mark, 15)
+        # Another round is safe only when nothing was bought: a late purchase would be followed by rank 2.
+        if not bought and player_record(run).get('Perks', {}).get('AdrenalStim'):
+            bought = 'bought late: the player record holds the perk'
+        if bought:
+            break
+    expect(step, 'the perk is bought', bought)
     perks = player_record(run).get('Perks', {})
     step.check('the purchase is saved on the player record', perks.get('AdrenalStim') == 1, json.dumps(perks))
     run.capture(step, 'perk-bought')
-    step.check('the perks window closes', client.close_window(*PERKS_CLOSE, PERKS_TITLE))
+    step.check('the perks window closes', client.close_window(*PERKS_CLOSE, PERKS_TITLE, slow=True))
     slot = new_hotbar_slot(hotbar_before, client.snapshot())
     step.check('the ability appears on the hotbar', slot is not None, str(slot))
     if slot is None:

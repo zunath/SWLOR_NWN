@@ -148,6 +148,41 @@ class ClientActionTests(unittest.TestCase):
         client, _ = self.client('640 350\nxdotool: window 7 8 is gone\n')
         self.assertEqual((640, 350), client.find_hostile([(640, 385), (640, 350)]))
 
+    def test_the_name_label_scan_hovers_the_points_beneath_the_label_and_answers_with_the_first_hit(self):
+        calls = []
+
+        def ui(*arguments, timeout=180):
+            calls.append(arguments)
+            return {'label-scan': 'tab held\n718 338 106\n', 'hostile-scan': '678 368\n'}[arguments[0]]
+        client = GameClient(SimpleNamespace(ui=ui, profile=Path(tempfile.gettempdir())))
+        self.assertEqual((678, 368), client.find_hostile_by_label())
+        self.assertEqual('label-scan', calls[0][0])
+        scan = calls[1]
+        self.assertEqual('hostile-scan', scan[0])
+        first = (int(scan[1]), int(scan[2]))
+        self.assertEqual((718 - 40, 338 + 30), first, 'the nearest guess is just below-left of the name')
+        self.assertEqual(2 * len(smoke_client.LABEL_GUESSES), len(scan) - 1)
+
+    def test_the_name_label_scan_finds_nothing_when_no_hostile_name_shows(self):
+        client, calls = self.client('')
+        self.assertIsNone(client.find_hostile_by_label())
+        self.assertEqual([('label-scan',)], calls, 'no point scan without a label')
+        client, calls = self.client('some warning with 3 4 5 numbers\n')
+        self.assertIsNone(client.find_hostile_by_label())
+
+    def test_the_name_label_guesses_stay_on_screen_near_the_edges(self):
+        calls = []
+
+        def ui(*arguments, timeout=180):
+            calls.append(arguments)
+            return '1270 5 100' if arguments[0] == 'label-scan' else ''
+        client = GameClient(SimpleNamespace(ui=ui, profile=Path(tempfile.gettempdir())))
+        client.find_hostile_by_label()
+        coordinates = [int(value) for value in calls[1][1:]]
+        points = list(zip(coordinates[::2], coordinates[1::2]))
+        self.assertTrue(points)
+        self.assertTrue(all(0 <= x < smoke_client.SCREEN[0] and 0 <= y < smoke_client.SCREEN[1] for x, y in points))
+
     def test_objects_are_hovered_before_they_are_clicked_and_ui_controls_avoid_tooltips(self):
         client, calls = self.client()
         with patch.object(smoke_client.time, 'sleep'):
@@ -156,6 +191,12 @@ class ClientActionTests(unittest.TestCase):
         neutral = tuple(str(value) for value in smoke_client.NEUTRAL_POINT)
         self.assertEqual([('move',) + neutral, ('move', '700', '300'), ('click', '700', '300'),
                           ('move',) + neutral, ('click', '100', '200')], calls)
+
+    def test_a_slow_click_rests_on_the_control_and_holds_the_button(self):
+        client, calls = self.client()
+        client.nui_click(100, 200, slow=True)
+        neutral = tuple(str(value) for value in smoke_client.NEUTRAL_POINT)
+        self.assertEqual([('move',) + neutral, ('nui-click', '100', '200')], calls)
 
     def test_say_types_a_line_between_two_enters(self):
         client, calls = self.client()
@@ -413,6 +454,7 @@ class StepHelperTests(unittest.TestCase):
         scans, clicks = [], []
         client = SimpleNamespace(
             ensure_alive=lambda: False, mark=lambda: 0,
+            find_hostile_by_label=lambda: None,
             find_hostile=lambda points: (scans.append(points), (5, 6) if points is smoke_steps.NEAR_SCAN
                                          else (7, 8))[1],
             click_object=lambda x, y: clicks.append((x, y)),
@@ -421,6 +463,18 @@ class StepHelperTests(unittest.TestCase):
         self.assertEqual([smoke_steps.NEAR_SCAN, smoke_steps.NEAR_SCAN, smoke_steps.NEAR_SCAN, smoke_steps.WIDE_SCAN],
                          scans)
         self.assertEqual([(5, 6), (5, 6), (5, 6), (7, 8)], clicks)
+
+    def test_the_hostile_name_label_is_tried_before_the_point_scans(self):
+        scans, clicks = [], []
+        client = SimpleNamespace(
+            ensure_alive=lambda: False, mark=lambda: 0,
+            find_hostile_by_label=lambda: (9, 9),
+            find_hostile=lambda points: scans.append(points),
+            click_object=lambda x, y: clicks.append((x, y)),
+            wait_for=lambda pattern, mark, timeout=20, poll=2: 'hit')
+        self.assertEqual((9, 9), smoke_steps.attack_target(client, 'Agan Tarn', 'Mynock'))
+        self.assertEqual([(9, 9)], clicks)
+        self.assertEqual([], scans, 'no blind scan when the label was found')
 
     def test_every_screen_point_lies_on_the_screen(self):
         width, height = smoke_client.SCREEN

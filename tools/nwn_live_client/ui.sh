@@ -60,6 +60,20 @@ case "$action" in
         press "$w" "$1" "$2" "$button"
         sleep 1
         ;;
+    nui-click)
+        # A click for NUI controls on a busy machine: the client draws too few frames for a click that
+        # follows its pointer move within a quarter of a second, so the pointer rests on the control for
+        # two seconds and the button is held for one (a quick click registered about one time in three).
+        [ $# -eq 2 ] || die "Usage: nui-click X Y"
+        point "$1" "$2"; w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool mousemove --window "$w" "$1" "$2"
+        sleep 2
+        xdotool mousedown 1
+        sleep 1
+        xdotool mouseup 1
+        sleep 1
+        ;;
     doubleclick)
         [ $# -eq 2 ] || die "Usage: doubleclick X Y"
         point "$1" "$2"; w=$(window)
@@ -124,6 +138,21 @@ case "$action" in
                 break
             fi
         done
+        ;;
+    label-scan)
+        # Holds Tab, which makes the client draw a name label over every creature in view, and prints
+        # "X Y N": the centre and the pixel count of the bright red (hostile) name text between the
+        # inventory panel and the chat area. Prints nothing when no such text shows. Tab is always released.
+        [ $# -eq 0 ] || die "Usage: label-scan"
+        w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool keydown Tab
+        sleep 1.5
+        found=$(import -window "$w" -crop "840x530+360+60" -depth 8 txt:- | tr -d ' ' \
+            | sed -n 's/^\([0-9]*\),\([0-9]*\):(\([0-9]*\),\([0-9]*\),\([0-9]*\)).*/\1 \2 \3 \4 \5/p' \
+            | awk '$3 > 220 && $4 < 100 && $5 < 100 { sx += $1 + 360; sy += $2 + 60; n++ } END { if (n >= 40) print int(sx / n), int(sy / n), n }') || true
+        xdotool keyup Tab
+        echo "$found"
         ;;
     key)
         [ $# -eq 1 ] || die "Usage: key KEYSYM (for example Return, Escape, ctrl+a)"

@@ -4767,8 +4767,8 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CasinoSlot.cs",
-    "Line": 99,
+    "File": "SWLOR.Game.Server/Domain/Economy/CasinoSlotService.cs",
+    "Line": 114,
     "Member": "Spin",
     "Delivery": "Retained",
     "Call": "SpeakString(\"Jackpot! This machine has paid out 10,000 credits!\")"
@@ -6174,8 +6174,8 @@
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Wardrobe.cs",
-    "Line": 76,
+    "File": "SWLOR.Game.Server/Domain/Items/WardrobeService.cs",
+    "Line": 79,
     "Member": "ExpandSlotLimit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your wardrobe now holds {limit} outfits.\")"

@@ -3009,19 +3009,8 @@ public class TintMapReviewTests
                     "ArmorColorIndexCalculator",
                     "IsPerPartOverrideVariableName"),
                 "saved palette-zero markers must replace stale markers on the currently equipped armor");
-        var outfitSource = ReadSource("SWLOR.Game.Server", "Service", "Wardrobe.cs");
-        var loadMethod = FindMethod(outfitSource, "Wear");
-        var loadInvocations = loadMethod.DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
-            .ToList();
-        loadInvocations.Should().Contain(invocation =>
-            IsMemberInvocation(invocation, "EquippedItemAppearance", "ApplyOutfit"));
-        loadInvocations.Should().Contain(invocation =>
-            IsMemberInvocation(invocation, "EquippedItemAppearance", "ApplyHelmet"));
-        loadInvocations.Select(GetInvokedMethodName).Should().NotContain(new[]
-        {
-            "CopyItemAndModify", "CopyItem", "ActionEquipItem", "ActionUnequipItem"
-        }, "loading an outfit must retain the actual equipped item and its gameplay state");
+        // What loading an outfit calls (the equipped item is retained, never copied, equipped or unequipped) is
+        // tested on the wardrobe instance: WardrobeServiceTests.Wear_keeps_the_worn_items_and_never_copies_equips_or_unequips.
         var appearanceSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
             "ItemAppearance", "EquippedItemAppearance.cs");
         foreach (var method in new[] { "ApplyOutfit", "ApplyHelmet" })

@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Economy;
@@ -113,10 +114,14 @@ public class BankServiceTests
         var blaster = BankedItem();
         _db.With(blaster);
 
-        var items = _service.SearchItems(PlayerId, "  ");
+        var page = _service.SearchItems(PlayerId, "  ", 0);
 
-        items.Should().ContainSingle().Which.Should().BeSameAs(blaster);
-        QueryOf(_db).Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@PlayerId:player\\-uuid\\-1").And.NotContain("@Name");
+        page.Items.Should().ContainSingle().Which.Should().BeSameAs(blaster);
+        page.MatchCount.Should().Be(1);
+        page.PageIndex.Should().Be(0);
+        _db.Queries.Should().HaveCount(2, "one query counts the matches and one loads the page");
+        foreach (var index in new[] { 0, 1 })
+            QueryOf(_db, index).Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@PlayerId:player\\-uuid\\-1").And.NotContain("@Name");
     }
 
     [Test]
@@ -124,10 +129,64 @@ public class BankServiceTests
     {
         _db.With(BankedItem());
 
-        _service.SearchItems(PlayerId, "blast");
+        _service.SearchItems(PlayerId, "blast", 0);
 
         QueryOf(_db).Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
     }
+
+    [Test]
+    public void SearchItems_with_no_match_loads_no_page_and_answers_an_empty_first_page()
+    {
+        var page = _service.SearchItems(PlayerId, string.Empty, 5);
+
+        page.Items.Should().BeEmpty();
+        page.MatchCount.Should().Be(0);
+        page.PageIndex.Should().Be(0);
+        page.PageNumbers.Count.Should().Be(1);
+        _db.Queries.Should().ContainSingle("only the count runs when nothing matches");
+    }
+
+    [TestCase(0, 0, 0)]
+    [TestCase(61, 0, 0)]
+    [TestCase(61, int.MaxValue, 3)]
+    [TestCase(60, 3, 2)]
+    [TestCase(120, 5, 5)]
+    public void SearchItems_loads_twenty_items_of_the_requested_page_and_clamps_past_the_last_page(int bankedCount, int requested, int expectedPage)
+    {
+        for (var i = 0; i < bankedCount; i++)
+            _db.With(BankedItem(name: "Item " + i));
+
+        var page = _service.SearchItems(PlayerId, string.Empty, requested);
+
+        page.PageIndex.Should().Be(expectedPage);
+        page.MatchCount.Should().Be(bankedCount);
+        if (bankedCount == 0)
+        {
+            _db.Queries.Should().ContainSingle();
+            return;
+        }
+
+        var pageQuery = (DBQuery<InventoryItem>)_db.Queries[1];
+        PrivateQueryValue(pageQuery, "Limit").Should().Be(20);
+        PrivateQueryValue(pageQuery, "Offset").Should().Be(20 * expectedPage);
+    }
+
+    [Test]
+    public void SearchItems_sorts_the_oldest_deposit_first_so_the_newest_is_on_the_last_page()
+    {
+        _db.With(BankedItem());
+
+        _service.SearchItems(PlayerId, string.Empty, 0);
+
+        foreach (var query in _db.Queries.Cast<DBQuery<InventoryItem>>())
+        {
+            PrivateQueryValue(query, "SortByField").Should().Be(nameof(InventoryItem.DepositedTicks));
+            PrivateQueryValue(query, "IsAscending").Should().Be(true);
+        }
+    }
+
+    private static object PrivateQueryValue(DBQuery<InventoryItem> query, string property) =>
+        typeof(DBQuery<InventoryItem>).GetProperty(property, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(query)!;
 
     // ---- depositing
 
@@ -201,6 +260,7 @@ public class BankServiceTests
         stored.Quantity.Should().Be(4);
         stored.Data.Should().Be("serialized-item");
         stored.IconResref.Should().NotBeNullOrEmpty();
+        stored.DepositedTicks.Should().BeGreaterThan(0, "the deposit time orders the bank pages");
         _db.Saved.Should().ContainSingle().Which.Should().BeSameAs(stored);
         _engine.Engine.CallsTo("DestroyObject").Should().ContainSingle().Which.Arguments[0].Should().Be(ItemObject);
     }

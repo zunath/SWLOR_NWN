@@ -456,7 +456,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .SetText("Complete Job")
                     .BindOnClicked(model => model.OnClickCompleteJob())
-                    .BindIsEnabled(model => model.IsStartJobEnabled);
+                    .BindIsEnabled(model => model.IsCompleteJobEnabled);
 
                 row.AddSpacer();
             });

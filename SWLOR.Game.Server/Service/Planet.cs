@@ -59,6 +59,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Gets the message shown to players who try to travel to a closed planet.
+        /// </summary>
+        /// <param name="type">The planet to check.</param>
+        /// <param name="message">The closure message, or an empty string when the planet is open.</param>
+        /// <returns>True when the planet is closed to players.</returns>
+        public static bool TryGetClosedMessage(PlanetType type, out string message)
+        {
+            return Instance.TryGetClosedMessage(type, out message);
+        }
+
+        /// <summary>
         /// Retrieves all of the active planets available.
         /// </summary>
         /// <returns>A dictionary containing the active planets.</returns>

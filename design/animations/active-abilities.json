@@ -2483,7 +2483,7 @@
   },
   {
     "Id": "GuardiansChallenge",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Guardian's Challenge",
     "DisplayName": "Guardian's Challenge",
     "InternalName": "sw_guar_chal",
@@ -2510,7 +2510,7 @@
     "InternalName": "sw_imbuestn",
     "Category": "Lightsaber",
     "Type": "Stance",
-    "Description": "While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.",
+    "Description": "While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and gain + 10% Force Attack. Each one that lands costs 2 FP.",
     "Reference": "",
     "BibleAnimationRow": 175,
     "PerkId": "ImbuementStance",
@@ -2524,13 +2524,13 @@
   },
   {
     "Id": "ImmovableStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Immovable Stance",
     "DisplayName": "Immovable Stance",
     "InternalName": "sw_immovstn",
     "Category": "Lightsaber",
     "Type": "Stance",
-    "Description": "While active, generate + 30% Enmity and gain + 8 Mobility Resistance, but your Attack and Force Attack are reduced by 25%.",
+    "Description": "While active, generate + 30% Enmity and gain + 20 Mobility Resistance, but your Attack and Force Attack are reduced by 15%.",
     "Reference": "",
     "BibleAnimationRow": 176,
     "PerkId": "ImmovableStance",
@@ -2544,7 +2544,7 @@
   },
   {
     "Id": "Reprisal",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Reprisal",
     "DisplayName": "Reprisal",
     "InternalName": "sw_reprisal",
@@ -2590,13 +2590,13 @@
   },
   {
     "Id": "ShatteringStrike",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Shattering Strike",
     "DisplayName": "Shattering Strike",
     "InternalName": "sw_shat_stri",
     "Category": "Lightsaber",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 28 and inflicts Sunder, reducing Defense and Force Defense by 12% for 30 seconds.",
+    "Description": "Deals weapon DMG + 28 and inflicts Sunder, reducing Defense and Force Defense by 15% for 30 seconds.",
     "Reference": "",
     "BibleAnimationRow": 179,
     "PerkId": "ShatteringStrike",
@@ -2611,13 +2611,13 @@
   },
   {
     "Id": "SunderingSweep",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Sundering Sweep",
     "DisplayName": "Sundering Sweep",
     "InternalName": "sw_sund_swee",
     "Category": "Lightsaber",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.",
+    "Description": "Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to up to three other enemies in melee range for 30 seconds.",
     "Reference": "",
     "BibleAnimationRow": 180,
     "PerkId": "SunderingSweep",
@@ -4023,7 +4023,7 @@
   },
   {
     "Id": "DisarmingShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Disarming Shot",
     "DisplayName": "Disarming Shot",
     "InternalName": "sw_disa_shot",
@@ -4046,7 +4046,7 @@
   },
   {
     "Id": "DoubleShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Double Shot",
     "DisplayName": "Double Shot",
     "InternalName": "sw_doub_shot",
@@ -4068,7 +4068,7 @@
   },
   {
     "Id": "FanTheHammer",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Fan the Hammer",
     "DisplayName": "Fan the Hammer",
     "InternalName": "sw_fanhammer",
@@ -4109,7 +4109,7 @@
   },
   {
     "Id": "InterruptingShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Interrupting Shot",
     "DisplayName": "Interrupting Shot",
     "InternalName": "sw_intr_shot",
@@ -4131,7 +4131,7 @@
   },
   {
     "Id": "LastWord",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Last Word",
     "DisplayName": "Last Word",
     "InternalName": "sw_lastword",
@@ -4151,7 +4151,7 @@
   },
   {
     "Id": "PointBlankBurst",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Point Blank Burst",
     "DisplayName": "Point Blank Burst",
     "InternalName": "sw_ptblkbst",
@@ -4172,7 +4172,7 @@
   },
   {
     "Id": "QuickDraw",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Quick Draw",
     "DisplayName": "Quick Draw",
     "InternalName": "sw_quickdraw",
@@ -4195,7 +4195,7 @@
   },
   {
     "Id": "SkirmisherStance",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Skirmisher Stance",
     "DisplayName": "Skirmisher Stance",
     "InternalName": "sw_skirmstn",
@@ -5506,7 +5506,7 @@
   },
   {
     "Id": "BerserkerStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Berserker Stance",
     "DisplayName": "Berserker Stance",
     "InternalName": "sw_berse_stn",
@@ -5548,7 +5548,7 @@
   },
   {
     "Id": "DefensiveStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Defensive Stance",
     "DisplayName": "Defensive Stance",
     "InternalName": "sw_defstn",
@@ -5588,7 +5588,7 @@
   },
   {
     "Id": "RendingStrike",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Rending Strike",
     "DisplayName": "Rending Strike",
     "InternalName": "sw_rendingst",
@@ -5609,7 +5609,7 @@
   },
   {
     "Id": "RiotBlade",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Riot Blade",
     "DisplayName": "Riot Blade",
     "InternalName": "sw_riotblade",
@@ -5632,7 +5632,7 @@
   },
   {
     "Id": "SavageCleave",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Savage Cleave",
     "DisplayName": "Savage Cleave",
     "InternalName": "sw_savagecle",
@@ -5718,7 +5718,7 @@
   },
   {
     "Id": "Backstab",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Backstab",
     "DisplayName": "Backstab",
     "InternalName": "sw_backstab",
@@ -5739,7 +5739,7 @@
   },
   {
     "Id": "CripplingSlice",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Crippling Slice",
     "DisplayName": "Crippling Slice",
     "InternalName": "sw_crip_slic",
@@ -5804,7 +5804,7 @@
   },
   {
     "Id": "ShadowflowStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Shadowflow",
     "DisplayName": "Shadowflow",
     "InternalName": "sw_shadf_stn",
@@ -5847,7 +5847,7 @@
   },
   {
     "Id": "ViralCascade",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Viral Cascade",
     "DisplayName": "Viral Cascade",
     "InternalName": "sw_vira_casc",
@@ -6030,25 +6030,25 @@
     "Duration": 2
   },
   {
-    "Id": "BlasterSlide",
+    "Id": "LeadShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Blaster Slide",
-    "DisplayName": "Blaster Slide",
+    "Name": "Lead Shot",
+    "DisplayName": "Lead Shot",
     "InternalName": "sw_blstslide",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Come out of the slide in a low crouch, fire both pistols twice from the crouch, then rise to ready",
+    "Description": "Lead with the right pistol: extend it alone for a quick sighting shot while the left pistol stays tucked at the chest, then bring both back to ready",
     "Reference": "",
-    "PerkId": "BlasterSlide",
+    "PerkId": "LeadShot",
     "Feats": [
-      "BlasterSlide1",
-      "BlasterSlide2",
-      "BlasterSlide3",
-      "BlasterSlide4"
+      "LeadShot1",
+      "LeadShot2",
+      "LeadShot3",
+      "LeadShot4"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/BlasterSlideAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/LeadShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",
@@ -6056,24 +6056,24 @@
     "Duration": 1.05
   },
   {
-    "Id": "GrappleShot",
+    "Id": "ClosingShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Grapple Shot",
-    "DisplayName": "Grapple Shot",
+    "Name": "Closing Shot",
+    "DisplayName": "Closing Shot",
     "InternalName": "sw_grapshot",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Land from the grapple pull with the left arm still extended, reel it in while the right pistol fires point blank twice",
+    "Description": "Plant and press both pistols forward together onto one point, hold a beat, then fire one heavy paired shot whose recoil rocks the shoulders back before recovering",
     "Reference": "",
-    "PerkId": "GrappleShot",
+    "PerkId": "ClosingShot",
     "Feats": [
-      "GrappleShot1",
-      "GrappleShot2",
-      "GrappleShot3"
+      "ClosingShot1",
+      "ClosingShot2",
+      "ClosingShot3"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/GrappleShotAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/ClosingShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",
@@ -6081,23 +6081,23 @@
     "Duration": 1.05
   },
   {
-    "Id": "PistolRush",
+    "Id": "TempoShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Pistol Rush",
-    "DisplayName": "Pistol Rush",
+    "Name": "Tempo Shot",
+    "DisplayName": "Tempo Shot",
     "InternalName": "sw_pistrush",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Carry the dash's forward lean into an angled double volley at the target being passed, then straighten",
+    "Description": "Fire three quick, light paired taps from a low hip-level grip on an even beat, swaying the shoulders with each tap, then lower",
     "Reference": "",
-    "PerkId": "PistolRush",
+    "PerkId": "TempoShot",
     "Feats": [
-      "PistolRush1",
-      "PistolRush2"
+      "TempoShot1",
+      "TempoShot2"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PistolRushAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/TempoShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",

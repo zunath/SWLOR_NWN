@@ -363,6 +363,39 @@
                 "type": "resref",
                 "value": "visc_smuggler"
               }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Nema Tal - Provisioner"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "hc_nema_shop"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Orel Tes - Arms Factor"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "hc_orel_shop"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Vesa Neral - Clothier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "hc_vesa_shop"
+              }
             }
           ]
         },

@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.None,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator),
                 sendsNoTargetMessage: sendsNoTargetMessage,
                 playImpactAnimation: false);
         }

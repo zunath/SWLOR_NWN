@@ -28,7 +28,7 @@ public sealed class WeaponCombatSpec
     public string Stance { get; set; } = "None";
     public bool AllowTechniqueAbilities { get; set; } = true;
     public bool EnableCriticals { get; set; } = true;
-    /// <summary>Weapon DMG an ability adds: Unarmed abilities count both Power Gloves, matching WeaponDamage.GetAbilityDMG.</summary>
+    /// <summary>Weapon DMG an ability adds: Unarmed abilities count both fists (a Power Glove pair or two Katars), matching WeaponDamage.GetAbilityDMG.</summary>
     public int AbilityWeaponDamage => PairedHands ? WeaponDamage * 2 : WeaponDamage;
     /// <summary>Raw attack delay before the engine floor, matching Combat.CalculateAttackDelay for this loadout.</summary>
     public int AttackDelayMilliseconds(int hastePercent) =>

@@ -80,8 +80,9 @@ public sealed partial class WeaponCombatState
         "CostlyAbilityUsedEvasionMinimumStaminaCost", "CostlyAbilityUsedEvasionPercentAdjustment", "CostlyAbilityUsedEvasionDurationSeconds",
         "AbilityStatusCategoryBonusSkillType", "AbilityStatusCategoryBonusRequiredCategory", "AbilityStatusCategoryDamageBonus",
         "AbilityStatusCategoryHitChancePercentAdjustment", "DamageTakenNextSkillAbilitySkillType", "DamageTakenNextSkillAbilityDamageBonus",
-        "DamageTakenNextSkillAbilityWindowSeconds", "StatusAppliedRequiredCategory", "StatusAppliedSelfDefensePercentAdjustment",
-        "StatusAppliedSelfDurationSeconds", "StatusAppliedSelfEnmityPercentAdjustment", "OutgoingDebuffDurationPercentAdjustment",
+        "DamageTakenNextSkillAbilityWindowSeconds", "DamageTakenNextSkillAbilityRequiredCategory", "StatusAppliedRequiredCategory", "StatusAppliedSelfDefensePercentAdjustment",
+        "StatusAppliedSelfDurationSeconds", "StatusAppliedSelfEnmityPercentAdjustment",
+        "StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment", "StatusAppliedTargetAttackingAllyEnmityDurationSeconds", "OutgoingDebuffDurationPercentAdjustment",
         "OutgoingControlDurationPercentAdjustment", "HostileAbilityRecastDelayPercentAdjustment", "PhysicalDefensePercentAdjustment",
         "DefensePercentAdjustment", "ForceDefensePercentAdjustment", "ForceAttackPercentAdjustment", "AttackPercentAdjustment", "EvasionPercentAdjustment", "AttackDelayReductionPercent",
         "MobilityResistance", "TraumaResistance", "SingleWeaponDamagePercentAdjustment"
@@ -204,7 +205,11 @@ public sealed partial class WeaponCombatState
                 flat += source.GetValueOrDefault(StatType.AbilityStatusCategoryDamageBonus);
                 hit += source.GetValueOrDefault(StatType.AbilityStatusCategoryHitChancePercentAdjustment);
             }
-            if (now < ReversalUntil && Stat(StatType.DamageTakenNextSkillAbilitySkillType) == (int)info.SkillType)
+            var reversalCategory = (StatusEffectCategory)Stat(StatType.DamageTakenNextSkillAbilityRequiredCategory);
+            if ((reversalCategory & ~StatusEffectCategory.Control) != StatusEffectCategory.None)
+                throw new InvalidDataException($"WeaponCombat only models a Control requirement for DamageTakenNextSkillAbilityRequiredCategory, not {reversalCategory}.");
+            if (now < ReversalUntil && Stat(StatType.DamageTakenNextSkillAbilitySkillType) == (int)info.SkillType &&
+                (reversalCategory == StatusEffectCategory.None || use.IsControl))
             {
                 flat += Stat(StatType.DamageTakenNextSkillAbilityDamageBonus); ReversalUntil = 0; Count("ReversalSpent");
             }

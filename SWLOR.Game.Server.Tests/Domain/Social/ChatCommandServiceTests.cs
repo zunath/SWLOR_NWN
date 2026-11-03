@@ -323,6 +323,90 @@ public class ChatCommandServiceTests
         Messages().Should().BeEmpty();
     }
 
+    // ---- running a command for someone else (the extra hotbars)
+
+    [Test]
+    public void RunCommand_runs_the_command_without_touching_the_chat_message()
+    {
+        _service.OnModuleLoad();
+
+        _service.RunCommand(Sender, "/svcplain one two");
+
+        _chat.CountOf("SkipMessage").Should().Be(0, "only a typed message is swallowed; a hotbar click has no message");
+        var call = ServiceTestChatCommands.Calls.Should().ContainSingle().Subject;
+        call.Command.Should().Be("svcplain");
+        call.User.Should().Be(Sender);
+        call.Args.Should().Equal("one", "two");
+    }
+
+    [Test]
+    public void RunCommand_trims_the_text_before_reading_it()
+    {
+        _service.OnModuleLoad();
+
+        _service.RunCommand(Sender, "   /svcplain   ");
+
+        ServiceTestChatCommands.Calls.Should().ContainSingle();
+    }
+
+    [TestCase("hello there")]
+    [TestCase("//not a command")]
+    [TestCase("/")]
+    [TestCase("")]
+    public void RunCommand_answers_text_that_is_not_a_command_with_the_invalid_command_message(string message)
+    {
+        _service.OnModuleLoad();
+
+        _service.RunCommand(Sender, message);
+
+        Messages().Should().ContainSingle().Which.Should().Contain("Invalid chat command. Use '/help'");
+        ServiceTestChatCommands.Calls.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RunCommand_refuses_a_sender_that_is_not_a_player_or_dm()
+    {
+        _engine.SetReturn("GetIsPC", false);
+        _service.OnModuleLoad();
+
+        _service.RunCommand(Sender, "/svcplain");
+
+        Messages().Should().ContainSingle().Which.Should().Contain("Invalid chat command. Use '/help'");
+        ServiceTestChatCommands.Calls.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RunCommand_sends_an_unknown_or_forbidden_command_to_help()
+    {
+        _service.OnModuleLoad();
+
+        _service.RunCommand(Sender, "/nosuchcommand");
+        _service.RunCommand(Sender, "/svcplayeronly");
+
+        Messages().Should().HaveCount(2).And.OnlyContain(message => message.Contains("Invalid chat command. Use '/help'"));
+        ServiceTestChatCommands.Calls.Should().BeEmpty();
+    }
+
+    [Test]
+    public void GetAvailableCommands_lists_what_the_sender_may_run_by_name_with_the_descriptions()
+    {
+        _service.OnModuleLoad();
+
+        var commands = _service.GetAvailableCommands(Sender);
+
+        var names = commands.Select(command => command.Name).ToList();
+        names.Should().Contain(new[] { "svcplain", "svcalias", "svcchecked", "svcemote", "svcadminemote", "svctarget" });
+        names.Should().NotContain(new[] { "svcplayeronly", "svcdmonly" }, "an admin sender does not hold the player or DM level");
+        names.Should().Equal(names.OrderBy(name => name).ToList(), "the list is ordered by command name");
+        commands.Single(command => command.Name == "svcplain").Description.Should().Be("A plain command.");
+    }
+
+    [Test]
+    public void GetAvailableCommands_is_empty_before_the_commands_are_loaded()
+    {
+        _service.GetAvailableCommands(Sender).Should().BeEmpty();
+    }
+
     // ---- commands that need a target
 
     [Test]

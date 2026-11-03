@@ -1,4 +1,3 @@
-using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CombatService;
@@ -11,9 +10,9 @@ public class WeaponAbilityCrossSkillTraitTests
     private static readonly DateTime Now = new(2026, 10, 18, 12, 0, 0, DateTimeKind.Utc);
     private static PairedRangedTraitConfiguration Config => new()
     {
-        MomentumMaximum = 3, MomentumDurationSeconds = 12, MomentumDamagePerCharge = 4,
-        MomentumStaminaRestorePerCharge = 1, MomentumStaminaRestoreMaximum = 3, MomentumRestoreCooldownSeconds = 12,
-        MovementNextAbilityAccuracy = 5, MovementAccuracyDurationSeconds = 8, MovementAccuracyCooldownSeconds = 10,
+        CadenceMaximum = 3, CadenceDurationSeconds = 12, CadenceChainWindowSeconds = 6, CadenceDamagePerCharge = 2,
+        CadenceStaminaRestorePerCharge = 1, CadenceStaminaRestoreMaximum = 3, CadenceRestoreCooldownSeconds = 12,
+        CadenceNextAbilityAccuracy = 5, CadenceAccuracyDurationSeconds = 8, CadenceAccuracyCooldownSeconds = 10,
         DirectDamageNextAbilityStaminaReduction = 2, DirectDamageCostWindowSeconds = 10, DirectDamageCostCooldownSeconds = 10
     };
 
@@ -41,16 +40,16 @@ public class WeaponAbilityCrossSkillTraitTests
     }
 
     [Test]
-    public void ZeroPaymentPreservesFlowButConsumesCapturedAccuracy()
+    public void ZeroPaymentPreservesCadenceButConsumesCapturedAccuracy()
     {
         var state = new PairedRangedTraitState();
-        state.RecordMovementHit(Now, Config);
+        state.RecordAbilityHit(Now, Config, Guid.NewGuid(), 1);
         var activation = new WeaponAbilityTraitActivation(state.CaptureAbility(Now, Config, true, true), 4);
         activation.SetPaidStamina(0);
         state.CommitAbility(Now, Config, activation.Snapshot).Should().BeTrue();
-        state.Momentum.Should().Be(1);
-        state.MovementAccuracyExpires.Should().Be(default);
-        activation.Snapshot.MomentumSpent.Should().Be(0);
+        state.Cadence.Should().Be(1);
+        state.CadenceAccuracyExpires.Should().Be(default);
+        activation.Snapshot.CadenceSpent.Should().Be(0);
         activation.Snapshot.AccuracyAdjustment.Should().Be(5);
     }
 
@@ -58,25 +57,84 @@ public class WeaponAbilityCrossSkillTraitTests
     public void CapturedChargesDoNotSpendRewardsEarnedAfterTheCastStarted()
     {
         var state = new PairedRangedTraitState();
-        state.RecordMovementHit(Now, Config);
+        state.RecordAbilityHit(Now, Config, Guid.NewGuid(), 1);
         var captured = state.CaptureAbility(Now, Config, true, true);
-        state.RecordMovementHit(Now.AddSeconds(1), Config);
+        state.RecordAbilityHit(Now.AddSeconds(1), Config, Guid.NewGuid(), 1);
         state.CommitAbility(Now.AddSeconds(1), Config, captured).Should().BeTrue();
-        state.Momentum.Should().Be(1);
+        state.Cadence.Should().Be(1);
         state.CommitAbility(Now.AddSeconds(1), Config, captured).Should().BeFalse();
-        state.CompleteAbility(Now.AddSeconds(1), Config, captured, true, 0, false, 6, 0).Should().Be(1);
-        state.CompleteAbility(Now.AddSeconds(1), Config, captured, true, 0, false, 6, 0).Should().Be(0);
+        state.CompleteAbility(Now.AddSeconds(1), Config, captured, true, 6, 0).Should().Be(1);
+        state.CompleteAbility(Now.AddSeconds(1), Config, captured, true, 6, 0).Should().Be(0);
     }
 
     [Test]
-    public void EmptySourceSnapshotCannotConsumeItsOwnMovementReward()
+    public void ASpenderThatChainsGainsFreshCadenceAfterSpending()
+    {
+        var state = new PairedRangedTraitState();
+        state.RecordAbilityHit(Now, Config, Guid.NewGuid(), 2);
+        var spender = state.CaptureAbility(Now.AddSeconds(1), Config, false, true);
+        state.CommitAbility(Now.AddSeconds(1), Config, spender).Should().BeTrue();
+        state.RecordAbilityHit(Now.AddSeconds(1), Config, spender.ActivationId, 1);
+        spender.CadenceSpent.Should().Be(2);
+        state.Cadence.Should().Be(1, "the spend happens at payment; the chained hit then grants one new charge");
+    }
+
+    [Test]
+    public void LeadShotEarnsOne_AndTempoShotEarnsTwo_WithoutAChain()
+    {
+        Activation(cadenceOnHit: 1, chained: false).CadenceEarnedOnHit.Should().Be(1);
+        Activation(cadenceOnHit: 2, chained: false).CadenceEarnedOnHit.Should().Be(2);
+    }
+
+    [Test]
+    public void AChainEarnsOne_AndDoesNotStackWithTheAbilitysOwnGrant()
+    {
+        Activation(cadenceOnHit: 0, chained: true).CadenceEarnedOnHit.Should().Be(1);
+        Activation(cadenceOnHit: 1, chained: true).CadenceEarnedOnHit.Should().Be(1);
+        Activation(cadenceOnHit: 2, chained: true).CadenceEarnedOnHit.Should().Be(2);
+        Activation(cadenceOnHit: 0, chained: false).CadenceEarnedOnHit.Should().Be(0,
+            "an unchained ability without its own grant earns nothing");
+    }
+
+    [Test]
+    public void AQueuedChainedHit_LandingAfterTheWindow_EarnsOnlyTheAbilitysOwnGrant()
+    {
+        var state = new PairedRangedTraitState();
+        var config = Config with { CadenceChainWindowSeconds = 6 };
+        state.RecordAbilityUse(Now, config, 1);
+        state.RecordAbilityUse(Now.AddSeconds(2), config, 2, out var landsBy).Should().BeTrue();
+        landsBy.Should().Be(Now.AddSeconds(6), "the chain counts from the previous ability");
+        var queued = Activation(cadenceOnHit: 0, chained: true);
+        queued.ChainLandsBy = landsBy;
+        queued.CadenceEarnedOnHitAt(Now.AddSeconds(6)).Should().Be(1, "the landing window is inclusive");
+        queued.CadenceEarnedOnHitAt(Now.AddSeconds(20)).Should().Be(0, "a hit queued past the window no longer chains");
+        var tempo = Activation(cadenceOnHit: 2, chained: true);
+        tempo.ChainLandsBy = landsBy;
+        tempo.CadenceEarnedOnHitAt(Now.AddSeconds(20)).Should().Be(2, "the ability's own grant does not depend on the chain");
+    }
+
+    [TestCase(2, 0, 3, 6)]
+    [TestCase(2, 1, 3, 9)]
+    [TestCase(2, 3, 3, 15)]
+    [TestCase(4, 3, 3, 21)]
+    [TestCase(4, 2, 1, 6)]
+    public void SteadyCadenceAddsItsBonusToEveryChargeSpent(int perCharge, int steadyCadence, int spent, int expected)
+    {
+        // PairedRangedTraits captures (ability override ?? generic per-charge) + Steady Cadence; Final Salvo overrides with 4.
+        var activation = new WeaponAbilityTraitActivation(new(Guid.NewGuid(), false, true, spent, 0), perCharge + steadyCadence)
+            { IsCommitted = true };
+        activation.TryTakeDamageBonus(40).Should().Be(expected);
+    }
+
+    [Test]
+    public void EmptySourceSnapshotCannotConsumeItsOwnHitReward()
     {
         var state = new PairedRangedTraitState();
         var source = state.CaptureAbility(Now, Config, true, true);
         state.CommitAbility(Now, Config, source).Should().BeTrue();
-        state.RecordMovementHit(Now, Config);
-        source.MomentumSpent.Should().Be(0);
-        state.Momentum.Should().Be(1);
+        state.RecordAbilityHit(Now, Config, source.ActivationId, 1);
+        source.CadenceSpent.Should().Be(0);
+        state.Cadence.Should().Be(1);
     }
 
     [TestCase(1)]
@@ -106,32 +164,10 @@ public class WeaponAbilityCrossSkillTraitTests
         activation.TryTakeDamageBonus(activation.PrimaryWeapon).Should().Be(0);
     }
 
-    [Test]
-    public void MovementCountsActualCompletedTravelAndConsumesOneOpportunity()
-    {
-        var window = new WeaponMovementWindow();
-        window.Observe(Now, 1, Vector3.Zero);
-        window.TryConsumeForHit(1, Vector3.Zero).Should().BeFalse("a projected destination is not movement");
-        window.Observe(Now, 1, new Vector3(1, 0, 0));
-        window.Observe(Now, 1, new Vector3(1, 1.1f, 0));
-        window.TryConsumeForHit(1, new Vector3(1, 1.1f, 0)).Should().BeTrue();
-        window.TryConsumeForHit(1, new Vector3(1, 1.1f, 0)).Should().BeFalse();
-        window.Observe(Now, 1, new Vector3(8, 1.1f, 0), walking: false);
-        window.TryConsumeForHit(1, new Vector3(8, 1.1f, 0)).Should().BeTrue("another skill's same-area reposition qualifies");
-        window.Observe(Now, 2, new Vector3(80, 80, 0));
-        window.TryConsumeForHit(2, new Vector3(80, 80, 0)).Should().BeFalse("cross-area travel resets the window");
-    }
-
-    [Test]
-    public void DuplicateOrdinaryRollCannotConsumeLaterMovement()
-    {
-        var window = new WeaponMovementWindow();
-        window.Observe(Now, 1, Vector3.Zero);
-        window.TryRememberOrdinaryHit(100).Should().BeTrue();
-        window.Observe(Now, 1, new Vector3(3, 0, 0));
-        window.TryRememberOrdinaryHit(100).Should().BeFalse();
-        window.DistanceTravelled.Should().Be(3);
-        window.TryRememberOrdinaryHit(101).Should().BeTrue();
-        window.TryConsumeForHit(1, new Vector3(3, 0, 0)).Should().BeTrue();
-    }
+    private static WeaponAbilityTraitActivation Activation(int cadenceOnHit, bool chained) =>
+        new(new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), false, false, 0, 0), 0)
+        {
+            CadenceOnHit = cadenceOnHit,
+            ContinuesChain = chained,
+        };
 }

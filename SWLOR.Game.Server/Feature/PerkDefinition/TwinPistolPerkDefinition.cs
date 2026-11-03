@@ -23,12 +23,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ConvergingFire();
             CoolUnderFire();
             TwinSuns();
-            BlasterSlide();
-            TwinPistolMomentum();
-            PairedHandling();
-            GrappleShot();
+            LeadShot();
+            Cadence();
+            SteadyCadence();
+            ClosingShot();
             ChangingAngles();
-            PistolRush();
+            TempoShot();
             CrossfireStance();
             TwinPistolFollowThrough();
             TwinPistolSecondWind();
@@ -94,24 +94,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Matched Rhythm")
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.PairedHandling)
                 .GrantsFeat(FeatType.MatchedRhythmTrait)
-                .Description("While wielding two weapons, grants +3% Haste. Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +3% Haste.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 3)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 8)
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.PairedHandling)
-                .Description("While wielding two weapons, grants +6% Haste. Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +6% Haste.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 22)
                 .RequirementMustHavePerk(PerkType.MatchedRhythm, 1)
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.PairedHandling)
-                .Description("While wielding two weapons, grants +8% Haste. Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +8% Haste.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 45)
@@ -237,116 +234,123 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementQuest(TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId);
         }
 
-        private void BlasterSlide()
+        private void LeadShot()
         {
-            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.BlasterSlide)
-                .Name("Blaster Slide")
+            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.LeadShot)
+                .Name("Lead Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BlasterSlide1)
+                .GrantsFeat(FeatType.LeadShot1)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(1)
-                .Description("Retreat up to 4m away from the selected enemy, turning aside when the way straight back is blocked, then attack with each equipped attack weapon for weapon DMG + 4 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 4. Grants 1 Cadence.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 2)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BlasterSlide2)
+                .GrantsFeat(FeatType.LeadShot2)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(2)
-                .Description("Retreat up to 4m away from the selected enemy, turning aside when the way straight back is blocked, then attack with each equipped attack weapon for weapon DMG + 8 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 8. Grants 1 Cadence.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 12)
-                .RequirementMustHavePerk(PerkType.BlasterSlide, 1)
+                .RequirementMustHavePerk(PerkType.LeadShot, 1)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BlasterSlide3)
+                .GrantsFeat(FeatType.LeadShot3)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(3)
-                .Description("Retreat up to 4m away from the selected enemy, turning aside when the way straight back is blocked, then attack with each equipped attack weapon for weapon DMG + 12 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 12. Grants 1 Cadence.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 28)
-                .RequirementMustHavePerk(PerkType.BlasterSlide, 2)
+                .RequirementMustHavePerk(PerkType.LeadShot, 2)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BlasterSlide4)
+                .GrantsFeat(FeatType.LeadShot4)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(4)
-                .Description("Retreat up to 4m away from the selected enemy, turning aside when the way straight back is blocked, then attack with each equipped attack weapon for weapon DMG + 16 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 16. Grants 1 Cadence.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinPistol, 40)
-                .RequirementMustHavePerk(PerkType.BlasterSlide, 3);
+                .RequirementMustHavePerk(PerkType.LeadShot, 3);
         }
 
-        private void TwinPistolMomentum()
+        private void Cadence()
         {
-            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.TwinPistolMomentum)
-                .Name("Flow")
+            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.Cadence)
+                .Name("Cadence")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.TwinPistolMomentumTrait)
-                .Description("After moving at least 2m, landing a hostile weapon attack grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 Accuracy to weapon auto-attacks. Your next Grapple Shot, Final Salvo, or other skill's hostile weapon ability that costs STM spends all Flow for +2 DMG per charge, applied once per weapon across the whole ability. Other Twin Pistol abilities keep Flow.")
-                .IncreasesStat(StatType.PairedRangedMomentumMaximum, 3)
-                .IncreasesStat(StatType.PairedRangedMomentumDurationSeconds, 12)
-                .IncreasesStat(StatType.PairedRangedMomentumAccuracyPerCharge, 2)
-                .IncreasesStat(StatType.MovementHitWeaponAbilityDamagePerCharge, 2)
+                .GrantsFeat(FeatType.CadenceTrait)
+                .Description("Landing a weapon ability within 6 seconds of a different one grants 1 Cadence, up to 3, for 12 seconds. Each Cadence grants +2 Accuracy to auto-attacks. Closing Shot, Final Salvo and other skills' weapon abilities spend all Cadence for +2 DMG per charge.")
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
+                .IncreasesStat(StatType.CadenceChainWindowSeconds, 6)
+                .IncreasesStat(StatType.CadenceAccuracyPerCharge, 2)
+                .IncreasesStat(StatType.CadenceDamagePerCharge, 2)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 5);
         }
 
-        private void PairedHandling()
+        private void SteadyCadence()
         {
-            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.PairedHandling)
-                .Name("Paired Handling")
+            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.SteadyCadence)
+                .Name("Steady Cadence")
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .GrantsFeat(FeatType.PairedHandlingTrait)
-                .Description("While wielding two weapons, weapon auto-attacks deal +5% damage. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 5)
+                .GrantsFeat(FeatType.SteadyCadenceTrait)
+                .Description("Spending Cadence deals +1 DMG per charge.")
+                .IncreasesStat(StatType.CadenceBonusDamagePerCharge, 1)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 8)
+                .RequirementMustHavePerk(PerkType.Cadence)
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("While wielding two weapons, weapon auto-attacks deal +8% damage. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 8)
+                .Description("Spending Cadence deals +2 DMG per charge.")
+                .IncreasesStat(StatType.CadenceBonusDamagePerCharge, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 22)
-                .RequirementMustHavePerk(PerkType.PairedHandling, 1)
+                .RequirementMustHavePerk(PerkType.SteadyCadence, 1)
 
                 .AddPerkLevel()
-                .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("While wielding two weapons, weapon auto-attacks deal +10% damage. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10)
+                .Description("Spending Cadence deals +3 DMG per charge.")
+                .IncreasesStat(StatType.CadenceBonusDamagePerCharge, 3)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 45)
-                .RequirementMustHavePerk(PerkType.PairedHandling, 2);
+                .RequirementMustHavePerk(PerkType.SteadyCadence, 2);
         }
 
-        private void GrappleShot()
+        private void ClosingShot()
         {
-            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.GrappleShot)
-                .Name("Grapple Shot")
+            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.ClosingShot)
+                .Name("Closing Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.GrappleShot1)
+                .GrantsFeat(FeatType.ClosingShot1)
                 .DroidAISlots(1)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 6. Spends all Cadence for +2 DMG per charge.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.GrappleShot2)
+                .GrantsFeat(FeatType.ClosingShot2)
                 .DroidAISlots(2)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 10. Spends all Cadence for +2 DMG per charge.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
-                .RequirementMustHavePerk(PerkType.GrappleShot, 1)
+                .RequirementMustHavePerk(PerkType.ClosingShot, 1)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.GrappleShot3)
+                .GrantsFeat(FeatType.ClosingShot3)
                 .DroidAISlots(3)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Works with any weapon.")
+                .Description("Deals weapon DMG + 14. Spends all Cadence for +2 DMG per charge.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
-                .RequirementMustHavePerk(PerkType.GrappleShot, 2);
+                .RequirementMustHavePerk(PerkType.ClosingShot, 2);
         }
 
         private void ChangingAngles()
@@ -356,33 +360,37 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ChangingAnglesTrait)
-                .Description("After moving at least 2m and landing a hostile weapon attack, your next hostile weapon ability gains +5 Accuracy. One charge, lasts 8 seconds; triggers at most once every 10 seconds.")
-                .IncreasesStat(StatType.PairedRangedMovementNextAbilityAccuracy, 5)
-                .IncreasesStat(StatType.PairedRangedMovementAccuracyDurationSeconds, 8)
-                .IncreasesStat(StatType.PairedRangedMovementAccuracyCooldownSeconds, 10)
+                .Description("Gaining Cadence gives your next weapon ability +5 Accuracy for 8 seconds. Triggers once every 10 seconds.")
+                .IncreasesStat(StatType.CadenceNextAbilityAccuracy, 5)
+                .IncreasesStat(StatType.CadenceAccuracyDurationSeconds, 8)
+                .IncreasesStat(StatType.CadenceAccuracyCooldownSeconds, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 15);
         }
 
-        private void PistolRush()
+        private void TempoShot()
         {
-            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.PistolRush)
-                .Name("Pistol Rush")
+            _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.TempoShot)
+                .Name("Tempo Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.PistolRush1)
+                .GrantsFeat(FeatType.TempoShot1)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(1)
-                .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 6 per impact. Works with any weapon.")
+                .Description("Deals 60% weapon DMG + 6. Grants 2 Cadence.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 18)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.PistolRush2)
+                .GrantsFeat(FeatType.TempoShot2)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(2)
-                .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 12 per impact. Works with any weapon.")
+                .Description("Deals 60% weapon DMG + 12. Grants 2 Cadence.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 32)
-                .RequirementMustHavePerk(PerkType.PistolRush, 1);
+                .RequirementMustHavePerk(PerkType.TempoShot, 1);
         }
 
         private void CrossfireStance()
@@ -393,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
                 .DroidAISlots(1)
-                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Flow. All weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
+                .Description("While active, grants +10% Haste and +10% Movement Speed and Cadence lasts 18 seconds, but auto-attacks deal 20% less damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }
@@ -405,10 +413,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolFollowThroughTrait)
-                .Description("A Flow-spending ability landing any hit restores 1 STM per charge spent, up to 3 STM. Cannot reduce the ability's net STM cost below 1. At most once per activation and once every 12 seconds.")
-                .IncreasesStat(StatType.PairedRangedMomentumStaminaRestorePerCharge, 1)
-                .IncreasesStat(StatType.PairedRangedMomentumStaminaRestoreMaximum, 3)
-                .IncreasesStat(StatType.PairedRangedMomentumRestoreCooldownSeconds, 12)
+                .Description("Spending Cadence on a hit restores 1 STM per charge, up to 3 STM. Triggers once every 12 seconds.")
+                .IncreasesStat(StatType.CadenceStaminaRestorePerCharge, 1)
+                .IncreasesStat(StatType.CadenceStaminaRestoreMaximum, 3)
+                .IncreasesStat(StatType.CadenceRestoreCooldownSeconds, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 25);
         }
@@ -420,11 +428,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolSecondWindTrait)
-                .Description("A direct hostile attack missing its accuracy-versus-evasion roll grants 1 Flow, at most once every 10 seconds.")
-                .IncreasesStat(StatType.PairedRangedEvasionMomentumCooldownSeconds, 10)
+                .Description("After you evade an attack, gain 1 Cadence. Triggers once every 10 seconds.")
+                .IncreasesStat(StatType.EvasionCadenceCooldownSeconds, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 35)
-                .RequirementMustHavePerk(PerkType.TwinPistolMomentum);
+                .RequirementMustHavePerk(PerkType.Cadence);
         }
 
         private void FinalSalvo()
@@ -434,11 +442,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinalSalvo)
-                .Description("Without moving, attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Flow for +4 DMG per charge on each impact (max +12). Works with any weapon.")
+                .Description("Deals weapon DMG + 20. Spends all Cadence for +4 DMG per charge.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
                 .RequirementQuest(TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId);
         }
     }
 }
-

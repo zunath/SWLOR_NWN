@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -147,17 +148,25 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
-        public AbilityBuilder HasWeaponAbilityFlowDamagePerCharge(int damage)
+        public AbilityBuilder HasWeaponAbilityCadenceDamagePerCharge(int damage)
         {
             if (damage < 0) throw new ArgumentOutOfRangeException(nameof(damage));
-            _activeAbility.WeaponAbilityFlowDamagePerCharge = damage;
+            _activeAbility.WeaponAbilityCadenceDamagePerCharge = damage;
             return this;
         }
 
-        /// <summary>The ability neither spends nor benefits from Flow, so it can build charges for a finisher.</summary>
-        public AbilityBuilder KeepsWeaponAbilityFlow()
+        /// <summary>The ability neither spends nor benefits from Cadence, so it can build charges for a finisher.</summary>
+        public AbilityBuilder KeepsWeaponAbilityCadence()
         {
-            _activeAbility.KeepsWeaponAbilityFlow = true;
+            _activeAbility.KeepsWeaponAbilityCadence = true;
+            return this;
+        }
+
+        /// <summary>A landed hit grants this much Cadence once per activation, without needing a chain.</summary>
+        public AbilityBuilder GrantsWeaponAbilityCadence(int charges)
+        {
+            if (charges <= 0) throw new ArgumentOutOfRangeException(nameof(charges));
+            _activeAbility.WeaponAbilityCadenceOnHit = charges;
             return this;
         }
 
@@ -635,16 +644,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Accepts a location cast past the max range; the ability's own handlers shorten the
-        /// destination toward the clicked point. Requires <see cref="HasMaxRange"/>.
-        /// </summary>
-        public AbilityBuilder ClampsLocationTargetToMaxRange()
-        {
-            _activeAbility.ClampsLocationTargetToMaxRange = true;
-            return this;
-        }
-
-        /// <summary>
         /// Adds a stamina requirement to use the ability at this level.
         /// </summary>
         /// <param name="requiredSTM">The amount of STM needed to use this ability at this level.</param>
@@ -760,6 +759,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder SkillType(SkillType skillType)
         {
             _activeAbility.SkillType = skillType;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares which status categories the ability's impact applies for an activator, so next-ability
+        /// bonuses that require a category (such as Control) know whether this ability qualifies.
+        /// </summary>
+        public AbilityBuilder ResolvesImpactStatusCategories(Func<uint, StatusEffectCategory> resolve)
+        {
+            _activeAbility.ResolveImpactStatusCategories = resolve;
 
             return this;
         }

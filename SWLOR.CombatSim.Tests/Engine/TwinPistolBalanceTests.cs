@@ -20,22 +20,20 @@ public class TwinPistolBalanceTests
         var rows = new List<object>();
         foreach (var crossfire in new[] { false, true })
         foreach (var rhythm in new[] { false, true })
-        foreach (var variant in new[] { "opening", "sustain", "three targets", "excess targets", "pvp", "pvp ramp", "pressure", "blocked movement", "stationary fallback", "high defense", "high evasion", "deflection", "slow", "haste" })
+        foreach (var variant in new[] { "opening", "sustain", "three targets", "excess targets", "pvp", "pvp ramp", "pressure", "eager spenders", "high defense", "high evasion", "deflection", "slow", "haste" })
         {
+            // Steady Cadence needs the Crossfire Cadence trait; Barrage's only handling slot is Matched Rhythm.
+            if (!crossfire && !rhythm) continue;
             var seconds = variant == "opening" ? 12 : variant == "pvp ramp" ? 360 : 120;
             var scenario = TwinPistolScenarios.Create(crossfire, rhythm, seconds,
                 targets: variant == "three targets" ? 3 : variant == "excess targets" ? 5 : 1,
                 pvp: variant is "pvp" or "pvp ramp", incomingPressure: variant == "pressure",
-                movementAvailable: variant is not ("blocked movement" or "stationary fallback"), haste: variant == "slow" ? -50 : variant == "haste" ? 50 : 0, catalog: catalog);
-            if (variant == "stationary fallback")
+                haste: variant == "slow" ? -50 : variant == "haste" ? 50 : 0, catalog: catalog);
+            if (variant == "eager spenders")
             {
-                foreach (var use in scenario.Teams[0].Members[0].Abilities.Where(use => catalog.Get(Enum.Parse<SWLOR.NWN.API.NWScript.Enum.FeatType>(use.Feat)).TwinPistol?.SpendsMomentum == true))
-                {
-                    use.MinimumFlow = 0;
-                    use.MovementMeters = 0;
-                    use.MovementSeconds = 0;
-                }
-                scenario.Description += " Stationary fallback overrides that policy: spenders may fire at zero Flow, and Grapple starts inside stopping range.";
+                foreach (var use in scenario.Teams[0].Members[0].Abilities)
+                    use.MinimumCadence = 0;
+                scenario.Description += " Eager spenders override that policy: spenders fire on cooldown at any Cadence.";
             }
             foreach (var target in scenario.Teams[1].Members)
             {
@@ -54,11 +52,12 @@ public class TwinPistolBalanceTests
                 actor.Stats.StmSpent.Should().BeGreaterThanOrEqualTo(actor.Stats.StmRefunded);
                 actor.Stats.AbilityImpacts.Should().BeGreaterThanOrEqualTo(actor.Stats.AbilityHits);
                 actor.Stats.OrdinaryAttempts.Should().BeGreaterThanOrEqualTo(actor.Stats.OrdinaryHits);
-                actor.Stats.FlowSpent.Should().BeLessThanOrEqualTo(actor.Stats.AbilitiesUsed * 3);
+                actor.Stats.CadenceSpent.Should().BeLessThanOrEqualTo(actor.Stats.AbilitiesUsed * 3);
+                actor.Stats.CadenceChains.Should().BeLessThanOrEqualTo(actor.Stats.AbilitiesUsed);
             }
             rows.Add(new
             {
-                line = crossfire ? "Crossfire" : "Barrage", handling = rhythm ? "Matched Rhythm" : "Paired Handling",
+                line = crossfire ? "Crossfire" : "Barrage", handling = rhythm ? "Matched Rhythm" : "Steady Cadence",
                 variant, seconds, samples, firstSeed, lastSeed = firstSeed + samples - 1,
                 skillPoints = catalog.Perks.GetPurchaseCost(scenario.Teams[0].Members[0].Perks),
                 damageMean = mean, damageP10 = damage[(int)(samples * .1)], damageP90 = damage[(int)(samples * .9)],
@@ -69,7 +68,8 @@ public class TwinPistolBalanceTests
                 abilityHitRate = results.Sum(actor => actor.Stats.AbilityHits) / (double)Math.Max(1, results.Sum(actor => actor.Stats.AbilityImpacts)),
                 staminaSpent = results.Average(actor => actor.Stats.StmSpent), staminaRefunded = results.Average(actor => actor.Stats.StmRefunded),
                 staminaEnd = results.Average(actor => actor.Stm), starvedSeconds = results.Average(actor => actor.Stats.StarvedSeconds),
-                flowSpent = results.Average(actor => actor.Stats.FlowSpent),
+                cadenceSpent = results.Average(actor => actor.Stats.CadenceSpent),
+                cadenceChains = results.Average(actor => actor.Stats.CadenceChains),
                 abilityUses = results.SelectMany(actor => actor.Stats.AbilityUses).GroupBy(entry => entry.Key)
                     .ToDictionary(group => group.Key, group => group.Sum(entry => entry.Value) / (double)samples),
                 assumptions = scenario.Description
@@ -82,7 +82,7 @@ public class TwinPistolBalanceTests
         {
             method = "64 fixed seeds per variant. Logical stat-based Twin simulation uses production damage/timing functions, extracted ability payloads and shared trait states. " +
                 "No Pistol baseline: its procs are not implemented by the generic simulator. Native equal69-SP comparison is separate evidence. " +
-                "These scenarios test internal pressure/mobility tradeoffs and sensitivity; they are not proof of global, equipment, movement or PvP balance.",
+                "These scenarios test internal pressure and chaining tradeoffs and sensitivity; they are not proof of global, equipment or PvP balance.",
             rows
         }, new JsonSerializerOptions { WriteIndented = true }));
         TestContext.AddTestAttachment(path, $"Twin Pistol {rows.Count * samples}-run sensitivity report");

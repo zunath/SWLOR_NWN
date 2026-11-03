@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.BloodFrenzy, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Provoke, 1);
             await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
-            ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "Payback begins without an Unarmed grip");
+            ctx.Assert(!PowerGloveEquipment.IsActivePair(caster), "Payback begins without Power Gloves");
             var ability = Ability.GetAbilityDetail(FeatType.BloodFrenzyBurst);
             var cost = ability.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
@@ -397,13 +397,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Cast(ctx, standard.Creature, standard.Creature, FeatType.FlowStance1);
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "valid grip activates Flow Stance");
                 await ctx.EquipItemAsync(standard.Creature, "ec_shield", InventorySlot.LeftHand);
-                ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(standard.Creature), "shield fails full Unarmed grip");
+                ctx.Assert(!PowerGloveEquipment.IsActivePair(standard.Creature), "the shield replaces the glove pair");
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "the actual shield equip event retains Flow Stance");
                 ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(standard.Creature, target), "activating the stance resets the earlier setup");
                 await ctx.EquipItemAsync(standard.Creature, "b_longsword", InventorySlot.RightHand);
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.MobilityResistance), "Rooted Technique remains unconditional with a sword and shield");
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.TraumaResistance), "Hard Knocks remains unconditional with a sword and shield");
-                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1), target)), "active fist strikes still require Power Gloves");
+                ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1), target), "Unarmed strikes accept a sword and shield");
                 await Cast(ctx, standard.Creature, standard.Creature, FeatType.BruiserStance1);
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(BruiserStanceStatusEffect)), "Bruiser Stance activates with another weapon class");
                 ctx.Assert(!StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "changing stances still removes the previous stance");
@@ -415,6 +415,77 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ResetOverrides(standard.Creature);
                 AssignCommand(sensitive.Creature, () => ClearAllActions());
+            }
+        }
+
+        [EngineTest("Unarmed strikes work with two Katars or swords and add both hands' DMG only for Katars", Category = "MeleeTechnique", TimeoutSeconds = 60f)]
+        public static async Task StrikesWorkWithOtherWeapons(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.DelaySecondsAsync(1f);
+            ctx.MakeHostile(target);
+            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            SetAILevel(target, AILevel.VeryLow);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+            TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
+            player.Update(record =>
+            {
+                record.Skills[SkillType.Unarmed].Rank = 50;
+                record.Skills[SkillType.Katar].Rank = 50;
+                record.Skills[SkillType.Vibroblade].Rank = 50;
+                record.Perks[PerkType.Jab] = 1;
+            });
+            var caster = player.Creature;
+            var jab = Ability.GetAbilityDetail(FeatType.Jab1);
+            var main = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.RightHand);
+            var off = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.LeftHand);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(caster, jab, target), "Jab accepts two Katars");
+                    ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(caster, main) + WeaponDamage.GetEffectiveDMG(caster, off),
+                        WeaponDamage.GetAbilityDMG(caster, main, SkillType.Unarmed), "Unarmed strikes add both Katars' DMG");
+                    ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(caster, main), WeaponDamage.GetAbilityDMG(caster, main, SkillType.Katar),
+                        "Katar abilities still add one Katar's DMG");
+                });
+                await Cast(ctx, caster, target, FeatType.Jab1);
+                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with two Katars lands");
+                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "Jab with two Katars earns Opening");
+
+                foreach (var katar in new[] { off, main })
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster, () => ActionUnequipItem(katar));
+                    await ctx.WaitUntilAsync(() => Item.GetItemSlot(caster, katar) == InventorySlot.Invalid, 6f, "the Katar to return to inventory");
+                }
+                var sword = await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(caster, jab, target), "Jab accepts a sword");
+                    ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(caster, sword), WeaponDamage.GetAbilityDMG(caster, sword, SkillType.Unarmed),
+                        "With one weapon, Unarmed strikes add its DMG once");
+                });
+                Recast.ReduceRecastDelay(caster, RecastGroup.UnarmedOpener, 100f);
+                await Cast(ctx, caster, target, FeatType.Jab1);
+                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with a sword lands");
+                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "Jab with a sword earns Opening");
+
+                var secondSword = await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.LeftHand);
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ctx.Assert(EquipmentPredicates.HasDualWield(caster), "Two swords strike with both hands");
+                    ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(caster, sword), WeaponDamage.GetAbilityDMG(caster, sword, SkillType.Unarmed),
+                        "Two swords add only the main sword's DMG to Unarmed strikes");
+                    ctx.Assert(WeaponDamage.GetAbilityDMG(caster, sword, SkillType.Unarmed) <
+                               WeaponDamage.GetEffectiveDMG(caster, sword) + WeaponDamage.GetEffectiveDMG(caster, secondSword),
+                        "The second sword does not count");
+                });
+            }
+            finally
+            {
+                ResetOverrides(caster);
             }
         }
 
@@ -468,7 +539,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
                     var windowGrantedAt = DateTime.UtcNow;
                     await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
-                    ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "the window regression swaps to a ranged weapon");
+                    ctx.Assert(!PowerGloveEquipment.IsActivePair(caster), "the window regression swaps to a ranged weapon");
                     ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(FlowStanceStatusEffect)), "weapon changes retain the stance itself");
                     ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "swapping retains the earned evasion window");
                     ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "swapping retains the earned haste window");
@@ -839,7 +910,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the replacement profile can create fresh setup");
                 await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
                 ctx.AssertEqual(SkillType.Vibroblade, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, caster))), "fixture equips another weapon skill");
-                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility, target)), "fist activation fails its grip check with a sword");
+                await ctx.DelaySecondsAsync(1.05f);
+                ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(caster, discountedAbility, target), "Unarmed strikes accept a sword");
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the weapon swap preserves the source-owned setup");
                 ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(OpeningStatusEffect)), "the swap retains the tracked setup marker");
                 await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);

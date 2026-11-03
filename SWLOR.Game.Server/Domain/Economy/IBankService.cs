@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {
@@ -32,9 +32,10 @@ namespace SWLOR.Game.Server.Domain.Economy
         bool IsFull(long itemCount);
 
         /// <summary>
-        /// Lists a player's banked items, narrowed by name when search text is given.
+        /// Returns one page of the banked items that match the search. A page index past the last page is
+        /// clamped to the last page, so callers can ask for <see cref="int.MaxValue"/> to reach the newest deposits.
         /// </summary>
-        List<InventoryItem> SearchItems(string playerId, string searchText);
+        BankItemPage SearchItems(string playerId, string searchText, int pageIndex);
 
         /// <summary>
         /// Why an item cannot be deposited, or an empty string when it can.

@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class SettingsDefinition : IGuiWindowDefinition
     {
         public const float MinimumWindowWidth = 400f;
-        public const float MinimumWindowHeight = 450f;
+        // Tall enough to show every General row, down to the Hotbars button.
+        public const float MinimumWindowHeight = 570f;
 
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 
@@ -108,6 +109,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")
                                 .BindOnClicked(model => model.OnClickChangeDescription())
+                                .SetWidth(230f)
+                                .SetHeight(32f);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddButton()
+                                .SetText("Hotbars")
+                                .SetTooltip("Turn extra hotbars on and off, choose their size and layout, and move them.")
+                                .BindOnClicked(model => model.OnClickHotbars())
                                 .SetWidth(230f)
                                 .SetHeight(32f);
                         });

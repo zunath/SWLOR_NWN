@@ -5,20 +5,24 @@ namespace SWLOR.CombatSim.Scenario;
 
 /// <summary>
 /// Reproducible Twin line comparisons. These are effective-stat fixtures, not NWN equipment,
-/// movement, projectile or character-build verification. The production engine tests provide
+/// projectile or character-build verification. The production engine tests provide
 /// the equal-investment Pistol baseline; the generic simulator does not model all Pistol procs.
 /// </summary>
 public static class TwinPistolScenarios
 {
     public static ScenarioSpec Create(bool crossfire, bool matchedRhythm, float duration = 120,
         int rank = 50, int targets = 1, bool pvp = false, bool incomingPressure = false,
-        bool movementAvailable = true, int haste = 0, AbilityCatalog catalog = null)
+        int haste = 0, AbilityCatalog catalog = null)
     {
+        // Each line owns one handling slot. Crossfire may swap Steady Cadence for Matched Rhythm; Steady Cadence
+        // only adds to charges the Crossfire Cadence trait creates, so Barrage always keeps Matched Rhythm.
+        if (!crossfire && !matchedRhythm)
+            throw new ArgumentException("Steady Cadence needs the Crossfire Cadence trait; Barrage builds use Matched Rhythm.", nameof(matchedRhythm));
         catalog ??= AbilityCatalog.Load();
         var category = crossfire ? PerkCategoryType.TwinPistolCrossfire : PerkCategoryType.TwinPistolBarrage;
-        var handling = matchedRhythm ? PerkType.MatchedRhythm : PerkType.PairedHandling;
+        var handling = matchedRhythm ? PerkType.MatchedRhythm : PerkType.SteadyCadence;
         var selected = catalog.Perks.InCategory(category).Where(perk =>
-            perk.Type is not (PerkType.MatchedRhythm or PerkType.PairedHandling)).Append(catalog.Perks.Get(handling));
+            perk.Type is not (PerkType.MatchedRhythm or PerkType.SteadyCadence)).Append(catalog.Perks.Get(handling));
         var perks = new List<string>();
         var abilities = new List<AbilityUseSpec>();
         foreach (var perk in selected)
@@ -31,32 +35,29 @@ public static class TwinPistolScenarios
             foreach (var feat in level.Value.GrantedFeats.Where(catalog.Abilities.ContainsKey))
             {
                 var info = catalog.Get(feat);
-                var movement = info.TwinPistol?.Movement ?? SWLOR.Game.Server.Service.CombatService.TwinPistolMovementType.None;
+                var spender = info.TwinPistol != null && !info.KeepsWeaponAbilityCadence;
                 abilities.Add(new AbilityUseSpec
                 {
                     Feat = feat.ToString(),
                     Target = info.IsHostile ? AbilityTarget.Enemy : AbilityTarget.Self,
                     KeepUp = !info.IsHostile,
-                    MinimumFlow = info.TwinPistol?.SpendsMomentum == true ? 1 : 0,
-                    LineTargets = targets,
-                    MovementMeters = movement == SWLOR.Game.Server.Service.CombatService.TwinPistolMovementType.None || !movementAvailable
-                        ? null : movement == SWLOR.Game.Server.Service.CombatService.TwinPistolMovementType.Retreat ? 4f : 3f,
-                    MovementSeconds = movement == SWLOR.Game.Server.Service.CombatService.TwinPistolMovementType.None ? 0 : 0.7f
+                    // Final Salvo waits for a full chain; Closing Shot fires on any Cadence.
+                    MinimumCadence = !spender ? 0 : feat == SWLOR.NWN.API.NWScript.Enum.FeatType.FinalSalvo ? 3 : 1
                 });
             }
         }
         var priority = crossfire
-            ? new[] { "CrossfireStance", "BlasterSlide", "PistolRush", "FinalSalvo", "GrappleShot" }
+            ? new[] { "CrossfireStance", "TempoShot", "LeadShot", "FinalSalvo", "ClosingShot" }
             : new[] { "AkimboStance", "TwinSuns", "PairedVolley", "FocusedBurst", "ControlledBurst" };
         abilities = abilities.OrderBy(use => Array.FindIndex(priority, prefix => use.Feat.StartsWith(prefix, StringComparison.Ordinal))).ToList();
         return new ScenarioSpec
         {
-            Name = $"Twin {(crossfire ? "Crossfire" : "Barrage")} {(matchedRhythm ? "Rhythm" : "Handling")} rank {rank}",
+            Name = $"Twin {(crossfire ? "Crossfire" : "Barrage")} {(matchedRhythm ? "Rhythm" : "Steady Cadence")} rank {rank}",
             Description = "Production Twin payloads, trait state and combat formulas; explicit effective ratings ATT150/ACC150, DMG22 per hand, Delay250 per hand, attributes26. " +
                 "60 SP line at rank50 with mastery unlocks assumed; profile includes 30% offhand delay reduction (the common 9 SP Armor investment). " +
                 "Finite61STM,20STM/30s; fixed targets HP30000/DEF94/EVA134/VIT26; no Guard, critical mitigation, item procs or terrain. " +
-                "Movement uses declared clear-path travel opportunities, speed adjusted; impacts use logical cadence, not native animation/projectile scheduling. " +
-                "The rotation waits for at least one Flow before either spender; this is a chosen policy, not a gameplay requirement. " +
+                "Impacts use logical timing, not native animation/projectile scheduling. Crossfire chains Tempo Shot, Lead Shot, then spends with " +
+                "Final Salvo at three Cadence or Closing Shot at one or more; these thresholds are a chosen policy, not a gameplay requirement. " +
                 "Other perk families fail closed. Equal-SP Pistol comparison requires WeaponRotationBalance native tests.",
             DurationSeconds = duration,
             TimeStepSeconds = 0.05f,

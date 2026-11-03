@@ -78,6 +78,9 @@ public sealed class ShuttleBench : IDisposable
     /// <summary>Whether the shuttle interior a new instance copies has the pilot chair and the boarding waypoint.</summary>
     public bool InteriorHasBoardingContract { get; set; } = true;
 
+    /// <summary>Whether the shuttle interior a new instance copies has the status console waypoint between the seat rows.</summary>
+    public bool InteriorHasConsolePoint { get; set; }
+
     public IEnumerable<SimObject> Objects => _objects.Values;
 
     public SimObject Get(uint id) => _objects[id];
@@ -174,6 +177,9 @@ public sealed class ShuttleBench : IDisposable
             AddWaypoint("PROPERTY_ENTRANCE", area, new Vector3(3f, 4f, 0f), 90f);
             AddPlaceable("pilot_chair", area, new Vector3(5f, 5f, 0f));
         }
+
+        if (InteriorHasConsolePoint)
+            AddWaypoint("SHUTTLE_STATUS_CONSOLE", area, new Vector3(7f, 9f, 0f), 180f);
 
         AddPlaceable("building_exit", area, new Vector3(1f, 1f, 0f));
         AddPlaceable("ShipComputer", area, new Vector3(2f, 2f, 0f));

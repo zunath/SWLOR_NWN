@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Killzone Beacon adept in Viscara - Republic Engineering Bunker."
+    "value": "Deserter Sapper (Killzone Beacon line) in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan in scuffed Republic soldier armor, a blaster pistol at his hip and a beacon emitter clipped to his belt. He belongs to the engineering cell that has turned the abandoned bunker's fire-control hardware to live testing, and he marks every doorway he passes as a field of fire."
+      "0": "A Bothan sapper in scuffed Republic soldier armor, a blaster pistol at his hip and a beacon emitter clipped to his belt. He belongs to the cell of deserters that has turned the abandoned bunker's fire-control hardware to live testing, and he marks every doorway he passes as a field of fire."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Killzone Beacon Adept"
+      "0": "Deserter Sapper"
     }
   },
   "fortbonus": {

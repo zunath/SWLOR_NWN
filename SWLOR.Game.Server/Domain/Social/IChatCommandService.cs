@@ -45,5 +45,17 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
         void HandleChatMessage();
+
+        /// <summary>
+        /// Runs a chat command as if the sender had typed it, including its targeting prompt.
+        /// </summary>
+        /// <param name="sender">The player or DM running the command.</param>
+        /// <param name="originalMessage">The command text, starting with a slash.</param>
+        void RunCommand(uint sender, string originalMessage);
+
+        /// <summary>
+        /// Lists the commands the sender is allowed to run, by name, with their descriptions.
+        /// </summary>
+        List<(string Name, string Description)> GetAvailableCommands(uint sender);
     }
 }

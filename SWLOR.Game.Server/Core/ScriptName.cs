@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnTrashOpened = "trash_opened";
         public const string OnTrashClosed = "trash_closed";
         public const string OnTrashDisturbed = "trash_disturbed";
+        public const string OnCasinoSlotUsed = "casino_slot_used";
         public const string OnJukeboxUsed = "jukebox_used";
 
         // Trap events

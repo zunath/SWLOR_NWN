@@ -14,6 +14,16 @@ namespace SWLOR.Game.Server.Domain.World
     {
         private const string PlanetTypeIdVariable = "PLANET_TYPE_ID";
         private readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
+
+        /// <summary>
+        /// Planets that exist in the module but are closed to players. Shuttles will not sell
+        /// tickets there and teleporters flagged with the planet will not let players through.
+        /// DMs are never blocked. Remove an entry to open the planet.
+        /// </summary>
+        private readonly Dictionary<PlanetType, string> _closedPlanetMessages = new()
+        {
+            [PlanetType.Eshan] = "Eshan Traffic Control: All approaches to Eshan are closed while the planet's landing beacons are under repair. No ships may enter until the work is finished.",
+        };
         private readonly Dictionary<string, PlanetType> _planetAreaResrefs = new(StringComparer.OrdinalIgnoreCase)
         {
             ["area"] = PlanetType.Viscara,
@@ -185,6 +195,18 @@ namespace SWLOR.Game.Server.Domain.World
         public PlanetAttribute GetPlanetByType(PlanetType type)
         {
             return _planets[type];
+        }
+
+        public bool TryGetClosedMessage(PlanetType type, out string message)
+        {
+            if (_closedPlanetMessages.TryGetValue(type, out var closedMessage))
+            {
+                message = closedMessage;
+                return true;
+            }
+
+            message = string.Empty;
+            return false;
         }
 
         public Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()

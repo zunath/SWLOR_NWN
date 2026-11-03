@@ -34,18 +34,6 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var originalBaseItem = GetBaseItemType(item);
-            PistolBaseItemCompatibility.Normalize(item);
-            var canonicalSlot = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
-                originalBaseItem,
-                slot);
-            if (canonicalSlot != slot)
-            {
-                EventsPlugin.SkipEvent();
-                AssignCommand(creature, () => ActionEquipItem(item, canonicalSlot));
-                return;
-            }
-
             var isSwapping = IsItemSwapping(creature, item, slot);
             var isRestrictedActor =
                 (GetIsPC(creature) || Droid.IsDroid(creature)) &&

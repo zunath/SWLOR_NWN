@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Hold the Line warden in Mon Cala - Medical Sublevel."
+    "value": "Ward Supervisor Aron Meel (Hold the Line line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Once the sublevel's night charge nurse, this Bothan has stood at the recovery ward's door so long he seems part of it. A fractured ward sigil hangs at his chest, and he holds his vibroblade like a bar across the doorway."
+      "0": "Once the sublevel's night charge nurse and now its ward supervisor, this Bothan has stood at the recovery ward's door so long he seems part of it. A fractured ward sigil hangs at his chest, and he holds his vibroblade like a bar across the doorway."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hold the Line Warden"
+      "0": "Ward Supervisor Aron Meel"
     }
   },
   "fortbonus": {

@@ -72,25 +72,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlastRadiusTrait)
-                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius and +4% blast damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BlastRadiusBonusTenths, 10)
+                .IncreasesStat(StatType.BlastDamagePercentAdjustment, 4)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius and +8% blast damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BlastRadiusBonusTenths, 20)
+                .IncreasesStat(StatType.BlastDamagePercentAdjustment, 8)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius and +12% blast damage, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BlastRadiusBonusTenths, 30)
+                .IncreasesStat(StatType.BlastDamagePercentAdjustment, 12)
                 .IncreasesStat(StatType.GrenadeControlPotencyBonus, 5);
         }
 
@@ -208,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Thermal Detonator")
 
                 .AddPerkLevel()
-                .Description("Deals 60 fire DMG plus PER scaling in a 5m blast and inflicts Burn for 45 seconds. Consumes explosives.")
+                .Description("Deals gadget DMG + 60 fire DMG plus PER scaling in a 5m blast and inflicts Burn for 45 seconds. Enemies already Bleeding or Burning take +40 DMG. Consumes explosives.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

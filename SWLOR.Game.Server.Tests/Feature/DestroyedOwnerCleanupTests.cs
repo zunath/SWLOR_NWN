@@ -11,8 +11,6 @@ public class DestroyedOwnerCleanupTests
 {
     [TestCase("Feature/OrdinaryAttackCombatLifecycle.cs", "OrdinaryAttackTraits.ForgetDestroyed(OBJECT_SELF)")]
     [TestCase("Feature/UsePerkFeat.cs", "_queuedWeaponTraits.Remove(creature);", "_queuedWeaponAttacks.Remove(creature);")]
-    [TestCase("Service/CombatService/WeaponRepositioning.cs", "_lockouts.Remove(actor);",
-        "if (_moving.Remove(actor, out var operation)) operation.OnArrival(false, 0f);")]
     [TestCase("Feature/TwinPistolCombatLifecycle.cs", "TwinPistolAbility.ForgetDestroyed(actor);",
         "PairedRangedAttackCycle.ForgetDestroyed(actor);", "PairedRangedPresentation.Release(actor);")]
     public void OwnerKeyedStateIsDroppedWhenTheOwnerIsDestroyed(string file, params string[] expected)

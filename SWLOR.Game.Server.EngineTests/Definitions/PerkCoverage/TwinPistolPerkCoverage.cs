@@ -82,31 +82,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
-                    Perk = PerkType.BlasterSlide,
+                    Perk = PerkType.LeadShot,
                     MaxLevel = 4,
                     Prices = new[] { 2, 2, 3, 5 },
-                    GrantedFeats = new[] { FeatType.BlasterSlide1, FeatType.BlasterSlide2, FeatType.BlasterSlide3, FeatType.BlasterSlide4 },
+                    GrantedFeats = new[] { FeatType.LeadShot1, FeatType.LeadShot2, FeatType.LeadShot3, FeatType.LeadShot4 },
                 },
                 new()
                 {
-                    Perk = PerkType.TwinPistolMomentum,
+                    Perk = PerkType.Cadence,
                     MaxLevel = 1,
                     Prices = new[] { 2 },
-                    GrantedFeats = new[] { FeatType.TwinPistolMomentumTrait },
+                    GrantedFeats = new[] { FeatType.CadenceTrait },
                 },
                 new()
                 {
-                    Perk = PerkType.PairedHandling,
+                    Perk = PerkType.SteadyCadence,
                     MaxLevel = 3,
                     Prices = new[] { 2, 4, 4 },
-                    GrantedFeats = new[] { FeatType.PairedHandlingTrait },
+                    GrantedFeats = new[] { FeatType.SteadyCadenceTrait },
                 },
                 new()
                 {
-                    Perk = PerkType.GrappleShot,
+                    Perk = PerkType.ClosingShot,
                     MaxLevel = 3,
                     Prices = new[] { 2, 4, 4 },
-                    GrantedFeats = new[] { FeatType.GrappleShot1, FeatType.GrappleShot2, FeatType.GrappleShot3 },
+                    GrantedFeats = new[] { FeatType.ClosingShot1, FeatType.ClosingShot2, FeatType.ClosingShot3 },
                 },
                 new()
                 {
@@ -117,10 +117,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
-                    Perk = PerkType.PistolRush,
+                    Perk = PerkType.TempoShot,
                     MaxLevel = 2,
                     Prices = new[] { 3, 3 },
-                    GrantedFeats = new[] { FeatType.PistolRush1, FeatType.PistolRush2 },
+                    GrantedFeats = new[] { FeatType.TempoShot1, FeatType.TempoShot2 },
                 },
                 new()
                 {

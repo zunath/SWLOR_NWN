@@ -24,7 +24,7 @@ $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)
         if ($name -in @('SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendResourceRestored')) { $delivery = 'Testing only' }
         elseif ($name -in @('SendWarningToPlayer', 'SendWarningNearby')) { $delivery = 'Rate limited in Production' }
         elseif ([SWLOR.Tools.PlayerMessagePolicy]::IsDiagnosticOnly($node)) { $delivery = 'Testing only' }
-        if ($file -match 'Service[\\/](PlayerFeedback|Messaging|Communication|Gui)\.cs$' -and $name -notlike '*Diagnostic*') { $delivery = 'Shared transport; policy at caller' }
+        if ($file -match 'Service[\\/](PlayerFeedback|Messaging|Communication|Gui)\.cs$|Domain[\\/]Core[\\/]CommunicationService\.cs$' -and $name -notlike '*Diagnostic*') { $delivery = 'Shared transport; policy at caller' }
         [pscustomobject][ordered]@{
             File = $file.Replace('\', '/')
             Line = $node.GetLocation().GetLineSpan().StartLinePosition.Line + 1

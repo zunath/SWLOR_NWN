@@ -118,7 +118,8 @@ public class PlayerMessageAuditTests
                 : "Retained"
         };
         if ((file is "SWLOR.Game.Server/Service/PlayerFeedback.cs" or "SWLOR.Game.Server/Service/Messaging.cs" or
-            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Service/Gui.cs") &&
+            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Core/CommunicationService.cs" or
+            "SWLOR.Game.Server/Service/Gui.cs") &&
             !name.Contains("Diagnostic", StringComparison.OrdinalIgnoreCase))
             delivery = "Shared transport; policy at caller";
 

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Composition
         {
             // Core
             services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+            services.AddSingleton<ICommunicationService, CommunicationService>();
 
             // Administration
             services.AddSingleton<IDMBlueprintCatalogService, DMBlueprintCatalogService>();

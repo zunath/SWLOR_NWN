@@ -305,14 +305,16 @@ namespace SWLOR.Game.Server.Service
 
             if (!mission.PaidCredits)
             {
-                if (ObjectPlugin.GetString(player, PaidCreditsVariable) != missionId)
+                if (!AgentCreditMarks.Has(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId))
                 {
                     GiveGoldToCreature(player, mission.Credits);
-                    ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);
+                    ObjectPlugin.SetString(player, PaidCreditsVariable,
+                        AgentCreditMarks.Add(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);
                 }
 
                 // The credits and their mark reach the character file before the mission is saved as paid. A save that fails
-                // leaves the mission unpaid: the mark keeps the credits from being given twice when it is paid again.
+                // leaves the mission unpaid: the mark, which names every mission not yet saved as paid, keeps the credits from
+                // being given twice when it is paid again, whatever missions are paid in between.
                 if (!CharacterCheckpoint.Save(player))
                 {
                     SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so this mission's credits are paid at your next login."));
@@ -320,6 +322,8 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 MarkPaid(player, missionId, x => x.PaidCredits = true);
+                ObjectPlugin.SetString(player, PaidCreditsVariable,
+                    AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);
             }
 
             MarkPaid(player, missionId, x => x.Paid = true);

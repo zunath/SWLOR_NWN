@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Tests.Feature.SpaceItemFixtures;
+using SWLOR.Game.Server.Service.FactionAgentService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -350,10 +351,29 @@ public class SpaceW11nReviewFixTests
         var pay = Between(source, "public static void PayMission(", "private static void FailMission(");
         pay.Should().Contain("Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing, MarkHeld(missionId, x => x.PaidStanding = true));");
         pay.Should().Contain("Currency.GiveCurrency(player, currency, mission.Tokens, MarkHeld(missionId, x => x.PaidTokens = true));");
-        Index(pay, "if (ObjectPlugin.GetString(player, PaidCreditsVariable) != missionId)")
+        Index(pay, "if (!AgentCreditMarks.Has(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId))")
             .Should().BeLessThan(Index(pay, "GiveGoldToCreature(player, mission.Credits);"), "credits already in the character file are not paid again");
-        Index(pay, "ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);")
+        Index(pay, "AgentCreditMarks.Add(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);")
             .Should().BeLessThan(Index(pay, "CharacterCheckpoint.Save(player)"), "the mark is saved in the same character save as the credits");
+        Index(pay, "MarkPaid(player, missionId, x => x.PaidCredits = true);")
+            .Should().BeLessThan(Index(pay, "AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);"),
+                "a mission leaves the mark only once it is saved as paid");
+    }
+
+    [Test]
+    public void AgentCreditMarks_KeepEveryMissionNotYetSavedAsPaid()
+    {
+        // Mission A's save failed; mission B is then paid and saved. A stays in the mark, so A's retry gives nothing.
+        var mark = AgentCreditMarks.Add(string.Empty, "a");
+        mark = AgentCreditMarks.Add(mark, "b");
+        AgentCreditMarks.Has(mark, "a").Should().BeTrue();
+        mark = AgentCreditMarks.Remove(mark, "b");
+        AgentCreditMarks.Has(mark, "a").Should().BeTrue("a later mission's payment never replaces an unsaved one");
+        AgentCreditMarks.Has(mark, "b").Should().BeFalse();
+        AgentCreditMarks.Add(mark, "a").Should().Be(mark, "an id is not added twice");
+        AgentCreditMarks.Remove(mark, "a").Should().BeEmpty();
+        AgentCreditMarks.Has(null, "a").Should().BeFalse();
+        AgentCreditMarks.Has("a", string.Empty).Should().BeFalse();
 
         var faction = ReadSource("Service", "Faction.cs").Replace("\r\n", "\n");
         faction = Between(faction, "public static void AdjustPlayerFactionStanding(", "public static void AdjustPlayerFactionPoints(");

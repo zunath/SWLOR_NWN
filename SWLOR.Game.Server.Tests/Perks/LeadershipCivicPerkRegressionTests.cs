@@ -72,13 +72,12 @@ public class LeadershipCivicPerkRegressionTests
         processCityLevel.Should().Contain("if (level > mayorLevel)");
         processCityLevel.Should().Contain("if (citizenCount >= _citizensRequired[level])");
 
-        var manageCity = ReadSource("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
-        var validateUpgrade = ExtractMethod(
-            manageCity,
-            "private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)");
-        validateUpgrade.Should().Contain("mayor.Perks[PerkType.CityManagement]");
-        validateUpgrade.Should().Contain("if (mayorPerkLevel + 1 <= currentLevel)");
-        validateUpgrade.Should().Contain("Mayor city management perk too low.");
+        // Facility upgrades are City Projects now; starting one still caps the facility at the mayor's City Management rank.
+        var projects = ReadSource("Service", "CityProjects.cs");
+        projects.Should().Contain("mayor.Perks.TryGetValue(PerkType.CityManagement, out var rank)");
+        var projectRules = ReadSource("Service", "CityProjectService", "CityProjectRules.cs");
+        projectRules.Should().Contain("if (mayorCityManagementRank + 1 <= currentLevel)");
+        projectRules.Should().Contain("Mayor city management perk too low.");
     }
 
     [Test]

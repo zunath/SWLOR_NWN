@@ -139,13 +139,17 @@ public class SpaceStaleMenuTests
     [Test]
     public void CityUpgrades_RecheckTheManageUpgradesPermission()
     {
-        var viewModel = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
-        var validate = Between(viewModel, "private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)", "private void HandleUpgrade(");
-        Index(validate, "if (!HasManageUpgradesPermission())").Should().BeLessThan(Index(validate, "return true;"));
+        // Facility upgrades start City Projects. The confirmation calls Start, which checks the power again before escrow takes the credits.
+        var viewModel = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.Projects.cs");
+        var startProject = Between(viewModel, "private void StartProject(CityProjectType type)", "public Action StartHomeGround()");
+        var modal = startProject[Index(startProject, "ShowModal(")..];
+        Index(modal, "CityProjects.Start(_cityId, type, GetObjectUUID(Player), out var project)").Should().BeGreaterThanOrEqualTo(0);
 
-        var handle = Between(viewModel, "private void HandleUpgrade(", "public Action UpgradeMedicalCenterLevel()");
-        var modal = handle[Index(handle, "ShowModal(")..];
-        Index(modal, "if (!ValidateUpgrade(upgradeType, initialPrice))").Should().BeLessThan(Index(modal, "DB.Set(dbCity);"),
+        var projects = ReadServer("Service", "CityProjects.cs");
+        var check = Between(projects, "public static CityProjectRefusal CheckStart(", "public static CityProjectRefusal Start(");
+        Index(check, "CityPowers.Can(city, playerId, CityPower.StartProjects)").Should().BeGreaterThanOrEqualTo(0);
+        var start = projects[Index(projects, "public static CityProjectRefusal Start(")..];
+        Index(start, "var refusal = CheckStart(city, type, playerId);").Should().BeLessThan(Index(start, "CityTreasury.PostEscrow("),
             "the confirmation runs the permission check again before the treasury is spent");
     }
 

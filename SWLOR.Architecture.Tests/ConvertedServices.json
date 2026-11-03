@@ -4,6 +4,7 @@
     { "name": "Achievement", "domain": "Character" },
     { "name": "Area", "domain": "World" },
     { "name": "Bank", "domain": "Economy" },
+    { "name": "BeastMastery", "domain": "Companions" },
     { "name": "ChatCommand", "domain": "Social" },
     { "name": "ChatPortraitTells", "domain": "Social" },
     { "name": "Currency", "domain": "Economy" },

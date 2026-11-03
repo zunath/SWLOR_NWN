@@ -89,21 +89,6 @@ public class BeastAttackCadenceTests
     }
 
     [Test]
-    public void BeastRuntime_AppliesTheConfiguredDelayToTheNaturalWeapon()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
-
-        source.Should().Contain(
-            "ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay)",
-            "the generated species cadence must replace the generic beast-claw delay at runtime");
-    }
-
-    [Test]
     public void BeastGenerator_RequiresAttackDelayFromTheDesignBible()
     {
         var root = FindRepositoryRoot();

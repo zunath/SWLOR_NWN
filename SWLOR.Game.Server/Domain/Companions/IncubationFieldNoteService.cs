@@ -185,9 +185,10 @@ namespace SWLOR.Game.Server.Domain.Companions
         }
 
         /// <summary>
-        /// Every beast type the beast catalog has loaded. The original call into <c>BeastMastery</c> (which is not
-        /// converted yet and holds its catalog in static state that only the module cache fills), on its own so a unit
-        /// test can answer it.
+        /// Every beast type the beast catalog has loaded. The original call into <c>BeastMastery</c>, on its own so a
+        /// unit test can answer it. It goes through the static facade, not an injected <c>IBeastMasteryService</c>:
+        /// the beast service takes this one (it grants the field note of a mutation), so injecting it both ways would
+        /// be a construction cycle.
         /// </summary>
         protected virtual IEnumerable<BeastType> GetAllBeastTypes()
         {

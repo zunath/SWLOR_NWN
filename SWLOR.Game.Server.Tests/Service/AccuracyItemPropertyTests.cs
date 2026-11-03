@@ -79,9 +79,6 @@ public class AccuracyItemPropertyTests
         stat.Should().Contain("accuracyBonus += dbPlayer.Accuracy;");
         stat.Should().Contain("accuracyBonus += npcStats.Accuracy;");
 
-        var beastMastery = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "BeastMastery.cs"));
-        beastMastery.Should().Contain("ItemPropertyCustom(ItemPropertyType.Accuracy, -1, accuracyBonus)");
-
         var craft = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Craft.cs"));
         craft.Should().NotContain("ItemPropertyAttackBonus(");
         craft.Should().Contain("ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount)");

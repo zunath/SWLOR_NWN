@@ -63,17 +63,13 @@ public class IncubationPerkRegressionTests
     public void DNAManipulation_PreservesIncubatorAccessAndHarvestLevelGates()
     {
         var extractor = ReadSource("Feature", "ItemDefinition", "DNAExtractorItemDefinition.cs");
-        var beastMastery = ReadSource("Service", "BeastMastery.cs");
-        var useIncubator = ExtractMethod(beastMastery, "public static void UseIncubator()");
 
         extractor.Should().Contain("var perkLevel = Perk.GetPerkLevel(user, PerkType.DNAManipulation);");
         extractor.Should().Contain("var maxLevel = perkLevel * 10;");
         extractor.Should().Contain("if (level > maxLevel)");
         extractor.Should().Contain("Insufficient 'DNA Manipulation' perk level.");
 
-        useIncubator.Should().Contain("Perk.GetPerkLevel(player, PerkType.DNAManipulation)");
-        useIncubator.Should().Contain("if (dnaManipulationLevel <= 0)");
-        useIncubator.Should().Contain("Perk 'DNA Manipulation I' is required to use incubators.");
+        // The incubator's own gate (no DNA Manipulation perk, no incubator) is pinned by BeastMasteryServiceTests.
     }
 
     [TestCase(0, 10, 129600)]

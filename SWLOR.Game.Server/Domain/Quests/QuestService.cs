@@ -454,6 +454,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                         {
                             if (killTargetObjective.Group != npcGroupType ||
                                 distance > killTargetObjective.MaximumCreditDistance) continue;
+                            if (!killTargetObjective.CountsKill(member, creature)) continue;
 
                             killRequiredForQuestAndState = true;
                             killTargetObjective.Advance(member, questId);

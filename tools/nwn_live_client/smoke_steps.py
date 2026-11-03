@@ -406,7 +406,9 @@ def craft(run, step) -> None:
            click_expect(client, *CRAFT_START, r'Lost Item: Distilled Water', attempts=3, wait=10))
     mark = client.mark()
     made = None
-    for _ in range(6):
+    # The recipe needs three successful syntheses (+10 progress each at a 90% success rate, 23 needed)
+    # and a busy client drops many clicks, so allow a dozen.
+    for _ in range(12):
         client.nui_click(*CRAFT_BASIC_SYNTHESIS)
         made = client.wait_for(r'Acquired Item: Mynock Meat Ball', mark, 7, 1.5)
         if made:

@@ -430,8 +430,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 if (GetArea(member) != GetArea(killer))
                     continue;
 
-                if (GetDistanceBetween(member, creature) > 50f)
-                    continue;
+                var distance = GetDistanceBetween(member, creature);
 
                 var playerId = GetObjectUUID(member);
                 var dbPlayer = _db.Get<Player>(playerId);
@@ -453,7 +452,8 @@ namespace SWLOR.Game.Server.Domain.Quests
                         // Only kill target objectives matching this NPC group ID are processed.
                         if (objective is KillTargetObjective killTargetObjective)
                         {
-                            if (killTargetObjective.Group != npcGroupType) continue;
+                            if (killTargetObjective.Group != npcGroupType ||
+                                distance > killTargetObjective.MaximumCreditDistance) continue;
 
                             killRequiredForQuestAndState = true;
                             killTargetObjective.Advance(member, questId);

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -15,6 +16,22 @@ namespace SWLOR.Game.Server.Tests.Feature;
 // valid as beasts and mutation paths are added or removed.
 public class IncubationFieldNoteTests
 {
+    // The registry is the container's instance of the incubation field note service, which the facade resolves.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     // Every beast definition, built once and reused. Mirrors BeastMastery.LoadBeasts without the
     // engine-bound parts, so the graph is available in a plain unit-test context.
     private static readonly Dictionary<BeastType, BeastDetail> Beasts = BuildAllBeasts();

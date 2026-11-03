@@ -71,9 +71,9 @@ public class AbandonedStationTests
         using (_facades.Install())
         {
             Guild.LoadData();
+            NPCGroup.CacheData();
         }
 
-        NPCGroup.CacheData();
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
             {

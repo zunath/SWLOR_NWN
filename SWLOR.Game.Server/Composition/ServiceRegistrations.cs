@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
@@ -34,6 +36,13 @@ namespace SWLOR.Game.Server.Composition
 
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
+
+            // Companions
+            services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
+            services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
+
+            // Creatures
+            services.AddSingleton<INPCGroupService, NPCGroupService>();
 
             // Economy
             services.AddSingleton<IBankService, BankService>();

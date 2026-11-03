@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private const float ContentPanelWidth = 560f;
         private const float MutationRailWidth = 300f;
-        private const float StageBoxHeight = 56f;
+        private const float StageBoxHeight = 62f;
         private const float StageBoxWidth = 178f;
         private const float PurityRowHeight = 22f;
         private const float PurityRowPitch = 26f;

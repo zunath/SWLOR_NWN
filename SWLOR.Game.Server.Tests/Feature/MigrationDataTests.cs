@@ -11,10 +11,14 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 24 and server migration 29. Player migration 25 is the crafting perk
-    // conversion; at release it folds into the newest player version production has not run.
-    private const int ReleasedPlayerVersion = 24;
-    private const int ReleasedServerVersion = 29;
+    // Production has run player migration 25 and server migration 30. The next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion; update these at each post-release cleanup.
+    // The crafting revamp ships first with player migration NextPlayerVersion; the space revamp follows it with player
+    // migration NextPlayerVersion + 1 and server migration NextServerVersion.
+    private const int ReleasedPlayerVersion = 25;
+    private const int ReleasedServerVersion = 30;
+    private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
+    private const int NextServerVersion = ReleasedServerVersion + 1;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
@@ -28,14 +32,13 @@ public class MigrationDataTests
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
                 CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
                 CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_27_ConvertSpaceItems") });
-        // 25 is master's next release; 26 is the crafting revamp's, which ships on its own; 27 is the space revamp's, which follows it.
+        // 26 is the crafting revamp's, which ships on its own; 27 is the space revamp's, which follows it.
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"), CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"),
-                    CharacterMigrations.Named("_27_ConvertSpaceItems") },
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_27_ConvertSpaceItems") },
                 "each unreleased release receives one combined player-item pass, and the crafting perk conversion ships before the space revamp");
-        CharacterMigrations.VersionOf("_25_ConsolidatePelvisAppearance").Should().Be(ReleasedPlayerVersion + 1);
-        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(ReleasedPlayerVersion + 2);
-        CharacterMigrations.VersionOf("_27_ConvertSpaceItems").Should().Be(ReleasedPlayerVersion + 3);
+        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(NextPlayerVersion);
+        CharacterMigrations.VersionOf("_27_ConvertSpaceItems").Should().Be(NextPlayerVersion + 1);
+        CharacterMigrations.LatestVersion.Should().Be(NextPlayerVersion + 1);
     }
 
     [Test]
@@ -126,12 +129,10 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance), typeof(_31_ConvertSpaceItems) },
-            "each unreleased release (30 next, 31 the space revamp) receives one combined stored-item pass");
-        new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_31_ConvertSpaceItems) },
+            $"the space revamp's release adds one combined stored-item pass as server migration {NextServerVersion}");
         new _31_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _31_ConvertSpaceItems().Version.Should().Be(ReleasedServerVersion + 2);
+        new _31_ConvertSpaceItems().Version.Should().Be(NextServerVersion);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

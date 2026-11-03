@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -289,9 +288,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
-        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
-        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
 
         /// <summary>
@@ -404,7 +401,6 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
-        [JsonConverter(typeof(RenamedNpcGroupsJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, int> CombatProgresses { get; set; } = new();

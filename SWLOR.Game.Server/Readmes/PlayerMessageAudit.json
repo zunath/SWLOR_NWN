@@ -1282,28 +1282,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1859,
+    "Line": 1860,
     "Member": "CloseForUnsupportedAppearance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1992,
+    "Line": 1993,
     "Member": "ApplyDMArmorDisplay",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Your helmet and cloak setting could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2271,
+    "Line": 2272,
     "Member": "SendScaleMessage",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2776,
+    "Line": 2777,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(_target, ColorToken.Green(\"Appearance settings saved successfully.\"))"

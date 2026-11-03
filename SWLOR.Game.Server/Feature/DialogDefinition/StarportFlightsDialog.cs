@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                 if (Planet.TryGetClosedMessage(type, out var closedMessage))
                 {
-                    page.Header += "\n\n" + ColorToken.Red(closedMessage);
+                    page.Header += "\n\n" + closedMessage;
                     continue;
                 }
 

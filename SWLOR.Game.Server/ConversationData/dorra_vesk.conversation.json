@@ -1,0 +1,1564 @@
+{
+  "Id": "dorra_vesk",
+  "Title": "dorra_vesk",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-done",
+      "Conditions": [
+        {
+          "Key": "condition-completed-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t2-ready",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "stablemaster_trial_2",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t2-remind",
+      "Conditions": [
+        {
+          "Key": "condition-has-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t2-offer",
+      "Conditions": [
+        {
+          "Key": "condition-can-accept-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t1-done-locked",
+      "Conditions": [
+        {
+          "Key": "condition-completed-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t1-ready",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "stablemaster_trial_1",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t1-remind",
+      "Conditions": [
+        {
+          "Key": "condition-has-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-t1-offer",
+      "Conditions": [
+        {
+          "Key": "condition-can-accept-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-not-eligible",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-not-eligible": {
+      "Id": "entry-not-eligible",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You're eyeing my pens like you've got a claim on them. You don't.\n\nI sign extra stable slots over to handlers who've run a beast through the worst this desert has. You're not there yet. Come back when your Beast Mastery reaches 50.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-about-locked",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-about-locked": {
+      "Id": "entry-about-locked",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Dewbacks, rontos, and whatever a spacer drags in off a freighter. Every stables terminal from here to Dathomir reads the same registry, so a slot I sign over here holds anywhere. I don't sign them over cheap.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-offer": {
+      "Id": "entry-t1-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That beast of yours. When did it last work for its supper?\n\nYou've got the look of a handler who's run out of room. The stables registry only gives you so many slots unless somebody like me vouches for you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-vouch",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-who",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-who": {
+      "Id": "entry-t1-who",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Dorra Vesk. I've kept the Anchorhead stables for twenty-six years and wrangled dewbacks for ten before that. When I say a handler can keep another animal, the registry listens.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-vouch",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-terms": {
+      "Id": "entry-t1-terms",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I can register one more stable slot under your name. One more beast you can keep, honored at every stables terminal. Two slots, if you earn the second one later.\n\nBut I don't sign for soft animals. Sand Demons have been coming down out of the hills and gutting dewbacks on the caravan routes. Put down eight of them with your beast in the fight. It has to hit every one of them before it drops. I don't care who lands the last blow.\n\nThen extract DNA from three beasts of level 40 or higher. Anywhere in the galaxy. Keep the samples; I only need your extractor's log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-dna",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-where",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-dna": {
+      "Id": "entry-t1-dna",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I breed what I stable, and a herd that only breeds with itself goes wrong. Sequences from strong wild animals keep it honest.\n\nYou'll need an extractor that can take a level-40 corpse and the training to use it. If you can't extract, you can't breed. If you can't breed, you don't need more slots.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-where",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-where": {
+      "Id": "entry-t1-where",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "North of town. The North Hills crawl with them, and they range out into the Northern Dunes, the Flatlands and the Southern Pass. Keep your beast between you and them.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-dna",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-accepted": {
+      "Id": "entry-t1-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. And don't bring me a beast that's never been bloodied. I'll know.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-remind": {
+      "Id": "entry-t1-remind",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Still short. Eight Sand Demons with your beast in every fight, and DNA from three beasts of level 40 or higher.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-where-remind",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t1-recheck",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-onit",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-where-remind": {
+      "Id": "entry-t1-where-remind",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "North Hills, mostly. Northern Dunes, the Flatlands and the Southern Pass when they're hungry. Which is always.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-thanks",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-ready": {
+      "Id": "entry-t1-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That smell is Sand Demon, and the gouge in your beast's hide is new. Let me see that extractor log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-turnin",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-complete": {
+      "Id": "entry-t1-complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Three clean sequences. That'll do.\n\nThere. One more stable slot on the registry with your name on it; any stables terminal will honor it. And take these. My mother's notes on hatching dewbacks. She'd want them used, not kept in a drawer.\n\nThere's one more slot I could sign over. It costs more than the first.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-thanks",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-done-locked": {
+      "Id": "entry-t1-done-locked",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Your first slot's on the registry. The second one is for handlers at the top of their craft. Come back when your Beast Mastery is 50 again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-offer": {
+      "Id": "entry-t2-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Back for the other slot? Thought you might be. Your beast's been eating well.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-price",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-terms": {
+      "Id": "entry-t2-terms",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "One more stable slot, the last I can give. For that I want three things.\n\nDathomir first. Ssurians nest in the Grottos, the Grotto Caverns and the Mountain Caves. Six of them, your beast in every fight. Then DNA from three beasts of level 45 or higher.\n\nThen the worm.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-worm",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t2-why",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t2-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-worm": {
+      "Id": "entry-t2-worm",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Ancient Sand Worm. It lives in the Worm Den, down past the bottom floor of the Tusken Raider Cave. Older than Anchorhead and twice as mean. It swallowed a ronto herd of mine three seasons back, handlers and all.\n\nTake people you trust. Your beast has to get its teeth in before it goes down.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-why",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t2-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-why": {
+      "Id": "entry-t2-why",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Because a beast that only fights on sand is half a beast. Dathomir is wet, dark and full of things that bite back. If yours walks out of those caves, it can go anywhere.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-worm",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t2-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-accepted": {
+      "Id": "entry-t2-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Come back in one piece. Your beast too.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-remind": {
+      "Id": "entry-t2-remind",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Six Ssurians on Dathomir, DNA from three beasts of level 45 or higher, and the Ancient Sand Worm. Your beast in every one of those fights.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-den",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-t2-recheck",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-onit",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-den": {
+      "Id": "entry-t2-den",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Through the Tusken Raider Cave and all the way down. The Tuskens won't thank you for passing through. Bring friends.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-thanks",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-ready": {
+      "Id": "entry-t2-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You smell like worm. Nobody smells like worm and walks in here unless the worm is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-turnin",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t2-complete": {
+      "Id": "entry-t2-complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then that's the last stable slot I can give, and I've never given it to anyone who didn't earn it twice. It's on the registry.\n\nThese are my ronto notes. Don't let anyone tell you rontos are only pack animals.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-thanks",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-t1-recheck": {
+      "Id": "entry-t1-recheck",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hold still. Let me look that beast over again, and your extractor log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t1-recheck-advance",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-t1-recheck-continue",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "1"
+              ],
+              "IsNegated": true
+            }
+          ]
+        }
+      ]
+    },
+    "entry-t2-recheck": {
+      "Id": "entry-t2-recheck",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hold still. Let me look that beast over again, and your extractor log.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-t2-recheck-advance",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-t2-recheck-continue",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "1"
+              ],
+              "IsNegated": true
+            }
+          ]
+        }
+      ]
+    },
+    "entry-recheck-later": {
+      "Id": "entry-recheck-later",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Something's changed since you started talking. Come back and ask me again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-done": {
+      "Id": "entry-done",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Both slots are yours, and the registry knows it. If your beasts need anything, the terminal's right there.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-goodbye",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-goodbye": {
+      "Id": "reply-goodbye",
+      "Text": {
+        "Text": "Goodbye.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-later": {
+      "Id": "reply-later",
+      "Text": {
+        "Text": "Not now.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-thanks": {
+      "Id": "reply-thanks",
+      "Text": {
+        "Text": "Thanks.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-onit": {
+      "Id": "reply-onit",
+      "Text": {
+        "Text": "I'm on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-about-locked": {
+      "Id": "reply-about-locked",
+      "Text": {
+        "Text": "What are these pens for?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-about-locked",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-who": {
+      "Id": "reply-t1-who",
+      "Text": {
+        "Text": "Who are you to vouch for anyone?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-who",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-vouch": {
+      "Id": "reply-t1-vouch",
+      "Text": {
+        "Text": "Can you vouch for me?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-terms",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-dna": {
+      "Id": "reply-t1-dna",
+      "Text": {
+        "Text": "What do you want with DNA logs?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-dna",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-where": {
+      "Id": "reply-t1-where",
+      "Text": {
+        "Text": "Where do the Sand Demons hunt?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-where",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-accept": {
+      "Id": "reply-t1-accept",
+      "Text": {
+        "Text": "Eight Sand Demons and three DNA samples. I'll do it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-where-remind": {
+      "Id": "reply-t1-where-remind",
+      "Text": {
+        "Text": "Where were the Sand Demons again?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-where-remind",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-turnin": {
+      "Id": "reply-t1-turnin",
+      "Text": {
+        "Text": "[Show her the extractor log] Register my slot.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-complete",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-price": {
+      "Id": "reply-t2-price",
+      "Text": {
+        "Text": "Name the price.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-terms",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-worm": {
+      "Id": "reply-t2-worm",
+      "Text": {
+        "Text": "The worm?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-worm",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-why": {
+      "Id": "reply-t2-why",
+      "Text": {
+        "Text": "Why send me to Dathomir?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-why",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-accept": {
+      "Id": "reply-t2-accept",
+      "Text": {
+        "Text": "Six Ssurians, three samples and the worm. Consider it done.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-den": {
+      "Id": "reply-t2-den",
+      "Text": {
+        "Text": "How do I reach the Worm Den?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-den",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-turnin": {
+      "Id": "reply-t2-turnin",
+      "Text": {
+        "Text": "It's dead. Register the last slot.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-complete",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-recheck": {
+      "Id": "reply-t1-recheck",
+      "Text": {
+        "Text": "I have everything. Check again.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-recheck",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t1-recheck-advance": {
+      "Id": "reply-t1-recheck-advance",
+      "Text": {
+        "Text": "[Wait while she checks.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_1"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-t1-remind",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": true
+    },
+    "reply-t1-recheck-continue": {
+      "Id": "reply-t1-recheck-continue",
+      "Text": {
+        "Text": "Well?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t1-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_1",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-recheck-later",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-recheck": {
+      "Id": "reply-t2-recheck",
+      "Text": {
+        "Text": "I have everything. Check again.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-recheck",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-t2-recheck-advance": {
+      "Id": "reply-t2-recheck-advance",
+      "Text": {
+        "Text": "[Wait while she checks.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "stablemaster_trial_2"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-t2-remind",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": true
+    },
+    "reply-t2-recheck-continue": {
+      "Id": "reply-t2-recheck-continue",
+      "Text": {
+        "Text": "Well?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-t2-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "stablemaster_trial_2",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-recheck-later",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

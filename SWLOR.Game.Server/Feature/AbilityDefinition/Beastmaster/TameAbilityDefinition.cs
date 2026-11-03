@@ -89,13 +89,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
                     }
 
-                    var maxBeasts = 1 + Perk.GetPerkLevel(activator, PerkType.Stabling);
+                    var maxBeasts = BeastStableCapacity.GetCapacity(activator);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
                     var beastCount = (int)DB.SearchCount(dbQuery);
                     if (beastCount >= maxBeasts)
                     {
-                        return $"You have already tamed the maximum number of beasts your perks support.";
+                        return "Your stables are full. Release a beast or expand your stables first.";
                     }
 
                     return string.Empty;

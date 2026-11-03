@@ -50,13 +50,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "You already have a beast.";
                     }
 
-                    var maxBeasts = 1 + Perk.GetPerkLevel(user, PerkType.Stabling);
+                    var maxBeasts = BeastStableCapacity.GetCapacity(user);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
                     var beastCount = (int)DB.SearchCount(dbQuery);
                     if (beastCount >= maxBeasts)
                     {
-                        return $"You have already tamed the maximum number of beasts your perks support.";
+                        return "Your stables are full. Release a beast or expand your stables first.";
                     }
 
                     return string.Empty;

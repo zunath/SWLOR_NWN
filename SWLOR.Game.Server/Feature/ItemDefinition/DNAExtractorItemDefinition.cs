@@ -151,6 +151,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     SetName(dna, $"Beast DNA: {beastDetail.Name}");
+                    BeastStableTrials.RecordDnaExtraction(user, level, target);
                     DestroyObject(target);
                     var body = GetLocalObject(target, Loot.CorpseBodyVariable);
                     AssignCommand(body, () => SetIsDestroyable());

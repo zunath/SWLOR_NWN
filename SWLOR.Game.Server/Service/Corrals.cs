@@ -682,6 +682,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static int ApplyPredatorPenalty(WorldProperty city, DateTime now)
         {
+            // Each corral's farmhand finishes the work it owed before the raid first, so the penalty only stops products from now on.
+            foreach (var corralId in GetAnimalsInCity(city.Id).Select(animal => animal.CorralId).Distinct().ToList())
+                Farmhands.CatchUp(corralId);
+
             var animals = GetAnimalsInCity(city.Id);
             foreach (var animal in animals)
             {

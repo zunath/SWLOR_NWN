@@ -1984,6 +1984,11 @@ namespace SWLOR.Game.Server.Service
             // An election that seats a mayor ends the Acting Mayor's term, and the end of a step-down election ends the step-down.
             var successionChange = CitySuccession.ApplyElectionEnd(city, election.Kind, outcome.HasMandate, seatChanged);
 
+            // Edicts the election lets resume pay for the rest of the week, measured against what was billed before the pauses
+            // clear; holdings under the Industrial Charter settle up to the change first.
+            var billedBefore = Edict.GetBilledTypes(city);
+            IndustrialCharter.SettleCity(city);
+
             // Only an outright win ends a No confidence pause; ties, No results and empty elections leave things as they were.
             if (outcome.SetsNoConfidence && !city.NoConfidenceSinceUtc.HasValue)
                 city.NoConfidenceSinceUtc = now;
@@ -2006,6 +2011,10 @@ namespace SWLOR.Game.Server.Service
             var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
             if (platformEnactment == null && seatChanged)
                 EdictChanges.ClearPlatformOrigin(city);
+
+            // Without a platform to replace them, the Edicts the cleared pauses let resume pay for the days left in the week.
+            if (platformEnactment == null)
+                Edict.AddResumedBilling(city, billedBefore, now);
 
             city.LastElectionResult = new ElectionResultRecord
             {

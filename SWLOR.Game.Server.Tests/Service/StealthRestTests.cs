@@ -43,6 +43,7 @@ public class StealthRestTests
                 public static bool GetIsDM(uint creature) => DM;
                 public static bool GetIsInCombat(uint creature) => Combat;
                 public static int GetLocalInt(uint creature, string name) => CombatWindow ? 1 : 0;
+                public static void DeleteLocalInt(uint creature, string name) { }
                 public static bool GetActionMode(uint creature, ActionMode mode) => NativeStealth;
                 public static void SetActionMode(uint creature, ActionMode mode, bool enabled) => NativeStealth = enabled;
                 public static void AssignCommand(uint creature, Action action) => action();

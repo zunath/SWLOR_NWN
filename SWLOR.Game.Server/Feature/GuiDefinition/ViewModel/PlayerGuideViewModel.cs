@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 2-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 2-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /helm and /cloak to show or hide your helmet and cloak, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
                     },
                     new[]
                     {
@@ -637,7 +637,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What helps XP gain?", "Social improves XP gain."),
                         new QuestionAnswer("What helps stamina?", "Might increases maximum STM and natural STM regeneration.")
                     },
-                    new[] { "Skills", "Abilities", "Perks", "Rebuilds", "Combat Basics", "Death & Recovery", "Common Questions" }),
+                    new[] { "Skills", "Abilities", "Perks", "Rebuilds", "Combat Basics", "Stat Caps", "Death & Recovery", "Common Questions" }),
 
                 new(
                     "Rebuilds",
@@ -749,7 +749,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
                     },
-                    new[] { StatusEffectGuideTopics.TopicName, "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
+                    new[] { "Stat Caps", StatusEffectGuideTopics.TopicName, "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
+
+                new(
+                    "Stat Caps",
+                    "Combat",
+                    "Where character and combat stats stop, so you know when more of a stat no longer helps.",
+                    "Where stats stop",
+                    new[]
+                    {
+                        new ArticleBlock("Character Progression",
+                            "Skills that count toward the skill cap can reach 400 total ranks. Every 10 earned SP grants 1 AP, up to 40 AP. AP upgrades raise an attribute to at most 26; a racial bonus can take one attribute to 27."),
+                        new ArticleBlock("Hit Chance",
+                            $"Final hit chance always lands between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent, however high or low Accuracy and Evasion are. Bosses always keep at least a {Combat.BossMinimumHitRate} percent chance to hit."),
+                        new ArticleBlock("Critical Hits",
+                            $"Critical chance is at least {Combat.MinimumCriticalRate} percent and at most {Combat.MaximumCriticalRate} percent. Critical Damage bonuses add at most +{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit."),
+                        new ArticleBlock("Damage Dealt",
+                            $"Percentage damage bonuses together can raise a hit by at most +{Combat.MaximumDamageBonusPercent} percent, double its base damage. Flat damage bonuses are added on top of that cap, and stance changes to ordinary weapon auto-attack damage apply after it."),
+                        new ArticleBlock("Damage Taken",
+                            $"Percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined. Reductions from Leadership abilities, Guard, and elemental resistance are applied separately on top of that, and damage immunity effects stop a hit entirely."),
+                        new ArticleBlock("Guard",
+                            $"Guard chance can reach {Stat.MaximumGuardChance} percent. A guarded hit loses {Combat.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {Combat.MaximumGuardDamageReductionPercent} percent."),
+                        new ArticleBlock("Deflection",
+                            $"Melee and Ranged Deflection chance each stop at {Stat.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {Stat.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent."),
+                        new ArticleBlock("Resistances",
+                            $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {Resistance.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {Resistance.MaximumResistance} percent."),
+                        new ArticleBlock("Attack Speed and Movement",
+                            $"Attack speed bonuses shorten your attack delay by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(Stat.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
+                        new ArticleBlock("Combat Readiness",
+                            $"Combat Readiness stops at {Stat.MaximumCombatReadinessPercent} percent."),
+                        new ArticleBlock("Healing From Damage",
+                            $"Healing from damage you deal, such as lifesteal, is at most {Combat.MaximumDamageDerivedHealingPercentPerHit} percent of that hit's damage. An activated ability heals you at most {Combat.MaximumActivatedDamageHealingMaxHPPercent} percent of your maximum HP this way per use. Passive on-hit healing gives at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit} percent of your maximum HP per hit ({Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit} percent for effects with their own cooldown) and at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow} percent every {Combat.CombatHealingWindowSeconds} seconds. Healing from defeating enemies gives at most {Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow} percent of your maximum HP every {Combat.CombatHealingWindowSeconds} seconds."),
+                        new ArticleBlock("Hard Crowd Control",
+                            $"Hard crowd control lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds, however long it was meant to last. Against players it is then halved by the PvP rules.")
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("Why does my hit chance never reach 100?", $"Final hit chance stops at {Combat.MaximumHitRate} percent, so more Accuracy past that point does not help."),
+                        new QuestionAnswer("What is the highest critical chance?", $"{Combat.MaximumCriticalRate} percent."),
+                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {Resistance.MaximumResistance - 1} percent outside temporary immunity effects."),
+                        new QuestionAnswer("How high can attributes go?", "AP upgrades stop at 26. A racial bonus can raise one attribute to 27.")
+                    },
+                    new[] { "Combat Basics", "Attributes", "Skills", "Force Affinity", StatusEffectGuideTopics.TopicName, "PvP Combat" }),
 
                 new(
                     "Espionage",

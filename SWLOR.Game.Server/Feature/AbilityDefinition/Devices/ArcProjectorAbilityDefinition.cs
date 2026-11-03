@@ -32,17 +32,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ArcProjector1(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector1, "Arc Projector I", 1, Rank1BaseDamage, 3);
+            ConfigureArcProjector(builder, FeatType.ArcProjector1, "Arc Projector I", 1, Rank1BaseDamage, 2);
         }
 
         private static void ArcProjector2(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector2, "Arc Projector II", 2, Rank2BaseDamage, 4);
+            ConfigureArcProjector(builder, FeatType.ArcProjector2, "Arc Projector II", 2, Rank2BaseDamage, 2);
         }
 
         private static void ArcProjector3(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector3, "Arc Projector III", 3, Rank3BaseDamage, 5);
+            ConfigureArcProjector(builder, FeatType.ArcProjector3, "Arc Projector III", 3, Rank3BaseDamage, 3);
         }
 
         private static void ConfigureArcProjector(

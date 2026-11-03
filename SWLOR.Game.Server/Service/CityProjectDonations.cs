@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             {
                 TakeItems(_player, donation.Resref, donation.Count);
                 ObjectPlugin.SetString(_player, MarkVariable, CityProjectDonationRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id), true);
-                ExportSingleCharacter(_player);
+                CharacterCheckpoint.Save(_player);
             }
 
             public void ClearMark(string donationId)
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
                 else
                     ObjectPlugin.SetString(_player, MarkVariable, mark, true);
 
-                ExportSingleCharacter(_player);
+                CharacterCheckpoint.Save(_player);
             }
 
             public bool IsApplied(CityProjectDonation donation)

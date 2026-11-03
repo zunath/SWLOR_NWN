@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Service
 
             // The credits and the mark reach the character file before the records go, so a restart cannot pay twice.
             ObjectPlugin.SetString(player, DeliveredVariable, string.Join(IdSeparator, records.Select(x => x.Id)), true);
-            ExportSingleCharacter(player);
+            CharacterCheckpoint.Save(player);
 
             foreach (var record in records)
             {
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             ObjectPlugin.DeleteString(player, DeliveredVariable);
-            ExportSingleCharacter(player);
+            CharacterCheckpoint.Save(player);
 
             foreach (var record in records)
             {
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             ObjectPlugin.DeleteString(player, DeliveredVariable);
-            ExportSingleCharacter(player);
+            CharacterCheckpoint.Save(player);
         }
 
         private static List<PendingCredit> Load(string playerId)

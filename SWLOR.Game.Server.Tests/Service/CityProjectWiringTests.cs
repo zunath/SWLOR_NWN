@@ -224,13 +224,13 @@ public class CityProjectWiringTests
 
         var take = ExtractMethod(service, "public void TakeAndMark(CityProjectDonation donation)");
         ShouldComeBefore(take, "TakeItems(_player, donation.Resref, donation.Count)", "ObjectPlugin.SetString(_player, MarkVariable");
-        ShouldComeBefore(take, "ObjectPlugin.SetString(_player, MarkVariable", "ExportSingleCharacter(_player)");
+        ShouldComeBefore(take, "ObjectPlugin.SetString(_player, MarkVariable", "CharacterCheckpoint.Save(_player)");
         take.Should().Contain("donation.Id), true)", "the mark is saved in the character file");
         take.Should().NotContain("DB.Set", "the project and the record are not this step's");
 
         var clear = ExtractMethod(service, "public void ClearMark(string donationId)");
-        clear.Should().Contain("ExportSingleCharacter(_player)", "the cleared mark is saved too");
-        ShouldComeBefore(clear, "CityProjectDonationRules.RemoveMark(", "ExportSingleCharacter(_player)");
+        clear.Should().Contain("CharacterCheckpoint.Save(_player)", "the cleared mark is saved too");
+        ShouldComeBefore(clear, "CityProjectDonationRules.RemoveMark(", "CharacterCheckpoint.Save(_player)");
 
         var apply = ExtractMethod(service, "public void ApplyToProject(CityProjectDonation donation)");
         ShouldComeBefore(apply, "CityProjectDonationRules.Apply(project, donation", "DB.Set(project)");

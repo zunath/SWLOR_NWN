@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service
                 LastProcessedUtc = now,
             };
             SetLocalString(controller, AssigningVariable, $"{targetId}|{assignmentId}");
-            ExportSingleCharacter(player);
+            CharacterCheckpoint.Save(player);
 
             DB.Set(farmhand);
             SaveReceipt(farmhand);
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Service
             // The returned controller is marked and saved with the character before the farmhand lets the droid go, so a restart
             // in between leaves a marked controller the next login settles by clearing the farmhand.
             SetLocalString(item, RecalledVariable, $"{targetId}|{farmhand.DroidAssignmentId}");
-            ExportSingleCharacter(player);
+            CharacterCheckpoint.Save(player);
 
             SendMessageToPC(player, ColorToken.Green($"{farmhand.DroidName} returns to you."));
             Release(farmhand, player);

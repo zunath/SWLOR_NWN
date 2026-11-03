@@ -8,13 +8,13 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
     {
         Invalid = 0,
 
-        // Only obtainable by actually performing the mutation. Never sold or dropped.
-        DiscoveryOnly = 1,
+        // Not sold. Dropped by rare spawn elites (and by discovery).
+        RareSpawnDrop = 1,
 
-        // Obtainable from boss loot tables (and by discovery). Never sold in a store.
+        // Not sold. Dropped by bosses and other non-rare-spawn creatures (and by discovery).
         BossDrop = 2,
 
-        // Obtainable from special stores and loot (and by discovery).
+        // Sold by the field note vendor, and may also drop (and by discovery).
         Store = 3,
     }
 }

@@ -30,7 +30,10 @@ public static class QuickCraftService
             return eligibility;
 
         if (!Craft.CanPlayerCraftRecipe(player, recipeType))
-            return QuickCraftEligibility.Refused("Recipe requirements not met.");
+        {
+            var problem = Craft.GetRequirementProblem(player, recipeType);
+            return QuickCraftEligibility.Refused(string.IsNullOrWhiteSpace(problem) ? "Recipe requirements not met." : problem);
+        }
 
         return QuickCraftEligibility.Eligible;
     }

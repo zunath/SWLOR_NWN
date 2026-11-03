@@ -23620,6 +23620,358 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Veles Fountain Statue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5130"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Veles Street Lamp"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5131"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Orchard Planter"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5132"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Viscaran Fern Cluster"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5133"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tide Fountain"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5138"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Giant Reef Shell"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5139"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Reef Kolto Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5140"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Kelp Garden Planter"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5141"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Obelisk"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5146"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Standard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5147"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Pedestal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5148"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tomb Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5149"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Mandalorian Armor Stand"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5154"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Rifle Rack"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5155"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Weapons Crate"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5156"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Hearth Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5157"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Moisture Vaporator"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5162"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Water Barrels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5163"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tusken Rifle Mount"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5164"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Desert Food Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5165"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Enclave Ruin Block"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5170"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Khoonda Dairy Vat"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5171"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Plains Crop Rows"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5172"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Grain Sacks"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5173"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Nightsister Cauldron"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5178"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Rancor Skull"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5179"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bone Tree"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5180"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Coven Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5181"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Cryo Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5186"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Hydroponic Trough"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5187"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Cargo Crate Stack"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5188"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Crew Locker"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5189"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {
@@ -61560,6 +61912,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Acolyte's Roast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_korr_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Acorn Cookies"
                     },
                     "RESREF": {
@@ -61609,6 +61972,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ara_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Kelp Chowder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_mcal_dish"
                     }
                   },
                   {
@@ -61923,6 +62297,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Clan Hearth Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_hutl_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Coarse Fish Substitute I"
                     },
                     "RESREF": {
@@ -62187,6 +62572,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Coven Oregano Au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dath_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal Sushi"
                     },
                     "RESREF": {
@@ -62214,6 +62610,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dan_flapjack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Ginger Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_korr_drink"
                     }
                   },
                   {
@@ -62379,6 +62786,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pf_dryfruit_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dune Sage Melon Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_tato_drink"
                     }
                   },
                   {
@@ -62737,6 +63155,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hydroponic Spacer Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_stat_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Idol Sushi"
                     },
                     "RESREF": {
@@ -62841,6 +63270,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keeb_binggona"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Khoonda Cream Au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dant_drink"
                     }
                   },
                   {
@@ -63155,6 +63595,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nightsister Cauldron Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dath_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Noodles"
                     },
                     "RESREF": {
@@ -63204,6 +63655,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "orange_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orchard Cider Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_visc_drink"
                     }
                   },
                   {
@@ -63270,6 +63732,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pine_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plains Harvest Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dant_dish"
                     }
                   },
                   {
@@ -63947,6 +64420,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tidepool Pineapple Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_mcal_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tiger Pot Pie"
                     },
                     "RESREF": {
@@ -64046,6 +64530,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Veles Orchard Roast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_visc_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Herb Soup"
                     },
                     "RESREF": {
@@ -64073,6 +64568,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warrior's Acorn Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_hutl_drink"
                     }
                   },
                   {
@@ -64211,6 +64717,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Womp Farmer's Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_tato_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Womp Rat Broth"
                     },
                     "RESREF": {
@@ -64238,6 +64755,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yellow_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zero-G Melon Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_stat_drink"
                     }
                   },
                   {

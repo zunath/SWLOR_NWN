@@ -18,6 +18,12 @@ public interface ICraftSessionWorld
     /// <summary>True when the player meets the recipe's skill and other requirements. It does not check materials.</summary>
     bool CanCraft(uint player, RecipeType recipe);
 
+    /// <summary>
+    /// The reason one of the recipe's own requirements (a perk, an unlock, a Shipyard, a planet identity) stops the player from crafting it
+    /// now, in the requirement's words, or an empty string when none does.
+    /// </summary>
+    string GetRequirementProblem(uint player, RecipeType recipe);
+
     /// <summary>Returns the reason the blueprint cannot be used for the recipe now, or an empty string when it can.</summary>
     string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe);
 

@@ -61,7 +61,11 @@ public sealed class CraftSessionLifecycle
             Fail(player, dbPlayer, CraftSessionEndReason.Replaced);
 
         if (!_world.CanCraft(player, request.Recipe))
-            return CraftSessionStartResult.Refused("Recipe requirements not met!");
+        {
+            // A requirement of the recipe's own says what is missing in its own words (a planet identity recipe says where to craft it).
+            var problem = _world.GetRequirementProblem(player, request.Recipe);
+            return CraftSessionStartResult.Refused(string.IsNullOrWhiteSpace(problem) ? "Recipe requirements not met!" : problem);
+        }
 
         var recipe = _world.GetRecipe(request.Recipe);
         if (request.HasBlueprint)

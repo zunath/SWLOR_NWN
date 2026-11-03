@@ -1,41 +1,14 @@
 using System.Text.Json;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
+/// <summary>
+/// The module data of the casino slot machine. The service's behaviour (payouts, eligibility, spins) is tested on the
+/// instance in <c>Domain/Economy/CasinoSlotServiceTests</c>.
+/// </summary>
 public class CasinoSlotTests
 {
-    [Test]
-    public void PayoutsRetainTheHouseEdge()
-    {
-        var payouts = Enumerable.Range(0, 10000).Select(CasinoSlot.GetPayout).ToArray();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(payouts.Count(p => p == 0), Is.EqualTo(7000));
-            Assert.That(payouts.Count(p => p == 100), Is.EqualTo(2000));
-            Assert.That(payouts.Count(p => p == 500), Is.EqualTo(800));
-            Assert.That(payouts.Count(p => p == 1000), Is.EqualTo(190));
-            Assert.That(payouts.Count(p => p == 10000), Is.EqualTo(10));
-            Assert.That(payouts.Max(), Is.EqualTo(CasinoSlot.MaximumPayout));
-            Assert.That(payouts.Average(), Is.EqualTo(89));
-            Assert.That(CasinoSlot.SpinCost, Is.EqualTo(100));
-        }
-    }
-
-    [TestCase(-1)]
-    [TestCase(10000)]
-    public void InvalidRollsAreRejected(int roll) =>
-        Assert.Throws<ArgumentOutOfRangeException>(() => CasinoSlot.GetPayout(roll));
-
-    [TestCase("pw_ar_nscasino", "swd_smach02", "SWTOR_SLOT2", true)]
-    [TestCase("pw_ar_narshahub", "swd_smach02", "SWTOR_SLOT2", false)]
-    [TestCase("tat_anc_junix", "swd_smach02", "SWTOR_SLOT2", false)]
-    [TestCase("pw_ar_nscasino", "swd_smach06", "SWTOR_SLOT2", false)]
-    [TestCase("pw_ar_nscasino", "swd_smach02", "OTHER", false)]
-    public void OnlyTheCasinoMachineIsEligible(string area, string resref, string tag, bool expected) =>
-        Assert.That(CasinoSlot.IsCasinoMachine(area, resref, tag), Is.EqualTo(expected));
-
     [Test]
     public void OnlyOneCasinoInstanceIsEnabledAndBlueprintStaysDecorative()
     {

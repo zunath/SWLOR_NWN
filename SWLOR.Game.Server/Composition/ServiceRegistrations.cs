@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Economy
             services.AddSingleton<IBankService, BankService>();
+            services.AddSingleton<ICasinoSlotService, CasinoSlotService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
             services.AddSingleton<IGuildService, GuildService>();
             services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
@@ -65,8 +66,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ILightsaberWorkbenchService, LightsaberWorkbenchService>();
             services.AddSingleton<ILootService, LootService>();
             services.AddSingleton<IOverflowStorageService, OverflowStorageService>();
+            services.AddSingleton<IWardrobeService, WardrobeService>();
 
             // Quests
+            services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();

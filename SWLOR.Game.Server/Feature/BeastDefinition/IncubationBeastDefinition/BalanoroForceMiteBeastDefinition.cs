@@ -31,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.VoidmireEcho)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Sunday)
 
                 ;
 

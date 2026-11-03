@@ -32,10 +32,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.HouseCat)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
                 ;
 

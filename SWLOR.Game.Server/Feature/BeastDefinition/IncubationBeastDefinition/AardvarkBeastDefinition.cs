@@ -31,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.CrystalflowSkimmer)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday)
 
                 ;
 

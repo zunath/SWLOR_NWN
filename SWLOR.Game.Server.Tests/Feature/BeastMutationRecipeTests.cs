@@ -96,11 +96,23 @@ public class BeastMutationRecipeTests
         return CanOneJobMeetBoth(recipe, new Recipe(), stagesPerJob);
     }
 
-    private static IEnumerable<(BeastType Parent, MutationDetail Slime)> SlimeMutations()
+    // The failure beasts: dead ends a player picks on purpose with a recipe of their own.
+    private static readonly BeastType[] BadOutcomes =
+    {
+        BeastType.MustardlashSlime,
+        BeastType.OchreMaw,
+        BeastType.GraymireAmalgam,
+        BeastType.VoidmireEcho,
+        BeastType.CrystalflowSkimmer,
+        BeastType.GreenbulkWallow,
+        BeastType.HouseCat,
+    };
+
+    private static IEnumerable<(BeastType Parent, MutationDetail Bad)> BadOutcomeMutations()
     {
         foreach (var (parent, detail) in BeastDefinitionCatalog.All)
         {
-            foreach (var mutation in detail.PossibleMutations.Where(m => m.Type == BeastType.MustardlashSlime))
+            foreach (var mutation in detail.PossibleMutations.Where(m => BadOutcomes.Contains(m.Type)))
             {
                 yield return (parent, mutation);
             }
@@ -108,39 +120,44 @@ public class BeastMutationRecipeTests
     }
 
     [Test]
-    public void MustardlashSlime_IsReachableFromParents()
+    public void BadOutcomes_AreReachableFromTwoOrMoreParents()
     {
-        SlimeMutations().Should().NotBeEmpty();
+        foreach (var bad in BadOutcomes)
+        {
+            BadOutcomeMutations().Count(pair => pair.Bad.Type == bad).Should().BeGreaterThanOrEqualTo(2, $"{bad} is a dead end players choose on purpose");
+            BeastDefinitionCatalog.All[bad].PossibleMutations.Should().BeEmpty($"{bad} is a dead end");
+        }
     }
 
     [Test]
-    public void MustardlashSlimeRecipes_NeverShareAJobWithTheParentsOtherMutations()
+    public void BadOutcomeRecipes_NeverShareAJobWithAnotherMutationOfTheParent()
     {
         var stages = GetStagesPerJob();
 
-        foreach (var (parent, slime) in SlimeMutations())
+        foreach (var (parent, bad) in BadOutcomeMutations())
         {
-            var slimeRecipe = BuildRecipe(slime);
+            var badRecipe = BuildRecipe(bad);
 
-            foreach (var other in BeastDefinitionCatalog.All[parent].PossibleMutations.Where(m => m.Type != BeastType.MustardlashSlime))
+            foreach (var other in BeastDefinitionCatalog.All[parent].PossibleMutations.Where(m => !ReferenceEquals(m, bad)))
             {
-                CanOneJobMeetBoth(slimeRecipe, BuildRecipe(other), stages).Should().BeFalse(
-                    $"a job that makes {other.Type} from {parent} must never also be able to make Mustardlash Slime");
+                CanOneJobMeetBoth(badRecipe, BuildRecipe(other), stages).Should().BeFalse(
+                    $"a job that makes {other.Type} from {parent} must never also be able to make {bad.Type}");
             }
         }
     }
 
     [Test]
-    public void MustardlashSlimeRecipes_AreDeliberateAndReachable()
+    public void BadOutcomeRecipes_AreDeliberateAndReachable()
     {
         var stages = GetStagesPerJob();
 
-        foreach (var (parent, slime) in SlimeMutations())
+        foreach (var (parent, bad) in BadOutcomeMutations())
         {
-            slime.Requirements.Should().NotBeEmpty($"{parent}'s Mustardlash Slime needs its own recipe");
+            bad.Requirements.Should().NotBeEmpty($"{parent}'s {bad.Type} needs its own recipe");
 
-            var recipe = BuildRecipe(slime);
-            CanOneJobMeet(recipe, stages).Should().BeTrue($"{parent}'s Mustardlash Slime recipe must fit in one job");
+            var recipe = BuildRecipe(bad);
+            recipe.Enzymes.Should().NotBeEmpty($"{parent}'s {bad.Type} recipe needs enzymes, not only a day");
+            CanOneJobMeet(recipe, stages).Should().BeTrue($"{parent}'s {bad.Type} recipe must fit in one job");
         }
     }
 

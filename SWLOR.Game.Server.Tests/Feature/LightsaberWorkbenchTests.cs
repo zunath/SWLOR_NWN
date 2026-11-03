@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -14,6 +15,22 @@ public class LightsaberWorkbenchTests
 {
     private const int LightsaberBaseItem = 512;
     private const int SaberstaffBaseItem = 511;
+
+    // The catalog tests call the workbench through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]
     public void KyberToken_IsCursedPlotSingleStackAndActivatable()
@@ -46,9 +63,8 @@ public class LightsaberWorkbenchTests
         consumables.Should().Contain("_builder.Create(\"kyber_token\")");
         consumables.Should().Contain("Currency.GiveCurrency(user, CurrencyType.KyberToken, 1);");
 
-        var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
-        workbench.Should().Contain("Currency.GetCurrency(player, CurrencyType.KyberToken)");
-
+        // The bench's own check (a Kyber Token in the wallet is required) is exercised by
+        // LightsaberWorkbenchServiceTests.ValidateAccess_*.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);");
     }

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
@@ -39,6 +40,13 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICurrencyService, CurrencyService>();
             services.AddSingleton<IGuildService, GuildService>();
             services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
+
+            // Items
+            services.AddSingleton<IEquipmentUnequipService, EquipmentUnequipService>();
+            services.AddSingleton<IItemTrashService, ItemTrashService>();
+            services.AddSingleton<IKeyItemService, KeyItemService>();
+            services.AddSingleton<ILightsaberWorkbenchService, LightsaberWorkbenchService>();
+            services.AddSingleton<IOverflowStorageService, OverflowStorageService>();
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();

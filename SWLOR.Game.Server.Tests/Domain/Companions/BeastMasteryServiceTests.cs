@@ -1129,12 +1129,11 @@ public class BeastMasteryServiceTests
     public void The_liked_and_the_hated_food_are_two_different_foods_drawn_in_order()
     {
         var foods = Enum.GetValues<BeastFoodType>().Where(food => food != BeastFoodType.Invalid).ToList();
+        // The second draw of a service that forgot to take the liked food out of the list would pick the liked food again.
         var seed = SeedWhere(random =>
         {
             var liked = random.Next(foods.Count);
-            var left = foods.ToList();
-            left.RemoveAt(liked);
-            return random.Next(left.Count) >= liked;
+            return random.Next(foods.Count) == liked;
         });
         Random.SetSeed(seed);
         var replay = new System.Random(seed);
@@ -1672,6 +1671,18 @@ public class BeastMasteryServiceTests
             return random.NextDouble() * 60 <= 10;
         });
         Random.SetSeed(bearbugSeed);
+
+        _service.CreateBeastEgg(job, Player);
+
+        _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
+    }
+
+    [Test]
+    public void A_mutation_roll_equal_to_the_chance_still_mutates()
+    {
+        Random.SetSeed(7);
+        var roll = new System.Random(7).Next(1000);
+        var job = Job(mutationChance: roll);
 
         _service.CreateBeastEgg(job, Player);
 

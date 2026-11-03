@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CivicExchangeService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service
@@ -104,9 +105,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Rolls the crate, then writes the records and gives the items: the XP and the week's allowance are saved first and the
-        /// materials second, so a restart can lose a crate but never hand one out twice. What does not fit in the inventory goes to
-        /// overflow storage (/overflow).
+        /// Rolls the crate, then pays for it and gives the items in one journaled withdrawal (<see cref="TransferJournal"/>): the XP and
+        /// the week's allowance are paid, and the character file is saved holding the materials, so a restart can neither lose the
+        /// crate after taking the XP nor hand one out twice. What does not fit in the inventory goes to overflow storage (/overflow).
         /// </summary>
         private static string BuyCrate(uint player, Player dbPlayer, CivicExchangeItem item, CivicExchangeAllowance allowance, DateTime now)
         {
@@ -117,20 +118,17 @@ namespace SWLOR.Game.Server.Service
             if (contents.Count == 0)
                 return $"The {item.Name} is out of stock. You were not charged.";
 
-            dbPlayer.UnallocatedXP -= item.PriceXp;
-            DB.Set(dbPlayer);
-            CivicExchangeRules.RecordCrate(allowance, now);
-            DB.Set(allowance);
-
+            // The XP and the week's allowance are paid and the character is saved holding the materials in one journaled withdrawal (the
+            // transfer journal), so a restart cannot take the XP and lose the crate, or hand out a crate the XP never paid for.
             var playerId = GetObjectUUID(player);
-            var location = GetLocation(player);
-            var overflow = 0;
+            var entry = TransferJournalRules.Create(playerId, CrateKind, TransferDirection.Withdraw, playerId, "Your Civic Exchange crate", now, item.PriceXp.ToString(), allowance.Key);
             foreach (var (resref, count) in contents)
             {
-                overflow += FarmItems.Give(player, playerId, resref, count, location);
+                entry.Items.Add(TransferJournalRules.Plain(resref, Cache.GetItemNameByResref(resref) ?? resref, count));
             }
 
-            ExportSingleCharacter(player);
+            TransferJournal.Withdraw(player, entry, out var overflowByItem);
+            var overflow = overflowByItem.Sum();
 
             SendMessageToPC(player, $"You open the {item.Name} and find: {DescribeContents(contents)}.");
             if (overflow > 0)
@@ -138,6 +136,36 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} bought {item.Key} at the Civic Exchange for {item.PriceXp} Available XP.");
             return string.Empty;
+        }
+
+        // Transfers
+
+        private const string CrateKind = "civic.crate";
+
+        /// <summary>
+        /// A crate bought with Available XP: the player's XP is paid and the receipt saved in one write, then the week's allowance is
+        /// counted. The player's receipt is the crate's, so a stop between the two writes delivers the crate and leaves one crate of the
+        /// week uncounted at worst.
+        /// </summary>
+        internal static readonly TransferHandler CrateTransfer = new(
+            CrateKind,
+            entry => TransferReceipts.Has(DB.Get<Player>(entry.PlayerId)?.TransferReceipts, entry.Id),
+            ApplyCrate);
+
+        private static void ApplyCrate(TransferEntry entry)
+        {
+            var dbPlayer = DB.Get<Player>(entry.PlayerId);
+            if (dbPlayer == null || TransferReceipts.Has(dbPlayer.TransferReceipts, entry.Id))
+                return;
+
+            var parts = TransferJournalRules.ParsePayload(entry.Payload);
+            dbPlayer.UnallocatedXP -= int.Parse(parts[0]);
+            dbPlayer.TransferReceipts = TransferReceipts.Add(dbPlayer.TransferReceipts, entry.Id);
+            DB.Set(dbPlayer);
+
+            var allowance = DB.Get<CivicExchangeAllowance>(parts[1]) ?? new CivicExchangeAllowance(parts[1]);
+            CivicExchangeRules.RecordCrate(allowance, entry.CreatedUtc);
+            DB.Set(allowance);
         }
 
         private static string DescribeContents(IReadOnlyDictionary<string, int> contents)

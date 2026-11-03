@@ -97,9 +97,10 @@ public class ClerkRecoveryWiringTests
         var harvest = ExtractMethod(ReadServerSource("Service", "Farming.cs"), "public static FarmingResult Harvest(");
 
         harvest.Should().Contain("if (toOverflow)");
-        ShouldComeBefore(harvest, "if (toOverflow)", "DB.Delete<GardenPlot>(record.Id)");
-        ShouldComeBefore(harvest, "ClerkRecovery.RunCrop(", "DB.Delete<GardenPlot>(record.Id)");
-        var remote = harvest[harvest.IndexOf("if (toOverflow)", StringComparison.Ordinal)..harvest.IndexOf("DB.Delete<GardenPlot>(record.Id)", StringComparison.Ordinal)];
+        const string ordinary = "TransferJournal.Withdraw(player, entry, out var overflowByItem)";
+        ShouldComeBefore(harvest, "if (toOverflow)", ordinary);
+        ShouldComeBefore(harvest, "ClerkRecovery.RunCrop(", ordinary);
+        var remote = harvest[harvest.IndexOf("if (toOverflow)", StringComparison.Ordinal)..harvest.IndexOf(ordinary, StringComparison.Ordinal)];
         remote.Should().Contain("return FarmingResult.Success(");
         remote.Should().NotContain("GiveItems", "a remote harvest never puts anything in an inventory");
         remote.Should().NotContain("DB.Delete", "the store deletes the crop, after the overflow records");
@@ -115,8 +116,8 @@ public class ClerkRecoveryWiringTests
         store.Split("DB.Delete<GardenPlot>").Length.Should().Be(2, "only the finish deletes the crop");
     }
 
-    [TestCase("public static LivestockResult Collect(", "ClerkRecoveryAction.Collect", "LivestockRules.ApplyCollection(animal, now)")]
-    [TestCase("public static LivestockResult Butcher(", "ClerkRecoveryAction.Butcher", "DB.Delete<Livestock>(animal.Id)")]
+    [TestCase("public static LivestockResult Collect(", "ClerkRecoveryAction.Collect", "GiveProducts(player, animal, definition, items, \"collected from\", now, CollectKind)")]
+    [TestCase("public static LivestockResult Butcher(", "ClerkRecoveryAction.Butcher", "GiveProducts(player, animal, definition, items, \"butchered\", now, RemoveAnimalKind)")]
     public void ARemoteCollectionOrButchering_GoesThroughTheMark_BeforeTheOrdinaryChangeToTheAnimal(string signature, string action, string ordinaryChange)
     {
         var method = ExtractMethod(ReadServerSource("Service", "Corrals.cs"), signature);
@@ -132,7 +133,7 @@ public class ClerkRecoveryWiringTests
         var method = ExtractMethod(ReadServerSource("Service", "Corrals.cs"), "public static LivestockResult Crate(");
 
         ShouldComeBefore(method, "if (toOverflow)", "CreateCrateItem(crate, definition, GetLocation(player))");
-        ShouldComeBefore(method, "CrateThroughClerk(", "DB.Delete<Livestock>(animal.Id)");
+        ShouldComeBefore(method, "CrateThroughClerk(", "TransferJournal.Withdraw(player, entry, out var itemsInOverflow)");
         method.Should().NotContain("var inOverflow = toOverflow", "the clerk's path no longer shares the ordinary one");
     }
 

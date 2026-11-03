@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service.FarmingService
 {
@@ -300,6 +301,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.NotFertilizer => "That is not a fertilizer.",
                 FarmingRefusal.NoFertilizer => "You do not carry that fertilizer.",
                 FarmingRefusal.FertilizerTooWeak => "That fertilizer is too weak for this crop. Use Fertilizer of the crop's tier or higher; yours was not used.",
+                FarmingRefusal.NotSaved => TransferJournalRules.NotSavedText,
                 _ => string.Empty
             };
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.LivestockService;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service.FarmhandService
 {
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Service.FarmhandService
                 FarmhandRefusal.NoCrops => "You carry none of that crop.",
                 FarmhandRefusal.NothingToTake => "The output hopper is empty.",
                 FarmhandRefusal.NoFarmhandHere => "No droid works here.",
+                FarmhandRefusal.NotSaved => TransferJournalRules.NotSavedText,
                 _ => string.Empty
             };
         }

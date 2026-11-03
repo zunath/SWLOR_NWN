@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.LivestockService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service.EnzymeCultureService
 {
@@ -295,6 +296,7 @@ namespace SWLOR.Game.Server.Service.EnzymeCultureService
                 FermentationRefusal.NoBatch => "This vat holds no batch.",
                 FermentationRefusal.NotTheOwner => "That batch belongs to another character.",
                 FermentationRefusal.NotDone => "The batch is not finished yet.",
+                FermentationRefusal.NotSaved => TransferJournalRules.NotSavedText,
                 _ => string.Empty
             };
         }

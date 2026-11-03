@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Entity
             DroidAssignmentId = string.Empty;
             FeedHopper = new Dictionary<CropType, int>();
             OutputHopper = new Dictionary<string, int>();
+            TransferReceipts = new List<string>();
         }
 
         /// <summary>The farmhand's key for a house's or corral's property id.</summary>
@@ -61,5 +62,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The last time the droid's work was brought up to date. Its replay starts here.</summary>
         public DateTime LastProcessedUtc { get; set; }
+
+        /// <summary>
+        /// The journal entries whose change to the hoppers this record holds, saved in the same write as the change
+        /// (<see cref="TransferReceipts"/>). Older records load without any.
+        /// </summary>
+        public List<string> TransferReceipts { get; set; }
     }
 }

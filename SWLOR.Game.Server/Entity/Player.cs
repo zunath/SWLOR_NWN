@@ -141,6 +141,11 @@ namespace SWLOR.Game.Server.Entity
         public int CharacterFileVersion { get; set; }
         /// <summary>Messages from a character upgrade, shown to the player at their next login.</summary>
         public List<string> UpgradeNotices { get; set; } = new();
+        /// <summary>
+        /// The journal entries whose change to this record (an XP price paid at the Civic Exchange) it holds, saved in the same write as
+        /// the change (<see cref="Service.TransferService.TransferReceipts"/>). Older records load without any.
+        /// </summary>
+        public List<string> TransferReceipts { get; set; } = new();
         public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }

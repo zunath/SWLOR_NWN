@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
@@ -11,6 +12,7 @@ using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -149,17 +151,10 @@ namespace SWLOR.Game.Server.Service
             var needsStarter = !EnzymeCultureRules.HasStarter(starters, type, color);
             var starterData = needsStarter ? ObjectPlugin.Serialize(starter) : string.Empty;
 
-            // The ingredients go first, so a stop between the steps loses a batch but never gives a free one.
-            FarmItems.Take(player, cropResref, EnzymeCultureRules.CropsPerBatch);
-            FarmItems.Take(player, manure, EnzymeCultureRules.ManurePerBatch);
-            FarmItems.Take(player, EnzymeCultureRules.WaterResref, EnzymeCultureRules.WaterPerBatch);
-            if (needsStarter)
-                DestroyObject(starter);
-
-            record ??= new FermentationVat { Id = FermentationVat.KeyFor(vatId), VatId = vatId };
-            record.Starters = EnzymeCultureRules.WithStarter(starters, type, color);
-            DB.Set(record);
-            DB.Set(new FermentationJob
+            // The ingredients and the starter are taken and the character file saved before the batch is recorded (the transfer journal),
+            // so a restart cannot leave them in the restored character with the batch fermenting, or lose the starter. A batch the vat
+            // can no longer take sends them to the character's overflow store.
+            var job = new FermentationJob
             {
                 Id = FermentationJob.KeyFor(vatId),
                 VatId = vatId,
@@ -173,7 +168,24 @@ namespace SWLOR.Game.Server.Service
                 ManureResref = manure,
                 WaterResref = EnzymeCultureRules.WaterResref,
                 StarterData = starterData
-            });
+            };
+            var entry = TransferJournalRules.Create(playerId, StartKind, TransferDirection.Deposit, job.Id, "The ingredients of your fermentation batch", now);
+            entry.Payload = JsonConvert.SerializeObject(job);
+            entry.Items.Add(TransferJournalRules.Plain(cropResref, crop.Name, EnzymeCultureRules.CropsPerBatch));
+            entry.Items.Add(TransferJournalRules.Plain(manure, Cache.GetItemNameByResref(manure) ?? manure, EnzymeCultureRules.ManurePerBatch));
+            entry.Items.Add(TransferJournalRules.Plain(EnzymeCultureRules.WaterResref, Cache.GetItemNameByResref(EnzymeCultureRules.WaterResref) ?? EnzymeCultureRules.WaterResref, EnzymeCultureRules.WaterPerBatch));
+            if (needsStarter)
+                entry.Items.Add(TransferJournalRules.Held(GetResRef(starter), GetName(starter), starterData));
+
+            switch (TransferJournal.Deposit(player, entry, needsStarter ? new[] { starter } : new uint[0]))
+            {
+                case TransferSettlement.Declined:
+                    return FermentationResult.Refused(FermentationRefusal.NotSaved);
+                case TransferSettlement.Apply:
+                    break;
+                default:
+                    return FermentationResult.Refused(FermentationRefusal.VatBusy);
+            }
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} started a batch of {EnzymeCultureRules.GetResref(type, color)} in fermentation vat {vatId}{(needsStarter ? ", using a hunted starter" : string.Empty)}.");
             return FermentationResult.Success(EnzymeCultureRules.DescribeStarted(type, color, needsStarter));
@@ -201,17 +213,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(item))
                 return FermentationResult.Refused(FermentationRefusal.NoBatch, "The vat cannot make that enzyme right now, so the batch stays in it.");
 
-            // The record goes first, so a stop between the two steps can lose the enzyme but never copy it.
-            DB.Delete<FermentationJob>(job.Id);
-
-            // An item that does not fit is destroyed by TryAcquireItem, so the enzyme is made again, the same, for the overflow store.
-            var inOverflow = !Item.TryAcquireItem(player, item);
-            if (inOverflow)
-            {
-                item = CreateEnzyme(job, rolls, GetLocation(player));
-                if (GetIsObjectValid(item))
-                    FarmItems.StoreInOverflow(job.OwnerPlayerId, item, string.Empty);
-            }
+            // The batch is deleted and the character is saved holding the enzyme in one journaled withdrawal (the transfer journal); an
+            // enzyme that does not fit goes to the owner's overflow store. The enzyme is saved in the entry exactly as rolled, so a
+            // restart delivers the same one.
+            var entry = TransferJournalRules.Create(job.OwnerPlayerId, CollectKind, TransferDirection.Withdraw, job.Id, "Your cultured enzyme", now, job.StartedUtc.Ticks.ToString());
+            entry.Items.Add(TransferJournalRules.Held(GetResRef(item), GetName(item), ObjectPlugin.Serialize(item)));
+            DestroyObject(item);
+            TransferJournal.Withdraw(player, entry, out var overflowByItem);
+            var inOverflow = overflowByItem[0] > 0;
 
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);
             Skill.GiveSkillXP(player, SkillType.Agriculture, EnzymeCultureRules.GetXp(rank), false, false);
@@ -424,6 +433,67 @@ namespace SWLOR.Game.Server.Service
             }
 
             FarmItems.StoreInOverflow(playerId, item, recordId);
+        }
+
+        // Transfers
+
+        private const string StartKind = "fermentation.start";
+        private const string CollectKind = "fermentation.collect";
+
+        /// <summary>
+        /// A batch started from ingredients: the vat remembers its color and records the batch, last, under the entry's start time, which
+        /// is its receipt. Refused when the vat is gone or busy, or the CD key already has a batch running.
+        /// </summary>
+        internal static readonly TransferHandler StartTransfer = new(
+            StartKind,
+            IsStarted,
+            ApplyStart,
+            CanTakeBatch);
+
+        /// <summary>A batch collected: the batch is deleted. It is collected once the vat holds no batch started at the entry's time.</summary>
+        internal static readonly TransferHandler CollectTransfer = new(
+            CollectKind,
+            IsCollected,
+            ApplyCollection);
+
+        private static bool IsStarted(TransferEntry entry)
+        {
+            var job = DB.Get<FermentationJob>(entry.TargetId);
+            return job != null && job.OwnerPlayerId == entry.PlayerId && job.StartedUtc == entry.CreatedUtc;
+        }
+
+        private static bool CanTakeBatch(TransferEntry entry)
+        {
+            var job = JsonConvert.DeserializeObject<FermentationJob>(entry.Payload);
+            return job != null &&
+                   GetVatStructure(job.VatId) != null &&
+                   GetJob(job.VatId) == null &&
+                   EnzymeCultureRules.CountRunning(GetJobsOfCdKey(job.OwnerCdKey, job.OwnerPlayerId), DateTime.UtcNow) < EnzymeCultureRules.MaxRunningPerCdKey;
+        }
+
+        private static void ApplyStart(TransferEntry entry)
+        {
+            var job = JsonConvert.DeserializeObject<FermentationJob>(entry.Payload);
+            if (job == null || IsStarted(entry))
+                return;
+
+            // The vat's colors are idempotent, so they come first; the batch carries the receipt and is saved last.
+            var record = GetRecord(job.VatId) ?? new FermentationVat { Id = FermentationVat.KeyFor(job.VatId), VatId = job.VatId };
+            record.Starters = EnzymeCultureRules.WithStarter(record.Starters, job.Type, job.Color);
+            DB.Set(record);
+            DB.Set(job);
+        }
+
+        private static bool IsCollected(TransferEntry entry)
+        {
+            var job = DB.Get<FermentationJob>(entry.TargetId);
+            return job == null || job.StartedUtc.Ticks.ToString() != TransferJournalRules.ParsePayload(entry.Payload)[0];
+        }
+
+        private static void ApplyCollection(TransferEntry entry)
+        {
+            if (!IsCollected(entry))
+                DB.Delete<FermentationJob>(entry.TargetId);
         }
 
         // Helpers

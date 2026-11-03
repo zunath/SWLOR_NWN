@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// The inventory and overflow-storage work that livestock and farmhands share: counting and taking items, and giving
-    /// items to a character, with whatever does not fit going to their overflow storage (/overflow). The records are written
-    /// first and the items second wherever a stop between the two could repeat a gift, so a restart can lose an item but never
-    /// duplicate one.
+    /// items to a character, with whatever does not fit going to their overflow storage (/overflow). These calls change only the
+    /// inventory. Anything that also changes a database record for the same items goes through <see cref="TransferJournal"/>,
+    /// since the character file saves long after the record does.
     /// </summary>
     public static class FarmItems
     {
@@ -76,6 +76,21 @@ namespace SWLOR.Game.Server.Service
             }
 
             return overflow;
+        }
+
+        /// <summary>
+        /// Puts up to <paramref name="count"/> of an item into the player's inventory and stops at the first that does not fit. Returns
+        /// how many went in; the caller decides what happens to the rest.
+        /// </summary>
+        public static int GiveToInventory(uint player, string resref, int count)
+        {
+            var placed = 0;
+            while (placed < count && GetIsObjectValid(player) && TryPutInInventory(player, resref))
+            {
+                placed++;
+            }
+
+            return placed;
         }
 
         /// <summary>

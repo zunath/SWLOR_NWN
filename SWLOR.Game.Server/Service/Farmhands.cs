@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.LivestockService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StationService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -265,37 +266,67 @@ namespace SWLOR.Game.Server.Service
             return FarmhandRefusal.None;
         }
 
-        /// <summary>The farmhand is gone. What its hoppers held goes to the owner: their inventory while they are on, and overflow storage for what does not fit.</summary>
+        /// <summary>
+        /// The farmhand is gone. What its hoppers held goes to the owner: their inventory while they are on, and overflow storage for what
+        /// does not fit. An owner who is on gets it through the transfer journal, which deletes the farmhand and saves their character with
+        /// the items, so a restart cannot lose the hoppers' contents or give them twice. An owner who is off gets overflow records under
+        /// ids made from the assignment, written before the farmhand is deleted, so a stop part way and a second try write the same ones.
+        /// </summary>
         private static void Release(Farmhand farmhand, uint ownerIfOn)
         {
-            var feed = farmhand.FeedHopper.ToDictionary(pair => pair.Key, pair => pair.Value);
-            var output = farmhand.OutputHopper.ToDictionary(pair => pair.Key, pair => pair.Value);
+            var contents = GetHopperItems(farmhand.FeedHopper, farmhand.OutputHopper);
+            if (contents.Count == 0)
+            {
+                DB.Delete<Farmhand>(farmhand.Id);
+                return;
+            }
 
-            // The record goes first, so a stop part way can lose what the hoppers held but never give it twice.
+            if (GetIsObjectValid(ownerIfOn) && GetIsPC(ownerIfOn))
+            {
+                var entry = TransferJournalRules.Create(farmhand.OwnerPlayerId, ReleaseKind, TransferDirection.Withdraw, farmhand.Id, "What the droid's hoppers held", DateTime.UtcNow, farmhand.DroidAssignmentId);
+                entry.Items.AddRange(contents);
+                TransferJournal.Withdraw(ownerIfOn, entry);
+                return;
+            }
+
+            var recordPrefix = "farmhand-hopper:" + (string.IsNullOrEmpty(farmhand.DroidAssignmentId) ? farmhand.Id : farmhand.DroidAssignmentId);
+            for (var index = 0; index < contents.Count; index++)
+            {
+                var item = contents[index];
+                var itemIndex = index;
+                CityProjects.WriteOverflow(farmhand.OwnerPlayerId, item.Resref, item.Count, chunk => $"{recordPrefix}:{itemIndex}:{chunk}", $"Farmhand {farmhand.Id}");
+            }
+
             DB.Delete<Farmhand>(farmhand.Id);
-            GiveHoppers(feed, output, farmhand.OwnerPlayerId, ownerIfOn);
         }
 
-        private static void GiveHoppers(Dictionary<CropType, int> feed, Dictionary<string, int> output, string ownerId, uint ownerIfOn)
+        /// <summary>The items the hoppers hold, one entry for each blueprint: the feed as the crops it is made of, and what the droid collected.</summary>
+        private static List<TransferItem> GetHopperItems(Dictionary<CropType, int> feed, Dictionary<string, int> output)
         {
-            var where = GetIsObjectValid(ownerIfOn) ? GetLocation(ownerIfOn) : GetStartingLocation();
+            var counts = new Dictionary<string, (string Name, int Count)>();
             foreach (var (cropType, count) in feed)
             {
                 var crop = Farming.GetCrop(cropType);
                 if (crop != null && count > 0)
-                    FarmItems.Give(ownerIfOn, ownerId, crop.HarvestResref, count, where);
+                    counts[crop.HarvestResref] = (crop.Name, counts.GetValueOrDefault(crop.HarvestResref).Count + count);
             }
 
             foreach (var (resref, count) in output)
             {
                 if (count > 0)
-                    FarmItems.Give(ownerIfOn, ownerId, resref, count, where);
+                    counts[resref] = (Cache.GetItemNameByResref(resref) ?? resref, counts.GetValueOrDefault(resref).Count + count);
             }
+
+            return counts.Select(pair => TransferJournalRules.Plain(pair.Key, pair.Value.Name, pair.Value.Count)).ToList();
         }
 
         // Hoppers
 
-        /// <summary>Loads the crops of one type the player carries into the feed hopper, up to its room. Returns how many went in.</summary>
+        /// <summary>
+        /// Loads the crops of one type the player carries into the feed hopper, up to its room. Returns how many went in. The crops are
+        /// taken, the character is saved and the hopper is credited through the transfer journal, so a restart cannot leave the crops in
+        /// the hopper and in the restored character too.
+        /// </summary>
         public static FarmhandRefusal LoadFeed(uint player, string targetId, CropType cropType, out int loaded)
         {
             loaded = 0;
@@ -316,15 +347,22 @@ namespace SWLOR.Game.Server.Service
             if (carried <= 0)
                 return FarmhandRefusal.NoCrops;
 
-            // The crops go first, so a stop between the two steps loses them but never copies them.
             var taking = Math.Min(carried, FarmhandRules.GetFeedRoom(farmhand.FeedHopper));
-            loaded = FarmItems.Take(player, crop.HarvestResref, taking);
-            FarmhandRules.LoadFeed(farmhand.FeedHopper, cropType, loaded);
-            DB.Set(farmhand);
-            return FarmhandRefusal.None;
+            var entry = TransferJournalRules.Create(farmhand.OwnerPlayerId, FeedLoadKind, TransferDirection.Deposit, farmhand.Id, "The feed you loaded", DateTime.UtcNow, ((int)cropType).ToString());
+            entry.Items.Add(TransferJournalRules.Plain(crop.HarvestResref, crop.Name, taking));
+            switch (TransferJournal.Deposit(player, entry))
+            {
+                case TransferSettlement.Declined:
+                    return FarmhandRefusal.NotSaved;
+                case TransferSettlement.Apply:
+                    loaded = taking;
+                    return FarmhandRefusal.None;
+                default:
+                    return FarmhandRefusal.FeedHopperFull;
+            }
         }
 
-        /// <summary>Takes all the feed back out of the hopper.</summary>
+        /// <summary>Takes all the feed back out of the hopper, through the transfer journal.</summary>
         public static FarmhandRefusal TakeFeedBack(uint player, string targetId)
         {
             CatchUp(targetId);
@@ -337,14 +375,11 @@ namespace SWLOR.Game.Server.Service
             if (FarmhandRules.CountFeed(farmhand.FeedHopper) <= 0)
                 return FarmhandRefusal.NothingToTake;
 
-            var feed = farmhand.FeedHopper.ToDictionary(pair => pair.Key, pair => pair.Value);
-            farmhand.FeedHopper.Clear();
-            DB.Set(farmhand);
-            GiveHoppers(feed, new Dictionary<string, int>(), farmhand.OwnerPlayerId, player);
+            Unload(player, farmhand, FeedHopperName, GetHopperItems(farmhand.FeedHopper, new Dictionary<string, int>()), "The feed you took back");
             return FarmhandRefusal.None;
         }
 
-        /// <summary>Empties the output hopper into the owner's inventory, with what does not fit going to their overflow store.</summary>
+        /// <summary>Empties the output hopper into the owner's inventory, with what does not fit going to their overflow store, through the transfer journal.</summary>
         public static FarmhandRefusal EmptyOutput(uint player, string targetId)
         {
             CatchUp(targetId);
@@ -357,11 +392,92 @@ namespace SWLOR.Game.Server.Service
             if (FarmhandRules.CountOutput(farmhand.OutputHopper) <= 0)
                 return FarmhandRefusal.NothingToTake;
 
-            var output = farmhand.OutputHopper.ToDictionary(pair => pair.Key, pair => pair.Value);
-            farmhand.OutputHopper.Clear();
-            DB.Set(farmhand);
-            GiveHoppers(new Dictionary<CropType, int>(), output, farmhand.OwnerPlayerId, player);
+            Unload(player, farmhand, OutputHopperName, GetHopperItems(new Dictionary<CropType, int>(), farmhand.OutputHopper), "What the droid collected");
             return FarmhandRefusal.None;
+        }
+
+        /// <summary>The hopper is cleared and its contents given to the owner in one journaled withdrawal.</summary>
+        private static void Unload(uint player, Farmhand farmhand, string hopper, List<TransferItem> items, string summary)
+        {
+            var entry = TransferJournalRules.Create(farmhand.OwnerPlayerId, HopperUnloadKind, TransferDirection.Withdraw, farmhand.Id, summary, DateTime.UtcNow, hopper);
+            entry.Items.AddRange(items);
+            TransferJournal.Withdraw(player, entry);
+        }
+
+        // Transfers
+
+        private const string FeedLoadKind = "farmhand.feed-load";
+        private const string HopperUnloadKind = "farmhand.hopper-unload";
+        private const string ReleaseKind = "farmhand.release";
+        private const string FeedHopperName = "feed";
+        private const string OutputHopperName = "output";
+
+        /// <summary>Feed loaded into the hopper: credited with a receipt, and refused when the hopper has changed hands or has no room.</summary>
+        internal static readonly TransferHandler FeedLoadTransfer = new(
+            FeedLoadKind,
+            entry => HoldsReceipt(entry),
+            ApplyFeedLoad,
+            CanTakeFeed);
+
+        /// <summary>A hopper emptied: cleared with a receipt.</summary>
+        internal static readonly TransferHandler HopperUnloadTransfer = new(
+            HopperUnloadKind,
+            entry => HoldsReceipt(entry),
+            ApplyHopperUnload);
+
+        /// <summary>A farmhand released with its hoppers' contents: the farmhand is deleted. It is released once its assignment is gone.</summary>
+        internal static readonly TransferHandler ReleaseTransfer = new(
+            ReleaseKind,
+            IsReleased,
+            ApplyRelease);
+
+        private static bool HoldsReceipt(TransferEntry entry) =>
+            TransferReceipts.Has(DB.Get<Farmhand>(entry.TargetId)?.TransferReceipts, entry.Id);
+
+        private static bool CanTakeFeed(TransferEntry entry)
+        {
+            var farmhand = DB.Get<Farmhand>(entry.TargetId);
+            return farmhand != null &&
+                   farmhand.OwnerPlayerId == entry.PlayerId &&
+                   FarmhandRules.GetFeedRoom(farmhand.FeedHopper) >= entry.Items.Sum(item => item.Count);
+        }
+
+        private static void ApplyFeedLoad(TransferEntry entry)
+        {
+            var farmhand = DB.Get<Farmhand>(entry.TargetId);
+            if (farmhand == null || TransferReceipts.Has(farmhand.TransferReceipts, entry.Id))
+                return;
+
+            FarmhandRules.LoadFeed(farmhand.FeedHopper, (CropType)int.Parse(TransferJournalRules.ParsePayload(entry.Payload)[0]), entry.Items.Sum(item => item.Count));
+            farmhand.TransferReceipts = TransferReceipts.Add(farmhand.TransferReceipts, entry.Id);
+            DB.Set(farmhand);
+        }
+
+        private static void ApplyHopperUnload(TransferEntry entry)
+        {
+            var farmhand = DB.Get<Farmhand>(entry.TargetId);
+            if (farmhand == null || TransferReceipts.Has(farmhand.TransferReceipts, entry.Id))
+                return;
+
+            if (TransferJournalRules.ParsePayload(entry.Payload)[0] == FeedHopperName)
+                farmhand.FeedHopper.Clear();
+            else
+                farmhand.OutputHopper.Clear();
+
+            farmhand.TransferReceipts = TransferReceipts.Add(farmhand.TransferReceipts, entry.Id);
+            DB.Set(farmhand);
+        }
+
+        private static bool IsReleased(TransferEntry entry)
+        {
+            var farmhand = DB.Get<Farmhand>(entry.TargetId);
+            return farmhand == null || farmhand.DroidAssignmentId != TransferJournalRules.ParsePayload(entry.Payload)[0];
+        }
+
+        private static void ApplyRelease(TransferEntry entry)
+        {
+            if (!IsReleased(entry))
+                DB.Delete<Farmhand>(entry.TargetId);
         }
 
         // Losing a post

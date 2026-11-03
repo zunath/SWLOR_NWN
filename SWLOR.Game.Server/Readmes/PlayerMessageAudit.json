@@ -4537,28 +4537,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CityStores.cs",
-    "Line": 444,
+    "Line": 454,
     "Member": "OnSellBefore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(seller, ColorToken.Red(\"City stores only sell. They do not buy from players.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 101,
+    "Line": 102,
     "Member": "BuyBuff",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You buy the {item.Name} for {item.PriceXp:N0} Available XP. {CivicExchangeCatalog.BuffSummary}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 135,
+    "Line": 133,
     "Member": "BuyCrate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You open the {item.Name} and find: {DescribeContents(contents)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 137,
+    "Line": 135,
     "Member": "BuyCrate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{overflow} of the items did not fit in your inventory. Claim them with /overflow.\")"
@@ -4866,14 +4866,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 723,
+    "Line": 728,
     "Member": "Notify",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 743,
+    "Line": 748,
     "Member": "DeliverNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
@@ -5370,35 +5370,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 223,
+    "Line": 224,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} now works {(farmhand.TargetType == FarmhandTargetType.House ? \"your crops here\" : \"the corral\")}. It handles tier 1 to {farmhand.DroidTier}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 246,
+    "Line": 247,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{farmhand.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 253,
+    "Line": 254,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farmhands.cs",
-    "Line": 262,
+    "Line": 263,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} returns to you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Farming.cs",
-    "Line": 428,
+    "Line": 460,
     "Member": "OnPlotRetrieved",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"
@@ -9217,6 +9217,20 @@
     "Member": "TryBustContrabandSale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(taken.Count > 0\n                    ? $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine and they confiscate {CustomsRules.Describe(taken)}.\"\n                    : $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
+    "Line": 138,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TransferJournalRules.DescribeOverflow(entry)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
+    "Line": 181,
+    "Member": "Tell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",

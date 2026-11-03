@@ -423,26 +423,30 @@ public class CivicExchangeTests
 
         var service = ReadServer("Service", "CivicExchange.cs");
         service.Should().Contain("CivicExchangeRules.GetAccess(");
-        service.Should().Contain("FarmItems.Give(player, playerId, resref, count, location)");
+        service.Should().Contain("TransferJournal.Withdraw(player, entry, out var overflowByItem)");
         service.Should().Contain("StatusEffect.ApplyStatusEffect<CivicProvisionsStatusEffect>(player, player, CivicExchangeCatalog.BuffDurationSeconds)");
     }
 
     [Test]
-    public void ACratePurchaseWritesTheRecordsBeforeItGivesTheMaterials()
+    public void ACratePurchasePaysAndGivesTheMaterialsInOneJournaledWithdrawal()
     {
-        var crate = Method(ReadServer("Service", "CivicExchange.cs"), "private static string BuyCrate(");
+        var service = ReadServer("Service", "CivicExchange.cs");
+        var crate = Method(service, "private static string BuyCrate(");
+        crate.Should().NotContain("dbPlayer.UnallocatedXP", "the journal handler takes the XP");
+        crate.Should().NotContain("FarmItems.Give(", "the journal gives the materials");
+
+        // The handler takes the XP with its receipt, then the week's allowance; the withdrawal gives the materials after both.
+        var apply = Method(service, "private static void ApplyCrate(TransferEntry entry)");
         var order = new[]
         {
-            "dbPlayer.UnallocatedXP -= item.PriceXp;",
+            "dbPlayer.UnallocatedXP -= ",
             "DB.Set(dbPlayer);",
-            "DB.Set(allowance);",
-            "FarmItems.Give(player, playerId, resref, count, location)",
-            "ExportSingleCharacter(player);"
+            "DB.Set(allowance);"
         };
         var last = -1;
         foreach (var line in order)
         {
-            var index = crate.IndexOf(line, StringComparison.Ordinal);
+            var index = apply.IndexOf(line, StringComparison.Ordinal);
             index.Should().BeGreaterThan(last, $"'{line}' comes after the line before it");
             last = index;
         }

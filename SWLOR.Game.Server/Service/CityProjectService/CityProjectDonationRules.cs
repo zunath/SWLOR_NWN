@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service.CityProjectService
 {
@@ -11,8 +12,6 @@ namespace SWLOR.Game.Server.Service.CityProjectService
     /// </summary>
     public static class CityProjectDonationRules
     {
-        private const char MarkSeparator = ',';
-
         #region Planning
 
         /// <summary>
@@ -115,25 +114,19 @@ namespace SWLOR.Game.Server.Service.CityProjectService
         /// <summary>The donation ids a character file's mark names.</summary>
         public static List<string> ParseMarks(string mark)
         {
-            return string.IsNullOrWhiteSpace(mark)
-                ? new List<string>()
-                : mark.Split(MarkSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.Ordinal).ToList();
+            return TransferJournalRules.ParseMarks(mark);
         }
 
         /// <summary>The mark with the donation's id added, once.</summary>
         public static string AddMark(string mark, string donationId)
         {
-            var ids = ParseMarks(mark);
-            if (!string.IsNullOrWhiteSpace(donationId) && !ids.Contains(donationId))
-                ids.Add(donationId);
-
-            return string.Join(MarkSeparator, ids);
+            return TransferJournalRules.AddMark(mark, donationId);
         }
 
         /// <summary>The mark without the donation's id. Empty when nothing is left.</summary>
         public static string RemoveMark(string mark, string donationId)
         {
-            return string.Join(MarkSeparator, ParseMarks(mark).Where(id => id != donationId));
+            return TransferJournalRules.RemoveMark(mark, donationId);
         }
 
         #endregion

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
@@ -11,6 +12,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -305,16 +307,25 @@ namespace SWLOR.Game.Server.Service
             if (refusal != LivestockRefusal.None)
                 return LivestockResult.Refused(refusal);
 
-            // The item goes first, so a stop between the two steps can lose an animal but never duplicate one.
-            UseUpOne(item);
+            // The item is taken and the character file saved before the animal is recorded (the transfer journal), so a restart cannot
+            // leave the item in the restored character and the animal in the corral too. The animal's creature is stood up when it is recorded.
             var animal = crate != null
                 ? LivestockRules.Unpack(crate, now, playerId, cdKey, corralId)
                 : LivestockRules.PlaceYoung(definition.Type, now, playerId, cdKey, corralId);
-            DB.Set(animal);
-
-            var placeable = Property.GetPlaceableByPropertyId(corralId);
-            if (GetIsObjectValid(placeable))
-                SpawnCreature(animal, placeable);
+            var entry = TransferJournalRules.Create(playerId, PlaceKind, TransferDirection.Deposit, animal.Id, "The animal you placed", now);
+            entry.Payload = JsonConvert.SerializeObject(animal);
+            entry.Items.Add(crate != null
+                ? TransferJournalRules.Held(GetResRef(item), GetName(item), ObjectPlugin.Serialize(item))
+                : TransferJournalRules.Plain(GetResRef(item), GetName(item), 1));
+            switch (TransferJournal.Deposit(player, entry, crate != null ? new[] { item } : new uint[0]))
+            {
+                case TransferSettlement.Declined:
+                    return LivestockResult.Refused(LivestockRefusal.NotSaved);
+                case TransferSettlement.Apply:
+                    break;
+                default:
+                    return LivestockResult.Refused(LivestockRefusal.NoCorral);
+            }
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} placed {(crate != null ? "a crated" : "a young")} {definition.Type} ({animal.Id}) in corral {corralId}.");
             return LivestockResult.Success(LivestockRules.DescribePlaced(definition.Name, crate != null));
@@ -345,8 +356,10 @@ namespace SWLOR.Game.Server.Service
             if (refusal != LivestockRefusal.None)
                 return LivestockResult.Refused(refusal);
 
-            // The crops go first, so a stop between the two steps loses a meal but never gives a free one.
-            FarmItems.Take(player, crop.HarvestResref, LivestockRules.FeedCrops);
+            // The crops are taken and the character file saved before the meal is recorded, so a restart loses a meal but never gives a free one.
+            if (!TransferJournal.TakeAndSave(player, (crop.HarvestResref, LivestockRules.FeedCrops)))
+                return LivestockResult.Refused(LivestockRefusal.NotSaved);
+
             LivestockRules.ApplyFeeding(animal, now);
             animal.LastProcessedUtc = now;
             DB.Set(animal);
@@ -379,12 +392,8 @@ namespace SWLOR.Game.Server.Service
             if (toOverflow)
                 return GiveProductsThroughClerk(player, animal, definition, items, ClerkRecoveryAction.Collect, "collected from", now);
 
-            // The record goes first, so a stop between the two steps can lose a collection but never repeat it.
-            LivestockRules.ApplyCollection(animal, now);
-            animal.LastProcessedUtc = now;
-            DB.Set(animal);
-
-            return GiveProducts(player, animal, definition, items, "collected from", now);
+            // The animal records the collection and the character is saved holding the products through the transfer journal.
+            return GiveProducts(player, animal, definition, items, "collected from", now, CollectKind);
         }
 
         /// <summary>
@@ -408,11 +417,8 @@ namespace SWLOR.Game.Server.Service
             if (toOverflow)
                 return GiveProductsThroughClerk(player, animal, definition, items, ClerkRecoveryAction.Butcher, "butchered", now);
 
-            // The record goes first, so a stop between the two steps can lose the meat but never butcher the animal twice.
-            DB.Delete<Livestock>(animal.Id);
-            DestroyCreature(animal.Id);
-
-            return GiveProducts(player, animal, definition, items, "butchered", now);
+            // The animal is deleted and the character is saved holding the meat through the transfer journal.
+            return GiveProducts(player, animal, definition, items, "butchered", now, RemoveAnimalKind);
         }
 
         /// <summary>
@@ -442,20 +448,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(item))
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal, "Crates are not available yet, so the animal stays where it is.");
 
-            // The record goes first, so a stop between the two steps can lose the animal but never copy it.
-            DB.Delete<Livestock>(animal.Id);
-            DestroyCreature(animal.Id);
-
-            // An item that does not fit is destroyed by TryAcquireItem, so the crate is made again for the overflow store.
-            var inOverflow = false;
-            if (!Item.TryAcquireItem(player, item))
-            {
-                inOverflow = true;
-                item = CreateCrateItem(crate, definition, GetLocation(player));
-            }
-
-            if (inOverflow && GetIsObjectValid(item))
-                FarmItems.StoreInOverflow(animal.OwnerPlayerId, item, string.Empty);
+            // The animal is deleted and the character is saved holding the crate through the transfer journal; a crate that does not
+            // fit goes to the owner's overflow store. The crate is saved in the entry exactly as made, so a restart delivers the same one.
+            var entry = TransferJournalRules.Create(animal.OwnerPlayerId, RemoveAnimalKind, TransferDirection.Withdraw, animal.Id, "Your crated animal", now);
+            entry.Items.Add(TransferJournalRules.Held(LivestockRules.CrateResref, GetName(item), ObjectPlugin.Serialize(item)));
+            DestroyObject(item);
+            TransferJournal.Withdraw(player, entry, out var itemsInOverflow);
+            var inOverflow = itemsInOverflow.Sum() > 0;
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} crated {definition.Type} {animal.Id}{(inOverflow ? " into overflow storage" : string.Empty)}.");
             return LivestockResult.Success(LivestockRules.DescribeCrated(definition.Name, inOverflow));
@@ -480,27 +479,33 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        /// <summary>Gives the owner what a collection or a butchering yielded and the Agriculture XP for it.</summary>
+        /// <summary>
+        /// Gives the owner what a collection or a butchering yielded and the Agriculture XP for it. The animal records the collection, or
+        /// is deleted, and the character is saved holding the products, in one journaled withdrawal (<paramref name="kind"/>).
+        /// </summary>
         private static LivestockResult GiveProducts(
             uint player,
             Livestock animal,
             LivestockDefinition definition,
             List<(string Resref, int Count)> items,
             string verb,
-            DateTime now)
+            DateTime now,
+            string kind)
         {
-            var itemsInOverflow = 0;
             var named = new List<(string Name, int Count)>();
+            var entry = TransferJournalRules.Create(animal.OwnerPlayerId, kind, TransferDirection.Withdraw, animal.Id, "The products of your animal", now);
             foreach (var (resref, count) in items)
             {
-                itemsInOverflow += FarmItems.Give(player, animal.OwnerPlayerId, resref, count, GetLocation(player));
-                named.Add((Cache.GetItemNameByResref(resref) ?? resref, count));
+                var name = Cache.GetItemNameByResref(resref) ?? resref;
+                entry.Items.Add(TransferJournalRules.Plain(resref, name, count));
+                named.Add((name, count));
             }
 
+            TransferJournal.Withdraw(player, entry, out var overflowByItem);
             GiveProductXp(player, definition, items);
 
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} {verb} {definition.Type} {animal.Id}: {string.Join(", ", items.Select(item => $"{item.Count} {item.Resref}"))} ({itemsInOverflow} to overflow).");
-            return LivestockResult.Success(LivestockRules.DescribeProducts(verb, definition.Name, named, itemsInOverflow));
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} {verb} {definition.Type} {animal.Id}: {string.Join(", ", items.Select(item => $"{item.Count} {item.Resref}"))} ({overflowByItem.Sum()} to overflow).");
+            return LivestockResult.Success(LivestockRules.DescribeProducts(verb, definition.Name, named, overflowByItem.Sum()));
         }
 
         private static void GiveProductXp(uint player, LivestockDefinition definition, List<(string Resref, int Count)> items)
@@ -857,18 +862,82 @@ namespace SWLOR.Game.Server.Service
             return item;
         }
 
+        // Transfers
+
+        private const string PlaceKind = "livestock.place";
+        private const string CollectKind = "livestock.collect";
+        private const string RemoveAnimalKind = "livestock.remove";
+
+        /// <summary>An animal placed from an item: recorded under the id the entry names, which is its receipt. Refused when the corral is gone or full.</summary>
+        internal static readonly TransferHandler PlaceTransfer = new(
+            PlaceKind,
+            entry => GetAnimal(entry.TargetId) != null,
+            ApplyPlacement,
+            CanTakeAnimal);
+
+        /// <summary>An animal collected from: its last collection is the entry's time, which is its receipt.</summary>
+        internal static readonly TransferHandler CollectTransfer = new(
+            CollectKind,
+            IsCollected,
+            ApplyCollectionTransfer);
+
+        /// <summary>An animal butchered or crated: deleted, so its absence is its receipt.</summary>
+        internal static readonly TransferHandler RemoveAnimalTransfer = new(
+            RemoveAnimalKind,
+            entry => GetAnimal(entry.TargetId) == null,
+            ApplyRemoval);
+
+        private static bool CanTakeAnimal(TransferEntry entry)
+        {
+            var animal = JsonConvert.DeserializeObject<Livestock>(entry.Payload);
+            var corral = animal == null ? null : GetCorral(animal.CorralId);
+            if (corral == null)
+                return false;
+
+            var city = DB.Get<WorldProperty>(corral.ParentPropertyId);
+            return LivestockRules.IsCorralOpen(GetCorralIndex(corral), city == null ? 1 : CityOfficers.GetCityLevel(city)) &&
+                   CountPlaced(animal.OwnerCdKey, animal.OwnerPlayerId) < LivestockRules.MaxAnimalsPerCdKey &&
+                   GetAnimalsInCorral(corral.Id).Count < LivestockRules.AnimalsPerCorral;
+        }
+
+        private static void ApplyPlacement(TransferEntry entry)
+        {
+            var animal = JsonConvert.DeserializeObject<Livestock>(entry.Payload);
+            if (animal == null || GetAnimal(animal.Id) != null)
+                return;
+
+            DB.Set(animal);
+            var placeable = Property.GetPlaceableByPropertyId(animal.CorralId);
+            if (GetIsObjectValid(placeable))
+                SpawnCreature(animal, placeable);
+        }
+
+        private static bool IsCollected(TransferEntry entry)
+        {
+            var animal = GetAnimal(entry.TargetId);
+            return animal == null || (animal.LastCollectedUtc.HasValue && animal.LastCollectedUtc.Value >= entry.CreatedUtc);
+        }
+
+        private static void ApplyCollectionTransfer(TransferEntry entry)
+        {
+            var animal = GetAnimal(entry.TargetId);
+            if (animal == null || IsCollected(entry))
+                return;
+
+            LivestockRules.ApplyCollection(animal, entry.CreatedUtc);
+            animal.LastProcessedUtc = entry.CreatedUtc;
+            DB.Set(animal);
+        }
+
+        private static void ApplyRemoval(TransferEntry entry)
+        {
+            DB.Delete<Livestock>(entry.TargetId);
+            DestroyCreature(entry.TargetId);
+        }
+
         // Helpers
 
         private static bool IsFarmer(uint player) =>
             GetIsObjectValid(player) && GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
-
-        private static void UseUpOne(uint item)
-        {
-            var size = GetItemStackSize(item);
-            if (size > 1)
-                SetItemStackSize(item, size - 1);
-            else
-                DestroyObject(item);
-        }
     }
 }

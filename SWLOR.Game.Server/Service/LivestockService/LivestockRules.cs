@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service.LivestockService
 {
@@ -400,6 +401,7 @@ namespace SWLOR.Game.Server.Service.LivestockService
                 LivestockRefusal.CorralOverLimit => "The city's level no longer allows animals in this corral.",
                 LivestockRefusal.NoAccess => "Only the city's citizens can add animals to its corrals.",
                 LivestockRefusal.NotAnAnimal => "That is not an animal.",
+                LivestockRefusal.NotSaved => TransferJournalRules.NotSavedText,
                 _ => string.Empty
             };
         }

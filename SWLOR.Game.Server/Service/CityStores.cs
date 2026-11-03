@@ -403,7 +403,18 @@ namespace SWLOR.Game.Server.Service
                 : 0;
 
             var tax = SalesTaxRules.GetTaxPortion(price, percent);
-            if (tax > 0 && !string.IsNullOrWhiteSpace(cityId))
+            var creditsTax = tax > 0 && !string.IsNullOrWhiteSpace(cityId);
+            var limited = IsTravelerStore(store) ? null : CityStoreRules.FindLimitedItem(CityStoreCatalog.Get(kind), GetLocalInt(store, LevelVariable), resref);
+            var countsAllowance = quantity > 0 && (IsTravelerStore(store) || limited != null);
+
+            // The sale is in the buyer's character file, which saves about once a minute, and the tax and the allowance are saved in the
+            // database at once. The file is saved first, so a restart cannot give the buyer back their credits and still credit the
+            // treasury, or count an item against the week that the buyer no longer holds. A restart in the instant after the save loses
+            // a tax or an allowance count, which is harmless; a save that fails leaves the tax credited as it always was.
+            if (creditsTax || countsAllowance)
+                CharacterCheckpoint.Save(buyer);
+
+            if (creditsTax)
                 CreditTax(cityId, tax, buyer);
 
             if (IsTravelerStore(store))
@@ -415,7 +426,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var limited = CityStoreRules.FindLimitedItem(CityStoreCatalog.Get(kind), GetLocalInt(store, LevelVariable), resref);
             if (limited != null && quantity > 0)
                 CityStockAllowances.RecordSale(cityId, kind, resref, quantity, DateTime.UtcNow);
         }

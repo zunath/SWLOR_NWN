@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -246,9 +247,15 @@ namespace SWLOR.Game.Server.Service
                 return FarmingResult.Refused(refusal);
 
             var fertilized = GetIsObjectValid(fertilizer);
-            UseUpOne(seed);
-            if (fertilized)
-                UseUpOne(fertilizer);
+
+            // The seed and the fertilizer are taken and the character file saved before the crop is recorded, so a restart loses a
+            // planting at worst and never leaves the seed in the restored character with the crop growing too.
+            var consumed = fertilized
+                ? new[] { (crop.SeedResref, 1), (fertilizerResref, 1) }
+                : new[] { (crop.SeedResref, 1) };
+            if (!TransferJournal.TakeAndSave(player, consumed))
+                return FarmingResult.Refused(FarmingRefusal.NotSaved);
+
             DB.Set(new GardenPlot
             {
                 Id = GardenPlot.KeyFor(plotId),
@@ -354,10 +361,16 @@ namespace SWLOR.Game.Server.Service
                 return FarmingResult.Success(ClerkRecoveryRules.DescribeRemoteHarvest(crop.Name, yield, seedReturned));
             }
 
-            // The record goes first, so a stop between the two steps can lose a harvest but never repeat it.
-            DB.Delete<GardenPlot>(record.Id);
-            var itemsInOverflow = GiveItems(player, playerId, crop.HarvestResref, yield);
-            var seedInOverflow = seedReturned && GiveItems(player, playerId, crop.SeedResref, 1) > 0;
+            // The crop is deleted and the character is saved holding the harvest in one journaled withdrawal (the transfer journal), so a
+            // restart cannot lose the harvest or give it twice.
+            var entry = TransferJournalRules.Create(playerId, RemoveCropKind, TransferDirection.Withdraw, record.Id, "Your harvest", now, record.PlantedUtc.Ticks.ToString());
+            entry.Items.Add(TransferJournalRules.Plain(crop.HarvestResref, crop.Name, yield));
+            if (seedReturned)
+                entry.Items.Add(TransferJournalRules.Plain(crop.SeedResref, Cache.GetItemNameByResref(crop.SeedResref) ?? crop.SeedResref, 1));
+
+            TransferJournal.Withdraw(player, entry, out var overflowByItem);
+            var itemsInOverflow = overflowByItem[0];
+            var seedInOverflow = seedReturned && overflowByItem[1] > 0;
             Skill.GiveSkillXP(player, SkillType.Agriculture, FarmingRules.GetHarvestXp(crop.Level, rank, yield), false, false);
 
             RefreshName(plotId);
@@ -413,14 +426,33 @@ namespace SWLOR.Game.Server.Service
             if (record == null)
                 return;
 
-            DB.Delete<GardenPlot>(record.Id);
             var crop = GetCrop(record.Crop);
             if (crop == null || FarmingRules.GetStage(record, DateTime.UtcNow) == GardenPlotStage.Withered)
+            {
+                DB.Delete<GardenPlot>(record.Id);
                 return;
+            }
 
             var planter = GetObjectByUUID(record.PlanterPlayerId);
             var planterIsOn = GetIsObjectValid(planter) && GetIsPC(planter);
-            var inOverflow = GiveItems(planterIsOn ? planter : OBJECT_INVALID, record.PlanterPlayerId, crop.SeedResref, 1, placeable) > 0;
+            bool inOverflow;
+            if (planterIsOn)
+            {
+                // The crop is deleted and the character is saved holding the seed in one journaled withdrawal.
+                var entry = TransferJournalRules.Create(record.PlanterPlayerId, RemoveCropKind, TransferDirection.Withdraw, record.Id, "The seed of your lost crop", DateTime.UtcNow, record.PlantedUtc.Ticks.ToString());
+                entry.Items.Add(TransferJournalRules.Plain(crop.SeedResref, Cache.GetItemNameByResref(crop.SeedResref) ?? crop.SeedResref, 1));
+                TransferJournal.Withdraw(planter, entry, out var overflowByItem);
+                inOverflow = overflowByItem[0] > 0;
+            }
+            else
+            {
+                // The seed's overflow record is written first, under an id that never changes, so a stop before the crop is deleted
+                // writes the same record again instead of a second one.
+                CityProjects.WriteOverflow(record.PlanterPlayerId, crop.SeedResref, 1, chunk => $"garden-seed:{record.Id}:{record.PlantedUtc.Ticks}:{chunk}", $"Garden plot {plot.Id}");
+                DB.Delete<GardenPlot>(record.Id);
+                inOverflow = true;
+            }
+
             Log.Write(LogGroup.Property, $"Garden plot {plot.Id} was picked up with {record.Crop} planted by {record.PlanterPlayerId}; the seed went to {(inOverflow ? "overflow storage" : "their inventory")}.");
 
             if (planterIsOn)
@@ -553,15 +585,6 @@ namespace SWLOR.Game.Server.Service
             return OBJECT_INVALID;
         }
 
-        private static void UseUpOne(uint item)
-        {
-            var size = GetItemStackSize(item);
-            if (size > 1)
-                SetItemStackSize(item, size - 1);
-            else
-                DestroyObject(item);
-        }
-
         internal static void RefreshName(string plotId)
         {
             var placeable = Property.GetPlaceableByPropertyId(plotId);
@@ -575,64 +598,26 @@ namespace SWLOR.Game.Server.Service
             SetName(placeable, crop == null ? PlotName : $"{PlotName} ({crop.Name})");
         }
 
-        /// <summary>
-        /// Gives a player <paramref name="count"/> of an item: into their inventory while there is room, and the rest into their
-        /// overflow storage, which they claim with /overflow. Returns how many went to overflow storage.
-        /// </summary>
-        /// <param name="player">The player, or invalid when they are off: everything then goes to overflow storage.</param>
-        /// <param name="where">The object whose place an item is created at before it is saved to overflow storage. The player when omitted.</param>
-        private static int GiveItems(uint player, string playerId, string resref, int count, uint where = OBJECT_INVALID)
+        // Transfers
+
+        private const string RemoveCropKind = "farming.remove-crop";
+
+        /// <summary>A crop harvested or lost: the plot's crop is deleted. It is removed once the plot no longer holds the crop planted at the entry's time.</summary>
+        internal static readonly TransferHandler RemoveCropTransfer = new(
+            RemoveCropKind,
+            IsCropRemoved,
+            ApplyCropRemoval);
+
+        private static bool IsCropRemoved(TransferEntry entry)
         {
-            var overflow = 0;
-            for (var unit = 0; unit < count; unit++)
-            {
-                if (GetIsObjectValid(player) && TryPutInInventory(player, resref))
-                    continue;
-
-                if (StoreInOverflow(playerId, resref, GetLocation(GetIsObjectValid(where) ? where : player)))
-                    overflow++;
-            }
-
-            return overflow;
+            var record = DB.Get<GardenPlot>(entry.TargetId);
+            return record == null || record.PlantedUtc.Ticks.ToString() != TransferJournalRules.ParsePayload(entry.Payload)[0];
         }
 
-        /// <summary>
-        /// Creates one item in the player's inventory. Returns false, leaving nothing behind, when it did not arrive there: the
-        /// inventory count decides, since an item that merged into a stack can come back as an invalid handle, and a created item
-        /// the engine left on the ground is destroyed.
-        /// </summary>
-        private static bool TryPutInInventory(uint player, string resref)
+        private static void ApplyCropRemoval(TransferEntry entry)
         {
-            var before = NwnQuickCraftWorld.CountComponent(player, resref);
-            var item = CreateItemOnObject(resref, player);
-            if (NwnQuickCraftWorld.CountComponent(player, resref) > before)
-                return true;
-
-            if (GetIsObjectValid(item))
-                DestroyObject(item);
-            return false;
-        }
-
-        private static bool StoreInOverflow(string playerId, string resref, Location location)
-        {
-            var item = CreateObject(ObjectType.Item, resref, location);
-            if (!GetIsObjectValid(item))
-            {
-                Log.Write(LogGroup.Property, $"Garden plot item '{resref}' for player {playerId} could not be created, so it is lost.");
-                return false;
-            }
-
-            DB.Set(new OverflowItem
-            {
-                PlayerId = playerId,
-                Name = GetName(item),
-                Resref = resref,
-                Tag = GetTag(item),
-                Quantity = 1,
-                Data = ObjectPlugin.Serialize(item)
-            });
-            DestroyObject(item);
-            return true;
+            if (!IsCropRemoved(entry))
+                DB.Delete<GardenPlot>(entry.TargetId);
         }
     }
 }

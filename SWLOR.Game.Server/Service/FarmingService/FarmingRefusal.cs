@@ -70,5 +70,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>The fertilizer is of a lower tier than the crop, so it would do nothing and is not used.</summary>
         FertilizerTooWeak = 22,
+
+        /// <summary>The character file could not be saved, so nothing was changed.</summary>
+        NotSaved = 23,
     }
 }

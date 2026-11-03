@@ -49,5 +49,8 @@ namespace SWLOR.Game.Server.Service.EnzymeCultureService
 
         /// <summary>The batch has not finished.</summary>
         NotDone = 15,
+
+        /// <summary>The character file could not be saved, so nothing was changed.</summary>
+        NotSaved = 16,
     }
 }

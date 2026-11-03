@@ -55,5 +55,8 @@ namespace SWLOR.Game.Server.Service.LivestockService
 
         /// <summary>The item is not a young or crated animal.</summary>
         NotAnAnimal = 17,
+
+        /// <summary>The character file could not be saved, so nothing was changed.</summary>
+        NotSaved = 18,
     }
 }

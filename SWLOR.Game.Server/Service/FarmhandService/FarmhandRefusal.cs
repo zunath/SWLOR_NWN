@@ -37,5 +37,8 @@ namespace SWLOR.Game.Server.Service.FarmhandService
 
         /// <summary>The house or corral has no farmhand.</summary>
         NoFarmhandHere = 11,
+
+        /// <summary>The character file could not be saved, so nothing was changed.</summary>
+        NotSaved = 12,
     }
 }

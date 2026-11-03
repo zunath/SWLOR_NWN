@@ -274,19 +274,28 @@ def ability(run, step) -> None:
         return
 
     expect(step, 'stim packs are created', spawn(client, 'stim_pack', 3, 'Stim Pack'))
-    mark = client.mark()
-    client.nui_click(*slot)
-    time.sleep(2)
-    client.click(*SELF_POINT)
-    expect(step, 'the ability is used', client.wait_for(rf'{re.escape(name)} readies Adrenal Stim I\.', mark, 20))
+    # A click on the hotbar slot is dropped now and then, and a dropped one leaves nothing to undo, so
+    # the use is repeated until the chat log shows it. The first try holds the button (the slot took a
+    # held click every time and a quick one often not); later tries alternate.
+    used = None
+    for attempt in range(4):
+        mark = client.mark()
+        client.nui_click(*slot, slow=attempt % 2 == 0)
+        time.sleep(2)
+        client.click(*SELF_POINT)
+        used = client.wait_for(rf'{re.escape(name)} readies Adrenal Stim I\.', mark, 15)
+        if used:
+            break
+    expect(step, 'the ability is used', used)
     expect(step, 'the stim pack is consumed', client.wait_for(r'Lost Item: Stim Pack', mark, 10))
     expect(step, 'the effect lands', client.wait_for(rf'{re.escape(name)} receives the effect of Adrenal Stim', mark, 10))
     run.capture(step, 'used')
 
+    # The cooldown message came after a quick click and not after a held one, so the quick click goes first.
     refusal = None
-    for _ in range(3):
+    for attempt in range(4):
         mark = client.mark()
-        client.nui_click(*slot)
+        client.nui_click(*slot, slow=attempt % 2 == 1)
         time.sleep(2)
         client.click(*SELF_POINT)
         refusal = client.wait_for(r'This ability can be used in \d+ seconds?\.', mark, 8)

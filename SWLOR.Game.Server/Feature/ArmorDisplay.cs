@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -129,7 +130,9 @@ namespace SWLOR.Game.Server.Feature
                 else showCloak = !showCloak;
 
                 shown = helmet ? showHelmet : showCloak;
-                return SetDMArmorDisplay(creature, showHelmet, showCloak);
+                var saved = SetDMArmorDisplay(creature, showHelmet, showCloak);
+                PublishToggle(creature, helmet, shown);
+                return saved;
             }
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
@@ -145,7 +148,21 @@ namespace SWLOR.Game.Server.Feature
 
             shown = helmet ? dbPlayer.Settings.ShowHelmet : dbPlayer.Settings.ShowCloak;
             Apply(creature, dbPlayer.Settings.ShowHelmet, dbPlayer.Settings.ShowCloak);
+            PublishToggle(creature, helmet, shown);
             return true;
+        }
+
+        /// <summary>
+        /// Keeps an open Appearance Editor's Show Helmet or Show Cloak box on the new setting, so saving the editor
+        /// or a DM's next checkbox click does not restore the old one. A possessed creature's editor belongs to its DM.
+        /// </summary>
+        private static void PublishToggle(uint creature, bool helmet, bool shown)
+        {
+            var payload = new ArmorDisplayChangedRefreshEvent(creature, helmet, shown);
+            if (GetIsDMPossessed(creature))
+                Gui.PublishRefreshEvent(GetMaster(creature), payload, creature);
+            else
+                Gui.PublishRefreshEvent(creature, payload);
         }
     }
 }

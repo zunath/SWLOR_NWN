@@ -365,19 +365,22 @@ namespace SWLOR.Game.Server.Service
             state.PendingDrillCollections ??= new Dictionary<string, string>();
             state.PendingDrillCollections[collection.Id] = collection.Serialize();
             DB.Set(state);
-            ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);
+            ObjectPlugin.SetString(player, DrillCollectionVariable,
+                DrillCollection.AddMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);
             if (CharacterCheckpoint.Save(player))
             {
                 state.PendingDrillCollections.Remove(collection.Id);
                 DB.Set(state);
                 DB.Delete<DrillCollectionReservation>(collection.Id);
+                ObjectPlugin.SetString(player, DrillCollectionVariable,
+                    DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);
             }
 
             var collected = collection.Units.Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}");
             SendMessageToPC(player, ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}."));
         }
 
-        /// <summary>The character-file local naming the last drill collection (<see cref="DrillCollection"/>).</summary>
+        /// <summary>The character-file local naming every drill collection not yet cleared by its drill (<see cref="DrillCollection.IsMarked"/>).</summary>
         private const string DrillCollectionVariable = "STATION_DRILL_COLLECTION";
 
         /// <summary>
@@ -414,7 +417,10 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 DB.Delete<DrillCollectionReservation>(reservation.Id);
+                mark = DrillCollection.RemoveMark(mark, reservation.Id);
             }
+
+            ObjectPlugin.SetString(player, DrillCollectionVariable, mark, true);
         }
 
         // Droids

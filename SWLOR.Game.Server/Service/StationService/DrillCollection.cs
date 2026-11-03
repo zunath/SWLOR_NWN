@@ -67,8 +67,26 @@ namespace SWLOR.Game.Server.Service.StationService
                 storage[resref] = storage.GetValueOrDefault(resref) + units;
         }
 
-        /// <summary>Whether the character file's mark (<see cref="Serialize"/>) names the collection <paramref name="collectionId"/>.</summary>
+        private const char MarkSeparator = ';';
+
+        /// <summary>
+        /// Whether the character file's mark names the collection <paramref name="collectionId"/>. The mark lists every
+        /// collection the character holds whose drill has not cleared it yet, so a later collection never hides an earlier one
+        /// whose save failed.
+        /// </summary>
         public static bool IsMarked(string mark, string collectionId) =>
-            TryParse(mark, out var marked) && string.Equals(marked.Id, collectionId, StringComparison.Ordinal);
+            !string.IsNullOrWhiteSpace(collectionId) &&
+            (mark ?? string.Empty).Split(MarkSeparator, StringSplitOptions.RemoveEmptyEntries).Contains(collectionId, StringComparer.Ordinal);
+
+        /// <summary>The mark with <paramref name="collectionId"/> added.</summary>
+        public static string AddMark(string mark, string collectionId) =>
+            IsMarked(mark, collectionId) || string.IsNullOrWhiteSpace(collectionId)
+                ? mark ?? string.Empty
+                : string.IsNullOrWhiteSpace(mark) ? collectionId : mark + MarkSeparator + collectionId;
+
+        /// <summary>The mark without <paramref name="collectionId"/>, once its drill has cleared it.</summary>
+        public static string RemoveMark(string mark, string collectionId) =>
+            string.Join(MarkSeparator, (mark ?? string.Empty).Split(MarkSeparator, StringSplitOptions.RemoveEmptyEntries)
+                .Where(x => !string.Equals(x, collectionId, StringComparison.Ordinal)));
     }
 }

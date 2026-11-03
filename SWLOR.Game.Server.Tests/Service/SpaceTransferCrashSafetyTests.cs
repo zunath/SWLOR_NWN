@@ -143,8 +143,16 @@ public class SpaceTransferCrashSafetyTests
         collection.ReturnTo(storage);
         storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 });
 
-        DrillCollection.IsMarked(collection.Serialize(), "c1").Should().BeTrue();
-        DrillCollection.IsMarked(collection.Serialize(), "c2").Should().BeFalse("an older mark does not hold a newer collection");
+        // Collection c1's save failed; c2 is then collected from another drill and saved. c1 stays marked, so the login keeps
+        // the ore the character holds instead of returning it to c1's drill as well.
+        var mark = DrillCollection.AddMark(string.Empty, "c1");
+        mark = DrillCollection.AddMark(mark, "c2");
+        DrillCollection.IsMarked(mark, "c1").Should().BeTrue();
+        mark = DrillCollection.RemoveMark(mark, "c2");
+        DrillCollection.IsMarked(mark, "c1").Should().BeTrue("a later collection never hides an earlier one whose save failed");
+        DrillCollection.IsMarked(mark, "c2").Should().BeFalse();
+        DrillCollection.AddMark(mark, "c1").Should().Be(mark);
+        DrillCollection.RemoveMark(mark, "c1").Should().BeEmpty();
         DrillCollection.IsMarked(string.Empty, "c1").Should().BeFalse();
         new StationBuildingState().PendingDrillCollections.Should().BeEmpty("older drills have no pending collection");
     }
@@ -158,7 +166,7 @@ public class SpaceTransferCrashSafetyTests
         var state = new StationBuildingState { DrillStorage = new Dictionary<string, int> { ["ore_a"] = 5 } };
         collection.TakeFrom(state.DrillStorage);
         state.PendingDrillCollections[collection.Id] = collection.Serialize();
-        var mark = characterSaved ? collection.Serialize() : string.Empty;
+        var mark = characterSaved ? DrillCollection.AddMark(string.Empty, collection.Id) : string.Empty;
         if (drillCleared)
             state.PendingDrillCollections.Remove(collection.Id);
 
@@ -190,11 +198,12 @@ public class SpaceTransferCrashSafetyTests
             "collection.TakeFrom(state.DrillStorage);",
             "state.PendingDrillCollections[collection.Id] = collection.Serialize();",
             "DB.Set(state);",
-            "ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);",
+            "DrillCollection.AddMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);",
             "if (CharacterCheckpoint.Save(player))",
             "state.PendingDrillCollections.Remove(collection.Id);",
             "DB.Set(state);",
-            "DB.Delete<DrillCollectionReservation>(collection.Id);");
+            "DB.Delete<DrillCollectionReservation>(collection.Id);",
+            "DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);");
         collect.Should().NotContain("ExportSingleCharacter(", "a save that fails leaves the collection pending, so the pending entry goes only after a saved file");
         service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollections()");
         InOrder(Method(service, "public static void SettleDrillCollections("),

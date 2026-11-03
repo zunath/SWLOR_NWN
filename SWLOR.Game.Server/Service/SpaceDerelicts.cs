@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Service
                 SameParty = existing != null && existing.PartyIds.Overlaps(party),
                 DockedCount = existing?.DockedShipIds.Count ?? 0,
                 PostedDroids = GetPostedDroids(ship).Count,
-                SalvageTeamOut = _derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == ship.Id),
+                SalvageTeamOut = IsSalvageTeamOut(ship.Id),
             };
         }
 
@@ -866,6 +866,13 @@ namespace SWLOR.Game.Server.Service
                                       $"T{boarding.TierIndex} in {boarding.AreaResref} (contested {boarding.Contested}).");
             return true;
         }
+
+        /// <summary>
+        /// Whether the ship's droids are out on a derelict salvage team. Until the team returns they are neither recalled nor
+        /// joined by new postings, so a droid working the derelict never also works a station.
+        /// </summary>
+        public static bool IsSalvageTeamOut(string shipId) =>
+            !string.IsNullOrWhiteSpace(shipId) && _derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == shipId);
 
         private static void ProcessSalvageTeam(DerelictBoarding boarding, double seconds)
         {

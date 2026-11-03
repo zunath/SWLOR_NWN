@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
@@ -43,12 +44,19 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             return $"Only on {DescribeDays()} (server time, UTC)";
         }
 
-        public string DescribeDays()
+        /// <summary>Lists the days in week order (Monday first), for example "Wednesday or Thursday".</summary>
+        public string DescribeDays(bool shortNames = false)
         {
-            if (_daysOfWeek.Count == 1)
-                return _daysOfWeek[0].ToString();
+            var names = _daysOfWeek
+                .Distinct()
+                .OrderBy(day => ((int)day + 6) % 7)
+                .Select(day => shortNames ? day.ToString()[..3] : day.ToString())
+                .ToList();
 
-            return string.Join(", ", _daysOfWeek.GetRange(0, _daysOfWeek.Count - 1)) + " or " + _daysOfWeek[^1];
+            if (names.Count == 1)
+                return names[0];
+
+            return string.Join(", ", names.GetRange(0, names.Count - 1)) + " or " + names[^1];
         }
     }
 }

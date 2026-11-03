@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ContentPanelWidth = 560f;
         private const float MutationRailWidth = 300f;
         private const float StageBoxHeight = 64f;
+        private const float StageBoxWidth = 178f;
+        private const float PurityRowHeight = 22f;
+        private const float PurityRowPitch = 26f;
+        private const int CollapsedPurityRows = 8;
 
         private readonly GuiWindowBuilder<IncubatorViewModel> _builder = new();
 
@@ -18,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.Incubator)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 920f, 640f)
+                .SetInitialGeometry(0, 0, 920f, 690f)
                 .SetTitle("Incubator")
                 .BindOnClosed(model => model.OnWindowClosed())
                 .DefinePartialView(IncubatorViewModel.NewJobPartial, host => AddBody(host, BuildNewJobSections))
@@ -143,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                     .BindRowCount(model => model.OutcomeNames)
                     .SetRowHeight(24f)
-                    .SetHeight(110f);
+                    .SetHeight(84f);
             });
             BuildPurities(col);
             col.AddRow(row =>
@@ -187,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddLabel()
                     .BindText(model => model.ServerDayText)
                     .SetColor(GuiColor.Grey)
-                    .SetWidth(170f)
+                    .SetWidth(210f)
                     .SetHeight(40f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Right);
             });
@@ -235,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(20f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left));
                 });
-            }).SetHeight(StageBoxHeight);
+            }).SetHeight(StageBoxHeight).SetWidth(StageBoxWidth);
         }
 
         private static void BuildEnzymeSlots(GuiColumn<IncubatorViewModel> col)
@@ -288,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHorizontalAlign(NuiHorizontalAlign.Left));
                 text.AddRow(r => r.AddLabel()
                     .BindText(detail)
+                    .BindTooltip(detail)
                     .SetColor(GuiColor.Grey)
                     .SetHeight(20f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left));
@@ -319,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.AddLabel()
                     .BindText(model => model.PurityHeader)
+                    .SetTooltip("The number in brackets is this stage's gain. Each stat gains at most 10% per stage.")
                     .SetColor(GuiColor.Cyan)
                     .SetHeight(22f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
@@ -358,7 +364,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     })
                     .BindRowCount(model => model.PurityNames)
-                    .SetRowHeight(26f);
+                    .SetRowHeight(PurityRowHeight)
+                    .SetHeight(PurityRowPitch * CollapsedPurityRows + 12f);
             });
         }
 

@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_dnaType == BeastType.Invalid)
             {
                 BeastName = "No DNA added";
-                BeastSubtitle = "Click the slot and pick a DNA sample from your inventory.";
+                BeastSubtitle = "Click the slot to add a DNA sample.";
                 return;
             }
 
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else if (stage == started + 1 && (job == null || finished))
                 {
                     titles[index] = $"Stage {stage} - next";
-                    details[index] = $"Add enzymes ({stageTime})";
+                    details[index] = $"Takes {stageTime}";
                     colors[index] = NextColor;
                 }
                 else
@@ -408,7 +408,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             PurityHeader = hasPendingStage
-                ? "Purities (gain in brackets is this stage, max +10% per stat)"
+                ? "Purities (+ this stage)"
                 : "Purities";
             ResistanceToggleText = _showResistances ? "Hide resistances" : "Show resistances";
 

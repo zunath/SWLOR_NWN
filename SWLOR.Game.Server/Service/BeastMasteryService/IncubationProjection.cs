@@ -144,7 +144,8 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         public MutationRecipeReport Evaluate(MutationDetail mutation, DateTime now)
         {
             var lines = new List<MutationRequirementLine>();
-            var missing = new List<string>();
+            var missingEnzymes = 0;
+            var otherUnmet = false;
             var reachable = true;
             var dayMet = true;
 
@@ -153,38 +154,39 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                 switch (requirement)
                 {
                     case MutationRequirementEnzyme enzyme:
-                        reachable &= AddEnzymeLines(lines, missing, "lyase", enzyme.LyaseEnzymeColors, _baseJob.LyaseColors, _projectedJob.LyaseColors);
-                        reachable &= AddEnzymeLines(lines, missing, "isomerase", enzyme.IsomeraseEnzymeColors, _baseJob.IsomeraseColors, _projectedJob.IsomeraseColors);
-                        reachable &= AddEnzymeLines(lines, missing, "hydrolase", enzyme.HydrolaseEnzymeColors, _baseJob.HydrolaseColors, _projectedJob.HydrolaseColors);
+                        reachable &= AddEnzymeLines(lines, ref missingEnzymes, "lyase", enzyme.LyaseEnzymeColors, _baseJob.LyaseColors, _projectedJob.LyaseColors);
+                        reachable &= AddEnzymeLines(lines, ref missingEnzymes, "isomerase", enzyme.IsomeraseEnzymeColors, _baseJob.IsomeraseColors, _projectedJob.IsomeraseColors);
+                        reachable &= AddEnzymeLines(lines, ref missingEnzymes, "hydrolase", enzyme.HydrolaseEnzymeColors, _baseJob.HydrolaseColors, _projectedJob.HydrolaseColors);
                         break;
                     case MutationRequirementDayOfWeek day:
                         dayMet = day.IsMetOn(now.DayOfWeek);
-                        lines.Add(new MutationRequirementLine($"Complete on {day.DescribeDays()} (UTC)", dayMet, true));
+                        lines.Add(new MutationRequirementLine($"Complete {day.DescribeDays(true)} (UTC)", dayMet, true));
                         break;
                     default:
                         var met = string.IsNullOrWhiteSpace(requirement.CheckRequirements(_projectedJob));
                         lines.Add(new MutationRequirementLine(requirement.GetRequirementDescription(), met, false));
-                        if (!met)
-                            missing.Add(requirement.GetRequirementDescription().ToLower());
+                        otherUnmet |= !met;
                         break;
                 }
             }
 
             string summary;
-            var ready = missing.Count == 0 && dayMet;
-            if (missing.Count == 0)
-                summary = dayMet ? "Requirements met" : "Enzymes met - wait for the listed day";
-            else if (!reachable)
+            var ready = missingEnzymes == 0 && !otherUnmet && dayMet;
+            if (!reachable)
                 summary = "Out of reach for this job";
+            else if (missingEnzymes > 0)
+                summary = missingEnzymes == 1 ? "1 more enzyme needed" : $"{missingEnzymes} more enzymes needed";
+            else if (otherUnmet)
+                summary = "Not ready yet";
             else
-                summary = "Missing: " + string.Join(", ", missing);
+                summary = dayMet ? "Requirements met" : "Enzymes met - wait for the day";
 
             return new MutationRecipeReport(lines, summary, ready);
         }
 
         private bool AddEnzymeLines(
             List<MutationRequirementLine> lines,
-            List<string> missing,
+            ref int missingEnzymes,
             string typeName,
             Dictionary<EnzymeColorType, int> required,
             Dictionary<EnzymeColorType, int> baseCounts,
@@ -198,8 +200,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                 var colorName = color.ToString().ToLower();
 
                 lines.Add(new MutationRequirementLine($"{colorName} {typeName} {Math.Min(have, count)}/{count}", have >= count, false));
-                if (have < count)
-                    missing.Add($"{count - have} {colorName} {typeName}");
+                missingEnzymes += Math.Max(0, count - have);
 
                 neededFromOpenStages += Math.Max(0, count - already);
             }

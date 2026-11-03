@@ -148,22 +148,29 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
-    "Line": 68,
-    "Member": "HandleChatMessage",
+    "Line": 63,
+    "Member": "RunCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
-    "Line": 85,
-    "Member": "HandleChatMessage",
+    "Line": 79,
+    "Member": "RunCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 96,
+    "Member": "RunCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, error)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
-    "Line": 109,
-    "Member": "HandleChatMessage",
+    "Line": 119,
+    "Member": "RunCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
   },

@@ -2408,6 +2408,7 @@ namespace SWLOR.Game.Server.Service
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
                 Tournaments.OnCityDeleted(property);
+                CityBounties.OnCityDeleted(property);
                 CityProjects.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
                 Townsfolk.OnCityDeleted(property.Id);

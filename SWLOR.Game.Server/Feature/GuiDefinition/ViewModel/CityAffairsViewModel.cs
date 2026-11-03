@@ -12,24 +12,27 @@ using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CityAffairsViewModel : GuiViewModelBase<CityAffairsViewModel, CityAffairsPayload>
+    public partial class CityAffairsViewModel : GuiViewModelBase<CityAffairsViewModel, CityAffairsPayload>
     {
         public const string TabContentElement = "cityaffairs_content";
         public const string SituationsTabPartial = "CITYAFFAIRS_SITUATIONS";
         public const string OfficersTabPartial = "CITYAFFAIRS_OFFICERS";
         public const string StoryTabPartial = "CITYAFFAIRS_STORY";
+        public const string BountiesTabPartial = "CITYAFFAIRS_BOUNTIES";
 
         private const int SituationsTabId = 0;
         private const int OfficersTabId = 1;
         private const int StoryTabId = 2;
+        private const int BountiesTabId = 3;
 
         private static readonly GuiTabGroup<CityAffairsViewModel, CityAffairsPayload> Tabs =
             new GuiTabGroup<CityAffairsViewModel, CityAffairsPayload>()
                 .AddTab(SituationsTabId, SituationsTabPartial, model => model.RefreshSituations())
                 .AddTab(OfficersTabId, OfficersTabPartial, model => model.RefreshOfficers())
-                .AddTab(StoryTabId, StoryTabPartial, model => model.RefreshStory());
+                .AddTab(StoryTabId, StoryTabPartial, model => model.RefreshStory())
+                .AddTab(BountiesTabId, BountiesTabPartial, model => model.RefreshBounties());
 
-        private static readonly GuiToggleGroupSync TabToggles = new(SituationsTabId, OfficersTabId, StoryTabId);
+        private static readonly GuiToggleGroupSync TabToggles = new(SituationsTabId, OfficersTabId, StoryTabId, BountiesTabId);
 
         private string _cityId = string.Empty;
         private bool _isMayor;
@@ -129,10 +132,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StoryInput = string.Empty;
             CanPostStory = false;
 
+            InitializeBounties();
+
             WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.SelectedCitizenIndex);
             WatchOnClient(model => model.TitleInput);
             WatchOnClient(model => model.StoryInput);
+            WatchOnClient(model => model.SelectedTargetIndex);
+            WatchOnClient(model => model.RewardInput);
 
             SelectTab(SituationsTabId);
         }
@@ -147,13 +154,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId, RestoreStoryInput);
 
         /// <summary>
-        /// Pushes the story request field again once its tab exists, since the client does not keep what was typed into a
-        /// field that was off screen.
+        /// Pushes the story request and bounty reward fields again once their tab exists, since the client does not keep
+        /// what was typed into a field that was off screen.
         /// </summary>
         private void RestoreStoryInput()
         {
             if (SelectedTabId == StoryTabId)
                 StoryInput = StoryInput;
+            else if (SelectedTabId == BountiesTabId)
+                RewardInput = RewardInput;
         }
 
         private void ShowError(string message)

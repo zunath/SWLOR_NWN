@@ -82,6 +82,9 @@ public class RecordingProxy : DispatchProxy
             return Activator.CreateInstance(returnType);
         if (returnType.IsAbstract || returnType.IsInterface)
             return null;
+        // An array cannot be made uninitialized; a new one-element array is just as distinct.
+        if (returnType.IsArray)
+            return Array.CreateInstance(returnType.GetElementType()!, 1);
 
         var uninitialized = RuntimeHelpers.GetUninitializedObject(returnType);
         // An engine structure frees its native handle when the garbage collector finalizes it, which crashes a process

@@ -24,6 +24,7 @@
     { "name": "Guild", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },
     { "name": "IncubationFieldNote", "domain": "Companions" },
+    { "name": "Item", "domain": "Items" },
     { "name": "ItemTrash", "domain": "Items" },
     { "name": "KeyItem", "domain": "Items" },
     { "name": "LightsaberWorkbench", "domain": "Items" },

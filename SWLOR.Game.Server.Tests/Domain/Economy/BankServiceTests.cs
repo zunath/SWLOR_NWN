@@ -20,6 +20,22 @@ namespace SWLOR.Game.Server.Tests.Domain.Economy;
 [TestFixture]
 public class BankServiceTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     private const uint PlayerObject = 1001;
     private const uint ItemObject = 2002;
     private const uint BankObject = 3003;

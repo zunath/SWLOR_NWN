@@ -22,6 +22,7 @@ using ToolsetDockFactory = SWLOR.Toolset.Shell.ToolsetDockFactory;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 using GameItem = SWLOR.Game.Server.Service.Item;
+using EconomyRestriction = SWLOR.Game.Server.Service.ItemService.EconomyRestriction;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Toolset.Editors
@@ -2519,7 +2520,9 @@ namespace SWLOR.Toolset.Editors
                 var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
                 var noEconomy = new VarTable(item).GetInt(GameItem.NoEconomyVariable) == 1;
                 var hasInventoryIcon = _previewRenderer?.RenderItemIcon(item) != null;
-                if (GameItem.IsEconomyRestricted(
+                // The editor has no service container, so it applies the server's stateless data-only classifier
+                // directly instead of going through the Item facade.
+                if (EconomyRestriction.IsRestricted(
                         (BaseItem)baseItem,
                         name ?? string.Empty,
                         noEconomy,

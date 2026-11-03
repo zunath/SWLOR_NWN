@@ -50,6 +50,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "invalid bytes replaced in the bind value");
         }
 
+        [EngineTest("Invalid object keys are repaired before the engine sorts them, including keys that collide and typed objects", Category = "ClientJsonUtf8", TimeoutSeconds = 60f)]
+        public static async Task InvalidObjectKeysAreRepairedBeforeDecoding(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var before = ClientJsonUtf8Guard.ReplacedByteCount;
+            // {"mouse_btn": 1, "\x80": "a", "\x81": "b", "typed": {$S#2 "k\xE9": "x", "\x82": "y"}}
+            // Repaired after decoding, "\x80" and "\x81" would both become "?" inside an already sorted map.
+            var payload = Concat(
+                Bytes('{'),
+                UbjsonKey(Encoding.ASCII.GetBytes("mouse_btn")), new byte[] { (byte)'i', 1 },
+                UbjsonKey(new byte[] { 0x80 }), UbjsonString(Encoding.ASCII.GetBytes("a")),
+                UbjsonKey(new byte[] { 0x81 }), UbjsonString(Encoding.ASCII.GetBytes("b")),
+                UbjsonKey(Encoding.ASCII.GetBytes("typed")),
+                Bytes('{'), Bytes('$'), Bytes('S'), Bytes('#'), new byte[] { (byte)'i', 2 },
+                UbjsonKey(new byte[] { (byte)'k', 0xE9 }), UbjsonKey(Encoding.ASCII.GetBytes("x")),
+                UbjsonKey(new byte[] { 0x82 }), UbjsonKey(Encoding.ASCII.GetBytes("y")),
+                Bytes('}'));
+
+            await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () =>
+                SendNuiMessage(fixture.Creature, NuiEventMinor, BuildEventMessage(payload)));
+
+            ctx.AssertEqual(before + 4, ClientJsonUtf8Guard.ReplacedByteCount, "invalid key bytes replaced");
+        }
+
         [EngineTest("A NUI event with valid UTF-8 text is passed through unchanged", Category = "ClientJsonUtf8", TimeoutSeconds = 60f)]
         public static async Task ValidNuiEventIsUntouched(EngineTestContext ctx)
         {

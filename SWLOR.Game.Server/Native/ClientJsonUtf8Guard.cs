@@ -12,12 +12,17 @@ namespace SWLOR.Game.Server.Native
     /// <summary>
     /// Repairs invalid UTF-8 in the JSON that clients send with NUI events and bind updates. The engine decodes
     /// that JSON without checking its text, then serializes every received payload for a debug log line with
-    /// strict UTF-8 handling. A string holding a single Windows-1252 byte made the serializer throw, nothing caught
-    /// the exception, and the server aborted. Repairing the decoded JSON keeps every later use of it safe.
+    /// strict UTF-8 handling. A string holding a single invalid byte made the serializer throw, nothing caught the
+    /// exception, and the server aborted.
     /// </summary>
     public static unsafe class ClientJsonUtf8Guard
     {
         private const string ReadJsonSymbol = "_ZN10CNWMessage8ReadJSONB5cxx11Ev";
+
+        // CNWMessage read state, as CNWMessage::ReadINT uses it: the byte buffer, its size and the read offset.
+        private const int ReadBufferOffset = 0x38;
+        private const int ReadBufferSizeOffset = 0x40;
+        private const int ReadBufferPositionOffset = 0x44;
 
         // nlohmann::json (libstdc++): a type byte, then an 8-byte value at offset 8. Objects point at a std::map,
         // arrays at a std::vector of json, strings at a std::string (data pointer, then length).
@@ -34,7 +39,6 @@ namespace SWLOR.Game.Server.Native
         private const int MapRootOffset = 16;
         private const int NodeLeftOffset = 16;
         private const int NodeRightOffset = 24;
-        private const int NodeKeyOffset = 32;
         private const int NodeValueOffset = 64;
 
         private static FunctionHook* _readJsonHook;
@@ -57,17 +61,30 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void* ReadJson(void* result, void* message)
         {
+            var replaced = 0;
+            try
+            {
+                // Repair the encoded text first, so every object key is valid before the engine sorts it into a map.
+                replaced += RepairPendingUbjson((byte*)message);
+            }
+            catch (Exception exception)
+            {
+                Log.WriteError(exception, "Could not check client UBJSON for invalid UTF-8");
+            }
+
             var original = (delegate* unmanaged<void*, void*, void*>)_readJsonHook->m_trampoline;
             var json = original(result, message);
             try
             {
-                var replaced = ReplaceInvalidText((byte*)json);
+                // A string value left invalid by any reader difference can still be repaired safely in place.
+                replaced += ReplaceInvalidStringValues((byte*)json);
                 if (replaced > 0)
                 {
                     ReplacedByteCount += replaced;
                     var playerId = CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID;
+                    var count = replaced;
                     // Native hooks only read engine state; look the player up once the frame continues.
-                    Scheduler.Schedule(() => LogReplacement(playerId, replaced), TimeSpan.Zero);
+                    Scheduler.Schedule(() => LogReplacement(playerId, count), TimeSpan.Zero);
                 }
             }
             catch (Exception exception)
@@ -79,11 +96,37 @@ namespace SWLOR.Game.Server.Native
         }
 
         /// <summary>
-        /// Replaces invalid UTF-8 in every string value and object key of a decoded json, including nested ones.
+        /// Repairs the UBJSON that ReadJSON is about to decode: a 4-byte length, then that many bytes, at the read
+        /// offset (after a type byte when the engine runs without multiplayer).
+        /// </summary>
+        private static int RepairPendingUbjson(byte* message)
+        {
+            var buffer = *(byte**)(message + ReadBufferOffset);
+            var size = (long)*(uint*)(message + ReadBufferSizeOffset);
+            var position = (long)*(uint*)(message + ReadBufferPositionOffset);
+            if (buffer == null)
+                return 0;
+
+            if (NWNXLib.g_pAppManager.m_bMultiplayerEnabled == 0)
+                position++;
+            if (position + sizeof(uint) > size)
+                return 0;
+
+            var length = (long)*(uint*)(buffer + position);
+            var start = position + sizeof(uint);
+            if (length == 0 || length > size - start || length > int.MaxValue)
+                return 0;
+
+            return UbjsonTextRepair.RepairStrings(new Span<byte>(buffer + start, (int)length));
+        }
+
+        /// <summary>
+        /// Replaces invalid UTF-8 in every string value of a decoded json, including nested ones. Object keys are
+        /// left alone: changing them would break the ordering of the map that holds them.
         /// </summary>
         /// <param name="root">The json to repair.</param>
         /// <returns>The number of bytes replaced.</returns>
-        private static int ReplaceInvalidText(byte* root)
+        private static int ReplaceInvalidStringValues(byte* root)
         {
             var rootType = root[0];
             if (rootType != JsonObject && rootType != JsonArray && rootType != JsonString)
@@ -117,8 +160,6 @@ namespace SWLOR.Game.Server.Native
                         while (nodes.Count > 0)
                         {
                             var node = (byte*)nodes.Pop();
-                            // A repaired key can sort differently, but only keys that were invalid change.
-                            replaced += ReplaceInvalidBytes(node + NodeKeyOffset);
                             values.Push((IntPtr)(node + NodeValueOffset));
                             var left = *(byte**)(node + NodeLeftOffset);
                             var right = *(byte**)(node + NodeRightOffset);

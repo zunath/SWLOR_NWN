@@ -93,7 +93,7 @@ public class CreditPaymentTests
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
         InOrder(settle, "SettlePendingFoundings(player, mark);", "var receipts = LoadReceipts(GetObjectUUID(player));",
             "if (!mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id)))",
-            "GiveGoldToCreature(player, mark.Credits);", "Retire(player);", "DB.Delete<CreditPaymentReceipt>(receipt.Id);");
+            "GiveGoldToCreature(player, mark.Credits);", "if (!CharacterCheckpoint.Save(player))", "DB.Delete<CreditPaymentReceipt>(receipt.Id);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
 

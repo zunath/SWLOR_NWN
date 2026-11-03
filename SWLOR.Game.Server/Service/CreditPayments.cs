@@ -213,10 +213,14 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Space, $"CREDIT PAYMENT RETURNED - {PlayerName.GetAuditName(player)} - {mark.Kind} {mark.RecordId} - {mark.Credits} credits whose change a restart never saved");
                 }
 
-                Retire(player);
+                // The cleared mark (and any credits returned) reach the character file at once. Until the file holds them the
+                // receipts stay, so a restart before the save finds the old mark and its receipt, and pays nothing twice.
+                ObjectPlugin.DeleteString(player, MarkVariable);
+                if (!CharacterCheckpoint.Save(player))
+                    return;
             }
 
-            // After the mark is retired: a restart before this leaves the receipts for the next login, which has no mark to settle.
+            // After the cleared mark is saved: a restart before this leaves the receipts for the next login, which has no mark to settle.
             foreach (var receipt in receipts)
             {
                 DB.Delete<CreditPaymentReceipt>(receipt.Id);

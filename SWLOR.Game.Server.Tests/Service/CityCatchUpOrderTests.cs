@@ -53,6 +53,18 @@ public class CityCatchUpOrderTests
         take.Should().Contain("GiveGoldToCreature(player, mark.Credits);", "a failed save puts the credits back");
     }
 
+    [Test]
+    public void LoginSettlement_KeepsPaymentReceiptsUntilTheClearedMarkIsSaved()
+    {
+        var payments = ReadServer("Service", "CreditPayments.cs");
+        var settle = Between(payments, "public static void SettleInterruptedPayment()", "private static string GetRecordPaymentId(");
+
+        var save = Index(settle, "if (!CharacterCheckpoint.Save(player))");
+        Index(settle, "ObjectPlugin.DeleteString(player, MarkVariable);").Should().BeLessThan(save);
+        Index(settle, "DB.Delete<CreditPaymentReceipt>(receipt.Id);").Should().BeGreaterThan(save,
+            "a receipt is deleted only once the file no longer holds the mark it guards");
+    }
+
     private static string ReadServer(params string[] parts)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -121,7 +121,7 @@ public class TournamentWiringTests
         var load = settle.IndexOf("var receipts = LoadReceipts(GetObjectUUID(player));", StringComparison.Ordinal);
         var keeps = settle.IndexOf("mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id))", load, StringComparison.Ordinal);
         var refund = settle.IndexOf("GiveGoldToCreature(player, mark.Credits);", keeps, StringComparison.Ordinal);
-        var retire = settle.IndexOf("Retire(player);", refund, StringComparison.Ordinal);
+        var retire = settle.IndexOf("if (!CharacterCheckpoint.Save(player))", refund, StringComparison.Ordinal);
         var delete = settle.IndexOf("DB.Delete<CreditPaymentReceipt>(receipt.Id);", retire, StringComparison.Ordinal);
 
         load.Should().BeGreaterThan(0);

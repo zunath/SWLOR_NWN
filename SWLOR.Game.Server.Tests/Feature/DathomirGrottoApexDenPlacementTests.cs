@@ -80,8 +80,12 @@ public class DathomirGrottoApexDenPlacementTests
     {
         using var dungeon = LoadModuleJson("git", DungeonAreaFile);
 
-        GetLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID")
-            .Should().Be("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN");
+        // Adepts and specialists spawn on fixed points (outer and deep halves), never at random area points,
+        // so each tier stays in its own part of the den.
+        GetOptionalLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().BeEmpty();
+        var waypointTags = EnumerateWaypointTags(dungeon.RootElement).ToArray();
+        waypointTags.Count(tag => tag == "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN").Should().Be(10);
+        waypointTags.Count(tag => tag == "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP").Should().Be(10);
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
     }
 
@@ -137,7 +141,7 @@ public class DathomirGrottoApexDenPlacementTests
     private static void AssertActivators(System.Text.Json.JsonDocument area, (string Resref, string Quest, string Encounter, string Enemy, string Waypoint)[] expected)
     {
         var waypoints = area.RootElement.GetProperty("WaypointList").GetProperty("value")
-            .EnumerateArray().ToDictionary(w => GetString(w, "Tag"), w => GetString(w, "TemplateResRef"));
+            .EnumerateArray().DistinctBy(w => GetString(w, "Tag")).ToDictionary(w => GetString(w, "Tag"), w => GetString(w, "TemplateResRef"));
 
         foreach (var (resref, questId, encounterId, creatureResref, spawnWaypoint) in expected)
         {

@@ -60,19 +60,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void CZ220BreakerYard(SpawnTableBuilder builder)
         {
-            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - Wreck Crew Scrapper (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_adamguard_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_adamguard_sp")
-                .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_adamguard_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -81,29 +73,42 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_scraplock_sp")
+                .AddSpawn(ObjectType.Creature, "cp_worldbrk_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD_DEEP", "CZ-220 Breaker Yard - Wreck Crew Rigger (Capstone Specialists)")
+                .AddSpawn(ObjectType.Creature, "cp_adamguard_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_scraplock_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_worldbrk_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_scraplock_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cp_worldbrk_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            builder.Create("CAPSTONE_ADAMGUARD_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Adamantine Guard line)")
+                .AddSpawn(ObjectType.Creature, "cp_adamguard_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_SCRAPLOCK_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Scrapheap Lockdown line)")
+                .AddSpawn(ObjectType.Creature, "cp_scraplock_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_WORLDBRK_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Worldbreaker line)")
                 .AddSpawn(ObjectType.Creature, "cp_worldbrk_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
 
             // Named rare elite droids live in a dedicated rare table (tagged waypoint in the

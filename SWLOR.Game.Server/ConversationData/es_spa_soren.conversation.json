@@ -1,0 +1,258 @@
+{
+  "Id": "es_spa_soren",
+  "Title": "Soren Tael - Guest",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "greeting",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "greeting": {
+      "Id": "greeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are welcome to walk with me. I am trying to keep my breathing even; the pace is deliberately unimpressive.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "topic-1",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-2",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-3",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Part of recovering from it. I spent years paying attention only when someone stood opposite me. A quiet walk makes me notice the tension I carry after the bout has ended.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "My training partner sent me here. She said she wanted to face me when I could move freely again. Respect sometimes means helping someone step away from the circle for a while.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-3": {
+      "Id": "topic-3",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Veylan Groves, if you mind the paths and the gathering grounds. People there tend the plants for good reasons. Leave what you do not need, and ask before taking from a marked patch.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "topic-1": {
+      "Id": "topic-1",
+      "Text": {
+        "Text": "Is this part of your training?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-1",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "Text": {
+        "Text": "Do you miss having an opponent?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-2",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-3": {
+      "Id": "topic-3",
+      "Text": {
+        "Text": "Where else is good for a quiet walk?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-3",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "return": {
+      "Id": "return",
+      "Text": {
+        "Text": "There was something else I wanted to ask.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "greeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "farewell": {
+      "Id": "farewell",
+      "Text": {
+        "Text": "Thank you. I will let you return to your day.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

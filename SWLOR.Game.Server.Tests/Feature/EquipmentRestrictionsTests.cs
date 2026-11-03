@@ -221,21 +221,6 @@ public class EquipmentRestrictionsTests
         result.Should().Be(expectedSlot);
     }
 
-    [TestCase(BaseItem.Bullet, true, true)]
-    [TestCase(BaseItem.Bullet, false, false)]
-    [TestCase(BaseItem.Arrow, true, false)]
-    public void PistolAmmunitionMigration_ClearsAnOccupiedBulletSlotBeforeEquipping(
-        BaseItem normalizedLegacyAmmoType,
-        bool bulletSlotOccupied,
-        bool expected)
-    {
-        var result = PistolBaseItemCompatibility.ShouldClearBulletSlot(
-            normalizedLegacyAmmoType,
-            bulletSlotOccupied);
-
-        result.Should().Be(expected);
-    }
-
     [TestCase(BaseItem.Pistol, BaseItem.Sling, true, true, true, false, true)]
     [TestCase(BaseItem.LegacyPistol, BaseItem.Sling, true, true, true, false, true)]
     [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, true, false, true)]

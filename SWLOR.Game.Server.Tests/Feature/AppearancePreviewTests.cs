@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -113,6 +114,21 @@ public class AppearancePreviewTests
     }
 
     [Test]
+    public void WeaponPartKeysNameTheEnginePartModels()
+    {
+        AppearancePreview.WeaponPartKey("WSwLs", AppearanceWeapon.Top, 101).Should().Be("wswls_t_011");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Middle, 325).Should().Be("wswls_m_253");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Bottom, 908).Should().Be("wswls_b_089");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Invalid, 101).Should().BeEmpty();
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Top, 0).Should().BeEmpty();
+        AppearancePreview.WeaponPartKey("", AppearanceWeapon.Top, 101).Should().BeEmpty();
+        AppearancePreview.Resref(AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Top, 101), AppearancePreviewView.Angle)
+            .Should().Be("awswls_t_011a");
+        AppearancePreview.SimpleWeaponKey("WPLGLV", 7).Should().Be("wplglv_007");
+        AppearancePreview.SimpleWeaponKey("wplglv", 0).Should().BeEmpty();
+    }
+
+    [Test]
     public void HeadHelmetAndCloakKeys()
     {
         AppearancePreview.HeadKey("pmh0", 7).Should().Be("pmh0_head007");
@@ -183,73 +199,80 @@ public class AppearancePreviewTests
 
     // ---------------------------------------------------------------- view model helpers
 
+    // width, height, x, y, screen width, screen height, scale -> width, height
+    [TestCase(600f, 400f, 40f, 30f, 0f, 0f, 1f, 600f, 400f)]
+    [TestCase(600f, 400f, 40f, 30f, 1920f, 1080f, 1f, 600f, 400f)]
+    [TestCase(1240f, 720f, 40f, 0f, 1280f, 720f, 1f, 1240f, 720f)]
+    [TestCase(1800f, 900f, 300f, 200f, 1280f, 720f, 1f, 1280f, 720f)]
+    [TestCase(800f, 500f, 1900f, 1000f, 2400f, 1350f, 1.2f, 800f, 500f)]
+    [TestCase(2000f, 1000f, 0f, 0f, 1600f, 900f, 0.8f, 2000f, 1000f)]
+    [TestCase(2400f, 1400f, 0f, 0f, 1600f, 900f, 0.8f, 2000f, 1125f)]
+    public void WindowsAreCappedToTheScreenButNeverGrown(float width, float height, float x, float y, float screenWidth,
+        float screenHeight, float scale, float expectedWidth, float expectedHeight)
+    {
+        var geometry = new GuiRectangle(x, y, width, height);
+        var fitted = FitWindowToScreen(geometry, screenWidth, screenHeight, scale);
+        fitted.Width.Should().BeApproximately(expectedWidth, 0.01f);
+        fitted.Height.Should().BeApproximately(expectedHeight, 0.01f);
+        if (screenWidth > 0f)
+        {
+            // Positions are physical pixels; the window covers its size times the GUI scale.
+            fitted.X.Should().BeInRange(0f, screenWidth - fitted.Width * scale + 0.01f);
+            fitted.Y.Should().BeInRange(0f, screenHeight - fitted.Height * scale + 0.01f);
+        }
+    }
+
+    [Test]
+    public void AWindowThatAlreadyFitsKeepsItsGeometry()
+    {
+        var geometry = new GuiRectangle(100f, 50f, 500f, 300f);
+        FitWindowToScreen(geometry, 1920f, 1080f, 1f).Should().BeSameAs(geometry);
+        FitWindowToScreen(geometry, 0f, 0f, 1f).Should().BeSameAs(geometry);
+    }
+
+    [Test]
+    public void PartColourRowsHaveNoTitle() =>
+        typeof(AppearanceEditorViewModel).GetProperty("SelectedPartColorsTitle").Should().BeNull(
+            "the body map's highlighted slot already names the part");
+
+    // editor x, screen width, scale -> browser x
+    [TestCase(100f, 1920f, 1f, 810f)]
+    [TestCase(1200f, 1920f, 1f, 580f)]
+    [TestCase(100f, 1280f, 1f, 660f)]
+    [TestCase(0f, 1280f, 1f, 660f)]
+    [TestCase(600f, 1280f, 1f, 0f)]
+    [TestCase(100f, 0f, 1f, 810f)]
+    [TestCase(100f, 1920f, 1.5f, 990f)]
+    [TestCase(1000f, 1920f, 1.5f, 70f)]
+    public void ThePartBrowserOpensBesideTheEditor(float editorX, float screenWidth, float scale, float expectedX)
+    {
+        var editor = new GuiRectangle(editorX, 50f, AppearanceEditorDefinition.EditorWidth, AppearanceEditorDefinition.EditorHeight);
+        var placed = PlaceBeside(editor, AppearancePartBrowserDefinition.WindowWidth,
+            AppearancePartBrowserDefinition.WindowHeight, screenWidth, 1080f, scale);
+        placed.X.Should().BeApproximately(expectedX, 0.01f,
+            "right of the editor when it fits, else left, else against the edge that covers less of the editor");
+        placed.Y.Should().Be(50f, "the browser lines up with the editor's top");
+        placed.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
+        placed.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
+        PlaceBeside(null, 620f, 590f, 1920f, 1080f, 1f).Should().BeNull();
+    }
+
     [TestCase(0, false, "A1")]
     [TestCase(7, false, "H1")]
+    [TestCase(63, false, "P4")]
     [TestCase(175, false, "P11")]
     [TestCase(42, true, "RGB")]
-    [TestCase(255, false, "Base")]
+    [TestCase(255, false, "")]
     [TestCase(255, true, "RGB")]
-    public void SwatchCodeShowsPaletteCodeRgbOrBase(int colorId, bool custom, string expected) =>
-        SwatchCode(BuildPaletteRegion(colorId), custom).Should().Be(expected);
+    public void SwatchCodesShowThePaletteCodeOrRgb(int colorId, bool custom, string expected) =>
+        SwatchCode(BuildPaletteRegion(colorId), custom).Should().Be(expected,
+            "a part using the outfit colour has no code of its own");
 
     [Test]
-    public void SwatchCodeOfAMissingRegionIsBase()
+    public void ASwatchWithNoRegionHasNoCode()
     {
-        SwatchCode(null, false).Should().Be("Base");
+        SwatchCode(null, false).Should().BeEmpty();
         SwatchCode(null, true).Should().Be("RGB");
-    }
-
-    [TestCase(2000f, true, 4)]
-    [TestCase(1240f, true, 4)]
-    [TestCase(1208f, true, 4)]
-    [TestCase(1207f, true, 3)]
-    [TestCase(1102f, true, 3)]
-    [TestCase(1101f, true, 2)]
-    [TestCase(996f, true, 2)]
-    [TestCase(995f, true, 1)]
-    [TestCase(0f, true, 1)]
-    [TestCase(688f, false, 4)]
-    [TestCase(687f, false, 3)]
-    [TestCase(582f, false, 3)]
-    [TestCase(581f, false, 2)]
-    [TestCase(476f, false, 2)]
-    [TestCase(475f, false, 1)]
-    public void BrowserColumnsFollowTheWindowWidth(float width, bool hasSideColumns, int expected) =>
-        BrowserColumnsForWidth(width, hasSideColumns).Should().Be(expected);
-
-    [Test]
-    public void BrowserColumnsNeverDecreaseAsTheWindowWidens([Values(true, false)] bool hasSideColumns)
-    {
-        var columns = Enumerable.Range(0, 2500).Select(width => BrowserColumnsForWidth(width, hasSideColumns)).ToArray();
-        columns.Should().BeInAscendingOrder();
-        columns.Should().OnlyContain(count => count >= 1 &&
-            count * AppearanceEditorViewModel.MaxBrowserRows <= AppearanceEditorViewModel.BrowserTileCount);
-    }
-
-    [TestCase(720f, 4, 3)]
-    [TestCase(714f, 4, 3)]
-    [TestCase(713f, 4, 2)]
-    [TestCase(640f, 4, 2)]
-    [TestCase(576f, 4, 2)]
-    [TestCase(575f, 4, 1)]
-    [TestCase(754f, 2, 3)]
-    [TestCase(753f, 2, 2)]
-    [TestCase(100f, 1, 1)]
-    [TestCase(4000f, 4, 3)]
-    public void BrowserRowsFollowTheWindowHeight(float height, int columns, int expected) =>
-        ((int)typeof(AppearanceEditorViewModel)
-            .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
-
-    [Test]
-    public void BrowserGridNamesAreDistinctPerSize()
-    {
-        var names = Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserColumns)
-            .SelectMany(columns => Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserRows)
-                .Select(rows => AppearanceEditorViewModel.BrowserGrid(columns, rows)))
-            .ToArray();
-        names.Should().OnlyHaveUniqueItems();
-        AppearanceEditorViewModel.BrowserGrid(4, 3).Should().Be("AE_BROWSER_GRID_4X3");
     }
 
     private static string SwatchCode(GuiRectangle region, bool custom) =>
@@ -257,15 +280,21 @@ public class AppearancePreviewTests
             .GetMethod("SwatchCode", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { region, custom })!;
 
-    private static int BrowserColumnsForWidth(float width, bool hasSideColumns) =>
-        (int)typeof(AppearanceEditorViewModel)
-            .GetMethod("BrowserColumnsForWidth", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { width, hasSideColumns })!;
-
     private static GuiRectangle BuildPaletteRegion(int colorId) =>
         (GuiRectangle)typeof(AppearanceEditorViewModel)
             .GetMethod("BuildPaletteRegion", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { colorId })!;
+
+    private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
+        float screenWidth, float screenHeight, float scale) =>
+        (GuiRectangle)typeof(AppearanceEditorViewModel)
+            .GetMethod("PlaceBeside", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { editor, width, height, screenWidth, screenHeight, scale });
+
+    private static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
+        (GuiRectangle)typeof(AppearanceEditorViewModel)
+            .GetMethod("FitWindowToScreen", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { geometry, screenWidth, screenHeight, scale })!;
 
     [TestCase("pme0_chest148", "pmh0_chest148")]
     [TestCase("pfd0_clk012", "pfh0_clk012")]

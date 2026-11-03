@@ -95,6 +95,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a creature is an enemy or NPC machine (droid, robot, or construct) and so cannot bleed.
+        /// Player characters and player droids keep their normal Bleed behavior.
+        /// </summary>
+        public static bool IsBloodlessMachine(uint creature)
+        {
+            if (GetIsPC(creature) || IsDroid(creature))
+                return false;
+
+            var racialType = GetRacialType(creature);
+            return racialType == RacialType.Droid ||
+                   racialType == RacialType.Robot ||
+                   racialType == RacialType.Construct;
+        }
+
+        /// <summary>
         /// Whether a droid is still being summoned and restoring its saved equipment.
         /// </summary>
         public static bool IsSpawning(uint droid) => GetLocalBool(droid, DroidIsSpawning);

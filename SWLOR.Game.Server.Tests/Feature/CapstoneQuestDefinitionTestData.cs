@@ -24,7 +24,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_veles",
             "CAPSTONE_VELES_MILITIA_ANNEX",
             "CAPSTONE_VELES_MILITIA_ANNEX_LESSON_LOOT",
-            "CAPSTONE_VELES_MILITIA_ANNEX_BOSS_LOOT"),
+            "CAPSTONE_VELES_MILITIA_ANNEX_BOSS_LOOT",
+            "pw_sc_velesannx"),
         new AreaGroup(
             "dantooine_jedi_enclave_trial_halls",
             "Hutlar Jedi Trial Halls",
@@ -34,7 +35,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_dantjedi",
             "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS",
             "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_LESSON_LOOT",
-            "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_BOSS_LOOT"),
+            "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_BOSS_LOOT",
+            "pw_sc_jedihalls"),
         new AreaGroup(
             "korriban_forge_caverns",
             "Tatooine Forge Caverns",
@@ -44,7 +46,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_kforge",
             "CAPSTONE_KORRIBAN_FORGE_CAVERNS",
             "CAPSTONE_KORRIBAN_FORGE_CAVERNS_LESSON_LOOT",
-            "CAPSTONE_KORRIBAN_FORGE_CAVERNS_BOSS_LOOT"),
+            "CAPSTONE_KORRIBAN_FORGE_CAVERNS_BOSS_LOOT",
+            "pw_sc_forgecav"),
         new AreaGroup(
             "smugglers_moon_fight_club_backrooms",
             "Smuggler's Moon Fight Club Backrooms",
@@ -54,7 +57,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_smfight",
             "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS",
             "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_LESSON_LOOT",
-            "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_BOSS_LOOT"),
+            "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_BOSS_LOOT",
+            "pw_sc_emfbackr"),
         new AreaGroup(
             "cz220_breaker_yard",
             "CZ-220 Breaker Yard",
@@ -64,7 +68,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_czbr",
             "CAPSTONE_CZ220_BREAKER_YARD",
             "CAPSTONE_CZ220_BREAKER_YARD_LESSON_LOOT",
-            "CAPSTONE_CZ220_BREAKER_YARD_BOSS_LOOT"),
+            "CAPSTONE_CZ220_BREAKER_YARD_BOSS_LOOT",
+            "cz220shipbreakin"),
         new AreaGroup(
             "anchorhead_canyon_range",
             "Anchorhead Canyon Range",
@@ -74,7 +79,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_tatcan",
             "CAPSTONE_ANCHORHEAD_CANYON_RANGE",
             "CAPSTONE_ANCHORHEAD_CANYON_RANGE_LESSON_LOOT",
-            "CAPSTONE_ANCHORHEAD_CANYON_RANGE_BOSS_LOOT"),
+            "CAPSTONE_ANCHORHEAD_CANYON_RANGE_BOSS_LOOT",
+            "pw_sc_canyonrng"),
         new AreaGroup(
             "czerka_arms_test_range",
             "Czerka Arms Test Range",
@@ -84,7 +90,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_czerka",
             "CAPSTONE_CZERKA_ARMS_TEST_RANGE",
             "CAPSTONE_CZERKA_ARMS_TEST_RANGE_LESSON_LOOT",
-            "CAPSTONE_CZERKA_ARMS_TEST_RANGE_BOSS_LOOT"),
+            "CAPSTONE_CZERKA_ARMS_TEST_RANGE_BOSS_LOOT",
+            "pw_ar_czarmrange"),
         new AreaGroup(
             "hutlar_qion_test_site",
             "Hutlar Qion Test Site",
@@ -94,7 +101,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_hutlar",
             "CAPSTONE_HUTLAR_QION_TEST_SITE",
             "CAPSTONE_HUTLAR_QION_TEST_SITE_LESSON_LOOT",
-            "CAPSTONE_HUTLAR_QION_TEST_SITE_BOSS_LOOT"),
+            "CAPSTONE_HUTLAR_QION_TEST_SITE_BOSS_LOOT",
+            "pw_sc_qiontest"),
         new AreaGroup(
             "korriban_sith_crypt_depths",
             "Mon Cala Sith Crypt Depths",
@@ -104,7 +112,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_kcrypt",
             "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS",
             "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_LESSON_LOOT",
-            "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_BOSS_LOOT"),
+            "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_BOSS_LOOT",
+            "pw_sc_cryptdeep"),
         new AreaGroup(
             "viscara_republic_engineering_bunker",
             "Viscara Republic Engineering Bunker",
@@ -114,7 +123,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_vrepub",
             "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER",
             "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_LESSON_LOOT",
-            "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_BOSS_LOOT"),
+            "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_BOSS_LOOT",
+            "pw_sc_repubeng"),
         new AreaGroup(
             "dantooine_medical_sublevel",
             "Mon Cala Medical Sublevel",
@@ -124,7 +134,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_dantmed",
             "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL",
             "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_LESSON_LOOT",
-            "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_BOSS_LOOT"),
+            "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_BOSS_LOOT",
+            "pw_sc_dantmedsub"),
         new AreaGroup(
             "dathomir_tarn_jungle_preserve",
             "Dathomir Tarn Jungle Preserve",
@@ -134,7 +145,8 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_dtarn",
             "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE",
             "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_LESSON_LOOT",
-            "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_BOSS_LOOT"),
+            "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_BOSS_LOOT",
+            "pw_sc_tarnpres"),
         new AreaGroup(
             "dathomir_grotto_apex_den",
             "Dathomir Grotto Apex Den",
@@ -144,10 +156,12 @@ internal static class CapstoneQuestDefinitionTestData
             "wp_cap_dgrot",
             "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN",
             "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_LESSON_LOOT",
-            "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_BOSS_LOOT"),
+            "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_BOSS_LOOT",
+            "pw_sc_dath_apexd"),
     };
 
-    public static IReadOnlyList<int> GeneralSpawnSteps { get; } = new[] { 0, 1, 3 };
+    public static IReadOnlyList<int> GeneralSpawnSteps { get; } = new[] { 0, 1 };
+    public static IReadOnlyList<int> FixedSpawnSteps { get; } = new[] { 3 };
     public static IReadOnlyList<int> OnDemandEncounterSteps { get; } = new[] { 2, 4 };
 
     public static IReadOnlyList<Line> Lines { get; } = new[]
@@ -178,11 +192,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_PrimalOverrun_Adept,
-                NPCGroupType.Dathomir_PrimalOverrun_Specialist,
-                NPCGroupType.Dathomir_PrimalOverrun_Warden,
-                NPCGroupType.Dathomir_PrimalOverrun_InnerCircle,
-                NPCGroupType.Dathomir_PrimalOverrun_Master,
+                NPCGroupType.Dathomir_YoungGrottoBeasts,
+                NPCGroupType.Dathomir_GoadScarredGrottoBeasts,
+                NPCGroupType.Dathomir_HandlersRancor,
+                NPCGroupType.Dathomir_DenElderGrottoBeasts,
+                NPCGroupType.Dathomir_OldRancor,
             },
             new[]
             {
@@ -213,7 +227,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_primover_wd",
-                null,
+                "wp_primover_ic",
                 "wp_primover_ms",
             },
             new[]
@@ -221,7 +235,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_PRIMOVER_WD_SPAWN",
-                null,
+                "CAPSTONE_PRIMOVER_IC_SPAWN",
                 "CAPSTONE_PRIMOVER_MS_SPAWN",
             },
             FeatType.PrimalOverrun1),
@@ -251,11 +265,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_UntouchableInstinct_Adept,
-                NPCGroupType.Dathomir_UntouchableInstinct_Specialist,
-                NPCGroupType.Dathomir_UntouchableInstinct_Warden,
-                NPCGroupType.Dathomir_UntouchableInstinct_InnerCircle,
-                NPCGroupType.Dathomir_UntouchableInstinct_Master,
+                NPCGroupType.Dathomir_YoungGrottoBeasts,
+                NPCGroupType.Dathomir_GoadScarredGrottoBeasts,
+                NPCGroupType.Dathomir_HandlersGiantBrownLizard,
+                NPCGroupType.Dathomir_DenElderGrottoBeasts,
+                NPCGroupType.Dathomir_OldGiantBrownLizard,
             },
             new[]
             {
@@ -286,7 +300,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_untinst_wd",
-                null,
+                "wp_untinst_ic",
                 "wp_untinst_ms",
             },
             new[]
@@ -294,7 +308,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_UNTINST_WD_SPAWN",
-                null,
+                "CAPSTONE_UNTINST_IC_SPAWN",
                 "CAPSTONE_UNTINST_MS_SPAWN",
             },
             FeatType.UntouchableInstinct1),
@@ -324,11 +338,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_ForceBondedBeast_Adept,
-                NPCGroupType.Dathomir_ForceBondedBeast_Specialist,
-                NPCGroupType.Dathomir_ForceBondedBeast_Warden,
-                NPCGroupType.Dathomir_ForceBondedBeast_InnerCircle,
-                NPCGroupType.Dathomir_ForceBondedBeast_Master,
+                NPCGroupType.Dathomir_YoungGrottoBeasts,
+                NPCGroupType.Dathomir_GoadScarredGrottoBeasts,
+                NPCGroupType.Dathomir_HandlersWraid,
+                NPCGroupType.Dathomir_DenElderGrottoBeasts,
+                NPCGroupType.Dathomir_OldWraid,
             },
             new[]
             {
@@ -359,7 +373,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_forcebeast_wd",
-                null,
+                "wp_forcebeast_ic",
                 "wp_forcebeast_ms",
             },
             new[]
@@ -367,7 +381,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_FORCEBEAST_WD_SPAWN",
-                null,
+                "CAPSTONE_FORCEBEAST_IC_SPAWN",
                 "CAPSTONE_FORCEBEAST_MS_SPAWN",
             },
             FeatType.ForceBondedBeast1),
@@ -397,11 +411,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_ApexBite_Adept,
-                NPCGroupType.Dathomir_ApexBite_Specialist,
-                NPCGroupType.Dathomir_ApexBite_Warden,
-                NPCGroupType.Dathomir_ApexBite_InnerCircle,
-                NPCGroupType.Dathomir_ApexBite_Master,
+                NPCGroupType.Dathomir_YoungPreserveBeasts,
+                NPCGroupType.Dathomir_PenScarredPreserveBeasts,
+                NPCGroupType.Dathomir_BreedersTukata,
+                NPCGroupType.Dathomir_ElderPreserveBeasts,
+                NPCGroupType.Dathomir_OldTukata,
             },
             new[]
             {
@@ -432,7 +446,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_apexbite_wd",
-                null,
+                "wp_apexbite_ic",
                 "wp_apexbite_ms",
             },
             new[]
@@ -440,7 +454,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_APEXBITE_WD_SPAWN",
-                null,
+                "CAPSTONE_APEXBITE_IC_SPAWN",
                 "CAPSTONE_APEXBITE_MS_SPAWN",
             },
             FeatType.ApexBite1),
@@ -470,11 +484,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_UnbreakableBeast_Adept,
-                NPCGroupType.Dathomir_UnbreakableBeast_Specialist,
-                NPCGroupType.Dathomir_UnbreakableBeast_Warden,
-                NPCGroupType.Dathomir_UnbreakableBeast_InnerCircle,
-                NPCGroupType.Dathomir_UnbreakableBeast_Master,
+                NPCGroupType.Dathomir_YoungPreserveBeasts,
+                NPCGroupType.Dathomir_PenScarredPreserveBeasts,
+                NPCGroupType.Dathomir_BreedersShyrack,
+                NPCGroupType.Dathomir_ElderPreserveBeasts,
+                NPCGroupType.Dathomir_OldShyrack,
             },
             new[]
             {
@@ -505,7 +519,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_unbrbeast_wd",
-                null,
+                "wp_unbrbeast_ic",
                 "wp_unbrbeast_ms",
             },
             new[]
@@ -513,7 +527,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_UNBRBEAST_WD_SPAWN",
-                null,
+                "CAPSTONE_UNBRBEAST_IC_SPAWN",
                 "CAPSTONE_UNBRBEAST_MS_SPAWN",
             },
             FeatType.UnbreakableBeast1),
@@ -543,11 +557,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dathomir_AlphaRhythm_Adept,
-                NPCGroupType.Dathomir_AlphaRhythm_Specialist,
-                NPCGroupType.Dathomir_AlphaRhythm_Warden,
-                NPCGroupType.Dathomir_AlphaRhythm_InnerCircle,
-                NPCGroupType.Dathomir_AlphaRhythm_Master,
+                NPCGroupType.Dathomir_YoungPreserveBeasts,
+                NPCGroupType.Dathomir_PenScarredPreserveBeasts,
+                NPCGroupType.Dathomir_BreedersIriazBull,
+                NPCGroupType.Dathomir_ElderPreserveBeasts,
+                NPCGroupType.Dathomir_OldIriazBull,
             },
             new[]
             {
@@ -578,7 +592,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_alpharhy_wd",
-                null,
+                "wp_alpharhy_ic",
                 "wp_alpharhy_ms",
             },
             new[]
@@ -586,7 +600,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_ALPHARHY_WD_SPAWN",
-                null,
+                "CAPSTONE_ALPHARHY_IC_SPAWN",
                 "CAPSTONE_ALPHARHY_MS_SPAWN",
             },
             FeatType.AlphaRhythm1),
@@ -616,11 +630,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_ThermalDetonator_Adept,
-                NPCGroupType.Hutlar_ThermalDetonator_Specialist,
-                NPCGroupType.Hutlar_ThermalDetonator_Warden,
-                NPCGroupType.Hutlar_ThermalDetonator_InnerCircle,
-                NPCGroupType.Hutlar_ThermalDetonator_Master,
+                NPCGroupType.Hutlar_TestCrewTechnicians,
+                NPCGroupType.Hutlar_TestCrewDemolitionists,
+                NPCGroupType.Hutlar_TestSupervisorSkorrik,
+                NPCGroupType.Hutlar_SiteChiefsOfficers,
+                NPCGroupType.Hutlar_SiteChiefSsorgan,
             },
             new[]
             {
@@ -651,7 +665,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_thermdet_wd",
-                null,
+                "wp_thermdet_ic",
                 "wp_thermdet_ms",
             },
             new[]
@@ -659,7 +673,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_THERMDET_WD_SPAWN",
-                null,
+                "CAPSTONE_THERMDET_IC_SPAWN",
                 "CAPSTONE_THERMDET_MS_SPAWN",
             },
             FeatType.ThermalDetonator1),
@@ -689,11 +703,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_OverloadBarrage_Adept,
-                NPCGroupType.Hutlar_OverloadBarrage_Specialist,
-                NPCGroupType.Hutlar_OverloadBarrage_Warden,
-                NPCGroupType.Hutlar_OverloadBarrage_InnerCircle,
-                NPCGroupType.Hutlar_OverloadBarrage_Master,
+                NPCGroupType.Hutlar_TestCrewTechnicians,
+                NPCGroupType.Hutlar_TestCrewDemolitionists,
+                NPCGroupType.Hutlar_TestSupervisorHaleDorrin,
+                NPCGroupType.Hutlar_SiteChiefsOfficers,
+                NPCGroupType.Hutlar_SiteChiefAnselPryor,
             },
             new[]
             {
@@ -724,7 +738,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_overbarr_wd",
-                null,
+                "wp_overbarr_ic",
                 "wp_overbarr_ms",
             },
             new[]
@@ -732,7 +746,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_OVERBARR_WD_SPAWN",
-                null,
+                "CAPSTONE_OVERBARR_IC_SPAWN",
                 "CAPSTONE_OVERBARR_MS_SPAWN",
             },
             FeatType.OverloadBarrage1),
@@ -762,11 +776,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_KillzoneBeacon_Adept,
-                NPCGroupType.Viscara_KillzoneBeacon_Specialist,
-                NPCGroupType.Viscara_KillzoneBeacon_Warden,
-                NPCGroupType.Viscara_KillzoneBeacon_InnerCircle,
-                NPCGroupType.Viscara_KillzoneBeacon_Master,
+                NPCGroupType.Viscara_DeserterSappers,
+                NPCGroupType.Viscara_DeserterEngineers,
+                NPCGroupType.Viscara_DeserterSergeantOrgul,
+                NPCGroupType.Viscara_QuartermastersGuards,
+                NPCGroupType.Viscara_DeserterCommanderKuvaz,
             },
             new[]
             {
@@ -797,7 +811,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_killbeacon_wd",
-                null,
+                "wp_killbeacon_ic",
                 "wp_killbeacon_ms",
             },
             new[]
@@ -805,7 +819,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_KILLBEACON_WD_SPAWN",
-                null,
+                "CAPSTONE_KILLBEACON_IC_SPAWN",
                 "CAPSTONE_KILLBEACON_MS_SPAWN",
             },
             FeatType.KillzoneBeacon1),
@@ -835,11 +849,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_EmergencyBunker_Adept,
-                NPCGroupType.Viscara_EmergencyBunker_Specialist,
-                NPCGroupType.Viscara_EmergencyBunker_Warden,
-                NPCGroupType.Viscara_EmergencyBunker_InnerCircle,
-                NPCGroupType.Viscara_EmergencyBunker_Master,
+                NPCGroupType.Viscara_DeserterSappers,
+                NPCGroupType.Viscara_DeserterEngineers,
+                NPCGroupType.Viscara_DeserterSergeantBekko,
+                NPCGroupType.Viscara_QuartermastersGuards,
+                NPCGroupType.Viscara_DeserterCommanderMukkDorl,
             },
             new[]
             {
@@ -870,7 +884,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_embunker_wd",
-                null,
+                "wp_embunker_ic",
                 "wp_embunker_ms",
             },
             new[]
@@ -878,7 +892,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_EMBUNKER_WD_SPAWN",
-                null,
+                "CAPSTONE_EMBUNKER_IC_SPAWN",
                 "CAPSTONE_EMBUNKER_MS_SPAWN",
             },
             FeatType.EmergencyBunker1),
@@ -908,11 +922,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_EmergencyCocktail_Adept,
-                NPCGroupType.MonCala_EmergencyCocktail_Specialist,
-                NPCGroupType.MonCala_EmergencyCocktail_Warden,
-                NPCGroupType.MonCala_EmergencyCocktail_InnerCircle,
-                NPCGroupType.MonCala_EmergencyCocktail_Master,
+                NPCGroupType.MonCala_WardOrderlys,
+                NPCGroupType.MonCala_WardGuards,
+                NPCGroupType.MonCala_WardSupervisorTenoBarr,
+                NPCGroupType.MonCala_MatronsAttendants,
+                NPCGroupType.MonCala_WardChiefKothDavin,
             },
             new[]
             {
@@ -943,7 +957,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_emcocktail_wd",
-                null,
+                "wp_emcocktail_ic",
                 "wp_emcocktail_ms",
             },
             new[]
@@ -951,7 +965,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_EMCOCKTAIL_WD_SPAWN",
-                null,
+                "CAPSTONE_EMCOCKTAIL_IC_SPAWN",
                 "CAPSTONE_EMCOCKTAIL_MS_SPAWN",
             },
             FeatType.EmergencyCocktail1),
@@ -981,11 +995,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_CryptRaider,
-                NPCGroupType.MonCala_CryptMarauder,
-                NPCGroupType.MonCala_CryptBreachCaptain,
-                NPCGroupType.MonCala_CryptReaver,
-                NPCGroupType.MonCala_CryptExpeditionLeader,
+                NPCGroupType.MonCala_ExpeditionRaiders,
+                NPCGroupType.MonCala_ExpeditionMarauders,
+                NPCGroupType.MonCala_ExpeditionCaptainRhaanTolek,
+                NPCGroupType.MonCala_ExpeditionReavers,
+                NPCGroupType.MonCala_ExpeditionLeaderKaelenDorr,
             },
             new[]
             {
@@ -1016,7 +1030,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_lightstand_wd",
-                null,
+                "wp_lightstand_ic",
                 "wp_lightstand_ms",
             },
             new[]
@@ -1024,7 +1038,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_LIGHTSTAND_WD_SPAWN",
-                null,
+                "CAPSTONE_LIGHTSTAND_IC_SPAWN",
                 "CAPSTONE_LIGHTSTAND_MS_SPAWN",
             },
             FeatType.LastStandOfTheLight1),
@@ -1054,11 +1068,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_VitaeReaverInitiate,
-                NPCGroupType.MonCala_VitaeReaverAdept,
-                NPCGroupType.MonCala_VitaeReaverEnforcer,
-                NPCGroupType.MonCala_VitaeReaverBinder,
-                NPCGroupType.MonCala_VitaeReaverChief,
+                NPCGroupType.MonCala_ExpeditionRaiders,
+                NPCGroupType.MonCala_ExpeditionMarauders,
+                NPCGroupType.MonCala_ExpeditionCaptainZarrikThane,
+                NPCGroupType.MonCala_ExpeditionReavers,
+                NPCGroupType.MonCala_ExpeditionLeaderMordekSull,
             },
             new[]
             {
@@ -1089,7 +1103,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_darkhung_wd",
-                null,
+                "wp_darkhung_ic",
                 "wp_darkhung_ms",
             },
             new[]
@@ -1097,7 +1111,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_DARKHUNG_WD_SPAWN",
-                null,
+                "CAPSTONE_DARKHUNG_IC_SPAWN",
                 "CAPSTONE_DARKHUNG_MS_SPAWN",
             },
             FeatType.HungerOfTheDark1),
@@ -1127,11 +1141,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_UmbralRaiderScout,
-                NPCGroupType.MonCala_UmbralRaiderAdept,
-                NPCGroupType.MonCala_UmbralRaiderCaptain,
-                NPCGroupType.MonCala_UmbralRaiderSaboteur,
-                NPCGroupType.MonCala_UmbralRaiderCommander,
+                NPCGroupType.MonCala_ExpeditionRaiders,
+                NPCGroupType.MonCala_ExpeditionMarauders,
+                NPCGroupType.MonCala_ExpeditionCaptainTavikOrrun,
+                NPCGroupType.MonCala_ExpeditionReavers,
+                NPCGroupType.MonCala_ExpeditionLeaderLorrekSyn,
             },
             new[]
             {
@@ -1162,7 +1176,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_eclipse_wd",
-                null,
+                "wp_eclipse_ic",
                 "wp_eclipse_ms",
             },
             new[]
@@ -1170,7 +1184,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_ECLIPSE_WD_SPAWN",
-                null,
+                "CAPSTONE_ECLIPSE_IC_SPAWN",
                 "CAPSTONE_ECLIPSE_MS_SPAWN",
             },
             FeatType.EclipseOfResolve1),
@@ -1200,11 +1214,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_AbsoluteDefense_Adept,
-                NPCGroupType.Tatooine_AbsoluteDefense_Specialist,
-                NPCGroupType.Tatooine_AbsoluteDefense_Warden,
-                NPCGroupType.Tatooine_AbsoluteDefense_InnerCircle,
-                NPCGroupType.Tatooine_AbsoluteDefense_Master,
+                NPCGroupType.Tatooine_ForgeboundInitiates,
+                NPCGroupType.Tatooine_ForgeboundJourneymans,
+                NPCGroupType.Tatooine_ForgeWardenSsorrak,
+                NPCGroupType.Tatooine_ForgeboundOverseers,
+                NPCGroupType.Tatooine_ForgeMasterKassrek,
             },
             new[]
             {
@@ -1235,7 +1249,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_absdef_wd",
-                null,
+                "wp_absdef_ic",
                 "wp_absdef_ms",
             },
             new[]
@@ -1243,7 +1257,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_ABSDEF_WD_SPAWN",
-                null,
+                "CAPSTONE_ABSDEF_IC_SPAWN",
                 "CAPSTONE_ABSDEF_MS_SPAWN",
             },
             FeatType.AbsoluteDefense1),
@@ -1273,11 +1287,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_SoulAscension_Adept,
-                NPCGroupType.Tatooine_SoulAscension_Specialist,
-                NPCGroupType.Tatooine_SoulAscension_Warden,
-                NPCGroupType.Tatooine_SoulAscension_InnerCircle,
-                NPCGroupType.Tatooine_SoulAscension_Master,
+                NPCGroupType.Tatooine_ForgeboundInitiates,
+                NPCGroupType.Tatooine_ForgeboundJourneymans,
+                NPCGroupType.Tatooine_ForgeWardenDaelKarrow,
+                NPCGroupType.Tatooine_ForgeboundOverseers,
+                NPCGroupType.Tatooine_ForgeMasterOrsenVale,
             },
             new[]
             {
@@ -1308,7 +1322,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_soulasc_wd",
-                null,
+                "wp_soulasc_ic",
                 "wp_soulasc_ms",
             },
             new[]
@@ -1316,7 +1330,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_SOULASC_WD_SPAWN",
-                null,
+                "CAPSTONE_SOULASC_IC_SPAWN",
                 "CAPSTONE_SOULASC_MS_SPAWN",
             },
             FeatType.SoulAscensionTrait),
@@ -1346,11 +1360,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.CZ220_AdamantineGuard_Adept,
-                NPCGroupType.CZ220_AdamantineGuard_Specialist,
-                NPCGroupType.CZ220_AdamantineGuard_Warden,
-                NPCGroupType.CZ220_AdamantineGuard_InnerCircle,
-                NPCGroupType.CZ220_AdamantineGuard_Master,
+                NPCGroupType.CZ220_WreckCrewScrappers,
+                NPCGroupType.CZ220_WreckCrewRiggers,
+                NPCGroupType.CZ220_CrewChiefRakkesh,
+                NPCGroupType.CZ220_ForemansHands,
+                NPCGroupType.CZ220_WreckForemanSsurgan,
             },
             new[]
             {
@@ -1381,7 +1395,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_adamguard_wd",
-                null,
+                "wp_adamguard_ic",
                 "wp_adamguard_ms",
             },
             new[]
@@ -1389,7 +1403,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_ADAMGUARD_WD_SPAWN",
-                null,
+                "CAPSTONE_ADAMGUARD_IC_SPAWN",
                 "CAPSTONE_ADAMGUARD_MS_SPAWN",
             },
             FeatType.AdamantineGuard1),
@@ -1419,11 +1433,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.CZ220_ScrapheapLockdown_Adept,
-                NPCGroupType.CZ220_ScrapheapLockdown_Specialist,
-                NPCGroupType.CZ220_ScrapheapLockdown_Warden,
-                NPCGroupType.CZ220_ScrapheapLockdown_InnerCircle,
-                NPCGroupType.CZ220_ScrapheapLockdown_Master,
+                NPCGroupType.CZ220_WreckCrewScrappers,
+                NPCGroupType.CZ220_WreckCrewRiggers,
+                NPCGroupType.CZ220_CrewChiefTobinRask,
+                NPCGroupType.CZ220_ForemansHands,
+                NPCGroupType.CZ220_WreckForemanLucanBrandt,
             },
             new[]
             {
@@ -1454,7 +1468,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_scraplock_wd",
-                null,
+                "wp_scraplock_ic",
                 "wp_scraplock_ms",
             },
             new[]
@@ -1462,7 +1476,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_SCRAPLOCK_WD_SPAWN",
-                null,
+                "CAPSTONE_SCRAPLOCK_IC_SPAWN",
                 "CAPSTONE_SCRAPLOCK_MS_SPAWN",
             },
             FeatType.ScrapheapLockdown1),
@@ -1492,11 +1506,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_HoldTheLine_Adept,
-                NPCGroupType.MonCala_HoldTheLine_Specialist,
-                NPCGroupType.MonCala_HoldTheLine_Warden,
-                NPCGroupType.MonCala_HoldTheLine_InnerCircle,
-                NPCGroupType.MonCala_HoldTheLine_Master,
+                NPCGroupType.MonCala_WardOrderlys,
+                NPCGroupType.MonCala_WardGuards,
+                NPCGroupType.MonCala_WardSupervisorAronMeel,
+                NPCGroupType.MonCala_MatronsAttendants,
+                NPCGroupType.MonCala_WardChiefAnchor,
             },
             new[]
             {
@@ -1527,7 +1541,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_holdline_wd",
-                null,
+                "wp_holdline_ic",
                 "wp_holdline_ms",
             },
             new[]
@@ -1535,7 +1549,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_HOLDLINE_WD_SPAWN",
-                null,
+                "CAPSTONE_HOLDLINE_IC_SPAWN",
                 "CAPSTONE_HOLDLINE_MS_SPAWN",
             },
             FeatType.HoldTheLine1),
@@ -1565,11 +1579,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_DecisiveCommand_Adept,
-                NPCGroupType.Viscara_DecisiveCommand_Specialist,
-                NPCGroupType.Viscara_DecisiveCommand_Warden,
-                NPCGroupType.Viscara_DecisiveCommand_InnerCircle,
-                NPCGroupType.Viscara_DecisiveCommand_Master,
+                NPCGroupType.Viscara_DeserterSappers,
+                NPCGroupType.Viscara_DeserterEngineers,
+                NPCGroupType.Viscara_DeserterSergeantGrennVhon,
+                NPCGroupType.Viscara_QuartermastersGuards,
+                NPCGroupType.Viscara_DeserterCommanderHaldenRhee,
             },
             new[]
             {
@@ -1600,7 +1614,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_deccommand_wd",
-                null,
+                "wp_deccommand_ic",
                 "wp_deccommand_ms",
             },
             new[]
@@ -1608,7 +1622,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_DECCOMMAND_WD_SPAWN",
-                null,
+                "CAPSTONE_DECCOMMAND_IC_SPAWN",
                 "CAPSTONE_DECCOMMAND_MS_SPAWN",
             },
             FeatType.DecisiveCommand1),
@@ -1638,10 +1652,10 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_StormDrillDroid,
-                NPCGroupType.Hutlar_StormDuelistDroid,
-                NPCGroupType.Hutlar_StormGatekeeperDroid,
-                NPCGroupType.Hutlar_StormExaminerDroid,
+                NPCGroupType.Hutlar_TrialDrillDroids,
+                NPCGroupType.Hutlar_TrialDuelistDroids,
+                NPCGroupType.Hutlar_TrialGatekeeperDroid,
+                NPCGroupType.Hutlar_TrialExaminerDroids,
                 NPCGroupType.Hutlar_TempestTrainingEngine,
             },
             new[]
@@ -1673,7 +1687,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_sabstorm_wd",
-                null,
+                "wp_sabstorm_ic",
                 "wp_sabstorm_ms",
             },
             new[]
@@ -1681,7 +1695,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_SABSTORM_WD_SPAWN",
-                null,
+                "CAPSTONE_SABSTORM_IC_SPAWN",
                 "CAPSTONE_SABSTORM_MS_SPAWN",
             },
             FeatType.Epicenter1),
@@ -1711,10 +1725,10 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_GuardianPatrolDroid,
-                NPCGroupType.Hutlar_GuardianBulwarkDroid,
-                NPCGroupType.Hutlar_GuardianGatekeeperDroid,
-                NPCGroupType.Hutlar_GuardianShieldDroid,
+                NPCGroupType.Hutlar_TrialDrillDroids,
+                NPCGroupType.Hutlar_TrialDuelistDroids,
+                NPCGroupType.Hutlar_TrialGatekeeperDroid,
+                NPCGroupType.Hutlar_TrialExaminerDroids,
                 NPCGroupType.Hutlar_BastionTrainingEngine,
             },
             new[]
@@ -1746,7 +1760,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_guardmst_wd",
-                null,
+                "wp_guardmst_ic",
                 "wp_guardmst_ms",
             },
             new[]
@@ -1754,7 +1768,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_GUARDMST_WD_SPAWN",
-                null,
+                "CAPSTONE_GUARDMST_IC_SPAWN",
                 "CAPSTONE_GUARDMST_MS_SPAWN",
             },
             FeatType.AegisEternal1),
@@ -1784,11 +1798,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_LastWord_Adept,
-                NPCGroupType.Tatooine_LastWord_Specialist,
-                NPCGroupType.Tatooine_LastWord_Warden,
-                NPCGroupType.Tatooine_LastWord_InnerCircle,
-                NPCGroupType.Tatooine_LastWord_Master,
+                NPCGroupType.Tatooine_CanyonDrifters,
+                NPCGroupType.Tatooine_CanyonSharpshooters,
+                NPCGroupType.Tatooine_RangeWardenGruvo,
+                NPCGroupType.Tatooine_HighTableGuns,
+                NPCGroupType.Tatooine_RangeMarshalWuunKalo,
             },
             new[]
             {
@@ -1819,7 +1833,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_lastword_wd",
-                null,
+                "wp_lastword_ic",
                 "wp_lastword_ms",
             },
             new[]
@@ -1827,7 +1841,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_LASTWORD_WD_SPAWN",
-                null,
+                "CAPSTONE_LASTWORD_IC_SPAWN",
                 "CAPSTONE_LASTWORD_MS_SPAWN",
             },
             FeatType.LastWord1),
@@ -1857,11 +1871,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_DeadMansHand_Adept,
-                NPCGroupType.Tatooine_DeadMansHand_Specialist,
-                NPCGroupType.Tatooine_DeadMansHand_Warden,
-                NPCGroupType.Tatooine_DeadMansHand_InnerCircle,
-                NPCGroupType.Tatooine_DeadMansHand_Master,
+                NPCGroupType.Tatooine_CanyonDrifters,
+                NPCGroupType.Tatooine_CanyonSharpshooters,
+                NPCGroupType.Tatooine_RangeWardenSilasCrowe,
+                NPCGroupType.Tatooine_HighTableGuns,
+                NPCGroupType.Tatooine_RangeMarshalJonasHarlan,
             },
             new[]
             {
@@ -1892,7 +1906,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_deadhand_wd",
-                null,
+                "wp_deadhand_ic",
                 "wp_deadhand_ms",
             },
             new[]
@@ -1900,7 +1914,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_DEADHAND_WD_SPAWN",
-                null,
+                "CAPSTONE_DEADHAND_IC_SPAWN",
                 "CAPSTONE_DEADHAND_MS_SPAWN",
             },
             FeatType.DeadMansHand1),
@@ -1930,11 +1944,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_KillBox_Adept,
-                NPCGroupType.SmugglersMoon_KillBox_Specialist,
-                NPCGroupType.SmugglersMoon_KillBox_Warden,
-                NPCGroupType.SmugglersMoon_KillBox_InnerCircle,
-                NPCGroupType.SmugglersMoon_KillBox_Master,
+                NPCGroupType.SmugglersMoon_RangeWashouts,
+                NPCGroupType.SmugglersMoon_RangeInstructors,
+                NPCGroupType.SmugglersMoon_RangeOverseerSskeer,
+                NPCGroupType.SmugglersMoon_BlackCellShooters,
+                NPCGroupType.SmugglersMoon_RangeDirectorKrassek,
             },
             new[]
             {
@@ -1965,7 +1979,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_killbox_wd",
-                null,
+                "wp_killbox_ic",
                 "wp_killbox_ms",
             },
             new[]
@@ -1973,7 +1987,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_KILLBOX_WD_SPAWN",
-                null,
+                "CAPSTONE_KILLBOX_IC_SPAWN",
                 "CAPSTONE_KILLBOX_MS_SPAWN",
             },
             FeatType.KillBox1),
@@ -2003,11 +2017,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_OneShot_Adept,
-                NPCGroupType.SmugglersMoon_OneShot_Specialist,
-                NPCGroupType.SmugglersMoon_OneShot_Warden,
-                NPCGroupType.SmugglersMoon_OneShot_InnerCircle,
-                NPCGroupType.SmugglersMoon_OneShot_Master,
+                NPCGroupType.SmugglersMoon_RangeWashouts,
+                NPCGroupType.SmugglersMoon_RangeInstructors,
+                NPCGroupType.SmugglersMoon_RangeOverseerCallumBreck,
+                NPCGroupType.SmugglersMoon_BlackCellShooters,
+                NPCGroupType.SmugglersMoon_RangeDirectorZhessk,
             },
             new[]
             {
@@ -2038,7 +2052,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_oneshot_wd",
-                null,
+                "wp_oneshot_ic",
                 "wp_oneshot_ms",
             },
             new[]
@@ -2046,7 +2060,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_ONESHOT_WD_SPAWN",
-                null,
+                "CAPSTONE_ONESHOT_IC_SPAWN",
                 "CAPSTONE_ONESHOT_MS_SPAWN",
             },
             FeatType.OneShot1),
@@ -2076,10 +2090,10 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_CycloneDrillDroid,
-                NPCGroupType.Hutlar_CycloneDuelistDroid,
-                NPCGroupType.Hutlar_CycloneGatekeeperDroid,
-                NPCGroupType.Hutlar_CycloneExaminerDroid,
+                NPCGroupType.Hutlar_TrialDrillDroids,
+                NPCGroupType.Hutlar_TrialDuelistDroids,
+                NPCGroupType.Hutlar_TrialGatekeeperDroid,
+                NPCGroupType.Hutlar_TrialExaminerDroids,
                 NPCGroupType.Hutlar_VortexTrainingEngine,
             },
             new[]
@@ -2111,7 +2125,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_sabcycl_wd",
-                null,
+                "wp_sabcycl_ic",
                 "wp_sabcycl_ms",
             },
             new[]
@@ -2119,7 +2133,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_SABCYCL_WD_SPAWN",
-                null,
+                "CAPSTONE_SABCYCL_IC_SPAWN",
                 "CAPSTONE_SABCYCL_MS_SPAWN",
             },
             FeatType.SaberCyclone1),
@@ -2149,11 +2163,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.MonCala_InfiniteConduit_Adept,
-                NPCGroupType.MonCala_InfiniteConduit_Specialist,
-                NPCGroupType.MonCala_InfiniteConduit_Warden,
-                NPCGroupType.MonCala_InfiniteConduit_InnerCircle,
-                NPCGroupType.MonCala_InfiniteConduit_Master,
+                NPCGroupType.MonCala_WardOrderlys,
+                NPCGroupType.MonCala_WardGuards,
+                NPCGroupType.MonCala_WardSupervisorDruSalin,
+                NPCGroupType.MonCala_MatronsAttendants,
+                NPCGroupType.MonCala_WardChiefIdrisVoh,
             },
             new[]
             {
@@ -2184,7 +2198,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_infconduit_wd",
-                null,
+                "wp_infconduit_ic",
                 "wp_infconduit_ms",
             },
             new[]
@@ -2192,7 +2206,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_INFCONDUIT_WD_SPAWN",
-                null,
+                "CAPSTONE_INFCONDUIT_IC_SPAWN",
                 "CAPSTONE_INFCONDUIT_MS_SPAWN",
             },
             FeatType.InfiniteConduit1),
@@ -2222,11 +2236,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_Forcebane_Adept,
-                NPCGroupType.Tatooine_Forcebane_Specialist,
-                NPCGroupType.Tatooine_Forcebane_Warden,
-                NPCGroupType.Tatooine_Forcebane_InnerCircle,
-                NPCGroupType.Tatooine_Forcebane_Master,
+                NPCGroupType.Tatooine_ForgeboundInitiates,
+                NPCGroupType.Tatooine_ForgeboundJourneymans,
+                NPCGroupType.Tatooine_ForgeWardenOrbekTal,
+                NPCGroupType.Tatooine_ForgeboundOverseers,
+                NPCGroupType.Tatooine_ForgeMasterKovathSull,
             },
             new[]
             {
@@ -2257,7 +2271,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_forcebane_wd",
-                null,
+                "wp_forcebane_ic",
                 "wp_forcebane_ms",
             },
             new[]
@@ -2265,7 +2279,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_FORCEBANE_WD_SPAWN",
-                null,
+                "CAPSTONE_FORCEBANE_IC_SPAWN",
                 "CAPSTONE_FORCEBANE_MS_SPAWN",
             },
             FeatType.Forcebane1),
@@ -2295,11 +2309,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_CripplingDefense_Adept,
-                NPCGroupType.SmugglersMoon_CripplingDefense_Specialist,
-                NPCGroupType.SmugglersMoon_CripplingDefense_Warden,
-                NPCGroupType.SmugglersMoon_CripplingDefense_InnerCircle,
-                NPCGroupType.SmugglersMoon_CripplingDefense_Master,
+                NPCGroupType.SmugglersMoon_StableBrawlers,
+                NPCGroupType.SmugglersMoon_StablePitFighters,
+                NPCGroupType.SmugglersMoon_PitBossSsarok,
+                NPCGroupType.SmugglersMoon_StablePromoters,
+                NPCGroupType.SmugglersMoon_StableChampionThrask,
             },
             new[]
             {
@@ -2330,7 +2344,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_cripdef_wd",
-                null,
+                "wp_cripdef_ic",
                 "wp_cripdef_ms",
             },
             new[]
@@ -2338,7 +2352,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_CRIPDEF_WD_SPAWN",
-                null,
+                "CAPSTONE_CRIPDEF_IC_SPAWN",
                 "CAPSTONE_CRIPDEF_MS_SPAWN",
             },
             FeatType.CripplingDefense1),
@@ -2368,11 +2382,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Tatooine_UnmovingCenter_Adept,
-                NPCGroupType.Tatooine_UnmovingCenter_Specialist,
-                NPCGroupType.Tatooine_UnmovingCenter_Warden,
-                NPCGroupType.Tatooine_UnmovingCenter_InnerCircle,
-                NPCGroupType.Tatooine_UnmovingCenter_Master,
+                NPCGroupType.Tatooine_CanyonDrifters,
+                NPCGroupType.Tatooine_CanyonSharpshooters,
+                NPCGroupType.Tatooine_RangeWardenDorrimVex,
+                NPCGroupType.Tatooine_HighTableGuns,
+                NPCGroupType.Tatooine_RangeMarshalTarekKor,
             },
             new[]
             {
@@ -2403,7 +2417,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_unmovctr_wd",
-                null,
+                "wp_unmovctr_ic",
                 "wp_unmovctr_ms",
             },
             new[]
@@ -2411,7 +2425,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_UNMOVCTR_WD_SPAWN",
-                null,
+                "CAPSTONE_UNMOVCTR_IC_SPAWN",
                 "CAPSTONE_UNMOVCTR_MS_SPAWN",
             },
             FeatType.UnmovingCenter1),
@@ -2441,11 +2455,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.CZ220_Worldbreaker_Adept,
-                NPCGroupType.CZ220_Worldbreaker_Specialist,
-                NPCGroupType.CZ220_Worldbreaker_Warden,
-                NPCGroupType.CZ220_Worldbreaker_InnerCircle,
-                NPCGroupType.CZ220_Worldbreaker_Master,
+                NPCGroupType.CZ220_WreckCrewScrappers,
+                NPCGroupType.CZ220_WreckCrewRiggers,
+                NPCGroupType.CZ220_CrewChiefNaloVen,
+                NPCGroupType.CZ220_ForemansHands,
+                NPCGroupType.CZ220_WreckForemanKaddoRin,
             },
             new[]
             {
@@ -2476,7 +2490,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_worldbrk_wd",
-                null,
+                "wp_worldbrk_ic",
                 "wp_worldbrk_ms",
             },
             new[]
@@ -2484,7 +2498,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_WORLDBRK_WD_SPAWN",
-                null,
+                "CAPSTONE_WORLDBRK_IC_SPAWN",
                 "CAPSTONE_WORLDBRK_MS_SPAWN",
             },
             FeatType.Worldbreaker1),
@@ -2514,11 +2528,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_RainOfSteel_Adept,
-                NPCGroupType.SmugglersMoon_RainOfSteel_Specialist,
-                NPCGroupType.SmugglersMoon_RainOfSteel_Warden,
-                NPCGroupType.SmugglersMoon_RainOfSteel_InnerCircle,
-                NPCGroupType.SmugglersMoon_RainOfSteel_Master,
+                NPCGroupType.SmugglersMoon_RangeWashouts,
+                NPCGroupType.SmugglersMoon_RangeInstructors,
+                NPCGroupType.SmugglersMoon_RangeOverseerPerrinAldous,
+                NPCGroupType.SmugglersMoon_BlackCellShooters,
+                NPCGroupType.SmugglersMoon_RangeDirectorDaavRhoun,
             },
             new[]
             {
@@ -2549,7 +2563,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_rainsteel_wd",
-                null,
+                "wp_rainsteel_ic",
                 "wp_rainsteel_ms",
             },
             new[]
@@ -2557,7 +2571,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_RAINSTEEL_WD_SPAWN",
-                null,
+                "CAPSTONE_RAINSTEEL_IC_SPAWN",
                 "CAPSTONE_RAINSTEEL_MS_SPAWN",
             },
             FeatType.RainOfSteel1),
@@ -2587,11 +2601,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Hutlar_PerfectFlurry_Adept,
-                NPCGroupType.Hutlar_PerfectFlurry_Specialist,
-                NPCGroupType.Hutlar_PerfectFlurry_Warden,
-                NPCGroupType.Hutlar_PerfectFlurry_InnerCircle,
-                NPCGroupType.Hutlar_PerfectFlurry_Master,
+                NPCGroupType.Hutlar_TestCrewTechnicians,
+                NPCGroupType.Hutlar_TestCrewDemolitionists,
+                NPCGroupType.Hutlar_TestSupervisorKetuRan,
+                NPCGroupType.Hutlar_SiteChiefsOfficers,
+                NPCGroupType.Hutlar_SiteChiefVeshanDru,
             },
             new[]
             {
@@ -2622,7 +2636,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_perflurry_wd",
-                null,
+                "wp_perflurry_ic",
                 "wp_perflurry_ms",
             },
             new[]
@@ -2630,7 +2644,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_PERFLURRY_WD_SPAWN",
-                null,
+                "CAPSTONE_PERFLURRY_IC_SPAWN",
                 "CAPSTONE_PERFLURRY_MS_SPAWN",
             },
             FeatType.PerfectFlurry1),
@@ -2660,11 +2674,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_TempestBloom_Adept,
-                NPCGroupType.SmugglersMoon_TempestBloom_Specialist,
-                NPCGroupType.SmugglersMoon_TempestBloom_Warden,
-                NPCGroupType.SmugglersMoon_TempestBloom_InnerCircle,
-                NPCGroupType.SmugglersMoon_TempestBloom_Master,
+                NPCGroupType.SmugglersMoon_StableBrawlers,
+                NPCGroupType.SmugglersMoon_StablePitFighters,
+                NPCGroupType.SmugglersMoon_PitBossDaxCorvin,
+                NPCGroupType.SmugglersMoon_StablePromoters,
+                NPCGroupType.SmugglersMoon_StableChampionRolanMace,
             },
             new[]
             {
@@ -2695,7 +2709,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_tempbloom_wd",
-                null,
+                "wp_tempbloom_ic",
                 "wp_tempbloom_ms",
             },
             new[]
@@ -2703,7 +2717,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_TEMPBLOOM_WD_SPAWN",
-                null,
+                "CAPSTONE_TEMPBLOOM_IC_SPAWN",
                 "CAPSTONE_TEMPBLOOM_MS_SPAWN",
             },
             FeatType.TempestBloom1),
@@ -2733,11 +2747,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.SmugglersMoon_RedBloom_Adept,
-                NPCGroupType.SmugglersMoon_RedBloom_Specialist,
-                NPCGroupType.SmugglersMoon_RedBloom_Warden,
-                NPCGroupType.SmugglersMoon_RedBloom_InnerCircle,
-                NPCGroupType.SmugglersMoon_RedBloom_Master,
+                NPCGroupType.SmugglersMoon_StableBrawlers,
+                NPCGroupType.SmugglersMoon_StablePitFighters,
+                NPCGroupType.SmugglersMoon_PitBossKessanPru,
+                NPCGroupType.SmugglersMoon_StablePromoters,
+                NPCGroupType.SmugglersMoon_StableChampionVenDolo,
             },
             new[]
             {
@@ -2768,7 +2782,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_redbloom_wd",
-                null,
+                "wp_redbloom_ic",
                 "wp_redbloom_ms",
             },
             new[]
@@ -2776,7 +2790,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_REDBLOOM_WD_SPAWN",
-                null,
+                "CAPSTONE_REDBLOOM_IC_SPAWN",
                 "CAPSTONE_REDBLOOM_MS_SPAWN",
             },
             FeatType.RedBloom1),
@@ -2806,11 +2820,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_Invincible_Adept,
-                NPCGroupType.Viscara_Invincible_Specialist,
-                NPCGroupType.Viscara_Invincible_Warden,
-                NPCGroupType.Viscara_Invincible_InnerCircle,
-                NPCGroupType.Viscara_Invincible_Master,
+                NPCGroupType.Viscara_HoldoutRecruits,
+                NPCGroupType.Viscara_HoldoutSergeants,
+                NPCGroupType.Viscara_HoldoutLieutenantSarn,
+                NPCGroupType.Viscara_HoldoutHonorGuards,
+                NPCGroupType.Viscara_HoldoutCaptainHaroKel,
             },
             new[]
             {
@@ -2841,7 +2855,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_invinc_wd",
-                null,
+                "wp_invinc_ic",
                 "wp_invinc_ms",
             },
             new[]
@@ -2849,7 +2863,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_INVINC_WD_SPAWN",
-                null,
+                "CAPSTONE_INVINC_IC_SPAWN",
                 "CAPSTONE_INVINC_MS_SPAWN",
             },
             FeatType.Invincible1),
@@ -2879,11 +2893,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_VitalRupture_Adept,
-                NPCGroupType.Viscara_VitalRupture_Specialist,
-                NPCGroupType.Viscara_VitalRupture_Warden,
-                NPCGroupType.Viscara_VitalRupture_InnerCircle,
-                NPCGroupType.Viscara_VitalRupture_Master,
+                NPCGroupType.Viscara_HoldoutRecruits,
+                NPCGroupType.Viscara_HoldoutSergeants,
+                NPCGroupType.Viscara_HoldoutLieutenantKorvanTull,
+                NPCGroupType.Viscara_HoldoutHonorGuards,
+                NPCGroupType.Viscara_HoldoutCaptainMarekDolan,
             },
             new[]
             {
@@ -2914,7 +2928,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_vitrupt_wd",
-                null,
+                "wp_vitrupt_ic",
                 "wp_vitrupt_ms",
             },
             new[]
@@ -2922,7 +2936,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_VITRUPT_WD_SPAWN",
-                null,
+                "CAPSTONE_VITRUPT_IC_SPAWN",
                 "CAPSTONE_VITRUPT_MS_SPAWN",
             },
             FeatType.ViralCascade1),
@@ -2952,11 +2966,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Viscara_SystemicShutdown_Adept,
-                NPCGroupType.Viscara_SystemicShutdown_Specialist,
-                NPCGroupType.Viscara_SystemicShutdown_Warden,
-                NPCGroupType.Viscara_SystemicShutdown_InnerCircle,
-                NPCGroupType.Viscara_SystemicShutdown_Master,
+                NPCGroupType.Viscara_HoldoutRecruits,
+                NPCGroupType.Viscara_HoldoutSergeants,
+                NPCGroupType.Viscara_HoldoutLieutenantVessikRane,
+                NPCGroupType.Viscara_HoldoutHonorGuards,
+                NPCGroupType.Viscara_HoldoutCaptainJorrikVael,
             },
             new[]
             {
@@ -2987,7 +3001,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "wp_sysshut_wd",
-                null,
+                "wp_sysshut_ic",
                 "wp_sysshut_ms",
             },
             new[]
@@ -2995,7 +3009,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 null,
                 "CAPSTONE_SYSSHUT_WD_SPAWN",
-                null,
+                "CAPSTONE_SYSSHUT_IC_SPAWN",
                 "CAPSTONE_SYSSHUT_MS_SPAWN",
             },
             FeatType.EscapeArtist1),
@@ -3024,7 +3038,18 @@ internal static class CapstoneQuestDefinitionTestData
         string GeneralWaypointResref,
         string SpawnTableId,
         string LessonLootTableId,
-        string BossLootTableId);
+        string BossLootTableId,
+        string DungeonAreaResref)
+    {
+        // Specialists spawn from their own table on the spawn points deeper in the dungeon.
+        public string DeepSpawnTableId => SpawnTableId + "_DEEP";
+        public string DeepWaypointResref => GeneralWaypointResref.Replace("wp_cap_", "wp_cdp_");
+
+        public string GetGeneralSpawnTableId(int step)
+        {
+            return step == 0 ? SpawnTableId : DeepSpawnTableId;
+        }
+    }
 
     public sealed record QuestGiver(string Name, string Resref, string DialogueResref);
 

@@ -768,24 +768,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     $"the {behaviorCase.Feat} channel to release the caster");
 
             await RetryAsync();
-            if (behaviorCase.SearchForSafeMovementLane && denial.Contains("Wait two seconds between movement abilities.", StringComparison.Ordinal))
-            {
-                ctx.Assert(!used, "The immediate retry respects the shared movement lockout");
-                ctx.Log($"{behaviorCase.Feat} immediate retry verified the two-second movement lockout");
-                await ctx.DelaySecondsAsync(2.05f);
-                ctx.Assert(!WeaponRepositioning.IsMoving(caster), "The first movement is complete before the cooldown-only fixture reset");
-                await ctx.ExecuteInCreatureContextAsync(caster, () =>
-                {
-                    ClearAllActions();
-                    ObjectPlugin.SetPosition(caster, initialCasterPosition);
-                });
-                await ctx.WaitFrameAsync();
-                ctx.Assert(System.Numerics.Vector3.Distance(initialCasterPosition, GetPosition(caster)) < .05f,
-                    "The cooldown-only retry starts at the original validated fixture position");
-                activationLocation = await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target);
-                await RetryAsync();
-            }
-
             ctx.Assert(!used, $"{behaviorCase.Feat} was accepted while its shared recast was active");
             ctx.Assert(
                 denial.Contains("This ability can be used in", StringComparison.Ordinal),

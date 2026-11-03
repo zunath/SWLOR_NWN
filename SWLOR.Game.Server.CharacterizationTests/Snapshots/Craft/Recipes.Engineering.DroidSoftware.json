@@ -2,7 +2,7 @@
   "function": "Recipe definitions: Engineering.DroidSoftware (every IRecipeListDefinition recipe in this group)",
   "description": "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, research cost modifier, components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) and the effect lines (count and fingerprint).",
   "seed": null,
-  "inputs": "490 of the 3355 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
+  "inputs": "490 of the 3377 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
   "rowCount": 490,
   "columns": ["recipe", "recipeName", "=> skill", "=> category", "=> level", "=> practiceRankLimit", "=> quantity", "=> resref", "=> isActive", "=> enhancementType", "=> enhancementSlots", "=> researchCostModifier", "=> components", "=> requirements", "=> effectLineCount", "=> effectFingerprint"],
   "rows": [
@@ -486,15 +486,15 @@
     [6344, "InstructionControlledBurst1", "Engineering", "DroidInstruction", 20, null, 1, "id_ctrlburst1", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
     [6345, "InstructionControlledBurst2", "Engineering", "DroidInstruction", 40, null, 1, "id_ctrlburst2", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
     [6346, "InstructionAkimboStance", "Engineering", "DroidInstruction", 30, null, 1, "id_akimbostance", true, "None", 0, 0, ["citrine x1", "elec_good x2", "ionite x1"], [], 0, null],
-    [6347, "InstructionBlasterSlide1", "Engineering", "DroidInstruction", 10, null, 1, "id_blastslide1", true, "None", 0, 0, ["jade x1", "elec_ruined x2", "quadrenium x1"], [], 0, null],
-    [6348, "InstructionBlasterSlide2", "Engineering", "DroidInstruction", 20, null, 1, "id_blastslide2", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
-    [6349, "InstructionBlasterSlide3", "Engineering", "DroidInstruction", 30, null, 1, "id_blastslide3", true, "None", 0, 0, ["citrine x1", "elec_good x2", "ionite x1"], [], 0, null],
-    [6350, "InstructionBlasterSlide4", "Engineering", "DroidInstruction", 50, null, 1, "id_blastslide4", true, "None", 0, 0, ["emerald x1", "elec_high x2", "zinsiam x1"], [], 0, null],
-    [6351, "InstructionGrappleShot1", "Engineering", "DroidInstruction", 20, null, 1, "id_grappshot1", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
-    [6352, "InstructionGrappleShot2", "Engineering", "DroidInstruction", 40, null, 1, "id_grappshot2", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
-    [6353, "InstructionGrappleShot3", "Engineering", "DroidInstruction", 40, null, 1, "id_grappshot3", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
-    [6354, "InstructionPistolRush1", "Engineering", "DroidInstruction", 20, null, 1, "id_pistolrush1", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
-    [6355, "InstructionPistolRush2", "Engineering", "DroidInstruction", 40, null, 1, "id_pistolrush2", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
+    [6347, "InstructionLeadShot1", "Engineering", "DroidInstruction", 10, null, 1, "id_blastslide1", true, "None", 0, 0, ["jade x1", "elec_ruined x2", "quadrenium x1"], [], 0, null],
+    [6348, "InstructionLeadShot2", "Engineering", "DroidInstruction", 20, null, 1, "id_blastslide2", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
+    [6349, "InstructionLeadShot3", "Engineering", "DroidInstruction", 30, null, 1, "id_blastslide3", true, "None", 0, 0, ["citrine x1", "elec_good x2", "ionite x1"], [], 0, null],
+    [6350, "InstructionLeadShot4", "Engineering", "DroidInstruction", 50, null, 1, "id_blastslide4", true, "None", 0, 0, ["emerald x1", "elec_high x2", "zinsiam x1"], [], 0, null],
+    [6351, "InstructionClosingShot1", "Engineering", "DroidInstruction", 20, null, 1, "id_grappshot1", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
+    [6352, "InstructionClosingShot2", "Engineering", "DroidInstruction", 40, null, 1, "id_grappshot2", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
+    [6353, "InstructionClosingShot3", "Engineering", "DroidInstruction", 40, null, 1, "id_grappshot3", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
+    [6354, "InstructionTempoShot1", "Engineering", "DroidInstruction", 20, null, 1, "id_pistolrush1", true, "None", 0, 0, ["agate x1", "elec_flawed x2", "vintrium x1"], [], 0, null],
+    [6355, "InstructionTempoShot2", "Engineering", "DroidInstruction", 40, null, 1, "id_pistolrush2", true, "None", 0, 0, ["ruby x1", "elec_imperfect x2", "katrium x1"], [], 0, null],
     [6356, "InstructionCrossfireStance", "Engineering", "DroidInstruction", 30, null, 1, "id_crossfirestan", true, "None", 0, 0, ["citrine x1", "elec_good x2", "ionite x1"], [], 0, null]
   ]
 }

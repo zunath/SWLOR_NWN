@@ -45,10 +45,10 @@ public class LinkedBankStorageTests
             .ReturnType
             .Should()
             .Be(typeof(long));
-        GetPublicBankMethod(nameof(Bank.SearchItems), typeof(string), typeof(string))
+        GetPublicBankMethod(nameof(Bank.SearchItems), typeof(string), typeof(string), typeof(int))
             .ReturnType
             .Should()
-            .Be(typeof(List<InventoryItem>));
+            .Be(typeof(BankItemPage));
         GetPublicBankMethod(nameof(Bank.GetDepositFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
@@ -82,7 +82,7 @@ public class LinkedBankStorageTests
         var bank = new BankService(db);
 
         bank.GetItemCount("player-id");
-        bank.SearchItems("player-id", string.Empty);
+        bank.SearchItems("player-id", string.Empty, 0);
 
         db.Queries.Should().HaveCount(2);
         foreach (var query in db.Queries.Cast<DBQuery<InventoryItem>>())
@@ -92,6 +92,84 @@ public class LinkedBankStorageTests
             queryString.Should().Contain("@StorageId:GLOBAL_BANK");
             queryString.Should().Contain("@PlayerId:player\\-id");
         }
+    }
+
+    [Test]
+    public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
+    {
+        var bank = new BankService(new InMemoryDBService());
+        var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
+
+        var all = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", string.Empty })!)
+            .BuildQuery().QueryString;
+        var filtered = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!)
+            .BuildQuery().QueryString;
+
+        all.Should().Contain("@StorageId:GLOBAL_BANK").And.NotContain("@Name:");
+        filtered.Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
+
+        // Pages need a fixed order: oldest deposit first, so the newest deposit is on the last page.
+        var query = (DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!;
+        var sortField = typeof(DBQuery<InventoryItem>).GetProperty("SortByField", BindingFlags.NonPublic | BindingFlags.Instance);
+        var ascending = typeof(DBQuery<InventoryItem>).GetProperty("IsAscending", BindingFlags.NonPublic | BindingFlags.Instance);
+        sortField!.GetValue(query).Should().Be(nameof(InventoryItem.DepositedTicks));
+        ascending!.GetValue(query).Should().Be(true);
+        typeof(InventoryItem).GetProperty(nameof(InventoryItem.DepositedTicks))!
+            .GetCustomAttribute<IndexedAttribute>().Should().NotBeNull("the sort field must be indexed");
+    }
+
+    [Test]
+    public void BankService_SearchItemsLoadsOnePageAndClampsThePageIndex()
+    {
+        // An unpaged DB search stops at 50 rows, which hid the newest deposits in banks holding more than 50 items.
+        var itemsPerPage = typeof(BankService).GetField("ItemsPerPage", BindingFlags.NonPublic | BindingFlags.Static);
+        itemsPerPage.Should().NotBeNull();
+        itemsPerPage!.GetRawConstantValue().Should().Be(20);
+
+        // The code now lives in the instance class; the facade only forwards.
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Economy", "BankService.cs"));
+        var start = source.IndexOf("public BankItemPage SearchItems", StringComparison.Ordinal);
+        var end = source.IndexOf("private DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
+
+        start.Should().BeGreaterThan(0);
+        end.Should().BeGreaterThan(start);
+        var body = source.Substring(start, end - start);
+        body.Should().Contain("_db.SearchCount(BuildSearchQuery(playerId, searchText))");
+        body.Should().Contain("GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex)");
+        body.Should().Contain(".AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex)");
+    }
+
+    [TestCase(0, 0, 0, 1)]
+    [TestCase(61, 0, 0, 4)]
+    [TestCase(61, int.MaxValue, 3, 4)]
+    [TestCase(60, 3, 2, 3)]
+    [TestCase(120, 5, 5, 6)]
+    public void BankPaging_ClampsToTheLastPageOfTwentyItems(long matchCount, int requested, int expectedPage, int expectedPageCount)
+    {
+        var pagination = SWLOR.Game.Server.Service.GuiService.GuiPaginationState.Create(matchCount, 20, requested);
+
+        pagination.SelectedPageIndex.Should().Be(expectedPage);
+        pagination.PageNumbers.Count.Should().Be(expectedPageCount);
+    }
+
+    [Test]
+    public void BankWindow_PagesItsListAndReloadsAfterDepositAndWithdraw()
+    {
+        var root = FindRepositoryRoot();
+        var guiDirectory = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition");
+        var definition = File.ReadAllText(Path.Combine(guiDirectory, "BankDefinition.cs"));
+        var viewModel = File.ReadAllText(Path.Combine(guiDirectory, "ViewModel", "BankViewModel.cs"));
+
+        definition.Should().Contain("col.AddPagination(");
+        definition.Should().Contain("model => model.PageNumbers");
+        definition.Should().Contain("model => model.SelectedPageIndex");
+        viewModel.Should().Contain("WatchOnClient(model => model.SelectedPageIndex);");
+        viewModel.Should().Contain("Bank.SearchItems(playerId, SearchText, pageIndex)");
+        viewModel.Should().Contain("LoadPage(int.MaxValue);");
+        viewModel.Should().Contain("LoadPage(SelectedPageIndex);");
+        viewModel.Should().NotContain("ItemNames.Add(");
+        viewModel.Should().NotContain("ItemNames.RemoveAt(");
     }
 
     [Test]
@@ -107,7 +185,7 @@ public class LinkedBankStorageTests
             "BankViewModel.cs"));
 
         source.Should().Contain("Bank.GetItemCount(playerId)");
-        source.Should().Contain("Bank.SearchItems(playerId, SearchText)");
+        source.Should().Contain("Bank.SearchItems(playerId, SearchText, pageIndex)");
         source.Should().Contain("Bank.GetDepositFailure(Player, item)");
         source.Should().Contain("Bank.DepositItem(Player, item)");
         source.Should().Contain("Bank.WithdrawItem(Player, itemId)");
@@ -298,6 +376,19 @@ public class LinkedBankStorageTests
         var method = typeof(Bank).GetMethod(
             name,
             BindingFlags.Public | BindingFlags.Static,
+            null,
+            parameterTypes,
+            null);
+
+        method.Should().NotBeNull();
+        return method!;
+    }
+
+    private static MethodInfo GetPrivateBankMethod(string name, params Type[] parameterTypes)
+    {
+        var method = typeof(BankService).GetMethod(
+            name,
+            BindingFlags.NonPublic | BindingFlags.Instance,
             null,
             parameterTypes,
             null);

@@ -89,6 +89,8 @@ public static class LootStatRevisionMigration
             if (reviseStats) changed |= MigrateItem(obj);
             // Release migrations only: on acquisition it would copy boosts onto parts made after the release.
             if (updateArtwork) changed |= DroidWeaponSkillMigration.MigrateItem(obj);
+            // Also on acquisition, for copies restored or imported after the release migrations ran.
+            changed |= FurnitureRenameMigration.RenameItem(obj);
             changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear, updateArtwork);
             var original = GetLocalString(obj, ConstructedDroidVariable);
             var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>

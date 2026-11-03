@@ -54,11 +54,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>One owned Power Glove with its linked cosmetic companion.</summary>
-        public static bool HasUnarmedGrip(uint creature)
-        {
-            return PowerGloveEquipment.IsActivePair(creature);
-        }
-
         public static bool HasUnarmedGrip(BaseItem? mainHand, BaseItem? offHand) =>
             mainHand == BaseItem.PowerGlove && offHand == BaseItem.CompanionPowerGlove;
 

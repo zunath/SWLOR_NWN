@@ -21,11 +21,11 @@ namespace SWLOR.Game.Server.Service
                 AwardProof(actor, TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId, KeyItemType.TwinSunsCanyonFiringTrace);
         }
 
-        public static void RecordAbility(uint actor, bool anyHit, float distanceTravelled, TwinPistolAbilitySpec spec, int momentumSpent)
+        public static void RecordAbility(uint actor, bool anyHit, PerkType perk, int cadenceSpent)
         {
             if (!CanAttempt(actor, TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId, false))
                 return;
-            if (GetAttempt(actor).RecordAbility(DateTime.UtcNow, anyHit, distanceTravelled, spec, momentumSpent))
+            if (GetAttempt(actor).RecordAbility(DateTime.UtcNow, anyHit, perk, cadenceSpent))
                 AwardProof(actor, TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId, KeyItemType.FinalSalvoCanyonRouteTrace);
         }
 

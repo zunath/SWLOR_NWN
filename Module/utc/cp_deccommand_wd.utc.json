@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Decisive Command warden, Captain Grenn Vhon, in Viscara - Republic Engineering Bunker."
+    "value": "Deserter Sergeant Grenn Vhon (Decisive Command line), Captain Grenn Vhon, in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Captain Grenn Vhon, an Ugnaught breach officer in Republic elite armor, carries a blaster pistol and wears a cracked command crest at his shoulder. He holds the bunker's inner blast doors for Halden Rhee and meets every assault head-on."
+      "0": "Grenn Vhon, an Ugnaught breach sergeant in Republic elite armor, carries a blaster pistol and wears a cracked command crest at his shoulder. He holds the bunker's inner blast doors for Halden Rhee and meets every assault head-on."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Decisive Command Warden"
+      "0": "Deserter Sergeant Grenn Vhon"
     }
   },
   "fortbonus": {

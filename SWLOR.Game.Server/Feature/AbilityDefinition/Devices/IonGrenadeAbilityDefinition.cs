@@ -125,7 +125,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         Array.Empty<Type>(),
                         damageType: CombatDamageType.Electrical,
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0,
+                        damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(
+                            activator,
+                            impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0),
                         playImpactAnimation: false);
                 }
 

@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 41
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 539
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 41
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A sealed jar of fragrant red chili oil recovered from Thyrsian exile or scrapyard smuggler supplies. Used in Echani spicy noodles and glazed poultry."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A sealed jar of fragrant red chili oil recovered from Thyrsian exile or scrapyard smuggler supplies. Used in Echani spicy noodles and glazed poultry."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Eshan Red Chili Oil"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 36
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "esh_chili_oil"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "esh_chili_oil"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
+  }
+}

@@ -22,7 +22,7 @@ services:
             - "8081:8081"
 
     server-home-init:
-        image: zunath/nwn-dotnet:8193.37.17-2
+        image: zunath/nwn-dotnet:8193.37.17-3
         user: "0:0"
         network_mode: none
         restart: "no"
@@ -34,13 +34,15 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
+        stop_grace_period: 45s
+        restart: always
         depends_on:
             server-home-init:
                 condition: service_completed_successfully
         build:
           context: .
           dockerfile: Dockerfile
-        image: zunath/nwn-dotnet:8193.37.17-2
+        image: zunath/nwn-dotnet:8193.37.17-3
         env_file: ./swlor.env
         links:
             - "redis:redis"

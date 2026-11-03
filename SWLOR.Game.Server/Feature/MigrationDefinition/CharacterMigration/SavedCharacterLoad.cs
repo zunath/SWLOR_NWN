@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
 /// The changes loading a character makes to its saved items, which the migrations were written to see, in load order:
-/// the native conversion of retired property rows (<see cref="SavedLegacyItemProperties"/>); the module acquire
-/// event for every item, which repairs retired basic weapons (<see cref="BasicVibrobladeCompatibility.OnAcquire"/>)
-/// and gives pistols and blaster ammunition their canonical base items (<see cref="PistolBaseItemCompatibility.OnAcquire"/>);
+/// the native conversion of retired property rows (<see cref="SavedLegacyItemProperties"/>); the repair of retired
+/// basic weapons (<see cref="BasicVibrobladeCompatibility.Normalize"/>) and canonical base items for pistols and blaster
+/// ammunition (<see cref="PistolBaseItemCompatibility.GetCanonicalBaseItem"/>) that the acquire event used to make;
 /// then the module equip event for each worn item, which gives a weapon without a Delay property its default one
 /// (<see cref="WeaponDelay.ApplyWeaponDelayFallback"/>). The upgrade applies them first so every migration sees
-/// the items a loaded character holds. Acquire and equip handlers whose changes no migration reads are left to login.
+/// the items a loaded character holds. Login no longer repairs legacy items, so the upgrade is the only conversion.
 /// </summary>
 internal static class SavedCharacterLoad
 {

@@ -105,13 +105,16 @@ public class KatarAnimationRemapPlanTests
     }
 
     [Test]
-    public void PowerGloves_DropTheRightArmSwordCarryLayers()
+    public void PowerGloves_DropBothArmsSwordCarryLayers()
     {
+        // The left companion glove triggers the left-arm carry, so both arms' layers are dropped.
         KatarAnimationRemapPlan.GetChanges(true, true, new Dictionary<string, string>(), NoActiveSwing)
             .Should().BeEquivalentTo(KatarAnimationRemapPlan.Pairs.Concat(new[]
             {
                 ("walk_swordr", NamedAnimationPlayback.NoHoldName),
                 ("run_swordr", NamedAnimationPlayback.NoHoldName),
+                ("walk_swordl", NamedAnimationPlayback.NoHoldName),
+                ("run_swordl", NamedAnimationPlayback.NoHoldName),
             }));
     }
 
@@ -133,7 +136,11 @@ public class KatarAnimationRemapPlanTests
             current[source] = replacement;
 
         KatarAnimationRemapPlan.GetChanges(true, false, current, NoActiveSwing)
-            .Should().BeEquivalentTo(new[] { ("walk_swordr", string.Empty), ("run_swordr", string.Empty) });
+            .Should().BeEquivalentTo(new[]
+            {
+                ("walk_swordr", string.Empty), ("run_swordr", string.Empty),
+                ("walk_swordl", string.Empty), ("run_swordl", string.Empty),
+            });
     }
 
     [Test]
@@ -146,16 +153,5 @@ public class KatarAnimationRemapPlanTests
         var changes = KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing);
 
         changes.Should().HaveCount(current.Count).And.OnlyContain(change => change.Replacement == string.Empty);
-    }
-
-    [Test]
-    public void RepositioningDash_KeepsTheCarryLayerItHolds()
-    {
-        // Twin Pistol repositioning maps run_swordr to the same missing clip for the length of its dash.
-        var current = new Dictionary<string, string> { ["run_swordr"] = NamedAnimationPlayback.NoHoldName };
-
-        KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing, carryLayersInUse: true).Should().BeEmpty();
-        KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing)
-            .Should().BeEquivalentTo(new[] { ("run_swordr", string.Empty) });
     }
 }

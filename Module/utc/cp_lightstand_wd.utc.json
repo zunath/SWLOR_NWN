@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Last Stand of the Light warden in Mon Cala - Sith Crypt Depths."
+    "value": "Expedition Captain Rhaan Tolek (Last Stand of the Light line) in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Cathar mercenary in battered armor, the best fighter the relic expedition has. He holds the trial altar in the Sith Crypt Depths with a blaster and does not give ground, even when he is hurt."
+      "0": "A Cathar mercenary captain in battered armor, the best fighter the relic expedition has. He holds the trial altar in the Sith Crypt Depths with a blaster and does not give ground, even when he is hurt."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Breach Captain"
+      "0": "Expedition Captain Rhaan Tolek"
     }
   },
   "fortbonus": {

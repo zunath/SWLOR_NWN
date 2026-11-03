@@ -135,6 +135,43 @@ public class NPCAbilityDefinitionTests
         }
     }
 
+    // The engine drops a creature's feat when its feat.2da row has no name strref, so a
+    // blueprint that lists the feat spawns without it and its AI never uses the ability.
+    [Test]
+    public void NPCAbilities_HaveFeat2daNameAndDescription()
+    {
+        const int customTlkOffset = 16777216;
+        var root = FindRepositoryRoot();
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var tlkText = ReadCustomTlkText(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var labels = featRows
+            .Where(row => row.Value["LABEL"].StartsWith("AutoCast", StringComparison.Ordinal))
+            .ToDictionary(row => row.Value["LABEL"], row => row.Key);
+        var failures = new List<string>();
+
+        foreach (var feat in BuildAllNPCAbilities().Keys)
+        {
+            var rows = new List<int> { (int)feat };
+            if (labels.TryGetValue("AutoCast" + feat, out var aliasRow))
+                rows.Add(aliasRow);
+
+            foreach (var row in rows)
+            {
+                foreach (var column in new[] { "FEAT", "DESCRIPTION" })
+                {
+                    var value = featRows[row][column];
+                    if (!int.TryParse(value, out var strRef))
+                        failures.Add($"feat.2da row {row} ({featRows[row]["LABEL"]}) has no {column} strref.");
+                    else if (strRef >= customTlkOffset &&
+                             (!tlkText.TryGetValue(strRef - customTlkOffset, out var text) || string.IsNullOrWhiteSpace(text)))
+                        failures.Add($"feat.2da row {row} ({featRows[row]["LABEL"]}) {column} {strRef} has no TLK text.");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty();
+    }
+
     [Test]
     public void NewResistanceThreatAbilities_UseFeatOnly2daRowsWithSharedNpcSpell()
     {
@@ -352,6 +389,14 @@ public class NPCAbilityDefinitionTests
         string Duration,
         string Notes,
         string SourceFile);
+
+    private static Dictionary<int, string> ReadCustomTlkText(PathInfo path)
+    {
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path.FullName));
+        return document.RootElement.GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(entry => entry.GetProperty("id").GetInt32(), entry => entry.GetProperty("text").GetString() ?? string.Empty);
+    }
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(PathInfo path)
     {

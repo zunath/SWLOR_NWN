@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void OnTechniqueLanded(uint player, uint target, AbilityDetail ability, MeleeTechniqueStage stage)
         {
-            if (!GetIsPC(player) || GetIsDM(player) || !EquipmentPredicates.HasUnarmedGrip(player) ||
+            if (!GetIsPC(player) || GetIsDM(player) ||
                 !GetIsObjectValid(target) || GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target) || GetImmortal(target) ||
                 GetIsObjectValid(GetMaster(target)) || !GetIsEnemy(target, player) ||
                 Stat.GetNPCStats(target).Level < MinimumOpponentLevel)

@@ -130,8 +130,8 @@ public class LightsaberPerkBehaviorTests
     public void ShatteringStrike_InflictsScaledSunder()
     {
         var source = AbilitySource("ShatteringStrikeAbilityDefinition.cs");
-        source.Should().Contain("StatusEffectFactory = () => new SunderStatusEffect(10)");
         source.Should().Contain("StatusEffectFactory = () => new SunderStatusEffect(12)");
+        source.Should().Contain("StatusEffectFactory = () => new SunderStatusEffect(15)");
     }
 
     [Test]
@@ -329,12 +329,13 @@ public class LightsaberPerkBehaviorTests
         var imbuement = new ImbuementStanceStatusEffect();
         imbuement.StatGroup.Stats[StatType.StanceHostileAutoAttackForceConversion].Should().Be(1);
         imbuement.StatGroup.Stats[StatType.StanceHostileAutoAttackFPCost].Should().Be(2);
+        imbuement.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(10);
 
         var immovable = new ImmovableStanceStatusEffect();
         immovable.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(30);
-        immovable.StatGroup.Stats[StatType.MobilityResistance].Should().Be(8);
-        immovable.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-25);
-        immovable.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-25);
+        immovable.StatGroup.Stats[StatType.MobilityResistance].Should().Be(20);
+        immovable.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-15);
+        immovable.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-15);
     }
 
     private static void AssertPerkStat(StatType statType, string valueExpression)

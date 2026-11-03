@@ -302,8 +302,10 @@ public class MeleeTechniqueTests
         new MeleeTechniqueProfile().IsValid.Should().BeFalse();
         new MeleeTechniqueProfile
         {
-            HasValidEquipment = _ => true,
-            EquipmentError = "Equip the required weapon."
-        }.IsValid.Should().BeFalse("equipment eligibility alone cannot replace the required presentation factories");
+            SetupMarkerFactory = _ => null,
+            OpeningFinisherWindowFactory = (_, _) => null,
+            FinishFinisherWindowFactory = _ => null,
+            StaminaDiscountMarkerFactory = () => null
+        }.IsValid.Should().BeFalse("every presentation factory is required");
     }
 }

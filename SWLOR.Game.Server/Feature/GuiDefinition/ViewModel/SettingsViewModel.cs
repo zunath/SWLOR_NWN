@@ -460,6 +460,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
+        public Action OnClickHotbars() => () =>
+        {
+            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+            {
+                SendMessageToPC(Player, ColorToken.Red("Only player characters have extra hotbars."));
+                return;
+            }
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExtraHotbarSetup);
+        };
+
         public Action OnClickChangeDescription() => () =>
         {
             if (Disguise.GetActiveDisguise(Player) != null)

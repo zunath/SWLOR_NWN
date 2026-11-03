@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Commandline Display Plinth."
+      "0": "A rare schematic for crafting Commandline Bust."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Commandline Display Plinth."
+      "0": "A rare schematic for crafting Commandline Bust."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Commandline Display Plinth"
+      "0": "Blueprint: Commandline Bust"
     }
   },
   "ModelPart1": {

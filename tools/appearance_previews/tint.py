@@ -5,6 +5,7 @@ ten bins (G); the colour is plt_palette[layer base + palette id, shade]. Legacy 
 store the same (shade, layer) pairs directly. Palette alpha below one is the legacy metal
 environment coverage, exported as a metallic mask.
 """
+import io
 import struct
 from pathlib import Path
 
@@ -62,9 +63,34 @@ def save_for_blender(rgb, metal, color_path: Path, metal_path: Path):
     Image.fromarray(metal).transpose(Image.FLIP_TOP_BOTTOM).save(metal_path)
 
 
+def bioware_dds(data: bytes) -> bytes:
+    """A standard DDS file from a Bioware-format DDS (20-byte header: width, height, 3 = DXT1 or
+    4 = DXT5, top mipmap size, alpha mean), which the base game still uses for many textures."""
+    width, height, channels, size = struct.unpack_from("<IIII", data, 0)
+    if channels not in (3, 4) or not width or not height or size != width * height // (2 if channels == 3 else 1):
+        raise ValueError("Not a Bioware DDS")
+    if len(data) < 20 + size:
+        raise ValueError("Truncated Bioware DDS")
+    pixel_format = struct.pack("<II4s5I", 32, 0x4, b"DXT1" if channels == 3 else b"DXT5", 0, 0, 0, 0, 0)
+    header = struct.pack("<7I44x", 124, 0x1 | 0x2 | 0x4 | 0x1000 | 0x80000, height, width, size, 0, 1)
+    header += pixel_format + struct.pack("<5I", 0x1000, 0, 0, 0, 0)
+    return b"DDS " + header + data[20:20 + size]
+
+
+def open_texture(path: Path) -> Image.Image:
+    try:
+        return Image.open(path)
+    except OSError:
+        if path.suffix.lower() != ".dds":
+            raise
+        image = Image.open(io.BytesIO(bioware_dds(path.read_bytes())))
+        image.load()
+        return image
+
+
 def plain_texture(path: Path, color_path: Path, keep_alpha=False):
     """keep_alpha: the material draws this texture's alpha as see-through (cutouts)."""
-    image = Image.open(path).convert("RGBA" if keep_alpha else "RGB")
+    image = open_texture(path).convert("RGBA" if keep_alpha else "RGB")
     if path.suffix.lower() == ".dds":
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
     image.save(color_path)

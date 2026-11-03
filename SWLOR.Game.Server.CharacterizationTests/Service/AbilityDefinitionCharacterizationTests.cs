@@ -27,7 +27,6 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.AllowsSelfQuickCast), a => a.AllowsSelfQuickCast),
         new(nameof(AbilityDetail.BreaksStealth), a => a.BreaksStealth),
         new(nameof(AbilityDetail.CanBeUsedInSpace), a => a.CanBeUsedInSpace),
-        new(nameof(AbilityDetail.ClampsLocationTargetToMaxRange), a => a.ClampsLocationTargetToMaxRange),
         new(nameof(AbilityDetail.CombatImpactDamageAbility), a => a.CombatImpactDamageAbility),
         new(nameof(AbilityDetail.DealsDeferredDamage), a => a.DealsDeferredDamage),
         new(nameof(AbilityDetail.DisplaysActivationMessage), a => a.DisplaysActivationMessage),
@@ -44,7 +43,7 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.IsMimicryTrait), a => a.IsMimicryTrait),
         new(nameof(AbilityDetail.IsMimicryUtility), a => a.IsMimicryUtility),
         new(nameof(AbilityDetail.IsSingleTargetAbility), a => a.IsSingleTargetAbility),
-        new(nameof(AbilityDetail.KeepsWeaponAbilityFlow), a => a.KeepsWeaponAbilityFlow),
+        new(nameof(AbilityDetail.KeepsWeaponAbilityCadence), a => a.KeepsWeaponAbilityCadence),
         new(nameof(AbilityDetail.MeleeTechnique), a => MeleeTechniqueText(a.MeleeTechnique)),
         new(nameof(AbilityDetail.MimicryElement), a => a.MimicryElement),
         new(nameof(AbilityDetail.MimicrySkillRequirement), a => a.MimicrySkillRequirement),
@@ -60,7 +59,8 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.SuppressesSourceStatusStackRiders), a => a.SuppressesSourceStatusStackRiders),
         new(nameof(AbilityDetail.TriggersDarkForceConversion), a => a.TriggersDarkForceConversion),
         new(nameof(AbilityDetail.UsesActiveAttackTarget), a => a.UsesActiveAttackTarget),
-        new(nameof(AbilityDetail.WeaponAbilityFlowDamagePerCharge), a => a.WeaponAbilityFlowDamagePerCharge),
+        new(nameof(AbilityDetail.WeaponAbilityCadenceDamagePerCharge), a => a.WeaponAbilityCadenceDamagePerCharge),
+        new(nameof(AbilityDetail.WeaponAbilityCadenceOnHit), a => a.WeaponAbilityCadenceOnHit),
     };
 
     // Animation, visual effect and sound fields, including the animation catalog binding. They live in their own
@@ -107,6 +107,7 @@ public class AbilityDefinitionCharacterizationTests
         (nameof(AbilityDetail.ChannelInterruptAction), a => a.ChannelInterruptAction != null),
         (nameof(AbilityDetail.CustomValidation), a => a.CustomValidation != null),
         (nameof(AbilityDetail.ImpactAction), a => a.ImpactAction != null),
+        (nameof(AbilityDetail.ResolveImpactStatusCategories), a => a.ResolveImpactStatusCategories != null),
     };
 
     // Properties that have their own column or are derived from locked fields.

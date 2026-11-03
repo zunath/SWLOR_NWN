@@ -37,6 +37,8 @@ public class WeatherAreaConfigurationTests
         var exposedInteriors = areas.Where(a => InteriorTilesets.Contains(a.Tileset) && (a.Flags & 3) == 0)
             .Select(a => a.Resource);
         exposedInteriors.Should().BeEquivalentTo(OutdoorLayouts);
+        (areas.Single(a => a.Resource == "pwsc_eshstarport").Flags & 1).Should().Be(1,
+            "Eshan's starport is enclosed and must shelter players from weather");
         (areas.Single(a => a.Resource == "korr_cavern").Flags & 2).Should().Be(2);
     }
 

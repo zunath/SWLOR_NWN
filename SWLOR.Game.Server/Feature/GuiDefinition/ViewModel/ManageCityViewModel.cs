@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -186,14 +187,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CitizenshipTax);
         }
 
-        private void RefreshPermissions()
+        private bool RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .Single();
+                .SingleOrDefault();
+
+            // The permission row is deleted when another manager revokes the player's last permission.
+            if (permission == null)
+            {
+                CanAccessTreasury = false;
+                CanEditTaxes = false;
+                CanManageUpkeep = false;
+                CanUpgradeMedicalCenters = false;
+                CanUpgradeStarports = false;
+                CanUpgradeCantinas = false;
+                return false;
+            }
 
             // Permissions
             CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
@@ -210,6 +223,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanUpgradeCantinas = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
+
+            return true;
         }
 
         private void RefreshUpgradeLevels()
@@ -500,6 +515,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
+        /// <summary>
+        /// Parses and clamps the entered taxes. Without the Edit Taxes permission the entered text is ignored
+        /// and the stored values are kept.
+        /// </summary>
+        public static void ResolveTaxes(
+            bool canEditTaxes,
+            string citizenshipText,
+            string transportationText,
+            int currentCitizenshipTax,
+            int currentTransportationTax,
+            out int citizenshipTax,
+            out int transportationTax)
+        {
+            if (!canEditTaxes)
+            {
+                citizenshipTax = currentCitizenshipTax;
+                transportationTax = currentTransportationTax;
+                return;
+            }
+
+            if (!int.TryParse(citizenshipText, out citizenshipTax))
+                citizenshipTax = 0;
+
+            if (!int.TryParse(transportationText, out transportationTax))
+                transportationTax = 0;
+
+            citizenshipTax = Math.Clamp(citizenshipTax, 0, 50000);
+            transportationTax = Math.Clamp(transportationTax, 0, 25);
+        }
+
         public Action SaveChanges() => () =>
         {
             if (CityName.Length <= 0)
@@ -509,30 +554,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (!RefreshPermissions())
+            {
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
+            ResolveTaxes(
+                CanEditTaxes,
+                CitizenshipTax,
+                TransportationTax,
+                dbCity.Taxes[PropertyTaxType.Citizenship],
+                dbCity.Taxes[PropertyTaxType.Transportation],
+                out var citizenshipTax,
+                out var transportationTax);
+
             dbCity.CustomName = CityName;
-
-            if (!int.TryParse(CitizenshipTax, out var citizenshipTax))
-            {
-                citizenshipTax = 0;
-            }
-
-            if (!int.TryParse(TransportationTax, out var transportationTax))
-            {
-                transportationTax = 0;
-            }
-
-            if (citizenshipTax < 0)
-                citizenshipTax = 0;
-            else if (citizenshipTax > 50000)
-                citizenshipTax = 50000;
-
-            if (transportationTax < 0)
-                transportationTax = 0;
-            else if (transportationTax > 25)
-                transportationTax = 25;
-
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 

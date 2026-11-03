@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold this. No, the other one-- just hold it and don't move-- good. I'm mid-diagnostic and short two hands and one working theory, so you're both now. Someone's cooking bad charge tables out of the Hutlar Qion Test Site, six adepts deep. Out the outpost's north exit onto the Qion Tundra, east through the Qion Foothills into the Qion Box Canyon; the entrance is just south of the road up to Fort Ka'ra, by the sentries and the cryo tanks. I need their Overload Barrage Qion Test Log before I trust another number on my board. Go get it.",
+          "Text": "Hold this. No, the other one-- just hold it and don't move-- good. I'm mid-diagnostic and short two hands and one working theory, so you're both now. Someone's cooking bad charge tables out of the Hutlar Qion Test Site, and the Test Crew Technicians in the rooms nearest the entrance are the ones running them: six of them, and they all serve the same crew, so any technician counts. Only kills made with your assault gadgets count, though; a technician who never met your flamethrower, rocket or lance tells my board nothing. Out the outpost's north exit onto the Qion Tundra, east through the Qion Foothills into the Qion Box Canyon; the entrance is just south of the road up to Fort Ka'ra, by the sentries and the cryo tanks. I need their Overload Barrage Qion Test Log before I trust another number on my board. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Start at the north exit, then. Here's the site key. Six adepts, one log, and try not to slag your rig doing it, I only have so many spares.",
+          "Text": "Start at the north exit, then. Here's the site key. Six Test Crew Technicians, one log, and try not to slag your rig doing it, I only have so many spares.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Log's still sitting in the test site under six adepts who'd rather you didn't take it. Tundra, foothills, box canyon, just south of the fort road. Go get it.",
+          "Text": "Log's still sitting in the test site under six technicians who'd rather you didn't take it. Tundra, foothills, box canyon, just south of the fort road. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Found something worse: their specialists are running a cryo-range regulator off my stolen charge tables, which means every number it's producing is built on math I already know is broken. Five specialists, one regulator, back to the test site. Bring it back before it corrupts a third data set.",
+          "Text": "Found something worse: their Test Crew Demolitionists, deeper in, are running a cryo-range regulator off my stolen charge tables, which means every number it's producing is built on math I already know is broken. Five demolitionists, one regulator, back to the test site, and every kill from your assault gadgets. Any demolitionist will do. Bring it back before it corrupts a third data set.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Regulator's still live in the test site. Five specialists between you and it. Go.",
+          "Text": "Regulator's still live in the test site. Five demolitionists between you and it, assault gadgets only. Go.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's running a shielding trick I haven't fully mapped, some way of eating a barrage without frying, and I need the Frostburned Test Crest to know how. Do not go alone, I mean it, one fighter draws his shield down, the others actually land the hit-- that's not optional math, that's just math. Three of you, minimum.",
+          "Text": "Test Supervisor Hale Dorrin is running a shielding trick I haven't fully mapped, some way of eating a barrage without frying, and I need the Frostburned Test Crest to know how. Do not go alone, I mean it, one fighter draws his shield down, the others actually land the hit-- that's not optional math, that's just math. Three of you, minimum.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's still shielded up in the test site. Don't go back without your two.",
+          "Text": "Dorrin's still shielded up in the test site. Don't go back without your two.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Inner circle's the ones who signed off on stealing my tables in the first place. Their Site Chief's Override Chip will tell me who authorized it, when, and how far up it goes, which is a question I've been avoiding asking myself. Four of them, same test site, bring the chip back clean.",
+          "Text": "The Site Chief's Officers are the ones who signed off on stealing my tables in the first place. Their Site Chief's Override Chip will tell me who authorized it, when, and how far up it goes, which is a question I've been avoiding asking myself. Four of them, in the deepest part of the same test site, and your assault gadgets have to do the killing. Any officer counts. Bring the chip back clean.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four together beats one warden, in some ways. Bring backup, less because the math demands it and more because I'd rather not explain to anyone why I sent you in short-handed.",
+          "Text": "Four officers together beat one supervisor, in some ways. Bring backup, less because the math demands it and more because I'd rather not explain to anyone why I sent you in short-handed.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chip's still in the test site, four signatures deep. Go get it.",
+          "Text": "Chip's still in the test site, four officers deep. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's got my original tables, not the stolen copies, the real ones, and he's running barrages I calculated on paper and never dared field-test. That was never a fair fight for one person-- my math says one fighter alone takes the full overload and doesn't walk away. Three can split it. Bring two. This is the last one.",
+          "Text": "Site Chief Ansel Pryor has my original tables, not the stolen copies, the real ones, and he's running barrages I calculated on paper and never dared field-test. That was never a fair fight for one person-- my math says one fighter alone takes the full overload and doesn't walk away. Three can split it. Bring two. This is the last one.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden borrowed a shield trick. He's not borrowing anything, he's running the barrage exactly the way I first designed it, before I worked the safeties in. Full discharge, no stagger, no mercy in the math.",
+          "Text": "Dorrin borrowed a shield trick. He's not borrowing anything, he's running the barrage exactly the way I first designed it, before I worked the safeties in. Full discharge, no stagger, no mercy in the math.",
           "Style": 0,
           "Color": null
         }
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "Same numbers as the warden fight?",
+        "Text": "Same numbers as the Dorrin fight?",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "How is he stronger than the warden?",
+        "Text": "How is he stronger than Dorrin?",
         "Style": 4,
         "Color": null
       },

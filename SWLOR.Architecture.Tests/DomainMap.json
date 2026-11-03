@@ -19,7 +19,7 @@
     },
     "UI": {
       "services": [
-        "Gui"
+        "Gui", "ExtraHotbar", "ExtraHotbars"
       ],
       "featureFolders": [
         "GuiDefinition"
@@ -57,7 +57,7 @@
     "Items": {
       "services": [
         "Item", "ItemTrash", "EquipmentUnequip", "KeyItem", "Loot", "LightsaberWorkbench",
-        "OverflowStorage"
+        "OverflowStorage", "Wardrobe"
       ],
       "featureFolders": [
         "ItemDefinition", "LootTableDefinition"
@@ -73,13 +73,14 @@
     },
     "Economy": {
       "services": [
-        "Bank", "Currency", "PlayerMarket", "Guild"
+        "Bank", "BankItemPage", "Currency", "PlayerMarket", "Guild", "CasinoSlot", "CasinoSlotPresentation",
+        "CasinoSpinResult", "CasinoPlayTracker"
       ],
       "featureFolders": []
     },
     "Quests": {
       "services": [
-        "Quest", "QuestContractBoard", "QuestContract", "Faction"
+        "Quest", "QuestContractBoard", "QuestContract", "Faction", "CapstoneProof"
       ],
       "featureFolders": [
         "QuestDefinition"

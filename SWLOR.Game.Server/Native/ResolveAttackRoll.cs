@@ -142,8 +142,7 @@ namespace SWLOR.Game.Server.Native
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
-                using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))
-                    GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
+                GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
@@ -281,7 +280,8 @@ namespace SWLOR.Game.Server.Native
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                     (queuedAbility == null ? 0 : Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
-                        abilitySkillType)) +
+                        abilitySkillType,
+                        queuedAbility)) +
                     Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                         attacker.m_idSelf,
                         defender.m_idSelf,
@@ -428,6 +428,10 @@ namespace SWLOR.Game.Server.Native
                 {
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 }
+
+                using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))
+                    GetDamageRoll.SettleForceConversionStanceAttack(
+                        attacker, targetObject, IsSuccessfulAttackResult(pAttackData.m_nAttackResult));
 
                 if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
                     Combat.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);

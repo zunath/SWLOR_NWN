@@ -54,7 +54,14 @@ namespace SWLOR.Game.Server.Service
                 ? disguise.PlayerListFlags ??= new List<PlayerListFlagType>()
                 : dbPlayer.PlayerListFlags ??= new List<PlayerListFlagType>();
 
-            if (isEnabled == flags.Contains(flag))
+            var isCurrentlyOn = flags.Contains(flag);
+
+            // During PvP combat a PvP flag turned off waits for the window to end (the requested state), and a request to
+            // turn it back on undoes it. The flag a bounty needs stays in effect until then.
+            if (flag == PlayerListFlagType.PvP && PvpCombatWindow.HoldFlagChange(player, dbPlayer, isCurrentlyOn, isEnabled))
+                return;
+
+            if (isEnabled == isCurrentlyOn)
                 return;
 
             if (isEnabled)
@@ -68,6 +75,23 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
 
             QueueRefresh();
+
+            // An identity that shows the PvP flag must see the bounty notice before a city can target it.
+            if (isEnabled && flag == PlayerListFlagType.PvP)
+                BountyConsent.PromptIfNeeded(player);
+        }
+
+        /// <summary>
+        /// Whether the player asked to turn the PvP flag off during PvP combat and it is still on, waiting for the window to
+        /// end. The Player List shows the requested state.
+        /// </summary>
+        public static bool IsFlagOffQueued(uint player, PlayerListFlagType flag)
+        {
+            if (flag != PlayerListFlagType.PvP)
+                return false;
+
+            var requests = DB.Get<Player>(GetObjectUUID(player))?.PvpCombatRequests;
+            return requests != null && requests.IsFlagOffQueued;
         }
 
         /// <summary>

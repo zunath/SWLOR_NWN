@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.Game.Server.Service.TradeService;
@@ -125,6 +126,7 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
+            PvpCombatRequests = new PvpCombatRequests();
             PaidShipSaleIds = new List<string>();
             LastAgentPurchaseId = string.Empty;
         }
@@ -285,6 +287,22 @@ namespace SWLOR.Game.Server.Entity
         public bool HasUndisguisedDescriptionSnapshot { get; set; }
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
+
+        /// <summary>
+        /// When the character accepted the one-time notice that cities can post bounties on the character's own identity
+        /// (Player City Revamp, "Conflict and PvP"); each disguise keeps its own. Unset for everyone at launch, so nobody can
+        /// be targeted before accepting.
+        /// </summary>
+        public DateTime? BountyNoticeAcceptedUtc { get; set; }
+
+        /// <summary>When a city bounty on the character's own identity was last claimed. Each disguise keeps its own.</summary>
+        public DateTime? LastBountyClaimedUtc { get; set; }
+
+        /// <summary>
+        /// Flag and identity changes the player asked for while their PvP combat window was open, applied when it ends.
+        /// Older records load empty.
+        /// </summary>
+        public PvpCombatRequests PvpCombatRequests { get; set; }
 
         /// <summary>The freight contracts the player holds (plan section 13). Older records load with none.</summary>
         public List<FreightContract> FreightContracts { get; set; } = new();

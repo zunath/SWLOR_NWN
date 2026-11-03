@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Keeps both sides of a hit in PvP combat when a player or a player's pet hits another
-        /// player or a player's pet.
+        /// player or a player's pet, and holds both players' combat windows open (<see cref="PvpCombatWindow"/>).
         /// </summary>
         public static void RecordHit(uint attacker, uint target)
         {
@@ -109,6 +109,10 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             MarkActivity(attackingPlayer, now);
             MarkActivity(targetPlayer, now);
+
+            // The bounty window holds flag and identity changes back for 60 seconds after any PvP damage dealt or taken.
+            PvpCombatWindow.Open(attackingPlayer);
+            PvpCombatWindow.Open(targetPlayer);
         }
 
         /// <summary>

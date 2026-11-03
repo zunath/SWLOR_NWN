@@ -58,7 +58,12 @@ namespace SWLOR.Game.Server.Service
 
             // A duel, and the protection after a third party voids one, turns a fall into a subdual whoever landed the
             // blow and whatever either player's settings are.
-            if (Duels.TakeFall(player, hostile))
+            var isDuelFall = Duels.TakeFall(player, hostile);
+
+            // A defeat or a subdual collects a city bounty on the identity the player shows. A duel never pays one.
+            CityBounties.ClaimOnFall(player, hostile, isDuelFall);
+
+            if (isDuelFall)
             {
                 ApplySubdual(player, PvpCombat.GetControllingPlayer(hostile));
             }

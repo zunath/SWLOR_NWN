@@ -10,9 +10,12 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 25 and server migration 30.
+    // Production has run player migration 25 and server migration 30. The next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion; update these at each post-release cleanup.
     private const int ReleasedPlayerVersion = 25;
     private const int ReleasedServerVersion = 30;
+    private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
+    private const int NextServerVersion = ReleasedServerVersion + 1;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
@@ -26,7 +29,8 @@ public class MigrationDataTests
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
                 CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") });
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion)
-            .Should().BeEmpty("the next release adds one combined player-item pass at the next version");
+            .Should().BeEmpty($"the next release adds one combined player-item pass as player migration {NextPlayerVersion}; " +
+                "when you add it, expect exactly that class here");
         CharacterMigrations.LatestVersion.Should().Be(ReleasedPlayerVersion);
     }
 
@@ -118,7 +122,8 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Should().BeEmpty("the next release adds one combined stored-item pass at the next version");
+        remaining.Should().BeEmpty($"the next release adds one combined stored-item pass as server migration {NextServerVersion}; " +
+            "when you add it, expect exactly that class here");
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

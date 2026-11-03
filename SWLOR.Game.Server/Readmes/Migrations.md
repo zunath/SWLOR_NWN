@@ -16,7 +16,7 @@ Sections: How migrations run · One migration per release · One pass per data s
 
 A release is a production deployment. Each release gets at most one server migration version and one player migration version.
 
-1. Find the newest server or player migration of the kind you need.
+1. Find the newest server or player migration of the kind you need. `MigrationDataTests` records the released versions (`ReleasedPlayerVersion`, `ReleasedServerVersion`) and the next ones; the cleanup after each release updates them. Feature branches may already claim a next version, so check open branches and ask the user which ships first.
 2. Ask the user whether it has shipped to production, unless they already said so in this task. Nothing in the repository proves deployment: GitHub release tags do not (the `2026-10-16` release contains server migration 27 and player migration 22, which were still unreleased afterwards).
 3. If it has not shipped, add your change to it (same version, same pass) instead of adding a version. If it has, add the next version; later changes before the next release go into that one.
 4. Folding into a migration that already shipped means production never runs the change, so never guess.

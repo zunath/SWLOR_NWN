@@ -377,6 +377,13 @@ them is not an option before facade removal (P2-Z).
   C5 `Random`, `Time`; C6 `Migration`; C7 UI (`Gui`, `ExtraHotbars`); C8 `DB`. Remaining small Core classes (`GameMath`,
   `ColorToken`, `TileMagic`, `AnimationPlayer`, `Menu`, the `Animation` and `Attribute` folders) are classified case by case
   with the item that touches them, or in one closing item.
+  **Decision (coordinator, 2026-11-03, from P2-C1): `Log` stays static in Phase 2.** It is a process-wide sink that must
+  work before the container exists (`Log.Register()` runs in `InitializeSWLORSystems`), on background threads (the combat
+  recorder's writer) and in projects without a container (CombatSim, characterization tests): a strict facade broke 46+
+  test fixtures, 112 CombatSim tests and crashed the test host. A tolerant facade with registration moved after the
+  container would risk dropping log lines written in between. Its home is decided in Phase 4 (most likely the hot-reload
+  host, next to the Redis connection, since loggers are process-lifetime). Converted services keep reaching it through
+  their `protected virtual` log wrappers.
 - **Wave D, the hot core (last, short freeze each):** Character (`StatusEffect`, `Skill`, `Perk`, then `Stat`),
   Abilities (`Ability`), Combat (`Combat`, split by responsibility as it converts).
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in

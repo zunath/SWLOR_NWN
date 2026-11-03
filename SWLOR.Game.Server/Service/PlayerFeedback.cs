@@ -1,6 +1,7 @@
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Entity;
-using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.MessagingService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -8,29 +9,27 @@ namespace SWLOR.Game.Server.Service
     /// Optional calculations and tester feedback can be hidden in Production.
     /// Gameplay outcomes, state changes, progression, and errors use the normal message APIs,
     /// even when they occur frequently. Frequency alone does not make a message diagnostic.
+    /// The logic lives in <see cref="IPlayerFeedbackService"/>; every member here forwards to the container's instance.
     /// </summary>
     public static class PlayerFeedback
     {
-        public static bool DiagnosticsEnabled => AreDiagnosticsEnabled(
-            ApplicationSettings.Get().ServerEnvironment,
-            ApplicationSettings.Get().ServerEnvironmentIsExplicit);
+        private static IPlayerFeedbackService Instance => FacadeAccessor.Resolve<IPlayerFeedbackService>();
+
+        public static bool DiagnosticsEnabled => Instance.DiagnosticsEnabled;
 
         public static bool AreDiagnosticsEnabled(ServerEnvironmentType environment, bool isExplicit)
         {
-            return isExplicit &&
-                   (environment == ServerEnvironmentType.Test || environment == ServerEnvironmentType.Development);
+            return Instance.AreDiagnosticsEnabled(environment, isExplicit);
         }
 
         public static void SendDiagnosticToPlayer(uint player, string message)
         {
-            if (DiagnosticsEnabled)
-                SendMessageToPC(player, message);
+            Instance.SendDiagnosticToPlayer(player, message);
         }
 
         public static void ShowDiagnosticFloatingText(string message, uint creature, bool displayToFaction = false)
         {
-            if (DiagnosticsEnabled)
-                FloatingTextStringOnCreature(message, creature, displayToFaction);
+            Instance.ShowDiagnosticFloatingText(message, creature, displayToFaction);
         }
 
         /// <summary>
@@ -39,22 +38,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool ShowCooldownFloatingText(uint player, string abilityName, string timeToWait)
         {
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return false;
-
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer?.Settings?.DisplayCooldownFloatingText != true)
-                return false;
-
-            const string lastSentVariable = "FEEDBACK_COOLDOWN_FLOATING_LAST_SENT";
-            var now = DateTime.UtcNow.Ticks;
-            long.TryParse(GetLocalString(player, lastSentVariable), out var lastSent);
-            if (!IsWarningDue(now, lastSent, 2))
-                return false;
-
-            SetLocalString(player, lastSentVariable, now.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            PlayerPlugin.FloatingTextStringOnCreature(player, player, ColorToken.Yellow($"{abilityName}: {timeToWait}"), false);
-            return true;
+            return Instance.ShowCooldownFloatingText(player, abilityName, timeToWait);
         }
 
         /// <summary>
@@ -63,61 +47,32 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void SendWarningToPlayer(uint player, string warningKey, string message, int intervalSeconds = 60)
         {
-            if (!GetIsPC(player) || !TryBeginWarning(player, warningKey, intervalSeconds))
-                return;
-
-            SendMessageToPC(player, message);
+            Instance.SendWarningToPlayer(player, warningKey, message, intervalSeconds);
         }
 
         /// <summary>
         /// Reports a creature's state to nearby players, including state changes on NPCs.
         /// Repeated notices share a limit on the source creature rather than on each observer.
         /// </summary>
-        public static void SendWarningNearby(uint creature, string warningKey, Messaging.BuildMessageDelegate buildMessage,
+        public static void SendWarningNearby(uint creature, string warningKey, BuildMessageDelegate buildMessage,
             int intervalSeconds = 60, float range = 10f)
         {
-            if (!GetIsObjectValid(creature) || buildMessage == null || !TryBeginWarning(creature, warningKey, intervalSeconds))
-                return;
-
-            Messaging.SendMessageNearbyToPlayers(creature, buildMessage, range);
-        }
-
-        private static bool TryBeginWarning(uint creature, string warningKey, int intervalSeconds)
-        {
-            var variable = "FEEDBACK_WARNING_" + warningKey;
-            var now = DateTime.UtcNow.Ticks;
-            long.TryParse(GetLocalString(creature, variable), out var lastSent);
-            if (!DiagnosticsEnabled && !IsWarningDue(now, lastSent, intervalSeconds))
-                return false;
-
-            SetLocalString(creature, variable, now.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            return true;
+            Instance.SendWarningNearby(creature, warningKey, buildMessage, intervalSeconds, range);
         }
 
         public static bool IsWarningDue(long now, long lastSent, int intervalSeconds)
         {
-            return lastSent <= 0 || now < lastSent ||
-                   now - lastSent >= TimeSpan.FromSeconds(Math.Max(0, intervalSeconds)).Ticks;
+            return Instance.IsWarningDue(now, lastSent, intervalSeconds);
         }
 
         public static string BuildResourceRestoredMessage(int restored, string resource)
         {
-            return restored > 0 ? $"Restored {restored} {resource}." : null;
+            return Instance.BuildResourceRestoredMessage(restored, resource);
         }
 
         public static void SendResourceRestored(uint creature, int restored, string resource)
         {
-            if (!DiagnosticsEnabled || restored <= 0 || !GetIsObjectValid(creature))
-                return;
-
-            var receiver = GetIsPC(creature) ? creature : GetMaster(creature);
-            if (!GetIsObjectValid(receiver) || !GetIsPC(receiver) || GetIsDM(receiver))
-                return;
-
-            var message = BuildResourceRestoredMessage(restored, resource);
-            if (receiver != creature)
-                message = $"{PlayerName.GetDisplayName(receiver, creature)}: {message}";
-            SendMessageToPC(receiver, ColorToken.Combat(message));
+            Instance.SendResourceRestored(creature, restored, resource);
         }
     }
 }

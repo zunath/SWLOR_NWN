@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
@@ -32,9 +33,20 @@ public class ChatCommandServiceTests
     private IDisposable _pluginScope = null!;
     private string? _previousAdminKey;
 
+    // The authorization lookup runs through the Authorization facade, which resolves the service from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _previousAdminKey = Environment.GetEnvironmentVariable("SWLOR_SUPER_ADMIN_CD_KEY");
         Environment.SetEnvironmentVariable("SWLOR_SUPER_ADMIN_CD_KEY", AdminCdKey);
 
@@ -52,6 +64,7 @@ public class ChatCommandServiceTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _pluginScope.Dispose();
         _engineScope.Dispose();
         Environment.SetEnvironmentVariable("SWLOR_SUPER_ADMIN_CD_KEY", _previousAdminKey);

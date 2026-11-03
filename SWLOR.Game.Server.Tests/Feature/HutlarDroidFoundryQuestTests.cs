@@ -16,10 +16,6 @@ public class HutlarDroidFoundryQuestTests
 {
     private const string QuestId = "fdy_shut_line";
     private const string Giver = "fdy_kesa";
-    private object _originalItemNames = null!;
-
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
 
     private static string Root
     {
@@ -60,14 +56,12 @@ public class HutlarDroidFoundryQuestTests
                 return document.RootElement.GetProperty("LocalizedName").GetProperty("value")
                     .TryGetProperty("0", out var name) ? name.GetString() ?? string.Empty : string.Empty;
             });
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
     public void RestoreItemNames()
     {
-        ItemNameCache.SetValue(null, _originalItemNames);
         _facades.Dispose();
     }
 

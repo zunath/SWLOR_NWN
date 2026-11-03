@@ -14,12 +14,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [NonParallelizable]
 public class SmugglersStarlaneTests
 {
-    private object _originalItemNames = null!;
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
-
     [OneTimeSetUp]
     public void LoadItemNamesWithoutAnEngine()
     {
@@ -29,17 +25,15 @@ public class SmugglersStarlaneTests
             NPCGroup.CacheData();
         }
 
-        _originalItemNames = ItemNameCache.GetValue(null)!;
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
                 JObject.Parse(File.ReadAllText(path))["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty);
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
     public void RestoreItemNames()
     {
-        ItemNameCache.SetValue(null, _originalItemNames);
         _facades.Dispose();
     }
 

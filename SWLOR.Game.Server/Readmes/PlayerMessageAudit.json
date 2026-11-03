@@ -953,21 +953,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
-    "Line": 69,
+    "Line": 169,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 189,
     "Member": "AddCivicExchange",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
-    "Line": 87,
+    "Line": 207,
     "Member": "OpenBank",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
-    "Line": 95,
+    "Line": 111,
+    "Member": "SendAwayPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
+    "Line": 142,
     "Member": "PlacePageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
@@ -2402,49 +2416,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 157,
+    "Line": 158,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You are the mayor of this city and cannot revoke your citizenship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 211,
+    "Line": 214,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your citizenship has been revoked!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 224,
+    "Line": 227,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"5000 credits are needed to register as a citizen.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 231,
+    "Line": 234,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your character must be 30 days or older to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 237,
+    "Line": 240,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You must have acquired a minimum of 100 skill ranks to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 257,
+    "Line": 262,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You became a citizen of {dbCity.CustomName}!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 275,
+    "Line": 280,
     "Member": "PayTaxes",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have any credits.\", Player, false)"
@@ -4803,14 +4817,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 634,
+    "Line": 719,
     "Member": "Notify",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 654,
+    "Line": 739,
     "Member": "DeliverNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
@@ -5321,7 +5335,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Farming.cs",
-    "Line": 403,
+    "Line": 428,
     "Member": "OnPlotRetrieved",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"

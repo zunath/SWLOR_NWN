@@ -61,7 +61,7 @@ Neither design below needs new format work.
 
 Four of these drive the designs:
 
-- **The Tag is the whole wiring.** `Spawn.cs` matches a waypoint's tag against the declared spawn
+- **The Tag is the whole wiring.** `Domain/Creatures/SpawnService.cs` matches a waypoint's tag against the declared spawn
   table IDs; `GetWaypointByTag` resolves travel and respawn points by tag; a trigger or door's
   `LinkedTo` names a tag. Nothing else on a waypoint is read at runtime. Where the game declares a
   closed set of tags, a free-text box would leave the entire object unvalidated.

@@ -167,8 +167,7 @@ public static class AbandonedStationDockMasterEngineTests
         }
     }
 
-    private static object SpawnState(string name) =>
-        typeof(Spawn).GetField(name, BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+    private static object SpawnState(string name) => SpawnInternals.Field(name);
 
     private static void ResetStationSpawns(EngineTestContext ctx, uint station)
     {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NWN.Native.API;
@@ -38,10 +37,8 @@ public static class CreatureHeartbeatEngineTests
             ctx.AssertEqual(ScriptName.OnCreatureHeartbeatAfter,
                 GetEventScript(guildmaster, EventScript.Creature_OnHeartbeat),
                 "The deployed Engineering Guild Master palette selects the managed heartbeat.");
-            var adjust = typeof(Spawn).GetMethod("AdjustScripts", BindingFlags.Static | BindingFlags.NonPublic);
-            ctx.Assert(adjust != null, "Spawn normalization is available to the regression fixture.");
-            adjust.Invoke(null, new object[] { guildmaster });
-            adjust.Invoke(null, new object[] { ordinaryNpc });
+            SpawnInternals.Invoke("AdjustScripts", guildmaster);
+            SpawnInternals.Invoke("AdjustScripts", ordinaryNpc);
             ctx.AssertEqual(ScriptName.OnCreatureHeartbeatAfter,
                 GetEventScript(guildmaster, EventScript.Creature_OnHeartbeat),
                 "Respawn/DM-spawn normalization retains the managed heartbeat.");

@@ -37,6 +37,7 @@
     { "name": "Quest", "domain": "Quests", "extras": [ { "facade": "QuestService.QuestEncounter" } ] },
     { "name": "QuestContractBoard", "domain": "Quests" },
     { "name": "Shuttle", "domain": "World" },
+    { "name": "Spawn", "domain": "Creatures" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Traps", "domain": "World" },
     { "name": "Weather", "domain": "World" }

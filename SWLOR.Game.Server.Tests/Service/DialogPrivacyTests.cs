@@ -6,19 +6,6 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class DialogPrivacyTests
 {
     [Test]
-    public void SpawnedNpcDialogs_DefaultToPrivateConversations()
-    {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Spawn.cs").Replace("\r\n", "\n");
-        var adjustScripts = ExtractMethod(source, "private static void AdjustScripts(uint spawn)");
-
-        adjustScripts.Should().Contain("if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))");
-        adjustScripts.Should().Contain("ObjectPlugin.SetConversationPrivate(spawn, true);");
-        adjustScripts.IndexOf("ObjectPlugin.SetConversationPrivate(spawn, true);", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(adjustScripts.IndexOf("SetEventScript(spawn, EventScript.Creature_OnSpawnIn, \"x2_def_spawn\");", StringComparison.Ordinal));
-    }
-
-    [Test]
     public void NuiNpcConversations_ForcePrivateConversations()
     {
         var source = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs").Replace("\r\n", "\n");

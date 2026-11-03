@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<INPCGroupService, NPCGroupService>();
+            services.AddSingleton<ISpawnService, SpawnService>();
 
             // Economy
             services.AddSingleton<IBankService, BankService>();

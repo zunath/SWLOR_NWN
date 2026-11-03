@@ -24,8 +24,8 @@ internal static class StoredItemSweep
 
     internal static void Migrate(int version)
     {
-        var progress = new ServerMigrationProgress(version, CountSections());
         var space = version >= LegacySpaceItemsVersion ? new LegacySpaceItemSweep(version) : null;
+        var progress = new ServerMigrationProgress(version, CountSections(space != null));
         var changed = Sweep(new ParallelStoredItemPass(progress), SavedDataStoredItemConverter.Instance, space);
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
         if (space == null)
@@ -36,7 +36,13 @@ internal static class StoredItemSweep
             $"{totals.ConfigurationModulesRefunded} configuration modules refunded for {totals.Credits} credits; {paid} owners paid or given designs.", true);
     }
 
-    private static (string Name, int Count)[] CountSections() => new[]
+    private static (string Name, int Count)[] CountSections(bool overflow)
+    {
+        var sections = BaseSections();
+        return overflow ? sections.Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray() : sections;
+    }
+
+    private static (string Name, int Count)[] BaseSections() => new[]
     {
         ServerMigrationProgress.CountRecords<InventoryItem>(),
         ServerMigrationProgress.CountRecords<MarketItem>(),
@@ -119,6 +125,12 @@ internal static class StoredItemSweep
         });
         changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems, space));
         changed += pass.Process<QuestContractDelivery>(delivery => MigrateContractItems(converter, delivery.Items, space));
+        // Overflow storage holds items earlier character upgrades could not keep, so retired ship deeds and modules can wait
+        // there unclaimed. Only the space rule runs on it: the release's other item rules already ran on those items.
+        if (space != null)
+            changed += pass.Process<OverflowItem>(item => space.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(OverflowItem)}:{item.Id}",
+                (blueprint, resref) => (item.Name, item.Tag, item.Resref) = (blueprint.Name, resref, resref),
+                credits => space.QueueRemoval<OverflowItem>(item.Id, item.PlayerId, credits)), space.Flush);
         return changed;
     }
 

@@ -20,6 +20,20 @@ public class CityAffairsWindowTests
     }
 
     [Test]
+    public void TheCityAffairsWindowOpensWithinA1280x720ClientWithRoomForEveryTab()
+    {
+        using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();
+
+        var geometry = new CityAffairsDefinition().BuildWindow().InitialGeometry;
+
+        geometry.Height.Should().BeLessThanOrEqualTo(680f, "a window taller than the client opens with its title bar off the screen");
+        geometry.Width.Should().BeLessThanOrEqualTo(1280f);
+        // The client draws each of the four tabs about 148 pixels wide whatever width the tab row asks for, and the content
+        // column loses about 64 pixels to its margin and scrollbar: a narrower window clips the Bounties tab and scrolls the bar.
+        geometry.Width.Should().BeGreaterThanOrEqualTo(4 * 148f + 64f);
+    }
+
+    [Test]
     public void ManageCityBuildsWithoutLayoutWarnings()
     {
         using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();

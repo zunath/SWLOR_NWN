@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Plant these in a garden plot to grow Viscaran Lemons. Needs Crop Management I."
+    }
   },
   "Description": {
     "type": "cexolocstring",

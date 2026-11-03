@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<CityAffairsViewModel> _builder = new();
 
+        // Fits a 1280x720 client with the title bar visible. The tab row is as wide as its four tabs: the client draws each tab
+        // about 148 pixels wide whatever width the row asks for, so a narrower window clips the last tab and scrolls the bar.
+        private const float WindowWidth = 720f;
+        private const float WindowHeight = 680f;
+        private const float TabBarWidth = 600f;
+
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
         private const float ContentPanelWidth = 560f;
@@ -38,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CityAffairs)
-                .SetInitialGeometry(0, 0, 610f, 640f)
+                .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("City Affairs")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -59,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Story Request")
                         .AddOption("Bounties")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(540f)
+                        .SetWidth(TabBarWidth)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(CityAffairsViewModel.TabContentElement);

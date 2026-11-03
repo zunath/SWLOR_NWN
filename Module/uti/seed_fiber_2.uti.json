@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Plant these in a garden plot to grow Flawed Fiberplast. Needs Crop Management II."
+    }
   },
   "Description": {
     "type": "cexolocstring",

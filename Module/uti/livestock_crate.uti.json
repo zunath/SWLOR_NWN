@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An animal packed for travel. It is paused while crated. Place it in a corral to carry on raising it."
+    }
   },
   "Description": {
     "type": "cexolocstring",

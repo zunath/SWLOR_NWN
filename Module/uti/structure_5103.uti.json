@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A large tent for the traveling merchants who visit a city. Deploy it outdoors in a city: each city may have one. Each week the travelers move to a different city with a lodge, and the city collects its sales tax on what they sell."
+    }
   },
   "Description": {
     "type": "cexolocstring",

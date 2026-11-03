@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A young tree for a woodlot. Plant it in an outdoor garden plot in a city: after 3 days it can be harvested for 4 aracia wood."
+    }
   },
   "Description": {
     "type": "cexolocstring",

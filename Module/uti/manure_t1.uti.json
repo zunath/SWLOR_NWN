@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dung from tier 1 livestock (Warocas). Mixed with Distilled Water, it makes Fertilizer I."
+    }
   },
   "Description": {
     "type": "cexolocstring",

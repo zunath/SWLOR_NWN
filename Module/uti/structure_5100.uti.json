@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A plot of tilled earth where a seed grows into a crop. Deploy it outdoors in a city, or inside a house."
+    }
   },
   "Description": {
     "type": "cexolocstring",

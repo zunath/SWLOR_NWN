@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A vat that cultures enzymes for breeders. Deploy it inside a house in a city. Give it 2 crops, 1 manure and Distilled Water, and 2 days later it makes one enzyme of the type and color you pick."
+    }
   },
   "Description": {
     "type": "cexolocstring",

@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Add it when you plant a tier 1 crop in a garden plot to get 1 more item from the harvest."
+    }
   },
   "Description": {
     "type": "cexolocstring",

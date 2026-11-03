@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An open pen for a city's animals. Deploy it on open ground in a planet city: it holds 3 animals, and a city can have 2 corrals for each city level."
+    }
   },
   "Description": {
     "type": "cexolocstring",

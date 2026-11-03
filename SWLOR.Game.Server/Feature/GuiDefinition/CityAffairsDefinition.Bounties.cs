@@ -12,8 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public partial class CityAffairsDefinition
     {
         private const float BountyRowHeight = 28f;
-        private const float BountyListHeight = 150f;
-        private const float BountyNoteHeight = 56f;
+        private const float BountyListHeight = 112f;
+        private const float BountyNoteHeight = 64f;
+        private const float BountyHeaderWidth = 130f;
         private const float RewardWidth = 200f;
 
         private static void AddBountiesTab(GuiGroup<CityAffairsViewModel> host)
@@ -31,11 +32,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(BountyNoteHeight);
                 });
 
+                // The empty-list note shares the heading's row, so the page stays short enough for Post Bounty to show
+                // without scrolling at the default window size.
                 content.AddRow(row =>
                 {
                     row.AddLabel()
                         .SetText("Open bounties")
                         .SetColor(GuiColor.Cyan)
+                        .SetWidth(BountyHeaderWidth)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    row.AddLabel()
+                        .BindIsVisible(model => model.IsBountyListEmpty)
+                        .SetText("The city has no open bounties.")
                         .SetHeight(LabelHeight)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 });
@@ -55,15 +64,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindRowCount(model => model.BountyNames)
                         .SetRowHeight(BountyRowHeight);
                     row.SetHeight(BountyListHeight);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.BindIsVisible(model => model.IsBountyListEmpty);
-                    row.AddLabel()
-                        .SetText("The city has no open bounties.")
-                        .SetHeight(LabelHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 });
 
                 content.AddRow(row =>
@@ -125,18 +125,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetMaxLength(12)
                         .SetWidth(RewardWidth);
                     row.AddSpacer();
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddSpacer();
                     row.AddButton()
                         .SetText("Post Bounty")
                         .BindIsEnabled(model => model.CanPostBounty)
                         .SetTooltip("Holds the reward out of the treasury until someone collects it or it runs out after 7 days. The bounty is public in the Gazette, and the player is told.")
                         .BindOnClicked(model => model.OnClickPostBounty())
                         .SetHeight(ButtonHeight);
-                    row.AddSpacer();
                 });
             });
         }

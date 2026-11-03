@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dung from tier 4 livestock (Womp Rat). Mixed with Distilled Water, it makes Fertilizer IV."
+    }
   },
   "Description": {
     "type": "cexolocstring",

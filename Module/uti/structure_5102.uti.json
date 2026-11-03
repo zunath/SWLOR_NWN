@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A stall for a city market. Deploy it outdoors in a city, up to one for each city level, and pick the stock its vendor sells: general goods, crafting supplies or decor."
+    }
   },
   "Description": {
     "type": "cexolocstring",

@@ -10,6 +10,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<ElectionViewModel> _builder = new();
 
+        // Fits a 1280x720 client with the title bar visible (a taller window opens with its top edge off the screen). Each
+        // step's panel scrolls, so the platform step, taller than the window, stays reachable down to its buttons.
+        private const float WindowWidth = 580f;
+        private const float WindowHeight = 640f;
+
         private const float ContentPanelWidth = 520f;
         private const float LabelHeight = 20f;
         private const float InstructionsHeight = 130f;
@@ -33,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.Election)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 580f, 800f)
+                .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Election")
                 .DefinePartialView(ElectionViewModel.MainContentPartial, AddMainContent)
                 .DefinePartialView(ElectionViewModel.PlatformPartial, AddPlatformContent);
@@ -52,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(content =>
                         {
                             content.AddRow(line =>
@@ -188,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(content =>
                         {
                             content.AddRow(line =>

@@ -71,6 +71,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isClosing = false;
             _lastDialogueSegmentLimit = 0;
 
+            // Older saved sizes predate the fixed-height reply list; a shorter window would squeeze the portrait.
+            if (Geometry != null && Geometry.Height < ConversationWindowDefinition.MinimumWindowHeight)
+                Geometry = new GuiRectangle(Geometry.X, Geometry.Y, Geometry.Width, ConversationWindowDefinition.MinimumWindowHeight);
+
             try
             {
                 RefreshConversation();

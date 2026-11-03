@@ -7,6 +7,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public sealed class ConversationWindowDefinition : IGuiWindowDefinition
     {
+        /// <summary>Replies the list shows without scrolling; more replies scroll by whole rows.</summary>
+        private const int VisibleChoiceRows = 5;
+        private const float ChoiceRowHeight = 42f;
+        private const float ChoiceRowSpacing = 4f;
+        private const float ChoiceListHeight = VisibleChoiceRows * (ChoiceRowHeight + ChoiceRowSpacing) + ChoiceRowSpacing;
+
+        /// <summary>
+        /// The shortest window that fits the speaker portrait above a full reply list. Saved sizes below this
+        /// are raised when a conversation opens.
+        /// </summary>
+        public const float MinimumWindowHeight = 600f;
+
         private readonly GuiWindowBuilder<ConversationViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -15,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(false)
                 .SetIsClosable(true)
-                .SetInitialGeometry(0f, 0f, 650f, 520f)
+                .SetInitialGeometry(0f, 0f, 650f, MinimumWindowHeight)
                 .SetTitle("Conversation")
                 .BindOnClosed(model => model.OnWindowClosed())
                 .AddColumn(root =>
@@ -93,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         })
                             .BindRowCount(model => model.ChoiceTexts)
-                            .SetRowHeight(42f)
+                            .SetRowHeight(ChoiceRowHeight)
+                            .SetHeight(ChoiceListHeight)
                             .SetShowBorders(false)
                             .SetScrollbars(NuiScrollbars.Y);
                     });

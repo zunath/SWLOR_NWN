@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private const float ContentPanelWidth = 560f;
         private const float MutationRailWidth = 300f;
-        private const float StageBoxHeight = 64f;
+        private const float StageBoxHeight = 56f;
         private const float StageBoxWidth = 178f;
         private const float PurityRowHeight = 22f;
         private const float PurityRowPitch = 26f;
@@ -123,6 +123,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(22f)
                     .SetColor(GuiColor.Cyan)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddButton()
+                    .SetText("Complete job")
+                    .SetWidth(150f)
+                    .SetTooltip("Hatch the egg. Shows the outcome odds before you confirm.")
+                    .BindOnClicked(model => model.OnClickCompleteJob())
+                    .BindIsEnabled(model => model.IsCompleteJobEnabled);
             });
             col.AddRow(row =>
             {
@@ -150,17 +156,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(84f);
             });
             BuildPurities(col);
-            col.AddRow(row =>
-            {
-                row.AddLabel()
-                    .SetText("Completing gives you the egg.")
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                row.AddButton()
-                    .SetText("Complete job")
-                    .SetWidth(150f)
-                    .BindOnClicked(model => model.OnClickCompleteJob())
-                    .BindIsEnabled(model => model.IsCompleteJobEnabled);
-            });
         }
 
         private static void BuildHeader(GuiColumn<IncubatorViewModel> col)
@@ -256,14 +251,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 AddEnzymeSlot(row, "Hydrolase",
+                    model => model.HydrolaseTitle,
                     model => model.HydrolaseItemResref,
                     model => model.OnClickHydrolase(),
                     model => model.HydrolaseDetail);
                 AddEnzymeSlot(row, "Lyase",
+                    model => model.LyaseTitle,
                     model => model.LyaseItemResref,
                     model => model.OnClickLyase(),
                     model => model.LyaseDetail);
                 AddEnzymeSlot(row, "Isomerase",
+                    model => model.IsomeraseTitle,
                     model => model.IsomeraseItemResref,
                     model => model.OnClickIsomerase(),
                     model => model.IsomeraseDetail);
@@ -273,6 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private static void AddEnzymeSlot(
             GuiRow<IncubatorViewModel> row,
             string name,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> title,
             System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> icon,
             System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, System.Action>> onClick,
             System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> detail)
@@ -287,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             row.AddColumn(text =>
             {
                 text.AddRow(r => r.AddLabel()
-                    .SetText(name)
+                    .BindText(title)
                     .SetHeight(20f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left));
                 text.AddRow(r => r.AddLabel()

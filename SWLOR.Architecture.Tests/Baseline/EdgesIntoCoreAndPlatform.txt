@@ -211,20 +211,23 @@ WeaponDelay -> Platform/Core | 2
 
 # Companions -> Core (8 edges)
 BeastMastery -> ColorToken | 2
-BeastMastery -> DB | 9
+BeastMastery -> DB | 11
 BeastMastery -> Random | 4
 BeastMastery -> Time | 1
 Droid -> ColorToken | 1
 Droid -> Random | 18
-DroidEquipmentDiagnostics -> Log | 5
+DroidEquipmentDiagnostics -> Log | 1
 IncubationFieldNote -> Log | 1
 
-# Companions -> Platform (6 edges)
+# Companions -> Platform (9 edges)
+BeastMastery -> Platform/Composition | 1
 BeastMastery -> Platform/Core | 22
-BeastMastery -> Platform/Entity | 30
+BeastMastery -> Platform/Entity | 34
 BeastMastery -> Platform/Extension | 1
 Droid -> Platform/Core | 23
+DroidEquipmentDiagnostics -> Platform/Composition | 1
 DroidEquipmentDiagnostics -> Platform/Core | 5
+IncubationFieldNote -> Platform/Composition | 1
 IncubationFieldNote -> Platform/Core | 1
 
 # Core -> Platform (42 edges)
@@ -301,16 +304,19 @@ Feature/SpawnDefinition -> Animation | 2
 Feature/SpawnDefinition -> Cache | 1
 Feature/SpawnDefinition -> Random | 6
 Spawn -> Animation | 7
-Spawn -> Log | 3
+Spawn -> Log | 1
 Spawn -> Random | 4
 Spawn -> Walkmesh | 1
 
-# Creatures -> Platform (6 edges)
+# Creatures -> Platform (9 edges)
+AI -> Platform/Composition | 1
 AI -> Platform/Core | 24
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Core | 6
+NPCGroup -> Platform/Composition | 1
 NPCGroup -> Platform/Core | 1
 NPCGroup -> Platform/Extension | 1
+Spawn -> Platform/Composition | 1
 Spawn -> Platform/Core | 6
 
 # Economy -> Core (10 edges)
@@ -510,33 +516,40 @@ Feature/ItemDefinition -> GameMath | 4
 Feature/ItemDefinition -> Log | 5
 Feature/ItemDefinition -> Random | 3
 Feature/LootTableDefinition -> Random | 2
-Item -> DB | 1
+Item -> DB | 3
 ItemTrash -> Log | 2
-KeyItem -> DB | 4
+KeyItem -> DB | 6
 KeyItem -> ObjectVisibility | 1
-LightsaberWorkbench -> DB | 1
+LightsaberWorkbench -> DB | 3
 LightsaberWorkbench -> Log | 1
 Loot -> Log | 2
 Loot -> Random | 2
 OverflowStorage -> ColorToken | 1
-OverflowStorage -> DB | 4
+OverflowStorage -> DB | 6
 OverflowStorage -> Log | 2
 Wardrobe -> DB | 4
 
-# Items -> Platform (15 edges)
+# Items -> Platform (22 edges)
+EquipmentUnequip -> Platform/Composition | 1
 EquipmentUnequip -> Platform/Core | 1
 Feature/ItemDefinition -> Platform/Core | 3
 Feature/ItemDefinition -> Platform/Entity | 6
 Feature/ItemDefinition -> Platform/Enumeration | 1
 Feature/LootTableDefinition -> Platform/Core | 1
+Item -> Platform/Composition | 1
 Item -> Platform/Core | 4
 Item -> Platform/Entity | 1
+ItemTrash -> Platform/Composition | 1
+KeyItem -> Platform/Composition | 1
 KeyItem -> Platform/Core | 2
 KeyItem -> Platform/Entity | 4
 KeyItem -> Platform/Extension | 2
+LightsaberWorkbench -> Platform/Composition | 1
 LightsaberWorkbench -> Platform/Core | 1
 LightsaberWorkbench -> Platform/Entity | 1
+Loot -> Platform/Composition | 1
 Loot -> Platform/Core | 7
+OverflowStorage -> Platform/Composition | 1
 OverflowStorage -> Platform/Entity | 4
 Wardrobe -> Platform/Entity | 11
 
@@ -548,7 +561,7 @@ Platform/Native -> ColorToken | 2
 Platform/Native -> DB | 2
 Platform/Native -> Feature/MigrationDefinition | 1
 Platform/Native -> FrameProfiler | 3
-Platform/Native -> Log | 28
+Platform/Native -> Log | 30
 Platform/Native -> Random | 2
 
 # Quests -> Core (19 edges)
@@ -560,7 +573,7 @@ Quest -> Cache | 5
 Quest -> ColorToken | 3
 Quest -> Conversation | 1
 Quest -> ConversationMenu | 1
-Quest -> DB | 32
+Quest -> DB | 36
 Quest -> Log | 2
 Quest -> Time | 1
 QuestContract -> DB | 3
@@ -572,15 +585,16 @@ QuestContractBoard -> ColorToken | 3
 QuestContractBoard -> DB | 25
 QuestContractBoard -> Log | 10
 
-# Quests -> Platform (13 edges)
+# Quests -> Platform (14 edges)
 Faction -> Platform/Composition | 1
 Faction -> Platform/Core | 1
 Faction -> Platform/Entity | 2
 Faction -> Platform/Extension | 1
 Feature/QuestDefinition -> Platform/Entity | 21
+Quest -> Platform/Composition | 2
 Quest -> Platform/Core | 13
-Quest -> Platform/Entity | 39
-Quest -> Platform/Enumeration | 12
+Quest -> Platform/Entity | 43
+Quest -> Platform/Enumeration | 14
 QuestContract -> Platform/Entity | 11
 QuestContractBoard -> Platform/Composition | 1
 QuestContractBoard -> Platform/Core | 2
@@ -662,7 +676,7 @@ Gui -> Log | 1
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 21
 Feature/GuiDefinition -> Platform/Core | 161
-Feature/GuiDefinition -> Platform/Entity | 352
+Feature/GuiDefinition -> Platform/Entity | 350
 Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
@@ -691,7 +705,7 @@ Notes -> DB | 5
 Property -> BackgroundJob | 1
 Property -> ColorToken | 2
 Property -> ConversationMenu | 1
-Property -> DB | 42
+Property -> DB | 48
 Property -> Feature/MigrationDefinition | 1
 Property -> Log | 19
 Shuttle -> ColorToken | 4
@@ -704,7 +718,7 @@ Traps -> DB | 4
 Weather -> DB | 3
 Weather -> Log | 1
 
-# World -> Platform (44 edges)
+# World -> Platform (45 edges)
 Area -> Platform/Composition | 1
 Area -> Platform/Core | 4
 Area -> Platform/Entity | 1
@@ -728,11 +742,12 @@ Planet -> Platform/Composition | 1
 Planet -> Platform/Core | 1
 Planet -> Platform/Enumeration | 26
 Planet -> Platform/Extension | 1
+Property -> Platform/Composition | 1
 Property -> Platform/Core | 11
-Property -> Platform/Entity | 75
-Property -> Platform/Enumeration | 2
+Property -> Platform/Entity | 98
+Property -> Platform/Enumeration | 4
 Property -> Platform/Extension | 3
-Property -> Platform/Root | 3
+Property -> Platform/Root | 2
 Shuttle -> Platform/Composition | 1
 Shuttle -> Platform/Core | 6
 Shuttle -> Platform/Entity | 17

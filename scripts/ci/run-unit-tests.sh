@@ -76,9 +76,6 @@ exclusions_for() {
         # The EspionageWorkbench recipe is not in the repository's Design Bible workbook (the owner uploads Bible
         # changes).
         echo "CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible"
-        # master #3128 added a red closure notice to StarportFlightsDialog headers; the conversation architecture test
-        # forbids mixed inline header colors, so master fails its own test (file and test are identical on master).
-        echo "ConversationArchitectureTests.EveryDirectlyColoredCodeDrivenHeader_WrapsItsEntireTextInOneColor"
 
         # ---- Hak content tests that read SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability. The job
         # ---- fetches only those three (a full checkout is 11 GB and 160,000 files). These check models, textures,

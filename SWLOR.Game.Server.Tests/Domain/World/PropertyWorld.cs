@@ -93,7 +93,7 @@ public sealed class PropertyWorld : IDisposable
         _scopes.Add(ObjectPluginRuntime.Override(Objects));
 
         Db = new QueryableDBService();
-        Catalog = new PropertyCatalog(Areas);
+        Catalog = new PropertyCatalogService(Areas);
         if (cacheDefinitions)
             Catalog.CacheData();
 
@@ -121,7 +121,7 @@ public sealed class PropertyWorld : IDisposable
     public StubPlanets Planets { get; }
 
     /// <summary>The real definitions catalog, filled by the module cache handler.</summary>
-    public PropertyCatalog Catalog { get; }
+    public PropertyCatalogService Catalog { get; }
 
     /// <summary>The catalog the loader, city governance and service use: <see cref="Catalog"/> behind a recorder.</summary>
     public RecordingCatalog Recorded { get; }
@@ -314,11 +314,11 @@ public sealed class PropertyWorld : IDisposable
     /// The catalog behind a recorder of the structure-changed events. The actions behind an event call code that is not
     /// converted yet (the static database), so they run only when <see cref="RunActions"/> is set.
     /// </summary>
-    public sealed class RecordingCatalog : IPropertyCatalog
+    public sealed class RecordingCatalog : IPropertyCatalogService
     {
-        private readonly IPropertyCatalog _inner;
+        private readonly IPropertyCatalogService _inner;
 
-        public RecordingCatalog(IPropertyCatalog inner) => _inner = inner;
+        public RecordingCatalog(IPropertyCatalogService inner) => _inner = inner;
 
         /// <summary>The structure-changed events asked for, in order.</summary>
         public List<(StructureType Structure, StructureChangeType Change, WorldProperty Property, uint Placeable)> Events { get; } = new();
@@ -361,9 +361,9 @@ public sealed class PropertyWorld : IDisposable
     }
 
     /// <summary>The loader with the clock-driven batch scheduler replaced by a list the test runs by hand.</summary>
-    public sealed class LoaderUnderTest : PropertyLoader
+    public sealed class LoaderUnderTest : PropertyLoaderService
     {
-        public LoaderUnderTest(IDBService db, StubAreas areas, IPropertyCatalog catalog)
+        public LoaderUnderTest(IDBService db, StubAreas areas, IPropertyCatalogService catalog)
             : base(db, areas, catalog)
         {
         }
@@ -402,9 +402,9 @@ public sealed class PropertyWorld : IDisposable
             IDBService db,
             IAreaService area,
             IPlanetService planet,
-            IPropertyCatalog catalog,
-            IPropertyLoader loader,
-            IPropertyCityGovernance city)
+            IPropertyCatalogService catalog,
+            IPropertyLoaderService loader,
+            IPropertyCityGovernanceService city)
             : base(db, area, planet, catalog, loader, city)
         {
         }
@@ -419,9 +419,9 @@ public sealed class PropertyWorld : IDisposable
     }
 
     /// <summary>The city governance with the broadcast webhook a test names, not the environment's.</summary>
-    public sealed class CityUnderTest : PropertyCityGovernance
+    public sealed class CityUnderTest : PropertyCityGovernanceService
     {
-        public CityUnderTest(IDBService db, IPropertyCatalog catalog)
+        public CityUnderTest(IDBService db, IPropertyCatalogService catalog)
             : base(db, catalog)
         {
         }

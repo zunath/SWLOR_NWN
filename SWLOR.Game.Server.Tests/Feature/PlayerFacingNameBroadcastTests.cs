@@ -417,9 +417,9 @@ public class PlayerFacingNameBroadcastTests
         {
             Path.Combine("Service", "Property.cs"),
             Path.Combine("Domain", "World", "PropertyService.cs"),
-            Path.Combine("Domain", "World", "PropertyLoader.cs"),
-            Path.Combine("Domain", "World", "PropertyCatalog.cs"),
-            Path.Combine("Domain", "World", "PropertyCityGovernance.cs"),
+            Path.Combine("Domain", "World", "PropertyLoaderService.cs"),
+            Path.Combine("Domain", "World", "PropertyCatalogService.cs"),
+            Path.Combine("Domain", "World", "PropertyCityGovernanceService.cs"),
         }.Select(relative => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", relative))));
         propertySource.Should().NotContain("$\"{GetName(player)}'s Apartment\"");
         propertySource.Should().NotContain("$\"{GetName(player)}'s Starship\"");

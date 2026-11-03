@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// world's list of batches, run by hand, so a test sees exactly what one batch does.
 /// </summary>
 [TestFixture]
-public class PropertyLoaderTests
+public class PropertyLoaderServiceTests
 {
     private const uint Player = 5001;
     private const string PlayerId = "player-uuid-1";
@@ -83,7 +83,7 @@ public class PropertyLoaderTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyLoader(db, _world.Areas, _world.Recorded);
+        _ = new PropertyLoaderService(db, _world.Areas, _world.Recorded);
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();
@@ -106,9 +106,9 @@ public class PropertyLoaderTests
         ran.Should().BeTrue("the default seam hands the batch to the static scheduler");
     }
 
-    private sealed class RealSchedulerLoader : PropertyLoader
+    private sealed class RealSchedulerLoader : PropertyLoaderService
     {
-        public RealSchedulerLoader(IDBService db, IAreaService areas, IPropertyCatalog catalog)
+        public RealSchedulerLoader(IDBService db, IAreaService areas, IPropertyCatalogService catalog)
             : base(db, areas, catalog)
         {
         }

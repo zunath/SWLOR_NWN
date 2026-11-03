@@ -110,81 +110,317 @@ public class ConvertedServiceRulesTests
         problems.Should().HaveCount(3);
     }
 
-    // ---- the parts of a split service
+    // ---- extras: further static facades and parts
+
+    private const string TrackerFacade = "AchievementService.AchievementTracker";
+
+    private static ConvertedService WithExtraFacades(params string[] facades) =>
+        new("Achievement", "Character") { Extras = facades.Select(ExtraPiece.Facade).ToArray() };
+
+    private static ConvertedService WithParts(params string[] parts) =>
+        new("Stat", "Character") { Extras = parts.Select(ExtraPiece.Part).ToArray() };
 
     [Test]
-    public void A_split_service_lists_its_parts_sorted_and_named_after_the_service()
+    public void The_extra_facades_of_a_service_are_read_from_the_list()
     {
-        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "StatCache", "StatEffects" ] } ] }""");
+        var list = ConvertedServiceList.Parse($$"""
+            { "services": [
+                { "name": "Achievement", "domain": "Character", "extras": [ { "facade": "{{TrackerFacade}}" } ] },
+                { "name": "Stat", "domain": "Character" } ] }
+            """);
 
         list.Problems.Should().BeEmpty();
-        var service = list.Services.Single();
-        service.PartNames.Should().Equal("StatCache", "StatEffects");
-        service.PartInterface("StatCache").ToString().Should().Be("SWLOR.Game.Server.Domain.Character.IStatCache");
-        service.PartInstance("StatCache").ToString().Should().Be("SWLOR.Game.Server.Domain.Character.StatCache");
+        var achievement = list.Services[0];
+        achievement.ExtraFacades.Should().Equal(TrackerFacade);
+        achievement.Facades.Select(facade => facade.ToString()).Should().Equal(
+            "SWLOR.Game.Server.Service.Achievement",
+            "SWLOR.Game.Server.Service.AchievementService.AchievementTracker");
+        list.Services[1].ExtraFacades.Should().BeEmpty();
+        list.Services[1].Pieces.Should().ContainSingle();
     }
 
     [Test]
-    public void A_part_that_the_cross_domain_guard_would_not_count_as_the_service_is_reported()
+    public void An_extra_facade_is_named_by_convention_after_its_type()
     {
-        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "Cache", "Statistics", "StatService", "Stat", "Bad Name" ] } ] }""");
+        var pieces = WithExtraFacades(TrackerFacade).Pieces;
 
-        list.Problems.Should().Contain(problem => problem.Contains("'Cache'") && problem.Contains("must start with the service name"));
-        list.Problems.Should().Contain(problem => problem.Contains("'Statistics'") && problem.Contains("followed by a capital letter"));
-        list.Problems.Should().Contain(problem => problem.Contains("'StatService'") && problem.Contains("StatService itself"));
-        list.Problems.Should().Contain(problem => problem.Contains("'Stat'") && problem.Contains("must start with the service name"));
-        list.Problems.Should().Contain(problem => problem.Contains("'Bad Name' is not a plain part name"));
+        pieces.Should().HaveCount(2);
+        pieces[0].Label.Should().Be("Achievement");
+        pieces[1].Label.Should().Be($"Achievement (extra facade {TrackerFacade})");
+        pieces[1].Facade!.Value.ToString().Should().Be("SWLOR.Game.Server.Service.AchievementService.AchievementTracker");
+        pieces[1].Interface.ToString().Should().Be("SWLOR.Game.Server.Domain.Character.IAchievementTrackerService");
+        pieces[1].Instance.ToString().Should().Be("SWLOR.Game.Server.Domain.Character.AchievementTrackerService");
     }
 
     [Test]
-    public void The_parts_must_be_sorted_without_duplicates()
+    public void An_extra_facade_may_sit_directly_in_the_service_namespace_or_deeper()
     {
-        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "StatEffects", "StatCache", "StatCache" ] } ] }""");
-
-        list.Problems.Should().Contain(problem => problem.Contains("'StatCache' of Stat is out of order"));
-        list.Problems.Should().Contain(problem => problem.Contains("'StatCache' of Stat is listed twice"));
+        ConvertedPieces.FacadeKey("Tracker").ToString().Should().Be("SWLOR.Game.Server.Service.Tracker");
+        ConvertedPieces.FacadeKey("AchievementService.Sub.Tracker").ToString().Should().Be("SWLOR.Game.Server.Service.AchievementService.Sub.Tracker");
     }
 
     [Test]
-    public void A_service_without_parts_has_none()
+    public void A_malformed_repeated_or_unsorted_facade_name_is_a_problem_of_the_list()
     {
-        new ConvertedService("Achievement", "Character").PartNames.Should().BeEmpty();
+        var list = ConvertedServiceList.Parse("""
+            { "services": [ { "name": "Achievement", "domain": "Character",
+                "extras": [ { "facade": "AchievementService.Beta" }, { "facade": "AchievementService.Alpha" }, { "facade": "AchievementService.Alpha" },
+                            { "facade": "bad name" }, { "facade": "AchievementService..Gamma" }, { "facade": "" } ] } ] }
+            """);
+
+        list.Problems.Should().Contain(problem => problem.Contains("Alpha of Achievement is out of order") && problem.Contains("extra facade"));
+        list.Problems.Should().Contain(problem => problem.Contains("Achievement lists the extra facade AchievementService.Alpha twice"));
+        list.Problems.Should().Contain(problem => problem.Contains("'bad name'") && problem.Contains("not a plain type name"));
+        list.Problems.Should().Contain(problem => problem.Contains("'AchievementService..Gamma'") && problem.Contains("not a plain type name"));
+        list.Problems.Should().Contain(problem => problem.Contains("'' (an extra facade of Achievement)"));
+        list.Services[0].ExtraFacades.Should().Equal("AchievementService.Beta", "AchievementService.Alpha");
     }
 
     [Test]
-    public void A_split_service_with_every_piece_and_part_passes()
+    public void An_extra_facade_in_the_namespace_of_its_service_has_no_list_problems()
     {
-        var service = new ConvertedService("Stat", "Character", ["StatCache"]);
+        ConvertedServiceRules.ListProblems(ListOf(WithExtraFacades(TrackerFacade, "AchievementService.Sub.AchievementZed")), DomainMap.Parse(MapJson)).Should().BeEmpty();
+    }
+
+    [Test]
+    public void An_extra_facade_outside_the_namespace_of_its_service_is_reported()
+    {
+        var problems = ConvertedServiceRules.ListProblems(
+            ListOf(WithExtraFacades("StatService.StatTracker", "Helper")),
+            DomainMap.Parse(MapJson));
+
+        problems.Should().Contain(problem => problem.Contains("StatService.StatTracker") && problem.Contains("belongs to Stat, not to Achievement"));
+        problems.Should().Contain(problem => problem.Contains("Helper") && problem.Contains("belongs to Helper, not to Achievement") && problem.Contains("Service.AchievementService"));
+    }
+
+    [Test]
+    public void The_main_facade_cannot_be_listed_as_an_extra_one()
+    {
+        var problems = ConvertedServiceRules.ListProblems(ListOf(WithExtraFacades("Achievement")), DomainMap.Parse(MapJson));
+
+        problems.Should().ContainSingle().Which.Should().Contain("is the main facade of Achievement");
+    }
+
+    [Test]
+    public void An_extra_facade_whose_service_class_would_not_count_as_the_service_is_reported()
+    {
+        var problems = ConvertedServiceRules.ListProblems(ListOf(WithExtraFacades("AchievementService.Tracker")), DomainMap.Parse(MapJson));
+
+        problems.Should().HaveCount(2, "the interface and the instance class are both misplaced");
+        problems.Should().OnlyContain(problem => problem.Contains("would count as Platform/Domain.Character, not as Achievement") && problem.Contains("starts with Achievement"));
+    }
+
+    [Test]
+    public void A_service_with_all_three_pieces_of_every_facade_passes()
+    {
+        var service = WithExtraFacades(TrackerFacade);
+        var extra = service.Pieces[1];
         var facts = FactsOf(
             new TypeFact(service.Facade, false, true, true, []),
             new TypeFact(service.Interface, true, false, false, []),
             new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
-            new TypeFact(service.PartInterface("StatCache"), true, false, false, []),
-            new TypeFact(service.PartInstance("StatCache"), false, false, true, [service.PartInterface("StatCache").ToString()]));
+            new TypeFact(extra.Facade!.Value, false, true, true, []),
+            new TypeFact(extra.Interface, true, false, false, []),
+            new TypeFact(extra.Instance, false, false, true, [extra.Interface.ToString()]));
 
         ConvertedServiceRules.MissingPieces(ListOf(service), facts).Should().BeEmpty();
     }
 
     [Test]
-    public void A_missing_or_misshapen_part_is_named()
+    public void An_extra_facade_that_does_not_exist_is_reported_with_its_pieces()
     {
-        var service = new ConvertedService("Stat", "Character", ["StatCache", "StatEffects", "StatTiming"]);
+        var service = WithExtraFacades(TrackerFacade);
+        var facts = FactsOf(
+            new TypeFact(service.Facade, false, true, true, []),
+            new TypeFact(service.Interface, true, false, false, []),
+            new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]));
+
+        var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
+
+        problems.Should().HaveCount(3);
+        problems.Should().OnlyContain(problem => problem.StartsWith($"Achievement (extra facade {TrackerFacade}): "));
+        problems.Should().Contain(problem => problem.Contains("the static facade") && problem.Contains("AchievementService.AchievementTracker does not exist"));
+        problems.Should().Contain(problem => problem.Contains("the interface") && problem.Contains("IAchievementTrackerService does not exist"));
+        problems.Should().Contain(problem => problem.Contains("the instance class") && problem.Contains("AchievementTrackerService does not exist"));
+    }
+
+    [Test]
+    public void A_misshapen_piece_of_an_extra_facade_is_named()
+    {
+        var service = WithExtraFacades(TrackerFacade);
+        var extra = service.Pieces[1];
         var facts = FactsOf(
             new TypeFact(service.Facade, false, true, true, []),
             new TypeFact(service.Interface, true, false, false, []),
             new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
-            new TypeFact(service.PartInterface("StatCache"), false, false, false, []),
-            new TypeFact(service.PartInstance("StatCache"), false, true, true, []),
-            new TypeFact(service.PartInterface("StatEffects"), true, false, false, []),
-            new TypeFact(service.PartInstance("StatEffects"), false, false, true, []));
+            new TypeFact(extra.Facade!.Value, false, false, false, []),
+            new TypeFact(extra.Interface, true, false, false, []),
+            new TypeFact(extra.Instance, false, false, true, []));
 
         var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
 
-        problems.Should().Contain(problem => problem.Contains("IStatCache must be an interface"));
-        problems.Should().Contain(problem => problem.Contains("StatCache must be an instance class"));
-        problems.Should().Contain(problem => problem.Contains("StatEffects must implement") && problem.Contains("IStatEffects"));
-        problems.Should().Contain(problem => problem.Contains("interface") && problem.Contains("IStatTiming") && problem.Contains("does not exist"));
-        problems.Should().Contain(problem => problem.Contains("StatTiming") && problem.Contains("class") && problem.Contains("does not exist"));
+        problems.Should().HaveCount(2);
+        problems.Should().Contain(problem => problem.Contains("must be a static class") && problem.Contains("AchievementTracker"));
+        problems.Should().Contain(problem => problem.Contains("must implement") && problem.Contains("IAchievementTrackerService"));
+    }
+
+    [Test]
+    public void The_instance_of_an_extra_facade_must_not_call_that_facade_but_may_call_the_main_one_and_the_other_way_round()
+    {
+        var service = WithExtraFacades(TrackerFacade);
+        var extra = service.Pieces[1];
+        var graph = new TypeReferenceGraph(
+            [service.Facade, service.Instance, service.Interface, extra.Facade!.Value, extra.Instance, extra.Interface],
+            new Dictionary<(TypeKey Source, TypeKey Target), IReadOnlySet<string>>
+            {
+                [(extra.Instance, extra.Facade!.Value)] = new HashSet<string> { "AchievementTrackerService::Track" },
+                [(extra.Instance, service.Facade)] = new HashSet<string> { "AchievementTrackerService::Give" },
+                [(service.Instance, extra.Facade!.Value)] = new HashSet<string> { "AchievementService::Track" }
+            });
+
+        var problems = ConvertedServiceRules.InstanceUsesItsFacade(graph, ListOf(service));
+
+        problems.Should().ContainSingle().Which.Should().Contain("AchievementTrackerService uses its own facade").And.Contain("AchievementTracker").And.Contain("Track");
+    }
+
+    [Test]
+    public void The_classifier_counts_the_pieces_of_an_extra_facade_as_the_service()
+    {
+        var map = DomainMap.Parse(MapJson);
+        var service = WithExtraFacades(TrackerFacade);
+
+        foreach (var type in service.Pieces.SelectMany(pieces => new[] { pieces.Facade ?? pieces.Instance, pieces.Interface, pieces.Instance }))
+            UnitClassifier.Classify(type, map).Should().Be(service.Unit, type.ToString());
+    }
+
+    [Test]
+    public void The_parts_of_a_service_are_read_from_the_same_list_as_its_extra_facades()
+    {
+        var list = ConvertedServiceList.Parse($$"""
+            { "services": [
+                { "name": "Achievement", "domain": "Character", "extras": [ { "facade": "{{TrackerFacade}}" }, { "part": "AchievementUnlocks" } ] },
+                { "name": "Stat", "domain": "Character", "extras": [ { "part": "StatCache" }, { "part": "StatEffects" } ] } ] }
+            """);
+
+        list.Problems.Should().BeEmpty();
+        var mixed = list.Services[0];
+        mixed.Extras.Should().Equal(ExtraPiece.Facade(TrackerFacade), ExtraPiece.Part("AchievementUnlocks"));
+        mixed.ExtraFacades.Should().Equal(TrackerFacade);
+        mixed.Parts.Should().Equal("AchievementUnlocks");
+        mixed.Facades.Should().HaveCount(2, "a part has no facade");
+        mixed.Pieces.Should().HaveCount(3);
+        list.Services[1].Parts.Should().Equal("StatCache", "StatEffects");
+        list.Services[1].ExtraFacades.Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_part_is_named_by_convention_after_its_type_and_has_no_facade()
+    {
+        var pieces = WithParts("StatCache").Pieces;
+
+        pieces.Should().HaveCount(2);
+        pieces[1].Label.Should().Be("Stat (part StatCache)");
+        pieces[1].Facade.Should().BeNull();
+        pieces[1].Interface.ToString().Should().Be("SWLOR.Game.Server.Domain.Character.IStatCacheService");
+        pieces[1].Instance.ToString().Should().Be("SWLOR.Game.Server.Domain.Character.StatCacheService");
+    }
+
+    [Test]
+    public void An_extra_that_is_neither_a_facade_nor_a_part_or_both_is_a_problem_of_the_list()
+    {
+        var list = ConvertedServiceList.Parse("""
+            { "services": [ { "name": "Stat", "domain": "Character",
+                "extras": [ { }, { "facade": "StatService.Tracker", "part": "StatCache" }, "StatCache", { "part": "Stat Cache" }, { "part": "StatCache" }, { "part": "StatCache" }, { "part": "StatBeta" } ] } ] }
+            """);
+
+        list.Problems.Should().Contain(problem => problem.Contains("An extra of Stat must be an object with either a \"facade\" or a \"part\""));
+        list.Problems.Count(problem => problem.Contains("An extra of Stat must be an object")).Should().Be(3);
+        list.Problems.Should().Contain(problem => problem.Contains("'Stat Cache' (a part of Stat) is not a plain class name"));
+        list.Problems.Should().Contain(problem => problem.Contains("Stat lists the part StatCache twice"));
+        list.Problems.Should().Contain(problem => problem.Contains("The part StatBeta of Stat is out of order"));
+        list.Services[0].Parts.Should().Equal("StatCache", "StatBeta");
+    }
+
+    [Test]
+    public void A_part_whose_classes_count_as_the_service_has_no_list_problems()
+    {
+        ConvertedServiceRules.ListProblems(ListOf(WithParts("StatCache", "StatEffects")), DomainMap.Parse(MapJson)).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_part_that_the_cross_domain_guard_would_not_count_as_the_service_is_reported()
+    {
+        var problems = ConvertedServiceRules.ListProblems(ListOf(WithParts("Cache", "Statistics")), DomainMap.Parse(MapJson));
+
+        problems.Should().HaveCount(4, "the interface and the instance class of each part are misplaced");
+        problems.Should().OnlyContain(problem => problem.Contains("would count as") && problem.Contains("not as Stat") && problem.Contains("Name the part so that"));
+    }
+
+    [Test]
+    public void A_part_cannot_be_the_main_class_of_its_service_or_share_a_class_with_another_extra()
+    {
+        var main = ConvertedServiceRules.ListProblems(ListOf(WithParts("Stat")), DomainMap.Parse(MapJson));
+        var shared = ConvertedServiceRules.ListProblems(
+            ListOf(new ConvertedService("Stat", "Character") { Extras = [ExtraPiece.Part("StatCache"), ExtraPiece.Facade("StatService.StatCache")] }),
+            DomainMap.Parse(MapJson));
+
+        main.Should().ContainSingle().Which.Should().Contain("is the main class of Stat");
+        shared.Should().ContainSingle().Which.Should().Contain("is already the instance class of another class of Stat");
+    }
+
+    [Test]
+    public void A_part_needs_its_interface_and_a_class_that_implements_it_but_no_facade()
+    {
+        var service = WithParts("StatCache", "StatEffects");
+        var cache = service.Pieces[1];
+        var effects = service.Pieces[2];
+        var facts = FactsOf(
+            new TypeFact(service.Facade, false, true, true, []),
+            new TypeFact(service.Interface, true, false, false, []),
+            new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
+            new TypeFact(cache.Interface, true, false, false, []),
+            new TypeFact(cache.Instance, false, false, true, [cache.Interface.ToString()]),
+            new TypeFact(effects.Interface, false, false, false, []),
+            new TypeFact(effects.Instance, false, true, true, []));
+
+        var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
+
+        problems.Should().NotContain(problem => problem.Contains("static facade"), "a part has no facade to look for");
+        problems.Should().NotContain(problem => problem.StartsWith("Stat (part StatCache)"));
+        problems.Should().Contain(problem => problem.StartsWith("Stat (part StatEffects)") && problem.Contains("IStatEffectsService must be an interface"));
+        problems.Should().Contain(problem => problem.StartsWith("Stat (part StatEffects)") && problem.Contains("StatEffectsService must be an instance class"));
+    }
+
+    [Test]
+    public void A_part_that_does_not_exist_is_reported_with_its_two_classes()
+    {
+        var service = WithParts("StatCache");
+        var facts = FactsOf(
+            new TypeFact(service.Facade, false, true, true, []),
+            new TypeFact(service.Interface, true, false, false, []),
+            new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]));
+
+        var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
+
+        problems.Should().HaveCount(2);
+        problems.Should().OnlyContain(problem => problem.StartsWith("Stat (part StatCache): "));
+        problems.Should().Contain(problem => problem.Contains("the interface") && problem.Contains("IStatCacheService does not exist"));
+        problems.Should().Contain(problem => problem.Contains("the instance class") && problem.Contains("StatCacheService does not exist"));
+    }
+
+    [Test]
+    public void A_part_is_not_checked_for_calls_to_a_facade_it_does_not_have()
+    {
+        var service = WithParts("StatCache");
+        var part = service.Pieces[1];
+        var graph = new TypeReferenceGraph(
+            [service.Facade, service.Instance, service.Interface, part.Instance, part.Interface],
+            new Dictionary<(TypeKey Source, TypeKey Target), IReadOnlySet<string>>
+            {
+                [(part.Instance, service.Facade)] = new HashSet<string> { "StatCacheService::Read" }
+            });
+
+        ConvertedServiceRules.InstanceUsesItsFacade(graph, ListOf(service)).Should().BeEmpty("only the main instance may not call its own facade");
     }
 
     // ---- static state
@@ -223,15 +459,28 @@ public class ConvertedServiceRulesTests
 
         var problems = ConvertedServiceRules.HandlersOffTheFacade(
             Facts,
-            type => type == facade || type == KeyOf(typeof(HandlerOnInstance)) ? facade : null);
+            type => type == facade || type == KeyOf(typeof(HandlerOnInstance)) ? new[] { facade } : null);
 
-        problems.Should().ContainSingle().Which.Should().Contain("HandlerOnInstance.Handle").And.Contain("HandlerOnFacade");
+        problems.Should().ContainSingle().Which.Should().Contain("HandlerOnInstance.Handle").And.Contain("its facade").And.Contain("HandlerOnFacade");
     }
 
     [Test]
     public void Handlers_of_types_that_are_not_converted_services_are_left_alone()
     {
         ConvertedServiceRules.HandlersOffTheFacade(Facts, _ => null).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_service_with_extra_facades_may_keep_its_handlers_on_any_of_them()
+    {
+        var facade = KeyOf(typeof(HandlerOnFacade));
+        var extra = new TypeKey("Elsewhere", "ExtraFacade");
+
+        var problems = ConvertedServiceRules.HandlersOffTheFacade(
+            Facts,
+            type => type == facade || type == KeyOf(typeof(HandlerOnInstance)) ? new[] { extra, facade } : null);
+
+        problems.Should().ContainSingle().Which.Should().Contain("HandlerOnInstance.Handle").And.Contain("one of its facades").And.Contain("ExtraFacade");
     }
 
     // ---- instance and facade
@@ -289,7 +538,7 @@ public class ConvertedServiceRulesTests
 
     private static ConvertedServiceList ListOf(params ConvertedService[] services) =>
         ConvertedServiceList.Parse("{ \"services\": [" + string.Join(",", services.Select(s =>
-            $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\", \"parts\": [{string.Join(",", s.PartNames.Select(part => $"\"{part}\""))}] }}")) + "] }");
+            $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\", \"extras\": [{string.Join(",", s.Extras.Select(extra => $"{{ \"{extra.Kind}\": \"{extra.Name}\" }}"))}] }}")) + "] }");
 
     private static TypeKey KeyOf(Type type) => new(type.Namespace ?? string.Empty, type.Name);
 }

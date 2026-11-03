@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// The definitions of the property system: the property types, layouts, entrances, permissions, structures and
     /// instance templates the module cache builds, and the lookups over them.
     /// </summary>
-    public interface IPropertyCatalog
+    public interface IPropertyCatalogService
     {
         /// <summary>
         /// When the module loads, cache all relevant data into memory.

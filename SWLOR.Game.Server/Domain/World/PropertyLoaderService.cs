@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.Domain.World
     /// queue that loads them a few at a time, the startup load of the world properties, and spawning a property into
     /// the game world. The logic and state that used to be static in <c>Service.Property</c>, moved here unchanged.
     /// </summary>
-    public class PropertyLoader : IPropertyLoader
+    public class PropertyLoaderService : IPropertyLoaderService
     {
         private readonly IDBService _db;
         private readonly IAreaService _area;
-        private readonly IPropertyCatalog _catalog;
+        private readonly IPropertyCatalogService _catalog;
 
         private readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
         private readonly Dictionary<string, PropertyLoadState> _propertyLoadStates = new();
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Domain.World
         private const int PropertyLoadProgressReportInterval = 25;
         private TimeSpan PropertyLoadBatchDelay => TimeSpan.FromSeconds(0.2d);
 
-        public PropertyLoader(IDBService db, IAreaService area, IPropertyCatalog catalog)
+        public PropertyLoaderService(IDBService db, IAreaService area, IPropertyCatalogService catalog)
         {
             _db = db;
             _area = area;

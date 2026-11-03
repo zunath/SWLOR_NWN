@@ -64,7 +64,7 @@ public class LeadershipCivicPerkRegressionTests
         placeCityHall.Should().Contain("Perk.GetPerkLevel(player, PerkType.CityManagement) < 1");
         placeCityHall.Should().Contain("The City Management I perk is required to establish a city.");
 
-        var property = ReadSource("Domain", "World", "PropertyCityGovernance.cs");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernanceService.cs");
         var processCityLevel = ExtractMethod(property, "private void ProcessCityLevel(WorldProperty city)");
         processCityLevel.Should().Contain("mayor.Perks[PerkType.CityManagement] + 1");
         processCityLevel.Should().Contain("if (mayorLevel < currentLevel)");
@@ -105,7 +105,7 @@ public class LeadershipCivicPerkRegressionTests
     {
         CalculateDiscountedWeeklyBasePrice(perkRank, dailyLayoutPrice).Should().Be(expectedWeeklyBasePrice);
 
-        var property = ReadSource("Domain", "World", "PropertyCityGovernance.cs");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernanceService.cs");
         var processUpkeep = ExtractMethod(property, "private void ProcessUpkeep(DateTime now, WorldProperty city)");
         processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep] * 0.05f");
         processUpkeep.Should().Contain("var basePrice = layout.PricePerDay * 7;");
@@ -139,10 +139,10 @@ public class LeadershipCivicPerkRegressionTests
         calculateGP.Should().Contain("(perkBonus * baseAmount)");
         calculateGP.Should().Contain("return (int)amount;");
 
-        var quest = ReadSource("Service", "Quest.cs");
+        var quest = ReadSource("Domain", "Quests", "QuestService.cs");
         var calculateCredits = ExtractMethod(
             quest,
-            "public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
+            "public int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
         calculateCredits.Should().Contain("if (isGuildQuest)");
         calculateCredits.Should().Contain("Perk.GetPerkLevel(player, PerkType.GuildRelations)");
         calculateCredits.Should().Contain("guildRelations = perkLevel * 0.05f;");

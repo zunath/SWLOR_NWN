@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// City governance: the boot-time processing of every city, the Discord broadcasts about it, and the city level rules.
     /// </summary>
-    public interface IPropertyCityGovernance
+    public interface IPropertyCityGovernanceService
     {
         /// <summary>
         /// Posts an event of a city to the property broadcast Discord channel. Nothing happens when no webhook is configured.
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <param name="title">The title of the post.</param>
         /// <param name="details">The text of the post.</param>
         /// <param name="color">The color of the post.</param>
-        void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyCityGovernance.PropertyBroadcastColor);
+        void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyCityGovernanceService.PropertyBroadcastColor);
 
         /// <summary>
         /// Formats a date the way the broadcasts show it, in UTC.

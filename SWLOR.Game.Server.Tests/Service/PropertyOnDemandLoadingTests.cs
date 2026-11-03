@@ -77,7 +77,7 @@ public class PropertyOnDemandLoadingTests
             "ViewModel",
             "PropertyDiagnosticsViewModel.cs"));
 
-        // PropertyLoaderTests proves the loader fills these fields; this proves the window shows them.
+        // PropertyLoaderServiceTests proves the loader fills these fields; this proves the window shows them.
         diagnosticSource.Should().Contain("public string OwnerPlayerId { get; set; }");
         diagnosticSource.Should().Contain("public string QueuePriority { get; set; }");
         diagnosticSource.Should().Contain("public int SpawnedChildCount { get; set; }");
@@ -141,14 +141,14 @@ public class PropertyOnDemandLoadingTests
     public void StartupPropertyLoadProgress_ReplacesPerPropertyConsoleSpam()
     {
         // The static Log has no seam a unit test can read, so the wording and the console flag are checked in the source
-        // of the loader, where the code lives; PropertyLoaderTests covers what the loader does.
+        // of the loader, where the code lives; PropertyLoaderServiceTests covers what the loader does.
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
             "World",
-            "PropertyLoader.cs")).Replace("\r\n", "\n");
+            "PropertyLoaderService.cs")).Replace("\r\n", "\n");
         var completeBody = ExtractMethod(source, "private void CompletePropertyLoad(PropertyLoadJob job)");
         var progressBody = ExtractMethod(source, "private void LogStartupPropertyLoadProgress(bool force = false)");
 

@@ -17,7 +17,10 @@ internal sealed class ConvertedServiceList
 
     public IReadOnlyList<ConvertedService> Services => _services;
 
-    /// <summary>Mistakes in the file itself: a name that is not a plain identifier, a service listed twice, an unsorted list.</summary>
+    /// <summary>
+    /// Mistakes in the file itself: a name that is not a plain identifier, a service or extra facade listed twice, an
+    /// unsorted list.
+    /// </summary>
     public IReadOnlyList<string> Problems => _problems;
 
     public static ConvertedServiceList Load(string path) => Parse(File.ReadAllText(path));
@@ -43,47 +46,76 @@ internal sealed class ConvertedServiceList
             if (previous is not null && string.CompareOrdinal(previous, name) > 0)
                 list._problems.Add($"{name} is out of order: keep the list sorted by name so pull requests that add services do not conflict.");
 
-            var parts = ReadParts(element, name, list._problems);
-
             previous = name;
-            list._services.Add(new ConvertedService(name, domain, parts));
+            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element) });
         }
 
         return list;
     }
 
     /// <summary>
-    /// The optional <c>parts</c> of a service: plain names, sorted, without duplicates, each starting with the service's
-    /// name followed by an upper-case letter (so <see cref="UnitClassifier"/> places the part in the service) and none
-    /// of them the service's own instance class.
+    /// The optional <c>extras</c> list of a service entry: objects with a <c>facade</c> (a type name relative to
+    /// <c>SWLOR.Game.Server.Service</c>) or a <c>part</c> (a plain name), sorted by name and without duplicates. An entry
+    /// that is not one of those is reported and left out.
     /// </summary>
-    private static List<string> ReadParts(JsonElement element, string service, List<string> problems)
+    private IReadOnlyList<ExtraPiece> ReadExtras(string service, JsonElement element)
     {
-        var parts = new List<string>();
-        if (!element.TryGetProperty("parts", out var array))
-            return parts;
+        if (!element.TryGetProperty("extras", out var extras))
+            return Array.Empty<ExtraPiece>();
 
+        var result = new List<ExtraPiece>();
         string? previous = null;
-        foreach (var item in array.EnumerateArray())
+        foreach (var entry in extras.EnumerateArray())
         {
-            var part = item.GetString() ?? string.Empty;
-            if (!IsPlainName(part))
-                problems.Add($"'{part}' is not a plain part name of {service}.");
-            else if (part == service + "Service" ||
-                     !part.StartsWith(service, StringComparison.Ordinal) ||
-                     part.Length == service.Length ||
-                     !char.IsUpper(part[service.Length]))
-                problems.Add($"The part '{part}' must start with the service name '{service}' followed by a capital letter (and not be {service}Service itself), or the cross-domain guard would not count it as {service}.");
-            if (parts.Contains(part))
-                problems.Add($"The part '{part}' of {service} is listed twice.");
-            if (previous is not null && string.CompareOrdinal(previous, part) > 0)
-                problems.Add($"The part '{part}' of {service} is out of order: keep the parts sorted by name.");
+            var extra = ReadExtra(service, entry);
+            if (extra is null)
+                continue;
 
-            previous = part;
-            parts.Add(part);
+            if (result.Any(known => known.Name == extra.Name))
+            {
+                _problems.Add($"{service} lists the {extra.Describe()} twice.");
+                continue;
+            }
+
+            if (previous is not null && string.CompareOrdinal(previous, extra.Name) > 0)
+                _problems.Add($"The {extra.Describe()} of {service} is out of order: keep the extras sorted by name so pull requests that add them do not conflict.");
+
+            previous = extra.Name;
+            result.Add(extra);
         }
 
-        return parts;
+        return result;
+    }
+
+    private ExtraPiece? ReadExtra(string service, JsonElement entry)
+    {
+        var facade = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("facade", out var facadeName) ? facadeName.GetString() : null;
+        var part = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("part", out var partName) ? partName.GetString() : null;
+
+        if (facade is null == part is null)
+        {
+            _problems.Add($"An extra of {service} must be an object with either a \"facade\" or a \"part\", such as {{ \"facade\": \"QuestService.QuestEncounter\" }} or {{ \"part\": \"PropertyCatalog\" }}.");
+            return null;
+        }
+
+        if (facade is not null)
+        {
+            if (!ConvertedPieces.IsPlainFacadeName(facade))
+            {
+                _problems.Add($"'{facade}' (an extra facade of {service}) is not a plain type name relative to SWLOR.Game.Server.Service, such as QuestService.QuestEncounter.");
+                return null;
+            }
+
+            return ExtraPiece.Facade(facade);
+        }
+
+        if (!IsPlainName(part!))
+        {
+            _problems.Add($"'{part}' (a part of {service}) is not a plain class name, such as PropertyCatalog.");
+            return null;
+        }
+
+        return ExtraPiece.Part(part!);
     }
 
     private static bool IsPlainName(string name) =>

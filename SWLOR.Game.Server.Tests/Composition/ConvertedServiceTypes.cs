@@ -1,13 +1,7 @@
 namespace SWLOR.Game.Server.Tests.Composition;
 
-/// <summary>A converted service resolved to its types, with the parts it is split into (none for most services).</summary>
-public sealed record ConvertedServiceTypes(
-    string Name,
-    string Domain,
-    Type Facade,
-    Type Contract,
-    Type Instance,
-    IReadOnlyList<ConvertedServicePartTypes> Parts);
-
-/// <summary>A part of a split converted service: its interface and its class.</summary>
-public sealed record ConvertedServicePartTypes(string Name, Type Contract, Type Instance);
+/// <summary>
+/// One class of a converted service resolved to its types: the main one, or an extra (a further static facade or a part).
+/// A part has no static facade, so <see cref="Facade"/> is null for it.
+/// </summary>
+public sealed record ConvertedServiceTypes(string Name, string Domain, Type? Facade, Type Contract, Type Instance);

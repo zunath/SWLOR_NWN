@@ -50,7 +50,9 @@ namespace SWLOR.Game.Server.Composition
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();
+            services.AddSingleton<IQuestService, QuestService>();
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
+            services.AddSingleton<IQuestEncounterService, QuestEncounterService>();
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();
@@ -65,9 +67,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<INotesService, NotesService>();
             services.AddSingleton<IPlanetService, PlanetService>();
-            services.AddSingleton<IPropertyCatalog, PropertyCatalog>();
-            services.AddSingleton<IPropertyCityGovernance, PropertyCityGovernance>();
-            services.AddSingleton<IPropertyLoader, PropertyLoader>();
+            services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();
+            services.AddSingleton<IPropertyCityGovernanceService, PropertyCityGovernanceService>();
+            services.AddSingleton<IPropertyLoaderService, PropertyLoaderService>();
             services.AddSingleton<IPropertyService, PropertyService>();
             services.AddSingleton<IShuttleService, ShuttleService>();
             services.AddSingleton<ITaxiService, TaxiService>();

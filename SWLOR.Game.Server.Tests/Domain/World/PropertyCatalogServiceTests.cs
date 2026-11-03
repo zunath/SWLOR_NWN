@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// the engine's areas, and the lookups answer from what it cached.
 /// </summary>
 [TestFixture]
-public class PropertyCatalogTests
+public class PropertyCatalogServiceTests
 {
     private const string ApartmentResref = "apartment_002";
     private const uint ApartmentTemplate = 5000;
 
     private PropertyWorld _world = null!;
 
-    private PropertyCatalog Catalog => _world.Catalog;
+    private PropertyCatalogService Catalog => _world.Catalog;
 
     [SetUp]
     public void SetUp() => _world = new PropertyWorld();
@@ -33,7 +33,7 @@ public class PropertyCatalogTests
     {
         _world.ClearCalls();
 
-        _ = new PropertyCatalog(new PropertyWorld.StubAreas(_world));
+        _ = new PropertyCatalogService(new PropertyWorld.StubAreas(_world));
 
         _world.Engine.Calls.Should().BeEmpty();
     }

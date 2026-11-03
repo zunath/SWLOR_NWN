@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// The property system: properties and their definitions, instance loading, permissions, placement and city governance.
-    /// The members of the parts (<see cref="IPropertyCatalog"/>, <see cref="IPropertyLoader"/>,
-    /// <see cref="IPropertyCityGovernance"/>) are forwarded by <see cref="PropertyService"/>, so callers see one service.
+    /// The members of the parts (<see cref="IPropertyCatalogService"/>, <see cref="IPropertyLoaderService"/>,
+    /// <see cref="IPropertyCityGovernanceService"/>) are forwarded by <see cref="PropertyService"/>, so callers see one service.
     /// </summary>
     public interface IPropertyService
     {

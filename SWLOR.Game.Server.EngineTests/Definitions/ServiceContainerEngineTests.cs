@@ -9,13 +9,14 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
     /// Proves, on a booted server, that the service container was built before the handlers ran and that the converted
-    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket, Music, Weather, Property, QuestContractBoard) work through their static facades
+    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket, Music, Weather, Property, QuestContractBoard, Quest and its QuestEncounter facade) work through their static facades
     /// against the real database.
     /// </summary>
     public static class ServiceContainerEngineTests
@@ -66,6 +67,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(SWLOR.Game.Server.Service.PropertyService.PropertyLoadState.Failed, Property.GetPropertyLoadState("no-such-property"),
                 "The property loader answers through the container");
             ctx.AssertEqual(QuestContractBoard.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
+            ctx.Assert(Quest.GetQuestByIdOrDefault("scrapmetal_monster") != null, "Quests cached by the module-cache handler");
+            ctx.Assert(!QuestEncounter.IsQuestEncounterCreature(OBJECT_INVALID), "Quest encounters answer through the container");
         }
 
         /// <summary>

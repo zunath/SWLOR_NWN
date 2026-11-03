@@ -29,17 +29,17 @@ namespace SWLOR.Game.Server.Service
         ///       it's possible the player will have more time than the value specified here.
         ///       This is expected.
         /// </summary>
-        public const int MinimumCitizensGracePeriodHours = PropertyCityGovernance.MinimumCitizensGracePeriodHours;
+        public const int MinimumCitizensGracePeriodHours = PropertyCityGovernanceService.MinimumCitizensGracePeriodHours;
 
         /// <summary>
         /// Determines the number of days citizens have to register for an election.
         /// </summary>
-        public const int ElectionRegistrationDays = PropertyCityGovernance.ElectionRegistrationDays;
+        public const int ElectionRegistrationDays = PropertyCityGovernanceService.ElectionRegistrationDays;
 
         /// <summary>
         /// Determines the number of days all citizens have to vote for an election.
         /// </summary>
-        public const int ElectionVotingDays = PropertyCityGovernance.ElectionVotingDays;
+        public const int ElectionVotingDays = PropertyCityGovernanceService.ElectionVotingDays;
 
         public static void BroadcastCityUpkeepPaid(WorldProperty city)
         {

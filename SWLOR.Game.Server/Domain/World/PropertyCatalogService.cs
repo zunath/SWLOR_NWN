@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// instance templates the module cache builds, and the lookups over them. The logic and state that used to be
     /// static in <c>Service.Property</c>, moved here unchanged. It depends on no other part of the property system.
     /// </summary>
-    public class PropertyCatalog : IPropertyCatalog
+    public class PropertyCatalogService : IPropertyCatalogService
     {
         private readonly IAreaService _area;
 
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
         private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
-        public PropertyCatalog(IAreaService area)
+        public PropertyCatalogService(IAreaService area)
         {
             _area = area;
         }

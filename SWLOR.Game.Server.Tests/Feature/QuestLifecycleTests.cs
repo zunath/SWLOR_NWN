@@ -2,11 +2,11 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -25,9 +25,9 @@ public class QuestLifecycleTests
         var service = Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service");
         var detail = File.ReadAllText(Path.Combine(service, "QuestService", "QuestDetail.cs"))
             .Replace("namespace SWLOR.Game.Server.Service.QuestService", "namespace QuestLifecycleHarness");
-        var load = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(service, "Quest.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.Text == "LoadPlayerQuests")
-            .WithAttributeLists(default).ToFullString();
+        // The login logic is the quest service instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod);
+        // its injected database is modelled by the harness's own DB below.
+        var load = DMPossessionHarness.InstanceMethod("Domain/Quests/QuestService.cs", "LoadPlayerQuests");
         var boundaries = """
             namespace QuestLifecycleHarness
             {
@@ -70,6 +70,12 @@ public class QuestLifecycleTests
                 public static class ColorToken { public static string Red(string text) => text; }
                 public static class Quest
                 {
+                    private static readonly Database _db = new();
+                    private sealed class Database
+                    {
+                        public T Get<T>(string id) => DB.Get<T>(id);
+                        public void Set<T>(T value) => DB.Set(value);
+                    }
                     public static QuestDetail Current;
                     public static QuestDetail GetQuestById(string id) => Current;
                     public static QuestDetail GetQuestByIdOrDefault(string id) => id == Current.QuestId ? Current : null;

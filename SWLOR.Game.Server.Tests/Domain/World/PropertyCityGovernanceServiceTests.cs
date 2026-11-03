@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// citizenship fees), against an in-memory database that evaluates the queries the governance asks.
 /// </summary>
 [TestFixture]
-public class PropertyCityGovernanceTests
+public class PropertyCityGovernanceServiceTests
 {
     private const string Mayor = "mayor-id";
     private const string Rival = "rival-id";
@@ -107,11 +107,11 @@ public class PropertyCityGovernanceTests
 
     /// <summary>Moves a city's election so that the registration window closed a day ago (voting is open).</summary>
     private void VotingOpen(WorldProperty city) =>
-        city.Dates[PropertyDateType.ElectionStart] = Now.AddDays(-(PropertyCityGovernance.ElectionRegistrationDays + 1));
+        city.Dates[PropertyDateType.ElectionStart] = Now.AddDays(-(PropertyCityGovernanceService.ElectionRegistrationDays + 1));
 
     /// <summary>Moves a city's election so that registration is closed and voting ended a day ago.</summary>
     private void VotingClosed(WorldProperty city) =>
-        city.Dates[PropertyDateType.ElectionStart] = Now.AddDays(-(PropertyCityGovernance.ElectionRegistrationDays + PropertyCityGovernance.ElectionVotingDays + 1));
+        city.Dates[PropertyDateType.ElectionStart] = Now.AddDays(-(PropertyCityGovernanceService.ElectionRegistrationDays + PropertyCityGovernanceService.ElectionVotingDays + 1));
 
     private WorldProperty Saved(WorldProperty city) => Db.Store.Saved.OfType<WorldProperty>().Last(x => x.Id == city.Id);
 
@@ -120,10 +120,10 @@ public class PropertyCityGovernanceTests
     [Test]
     public void The_grace_period_and_election_windows_are_what_they_have_always_been()
     {
-        PropertyCityGovernance.MinimumCitizensGracePeriodHours.Should().Be(18);
-        PropertyCityGovernance.ElectionRegistrationDays.Should().Be(14);
-        PropertyCityGovernance.ElectionVotingDays.Should().Be(7);
-        PropertyCityGovernance.PropertyBroadcastColor.Should().Be(5763719);
+        PropertyCityGovernanceService.MinimumCitizensGracePeriodHours.Should().Be(18);
+        PropertyCityGovernanceService.ElectionRegistrationDays.Should().Be(14);
+        PropertyCityGovernanceService.ElectionVotingDays.Should().Be(7);
+        PropertyCityGovernanceService.PropertyBroadcastColor.Should().Be(5763719);
     }
 
     [TestCase(1, "Outpost")]
@@ -162,7 +162,7 @@ public class PropertyCityGovernanceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyCityGovernance(db, _world.Recorded);
+        _ = new PropertyCityGovernanceService(db, _world.Recorded);
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();
@@ -219,7 +219,7 @@ public class PropertyCityGovernanceTests
 
         var saved = Saved(city);
         saved.IsQueuedForDeletion.Should().BeFalse();
-        saved.Dates[PropertyDateType.BelowRequiredCitizens].Should().BeCloseTo(DateTime.UtcNow.AddHours(PropertyCityGovernance.MinimumCitizensGracePeriodHours), TimeSpan.FromMinutes(1));
+        saved.Dates[PropertyDateType.BelowRequiredCitizens].Should().BeCloseTo(DateTime.UtcNow.AddHours(PropertyCityGovernanceService.MinimumCitizensGracePeriodHours), TimeSpan.FromMinutes(1));
     }
 
     [Test]
@@ -325,7 +325,7 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Db.Store.Deleted.Should().Contain(election.Id);
-        Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernance.ElectionRegistrationDays).AddDays(21));
+        Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernanceService.ElectionRegistrationDays).AddDays(21));
         Saved(city).OwnerPlayerId.Should().Be(Mayor);
     }
 
@@ -412,7 +412,7 @@ public class PropertyCityGovernanceTests
         Db.Store.Deleted.Should().Contain(mayorPermission.Id).And.Contain(election.Id);
         Db.Store.Saved.OfType<WorldPropertyPermission>().Should().ContainSingle().Which.Should().BeSameAs(rivalPermission, "an existing permission record is reused");
         rivalPermission.Permissions[PropertyPermissionType.EditTaxes].Should().BeTrue();
-        Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernance.ElectionRegistrationDays + PropertyCityGovernance.ElectionVotingDays).AddDays(21));
+        Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernanceService.ElectionRegistrationDays + PropertyCityGovernanceService.ElectionVotingDays).AddDays(21));
     }
 
     [Test]
@@ -628,7 +628,7 @@ public class PropertyCityGovernanceTests
     [Test]
     public void The_governance_uses_the_webhook_of_the_environment_unless_a_test_names_one()
     {
-        var plain = new PropertyCityGovernance(Db, _world.Recorded);
+        var plain = new PropertyCityGovernanceService(Db, _world.Recorded);
 
         var city = StoreCity();
         var broadcast = () => plain.BroadcastPropertyEvent(city, "Title", "Details");

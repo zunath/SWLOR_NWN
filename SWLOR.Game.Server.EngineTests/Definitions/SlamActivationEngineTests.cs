@@ -56,8 +56,7 @@ public static class SlamActivationEngineTests
         native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(active).AsNWSPlaceable();
         native.OpenInventory(player);
         await ctx.WaitUntilAsync(() => Activity.IsBusy(player), 3f, "opening the collector for timeout cleanup");
-        await ctx.ExecuteInCreatureContextAsync(active, () => typeof(Quest)
-            .GetMethod("DestroyItemCollector", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { active }));
+        await ctx.ExecuteInCreatureContextAsync(active, () => QuestInternals.DestroyItemCollector(active));
         ctx.Assert(!Activity.IsBusy(player), "The timeout destruction path releases busy state without a client close event.");
     }
 
@@ -76,8 +75,7 @@ public static class SlamActivationEngineTests
         var quest = new QuestBuilder().Create(questId, "Engine test hand-in")
             .AddState().SetStateJournalText("Turn in the medkit.").AddCollectItemObjective("nw_it_medkit001", 1)
             .AddState().SetStateJournalText("Finished.").Build()[questId];
-        var cache = (Dictionary<string, QuestDetail>)typeof(Quest)
-            .GetField("_quests", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var cache = QuestInternals.Quests;
         cache.Add(questId, quest);
         try
         {

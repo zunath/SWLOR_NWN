@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// The property system: creating and deleting properties, permissions, entering and leaving them, placing
     /// structures and the terminal menus. The definitions, instance loading and city governance are the parts
-    /// <see cref="IPropertyCatalog"/>, <see cref="IPropertyLoader"/> and <see cref="IPropertyCityGovernance"/>; the logic and
+    /// <see cref="IPropertyCatalogService"/>, <see cref="IPropertyLoaderService"/> and <see cref="IPropertyCityGovernanceService"/>; the logic and
     /// state that used to be static in <c>Service.Property</c> moved to these classes unchanged, and the members of the
     /// parts are forwarded from here so the facade keeps one interface. The facade still carries the event handlers.
     /// </summary>
@@ -30,17 +30,17 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IDBService _db;
         private readonly IAreaService _area;
         private readonly IPlanetService _planet;
-        private readonly IPropertyCatalog _catalog;
-        private readonly IPropertyLoader _loader;
-        private readonly IPropertyCityGovernance _city;
+        private readonly IPropertyCatalogService _catalog;
+        private readonly IPropertyLoaderService _loader;
+        private readonly IPropertyCityGovernanceService _city;
 
         public PropertyService(
             IDBService db,
             IAreaService area,
             IPlanetService planet,
-            IPropertyCatalog catalog,
-            IPropertyLoader loader,
-            IPropertyCityGovernance city)
+            IPropertyCatalogService catalog,
+            IPropertyLoaderService loader,
+            IPropertyCityGovernanceService city)
         {
             _db = db;
             _area = area;

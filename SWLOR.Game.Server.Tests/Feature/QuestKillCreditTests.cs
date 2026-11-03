@@ -2,11 +2,11 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -17,12 +17,9 @@ public class QuestKillCreditTests
     [OneTimeSetUp]
     public void CompileActualDeathHandlerWithRecordingBoundaries()
     {
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
-        var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Quest.cs"));
-        var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Single(m => m.Identifier.Text == "ProgressKillTargetObjectives")
-            .WithAttributeLists(default).ToFullString();
+        // The death handler is the quest service instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod);
+        // the objectives need the static database, so the harness stands in for them and for the injected encounters and database.
+        var method = DMPossessionHarness.InstanceMethod("Domain/Quests/QuestService.cs", "ProgressKillTargetObjectives");
         var boundaries = """
             using System;
             using System.Collections.Generic;
@@ -51,13 +48,19 @@ public class QuestKillCreditTests
                 public static float GetDistanceBetween(uint a, uint b) => Distance;
                 public static string GetObjectUUID(uint o) => "player";
                 public static Detail GetQuestById(string id) => new();
+                private static readonly Encounters _encounters = new();
+                private static readonly Database _db = new();
                 METHOD
             }
-            public static class QuestEncounter
+            public sealed class Encounters
             {
-                public static bool IsQuestEncounterCreature(uint o) => false;
-                public static void ProgressKillCredit(uint o, NPCGroupType group, List<string> quests) { }
-                public static void ClearEncounterForCreature(uint o) { }
+                public bool IsQuestEncounterCreature(uint o) => false;
+                public void ProgressKillCredit(uint o, NPCGroupType group, List<string> quests) { }
+                public void ClearEncounterForCreature(uint o) { }
+            }
+            public sealed class Database
+            {
+                public T Get<T>(string id) => DB.Get<T>(id);
             }
             public static class Enmity { public static uint GetHighestEnmityTarget(uint o) => 1; }
             public static class DB

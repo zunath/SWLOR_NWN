@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// Instance loading: the registry of property area instances, their load states, failures and waiting players, the
     /// queue that loads them, and spawning a property into the game world.
     /// </summary>
-    public interface IPropertyLoader
+    public interface IPropertyLoaderService
     {
         /// <summary>
         /// Assigns a property Id as a local variable to a specific object.

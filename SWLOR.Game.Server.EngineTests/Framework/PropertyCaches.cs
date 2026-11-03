@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     {
         /// <summary>The entrance of every layout, as the catalog cached it. Changes show to the next entry.</summary>
         public static Dictionary<PropertyLayoutType, Vector4> EntrancesByLayout =>
-            Field<Dictionary<PropertyLayoutType, Vector4>>(typeof(IPropertyCatalog), "_entrancesByLayout");
+            Field<Dictionary<PropertyLayoutType, Vector4>>(typeof(IPropertyCatalogService), "_entrancesByLayout");
 
         /// <summary>The property instances the loader has registered, by property Id.</summary>
         public static Dictionary<string, PropertyInstance> Instances =>
-            Field<Dictionary<string, PropertyInstance>>(typeof(IPropertyLoader), "_propertyInstances");
+            Field<Dictionary<string, PropertyInstance>>(typeof(IPropertyLoaderService), "_propertyInstances");
 
         /// <summary>Runs the clean-up the property service does at boot (expired leases, deletions, starship docks).</summary>
         public static void CleanUpData()

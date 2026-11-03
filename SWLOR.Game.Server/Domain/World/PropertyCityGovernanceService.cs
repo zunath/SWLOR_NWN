@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Domain.World
     /// citizenship fees), the Discord broadcasts about it, and the city level rules. The logic and state that used to
     /// be static in <c>Service.Property</c>, moved here unchanged.
     /// </summary>
-    public class PropertyCityGovernance : IPropertyCityGovernance
+    public class PropertyCityGovernanceService : IPropertyCityGovernanceService
     {
         private readonly IDBService _db;
-        private readonly IPropertyCatalog _catalog;
+        private readonly IPropertyCatalogService _catalog;
 
         private readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         public const int ElectionVotingDays = 7;
 
-        public PropertyCityGovernance(IDBService db, IPropertyCatalog catalog)
+        public PropertyCityGovernanceService(IDBService db, IPropertyCatalogService catalog)
         {
             _db = db;
             _catalog = catalog;

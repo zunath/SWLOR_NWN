@@ -45,12 +45,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Whether a login keeps the payment. A station is founded before it is paid for, so its payment is always kept
         /// (an unpaid founding is undone instead, <see cref="PaysPendingFounding"/>). A payment that changes no record is
         /// complete once the character file holds it. Any other is kept only when its record names it
-        /// (<paramref name="recordPaymentId"/>, the payer's payment saved with the change).
+        /// (<paramref name="recordPaymentId"/>, the payer's payment saved with the change), or when a receipt for the payment
+        /// exists (<paramref name="hasReceipt"/>): the record was saved and has been deleted since, such as a tournament
+        /// cancelled before its entrant logged in, and the settlement that deleted it already dealt with the money.
         /// </summary>
-        public bool KeepsPayment(string recordPaymentId) =>
+        public bool KeepsPayment(string recordPaymentId, bool hasReceipt = false) =>
             Kind == CreditPaymentKind.StationFounding ||
             string.IsNullOrWhiteSpace(RecordId) ||
-            recordPaymentId == Id;
+            recordPaymentId == Id ||
+            hasReceipt;
 
         /// <summary>Whether this mark pays for the station founding still pending under <paramref name="pendingPaymentId"/>.</summary>
         public static bool PaysPendingFounding(CreditPaymentMark mark, string pendingPaymentId) =>

@@ -75,13 +75,13 @@ namespace SWLOR.Game.Server.Service
             if (crop == null)
                 return null;
 
-            if (ClerkRecoveryRules.CanReachCrop(Farming.HasGardenPermission(player, structure), IsCitizenOf(playerId, cityId)))
+            var parent = DB.Get<WorldProperty>(structure.ParentPropertyId);
+            if (ClerkRecoveryRules.CanReachCrop(Farming.HasGardenPermission(player, structure), IsCitizenOf(playerId, cityId), CanEnterPlotProperty(playerId, parent)))
             {
                 refusal = ClerkRecoveryRules.CanReachCropText;
                 return null;
             }
 
-            var parent = DB.Get<WorldProperty>(structure.ParentPropertyId);
             var place = parent == null ? string.Empty : parent.PropertyType == PropertyType.City ? "the city's gardens" : parent.CustomName;
             return new ClerkRecoveryOffer(
                 ClerkRecoverySourceKind.Crop,
@@ -118,6 +118,26 @@ namespace SWLOR.Game.Server.Service
                 ClerkRecoveryRules.DescribeAnimalTitle(definition.Name, animal, now),
                 ClerkRecoveryRules.DescribeAnimal(definition.Name, animal, now),
                 ClerkRecoveryRules.GetAnimalActions(animal, now));
+        }
+
+        /// <summary>
+        /// Whether the player can walk into the property that holds the plot, as <see cref="Property.EnterBuilding"/> decides: it is publicly
+        /// accessible (the city's land, or a house its owner opened) or the player holds Enter Property on it. A planter who keeps Tend
+        /// Gardens on a private house but lost Enter Property cannot get to the plot.
+        /// </summary>
+        private static bool CanEnterPlotProperty(string playerId, WorldProperty parent)
+        {
+            if (parent == null)
+                return false;
+
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), parent.Id, false)
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
+                .FirstOrDefault();
+            var holdsEnterProperty = permission != null &&
+                                     permission.Permissions.TryGetValue(PropertyPermissionType.EnterProperty, out var allowed) &&
+                                     allowed;
+            return ClerkRecoveryRules.CanEnterPlotProperty(parent.IsPubliclyAccessible, holdsEnterProperty);
         }
 
         private static bool IsCitizenOf(string playerId, string cityId)

@@ -49,14 +49,40 @@ public class ClerkRecoveryRulesTests
 
     #region Who cannot reach
 
-    [TestCase(true, true, true)]
-    [TestCase(false, true, false)]
-    [TestCase(true, false, false)]
-    [TestCase(false, false, false)]
-    public void APlanterReachesTheirCrop_OnlyWithGardenPermissionAndCitizenship(bool permission, bool citizen, bool reaches)
+    [TestCase(true, true, true, true)]
+    [TestCase(false, true, true, false)]
+    [TestCase(true, false, true, false)]
+    [TestCase(true, true, false, false)]
+    [TestCase(false, false, false, false)]
+    public void APlanterReachesTheirCrop_OnlyWithGardenPermissionCitizenshipAndAWayIn(bool permission, bool citizen, bool canEnter, bool reaches)
     {
-        // Permission removed, the house changed hands (their record is gone), or they left the city: each is a way to lose one of the two.
-        ClerkRecoveryRules.CanReachCrop(permission, citizen).Should().Be(reaches);
+        // Permission removed, the house changed hands (their record is gone), or they left the city: each is a way to lose one of the first
+        // two. A planter who keeps both but cannot walk into the house is the third.
+        ClerkRecoveryRules.CanReachCrop(permission, citizen, canEnter).Should().Be(reaches);
+    }
+
+    [TestCase(true, false, true)]
+    [TestCase(true, true, true)]
+    [TestCase(false, true, true)]
+    [TestCase(false, false, false)]
+    public void APlotsPropertyCanBeEntered_WhenItIsPublicOrThePlayerHoldsEnterProperty(bool isPublic, bool holdsEnter, bool canEnter)
+    {
+        ClerkRecoveryRules.CanEnterPlotProperty(isPublic, holdsEnter).Should().Be(canEnter);
+    }
+
+    [Test]
+    public void APlanterWhoKeepsCitizenshipAndTendGardens_ButLostEnterPropertyOnAPrivateHouse_CannotReachTheCrop()
+    {
+        // The private house: not public, and the planter's Enter Property is gone. Tend Gardens and citizenship stay.
+        var canEnter = ClerkRecoveryRules.CanEnterPlotProperty(isPubliclyAccessible: false, holdsEnterProperty: false);
+
+        canEnter.Should().BeFalse();
+        ClerkRecoveryRules.CanReachCrop(holdsGardenPermission: true, isCitizenOfCity: true, canEnterPlotProperty: canEnter)
+            .Should().BeFalse("the clerk is the only way to the crop, so it is offered");
+
+        // Opening the house, or granting Enter Property again, puts the plot back in reach.
+        ClerkRecoveryRules.CanReachCrop(true, true, ClerkRecoveryRules.CanEnterPlotProperty(true, false)).Should().BeTrue();
+        ClerkRecoveryRules.CanReachCrop(true, true, ClerkRecoveryRules.CanEnterPlotProperty(false, true)).Should().BeTrue();
     }
 
     [TestCase(true, true)]

@@ -43,6 +43,8 @@ public class CreditPaymentTests
         refit.KeepsPayment("an older payment").Should().BeFalse();
         // The ship saved the design with the payment's id before the mark was retired.
         refit.KeepsPayment("p1").Should().BeTrue();
+        refit.KeepsPayment(null, hasReceipt: true).Should().BeTrue("the record that named the payment was deleted after it was saved, and left a receipt");
+        refit.KeepsPayment("an older payment", hasReceipt: false).Should().BeFalse();
 
         var fineWithoutShip = new CreditPaymentMark { Id = "f1", Kind = CreditPaymentKind.CustomsFine, RecordId = string.Empty, Credits = 100 };
         fineWithoutShip.KeepsPayment(null).Should().BeTrue("a fine that changes no record is complete once the file holds it");
@@ -89,8 +91,9 @@ public class CreditPaymentTests
         InOrder(Method(payments, "private static void SettlePendingFoundings("),
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
-        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(GetRecordPaymentId(player, mark)))",
-            "GiveGoldToCreature(player, mark.Credits);", "Retire(player);");
+        InOrder(settle, "SettlePendingFoundings(player, mark);", "var receipts = LoadReceipts(GetObjectUUID(player));",
+            "if (!mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id)))",
+            "GiveGoldToCreature(player, mark.Credits);", "Retire(player);", "DB.Delete<CreditPaymentReceipt>(receipt.Id);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
 

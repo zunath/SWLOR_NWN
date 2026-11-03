@@ -731,7 +731,7 @@ public class TournamentRulesTests
 
         TournamentRules.FindEntryPaymentId(tournament, "pay2").Should().Be("pay2");
         TournamentRules.FindEntryPaymentId(tournament, "pay9").Should().BeNull("a payment no entrant carries is returned to the player");
-        TournamentRules.FindEntryPaymentId(null, "pay2").Should().BeNull("a tournament that is gone saved nothing");
+        TournamentRules.FindEntryPaymentId(null, "pay2").Should().BeNull("a tournament that is gone says nothing itself; its settlement left receipts for its paid entrants");
         TournamentRules.FindEntryPaymentId(tournament, string.Empty).Should().BeNull();
     }
 

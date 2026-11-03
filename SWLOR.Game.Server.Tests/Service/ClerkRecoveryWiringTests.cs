@@ -210,7 +210,11 @@ public class ClerkRecoveryWiringTests
 
         var crop = ExtractMethod(clerk, "private static ClerkRecoveryOffer FindCropOffer(");
         crop.Should().Contain("record.PlanterPlayerId != playerId").And.Contain("Property.GetCityIdForProperty(structure.ParentPropertyId) != cityId");
-        crop.Should().Contain("ClerkRecoveryRules.CanReachCrop(Farming.HasGardenPermission(player, structure), IsCitizenOf(playerId, cityId))");
+        crop.Should().Contain("ClerkRecoveryRules.CanReachCrop(Farming.HasGardenPermission(player, structure), IsCitizenOf(playerId, cityId), CanEnterPlotProperty(playerId, parent))");
+
+        var entry = ExtractMethod(clerk, "private static bool CanEnterPlotProperty(");
+        entry.Should().Contain("PropertyPermissionType.EnterProperty").And.Contain("parent.IsPubliclyAccessible")
+            .And.Contain("ClerkRecoveryRules.CanEnterPlotProperty(");
         crop.Should().Contain("ClerkRecoveryRules.GetCropActions(");
 
         var animal = ExtractMethod(clerk, "private static ClerkRecoveryOffer FindAnimalOffer(");

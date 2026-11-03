@@ -21,11 +21,13 @@ public class TournamentWiringTests
     {
         typeof(CityTournament).BaseType.Should().Be(typeof(EntityBase));
         typeof(PendingCredit).BaseType.Should().Be(typeof(EntityBase));
+        typeof(CreditPaymentReceipt).BaseType.Should().Be(typeof(EntityBase));
 
         IsIndexed(typeof(CityTournament), nameof(CityTournament.CityId)).Should().BeTrue();
         IsIndexed(typeof(CityTournament), nameof(CityTournament.RingPropertyId)).Should().BeTrue();
         IsIndexed(typeof(CityTournament), nameof(CityTournament.State)).Should().BeTrue();
         IsIndexed(typeof(PendingCredit), nameof(PendingCredit.PlayerId)).Should().BeTrue();
+        IsIndexed(typeof(CreditPaymentReceipt), nameof(CreditPaymentReceipt.PlayerId)).Should().BeTrue();
     }
 
     [Test]
@@ -91,6 +93,42 @@ public class TournamentWiringTests
     {
         ReadServerSource("Service", "CreditPayments.cs")
             .Should().Contain("CreditPaymentKind.TournamentEntry => TournamentRules.FindEntryPaymentId(DB.Get<CityTournament>(mark.RecordId), mark.Id)");
+    }
+
+    [Test]
+    public void TheSettlement_WritesReceiptsForThePaidEntrants_BeforeItDeletesTheTournament()
+    {
+        var settle = ReadServerSource("Service", "Tournaments.Settlement.cs");
+        var payouts = settle.IndexOf("PendingCredits.Add(payout.Id, payout.PlayerId, payout.Credits, payout.Reason);", StringComparison.Ordinal);
+        var receipts = settle.IndexOf("CreditPayments.SaveReceipt(paymentId, playerId);", payouts, StringComparison.Ordinal);
+        var city = settle.IndexOf("DB.Set(city);", receipts, StringComparison.Ordinal);
+        var delete = settle.IndexOf("DB.Delete<CityTournament>(tournament.Id);", city, StringComparison.Ordinal);
+
+        payouts.Should().BeGreaterThan(0);
+        receipts.Should().BeGreaterThan(payouts);
+        city.Should().BeGreaterThan(receipts);
+        delete.Should().BeGreaterThan(city, "a restart before the delete repeats the settlement and its receipts under the same ids");
+        settle.Should().Contain("TournamentSettlementRules.GetEntryReceipts(tournament)");
+    }
+
+    [Test]
+    public void TheLogin_SettlesAMarkWithTheReceiptsOfAnEndedTournament_AndDeletesThemAfterTheMarkIsRetired()
+    {
+        var payments = ReadServerSource("Service", "CreditPayments.cs");
+        var settle = payments.Substring(payments.IndexOf("public static void SettleInterruptedPayment()", StringComparison.Ordinal));
+        settle = settle.Substring(0, settle.IndexOf("private static string GetRecordPaymentId(", StringComparison.Ordinal));
+
+        var load = settle.IndexOf("var receipts = LoadReceipts(GetObjectUUID(player));", StringComparison.Ordinal);
+        var keeps = settle.IndexOf("mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id))", load, StringComparison.Ordinal);
+        var refund = settle.IndexOf("GiveGoldToCreature(player, mark.Credits);", keeps, StringComparison.Ordinal);
+        var retire = settle.IndexOf("Retire(player);", refund, StringComparison.Ordinal);
+        var delete = settle.IndexOf("DB.Delete<CreditPaymentReceipt>(receipt.Id);", retire, StringComparison.Ordinal);
+
+        load.Should().BeGreaterThan(0);
+        keeps.Should().BeGreaterThan(load);
+        refund.Should().BeGreaterThan(keeps);
+        retire.Should().BeGreaterThan(refund);
+        delete.Should().BeGreaterThan(retire, "a restart before the receipts go leaves them for a login that has no mark");
     }
 
     [Test]
@@ -200,6 +238,8 @@ public class TournamentWiringTests
     [TestCase("Service", "TournamentService", "TournamentText.cs")]
     [TestCase("Service", "TournamentService", "TournamentRules.cs")]
     [TestCase("Service", "TournamentService", "TournamentSettlementRules.cs")]
+    [TestCase("Service", "CreditPayments.cs")]
+    [TestCase("Entity", "CreditPaymentReceipt.cs")]
     [TestCase("Feature", "TournamentNotices.cs")]
     [TestCase("Feature", "DialogDefinition", "DuelingRingDialog.Tournaments.cs")]
     public void TheSource_IsPlainAscii(params string[] path)

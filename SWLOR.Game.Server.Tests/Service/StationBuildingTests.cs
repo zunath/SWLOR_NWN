@@ -570,6 +570,40 @@ public class StationBuildingTests
     }
 
     [Test]
+    public void StationConsoles_AskTheCityPowers_SoADepartedMayorsRecordGrantsNothing()
+    {
+        var dialog = ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs");
+        dialog.Should().Contain("StationBuildings.HasStationPower(Player, station, CityPower.ChangeTaxes)")
+            .And.Contain("StationBuildings.HasStationPower(Player, station, CityPower.WithdrawTreasury)");
+        dialog.Should().NotContain("PropertyPermissionType.EditTaxes").And.NotContain("PropertyPermissionType.AccessTreasury",
+            "a mayor who stepped down keeps these on their record until the snap election ends");
+
+        var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var check = service.Substring(service.IndexOf("public static bool HasStationPower(", StringComparison.Ordinal));
+        check = check.Substring(0, check.IndexOf("public static bool IsCitizen(", StringComparison.Ordinal));
+        check.Should().Contain("CityPowers.Can(station, GetObjectUUID(player), power)").And.NotContain("HasPropertyPermission(");
+        check.IndexOf("GetIsDM(player)", StringComparison.Ordinal).Should().BeLessThan(check.IndexOf("CityPowers.Can(", StringComparison.Ordinal),
+            "staff keep the access they have through HasPropertyPermission");
+    }
+
+    [Test]
+    public void NoConsoleOrServiceReadsAPermissionsTablePowerFromTheRawRecord()
+    {
+        // The Permissions table's powers (Edit Taxes, Access Treasury, Manage Upgrades, Manage Upkeep, Manage Edicts) are read with
+        // CityPowers, which turns a departed mayor's record away. Property.HasPropertyPermission does not know roles.
+        var root = Path.Combine(RepositoryRoot, "SWLOR.Game.Server");
+        var pattern = new Regex(@"HasPropertyPermission\([^;]*PropertyPermissionType\.(EditTaxes|AccessTreasury|ManageUpgrades|ManageUpkeep|ManageEdicts)\b", RegexOptions.Singleline);
+        var offenders = Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
+                           !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+            .Where(path => pattern.IsMatch(File.ReadAllText(path)))
+            .Select(path => Path.GetRelativePath(root, path))
+            .ToList();
+
+        offenders.Should().BeEmpty();
+    }
+
+    [Test]
     public void TheDrill_ReadsItsStockAgainWhenOreIsCollected()
     {
         var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");

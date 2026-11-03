@@ -29,10 +29,17 @@ namespace SWLOR.Game.Server.Service.ClerkRecoveryService
 
         /// <summary>
         /// Whether a planter can reach their crop themselves. They cannot once their garden permission on the plot's house or city is
-        /// gone (removed, the house changed hands, or they left the city, which removes it) or they are no longer a citizen of the
-        /// city the plot stands in.
+        /// gone (removed, the house changed hands, or they left the city, which removes it), they are no longer a citizen of the
+        /// city the plot stands in, or they cannot walk into the property that holds it (<see cref="CanEnterPlotProperty"/>).
         /// </summary>
-        public static bool CanReachCrop(bool holdsGardenPermission, bool isCitizenOfCity) => holdsGardenPermission && isCitizenOfCity;
+        public static bool CanReachCrop(bool holdsGardenPermission, bool isCitizenOfCity, bool canEnterPlotProperty) =>
+            holdsGardenPermission && isCitizenOfCity && canEnterPlotProperty;
+
+        /// <summary>
+        /// Whether a player can enter the property that holds a plot: it is publicly accessible (the city's land, or a house its owner
+        /// opened) or they hold Enter Property on it. This is the entry rule of a building's door.
+        /// </summary>
+        public static bool CanEnterPlotProperty(bool isPubliclyAccessible, bool holdsEnterProperty) => isPubliclyAccessible || holdsEnterProperty;
 
         /// <summary>Whether an owner can reach their corral: a citizen of its city. One who left the city or was deleted cannot.</summary>
         public static bool CanReachAnimal(bool isCitizenOfCity) => isCitizenOfCity;

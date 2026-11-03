@@ -97,7 +97,7 @@ public class SpaceStaleMenuTests
         var dialog = ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs");
 
         var collect = Between(dialog, "page.AddResponse(\"Collect the ore\"", "page.AddResponse(\"Assigned droid\"");
-        Index(collect, "Property.HasPropertyPermission(player, station.Id, PropertyPermissionType.AccessTreasury)")
+        Index(collect, "if (!CanCollectOre(station))")
             .Should().BeLessThan(Index(collect, "StationBuildings.CollectDrill(player, station, state.BuildingId);"));
 
         var recall = Between(dialog, "page.AddResponse($\"Recall {state.DroidName}\"", "page.AddResponse(\"Assign one of your droids\"");

@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.LogService;
@@ -163,6 +164,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Permissions and citizenship
+
+        /// <summary>
+        /// Whether the player holds a city power at the station, by their role or a permission they hold
+        /// (<see cref="CityPowers.Can"/>). A mayor who stepped down holds none, whatever their permission record says, so the
+        /// consoles ask here and not <see cref="Property.HasPropertyPermission"/>. Staff always do, as there.
+        /// </summary>
+        public static bool HasStationPower(uint player, WorldProperty station, CityPower power)
+        {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+
+            return GetIsPC(player) && station != null && CityPowers.Can(station, GetObjectUUID(player), power);
+        }
 
         public static bool IsCitizen(uint player, WorldProperty station)
         {

@@ -305,4 +305,50 @@ public class CityPermissionTableTests
     }
 
     #endregion
+
+    #region Station consoles
+
+    // A station console sets its policy with the Change taxes power (Edit Taxes) and hands out the drill's ore with the Withdraw from the
+    // treasury power (Access Treasury). StationBuildings.HasStationPower asks CityPowers.Can, which reads the role and the record with these rules.
+
+    [Test]
+    public void AfterTheStepDownIsAccepted_TheDepartedMayorCannotSetAStationsPolicyOrCollectItsOre_WhateverTheirRecordSays()
+    {
+        var station = City();
+        station.StepDown = AcceptedStepDown();
+        var everything = Enum.GetValues<PropertyPermissionType>().ToDictionary(type => type, _ => true);
+        var role = CityPowerRules.GetRole(station, Mayor, Now);
+
+        role.Should().Be(CityRole.DepartedMayor);
+        CityPowerRules.HasPower(role, CityPower.ChangeTaxes, everything).Should().BeFalse("the policy consoles are the Edit Taxes power");
+        CityPowerRules.HasPower(role, CityPower.WithdrawTreasury, everything).Should().BeFalse("the drill's ore is the Access Treasury power");
+    }
+
+    [Test]
+    public void UntilTheStepDownIsAccepted_TheMayorKeepsTheStationConsoles()
+    {
+        var station = City();
+        station.StepDown = new CityStepDown { InterimHolderPlayerId = Interim, Stage = CityStepDownStage.Pending, AcceptDeadlineUtc = Now.AddDays(7) };
+        var role = CityPowerRules.GetRole(station, Mayor, Now);
+
+        CityPowerRules.HasPower(role, CityPower.ChangeTaxes, null).Should().BeTrue();
+        CityPowerRules.HasPower(role, CityPower.WithdrawTreasury, null).Should().BeTrue();
+    }
+
+    [Test]
+    public void DuringTheSnapElection_TheInterimHolderSetsPolicyButDoesNotCollectTheOre_AndAGrantedPermissionStillWorks()
+    {
+        var station = City();
+        station.StepDown = AcceptedStepDown();
+        var interim = CityPowerRules.GetRole(station, Interim, Now);
+        var delegateRole = CityPowerRules.GetRole(station, Citizen, Now);
+
+        CityPowerRules.HasPower(interim, CityPower.ChangeTaxes, null).Should().BeTrue("the Acting Mayor changes taxes");
+        CityPowerRules.HasPower(interim, CityPower.WithdrawTreasury, null).Should().BeFalse("the Acting Mayor makes no treasury withdrawals");
+        CityPowerRules.HasPower(delegateRole, CityPower.ChangeTaxes, Granted(PropertyPermissionType.EditTaxes)).Should().BeTrue();
+        CityPowerRules.HasPower(delegateRole, CityPower.WithdrawTreasury, Granted(PropertyPermissionType.AccessTreasury)).Should().BeTrue();
+        CityPowerRules.HasPower(delegateRole, CityPower.ChangeTaxes, Granted(PropertyPermissionType.AccessTreasury)).Should().BeFalse();
+    }
+
+    #endregion
 }

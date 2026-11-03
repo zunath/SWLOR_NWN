@@ -114,6 +114,24 @@ namespace SWLOR.Game.Server.Service.TournamentService
             return settlement with { ReleasedEscrow = true };
         }
 
+        /// <summary>
+        /// The credit payments that paid for the entrants' sign-ups, by payment id, with the player who made each. Settling a tournament
+        /// deletes it, and with it the only proof that a sign-up was saved: a payer whose restart left the payment's mark would otherwise
+        /// find no record, read the sign-up as never saved, and be returned a fee the settlement already returned or kept. The settlement
+        /// writes these as receipts (<see cref="CreditPaymentReceipt"/>) before it deletes the tournament. An entrant who paid nothing has none.
+        /// </summary>
+        public static Dictionary<string, string> GetEntryReceipts(CityTournament tournament)
+        {
+            var receipts = new Dictionary<string, string>();
+            foreach (var entrant in tournament.Entrants)
+            {
+                if (!string.IsNullOrWhiteSpace(entrant.PaymentId) && !string.IsNullOrWhiteSpace(entrant.PlayerId))
+                    receipts[entrant.PaymentId] = entrant.PlayerId;
+            }
+
+            return receipts;
+        }
+
         /// <summary>The id of a player's payout from a tournament ending a given way.</summary>
         public static string BuildPayoutId(CityTournament tournament, TournamentOutcome outcome, string playerId)
         {

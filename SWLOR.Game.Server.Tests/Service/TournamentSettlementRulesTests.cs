@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DuelService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -320,6 +321,82 @@ public class TournamentSettlementRulesTests
 
         again.ReleasedEscrow.Should().BeTrue();
         saved.Treasury.Should().Be(80_000 - Prize + 4 * Fee);
+    }
+
+    // A restart in the middle of signing up, then a cancellation before the entrant logs back in
+
+    private static CityTournament PaidEntrants(int entrants)
+    {
+        var tournament = Tournament(entrants);
+        foreach (var entrant in tournament.Entrants)
+            entrant.PaymentId = $"pay-{entrant.PlayerId}";
+
+        return tournament;
+    }
+
+    private static CreditPaymentMark EntryMark(string playerId) =>
+        new() { Id = $"pay-{playerId}", Kind = CreditPaymentKind.TournamentEntry, RecordId = "tournament-1", Credits = (int)Fee };
+
+    [TestCase(TournamentOutcome.Cancelled)]
+    [TestCase(TournamentOutcome.CityRemoved)]
+    public void ARestartAfterTheEntrantWasSaved_ThenACancellation_ReturnsTheFeeOnce(TournamentOutcome outcome)
+    {
+        var tournament = PaidEntrants(3);
+        var mark = EntryMark("p2");
+
+        // The server stopped after the entrant was saved and before the mark was retired. The settlement owes p2 the fee...
+        var settlement = TournamentSettlementRules.Build(tournament, outcome, Escrow(tournament));
+        settlement.Payouts.Where(x => x.PlayerId == "p2").Sum(x => x.Credits).Should().Be(Fee);
+
+        // ...and deletes the tournament, so the entrant's record no longer says the sign-up was saved.
+        var recordPaymentId = TournamentRules.FindEntryPaymentId(null, mark.Id);
+        mark.KeepsPayment(recordPaymentId).Should().BeFalse("without a receipt the login would return the fee a second time");
+
+        // The receipts the settlement wrote before it deleted the tournament settle the mark.
+        var receipts = TournamentSettlementRules.GetEntryReceipts(tournament);
+        receipts[mark.Id].Should().Be("p2");
+        mark.KeepsPayment(recordPaymentId, receipts.ContainsKey(mark.Id)).Should().BeTrue("the fee is already owed through the settlement");
+    }
+
+    [Test]
+    public void ARestartAfterTheEntrantWasSaved_ThenACompletedTournament_KeepsTheFeeForTheCity()
+    {
+        var tournament = PaidEntrants(4);
+        var mark = EntryMark("p3");
+
+        TournamentSettlementRules.Build(tournament, TournamentOutcome.Completed, Escrow(tournament))
+            .Payouts.Where(x => x.PlayerId == "p3").Should().BeEmpty("the fee went to the city");
+
+        mark.KeepsPayment(TournamentRules.FindEntryPaymentId(null, mark.Id), TournamentSettlementRules.GetEntryReceipts(tournament).ContainsKey(mark.Id))
+            .Should().BeTrue("the sign-up was saved, so the fee is not returned");
+    }
+
+    [Test]
+    public void ARestartBeforeTheEntrantWasSaved_ThenACancellation_StillReturnsTheFeeThroughTheMark()
+    {
+        var tournament = PaidEntrants(2);
+        var unsaved = EntryMark("p9");
+
+        // p9 never reached the tournament, so the settlement owes them nothing and wrote no receipt for them.
+        TournamentSettlementRules.Build(tournament, TournamentOutcome.Cancelled, Escrow(tournament)).Payouts.Should().NotContain(x => x.PlayerId == "p9");
+        var receipts = TournamentSettlementRules.GetEntryReceipts(tournament);
+
+        receipts.ContainsKey(unsaved.Id).Should().BeFalse();
+        unsaved.KeepsPayment(TournamentRules.FindEntryPaymentId(null, unsaved.Id), receipts.ContainsKey(unsaved.Id))
+            .Should().BeFalse("the login returns the fee the player was charged, the only time it is returned");
+    }
+
+    [Test]
+    public void TheReceipts_AreOnePerPaidEntrant_AndNoneForAnEntrantWhoPaidNothing()
+    {
+        var tournament = PaidEntrants(3);
+        tournament.Entrants[1].PaymentId = string.Empty;
+        tournament.Entrants[2].PlayerId = string.Empty;
+
+        var receipts = TournamentSettlementRules.GetEntryReceipts(tournament);
+
+        receipts.Should().ContainSingle().Which.Should().Be(new KeyValuePair<string, string>("pay-p1", "p1"));
+        TournamentSettlementRules.GetEntryReceipts(new CityTournament()).Should().BeEmpty();
     }
 
     [Test]

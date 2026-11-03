@@ -86,6 +86,13 @@ namespace SWLOR.Game.Server.Service
                 PendingCredits.Add(payout.Id, payout.PlayerId, payout.Credits, payout.Reason);
             }
 
+            // The tournament is the only proof that an entrant's sign-up was saved, and it goes below. An entrant whose restart left a
+            // payment mark in their character file is settled by these receipts at their next login, so the fee is not returned twice.
+            foreach (var (paymentId, playerId) in TournamentSettlementRules.GetEntryReceipts(tournament))
+            {
+                CreditPayments.SaveReceipt(paymentId, playerId);
+            }
+
             if (settlement.ReleasedEscrow)
                 DB.Set(city);
 

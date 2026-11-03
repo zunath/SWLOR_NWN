@@ -2,6 +2,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
@@ -68,8 +69,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return false;
         }
 
+        // The city powers of the Permissions table, read by role and permission (a mayor who stepped down has none).
         private bool CanSetPolicy(WorldProperty station) =>
-            Property.HasPropertyPermission(Player, station.Id, PropertyPermissionType.EditTaxes);
+            StationBuildings.HasStationPower(Player, station, CityPower.ChangeTaxes);
+
+        private bool CanCollectOre(WorldProperty station) =>
+            StationBuildings.HasStationPower(Player, station, CityPower.WithdrawTreasury);
 
         private bool CanManageStructures(WorldProperty station) =>
             Property.HasPropertyPermission(Player, station.Id, PropertyPermissionType.EditStructures);
@@ -155,12 +160,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           $"Ore: {ore}\n" +
                           DescribeDroid(state, $"output +{droidPercent}%");
 
-            if (Property.HasPropertyPermission(player, station.Id, PropertyPermissionType.AccessTreasury))
+            if (CanCollectOre(station))
             {
                 page.AddResponse("Collect the ore", () =>
                 {
                     // The permission may have been revoked since the page was built.
-                    if (!Property.HasPropertyPermission(player, station.Id, PropertyPermissionType.AccessTreasury))
+                    if (!CanCollectOre(station))
                     {
                         SendMessageToPC(player, ColorToken.Red("You no longer have permission to collect the ore."));
                         return;

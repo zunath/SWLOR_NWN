@@ -52,6 +52,33 @@ namespace SWLOR.Game.Server.Service
             ExportSingleCharacter(player);
         }
 
+        // Receipts
+
+        /// <summary>
+        /// Keeps the proof that a payment's change was saved after the record that held it is deleted
+        /// (<see cref="CreditPaymentReceipt"/>). Writing the same payment again leaves one receipt.
+        /// </summary>
+        public static void SaveReceipt(string paymentId, string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(paymentId) || string.IsNullOrWhiteSpace(playerId))
+                return;
+
+            DB.Set(new CreditPaymentReceipt { Id = paymentId, PlayerId = playerId, CreatedUtc = DateTime.UtcNow });
+        }
+
+        private static List<CreditPaymentReceipt> LoadReceipts(string playerId)
+        {
+            var query = new DBQuery<CreditPaymentReceipt>()
+                .AddFieldSearch(nameof(CreditPaymentReceipt.PlayerId), playerId, false);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
+                return new List<CreditPaymentReceipt>();
+
+            return DB.Search(query.AddPaging(count, 0))
+                .Where(x => x != null)
+                .ToList();
+        }
+
         // Station founding
 
         /// <summary>
@@ -137,6 +164,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Settles the credit payment a restart interrupted: pending station foundings first (they read the mark), then
         /// the mark itself, whose payment is returned when its change was never saved. The mark is retired either way.
+        /// A change saved in a record that was deleted before this login (a tournament cancelled or removed) left a receipt, which
+        /// keeps the payment: the settlement that deleted the record already returned or kept the money. The player's receipts go
+        /// once the mark is retired; they only exist to settle a mark.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleInterruptedPayment()
@@ -147,19 +177,27 @@ namespace SWLOR.Game.Server.Service
 
             CreditPaymentMark.TryParse(ObjectPlugin.GetString(player, MarkVariable), out var mark);
             SettlePendingFoundings(player, mark);
-            if (mark == null)
-                return;
 
-            if (!mark.KeepsPayment(GetRecordPaymentId(player, mark)))
+            var receipts = LoadReceipts(GetObjectUUID(player));
+            if (mark != null)
             {
-                GiveGoldToCreature(player, mark.Credits);
-                var credits = mark.Credits;
-                DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
-                    $"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.")));
-                Log.Write(LogGroup.Space, $"CREDIT PAYMENT RETURNED - {PlayerName.GetAuditName(player)} - {mark.Kind} {mark.RecordId} - {mark.Credits} credits whose change a restart never saved");
+                if (!mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id)))
+                {
+                    GiveGoldToCreature(player, mark.Credits);
+                    var credits = mark.Credits;
+                    DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
+                        $"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.")));
+                    Log.Write(LogGroup.Space, $"CREDIT PAYMENT RETURNED - {PlayerName.GetAuditName(player)} - {mark.Kind} {mark.RecordId} - {mark.Credits} credits whose change a restart never saved");
+                }
+
+                Retire(player);
             }
 
-            Retire(player);
+            // After the mark is retired: a restart before this leaves the receipts for the next login, which has no mark to settle.
+            foreach (var receipt in receipts)
+            {
+                DB.Delete<CreditPaymentReceipt>(receipt.Id);
+            }
         }
 
         /// <summary>The player's payment id saved with the mark's change on its record, or null when the record is gone.</summary>

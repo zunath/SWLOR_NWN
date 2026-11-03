@@ -480,6 +480,10 @@ The generator writes `model_builds` records only after validation succeeds. Reus
 requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
+For a wearer root, the parent is its bank's skeleton and part IDs without the clips,
+since the compiler copies no clips into the root. An animation release that keeps
+the bank skeleton therefore reuses every root and rebuilds only the banks; the
+whole-chain pose checks below still evaluate every root against the new clips.
 Whole-chain body-pose checks still run during generation even when models are reused.
 Staging `compilations.json` records compilation-only checkpoints for interrupted
 builds. They require matching source, compiler, parent, original binding data,

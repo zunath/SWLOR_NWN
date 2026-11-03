@@ -245,6 +245,15 @@ public class WeaponTechniqueTests
         c.Weapon.DefensePercent(29).Should().Be(10);
         c.Weapon.DefensePercent(30).Should().Be(0);
     }
+    [Test] public void BreakerReversal_WaitsForTheNextControlAbility()
+    {
+        var c = Fighter("c", 1, "None", "BreakerReversal"); var enemy = Fighter("e", 2);
+        c.Weapon.AnyDamage(0);
+        Use(c, enemy, FeatType.HookingStrike4, 1, control: false).FlatPower.Should().Be(0);
+        c.Weapon.ReversalUntil.Should().Be(30);
+        Use(c, enemy, FeatType.HookingStrike4, 2, control: true).FlatPower.Should().Be(20);
+        c.Weapon.ReversalUntil.Should().Be(0);
+    }
     [Test] public void RejectedControl_DoesNotRefreshDefenseButRetainsAuthoredDamageAndAccuracyBonuses()
     {
         var c = Fighter("c", 1, "None", "GuardTraining", "RedirectingGuard", "ScrapperControl:3");

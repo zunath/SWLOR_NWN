@@ -2464,6 +2464,14 @@ namespace SWLOR.Game.Server.Service
                 defenseIgnore,
                 duration,
                 StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                attacker,
+                StatType.NextSkillAbilityRequiredCategory,
+                0,
+                duration,
+                StatType.NextSkillAbilitySkillType);
         }
 
         private static void ApplyCriticalNextAbilityDamageBonus(uint attacker, SkillType skillType)
@@ -2682,7 +2690,10 @@ namespace SWLOR.Game.Server.Service
             if (damageBonus <= 0 || window <= 0)
                 return;
 
-            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window);
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                defender,
+                StatType.DamageTakenNextSkillAbilityRequiredCategory));
+            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window, requiredCategory: requiredCategory);
         }
 
         public static void ApplyLowHPDamageTakenEffects(uint defender, int damage)
@@ -5961,7 +5972,8 @@ namespace SWLOR.Game.Server.Service
             bool firstHostileAbilityHitDamageBonusApplied,
             bool isFirstSuccessfulTarget,
             StatusEffectCategory appliedStatusCategories,
-            bool allowsHitProcs = true)
+            bool allowsHitProcs = true,
+            bool targetWasAttackingAlly = false)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5994,7 +6006,8 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusAppliedEffects(
                 activator,
                 target,
-                appliedStatusCategories);
+                appliedStatusCategories,
+                targetWasAttackingAlly);
             ApplyAbilityTargetStatusEffects(activator, target, ability);
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
@@ -7634,7 +7647,8 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStatusAppliedEffects(
             uint activator,
             uint target,
-            StatusEffectCategory appliedStatusCategories)
+            StatusEffectCategory appliedStatusCategories,
+            bool targetWasAttackingAlly)
         {
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 activator,
@@ -7665,6 +7679,66 @@ namespace SWLOR.Game.Server.Service
 
             ApplyStatusAppliedSelfEffects(activator);
             ApplyStatusAppliedTargetEffects(activator, target);
+            if (targetWasAttackingAlly)
+                ApplyStatusAppliedTargetAttackingAllyEnmity(activator, target);
+        }
+
+        /// <summary>
+        /// Whether the target is attacking one of the activator's allies, checked only when the activator
+        /// has a rider that needs it.
+        /// </summary>
+        public static bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target)
+        {
+            if (Stat.GetStatAdjustment(activator, StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment) <= 0)
+                return false;
+
+            return IsAttackingAllyOf(target, activator);
+        }
+
+        /// <summary>
+        /// Whether the attacker is attacking a party member of the creature other than the creature itself.
+        /// Uses the attacker's current attack target, or, while it is casting or moving, the creature its
+        /// enmity table has it attacking.
+        /// </summary>
+        public static bool IsAttackingAllyOf(uint attacker, uint creature)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(creature))
+                return false;
+
+            var attackTarget = GetAttackTarget(attacker);
+            if (!GetIsObjectValid(attackTarget))
+                attackTarget = Enmity.GetHighestEnmityAttackTarget(attacker);
+
+            return GetIsObjectValid(attackTarget) &&
+                   attackTarget != creature &&
+                   Party.IsInParty(creature, attackTarget);
+        }
+
+        private static void ApplyStatusAppliedTargetAttackingAllyEnmity(uint activator, uint target)
+        {
+            var enmity = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment);
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedTargetAttackingAllyEnmityDurationSeconds);
+            if (enmity <= 0 || duration <= 0 || !GetIsObjectValid(target))
+                return;
+
+            // Challenge is the shared "more Enmity toward its source" status. Never replace a stronger one
+            // the activator already put on this target, such as Guardian's Challenge.
+            var existing = StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Where(effect => effect is ChallengeEnmityStatusEffect &&
+                                 effect.Source == activator &&
+                                 !effect.IsFlaggedForRemoval)
+                .Select(effect => effect.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment))
+                .DefaultIfEmpty(0)
+                .Max();
+            if (existing > enmity)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, new ChallengeEnmityStatusEffect(enmity), duration);
         }
 
         private static void ApplyStatusAppliedSelfEffects(uint activator)
@@ -9563,9 +9637,12 @@ namespace SWLOR.Game.Server.Service
                        GetSkillTypeFromStat(source[StatType.NextSkillAbilityStaminaCostAdjustmentSkillType]));
         }
 
+        /// <param name="abilityStatusCategories">Status categories the ability applies; a bonus stored with
+        /// a required category (Breaker Reversal: Control) waits for an ability that applies it.</param>
         public static (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            StatusEffectCategory abilityStatusCategories = StatusEffectCategory.None)
         {
             if (skillType == SkillType.Invalid)
                 return (0, 0, 0);
@@ -9576,6 +9653,16 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType));
             if (!SkillTypeMatches(skillType, storedSkillType))
                 return (0, 0, 0);
+
+            var requiredCategory = GetStatusEffectCategoryFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                StatType.NextSkillAbilitySkillType));
+            if (requiredCategory != StatusEffectCategory.None &&
+                (abilityStatusCategories & requiredCategory) == 0)
+            {
+                return (0, 0, 0);
+            }
 
             var damageBonus = TemporaryStatModifier.Consume(
                 creature,
@@ -9588,6 +9675,10 @@ namespace SWLOR.Game.Server.Service
             var defenseIgnore = TemporaryStatModifier.Consume(
                 creature,
                 StatType.NextSkillAbilityDefenseIgnorePercentAdjustment,
+                StatType.NextSkillAbilitySkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
                 StatType.NextSkillAbilitySkillType);
             TemporaryStatModifier.Consume(
                 creature,
@@ -9906,9 +9997,13 @@ namespace SWLOR.Game.Server.Service
                 StatType.WeaponAbilityActivationIdleSnapshot);
         }
 
+        /// <param name="ability">The queued ability. Its status categories add category accuracy
+        /// (Scrapper Control: "your control abilities gain Ability Accuracy"), which ability rolls get
+        /// in ApplyCombatImpact but the native weapon roll would otherwise miss.</param>
         public static int GetQueuedWeaponAbilityActivationHitChanceAdjustment(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            AbilityDetail ability = null)
         {
             var activationSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
@@ -9921,8 +10016,14 @@ namespace SWLOR.Game.Server.Service
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
 
+            var statusCategoryHitChanceAdjustment = GetAbilityStatusCategoryHitChancePercentAdjustment(
+                creature,
+                skillType,
+                ability?.ResolveImpactStatusCategories?.Invoke(creature) ?? StatusEffectCategory.None);
+
             // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
-            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment +
+                   statusCategoryHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
@@ -11939,7 +12040,8 @@ namespace SWLOR.Game.Server.Service
             int damageBonus,
             int criticalRatePercentAdjustment,
             int durationSeconds,
-            int defenseIgnorePercentAdjustment = 0)
+            int defenseIgnorePercentAdjustment = 0,
+            StatusEffectCategory requiredCategory = StatusEffectCategory.None)
         {
             if (!GetIsObjectValid(creature) ||
                 durationSeconds <= 0 ||
@@ -11950,6 +12052,14 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.NextSkillAbilitySkillType,
                 (int)skillType,
+                durationSeconds,
+                StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                (int)requiredCategory,
                 durationSeconds,
                 StatType.NextSkillAbilitySkillType);
 

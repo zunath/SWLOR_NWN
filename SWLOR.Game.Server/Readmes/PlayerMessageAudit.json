@@ -4845,56 +4845,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1040,
+    "Line": 1058,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1048,
+    "Line": 1066,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1071,
+    "Line": 1089,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1075,
+    "Line": 1093,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 62,
+    "Line": 64,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 338,
+    "Line": 340,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 359,
+    "Line": 361,
     "Member": "ApplyShipBlueprintTraits",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 453,
+    "Line": 455,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

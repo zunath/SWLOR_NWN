@@ -58,6 +58,11 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;
 
+    /// <summary>What the fake says a failing requirement of the recipe is, in its own words. Empty for a plain refusal.</summary>
+    public string RequirementProblem { get; set; } = string.Empty;
+
+    public string GetRequirementProblem(uint player, RecipeType recipe) => RequirementProblem;
+
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe) => BlueprintProblem;
 
     public BlueprintDetail ChargeBlueprint(uint player, uint blueprintItem)

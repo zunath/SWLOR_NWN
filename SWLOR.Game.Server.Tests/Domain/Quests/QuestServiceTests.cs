@@ -1037,7 +1037,7 @@ public class QuestServiceTests
     }
 
     [Test]
-    public void ProgressKillTargetObjectives_skips_members_who_are_dead_in_another_area_or_too_far_away()
+    public void ProgressKillTargetObjectives_skips_members_who_are_dead_or_in_another_area()
     {
         RegisterHunt();
         _faction.AddRange(new[] { Dm, Ally });
@@ -1047,11 +1047,8 @@ public class QuestServiceTests
         _dead.Clear();
         _areas[Ally] = Spaceport;
         _service.ProgressKillTargetObjectives();
-        _areas[Ally] = Cantina;
-        _distance = 80f;
-        _service.ProgressKillTargetObjectives();
 
-        _db.Reads.Should().BeEmpty("the DM, the dead player, the player in another area and the player out of range are not credited");
+        _db.Reads.Should().BeEmpty("the DM, the dead player and the player in another area are not credited");
     }
 
     [Test]
@@ -1109,6 +1106,51 @@ public class QuestServiceTests
     }
 
     [Test]
+    public void ProgressKillTargetObjectives_credits_nobody_beyond_the_distance_a_kill_objective_allows()
+    {
+        RegisterHunt();
+        _service.RegisterRuntimeQuest(HuntQuest(new KillTargetObjective(NPCGroupType.Korriban_AlchemizedFrog, 3, 5f)));
+        _faction.Add(Hero);
+        _db.With(new Player("uuid-" + Hero) { Quests = { ["story"] = new PlayerQuest { CurrentState = 1 } } });
+        _distance = 10f;
+
+        var progress = () => _service.ProgressKillTargetObjectives();
+
+        progress.Should().NotThrow("the objective's range of 5 is exceeded, so it is never asked to advance");
+        _db.Reads.Should().Equal("uuid-" + Hero);
+        _db.Saved.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ProgressKillTargetObjectives_still_reads_the_record_of_a_member_beyond_fifty_meters()
+    {
+        RegisterHunt();
+        _faction.Add(Hero);
+        _db.With(new Player("uuid-" + Hero));
+        _distance = 80f;
+
+        _service.ProgressKillTargetObjectives();
+
+        _db.Reads.Should().Equal("uuid-" + Hero);
+    }
+
+    [Test]
+    public void ProgressKillTargetObjectives_asks_the_objective_whether_the_kill_counts_for_each_member()
+    {
+        RegisterHunt();
+        var objective = new RefusingObjective();
+        _service.RegisterRuntimeQuest(HuntQuest(objective));
+        _faction.Add(Hero);
+        _db.With(new Player("uuid-" + Hero) { Quests = { ["story"] = new PlayerQuest { CurrentState = 1 } } });
+
+        var progress = () => _service.ProgressKillTargetObjectives();
+
+        progress.Should().NotThrow("a refused kill is never advanced");
+        objective.Asked.Should().Equal((Hero, Beast));
+        _db.Saved.Should().BeEmpty();
+    }
+
+    [Test]
     public void ProgressKillTargetObjectives_credits_the_players_of_an_encounter_creature_and_clears_the_encounter()
     {
         RegisterHunt();
@@ -1122,6 +1164,31 @@ public class QuestServiceTests
         _engine.CallsTo("GetNearestCreature").Should().ContainSingle("the encounter credits its own participants");
         _db.Reads.Should().Contain("uuid-" + Hero);
         _locals.Object(Giver, QuestEncounterService.ActiveCreatureVariable).Should().Be(ObjectInvalid, "the activator is free for the next call");
+    }
+
+    private static QuestDetail HuntQuest(IQuestObjective objective)
+    {
+        var quest = new QuestDetail { QuestId = "story", Name = "story" };
+        quest.States[1] = new QuestStateDetail { JournalText = "Hunt." };
+        quest.States[1].AddObjective(objective);
+        return quest;
+    }
+
+    /// <summary>A kill objective for the frog group that refuses every kill and records who it was asked about.</summary>
+    private sealed class RefusingObjective : KillTargetObjective
+    {
+        public RefusingObjective()
+            : base(NPCGroupType.Korriban_AlchemizedFrog, 3)
+        {
+        }
+
+        public List<(uint Player, uint Creature)> Asked { get; } = new();
+
+        public override bool CountsKill(uint player, uint creature)
+        {
+            Asked.Add((player, creature));
+            return false;
+        }
     }
 
     /// <summary>Registers the sample hunt (four quests that want the frog group killed) and makes the beast a frog.</summary>

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Administration;
 /// <summary>
 /// Unit tests of the DM blueprint catalog instance. The engine, its JSON values and templates (<see cref="FakeJsonEngine"/>)
 /// and the resource listing of the NWNX utility plugin are replaced by fakes, so palettes are read from templates
-/// registered by the test.
+/// registered by the test. A created creature is prepared by the spawn facade, so the fixture installs a container.
 /// </summary>
 [TestFixture]
 public class DMBlueprintCatalogServiceTests
@@ -42,10 +42,19 @@ public class DMBlueprintCatalogServiceTests
     private IDisposable _utilScope = null!;
     private IDisposable _objectScope = null!;
     private DMBlueprintCatalogService _service = null!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
 
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _world = new DMPossessionEngine();
         _json = new FakeJsonEngine(_world.Engine);
         _util = new FakeUtilPlugin();
@@ -63,6 +72,7 @@ public class DMBlueprintCatalogServiceTests
         _objectScope.Dispose();
         _utilScope.Dispose();
         _world.Dispose();
+        _facadeScope.Dispose();
     }
 
     private static DMBlueprint Blueprint(string resref, DMBlueprintCategory category) =>

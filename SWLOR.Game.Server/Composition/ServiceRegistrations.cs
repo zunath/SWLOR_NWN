@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
 
             // Creatures
+            services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnService, SpawnService>();
 

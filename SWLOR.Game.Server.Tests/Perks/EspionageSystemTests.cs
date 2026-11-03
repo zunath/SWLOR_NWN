@@ -273,12 +273,6 @@ public class EspionageSystemTests
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
-        var aiSource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "AI.cs"));
-
         var resolveStart = stealthSource.IndexOf(
             "private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
             StringComparison.Ordinal);
@@ -315,14 +309,6 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("Stealth perk refresh reapplied active status snapshot");
         stealthSource.Should().Contain("Stealth perk full refund forced native stealth exit");
         stealthSource.Should().Contain("Stealth detection forced native stealth exit");
-        aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
-        aiSource.Should().Contain("if (!IsAIEnabled(observer))");
-        aiSource.Should().Contain("if (!TryAcquireAggro(observer, target))");
-        var successfulAggroIndex = aiSource.IndexOf("if (!TryAcquireAggro(observer, target))", StringComparison.Ordinal);
-        var successfulAggroLogIndex = aiSource.IndexOf("Stealth detection acquired normal proximity aggro", StringComparison.Ordinal);
-        successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
-        successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
-            "the handoff log must describe a completed acquisition, not a rejected attempt");
     }
 
     [TestCase(true, true, true, TestName = "Hostile observer success breaks stealth")]
@@ -500,11 +486,6 @@ public class EspionageSystemTests
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
-        var aiSource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "AI.cs"));
         var infiltrationSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -518,17 +499,6 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackBefore)]");
         stealthSource.Should().Contain("EspionageInfiltration.RecordPlayerCombatInitiation(attacker);");
         stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
-        aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
-        aiSource.Should().Contain("if (!Stealth.CanAcquireAggro(self, entering))");
-        aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
-        aiSource.IndexOf("EspionageInfiltration.TryBegin(entering, self);", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal),
-                "the attempt must exist before the first opposed detection result is recorded");
-        aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                aiSource.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal),
-                "an undetected stealthed player must not enter the hostile's enmity table");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");

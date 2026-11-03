@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         public static void Clear(uint companion)
         {
             _states.Remove(companion);
-            NPCAI.ClearState(companion);
+            AI.ClearAIState(companion);
         }
 
         public static CompanionMode GetMode(uint companion)
@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return;
             }
 
-            if (NPCAI.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
+            if (AI.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
             {
                 SendResponse(companion, $"Using {abilityName} on you, then returning to Follow.");
                 return;

@@ -40,10 +40,26 @@ public class SpawnServiceTests
     private TestSpawnService _service = null!;
     private uint _area;
     private SpawnSim _player = null!;
+    private FacadeContainer _container = null!;
+    private IDisposable _containerScope = null!;
+
+    // The spawn code sets the AI flags and profile of a spawn through the AI facade, which resolves from a container.
+    [OneTimeSetUp]
+    public void BuildTheContainer()
+    {
+        _container = new FacadeContainer();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeTheContainer()
+    {
+        _container.Dispose();
+    }
 
     [SetUp]
     public void SetUp()
     {
+        _containerScope = _container.Install();
         SpawnActions.Clear();
         GameRandom.SetSeed(20261103);
         _bench = new SpawnBench(Start);
@@ -58,6 +74,7 @@ public class SpawnServiceTests
     {
         _bench.Dispose();
         GameRandom.ResetSeed();
+        _containerScope.Dispose();
     }
 
     // ---------------------------------------------------------------- loading the tables and the areas

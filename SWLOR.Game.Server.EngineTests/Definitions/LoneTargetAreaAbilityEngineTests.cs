@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.AIService;
@@ -25,18 +24,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var mynock = await SpawnMynockAsync(ctx, player.Creature, AILevel.VeryLow);
             Enmity.ModifyEnmity(player.Creature, mynock, 10);
 
-            var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
             foreach (var (feat, expected, label) in new[]
                      {
                          (FeatType.SonicShriek, player.Creature, "Sonic Shriek aims at the lone player"),
                          (FeatType.DisorientingScreech, mynock, "Disorienting Screech centers on the mynock with the lone player in range")
                      })
             {
-                var action = NPCAI.Profiles[AIProfileType.Generic].Actions
+                var action = AIInternals.Profiles[AIProfileType.Generic].Actions
                     .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == feat);
                 var context = new AIContext(mynock, AITriggerType.CombatRound, player.Creature,
                     new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
-                var selected = (uint)resolveTarget.Invoke(null, new object[] { context, action })!;
+                var selected = (uint)AIInternals.Invoke("ResolveTarget", context, action);
                 ctx.AssertEqual(expected, selected, label);
                 context.SetEvaluatedTarget(selected);
                 ctx.Assert(action.Score(context) > 0, $"{feat} scores against the lone player");

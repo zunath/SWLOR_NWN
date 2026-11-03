@@ -435,7 +435,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             })
             {
                 var ability = Ability.GetAbilityDetail(feat);
-                var action = NPCAI.Profiles[AIProfileType.BeastCompanion].Actions
+                var action = AIInternals.Profiles[AIProfileType.BeastCompanion].Actions
                     .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == feat);
                 var context = new AIContext(beast, AITriggerType.Heartbeat, target,
                     new AIProfile { Type = AIProfileType.BeastCompanion }, new AIState(), Array.Empty<uint>());

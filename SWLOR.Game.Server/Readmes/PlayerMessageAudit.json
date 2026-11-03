@@ -98,6 +98,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
+    "Line": 1511,
+    "Member": "ExecuteAction",
+    "Delivery": "Retained",
+    "Call": "SpeakString(action.Text)"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
     "Line": 109,
     "Member": "GiveGuildPoints",
@@ -4758,13 +4765,6 @@
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/AIService/NPCAI.cs",
-    "Line": 551,
-    "Member": "ExecuteAction",
-    "Delivery": "Retained",
-    "Call": "SpeakString(action.Text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/CasinoSlot.cs",

@@ -64,7 +64,13 @@ public class DMPossessionPlayerLoopTests
                 public enum AIFlag { None = 0, ReturnHome = 1 }
                 public static AIFlag GetAIFlag(uint creature) => AIFlag.ReturnHome;
                 private static bool GetIsEnemy(uint target, uint source) => true;
-                {{Method("Service/AI.cs", "ShouldUseCombatLeash")}}
+                // The AI instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
+                {{InstanceMethod("Domain/Creatures/AIService.cs", "ShouldUseCombatLeash")}}
             }
 
             public static class Mimicry

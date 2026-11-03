@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -68,15 +67,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // The Tusken is fighting the visible decoy; the stealthed player stands beside it.
             Enmity.ModifyEnmity(decoy, tusken, 10);
-            var screech = NPCAI.Profiles[AIProfileType.Generic].Actions
+            var screech = AIInternals.Profiles[AIProfileType.Generic].Actions
                 .Single(action => action.Type == AIActionType.Ability && action.Feat == FeatType.DisorientingScreech);
             var context = new AIContext(tusken, AITriggerType.CombatRound, decoy,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
-            var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
             var radius = Ability.GetAbilityDetail(FeatType.DisorientingScreech).Targeting.ResolveSizeX(tusken, true);
             int CountScreechTargets()
             {
-                ctx.AssertEqual(tusken, (uint)resolveTarget.Invoke(null, new object[] { context, screech })!,
+                ctx.AssertEqual(tusken, (uint)AIInternals.Invoke("ResolveTarget", context, screech),
                     "Disorienting Screech centers on the Tusken while it sees an enemy in range");
                 return context.CountHostilesNearTarget(radius);
             }

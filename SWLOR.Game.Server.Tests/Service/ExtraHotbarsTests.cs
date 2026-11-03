@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -225,5 +226,53 @@ public class ExtraHotbarsTests
 
         ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Horizontal, true)
             .Should().BeGreaterThan(ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Horizontal, false));
+    }
+
+    // Hotbar 1 as set up at 1280x720: 12 horizontal slots with the setup title bar.
+    private static readonly GuiRectangle _bar1 = new(793f, 566f, 482f, 96f);
+
+    [Test]
+    public void FindClearSpot_BarTouchingAnotherBar_StaysPut()
+    {
+        var spot = ExtraHotbarViewModel.FindClearSpot(793f, 470f, 482f, 96f, new[] { _bar1 }, 1280f, 720f);
+
+        spot.Should().Be((793f, 470f));
+    }
+
+    [Test]
+    public void FindClearSpot_BarDraggedOnePixelOntoAnother_MovesFlushAgainstIt()
+    {
+        var spot = ExtraHotbarViewModel.FindClearSpot(793f, 471f, 482f, 96f, new[] { _bar1 }, 1280f, 720f);
+
+        spot.Should().Be((793f, 470f));
+    }
+
+    [Test]
+    public void FindClearSpot_TitleBarCoversTheBarStackedAbove_UpperBarMovesUp()
+    {
+        // The default stack touches while locked, so bar 1's title bar covers the bottom of bar 2 in setup.
+        var spot = ExtraHotbarViewModel.FindClearSpot(793f, 502f, 482f, 96f, new[] { _bar1 }, 1280f, 720f);
+
+        spot.Should().Be((793f, 470f));
+    }
+
+    [Test]
+    public void FindClearSpot_NoRoomOnTheNearSide_UsesTheNextNearestSide()
+    {
+        var topBar = new GuiRectangle(793f, 0f, 482f, 96f);
+
+        var spot = ExtraHotbarViewModel.FindClearSpot(793f, 10f, 482f, 96f, new[] { topBar }, 1280f, 720f);
+
+        spot.Should().Be((793f, 96f));
+    }
+
+    [Test]
+    public void FindClearSpot_PushedOffOneBarOntoAnother_ClearsBoth()
+    {
+        var bar2 = new GuiRectangle(793f, 470f, 482f, 96f);
+
+        var spot = ExtraHotbarViewModel.FindClearSpot(793f, 520f, 482f, 96f, new[] { _bar1, bar2 }, 1280f, 720f);
+
+        spot.Should().Be((793f, 374f));
     }
 }

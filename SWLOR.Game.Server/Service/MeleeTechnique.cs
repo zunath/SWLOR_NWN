@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         {
             UnregisterProfile(skill);
             if (skill == SkillType.Invalid || profile?.IsValid != true)
-                throw new ArgumentException("A technique profile requires a weapon skill, equipment rules and presentation factories.");
+                throw new ArgumentException("A technique profile requires a weapon skill and presentation factories.");
             Profiles[skill] = profile;
         }
 
@@ -68,11 +68,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (ability?.MeleeTechnique == null)
                 return string.Empty;
+            // Techniques are cross-skill: any equipped weapon can perform them.
             if (!Profiles.TryGetValue(ability.SkillType, out var profile) || !profile.IsValid)
                 return "This technique's weapon profile is unavailable.";
-            if (!TryGetEquippedProfile(creature, out var skill, out var equipped) ||
-                skill != ability.SkillType || equipped != profile)
-                return profile.EquipmentError;
             if (ability.IsHostileAbility && !GetOwner(creature).Resources.CanActivate(DateTime.UtcNow))
                 return "Wait a moment before using another technique.";
             var required = ability.MeleeTechnique.RequiredStages;
@@ -271,7 +269,7 @@ namespace SWLOR.Game.Server.Service
             Activations.Remove(creature);
             var detail = activation.Ability.MeleeTechnique;
             var landed = summary.ImpactedTargetCount > 0;
-            if (!landed || !IsGripSnapshotValid(creature, activation.Profile, activation.Skill, activation.Weapon, activation.OffHand, activation.Area) ||
+            if (!landed || !IsEquipmentSnapshotValid(creature, activation.Weapon, activation.OffHand, activation.Area) ||
                 !GetIsObjectValid(activation.Target) || GetArea(activation.Target) != activation.Area ||
                 !GetIsReactionTypeHostile(activation.Target, creature))
                 return;
@@ -625,7 +623,7 @@ namespace SWLOR.Game.Server.Service
         private static bool TryGetActivation(uint creature, uint target, out Activation activation)
         {
             return Activations.TryGetValue(creature, out activation) && activation.Target == target &&
-                   IsGripSnapshotValid(creature, activation.Profile, activation.Skill, activation.Weapon, activation.OffHand, activation.Area) &&
+                   IsEquipmentSnapshotValid(creature, activation.Weapon, activation.OffHand, activation.Area) &&
                    IsValidEnemy(creature, target);
         }
 
@@ -633,30 +631,15 @@ namespace SWLOR.Game.Server.Service
         {
             return Activations.TryGetValue(creature, out activation) &&
                    (activation.Target == target || activation.SecondaryTarget == target) &&
-                   IsGripSnapshotValid(creature, activation.Profile, activation.Skill, activation.Weapon, activation.OffHand, activation.Area) &&
+                   IsEquipmentSnapshotValid(creature, activation.Weapon, activation.OffHand, activation.Area) &&
                    IsValidEnemy(creature, target);
         }
 
-        private static bool IsGripSnapshotValid(uint creature, MeleeTechniqueProfile profile, SkillType skill,
-            uint main, uint off, uint area) =>
+        /// <summary>A cast resolves only with the hands it started with, whatever those weapons are.</summary>
+        private static bool IsEquipmentSnapshotValid(uint creature, uint main, uint off, uint area) =>
             GetIsObjectValid(creature) && !GetIsDead(creature) &&
-            TryGetEquippedProfile(creature, out var currentSkill, out var currentProfile) &&
-            currentSkill == skill && currentProfile == profile &&
             GetArea(creature) == area && GetItemInSlot(InventorySlot.RightHand, creature) == main &&
             GetItemInSlot(InventorySlot.LeftHand, creature) == off;
-
-        private static bool TryGetEquippedProfile(uint creature, out SkillType skill, out MeleeTechniqueProfile profile)
-        {
-            skill = SkillType.Invalid;
-            profile = null;
-            if (!GetIsObjectValid(creature))
-                return false;
-            var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
-            if (!GetIsObjectValid(weapon))
-                return false;
-            skill = Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon));
-            return Profiles.TryGetValue(skill, out profile) && profile.IsValid && profile.HasValidEquipment(creature);
-        }
 
         private static Type ApplyOwnedEffect(uint creature, IStatusEffect effect, float duration)
         {

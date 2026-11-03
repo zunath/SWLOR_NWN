@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A throwing range is chalked onto the frozen floor, knife-scarred targets standing at the far end. The warden here throws at anyone who steps up."
+            "0": "A throwing range is chalked onto the frozen floor, knife-scarred targets standing at the far end. The test supervisor here throws at anyone who steps up."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A blast-test pad scorched black, ringed by frost-cracked safety markers. The warden who runs the detonation trials still keeps it armed."
+            "0": "A blast-test pad scorched black, ringed by frost-cracked safety markers. The test supervisor who runs the detonation trials still keeps it armed."
           }
         },
         "DisarmDC": {
@@ -47241,7 +47241,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Warden Spawn"
+            "0": "Hutlar Qion Test Site - Test Supervisor Ketu Ran Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -47304,7 +47304,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Warden Spawn"
+            "0": "Hutlar Qion Test Site - Test Supervisor Skorrik Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -47367,7 +47367,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Warden Spawn"
+            "0": "Hutlar Qion Test Site - Test Supervisor Hale Dorrin Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {
@@ -47430,7 +47430,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47493,7 +47493,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47506,11 +47506,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47556,7 +47556,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47619,7 +47619,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47632,11 +47632,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47682,7 +47682,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47745,7 +47745,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47758,11 +47758,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47808,7 +47808,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47871,7 +47871,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47884,11 +47884,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47934,7 +47934,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47997,7 +47997,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48010,11 +48010,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48060,7 +48060,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48123,7 +48123,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48136,11 +48136,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48186,7 +48186,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48249,7 +48249,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48262,11 +48262,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48312,7 +48312,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48375,7 +48375,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48388,11 +48388,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48438,7 +48438,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48501,7 +48501,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48514,11 +48514,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48564,7 +48564,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48627,7 +48627,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48640,11 +48640,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -49068,7 +49068,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -49089,15 +49089,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 92.5
+          "value": 43.25
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 137.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.27
+          "value": 0.04
         },
         "XOrientation": {
           "type": "float",
@@ -49131,7 +49131,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -49152,15 +49152,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 91.0
+          "value": 51.25
         },
         "YPosition": {
           "type": "float",
-          "value": 96.5
+          "value": 131.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.11
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49194,7 +49194,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -49215,15 +49215,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 89.5
+          "value": 29.75
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49257,7 +49257,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -49278,15 +49278,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 91.0
+          "value": 30.75
         },
         "YPosition": {
           "type": "float",
-          "value": 93.5
+          "value": 128.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49320,7 +49320,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -49341,15 +49341,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 80.5
+          "value": 70.25
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 96.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49383,7 +49383,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -49404,15 +49404,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 79.0
+          "value": 69.75
         },
         "YPosition": {
           "type": "float",
-          "value": 20.5
+          "value": 86.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.07
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49446,7 +49446,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -49467,15 +49467,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 77.5
+          "value": 59.75
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 88.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.02
         },
         "XOrientation": {
           "type": "float",
@@ -49509,7 +49509,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -49530,15 +49530,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 79.0
+          "value": 89.75
         },
         "YPosition": {
           "type": "float",
-          "value": 17.5
+          "value": 105.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49572,7 +49572,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {
@@ -49593,15 +49593,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 26.5
+          "value": 115.75
         },
         "YPosition": {
           "type": "float",
-          "value": 73.0
+          "value": 136.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1
+          "value": 0.13
         },
         "XOrientation": {
           "type": "float",
@@ -49635,7 +49635,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {
@@ -49656,15 +49656,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 24.0
+          "value": 125.75
         },
         "YPosition": {
           "type": "float",
-          "value": 74.0
+          "value": 136.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.34
+          "value": 0.13
         },
         "XOrientation": {
           "type": "float",
@@ -49698,7 +49698,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {
@@ -49719,15 +49719,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 24.0
+          "value": 105.25
         },
         "YPosition": {
           "type": "float",
-          "value": 72.0
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.20
         },
         "XOrientation": {
           "type": "float",
@@ -49761,7 +49761,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {
@@ -49782,15 +49782,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 26.0
+          "value": 95.75
         },
         "YPosition": {
           "type": "float",
-          "value": 71.0
+          "value": 130.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Crippling Defense specialist in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Pit Fighter (Crippling Defense line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human ring engineer who fought before he started rigging fights, keeping the shock plates under the backroom canvases live. He uses his spear to pull opponents onto the plates and dance them around the dial."
+      "0": "A human pit fighter and ring engineer who fought before he started rigging fights, keeping the shock plates under the backroom canvases live. He uses his spear to pull opponents onto the plates and dance them around the dial."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crippling Defense Specialist"
+      "0": "Stable Pit Fighter"
     }
   },
   "fortbonus": {

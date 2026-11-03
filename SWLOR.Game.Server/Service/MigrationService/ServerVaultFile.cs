@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.MigrationService;
 /// </summary>
 internal static class ServerVaultFile
 {
-    private const char EscapeBase = '\uDC00';
+    private const char EscapeBase = (char)0xDC00;
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
 
     /// <summary>The string for a raw file name: the UTF-8 text when valid, otherwise ASCII with every other byte escaped.</summary>

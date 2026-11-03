@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// The saved-data stored-item sweep edits saved GFF the way the engine pass edits live items. Parity with
 /// the engine on real data is checked on a production copy; these cases pin each rule and its saved form.
 /// </summary>
-public class SavedDataItemSweepTests
+public partial class SavedDataItemSweepTests
 {
     private static readonly Assembly ServerAssembly = typeof(HeadgearSlotMigration).Assembly;
     private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;

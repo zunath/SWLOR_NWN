@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -56,6 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // ---------------- selected part bindings ----------------
         public string PartPreviewImage { get => Get<string>(); set => Set(value); }
         public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
+        /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
+        public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
         public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
         public string PreviewViewText { get => Get<string>(); set => Set(value); }
 
@@ -285,6 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PreviewViewText = _previewView.ToString();
             PartPreviewImage = string.Empty;
             PartPreviewLabel = string.Empty;
+            PartPreviewNumber = string.Empty;
             IsPartPreviewEnabled = false;
             foreach (AppearanceEditorSlot slot in Enum.GetValues(typeof(AppearanceEditorSlot)))
             {
@@ -323,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _browserIds = ids.ToList();
             _browserCurrent = current;
             _browserKey = key;
-            _browserLabel = label ?? (id => id.ToString());
+            _browserLabel = label ?? (id => AppearancePartNames.Get(key(id), id.ToString()));
             _browserApply = apply;
             PublishBrowser();
         }
@@ -344,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var current = _browserIds.Contains(_browserCurrent) ? _browserCurrent : -1;
             SetIfChanged(nameof(PartPreviewImage), current >= 0 ? AppearancePreview.Picture(_browserKey(current), view) : string.Empty);
             SetIfChanged(nameof(PartPreviewLabel), current >= 0 ? _browserLabel(current) : string.Empty);
+            SetIfChanged(nameof(PartPreviewNumber), current > 0 ? current.ToString() : string.Empty);
             SetIfChanged(nameof(IsPartPreviewEnabled), _browserIds.Count > 0 && _browserApply != null);
             SetIfChanged(nameof(PreviewViewText), view.ToString());
             SyncPartBrowser();
@@ -391,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var current = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)part);
                 SetBrowserSource(options?.Select(option => option.Value) ?? Array.Empty<int>(), current,
                     id => AppearancePreview.ArmorPartKey(body, slot, id),
-                    id => id == 0 ? "None" : id.ToString(),
+                    id => id == 0 ? "None" : AppearancePartNames.Get(AppearancePreview.ArmorPartKey(body, slot, id), id.ToString()),
                     id => ApplyArmorPartFromBrowser(part, id));
             }
             else if (SelectedItemTypeIndex == 1)
@@ -406,8 +411,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var names = PartOptions;
                 var ids = _partIds;
-                SetBrowserSource(ids, CurrentPartId(), WeaponPictureKey(),
-                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count ? names[index] : id.ToString(),
+                var pictureKey = WeaponPictureKey();
+                // A weapon definition's own part name wins over the picture's name.
+                SetBrowserSource(ids, CurrentPartId(), pictureKey,
+                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count &&
+                          names[index] != WeaponAppearanceBaseDefinition.DefaultPartName(id)
+                        ? names[index]
+                        : AppearancePartNames.Get(pictureKey(id), id.ToString()),
                     SelectPartFromBrowser, frontOnly: true);
             }
             RefreshBodyMap();

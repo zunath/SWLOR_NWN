@@ -90,7 +90,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Scenario One. Weeks of brutal fighting have concluded a battle, with the Republic triumphant. Throughout the battle, the Sith Empire had not hesitated with cruel and unjust strategems, such as hiding their ion cannon batteries near civilian buildings or executing prisoners of war. Now, however, masses of Imperial soldiers are surrendering, especially after the Sith Lord who led them have been slain. What is the appropriate course of action?\"",
+          "Text": "\"Scenario One. Weeks of brutal fighting have concluded a battle, with the Republic triumphant. Throughout the battle, the Sith Empire had not hesitated with cruel and unjust stratagems, such as hiding their ion cannon batteries near civilian buildings or executing prisoners of war. Now, however, masses of Imperial soldiers are surrendering, especially after the Sith Lord who led them has been slain. What is the appropriate course of action?\"",
           "Style": 0,
           "Color": null
         }
@@ -102,11 +102,11 @@
           "Conditions": []
         },
         {
-          "ChoiceId": "reply-00015",
+          "ChoiceId": "reply-00003",
           "Conditions": []
         },
         {
-          "ChoiceId": "reply-00003",
+          "ChoiceId": "reply-00015",
           "Conditions": []
         }
       ]
@@ -158,11 +158,11 @@
       "OnEnterActions": [],
       "Choices": [
         {
-          "ChoiceId": "reply-00013",
+          "ChoiceId": "reply-00005",
           "Conditions": []
         },
         {
-          "ChoiceId": "reply-00005",
+          "ChoiceId": "reply-00013",
           "Conditions": []
         }
       ]
@@ -180,7 +180,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Good! The Jedi adhere to very strict codes and rules within their Order, and fraternizing with a Jedi can compromise their training and place in the Jedi Order. It is strictly against our regulations to fraternize with a Jedi, and I note that this stays true whether the Jedi belongs to the Jedi Service Corps or is an Initiate or a Padawan. You may report such dalliances to command should such occur on the Jedi's initiation, and appropriate censures shall be issued.\"",
+          "Text": "\"Good! The Jedi adhere to very strict codes and rules within their Order, and fraternizing with a Jedi can compromise their training and place in the Jedi Order. It is strictly against our regulations to fraternize with a Jedi, and I note that this stays true whether the Jedi belongs to the Jedi Service Corps or is an Initiate or a Padawan. You may report such dalliances to command should such occur on the Jedi's initiative, and appropriate censures shall be issued.\"",
           "Style": 0,
           "Color": null
         }
@@ -298,7 +298,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "reply-00012",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00010": {
       "Id": "entry-00010",
@@ -450,7 +455,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "Indicate readiness and bade the training program to continue.",
+        "Text": "Indicate readiness and bid the training program to continue.",
         "Style": 4,
         "Color": null
       },
@@ -693,8 +698,13 @@
       "Comment": "",
       "JournalQuest": "",
       "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     },
     "reply-00013": {
@@ -734,8 +744,13 @@
       "Comment": "",
       "JournalQuest": "",
       "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     },
     "reply-00015": {
@@ -775,8 +790,13 @@
       "Comment": "",
       "JournalQuest": "",
       "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     },
     "reply-00017": {
@@ -816,8 +836,13 @@
       "Comment": "",
       "JournalQuest": "",
       "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     },
     "reply-00019": {

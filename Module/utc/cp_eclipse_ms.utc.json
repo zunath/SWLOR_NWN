@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Eclipse of Resolve master in Mon Cala - Final Ritual Chamber."
+    "value": "Expedition Leader Lorrek Syn (Eclipse of Resolve line) in Mon Cala - Final Ritual Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Force-trained Twi'lek in a stolen Sith officer's armor, the man who signed the Umbral Raiders' forged orders. He commands the looting of the Sith Crypt Depths and uses fear as readily as his blaster."
+      "0": "A Force-trained Twi'lek in a stolen Sith officer's armor, the man who signed the Umbral Raiders' forged orders. He leads the expedition's looting of the Sith Crypt Depths and uses fear as readily as his blaster."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Umbral Raider Commander"
+      "0": "Expedition Leader Lorrek Syn"
     }
   },
   "fortbonus": {

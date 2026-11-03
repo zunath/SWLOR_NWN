@@ -131,8 +131,8 @@ attacks keep their original visual path. Inactive playback records expire automa
 The retired `longsword_b` template can survive in saved inventory without a DMG property,
 causing the generic damage fallback of 1. Its current equivalent, `b_longsword`, has DMG 5,
 Delay 230 and a rank-zero Vibroblade requirement. `BasicVibrobladeCompatibility` restores
-only missing properties on those two basic templates during login, acquisition and the
-existing stored-item migration. Existing damage, enhancements, identity, appearance and
+only missing properties on those two basic templates; the boot-time character upgrade and the
+stored-item migration apply it. Existing damage, enhancements, identity, appearance and
 custom names remain intact. The default name is **Basic Vibroblade LS** in both cases.
 
 ## Verification

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker in the Viscara swamps was my last command. The Republic abandoned it; my old adjutant did not. He sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk.",
+          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker in the Viscara swamps was my last command. The Republic abandoned it; my old adjutant did not. He sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His Deserter Sappers hold the outer galleries nearest the entrance. Put six of them down, and do it by command: keep Press the Attack driving your party while they fall. Any sapper counts, they all answer to the same garrison, but only while your Press the Attack is fresh on your people; a kill made without your voice behind it teaches you nothing. Then bring me the Republic Bunker Docket from the gallery duty desk.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The docket says Rhee moved his veterans to the shield grid. The bunker generates its own defensive screen, and his specialists keep it humming so no one can force the door. Five of them hold the grid chambers. Kill the five and pull the Shield Grid Relay from the master junction. Without the relay his wall of light dies, and a garrison that cannot hide behind a shield has to start answering questions.",
+          "Text": "The docket says Rhee moved his veterans to the shield grid. The bunker generates its own defensive screen, and his Deserter Engineers keep it humming so no one can force the door. Five of them hold the grid chambers. Kill the five with Press the Attack driving your party; any engineer counts while the order is fresh, and pull the Shield Grid Relay from the master junction. Without the relay his wall of light dies, and a garrison that cannot hide behind a shield has to start answering questions.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The grid chambers sit below the galleries you cleared - follow the power trunking down. The specialists will fight in the dark and by the numbers, because Rhee wrote their numbers. Do not fight their drill. Break its tempo, give your own orders louder than his echo, and the chambers are yours.",
+          "Text": "The grid chambers sit below the galleries you cleared - follow the power trunking down. The Deserter Engineers will fight in the dark and by the numbers, because Rhee wrote their numbers. Do not fight their drill. Break its tempo, give your own orders louder than his echo, and the chambers are yours.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The shield grid is still lit. Five specialists, one relay. Put the light out.",
+          "Text": "The shield grid is still lit. Five Deserter Engineers, one relay, your orders behind every kill. Put the light out.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "With the shield down, Rhee has pulled his line back to the inner blast doors, and the officer holding them is his warden - Captain Grenn Vhon, the Ugnaught I pinned first bars on myself. Hear this as fact and not fear: he has broken officers with twice your record, and he will break you too if you walk in alone. This is a fire-team door, not a hero's door. Take two you trust to move on your word, at the least, and breach it. He carries the Cracked Command Crest - my old crest, the one Rhee split when he declared the bunker his. Bring it to me off his shoulder.",
+          "Text": "With the shield down, Rhee has pulled his line back to the inner blast doors, and the officer holding them is Deserter Sergeant Grenn Vhon, the Ugnaught I pinned first bars on myself. Hear this as fact and not fear: he has broken officers with twice your record, and he will break you too if you walk in alone. This is a fire-team door, not a hero's door. Take two you trust to move on your word, at the least, and breach it. He carries the Cracked Command Crest - my old crest, the one Rhee split when he declared the bunker his. Bring it to me off his shoulder.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Split clean through the emblem... Rhee always did have precise hands. I will wear it cracked until this ends; mended honors lie. Vhon deserved a better war and a worse commander, and you gave him the cleanest ending on offer. Two links of the chain are cut. What remains is the circle that runs its supply, and then the man whose voice all of it obeys.",
+          "Text": "Split clean through the emblem... Rhee always did have precise hands. I will wear it cracked until this ends; mended honors lie. Vhon deserved a better war and a worse commander, and you gave him the cleanest ending on offer. Two links of the chain are cut. What remains is the Quartermaster's Guard that runs its supply, and then the man whose voice all of it obeys.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Rhee's inner circle is four officers - his quartermaster corps, the ones who keep a sealed bunker fed, armed, and paid. Mutiny is logistics. Cut the logistics and the mutiny is a speech. They hold the deep stores behind the blast line you opened. Kill all four and bring me the Quartermaster Override Chip. It is the master authorization for every magazine and ration vault in that bunker - the actual object his chain of command hangs from.",
+          "Text": "Rhee's Quartermaster's Guard is four officers - his quartermaster corps, the ones who keep a sealed bunker fed, armed, and paid. Mutiny is logistics. Cut the logistics and the mutiny is a speech. They hold the deep stores behind the blast line you opened, the deepest part of the bunker. Kill all four with Press the Attack driving your party; any Quartermaster's Guard counts, whichever of them you meet, as long as your order is fresh. Then bring me the Quartermaster Override Chip. It is the master authorization for every magazine and ration vault in that bunker - the actual object his chain of command hangs from.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four quartermasters, one chip, and a bunker that eats only while they say so. Finish the circle.",
+          "Text": "Four Quartermaster's Guards, one chip, and a bunker that eats only while they say so. Finish the Guard, and keep your orders driving the party while you do.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Halden Rhee. My adjutant, my student, and the finest commander I ever built - I say it plainly because you have earned plain. What you call decisive command, he does not practice. He is it. His voice moves that garrison the way yours moves your own hand, and when you face him, your instincts will want to obey him. That is why no one takes his door alone. His own officers tried, one by one, and they are the reason the room has trophies. Bring the people who have bled through every step of this. There is nothing to carry back this time. His silence is the report.",
+          "Text": "Deserter Commander Halden Rhee. My adjutant, my student, and the finest commander I ever built - I say it plainly because you have earned plain. What you call decisive command, he does not practice. He is it. His voice moves that garrison the way yours moves your own hand, and when you face him, your instincts will want to obey him. That is why no one takes his door alone. His own officers tried, one by one, and they are the reason the room has trophies. Bring the people who have bled through every step of this. There is nothing to carry back this time. His silence is the report.",
           "Style": 0,
           "Color": null
         }
@@ -1720,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is Captain Vhon?",
+        "Text": "Who is Sergeant Vhon?",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four quartermasters. The chip comes home.",
+        "Text": "Four Quartermaster's Guards. The chip comes home.",
         "Style": 4,
         "Color": null
       },

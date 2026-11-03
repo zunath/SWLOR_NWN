@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Adamantine Guard specialist in CZ-220 - Breaker Bay."
+    "value": "Wreck Crew Rigger (Adamantine Guard line) in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in a Czerka yard uniform he was never issued, katars crossed before him in a guard that does not give. He works the rerouted junkline with the rest of his crew, keeping every belt in the Breaker Yard feeding their drill pit instead of the smelters."
+      "0": "A human rigger in a Czerka yard uniform he was never issued, katars crossed before him in a guard that does not give. He works the rerouted junkline with the rest of his crew, keeping every belt in the Breaker Yard feeding their drill pit instead of the smelters."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Adamantine Guard Specialist"
+      "0": "Wreck Crew Rigger"
     }
   },
   "fortbonus": {

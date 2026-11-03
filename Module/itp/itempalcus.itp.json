@@ -2139,6 +2139,83 @@
                       "type": "resref",
                       "value": "engi_armor_2"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Firedancer Ceremonial Garb (Female)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_fire_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Firedancer Ceremonial Garb (Male)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_fire_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Cerin Tal's Work Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_oq_cerinwear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Toren Senn's Practice Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_oq_torenwear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Spa Reception Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_spa_uniform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Spa Visitor Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_spa_visitor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Highcrest Trade Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hc_tradecoat"
+                    }
                   }
                 ]
               },
@@ -3815,6 +3892,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "thermdet_w1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Highcrest Guard Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hc_guard_plate"
                     }
                   }
                 ]
@@ -6428,6 +6516,17 @@
                       "type": "resref",
                       "value": "oneshot_l7"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Highcrest Guard Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hc_guard_helm"
+                    }
                   }
                 ]
               },
@@ -8187,6 +8286,61 @@
                       "type": "resref",
                       "value": "yshrobes002"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Ilya Venn's Work Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_oq_ilyawear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Sera Vey's Work Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_oq_serawear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Spa Linen Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_spa_linen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Spa Recovery Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_spa_wraps"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Highcrest Work Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hc_workwear"
+                    }
                   }
                 ]
               },
@@ -9656,6 +9810,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zombieworker_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Natural Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_direwolf_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echa'olm Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_echaolm_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Frost Dire Wolf Natural Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_frostwolf_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gorak Vesh Creature Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_gorak_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Thornbound Warden Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_veinboss_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shattervein Wolf Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_veinwolf_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Alpha Natural Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_wolfalpha_wp"
                     }
                   }
                 ]
@@ -13939,6 +14170,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vtdrakegruntmele"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Captain Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nccapt_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Heavy Gunner Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_heavy_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Hunter Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_hunter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Field Medic Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_medic_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Scout Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_scout_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thyrsian Force Pike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_sung_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapyard Smuggler Weapon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_scrap_wp"
                     }
                   }
                 ]
@@ -19869,6 +20177,171 @@
                       "type": "resref",
                       "value": "zombieworker_sk"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_direwolf_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echa'olm Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_echaolm_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Frost Dire Wolf Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_frostwolf_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gorak Vesh Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_gorak_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Captain Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nccapt_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Vanguard Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_ncvang_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Heavy Gunner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_heavy_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Hunter Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_hunter_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Field Medic Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_medic_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Scout Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_scout_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapyard Smuggler Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_scrap_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thyrsian Exile Boss Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_sung_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Thornbound Warden Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_veinboss_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shattervein Wolf Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_veinwolf_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Alpha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_wolfalpha_sk"
+                    }
                   }
                 ]
               },
@@ -20544,6 +21017,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vtdrakegunnerarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thyrsian Gilded Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_sung_armor"
                     }
                   }
                 ]
@@ -55975,6 +56459,171 @@
                       "type": "resref",
                       "value": "zondeyn"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Red Chili Oil"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_chili_oil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Farm Eggs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_egg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan River-Fish Fillets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_fish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Frost Fang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_frost_fang"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Icebound Chiro Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_gorak_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Silverwood Greens"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_greens"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Neo-Crusader Salvage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_mando_salv"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Pickled Greens"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_pickles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Farm Poultry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_poultry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan White Rice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_rice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Scallions"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_scallion"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Silverwood Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_seeds"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thyrsian Exile Insignia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_sun_insignia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_wolf_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Pelt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_wolf_pelt"
+                    }
                   }
                 ]
               },
@@ -62633,6 +63282,138 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zoni_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Hand-Pulled Broth Noodles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_broth_noodle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Chili-Oil Noodles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_chili_noodle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Crispy Claypot Rice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_clayrice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Steamed Dumplings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_dumplings"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Scallion Flatbread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_flatbread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Ginger-Steamed Fish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_ginger_fish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Sticky Glazed Poultry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_glaze_fowl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Shared Hotpot Portion"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_hotpot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Marbled Eggs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_marble_egg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Savory Rice Porridge"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_porridge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Sweet Seed-Paste Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_seed_cake"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Echani Stuffed Steamed Buns"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_steam_bun"
                     }
                   }
                 ]
@@ -72588,6 +73369,237 @@
                       "type": "resref",
                       "value": "map_034"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Battlegrounds Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_battle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Farmlands Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_farms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - Silver Gate District Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_gate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - The Veylan Groves Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_groves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - Hearth Ward Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_hearth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Keshan Heights Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_height"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - Highcrest Quarter Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_high"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - The Winter Marches Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_marches"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - The Old Quarter Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_oldquart"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_orbit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Keshan Peaks Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_peaks"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - The Grand Proving Grounds Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_proving"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - The Riverway Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_river"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Scraplands Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_scrap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Scraplands - Caves Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_scrcave"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - The Shimmerdeep Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_shimmer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Silverwood Expanse Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_silver"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - Starport Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_starport"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - Tunnels Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_tunnels"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan - The Shattervein Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan City - Verdant Crown Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_map_verdant"
+                    }
                   }
                 ]
               },
@@ -79620,6 +80632,17 @@
                             "type": "resref",
                             "value": "vet_trnsaber"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Neo-Crusader Vanguard Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "esh_ncvang_wp"
+                          }
                         }
                       ]
                     },
@@ -81450,6 +82473,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bp_hidecuirass"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Sun-Cured Hide Cuirass - Silverpelt Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_silverpelt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Alpha-Fang Gauntlet - Frost Fang Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_frostgaunt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Windcaller Mantle - Ridged Hide Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_ridgemantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Scopewright Cap - Reclaimed Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_rec_scope"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Warband Helm - Reclaimed Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_rec_warhelm"
                           }
                         },
                         {
@@ -85382,6 +86460,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vet_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Highcrest Guard Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hc_guard_spear"
                     }
                   }
                 ]

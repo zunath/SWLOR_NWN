@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unmoving Center warden in Tatooine - Anchorhead Canyon Range."
+    "value": "Range Warden Dorrim Vex (Unmoving Center line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in a merchant guard's outfit who stands inside a ring of stones beside the altar on the west side of the Anchorhead Canyon Range and never leaves it. He does not flinch before a blow or after one, and he has outlasted stronger fighters who came at him alone. The range's crest marks him as the one who runs its floor."
+      "0": "A Zabrak range warden in a merchant guard's outfit who stands inside a ring of stones beside the altar on the west side of the Anchorhead Canyon Range and never leaves it. He does not flinch before a blow or after one, and he has outlasted stronger fighters who came at him alone. The range's crest marks him as the one who runs its floor."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unmoving Center Warden"
+      "0": "Range Warden Dorrim Vex"
     }
   },
   "fortbonus": {

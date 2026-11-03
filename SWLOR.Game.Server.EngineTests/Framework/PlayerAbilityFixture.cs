@@ -261,6 +261,13 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
+        /// Sets the records summed from gear (Attack, Accuracy, Evasion, Defense and the rest) to what the worn gear grants,
+        /// as a login does. The new record's combat values come from no gear, so any equip change or login rebuilds them;
+        /// tests that count equipment totals call this first so their baseline is the gear.
+        /// </summary>
+        public void MatchEquipmentRecordsToGear() => Stat.RefreshPlayerEquipmentStats(Creature);
+
+        /// <summary>
         /// Saves current carried/equipped items with native server character save flags and reloads
         /// with PC inventory semantics. This does not simulate server-vault client login.
         /// </summary>

@@ -282,7 +282,7 @@ def ability(run, step) -> None:
         mark = client.mark()
         client.nui_click(*slot, slow=attempt % 2 == 0)
         time.sleep(2)
-        client.click(*SELF_POINT)
+        client.click_object(*SELF_POINT)
         used = client.wait_for(rf'{re.escape(name)} readies Adrenal Stim I\.', mark, 15)
         if used:
             break
@@ -297,7 +297,7 @@ def ability(run, step) -> None:
         mark = client.mark()
         client.nui_click(*slot, slow=attempt % 2 == 1)
         time.sleep(2)
-        client.click(*SELF_POINT)
+        client.click_object(*SELF_POINT)
         refusal = client.wait_for(r'This ability can be used in \d+ seconds?\.', mark, 8)
         if refusal:
             break

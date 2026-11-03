@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TotalBoxHeight = 32f;
         private const float CardButtonSize = 48f;
         private const float TurnButtonWidth = 100f;
+        private const float ActionButtonHeight = 32f;
+        private const float NameWidth = 150f;
         private const float ListCardSize = 36f;
 
         private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentSlots =
@@ -120,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Pazaak)
-                .SetInitialGeometry(0, 0, 540f, 620f)
+                .SetInitialGeometry(0, 0, 540f, 660f)
                 .SetTitle("Pazaak")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -263,12 +265,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     AddLight(row, model => model.PlayerTurnLight);
                     row.AddLabel()
                         .BindText(model => model.PlayerTitle)
+                        .SetWidth(NameWidth)
                         .SetHeight(TotalBoxHeight)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    row.AddSpacer();
                     AddTotalBox(row, model => model.PlayerTotal);
                     AddTotalBox(row, model => model.OpponentTotal);
+                    row.AddSpacer();
                     row.AddLabel()
                         .BindText(model => model.OpponentTitle)
+                        .SetWidth(NameWidth)
                         .SetHeight(TotalBoxHeight)
                         .SetHorizontalAlign(NuiHorizontalAlign.Right);
                     AddLight(row, model => model.OpponentTurnLight);
@@ -324,7 +330,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsEnabled(HandSignEnabled[index])
                             .BindOnClicked(HandFlipClicks[index])
                             .SetTooltip("Flip the sign this card is played with.")
-                            .SetWidth(CardButtonSize);
+                            .SetWidth(CardButtonSize)
+                            .SetHeight(ActionButtonHeight);
                     }
                     row.AddSpacer();
                     row.AddButton()
@@ -332,13 +339,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetTooltip("Pass the turn. You draw another card on your next turn.")
                         .BindIsEnabled(model => model.IsTurnActionEnabled)
                         .BindOnClicked(model => model.OnClickEndTurn())
-                        .SetWidth(TurnButtonWidth);
+                        .SetWidth(TurnButtonWidth)
+                        .SetHeight(ActionButtonHeight);
                     row.AddButton()
                         .SetText("Stand")
                         .SetTooltip("Keep your total for the rest of this set.")
                         .BindIsEnabled(model => model.IsTurnActionEnabled)
                         .BindOnClicked(model => model.OnClickStand())
-                        .SetWidth(TurnButtonWidth);
+                        .SetWidth(TurnButtonWidth)
+                        .SetHeight(ActionButtonHeight);
                 });
 
                 col.AddRow(row =>
@@ -353,7 +362,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetText("Forfeit Game")
                         .BindIsEnabled(model => model.IsForfeitEnabled)
                         .BindOnClicked(model => model.OnClickForfeit())
-                        .SetWidth(TurnButtonWidth * 2f + 8f);
+                        .SetWidth(TurnButtonWidth * 2f + 8f)
+                        .SetHeight(ActionButtonHeight);
                 });
 
                 AddCenteredLabel(col, model => model.StatusText);

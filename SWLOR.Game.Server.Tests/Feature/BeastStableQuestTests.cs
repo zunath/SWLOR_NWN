@@ -176,7 +176,7 @@ public class BeastStableQuestTests
         var allText = string.Join("\n", graph.Nodes.Values.SelectMany(node => node.Text.Select(text => text.Text))
             .Concat(graph.Choices.Values.Select(choice => choice.Text.Text)));
         allText.All(character => character < 128).Should().BeTrue("game text uses ASCII punctuation");
-        allText.Should().Contain("Beast Mastery reaches 50").And.Contain("one more stable slot");
+        allText.Should().Contain("mastered the handling of beasts").And.Contain("one more stable slot");
 
         var blueprint = JObject.Parse(File.ReadAllText(Path.Combine(root, "Module", "utc", "dorra_vesk.utc.json")));
         blueprint["Conversation"]!["value"]!.Value<string>().Should().Be("dorra_vesk");

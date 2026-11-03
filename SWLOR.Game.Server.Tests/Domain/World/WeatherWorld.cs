@@ -412,6 +412,12 @@ internal sealed class WeatherWorld : IDisposable
 
         public PlanetAttribute GetPlanetByType(PlanetType type) => throw new NotSupportedException();
 
+        public bool TryGetClosedMessage(PlanetType type, out string message)
+        {
+            message = string.Empty;
+            return false;
+        }
+
         public Dictionary<PlanetType, PlanetAttribute> GetAllPlanets() => new();
     }
 

@@ -109,6 +109,25 @@ public class PlanetServiceTests
     }
 
     [Test]
+    public void TryGetClosedMessage_closes_Eshan_to_players_with_the_lore_notice()
+    {
+        _service.TryGetClosedMessage(PlanetType.Eshan, out var message).Should().BeTrue();
+
+        message.Should().StartWith("Eshan Traffic Control:").And.Contain("landing beacons are under repair");
+        message.All(character => character < 128).Should().BeTrue("player-facing text is plain ASCII");
+    }
+
+    [Test]
+    public void TryGetClosedMessage_leaves_every_other_planet_open_and_answers_an_empty_message()
+    {
+        foreach (var type in Enum.GetValues<PlanetType>().Where(type => type != PlanetType.Eshan))
+        {
+            _service.TryGetClosedMessage(type, out var message).Should().BeFalse(type.ToString());
+            message.Should().BeEmpty();
+        }
+    }
+
+    [Test]
     public void CacheData_can_run_again_without_changing_the_cache()
     {
         _service.CacheData();

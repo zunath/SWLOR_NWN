@@ -230,6 +230,27 @@ public class ShuttleServiceTests
     }
 
     [Test]
+    public void TryPurchaseTicket_refuses_a_destination_that_is_closed_to_players_and_tells_them_why()
+    {
+        Service.TryPurchaseTicket(_passenger.Id, Origin, PlanetType.Eshan, string.Empty, 0f).Should().BeFalse();
+
+        _bench.Db.Store.Saved.Should().BeEmpty();
+        _bench.Engine.CallsTo("TakeGoldFromCreature").Should().BeEmpty("no fare is taken for a closed planet");
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Eshan Traffic Control:");
+        Service.GetRide(PassengerId).Should().BeNull();
+    }
+
+    [Test]
+    public void TryPurchaseTicket_checks_the_closed_destination_before_an_existing_ticket()
+    {
+        Ticketed();
+
+        Service.TryPurchaseTicket(_passenger.Id, Origin, PlanetType.Eshan, string.Empty, 0f).Should().BeFalse();
+
+        _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("Eshan Traffic Control:");
+    }
+
+    [Test]
     public void TryPurchaseTicket_refuses_a_second_ticket()
     {
         Ticketed();

@@ -371,6 +371,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 763,
+    "Member": "TryPurchaseTicket",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(closedMessage))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
     "Line": 44,
     "Member": "RegisterTaxiDestination",

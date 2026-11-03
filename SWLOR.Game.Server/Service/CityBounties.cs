@@ -65,12 +65,6 @@ namespace SWLOR.Game.Server.Service
             return Search(new DBQuery<CityBounty>().AddFieldSearch(nameof(CityBounty.TargetPlayerId), playerId, false));
         }
 
-        /// <summary>The identity a player shows now: their active disguise, or their own character.</summary>
-        public static BountyIdentity GetShownIdentity(Player dbPlayer)
-        {
-            return new BountyIdentity(dbPlayer.Id, Disguise.GetActiveDisguise(dbPlayer)?.Id);
-        }
-
         private static DateTime? GetLastClaimedUtc(Player dbPlayer, PlayerDisguise disguise)
         {
             return disguise != null ? disguise.LastBountyClaimedUtc : dbPlayer.LastBountyClaimedUtc;

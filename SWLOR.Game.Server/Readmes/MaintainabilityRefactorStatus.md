@@ -4,7 +4,7 @@ The single source of truth for the refactor's progress and handoff. The plan and
 in [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md). Update this file in the same pull
 request as the work it describes, and whenever a work item starts, finishes or gets blocked.
 
-Last updated: 2026-11-02 (resumed; see "In flight").
+Last updated: 2026-11-03 (paused near the owner's weekly usage limit; see "In flight").
 
 ## Resuming (any agent, any account)
 
@@ -82,7 +82,7 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-B4 | Wave B, Creatures I: `Spawn` (about 1,530 lines incl. folder, 7 handlers) | P2-0 | Sonnet | done | [#3150](https://github.com/zunath/SWLOR_NWN/pull/3150) | Coverage 5.9% -> 99.4%. `SpawnService` holds all spawn, queue and despawn state, takes no dependencies; `UtcNow()` (Spawn is outside the clock seam by design), the spawn-list assembly scan and error logging sit behind `protected virtual` wrappers; `Service/SpawnService/` unchanged. Source-text asserts in `AIModelTests`, `DialogPrivacyTests`, `ViscaraSpawnDefinitionTests` replaced by `SpawnServiceTests` (51 cases, `Support/SpawnBench`); engine tests via `EngineTests/Framework/SpawnInternals`. |
 | P2-B3 | Wave B, Items II: `Loot` (about 660 lines) | P2-0 | Sonnet | done | [#3148](https://github.com/zunath/SWLOR_NWN/pull/3148) | Coverage 0% -> 98.2%. `Service/Loot.cs` (a non-static class with only static members) is a static facade; `LootService` holds `_lootTables`, takes no dependencies; `Perk`/`Stat`/`BeastMastery` reads and the loot-table assembly scan sit behind `protected virtual` wrappers; `Service/LootService/*` unchanged; random order and count unchanged (seeded draw tests); characterization and engine loot scenarios unchanged (engine `-CheckOnly` 41/41 on the pre-merge head). |
 | P2-B5 | Wave B, Companions I: `BeastMastery` (about 2,260 lines incl. folder) | P2-0 | Sonnet | done | [#3152](https://github.com/zunath/SWLOR_NWN/pull/3152) | Coverage 25.9% -> 94.7%. `BeastMasteryService` injects `IDBService`, `IIncubationFieldNoteService`, `IPropertyService` (`IncubationFieldNoteService` keeps reading the beast catalog through the facade: no cycle); `Perk`, `Stat`, `Gui`, `CompanionControl`, `ReviveRules`, `StatusEffect`, `Item` calls and the beast-definition assembly scan sit behind `protected virtual` wrappers; `Service/BeastMasteryService/` unchanged (no static state, no extras). Source-text asserts in 7 test files replaced by `BeastMasteryServiceTests` (103 cases; random order pinned by replayed seeds; 8-mutation check). |
-| P2-B6 | Wave B, Creatures II: `AI` (about 2,700 lines incl. folder, 18 handlers) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-b6`, worktree `.claude/worktrees/mr-p2-b6` |
+| P2-B6 | Wave B, Creatures II: `AI` (about 2,700 lines incl. folder, 18 handlers) | P2-0 | Sonnet | done | [#3155](https://github.com/zunath/SWLOR_NWN/pull/3155) | Coverage: AI + NPCAI 5.4% -> 96.3% (whole AI folder 28.8% -> 90.3%). `NPCAI` folded into `AIService` (listing it under `extras` would classify as unit `NPC` and break the cross-domain baseline); `NPCAI.cs` keeps only the two profile-variable constants the toolset reads; its effect check became `HasEffectType` (keeps the `AppliedEffects.MayHaveScriptType` pre-check; no overload change). The facade gained `ClearAIState` and `TryUseBestTargetedSupportAbility` for `CompanionControl`'s two call sites. `AITarget`'s static override dictionary moved to the instance; `AIPhaseId.Invalid` is a getter. `Enmity`, `Stat`, `Ability`, `Perk`, `UsePerkFeat`, stealth, espionage and companion calls behind `protected virtual` wrappers. `ClockSeamFiles.txt` updated (`Apply-ClockSeam.ps1 -Check` clean). 191 instance tests (`AIBench`, `TestAIService`). |
 | P2-B7 | Wave B, Items III: `Item` (about 1,870 lines incl. folder, 4 handlers) | P2-0 | Sonnet | review | [#3154](https://github.com/zunath/SWLOR_NWN/pull/3154) | Head `03f583254`, Codex clean, coordinator review approved (moved code matches; wrappers only). Coverage 51.5% -> 98.5%. `ItemService` injects `IBeastMasteryService`, `IDBService`; `FitsInInventory`, `Perk`/`Skill` reads and the item-list assembly scan behind `protected virtual` wrappers. The data-only economy-restriction rules moved to a stateless static `Service/ItemService/EconomyRestriction`, which the Toolset editor (`SWLOR.Toolset/Editors/EditorService.cs`, no container) now calls directly (one call + alias; through the facade it would have thrown and emptied the merchant item search). 24 fixtures gained a `FacadeContainer`; `RecordingProxy` handles array returns. **Not merged yet:** one open CodeRabbit thread flags master's existing `ReduceItemStack` bug (see Reported defects); replying to/resolving it from the coordinator session was blocked by the permission classifier, so it waits for the owner. `feature/space-revamp` changes `Item.cs` (about 77 lines): port when it reaches master. |
 | P2-B? | Wave B, rest: Companions (`Droid`: 245 lines of `feature/space-revamp` overlap; wait for that branch), Creatures' `CompanionControlService` and `NPCService` folders (static helpers, no facade file) | P2-0 | Sonnet | open | | Split into items of about 1,000-2,500 lines. **`Craft` deferred** until `feature/crafting-revamp` (about 18,000 lines in `Service/CraftService/`) merges to master. |
 | P0-6 | Scripted live smoke run framework (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | done | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) | `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`, `-PublicCdKey`), 69 tool tests, InEngineVisualVerification.md "Smoke run" section. Server boot checks pass (two identical server-only runs). Results of runs so far: `C:\Temp\mr-p0-6` (local). |
@@ -95,62 +95,43 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-**Resumed 2026-11-02** by the coordinator session "SWLOR maintainability refactor coordination" (worktree
-`.claude/worktrees/funny-ellis-7b398f`, on `feature/maintainability-refactor`), on the original machine. The owner asked
-to pause again at a clean stopping point if the account's weekly usage passes 80% (39% at resume). Running now (Sonnet
-subagents):
-- The master sync (`f1c8cf097`, #3143) is merged (`d8e74dd31`); see Sync log and Port log.
-- P2-B1 merged (#3145, 2026-11-03).
-- P2-A7b merged (#2969, 2026-11-03).
-- P0-6b merged (#2955, 2026-11-03): the Phase 0 smoke baseline is recorded. **Phase 0 is complete** except GitHub CI,
-  which cannot run (billing lock; the owner accepted the local `scripts/ci/run-unit-tests.sh` gate).
-- P2-A8 merged (#2972, 2026-11-03).
-- P2-B2 merged (#3147, 2026-11-03).
-- P2-B3 merged (#3148, 2026-11-03).
-- P2-B4 merged (#3150, 2026-11-03).
-- P2-B5 merged (#3152, 2026-11-03).
-- P2-B6 (`AI`) running (Sonnet). P2-B7 (`Item`, #3154) reviewed and Codex-clean, waiting on the owner for its open
-  CodeRabbit thread (master bug; reply/resolve blocked by the permission classifier). Started at 69% weekly usage; pause near
-  80%. Master: 2 commits since the 2026-11-02 sync (checked 2026-11-03), not yet synced.
+**Paused 2026-11-03 (owner's rule: pause near 80% of the account's weekly usage; 75% at the pause).** Nothing is running:
+no subagents, containers or test processes of the refactor. The branch head is the last status commit. Last master sync:
+2026-11-02, `f1c8cf097` (master had 2 more commits on 2026-11-03, not synced).
 
-Pause of 2026-10-27 (kept for reference): every agent stopped and pushed its branch. The four parked items (all on pushed branches, each with its worktree kept under
-`C:\Projects\SWLOR_NWN\.claude\worktrees\`; details and exact remaining steps in their Work queue rows):
+Done in the 2026-11-02/03 run (coordinator session "SWLOR maintainability refactor coordination", worktree
+`.claude/worktrees/funny-ellis-7b398f`): the master sync (#3143) and P2-A7b (#2969), P2-A8 (#2972), P2-B1 (#3145),
+P0-6b (#2955; **Phase 0 complete** except GitHub CI, billing-locked), P2-B2 (#3147), P2-B3 (#3148), P2-B4 (#3150),
+P2-B5 (#3152), P2-B6 (#3155).
+
+Open:
 
 | Item | Branch head | Pull request | State |
 |---|---|---|---|
-| P2-A7b `Quest`, `QuestEncounter`, `facades` support | merged | [#2969](https://github.com/zunath/SWLOR_NWN/pull/2969) | Done 2026-11-03 |
-| P2-A8 `Property` split | merged | [#2972](https://github.com/zunath/SWLOR_NWN/pull/2972) | Done 2026-11-03 |
-| P2-B1 Items I | merged | [#3145](https://github.com/zunath/SWLOR_NWN/pull/3145) | Done 2026-11-03 |
-| P0-6b client smoke run | `fb95cce3b` | [#2955](https://github.com/zunath/SWLOR_NWN/pull/2955) draft | Steps 3-8 automated, Codex clean; 3 CodeRabbit threads open; needs two matching full runs |
+| P2-B7 `Item` | `03f583254` | [#3154](https://github.com/zunath/SWLOR_NWN/pull/3154) | Reviewed (coordinator) and Codex-clean on that head. One open CodeRabbit thread flags master's existing `ReduceItemStack` bug (Reported defects); the coordinator's reply/resolve was blocked by the permission classifier, so the owner decides. P2-B6 (#3155) merged after it, so first merge the base into `claude/mr-p2-b7` (list conflicts in `ServiceRegistrations.cs`, `ConvertedServices.json`, `PlayerMessageAudit.json`), rerun the suite and Codex on the new head, then merge. Worktree `.claude/worktrees/mr-p2-b7` kept. |
 
-**Resuming on another machine (owner's plan for next week):** everything needed is on GitHub (the four branches, PRs
-#2955, #2969, #2972, this file). The kept worktrees and these local files exist only on the original machine and are not
-needed: `C:\Temp\mr-p0-6b` (earlier smoke evidence; the two matching runs are recorded anew), `C:\Temp\mr-p2-a7b\cov.ps1`
-(per-file coverage helper; read per-file numbers from the coverage report of `scripts/ci/run-unit-tests.sh` instead),
-`C:\Temp\mr-p0-4d2` (old engine-test home). A new machine needs the setup in `Readmes/AgentEnvironment.md`: the sparse
-`SWLOR_Haks` submodule for unit tests; for the engine snapshot refresh and the smoke run also Docker, a full hak set
-(local deploy, `debugserver/hak`, or `-BaseHakDirectory`) and, for P0-6b, the NWN client files and `cdkey.ini` as
-`Readmes/InEngineVisualVerification.md` describes; `gh` signed in with push access to `zunath/SWLOR_NWN`. The
-`-c http.sslBackend=schannel` git setting was needed on the original machine only (antivirus TLS inspection); use it only
-if git over HTTPS fails there too.
+A master fix for `ReduceItemStack` was proposed to the owner as a separate session (2026-11-03); once on master, the next
+sync ports it into `Domain/Items/ItemService.cs`.
 
-Coordination: the last coordinator was the session "SWLOR maintainability refactor coordination" (worktree
-`.claude/worktrees/mynock-sonic-shriek-b33206`, on `feature/maintainability-refactor`). The first coordinator's session
-("Codebase refactoring plan") ran P0-6b and starts nothing new. A new coordinator takes over from this file.
+Kept local-only (original machine): `C:\Temp\mr-p0-6b\results\p06b-g-20261103T083756Z` (smoke baseline evidence),
+`C:\Temp\mr-p0-4d2` (old engine-test home). Nothing else is needed from this machine; a resume elsewhere follows
+`Readmes/AgentEnvironment.md` (sparse haks; Docker, a full hak set and the NWN client only for engine refreshes and smoke
+runs; `gh` with push access; `-c http.sslBackend=schannel` only if git over HTTPS fails).
 
 ## Next actions
 
-1. **Next daily sync** after the parked items merge (last: 2026-11-02, `f1c8cf097`). Check whether `feature/space-revamp` or
-   `feature/crafting-revamp` reached master (unblocks P2-A9 `Space` and `Craft`); on 2026-11-03 neither had.
-2. **Finish the parked items, at most three agents at a time** (each resumes in its kept worktree, or on another machine in a
-   new worktree of its pushed branch; first merge the base):
-   1. P2-A7b: done (#2969).
-   2. P2-A8: done (#2972).
-   3. P2-B1: done (#3145).
-   4. P0-6b: done (#2955).
-3. Then the rest of Wave B (see the `P2-B?` row), Wave C, then Wave D per the specs' Phase 2 section (the `FacadeAccessor`
-   cache must land before Wave D). `Space` (P2-A9) and `Craft` wait for their revamp branches to reach master.
-4. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
+1. **P2-B7 (#3154):** the owner's call on the open CodeRabbit thread; then merge the base, rerun, Codex, squash-merge.
+2. **Daily sync** (last 2026-11-02, `f1c8cf097`): `tools/Refactor/Sync-MaintainabilityBranch.ps1 -RunParity` on a work branch
+   if ports are needed (branch rule), `Update-EngineCharacterization.ps1`, record. Check whether `feature/space-revamp` or
+   `feature/crafting-revamp` reached master (unblocks P2-A9 `Space`, `Craft`, `Droid`, and the `Item` space-revamp port).
+3. **Rest of Wave B:** `Droid` (waits for the space revamp), the `CompanionControlService` and `NPCService` helper folders.
+   Small follow-ups now possible: `Loot` and `IncubationFieldNote` read `BeastMastery` through `protected virtual` wrappers
+   over the facade and could inject `IBeastMasteryService` (check for cycles first).
+4. **Wave C** (Core services other than `DB`: `Log`, `Cache`, `Messaging`, ...; then `DB` alone with extra review), then
+   **Wave D** (`StatusEffect`, `Skill`, `Perk`, `Stat`, `Ability`, `Combat`; the `FacadeAccessor` cache must land first),
+   per the specs' Phase 2 section.
+5. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
+6. Pace by the account's weekly usage (the owner pauses the work near 80%); each Wave B conversion cost about 2-3 points.
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
 
@@ -183,6 +164,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P2-B3 | `Loot.SpawnStealLoot` passes the local variable's name (`STEAL_LOOT_TABLE_1`) to the table lookup instead of the table name stored in it, so a creature using it throws "not registered" (no module content uses it). |
 | P2-B3 | An unparseable loot chance (for example `"TABLE, often"`) becomes 0, so nothing drops; an unparseable attempts value becomes 1. |
 | P2-B4 | `Spawn.QueueRespawn` throws on a malformed or unknown `SPAWN_ID`, while `DespawnAndQueueRespawn` handles it; the hand-placed random-location branch in `SpawnObject` is dead; the `FailureCount` reset after a successful spawn has no effect. |
+| P2-B6 | `AI.RemoveFromAlliesCache` returns early unless the creature has its own ally set; one `return` in `CompleteLeashEvadeReturn` is unreachable; `RefreshActionCache` keys cached actions on feats only, so a profile reload would leave stale actions. |
 | P2-B7 | `Item.ReduceItemStack(item, reduceBy)` computes `amount = Math.Abs(reduceBy)` but the guard and the subtraction use `reduceBy`, so a negative argument grows the stack (flagged by CodeRabbit on #3154). A master fix session was proposed to the owner on 2026-11-03; the fix reaches the branch through a sync. P2-B7 also noted an unread `_2daCache` field. |
 | P2-B4 | `SWLOR.Toolset.Tests` `GameCodeIndexTests.WaypointDestinationsComeFromTheServerDeclarations` expects 10 planet landing waypoints and finds 11 (not part of the CI script; not checked on master; likely a master content addition). |
 | P2-A6 | `SpecialFishingLocationDefinition` picks locations with the shared `Random`; `_fishResrefsByLocation` is built from whichever definition reaches a location first, so a picked Tatooine or Viscara location can show a description without its regular fish. |

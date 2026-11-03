@@ -49,6 +49,76 @@
     "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Items/KeyItemService.cs",
+    "Line": 135,
+    "Member": "GiveKeyItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You acquire the '{keyItemDetail.Name}' key item.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/KeyItemService.cs",
+    "Line": 153,
+    "Member": "RemoveKeyItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You lost the '{keyItemDetail.Name}' key item.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/KeyItemService.cs",
+    "Line": 201,
+    "Member": "ObtainKeyItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You already have this key item.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/LightsaberWorkbenchService.cs",
+    "Line": 258,
+    "Member": "UseLightsaberWorkbench",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(error, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 49,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have no items in overflow storage.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 74,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your inventory is full. Free inventory space, then use /overflow again to claim your {records.Count} item(s).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 82,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your character could not be saved, so your items stay in overflow storage. Please try again.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 102,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 104,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage. {remaining} item(s) remain; free inventory space and use /overflow again.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
+    "Line": 112,
+    "Member": "NotifyOnLogin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
     "Line": 87,
     "Member": "AdjustPlayerFactionStanding",
@@ -4942,34 +5012,6 @@
     "Call": "SendMessageToPC(user, validationMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/KeyItem.cs",
-    "Line": 165,
-    "Member": "GiveKeyItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You acquire the '{keyItemDetail.Name}' key item.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/KeyItem.cs",
-    "Line": 190,
-    "Member": "RemoveKeyItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You lost the '{keyItemDetail.Name}' key item.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/KeyItem.cs",
-    "Line": 256,
-    "Member": "ObtainKeyItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You already have this key item.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/LightsaberWorkbench.cs",
-    "Line": 274,
-    "Member": "UseLightsaberWorkbench",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(error, player, false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/Loot.cs",
     "Line": 422,
     "Member": "DisturbCorpseContainer",
@@ -5045,48 +5087,6 @@
     "Member": "UnequipTechnique",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 41,
-    "Member": "Claim",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You have no items in overflow storage.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 66,
-    "Member": "Claim",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your inventory is full. Free inventory space, then use /overflow again to claim your {records.Count} item(s).\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 74,
-    "Member": "Claim",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Your character could not be saved, so your items stay in overflow storage. Please try again.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 94,
-    "Member": "Claim",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 96,
-    "Member": "Claim",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage. {remaining} item(s) remain; free inventory space and use /overflow again.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 105,
-    "Member": "NotifyOnLogin",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",

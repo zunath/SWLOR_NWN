@@ -14,9 +14,20 @@ public sealed class FacadeContainer : IDisposable
     private readonly ServiceProvider _provider;
 
     public FacadeContainer()
+        : this(null)
+    {
+    }
+
+    /// <summary>
+    /// Builds the server's registrations, then lets <paramref name="configure"/> replace some of them, for a test of
+    /// the code that calls a facade (a handler that audits an item, say) and not of the service behind it:
+    /// <c>services => services.Replace(ServiceDescriptor.Singleton&lt;IItemTrashService&gt;(recorder))</c>.
+    /// </summary>
+    public FacadeContainer(Action<IServiceCollection>? configure)
     {
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
+        configure?.Invoke(services);
         _provider = ContainerHost.Create(services);
     }
 

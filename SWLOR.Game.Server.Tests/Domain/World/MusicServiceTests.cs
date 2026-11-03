@@ -56,16 +56,29 @@ public class MusicServiceTests
     private readonly Dictionary<uint, uint> _areaOf = new();
     private readonly Dictionary<uint, string> _tags = new();
 
+    // The key item facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [OneTimeSetUp]
     public void LoadKeyItems()
     {
+        _facades = new FacadeContainer();
+
         // The song names come from the key item the song is tracked by; the module-cache handler fills that table.
-        KeyItem.LoadData();
+        using (_facades.Install())
+        {
+            KeyItem.LoadData();
+        }
     }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
 
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _players.Clear();
         _dms.Clear();
         _possessed.Clear();
@@ -103,6 +116,7 @@ public class MusicServiceTests
     {
         _pluginScope.Dispose();
         _engineScope.Dispose();
+        _facadeScope.Dispose();
     }
 
     /// <summary>

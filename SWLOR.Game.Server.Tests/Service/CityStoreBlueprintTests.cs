@@ -40,8 +40,8 @@ public class CityStoreBlueprintTests
     }
 
     [TestCase(CityStoreKind.Starport, 1, "cs_port_1")]
-    [TestCase(CityStoreKind.Starport, 3, "cs_port_3")]
-    [TestCase(CityStoreKind.Starport, 5, "cs_port_5")]
+    [TestCase(CityStoreKind.Starport, 3, "cs_port_1")]
+    [TestCase(CityStoreKind.Starport, 5, "cs_port_1")]
     [TestCase(CityStoreKind.Cantina, 2, "cs_cantina_2")]
     [TestCase(CityStoreKind.Cantina, 5, "cs_cantina_3")]
     [TestCase(CityStoreKind.MedicalCenter, 4, "cs_medical_1")]
@@ -75,9 +75,22 @@ public class CityStoreBlueprintTests
     }
 
     [Test]
-    public void TheExclusiveItems_AreALaterContentStep_SoNoStoreHasLimitedStockYet()
+    public void EveryLimitedItem_HasAnItemBlueprint_AndStaysOutOfTheBlueprints()
     {
-        CityStoreCatalog.All.Should().OnlyContain(detail => detail.LimitedItems.Count == 0);
+        foreach (var detail in CityStoreCatalog.All)
+        {
+            detail.LimitedItems.Should().NotBeEmpty($"{detail.Kind} sells exclusive items");
+
+            foreach (var item in detail.LimitedItems)
+            {
+                File.Exists(Path.Combine(Root, "Module", "uti", $"{item.Resref}.uti.json"))
+                    .Should().BeTrue($"{detail.Kind} lists '{item.Resref}', which has no item blueprint");
+
+                foreach (var (_, blueprint) in detail.Blueprints)
+                    Entries(ReadStore(blueprint)).Select(x => x.Resref).Should().NotContain(item.Resref,
+                        $"{blueprint} is infinite stock; {item.Resref} comes from its weekly allowance");
+            }
+        }
     }
 
     #endregion
@@ -185,14 +198,27 @@ public class CityStoreBlueprintTests
     }
 
     [Test]
-    public void TheTopStarportLevel_SellsEverythingTheDockhandStoreDid()
+    public void TheLevelOneStarport_SellsTheDockhandStoresFullStock_MiningLasersIncluded()
     {
         var dockhand = Entries(JObject.Parse(File.ReadAllText(Path.Combine(Root, "Module", "utm", "dockhand_store.utm.json"))))
             .Select(x => x.Resref).ToHashSet();
-        var top = Entries(ReadStore("cs_port_5")).Select(x => x.Resref).ToHashSet();
+        var starport = CityStoreCatalog.Get(CityStoreKind.Starport);
+        var first = Entries(ReadStore(starport.Blueprints[0].Blueprint)).Select(x => x.Resref).ToHashSet();
 
-        dockhand.Except(top).Should().BeEmpty();
-        top.Except(dockhand).Should().BeEmpty("a city starport sells the dockhand's ship supplies and nothing else");
+        starport.Blueprints[0].MinLevel.Should().Be(1);
+        dockhand.Except(first).Should().BeEmpty("a level 1 city starport keeps every ship supply the dockhand store sells, so no city loses stock");
+        first.Except(dockhand).Should().BeEmpty("a city starport sells the dockhand's ship supplies and nothing else");
+        first.Where(resref => resref.StartsWith("sm_mine_")).Should().BeEquivalentTo("sm_mine_00", "sm_mine_10", "sm_mine_20", "sm_mine_30", "sm_mine_40");
+    }
+
+    [Test]
+    public void AHigherStarportLevel_NeverSellsLessThanLevelOne()
+    {
+        var starport = CityStoreCatalog.Get(CityStoreKind.Starport);
+        var first = Entries(ReadStore(starport.Blueprints[0].Blueprint)).Select(x => x.Resref).ToHashSet();
+
+        foreach (var (_, blueprint) in starport.Blueprints.Skip(1))
+            first.Except(Entries(ReadStore(blueprint)).Select(x => x.Resref)).Should().BeEmpty($"{blueprint} only adds to level 1");
     }
 
     [Test]

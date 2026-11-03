@@ -4229,6 +4229,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         DuelingRing = 8011,
         Corral = 8012,
 
+        // City stores and travelers (slice 4e): the structures that hold them. This slice takes 8013-8039.
+        MarketStall = 8013,
+        TravelersLodge = 8014,
+
         // Player City Revamp: the Fermentation Vat (slice 5d). The City Revamp reserves 8000-8199; this slice takes 8040-8079.
         FermentationVat = 8040,
     }

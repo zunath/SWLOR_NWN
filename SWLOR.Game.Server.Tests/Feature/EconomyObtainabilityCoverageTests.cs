@@ -140,6 +140,8 @@ public class EconomyObtainabilityCoverageTests
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
             @"(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*""([^""]+)""",
+            // The exclusive items city stores sell with a weekly allowance (CityStoreCatalog).
+            @"new\s+CityStoreLimitedItem\(\s*""([^""]+)""",
         };
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
 

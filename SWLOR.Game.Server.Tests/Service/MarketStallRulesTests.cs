@@ -209,7 +209,7 @@ public class MarketStallRulesTests
     }
 
     [Test]
-    public void TheStallsItem_IsTheStructureItemOfItsId_AndNotEconomyUntilARecipeExists()
+    public void TheStallsItem_IsTheStructureItemOfItsId_AndAPlayerItemBecauseARecipeMakesIt()
     {
         var path = Path.Combine(Root, "Module", "uti", "structure_5102.uti.json");
         File.Exists(path).Should().BeTrue();
@@ -221,10 +221,7 @@ public class MarketStallRulesTests
         item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be("Market Stall");
         item.GetProperty("Description").GetProperty("value").GetProperty("0").GetString().Should().MatchRegex("^[\\x20-\\x7E]+$");
 
-        var flags = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
-            .Where(local => Text(local, "Name") == "NO_ECONOMY").ToList();
-        flags.Should().HaveCount(1, "no recipe or source gives the stall yet");
-        flags[0].GetProperty("Value").GetProperty("value").GetInt32().Should().Be(1);
+        item.TryGetProperty("VarTable", out _).Should().BeFalse("a Fabrication recipe makes the stall, so it is a player item (no NO_ECONOMY flag)");
 
         File.ReadAllText(Path.Combine(Root, "Module", "itp", "itempalcus.itp.json"))
             .Should().Contain("\"structure_5102\"", "the toolset palette lists the item");

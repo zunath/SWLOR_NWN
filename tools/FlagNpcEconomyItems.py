@@ -72,6 +72,8 @@ def collect():
         r'\.AddItemReward\(\s*"([^"]+)"',
         r'RefinedItemResref\s*=\s*"([^"]+)"', r'new\s+TerminalItem\([^,]+,\s*"([^"]+)"',
         r'(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*"([^"]+)"',
+        # The exclusive items city stores sell with a weekly allowance (CityStoreCatalog).
+        r'new\s+CityStoreLimitedItem\(\s*"([^"]+)"',
     ]
     # Files whose bare string literals are all item resrefs (attribute-decorated registries).
     literal_registries = (

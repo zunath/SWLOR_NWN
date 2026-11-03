@@ -40,7 +40,7 @@ public partial class SavedDataItemSweepTests
         foreach (var (resref, previous, model) in blueprints)
         {
             var legacy = Encode(Item(resref, previous, 3, Scalar(2, "StackSize", 1), Text("UUID", "enzyme-" + resref)));
-            EnzymeBaseItemMigration.MigrateSavedObject(legacy, out var migrated).Should().BeTrue(resref);
+            PelvisAppearanceMigration.MigrateSavedObject(legacy, out var migrated).Should().BeTrue(resref);
             var root = Read(migrated);
             Int(root, "BaseItem").Should().Be(EnzymeBaseItem, resref);
             (Int(root, "ModelPart1"), Int(root, "xModelPart1")).Should().Be((model, model), resref);
@@ -85,14 +85,14 @@ public partial class SavedDataItemSweepTests
             Property(ItemPropertyType.Attack, 0, 45, 7, param1Value: 0),
             List("VarTable", Node(0, Text("Name", "ENZYME_PRIMARY"), Scalar(4, "Type", 1), Scalar(5, "Value", 42)))));
 
-        EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeTrue();
+        PelvisAppearanceMigration.MigrateSavedObject(original, out var migrated).Should().BeTrue();
         var root = Read(migrated);
         (Int(root, "BaseItem"), Int(root, "ModelPart1"), Int(root, "xModelPart1")).Should().Be((EnzymeBaseItem, 1, 1));
         Value(root, "UUID").Should().Be("retained-enzyme");
         Children(root, "PropertiesList").Select(property => Int(property, "CostValue")).Should().Equal(7);
         Locals(root).Should().Equal(("ENZYME_PRIMARY", 42));
 
-        EnzymeBaseItemMigration.MigrateSavedObject(migrated, out var rerun).Should().BeFalse("the item is no longer on a 2x2 base item");
+        PelvisAppearanceMigration.MigrateSavedObject(migrated, out var rerun).Should().BeFalse("the item is no longer on a 2x2 base item");
         rerun.Should().BeSameAs(migrated);
     }
 
@@ -105,7 +105,7 @@ public partial class SavedDataItemSweepTests
     public void EnzymeShrink_LeavesEverythingElseUntouched(string resref, BaseItem baseItem, int model)
     {
         var original = Encode(Item(resref, baseItem, model));
-        EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeFalse();
+        PelvisAppearanceMigration.MigrateSavedObject(original, out var migrated).Should().BeFalse();
         migrated.Should().BeSameAs(original);
     }
 
@@ -128,7 +128,7 @@ public partial class SavedDataItemSweepTests
             List("Equip_ItemList", Item("beast_dna", BaseItem.Electronics5, 1)),
             List("ItemList", bag, Item("hydrolase_white", BaseItem.Electronics5, 3, Text("UUID", "top")))), "UTC ");
 
-        EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeTrue();
+        PelvisAppearanceMigration.MigrateSavedObject(original, out var migrated).Should().BeTrue();
         var root = Read(migrated);
         Value(root, "Tag").Should().Be("saved-npc");
         Int(Children(root, "Equip_ItemList").Single(), "BaseItem").Should().Be((int)BaseItem.Electronics5, "DNA keeps its row");
@@ -147,7 +147,7 @@ public partial class SavedDataItemSweepTests
             (Int(enzyme, "BaseItem"), Int(enzyme, "ModelPart1")).Should().Be((EnzymeBaseItem, model));
             Value(enzyme, "UUID").Should().Be(id);
         }
-        EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();
+        PelvisAppearanceMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();
     }
 
     [TestCase("hydrolase_orange", "iit_ess5_004", "iit_enzyme_002")]
@@ -167,7 +167,7 @@ public partial class SavedDataItemSweepTests
     private static bool TryUpdateEnzymeListingIcon(string resref, string icon, out string? result)
     {
         string? written = null;
-        var update = typeof(EnzymeBaseItemMigration).GetMethod("UpdateListingIcon", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var update = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.EnzymeBaseItemMigration")!.GetMethod("UpdateListingIcon", BindingFlags.NonPublic | BindingFlags.Static)!;
         var changed = (bool)update.Invoke(null, new object[] { resref, icon, (Action<string>)(value => written = value) })!;
         result = written;
         return changed;
@@ -178,9 +178,9 @@ public partial class SavedDataItemSweepTests
     {
         const BindingFlags members = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
         var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
-        var migrationType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._28_ShrinkEnzymes")!;
+        var migrationType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._25_ConsolidatePelvisAppearance")!;
         var migration = Activator.CreateInstance(migrationType, true)!;
-        var record = new Player { Version = 28, CharacterFileVersion = 28, HP = 17, FP = 13, Stamina = 11 };
+        var record = new Player { Version = 25, CharacterFileVersion = 25, HP = 17, FP = 13, Stamina = 11 };
         var beforeRecord = JsonConvert.SerializeObject(record);
         var original = Encode(Node(0,
             List("ItemList",

@@ -98,7 +98,7 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void StatusConsoleStandsInTheSeatingCabinInsteadOfOnTheBoardingDivider()
     {
-        var tag = typeof(Shuttle).GetField("ConsoleWaypointTag",
+        var tag = typeof(ShuttleService).GetField("ConsoleWaypointTag",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var waypoints = Objects(ReadResource("git", "shuttle"), "WaypointList").ToList();
         var console = waypoints.Single(point => Value<string>(point, "Tag") == tag);

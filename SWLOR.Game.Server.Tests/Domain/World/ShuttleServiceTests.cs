@@ -426,6 +426,33 @@ public class ShuttleServiceTests
     }
 
     [Test]
+    public void The_tick_puts_the_status_console_at_the_console_point_when_the_interior_has_one()
+    {
+        _bench.InteriorHasConsolePoint = true;
+
+        BoardThePassenger();
+
+        var area = FlightArea();
+        var console = _bench.Objects.Single(sim => sim.Area == area && sim.Type == ObjectType.Placeable && sim.Tag == "flights_terminal");
+        console.Position.Should().Be(new Vector3(7f, 9f, 0f), "the console stands at the SHUTTLE_STATUS_CONSOLE waypoint, not on the boarding divider");
+        console.Facing.Should().Be(180f);
+        Service.TryGetFlightInfo(console.Id, out var destination, out _).Should().BeTrue();
+        destination.Should().Be(Destination);
+    }
+
+    [Test]
+    public void The_tick_keeps_boarding_passengers_at_the_boarding_point_when_the_interior_has_a_console_point()
+    {
+        _bench.InteriorHasConsolePoint = true;
+        BoardThePassenger();
+
+        _bench.RunAssigned(_passenger.Id);
+
+        var jump = (Location)_bench.Engine.CallsTo("ActionJumpToLocation").Should().ContainSingle().Subject.Arguments[0]!;
+        _bench.Describe(jump).Position.Should().Be(new Vector3(3f, 4f, 0f), "only the console moves");
+    }
+
+    [Test]
     public void The_tick_seats_a_pilot_droid_in_the_pilot_chair()
     {
         BoardThePassenger();

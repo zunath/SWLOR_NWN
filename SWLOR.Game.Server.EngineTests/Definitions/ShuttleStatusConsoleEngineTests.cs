@@ -14,9 +14,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var departure = DateTime.UtcNow.AddMinutes(5);
             var flightId = ShuttleSchedule.BuildFlightId(PlanetType.CZ220, PlanetType.Viscara, departure);
-            var flight = typeof(Shuttle)
-                .GetMethod("GetOrCreateFlight", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { flightId, PlanetType.CZ220, PlanetType.Viscara, departure, departure.AddMinutes(2) });
+            var flight = ShuttleInternals.Invoke("GetOrCreateFlight",
+                flightId, PlanetType.CZ220, PlanetType.Viscara, departure, departure.AddMinutes(2));
             var area = (uint)flight.GetType().GetProperty("Area").GetValue(flight);
             try
             {
@@ -35,8 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                ((IDictionary)typeof(Shuttle).GetField("_activeFlights", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))
-                    .Remove(flightId);
+                ShuttleInternals.ActiveFlights.Remove(flightId);
                 if (GetIsObjectValid(area))
                     DestroyArea(area);
             }

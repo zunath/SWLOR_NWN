@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -80,7 +81,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string BuildWeaponDetails(bool hasLiveItem)
         {
-            if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+            if (!_payload.IsIdentified)
+                return string.Empty;
+            if (_payload.ItemType == BaseItem.PowerGlove)
+                return WeaponDamage.PowerGloveGripDescription;
+            if (!WeaponDamage.IsSingleWeaponType(_payload.ItemType))
                 return string.Empty;
 
             var details = WeaponDamage.BuildSingleWeaponDescription(_payload.ItemDMG,

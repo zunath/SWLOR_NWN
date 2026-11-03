@@ -2039,12 +2039,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         AshmarkDataConsole = 338,
 
-        [Structure("Ashmark Display Plinth",
-            "plc_pedestal",
+        [Structure("Ashmark Altar",
+            "_mdrn_pl_altarsi",
             "",
             true,
             1)]
-        AshmarkDisplayPlinth = 339,
+        AshmarkAltar = 339,
 
         [Structure("Ashmark Work Stool",
             "frn_chair_swlr02",
@@ -2109,12 +2109,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         GuttermarkDataConsole = 348,
 
-        [Structure("Guttermark Display Plinth",
-            "plc_pedestal",
+        [Structure("Guttermark Easel",
+            "x3_plc_stand001",
             "",
             true,
             1)]
-        GuttermarkDisplayPlinth = 349,
+        GuttermarkEasel = 349,
 
         [Structure("Guttermark Work Stool",
             "frn_chair_swlr02",
@@ -2179,12 +2179,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         TrailmarkDataConsole = 358,
 
-        [Structure("Trailmark Display Plinth",
-            "plc_pedestal",
+        [Structure("Trailmark Waystone",
+            "x0_runestone1",
             "",
             true,
             1)]
-        TrailmarkDisplayPlinth = 359,
+        TrailmarkWaystone = 359,
 
         [Structure("Trailmark Work Stool",
             "frn_chair_swlr02",
@@ -2249,12 +2249,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         StonewakeDataConsole = 368,
 
-        [Structure("Stonewake Display Plinth",
-            "plc_pedestal",
+        [Structure("Stonewake Stone Altar",
+            "x0_altar",
             "",
             true,
             1)]
-        StonewakeDisplayPlinth = 369,
+        StonewakeStoneAltar = 369,
 
         [Structure("Stonewake Work Stool",
             "frn_chair_swlr02",
@@ -2319,12 +2319,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         AegislineDataConsole = 378,
 
-        [Structure("Aegisline Display Plinth",
-            "plc_pedestal",
+        [Structure("Aegisline Sword Pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
-        AegislineDisplayPlinth = 379,
+        AegislineSwordPedestal = 379,
 
         [Structure("Aegisline Work Stool",
             "frn_chair_swlr02",
@@ -2389,12 +2389,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         VeilcarvedDataConsole = 388,
 
-        [Structure("Veilcarved Display Plinth",
-            "plc_pedestal",
+        [Structure("Veilcarved Rune Pillar",
+            "x0_runepillar",
             "",
             true,
             1)]
-        VeilcarvedDisplayPlinth = 389,
+        VeilcarvedRunePillar = 389,
 
         [Structure("Veilcarved Work Stool",
             "frn_chair_swlr02",
@@ -2459,12 +2459,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         SurgewakeDataConsole = 398,
 
-        [Structure("Surgewake Display Plinth",
-            "plc_pedestal",
+        [Structure("Surgewake Holo Projector",
+            "_mdrn_pl_holobas",
             "",
             true,
             1)]
-        SurgewakeDisplayPlinth = 399,
+        SurgewakeHoloProjector = 399,
 
         [Structure("Surgewake Work Stool",
             "frn_chair_swlr02",
@@ -2529,12 +2529,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         ResonantDataConsole = 408,
 
-        [Structure("Resonant Display Plinth",
-            "plc_pedestal",
+        [Structure("Resonant Crystal",
+            "x2_plc_crystal",
             "",
             true,
             1)]
-        ResonantDisplayPlinth = 409,
+        ResonantCrystal = 409,
 
         [Structure("Resonant Work Stool",
             "frn_chair_swlr02",
@@ -2599,12 +2599,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         FieldlineDataConsole = 418,
 
-        [Structure("Fieldline Display Plinth",
-            "plc_pedestal",
+        [Structure("Fieldline Display Case",
+            "zep_displaycase1",
             "",
             true,
             1)]
-        FieldlineDisplayPlinth = 419,
+        FieldlineDisplayCase = 419,
 
         [Structure("Fieldline Work Stool",
             "frn_chair_swlr02",
@@ -2669,12 +2669,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         CommandlineDataConsole = 428,
 
-        [Structure("Commandline Display Plinth",
-            "plc_pedestal",
+        [Structure("Commandline Bust",
+            "_mdrn_pl_bust",
             "",
             true,
             1)]
-        CommandlineDisplayPlinth = 429,
+        CommandlineBust = 429,
 
         [Structure("Commandline Work Stool",
             "frn_chair_swlr02",

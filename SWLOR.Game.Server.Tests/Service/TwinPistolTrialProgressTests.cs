@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -32,31 +33,63 @@ public class TwinPistolTrialProgressTests
     }
 
     [Test]
-    public void MovementTrial_RequiresBothSuccessfulBuilders_AndAChargedSuccessfulSpender()
+    public void SequenceTrial_TempoThenLeadThenAClosingShotSpendingTwoCadence()
     {
         var trial = new TwinPistolTrialProgress();
-        var slide = new TwinPistolAbilitySpec { IsCrossfire = true, GeneratesMomentum = true, Movement = TwinPistolMovementType.Retreat };
-        var rush = slide with { Movement = TwinPistolMovementType.FreeDestination };
-        var grapple = new TwinPistolAbilitySpec { IsCrossfire = true, SpendsMomentum = true, Movement = TwinPistolMovementType.Approach };
-        trial.RecordAbility(Start, false, 4, slide, 0).Should().BeFalse();
-        trial.RecordAbility(Start, true, 1, slide, 0).Should().BeFalse();
-        trial.RecordAbility(Start, true, 4, slide, 0).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(2), true, 4, slide, 0).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(4), true, 4, rush, 0).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(6), false, 4, grapple, 2).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(7), true, 4, grapple, 1).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(8), true, 0, grapple, 2).Should().BeTrue();
+        trial.RecordAbility(Start, true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(2), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(4), true, PerkType.ClosingShot, 2).Should().BeTrue();
     }
 
     [Test]
-    public void MovementTrial_ExpiredBuildersCannotValidateALaterSpender()
+    public void SequenceTrial_MissesDoNotAdvance_AndAClosingShotNeedsTwoCadence()
     {
         var trial = new TwinPistolTrialProgress();
-        var slide = new TwinPistolAbilitySpec { IsCrossfire = true, GeneratesMomentum = true, Movement = TwinPistolMovementType.Retreat };
-        var rush = slide with { Movement = TwinPistolMovementType.FreeDestination };
-        var grapple = slide with { GeneratesMomentum = false, SpendsMomentum = true, Movement = TwinPistolMovementType.Approach };
-        trial.RecordAbility(Start, true, 4, rush, 0).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(2), true, 4, slide, 0).Should().BeFalse();
-        trial.RecordAbility(Start.AddSeconds(18), true, 4, grapple, 3).Should().BeFalse();
+        trial.RecordAbility(Start, false, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(1), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(2), true, PerkType.ClosingShot, 3).Should().BeFalse("no landed Tempo Shot started the sequence");
+        trial.RecordAbility(Start.AddSeconds(3), true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(4), false, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(5), true, PerkType.ClosingShot, 3).Should().BeFalse("the Lead Shot missed");
+        trial.RecordAbility(Start.AddSeconds(6), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(7), true, PerkType.ClosingShot, 1).Should().BeFalse("one Cadence is not enough");
+        trial.RecordAbility(Start.AddSeconds(8), false, PerkType.ClosingShot, 3).Should().BeFalse("a missed Closing Shot does not count");
+        trial.RecordAbility(Start.AddSeconds(9), true, PerkType.ClosingShot, 2).Should().BeTrue();
+    }
+
+    [Test]
+    public void SequenceTrial_OtherAbilitiesInBetweenDoNotBreakIt()
+    {
+        var trial = new TwinPistolTrialProgress();
+        trial.RecordAbility(Start, true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(1), true, PerkType.FocusedBurst, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(3), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(5), true, PerkType.PairedVolley, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(7), true, PerkType.ClosingShot, 3).Should().BeTrue();
+    }
+
+    [Test]
+    public void SequenceTrial_OrderMatters_AndANewTempoShotRestartsIt()
+    {
+        var trial = new TwinPistolTrialProgress();
+        trial.RecordAbility(Start, true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(1), true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(2), true, PerkType.ClosingShot, 3).Should().BeFalse("Lead Shot came before Tempo Shot");
+        trial.RecordAbility(Start.AddSeconds(3), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(4), true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(5), true, PerkType.ClosingShot, 3).Should().BeFalse("the new Tempo Shot needs its own Lead Shot");
+    }
+
+    [Test]
+    public void SequenceTrial_ExpiresEighteenSecondsAfterTheTempoShot()
+    {
+        var trial = new TwinPistolTrialProgress();
+        trial.RecordAbility(Start, true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(2), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(18), true, PerkType.ClosingShot, 3).Should().BeFalse();
+
+        trial.RecordAbility(Start.AddSeconds(20), true, PerkType.TempoShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(30), true, PerkType.LeadShot, 0).Should().BeFalse();
+        trial.RecordAbility(Start.AddSeconds(37.9), true, PerkType.ClosingShot, 2).Should().BeTrue("just inside the window");
     }
 }

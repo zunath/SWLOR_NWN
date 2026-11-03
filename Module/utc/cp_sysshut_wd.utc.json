@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Systemic Shutdown warden in Viscara - Veles Militia Annex."
+    "value": "Holdout Lieutenant Vessik Rane (Systemic Shutdown line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in armored garb who holds the inner gate of the annex and handed a forbidden disabling technique to students with no clearance for it. He has kept that lesson quiet for years, and his vibroknife has put down better fighters who came at him alone."
+      "0": "A Zabrak lieutenant in armored garb who holds the inner gate of the annex and handed a forbidden disabling technique to recruits with no clearance for it. He has kept that lesson quiet for years, and his vibroknife has put down better fighters who came at him alone."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Systemic Shutdown Warden"
+      "0": "Holdout Lieutenant Vessik Rane"
     }
   },
   "fortbonus": {

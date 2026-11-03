@@ -105,6 +105,7 @@ namespace SWLOR.Toolset.Shell
             Bind(Key.S, KeyModifiers.Control | KeyModifiers.Shift, viewModel.SaveAllCommand, flushPendingEdits: true);
             Bind(Key.Z, KeyModifiers.Control, viewModel.UndoCommand);
             Bind(Key.Y, KeyModifiers.Control, viewModel.RedoCommand);
+            Bind(Key.Z, KeyModifiers.Control | KeyModifiers.Shift, viewModel.RedoCommand);
 
             // Ctrl+B compiles the active script, Ctrl+Shift+B builds them all. Ctrl+B is also handled
             // by the script editor so it fires with the buffer focused; that path marks the key

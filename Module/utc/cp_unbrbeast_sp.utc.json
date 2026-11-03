@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unbreakable Beast specialist in Dathomir - Tarn Jungle Preserve."
+    "value": "Pen-Scarred Plated Burrower (Unbreakable Beast line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unbreakable Beast Specialist"
+      "0": "Pen-Scarred Plated Burrower"
     }
   },
   "fortbonus": {
@@ -172,7 +172,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -238,43 +238,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -282,11 +282,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 243
+          "value": 238
         }
       },
       {

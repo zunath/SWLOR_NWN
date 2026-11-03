@@ -40,7 +40,7 @@ A pull request with merge conflicts is not ready, however clean its review. Reso
 
 - Check every pull request, companions included, with `gh pr view <pr> --repo <owner>/<repo> --json mergeable,mergeStateStatus` before you report it ready, and again whenever you come back to it. `CONFLICTING` or `DIRTY` means it has conflicts. `UNKNOWN` means GitHub is still computing; ask again.
 - Resolve them by merging the pull request's own base branch into your branch. Read the base from `gh pr view <pr> --repo <owner>/<repo> --json baseRefName`, refresh it with `git fetch origin +refs/heads/<base>:refs/remotes/origin/<base>` (`Readmes/AgentEnvironment.md`), then `git merge origin/<base>`; don't rebase or force-push a branch under review. Keep both sides' intent, rebuild, rerun the tests that guard the change, and push.
-- A conflicting submodule pointer resolves to the companion's current head once the companion branch has its own base merged in.
+- For an open companion, resolve a conflicting submodule pointer to its current head after merging its own base. If the companion has already merged, use the actual merged asset revision (or a newer revision containing both sides), not its old feature-branch head. Verify that both the task's assets and the incoming base's unrelated assets remain present; choosing one side blindly can discard another completed fix. Check ancestry and file/tree content when squash merges make the histories diverge.
 - The merge commit is a new head, so run the review loop again until the latest review of that head is clean.
 
 ## Review threads

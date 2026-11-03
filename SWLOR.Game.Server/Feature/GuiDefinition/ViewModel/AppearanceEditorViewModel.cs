@@ -91,15 +91,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int SettingsTabId = 2;
         private const int SimpleEquipmentTabId = 3;
         private const int WeaponEquipmentTabId = 4;
+        private const int OutfitsTabId = 5;
         private static readonly GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload> EditorTabs =
             new GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload>()
                 .AddTab(AppearanceTabId, EditorMainPartial)
                 .AddTab(EquipmentTabId, EditorArmorPartial)
                 .AddTab(SettingsTabId, SettingsPartial)
                 .AddTab(SimpleEquipmentTabId, EditorArmorPartial)
-                .AddTab(WeaponEquipmentTabId, EditorWeaponPartial);
+                .AddTab(WeaponEquipmentTabId, EditorWeaponPartial)
+                .AddTab(OutfitsTabId, OutfitsPartial);
         private static readonly GuiToggleGroupSync EditorToggles = new(AppearanceTabId, EquipmentTabId);
         private static readonly GuiToggleGroupSync SettingsToggles = new(SettingsTabId);
+        private static readonly GuiToggleGroupSync OutfitsToggles = new(OutfitsTabId);
         private int _selectedTabId = AppearanceTabId;
         private int _armorBindingGeneration;
         private bool _armorClientBindingsWatched;
@@ -143,12 +146,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var uiTarget = GetMaster(dm);
 
+                Gui.CloseWindow(dm, GuiWindowType.AppearancePartBrowser, uiTarget);
                 Gui.CloseWindow(dm, GuiWindowType.AppearanceEditor, uiTarget);
             }
             else
             {
                 if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
                     Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
+                Gui.ClosePlayerWindow(dm, GuiWindowType.AppearancePartBrowser);
             }
         }
 
@@ -724,6 +729,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        // Equipment slot tabs, in tab order. Helmets and cloaks are chosen on the armor body map.
+        public const int ArmorEquipmentValue = 0;
+        public const int MainHandEquipmentValue = 1;
+        public const int OffHandEquipmentValue = 2;
+        private const int MainHandItemType = 3;
+        private const int OffHandItemType = 4;
+
+        /// <summary>Equipment slot tab: armor (also while its helmet or cloak is edited) or a weapon hand.</summary>
+        public int EquipmentTypeValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                var itemType = ToItemTypeIndex(value);
+                // Armor already covers its helmet and cloak; only a weapon or a weapon-to-armor change loads a page.
+                if (itemType == 0 && SelectedItemTypeIndex is 0 or 1 or 2)
+                    return;
+                if (SelectedItemTypeIndex != itemType)
+                    SelectedItemTypeIndex = itemType;
+            }
+        }
+
+        public static int ToItemTypeIndex(int equipmentValue) => equipmentValue switch
+        {
+            MainHandEquipmentValue => MainHandItemType,
+            OffHandEquipmentValue => OffHandItemType,
+            _ => 0
+        };
+
+        public static int ToEquipmentTypeValue(int itemTypeIndex) => itemTypeIndex switch
+        {
+            MainHandItemType => MainHandEquipmentValue,
+            OffHandItemType => OffHandEquipmentValue,
+            _ => ArmorEquipmentValue
+        };
+
         public int SelectedItemTypeIndex
         {
             get => Get<int>();
@@ -735,6 +777,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
                 Set(value);
+                SetIfChanged(nameof(EquipmentTypeValue), ToEquipmentTypeValue(value));
                 // Client hydration updates the binding before calling its property setter.
                 // Track the loaded page separately so an echo cannot reset a selected armor part.
                 if (value == _loadedItemTypeIndex)
@@ -748,6 +791,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _selectedColorChannel = AppearanceArmorColor.Leather1;
                 }
                 ToggleItemEquippedFlags();
+                // Helmets, cloaks and weapons have no armor parts to colour.
+                if (value != 0)
+                    SetIfChanged(nameof(IsPartColorsVisible), false);
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();
@@ -902,7 +948,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var hasItemEquipped = IsValidItem();
             HasItemEquipped = hasItemEquipped;
             DoesNotHaveItemEquipped = !hasItemEquipped;
+            IsNoEditableItemVisible = !hasItemEquipped && IsEquipmentSelected;
+            // An empty slot has no parts: the browser must not keep showing the last item's.
+            if (!hasItemEquipped)
+                ClearBrowser();
         }
+
+        /// <summary>The slot tabs' "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
+        public bool IsNoEditableItemVisible { get => Get<bool>(); set => Set(value); }
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
@@ -932,9 +985,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _colorTarget = ColorTarget.Global;
             _selectedColorChannel = AppearanceArmorColor.Leather1;
             _selectedTabId = AppearanceTabId;
+            FitWindowToPlayerScreen();
             Set(0, nameof(EditorTabToggleValue));
             Set(-1, nameof(SettingsTabToggleValue));
             Set(0, nameof(SelectedItemTypeIndex));
+            Set(ArmorEquipmentValue, nameof(EquipmentTypeValue));
             _loadedItemTypeIndex = 0;
             RegisterColorMappings();
             _selectedSlot = AppearanceEditorSlot.Head;
@@ -958,20 +1013,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshTintMapAvailability();
             LoadTintMapEditor();
             InitializeSettings();
+            InitializeOutfits();
             ColorTargetText = string.Empty;
             LoadItemTypeEditor();
 
             WatchOnClient(model => model.EditorTabToggleValue);
             WatchOnClient(model => model.SettingsTabToggleValue);
+            WatchOnClient(model => model.OutfitsTabToggleValue);
+            WatchOnClient(model => model.OutfitName);
+            WatchOnClient(model => model.QuickOutfitValue);
             WatchOnClient(model => model.SelectedColorCategoryIndex);
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
-            WatchOnClient(model => model.SelectedItemTypeIndex);
+            WatchOnClient(model => model.EquipmentTypeValue);
             WatchOnClient(model => model.SelectedTintColor);
             WatchOnClient(model => model.CustomTintRed);
             WatchOnClient(model => model.CustomTintGreen);
             WatchOnClient(model => model.CustomTintBlue);
-            WatchPartBrowser();
             _tintControlBindingsWatched = true;
         }
 
@@ -1378,9 +1436,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
-            if (propertyName == nameof(Geometry))
-                QueueBrowserResize();
-
             if (_isDMArmorDisplay && propertyName is nameof(ShowHelmet) or nameof(ShowCloak))
                 ApplyDMArmorDisplay();
 
@@ -1539,6 +1594,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SuspendArmorClientWatches();
             var partialTabId = IsSettingsSelected
                 ? SettingsTabId
+                : IsOutfitsSelected
+                ? OutfitsTabId
                 : IsEquipmentSelected
                     ? SelectedItemTypeIndex == 0 ? EquipmentTabId
                         : SelectedItemTypeIndex is 3 or 4 ? WeaponEquipmentTabId : SimpleEquipmentTabId
@@ -1557,13 +1614,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IsCopyEnabled = true;
                     UpdatePaletteSheetForChannel();
                 }
-                if (!IsSettingsSelected)
-                    ApplyBrowserColumns(force: true);
-
                 // Tab replacement still needs current bindings after its nested palette.
                 // Resizing does not replace controls or pause their watches.
                 RepublishBindings();
             });
+            RepublishOutfitInputs();
             if (isArmorEditor)
                 ResumeArmorClientWatches();
         }
@@ -1572,26 +1627,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             EditorToggles.SyncTo(_selectedTabId, value => EditorTabToggleValue = value);
             SettingsToggles.SyncTo(_selectedTabId, value => SettingsTabToggleValue = value);
+            OutfitsToggles.SyncTo(_selectedTabId, value => OutfitsTabToggleValue = value);
             LoadItemTypeEditor();
         }
 
         private void SelectEditorTab(int tabId)
         {
-            if (tabId is < AppearanceTabId or > SettingsTabId ||
-                tabId == SettingsTabId && !IsSettingsVisible)
+            if (tabId is not (AppearanceTabId or EquipmentTabId or SettingsTabId or OutfitsTabId) ||
+                tabId == SettingsTabId && !IsSettingsVisible ||
+                tabId == OutfitsTabId && !IsOutfitsVisible)
                 return;
             CommitCustomTintComponents();
             _selectedTabId = tabId;
             EditorToggles.SyncTo(tabId, value => EditorTabToggleValue = value);
             SettingsToggles.SyncTo(tabId, value => SettingsTabToggleValue = value);
+            OutfitsToggles.SyncTo(tabId, value => OutfitsTabToggleValue = value);
             IsAppearanceSelected = tabId == AppearanceTabId;
             IsEquipmentSelected = tabId == EquipmentTabId;
             IsSettingsSelected = tabId == SettingsTabId;
+            IsOutfitsSelected = tabId == OutfitsTabId;
             SuspendArmorClientWatches();
 
-            if (IsSettingsSelected)
+            if (IsPartEditorHidden)
             {
-                LoadSettings();
+                IsNoEditableItemVisible = false;
+                // Wardrobe and Settings edit no parts: drop the part list and close its browser.
+                ClearBrowser();
+                if (IsSettingsSelected)
+                    LoadSettings();
+                else
+                    LoadOutfits();
                 LoadItemTypeEditor();
                 return;
             }
@@ -2661,7 +2726,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
 
-        private static bool TryParsePartNumber(string text, out int partId)
+        internal static bool TryParsePartNumber(string text, out int partId)
         {
             text = text?.Trim() ?? string.Empty;
             if (text.StartsWith("#"))
@@ -2670,13 +2735,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return int.TryParse(text, out partId);
         }
 
-        public Action OnClickOutfits() => () =>
-        {
-            Gui.TogglePlayerWindow(_target, GuiWindowType.Outfits);
-        };
-
         public Action OnCloseWindow() => () =>
         {
+            ClosePartBrowser();
             FlushPendingPickerColor();
             CancelTintPickerGesture();
             CommitCustomTintComponents();

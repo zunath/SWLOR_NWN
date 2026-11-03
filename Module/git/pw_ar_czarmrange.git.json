@@ -159815,7 +159815,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -159833,7 +159833,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -159865,7 +159865,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -159874,7 +159874,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -159931,7 +159931,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -159943,7 +159943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -159955,15 +159955,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -159995,7 +159995,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160042,7 +160042,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160060,7 +160060,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160092,7 +160092,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160101,7 +160101,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160158,7 +160158,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160170,7 +160170,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160182,15 +160182,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160222,7 +160222,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160269,7 +160269,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160287,7 +160287,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160319,7 +160319,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160328,7 +160328,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160385,7 +160385,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160397,7 +160397,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160409,15 +160409,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160449,7 +160449,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160496,7 +160496,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160514,7 +160514,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160546,7 +160546,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160555,7 +160555,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160612,7 +160612,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160624,7 +160624,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160636,15 +160636,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160676,7 +160676,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -353078,7 +353078,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - Kill Box Warden Spawn"
+            "0": "Czerka Arms Test Range - Range Overseer Sskeer Spawn (Kill Box line)"
           }
         },
         "MapNote": {
@@ -353141,7 +353141,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - Rain of Steel Warden Spawn"
+            "0": "Czerka Arms Test Range - Range Overseer Perrin Aldous Spawn (Rain of Steel line)"
           }
         },
         "MapNote": {
@@ -353204,7 +353204,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - One Shot Warden Spawn"
+            "0": "Czerka Arms Test Range - Range Overseer Callum Breck Spawn (One Shot line)"
           }
         },
         "MapNote": {
@@ -353391,7 +353391,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353454,7 +353454,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353517,7 +353517,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353580,7 +353580,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353643,7 +353643,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353706,7 +353706,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353769,7 +353769,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -353832,7 +353832,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -353845,11 +353845,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -353895,7 +353895,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -353908,11 +353908,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -353958,7 +353958,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -353971,11 +353971,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354021,7 +354021,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354034,11 +354034,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354084,7 +354084,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354097,11 +354097,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354147,7 +354147,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -354210,7 +354210,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -354273,7 +354273,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -354336,7 +354336,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354349,11 +354349,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354399,7 +354399,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354412,11 +354412,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354462,7 +354462,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354475,11 +354475,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354525,7 +354525,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354538,11 +354538,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354588,7 +354588,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -354601,11 +354601,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354626,6 +354626,762 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Rain of Steel line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_RAINSTEEL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_rainsteel_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 17.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -1.91
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Rain of Steel line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_RAINSTEEL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_rainsteel_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 55.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 16.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Rain of Steel line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_RAINSTEEL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_rainsteel_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 44.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 27.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.41
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Rain of Steel line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_RAINSTEEL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_rainsteel_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 34.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Kill Box line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_KILLBOX_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_killbox_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 11.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 66.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Kill Box line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_KILLBOX_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_killbox_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 18.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 74.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Kill Box line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_KILLBOX_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_killbox_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 17.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (Kill Box line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_KILLBOX_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_killbox_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 81.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (One Shot line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ONESHOT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_oneshot_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 16.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 102.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (One Shot line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ONESHOT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_oneshot_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 26.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 102.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (One Shot line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ONESHOT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_oneshot_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 27.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Czerka Arms Test Range - Black Cell Shooter Spawn (One Shot line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ONESHOT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_oneshot_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 82.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
         }
       }
     ]

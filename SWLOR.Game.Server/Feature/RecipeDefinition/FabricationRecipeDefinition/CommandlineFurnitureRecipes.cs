@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_high", 2)
                 .Component("command_key", 1);
 
-            // Commandline Display Plinth
-            _builder.Create(RecipeType.CommandlineDisplayPlinth, SkillType.Fabrication)
+            // Commandline Bust
+            _builder.Create(RecipeType.CommandlineBust, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0429")
                 .Level(34)

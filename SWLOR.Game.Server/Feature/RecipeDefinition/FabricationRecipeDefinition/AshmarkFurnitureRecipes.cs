@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_ruined", 2)
                 .Component("sr_token", 1);
 
-            // Ashmark Display Plinth
-            _builder.Create(RecipeType.AshmarkDisplayPlinth, SkillType.Fabrication)
+            // Ashmark Altar
+            _builder.Create(RecipeType.AshmarkAltar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0339")
                 .Level(14)

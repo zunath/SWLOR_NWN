@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolCrossSkillEngineTests
 {
+    // No perk grants this stat after the Cadence rework; a temporary modifier keeps its dual-wield gating covered.
+
     private static uint _observedTarget = OBJECT_INVALID;
     private static int _damageEvents;
     private static uint _queuedActor = OBJECT_INVALID;
@@ -70,7 +72,7 @@ public static class TwinPistolCrossSkillEngineTests
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
                     if (stance) StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
+                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.SeedRandom(94561);
                     _queuedActor = actor;
                     _queuedTarget = target;
@@ -167,28 +169,19 @@ public static class TwinPistolCrossSkillEngineTests
 
                 baseline = Sample(64, 0, false);
                 ctx.Assert(baseline.All(damage => damage > 20), "The seeded baseline stays clear of minimum-damage rounding");
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
-                ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-                    "The purchased handling trait contributes ten percent");
-                // Paired Handling offsets the paired firing cycle, so a single pistol captures none of it.
-                AssertDamage(Sample(64, 0, false), 0, 0, false, "Paired Handling on one pistol");
-
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, 0, true, "Twin Suns");
                 ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
                     "The sixth ordinary attempt exhausts the Twin Suns status");
 
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
                 StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo with one-pistol handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
                 StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire with one-pistol handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
 
                 // Use the same production grant/expiry path with a short fixture lifetime.
                 GrantTwinSuns(1);
@@ -221,7 +214,7 @@ public static class TwinPistolCrossSkillEngineTests
         void GrantTwinSuns(int seconds)
         {
             var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-            PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, seconds);
+            PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, seconds);
             ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                 "The production activation completion grants six ordinary attempts");
         }
@@ -314,13 +307,6 @@ public static class TwinPistolCrossSkillEngineTests
                         });
                     }
                     var baseline = Sample();
-                    player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
-                    ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The purchased handling trait is present outside pistol equipment");
-                    var handling = Sample();
-                    // Paired Handling needs two weapons; a single saber or rifle captures none of it.
-                    ctx.Assert(Math.Abs(handling - baseline) < .01,
-                        $"The single {resref} gains no Paired Handling bonus ({baseline:0.00}->{handling:0.00})");
-                    player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
                     StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();
                     ctx.Assert(akimbo / baseline is > .67 and < .71,
@@ -332,7 +318,7 @@ public static class TwinPistolCrossSkillEngineTests
                         $"The same {resref} pays Crossfire's native ordinary damage cost ({baseline:0.00}->{crossfire:0.00})");
                     StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
                     ClearAllActions();
-                    ctx.Log($"{resref}:256 matched-seed native rolls each, baseline={baseline:0.00}, handling={handling:0.00}, Akimbo={akimbo:0.00}, Crossfire={crossfire:0.00}");
+                    ctx.Log($"{resref}:256 matched-seed native rolls each, baseline={baseline:0.00}, Akimbo={akimbo:0.00}, Crossfire={crossfire:0.00}");
                 });
                 await ctx.DelaySecondsAsync(.75f);
                 async Task<int> CountActualAttacks()
@@ -448,13 +434,7 @@ public static class TwinPistolCrossSkillEngineTests
                 await ctx.DelaySecondsAsync(.4f);
                 if (!killingShot)
                     ctx.AssertEqual(impacts, _damageEvents, $"{mainResref}/{offResref} contributes exactly one impact per equipped attack weapon");
-                var firingSources = 0;
-                for (var source = GetFirstObjectInArea(ctx.Arena, ObjectType.Placeable); GetIsObjectValid(source);
-                     source = GetNextObjectInArea(ctx.Arena, ObjectType.Placeable))
-                    if (GetTag(source) == PairedRangedPresentation.MuzzleTag &&
-                        GetResRef(source) == PairedRangedPresentation.MuzzleBlueprint &&
-                        GetPosition(source).Z - GetPosition(actor).Z > 1f)
-                        firingSources++;
+                var firingSources = PairedRangedPresentation.GetLaunchCount(actor);
                 ctx.AssertEqual(mainResref == "b_twinpistol" ? 2 : 0, firingSources,
                     "The real ability shows each fired pistol including a killing shot, while cross-skilled weapons create no paired muzzle effects");
                 if (killingShot)
@@ -470,7 +450,7 @@ public static class TwinPistolCrossSkillEngineTests
                     }
                 }
                 ctx.Log($"Ability presentation {mainResref}/{offResref}: lethal={killingShot}, damageCallbacks={_damageEvents}, " +
-                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, raisedSources={firingSources}");
+                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, launches={firingSources}");
                 ctx.AssertEqual(SkillType.TwinPistol, Ability.GetLastCompletedAbilityImpactSummary(actor).SkillType,
                     "Cross-trained equipment does not redirect the purchased ability's skill");
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Scrapheap Lockdown specialist in CZ-220 - Breaker Bay."
+    "value": "Wreck Crew Rigger (Scrapheap Lockdown line) in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in a Czerka uniform, katars ready, keeping his place in a tight rotation along the rerouted junkline. His crew rewired the Breaker Yard's belts and gates into a moving stand-off, and he holds his part of it without a wasted motion."
+      "0": "An Ugnaught rigger in a Czerka uniform, katars ready, keeping his place in a tight rotation along the rerouted junkline. His crew rewired the Breaker Yard's belts and gates into a moving stand-off, and he holds his part of it without a wasted motion."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scrapheap Lockdown Specialist"
+      "0": "Wreck Crew Rigger"
     }
   },
   "fortbonus": {
@@ -327,7 +327,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -393,43 +393,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -437,11 +437,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 138
+          "value": 133
         }
       },
       {
@@ -732,7 +732,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 1
+    "value": 7
   },
   "willbonus": {
     "type": "short",

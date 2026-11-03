@@ -1411,6 +1411,7 @@ public static class ItemIconMigration
             if (GetObjectType(current) == ObjectType.Item)
             {
                 changed |= MigrateItem(current);
+                changed |= FurnitureRenameMigration.RenameItem(current);
                 changed |= MigrateDroidInventory(current);
             }
             if (GetObjectType(current) == ObjectType.Creature)

@@ -1,18 +1,14 @@
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
-using System.Numerics;
 
 namespace SWLOR.CombatSim.Engine;
 
-/// <summary>Uses the server's state machines; no independently transcribed proc/Flow rules.</summary>
+/// <summary>Uses the server's state machines; no independently transcribed proc/Cadence rules.</summary>
 public sealed class WeaponTraitState
 {
     public PairedRangedTraitState Paired { get; } = new();
     public OrdinaryAttackHasteState Haste { get; } = new();
     public long RollId { get; set; }
-    public double MovementReadyAt { get; set; }
-    public WeaponMovementWindow Movement { get; } = new();
-    public Vector3 Position { get; set; }
 
     /// <summary>Mirrors the server: these stats apply only with two weapons (an off-hand attack).</summary>
     public static int DualWieldStat(Combatant actor, StatType stat) =>
@@ -20,7 +16,6 @@ public sealed class WeaponTraitState
 
     public static PairedRangedTraitConfiguration Configuration(Combatant actor) => new()
     {
-        OrdinaryDamagePercentAdjustment = DualWieldStat(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
         OrdinaryHitRestoreCount = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
         OrdinaryHitStaminaRestore = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
         OrdinaryHitRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),
@@ -30,18 +25,20 @@ public sealed class WeaponTraitState
         DirectDamageNextAbilityStaminaReduction = actor.GetStat(StatType.PairedRangedDirectDamageNextAbilityStaminaReduction),
         DirectDamageCostWindowSeconds = actor.GetStat(StatType.PairedRangedDirectDamageCostWindowSeconds),
         DirectDamageCostCooldownSeconds = actor.GetStat(StatType.PairedRangedDirectDamageCostCooldownSeconds),
-        MomentumMaximum = actor.GetStat(StatType.PairedRangedMomentumMaximum),
-        MomentumDurationSeconds = actor.GetStat(StatType.PairedRangedMomentumDurationSeconds),
-        MomentumAccuracyPerCharge = actor.GetStat(StatType.PairedRangedMomentumAccuracyPerCharge),
-        MomentumDamagePerCharge = actor.GetStat(StatType.MovementHitWeaponAbilityDamagePerCharge),
-        MomentumStaminaRestorePerCharge = actor.GetStat(StatType.PairedRangedMomentumStaminaRestorePerCharge),
-        MomentumStaminaRestoreMaximum = actor.GetStat(StatType.PairedRangedMomentumStaminaRestoreMaximum),
-        MomentumRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedMomentumRestoreCooldownSeconds),
-        EvasionMomentumCooldownSeconds = actor.GetStat(StatType.PairedRangedEvasionMomentumCooldownSeconds),
-        MovementNextAbilityAccuracy = actor.GetStat(StatType.PairedRangedMovementNextAbilityAccuracy),
-        MovementAccuracyDurationSeconds = actor.GetStat(StatType.PairedRangedMovementAccuracyDurationSeconds),
-        MovementAccuracyCooldownSeconds = actor.GetStat(StatType.PairedRangedMovementAccuracyCooldownSeconds),
-        MomentumExtendedDurationSeconds = actor.GetStat(StatType.PairedRangedMomentumExtendedDurationSeconds)
+        CadenceMaximum = actor.GetStat(StatType.CadenceMaximum),
+        CadenceDurationSeconds = actor.GetStat(StatType.CadenceDurationSeconds),
+        CadenceChainWindowSeconds = actor.GetStat(StatType.CadenceChainWindowSeconds),
+        CadenceAccuracyPerCharge = actor.GetStat(StatType.CadenceAccuracyPerCharge),
+        CadenceDamagePerCharge = actor.GetStat(StatType.CadenceDamagePerCharge),
+        CadenceBonusDamagePerCharge = actor.GetStat(StatType.CadenceBonusDamagePerCharge),
+        CadenceStaminaRestorePerCharge = actor.GetStat(StatType.CadenceStaminaRestorePerCharge),
+        CadenceStaminaRestoreMaximum = actor.GetStat(StatType.CadenceStaminaRestoreMaximum),
+        CadenceRestoreCooldownSeconds = actor.GetStat(StatType.CadenceRestoreCooldownSeconds),
+        EvasionCadenceCooldownSeconds = actor.GetStat(StatType.EvasionCadenceCooldownSeconds),
+        CadenceNextAbilityAccuracy = actor.GetStat(StatType.CadenceNextAbilityAccuracy),
+        CadenceAccuracyDurationSeconds = actor.GetStat(StatType.CadenceAccuracyDurationSeconds),
+        CadenceAccuracyCooldownSeconds = actor.GetStat(StatType.CadenceAccuracyCooldownSeconds),
+        CadenceExtendedDurationSeconds = actor.GetStat(StatType.CadenceExtendedDurationSeconds)
     };
 
     public static OrdinaryAttackHasteConfiguration HasteConfiguration(Combatant actor) => new(

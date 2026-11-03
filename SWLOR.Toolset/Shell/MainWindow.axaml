@@ -32,7 +32,7 @@
       </MenuItem>
       <MenuItem Header="_Edit">
         <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
-        <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
+        <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Shift+Z" />
         <Separator />
         <MenuItem x:Name="ModulePropertiesMenuItem" Header="Module _Properties..."
                   Command="{Binding ModulePropertiesCommand}" />
@@ -86,7 +86,7 @@
         <Button Classes="tool" Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)">
           <Path Data="M8,6 L3,11 L8,16 M3,11 H14 A6,6 0 0 1 14,23 H10" />
         </Button>
-        <Button Classes="tool" Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Y)">
+        <Button Classes="tool" Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)">
           <Path Data="M16,6 L21,11 L16,16 M21,11 H10 A6,6 0 0 0 10,23 H14" />
         </Button>
 

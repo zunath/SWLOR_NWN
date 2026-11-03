@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Infinite Conduit warden in Mon Cala - Medical Sublevel."
+    "value": "Ward Supervisor Dru Salin (Infinite Conduit line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan ward-keeper who once kept the deep ward's night watch, now a reservoir of everything he refused to let go. A fractured ward sigil hangs at his neck, and he turns his twin electroblade with the heavy patience of deep water."
+      "0": "A Bothan ward supervisor who once kept the deep ward's night watch, now a reservoir of everything he refused to let go. A fractured ward sigil hangs at his neck, and he turns his twin electroblade with the heavy patience of deep water."
     }
   },
   "Dex": {
@@ -393,7 +393,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Infinite Conduit Warden"
+      "0": "Ward Supervisor Dru Salin"
     }
   },
   "fortbonus": {

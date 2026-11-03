@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unbreakable Beast adept in Dathomir - Tarn Jungle Preserve."
+    "value": "Young Plated Burrower (Unbreakable Beast line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -140,7 +140,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unbreakable Beast Adept"
+      "0": "Young Plated Burrower"
     }
   },
   "fortbonus": {
@@ -533,7 +533,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 242
+          "value": 237
         }
       },
       {

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Alpha Rhythm warden in Dathomir - Tarn Jungle Preserve."
+    "value": "Breeder's Iriaz Bull (Alpha Rhythm line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -168,7 +168,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Alpha Rhythm Warden"
+      "0": "Breeder's Iriaz Bull"
     }
   },
   "fortbonus": {

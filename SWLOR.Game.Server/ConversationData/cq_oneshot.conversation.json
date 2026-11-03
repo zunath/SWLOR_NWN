@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Eleven steps, and the fourth was loud. Stay anyway. There's a crew squatting in the Czerka Arms Test Range - the old proving lanes here on Smuggler's Moon - burning rounds like breath is free. Their adepts call what they do my doctrine. It isn't. Six of them on the near lanes. Put them down and bring me the One Shot Czerka Test Docket they score themselves against. I want to see what they think counts as a hit.",
+          "Text": "Eleven steps, and the fourth was loud. Stay anyway. There's a crew squatting in the Czerka Arms Test Range - the old proving lanes here on Smuggler's Moon - burning rounds like breath is free. The Range Washouts call what they do my doctrine. It isn't. Six of them hold the near lanes, the rooms nearest the entrance. Any Range Washout counts, but only if you drop him with Aimed Shot, Piercing Round or Headshot; a sprayed kill teaches you nothing. Put six down and bring me the One Shot Czerka Test Docket they score themselves against. I want to see what they think counts as a hit.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Range crew. Rodians, nearly all of them. Czerka let them stay on when the contracts dried up, and they found my old target logs and decided doctrine was a thing you could copy off paper. Now they teach it loud and sell it louder. Six adepts on the near lanes. They count their hits. They never count their misses. That tells you everything.",
+          "Text": "Range crew. Rodians, nearly all of them. Czerka let them stay on when the contracts dried up, and they found my old target logs and decided doctrine was a thing you could copy off paper. Now they teach it loud and sell it louder. Six Range Washouts on the near lanes. They count their hits. They never count their misses. That tells you everything.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts. One docket. The gate by the GSI Tower. You're spending words I didn't buy - go spend rounds instead.",
+          "Text": "Six Range Washouts. One docket. The gate by the GSI Tower. You're spending words I didn't buy - go spend rounds instead.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists hold the mid-lanes. Better than the six you dropped - these miss with intention. They pulled the blast-cell regulator off the line and cranked every test rifle hot, because a hot rifle flatters a bad shooter. Take all five and bring back the One Shot Blast-Cell Regulator. Rifles should tell the truth.",
+          "Text": "Five Range Instructors hold the mid-lanes, deeper in. Better than the six you dropped - these miss with intention. They pulled the blast-cell regulator off the line and cranked every test rifle hot, because a hot rifle flatters a bad shooter. Take five of them, any Range Instructor, each with Aimed Shot, Piercing Round or Headshot, and bring back the One Shot Blast-Cell Regulator. Rifles should tell the truth.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In volume. A specialist puts five rounds in the air hoping one lands honest, and against most people one does. Don't be most people. Between the third and fourth trigger pull there's a breath. Live inside it.",
+          "Text": "In volume. A Range Instructor puts five rounds in the air hoping one lands honest, and against most people one does. Don't be most people. Between the third and fourth trigger pull there's a breath. Live inside it.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists. One regulator. Everything else is stalling.",
+          "Text": "Five Range Instructors. One regulator. Everything else is stalling.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden holds the long lane, and he wears the One Shot Scored Range Crest. My crest - the one I shot for, back before he decided wearing it was the same as earning it. He is patient. The real kind, not the counterfeit. So hear me: one trigger is not enough down there. One trigger, many eyes. Take two spotters you'd trust with your own breath, or don't go at all. The last shooter who walked that lane alone is still on it. Nobody has managed to go fetch him.",
+          "Text": "The warden, Callum Breck, holds the long lane, and he wears the One Shot Scored Range Crest. My crest - the one I shot for, back before he decided wearing it was the same as earning it. He is patient. The real kind, not the counterfeit. So hear me: one trigger is not enough down there. One trigger, many eyes. Take two spotters you'd trust with your own breath, or don't go at all. The last shooter who walked that lane alone is still on it. Nobody has managed to go fetch him.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of the old crew left - the inner circle, the ones who taught the rest to spray. They've sealed the deep lanes behind a pooled clearance chit and they're stripping the range as they go. Optics, charge cells, twenty years of target logs. Mine among them. Take all four and bring me the One Shot Czerka Clearance Chit. It's the last key that isn't yours.",
+          "Text": "The old crew's last guns are left - the Black Cell Shooters, the inner circle, the ones who taught the rest to spray. They've sealed the deepest lanes behind a pooled clearance chit and they're stripping the range as they go. Optics, charge cells, twenty years of target logs. Mine among them. Take four of them, any Black Cell Shooter, each with Aimed Shot, Piercing Round or Headshot, and bring me the One Shot Czerka Clearance Chit. It's the last key that isn't yours.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last target. The Trandoshan in the Blast-Safe Cell at the far end of the range never joined that crew - they squatted on his range for years and he never wasted a single round telling them to leave. He is the doctrine finished. One round, one answer, every time. I watched him shoot the worst wind this moon ever threw, and I never saw him fire twice. There is nothing to carry out. So bring every eye you trust. Against him the eyes matter more than the trigger, because whoever he sees first is spent.",
+          "Text": "Last target. Zhessk, the Trandoshan in the Blast-Safe Cell at the far end of the range never joined that crew - they squatted on his range for years and he never wasted a single round telling them to leave. He is the doctrine finished. One round, one answer, every time. I watched him shoot the worst wind this moon ever threw, and I never saw him fire twice. There is nothing to carry out. So bring every eye you trust. Against him the eyes matter more than the trigger, because whoever he sees first is spent.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts. Every round will count.",
+        "Text": "Six Range Washouts. Every round will count.",
         "Style": 4,
         "Color": null
       },

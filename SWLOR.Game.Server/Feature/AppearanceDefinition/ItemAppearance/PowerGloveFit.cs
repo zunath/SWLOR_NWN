@@ -115,11 +115,11 @@ public static class PowerGloveFit
         // The off-hand carrier follows the owned item's cosmetics in place, preserving combat setup.
         PowerGloveEquipment.RefreshAppearance(creature);
 
-        var rightModel = GetHandModel(creature, CreaturePart.RightHand, "r");
-        var leftModel = GetHandModel(creature, CreaturePart.LeftHand, "l");
+        var rightHand = GetHandModels(creature, CreaturePart.RightHand, "r");
+        var leftHand = GetHandModels(creature, CreaturePart.LeftHand, "l");
         var costumeModel = GetCostumeModel(creature);
-        Fit(right, rightModel, rightModel, leftModel, costumeModel, true);
-        Fit(left, leftModel, rightModel, leftModel, costumeModel, false);
+        Fit(right, rightHand, leftHand, costumeModel, true);
+        Fit(left, rightHand, leftHand, costumeModel, false);
     }
 
     private static string GetCostumeModel(uint creature)
@@ -133,20 +133,35 @@ public static class PowerGloveFit
         return robe > 0 ? TintMapModelResolver.GetCurrentRobeModelResref(creature, robe) : string.Empty;
     }
 
-    private static string GetHandModel(uint creature, CreaturePart part, string side)
+    /// <summary>The hand model the wearer shows on this side, and the natural hand beneath any armor hand.</summary>
+    private static (string Worn, string Natural) GetHandModels(uint creature, CreaturePart part, string side)
     {
         var appearance = (int)GetAppearanceType(creature);
         if (!Get2DAString("appearance", "MODELTYPE", appearance).StartsWith("P", StringComparison.OrdinalIgnoreCase))
-            return string.Empty;
+            return (string.Empty, string.Empty);
         var armor = GetItemInSlot(InventorySlot.Chest, creature);
         var armorPart = GetIsObjectValid(armor)
             ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part)
             : 0;
         var phenotype = RobeModelRenderer.GetBasePhenotype(creature);
-        var model = ResolveHandModel(Get2DAString("appearance", "RACE", appearance), GetGender(creature),
-            phenotype, side, GetCreatureBodyPart(part, creature), armorPart);
-        return ResolveAvailableHandModel(model, phenotype, ModelResource.Exists);
+        var race = Get2DAString("appearance", "RACE", appearance);
+        var gender = GetGender(creature);
+        var naturalPart = GetCreatureBodyPart(part, creature);
+        var worn = ResolveHandModel(race, gender, phenotype, side, naturalPart, armorPart);
+        var natural = ResolveHandModel(race, gender, phenotype, side, naturalPart, 0);
+        return (ResolveAvailableHandModel(worn, phenotype, ModelResource.Exists),
+            ResolveAvailableHandModel(natural, phenotype, ModelResource.Exists));
     }
+
+    /// <summary>
+    /// Selects the hand whose measurements fit the glove. Only a few armor hands are measured; any other armor
+    /// hand fits like the wearer's own measured hand instead of the oversized clearance used for unknown hands.
+    /// </summary>
+    private static string ResolveFitHandModel(string worn, string natural, int appearance) =>
+        !string.IsNullOrWhiteSpace(natural) && !PowerGloveHandFitCatalog.HasMeasuredFit(worn, appearance) &&
+        PowerGloveHandFitCatalog.HasMeasuredFit(natural, appearance)
+            ? natural
+            : worn;
 
     private static string ResolveHandModel(string race, Gender gender, int phenotype, string side, int naturalPart, int armorPart)
     {
@@ -168,14 +183,16 @@ public static class PowerGloveFit
         return modelExists(normalModel) ? normalModel : model;
     }
 
-    private static void Fit(uint item, string handModel, string rightModel, string leftModel,
-        string costumeModel, bool rightHand)
+    private static void Fit(uint item, (string Worn, string Natural) rightHandModels,
+        (string Worn, string Natural) leftHandModels, string costumeModel, bool rightHand)
     {
         if (!IsPowerGlove(item))
             return;
         var appearance = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle) * 100 +
                          GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-        var fit = ResolveFit(handModel, rightModel, leftModel, costumeModel, rightHand, appearance);
+        var rightModel = ResolveFitHandModel(rightHandModels.Worn, rightHandModels.Natural, appearance);
+        var leftModel = ResolveFitHandModel(leftHandModels.Worn, leftHandModels.Natural, appearance);
+        var fit = ResolveFit(rightHand ? rightModel : leftModel, rightModel, leftModel, costumeModel, rightHand, appearance);
         SetScale(item, fit.Scale);
         ApplyTranslation(item, fit.Translation);
     }

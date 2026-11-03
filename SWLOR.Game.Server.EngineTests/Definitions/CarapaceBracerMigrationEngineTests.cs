@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -210,10 +209,10 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 var legacyData = DB.Get<InventoryItem>(legacy.Id).Data;
-                new _29_CorrectStoredCarapaceBracers().Migrate();
+                StoredItemSweepRunner.Run();
                 var migrated = DB.Get<InventoryItem>(legacy.Id);
                 ctx.Assert(migrated.Data != legacyData, "The server migration rewrites the stored legacy item before withdrawal");
-                new _29_CorrectStoredCarapaceBracers().Migrate();
+                StoredItemSweepRunner.Run();
                 ctx.AssertEqual(migrated.Data, DB.Get<InventoryItem>(legacy.Id).Data, "Stored migration retry is stable");
                 Bank.WithdrawItem(owner, legacy.Id);
             });
@@ -258,7 +257,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the deposited bracer to leave inventory");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                new _29_CorrectStoredCarapaceBracers().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(owner, stored.Id);
             });
             await ctx.WaitFrameAsync();

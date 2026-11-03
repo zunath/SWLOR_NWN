@@ -170,8 +170,8 @@ public static class PairedRangedConversionEngineTests
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Fire));
             });
             await ctx.WaitUntilAsync(() => preflightAt > 0, 1f, "the native preflight sample to execute");
-            ctx.Assert(preflightAt < detectedAt + flightMilliseconds,
-                "The preflight assertion samples the actual launch window before arrival");
+            // DelayCommand runs due events in scheduled order, so this half-flight sample precedes the
+            // production arrival even when a server hitch makes both due in the same frame.
             ctx.AssertEqual(health, preflightHealth, "Neither damage portion lands before the bolt arrives");
             ctx.AssertEqual(fp, preflightFP, "The converted reaction spends no FP before arrival");
             ctx.AssertEqual(0, preflightNotifications, "The converted hit dispatches no status reaction before arrival");

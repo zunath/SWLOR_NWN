@@ -75,6 +75,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private bool _skipPaginationSearch;
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (!_skipPaginationSearch)
+                    Search();
+            }
+        }
+
         private void RefreshItemCount()
         {
             var playerId = GetObjectUUID(Player);
@@ -89,14 +109,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
+            LoadPage(SelectedPageIndex);
+        }
+
+        /// <summary>
+        /// Loads a page of the bank. A page past the end shows the last page, which holds the newest deposits.
+        /// </summary>
+        private void LoadPage(int pageIndex)
+        {
             var playerId = GetObjectUUID(Player);
+            var page = Bank.SearchItems(playerId, SearchText, pageIndex);
+
+            _skipPaginationSearch = true;
+            PageNumbers = page.PageNumbers;
+            SelectedPageIndex = page.PageIndex;
+            _skipPaginationSearch = false;
 
             _itemIds.Clear();
-            var items = Bank.SearchItems(playerId, SearchText);
             var itemResrefs = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
 
-            foreach (var item in items)
+            foreach (var item in page.Items)
             {
                 _itemIds.Add(item.Id);
                 itemResrefs.Add(item.IconResref);
@@ -109,23 +142,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _skipPaginationSearch = true;
             SearchText = string.Empty;
+            PageNumbers = new GuiBindingList<GuiComboEntry>();
+            SelectedPageIndex = 0;
+            _skipPaginationSearch = false;
 
             RefreshItemCount();
-            Search();
+            LoadPage(0);
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedPageIndex);
         }
 
         public Action OnClickClearSearch() => () =>
         {
             SearchText = string.Empty;
-            Search();
+            LoadPage(0);
         };
 
         public Action OnClickSearch() => () =>
         {
-            Search();
+            LoadPage(0);
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            LoadPage(Math.Max(0, SelectedPageIndex - 1));
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            LoadPage(Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1));
         };
 
         public Action OnClickWithdraw() => () =>
@@ -140,11 +188,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            _itemIds.RemoveAt(index);
-            ItemNames.RemoveAt(index);
-            ItemResrefs.RemoveAt(index);
-
             RefreshItemCount();
+            // Reload so the page refills from the next page, or moves back a page when it empties.
+            LoadPage(SelectedPageIndex);
         };
 
         public Action OnClickDeposit() => () =>
@@ -159,13 +205,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var dbItem = Bank.DepositItem(Player, item);
-
-                _itemIds.Add(dbItem.Id);
-                ItemNames.Add($"{dbItem.Quantity}x {dbItem.Name}");
-                ItemResrefs.Add(dbItem.IconResref);
+                Bank.DepositItem(Player, item);
 
                 RefreshItemCount();
+                // New deposits sort last, so show the last page where the player can see the item.
+                LoadPage(int.MaxValue);
             });
         };
     }

@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service.CurrencyService
         StatRefundToken = 3,
         [Currency("Kyber Tokens", "cur_kyber", "Consumed at a Lightsaber Workbench to construct a new saber.")]
         KyberToken = 4,
+        [Currency("Language Tokens", "cur_language", "Consumed to instantly master one language of your choice.")]
+        LanguageToken = 5,
     }
 
     public class CurrencyAttribute : Attribute

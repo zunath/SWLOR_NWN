@@ -701,8 +701,9 @@ public class PlayerNameRecognitionTests
         var cacheSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Cache.cs"));
+            "Domain",
+            "Core",
+            "CacheService.cs"));
         var dialogSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -886,9 +887,9 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("return ContentRetiredPartial;");
         viewModelSource.Should().Contain("return IsAvailableSelected ? ContentAvailablePartial : ContentEmptyPartial;");
 
-        cacheSource.Should().Contain("private static Dictionary<int, string> SoundSetPreviewSoundResrefs");
-        cacheSource.Should().Contain("private static string ResolveSoundSetPreviewSoundResref(string soundSetResref)");
-        cacheSource.Should().Contain("public static string GetSoundSetPreviewSoundResref(int soundSetId)");
+        cacheSource.Should().Contain("private Dictionary<int, string> SoundSetPreviewSoundResrefs");
+        cacheSource.Should().Contain("private string ResolveSoundSetPreviewSoundResref(string soundSetResref)");
+        cacheSource.Should().Contain("public string GetSoundSetPreviewSoundResref(int soundSetId)");
         cacheSource.Should().Contain("[\"wookie\"] = \"p_zaalbar_bat1\"");
         cacheSource.Should().Contain("return trimmedResref.Length <= 11");
 

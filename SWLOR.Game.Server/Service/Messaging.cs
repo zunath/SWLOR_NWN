@@ -1,11 +1,16 @@
-using SWLOR.Game.Server.Service.FrameProfilerService;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Service.MessagingService;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Messaging
+    /// <summary>
+    /// The static API of the nearby broadcasts. The logic lives in <see cref="IMessagingService"/>; every member here
+    /// forwards to the container's instance.
+    /// </summary>
+    public static class Messaging
     {
-        public delegate string BuildMessageDelegate(uint receiver);
+        private static IMessagingService Instance => FacadeAccessor.Resolve<IMessagingService>();
 
         /// <summary>
         /// Sends a message to all nearby players within a certain distance.
@@ -15,34 +20,18 @@ namespace SWLOR.Game.Server.Service
         /// <param name="range">The range, in meters, to deliver the message. Any creatures outside this range will not see the message.</param>
         public static void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)
         {
-            SendMessageNearbyToPlayers(sender, _ => message, range);
+            Instance.SendMessageNearbyToPlayers(sender, message, range);
         }
 
+        /// <summary>
+        /// Sends each nearby player within a certain distance the message built for that player.
+        /// </summary>
+        /// <param name="sender">The sender of the message.</param>
+        /// <param name="buildMessage">Builds the message for one receiver. The sender gets the message built for the sender.</param>
+        /// <param name="range">The range, in meters, to deliver the message. Any creatures outside this range will not see the message.</param>
         public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f)
         {
-            if (buildMessage == null)
-                throw new ArgumentNullException(nameof(buildMessage));
-
-            var profile = FrameProfiler.Start();
-            SendMessageToPC(sender, buildMessage(sender));
-            var receivers = profile != 0 && GetIsPC(sender) ? 1 : 0;
-
-            int nth = 1;
-            var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
-            while (GetIsObjectValid(nearby) && GetDistanceBetween(sender, nearby) <= range)
-            {
-                if (sender != nearby)
-                {
-                    SendMessageToPC(nearby, buildMessage(nearby));
-                    receivers++;
-                }
-
-                nth++;
-                nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
-            }
-
-            FrameProfiler.Stop(FrameMetric.Broadcast, profile);
-            FrameProfiler.Count(FrameMetric.BroadcastReceiver, receivers);
+            Instance.SendMessageNearbyToPlayers(sender, buildMessage, range);
         }
     }
 }

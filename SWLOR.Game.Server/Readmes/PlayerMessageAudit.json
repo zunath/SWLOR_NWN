@@ -5461,21 +5461,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 18,
+    "Line": 23,
+    "Member": "SendMessageNearbyToPlayers",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Instance.SendMessageNearbyToPlayers(sender, message, range)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Messaging.cs",
+    "Line": 34,
+    "Member": "SendMessageNearbyToPlayers",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Instance.SendMessageNearbyToPlayers(sender, buildMessage, range)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "Line": 15,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageNearbyToPlayers(sender, _ => message, range)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 27,
+    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "Line": 24,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, buildMessage(sender))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 36,
+    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "Line": 33,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(nearby, buildMessage(nearby))"
@@ -5540,40 +5554,75 @@
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
     "Line": 27,
     "Member": "SendDiagnosticToPlayer",
+    "Delivery": "Testing only",
+    "Call": "Instance.SendDiagnosticToPlayer(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
+    "Line": 32,
+    "Member": "ShowDiagnosticFloatingText",
+    "Delivery": "Testing only",
+    "Call": "Instance.ShowDiagnosticFloatingText(message, creature, displayToFaction)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
+    "Line": 50,
+    "Member": "SendWarningToPlayer",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Instance.SendWarningToPlayer(player, warningKey, message, intervalSeconds)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
+    "Line": 60,
+    "Member": "SendWarningNearby",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Instance.SendWarningNearby(creature, warningKey, buildMessage, intervalSeconds, range)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
+    "Line": 75,
+    "Member": "SendResourceRestored",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Instance.SendResourceRestored(creature, restored, resource)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 40,
+    "Member": "SendDiagnosticToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 33,
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 46,
     "Member": "ShowDiagnosticFloatingText",
     "Delivery": "Shared transport; policy at caller",
     "Call": "FloatingTextStringOnCreature(message, creature, displayToFaction)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 56,
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 69,
     "Member": "ShowCooldownFloatingText",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PlayerPlugin.FloatingTextStringOnCreature(player, player, ColorToken.Yellow($\"{abilityName}: {timeToWait}\"), false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 69,
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 82,
     "Member": "SendWarningToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 82,
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 95,
     "Member": "SendWarningNearby",
     "Delivery": "Shared transport; policy at caller",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature, buildMessage, range)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, buildMessage, range)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 120,
+    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "Line": 133,
     "Member": "SendResourceRestored",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(receiver, ColorToken.Combat(message))"

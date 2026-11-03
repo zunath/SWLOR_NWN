@@ -1,5 +1,4 @@
 using System.Text;
-using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -10,28 +9,36 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 [NonParallelizable]
 public class EshanBalanceReviewTests
 {
-    private object _originalItemNames = null!;
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
+    // The quests resolve reward names through the Cache facade, which needs a container: the fixture builds one and
+    // fills its item name cache from the blueprints, as the server does at boot by spawning every blueprint.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [OneTimeSetUp]
     public void LoadQuestRewardNamesWithoutTheEngine()
     {
+        _facades = new FacadeContainer();
         var names = Directory.EnumerateFiles(Path.Combine(Root(), "Module/uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
                 JObject.Parse(File.ReadAllText(path, Encoding.Latin1))["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? "");
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
-    public void RestoreQuestRewardNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreQuestRewardNames() => _facades.Dispose();
 
     private static readonly string[] Hostiles =
     [

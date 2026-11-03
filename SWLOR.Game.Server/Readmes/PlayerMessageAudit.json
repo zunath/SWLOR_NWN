@@ -232,77 +232,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 489,
+    "Line": 490,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest collector is not available to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 493,
+    "Line": 494,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 504,
+    "Line": 505,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 565,
+    "Line": 566,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest collector is no longer available to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 574,
+    "Line": 575,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"That item is not required for this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 585,
+    "Line": 586,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest is no longer available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 600,
+    "Line": 601,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, rejection)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 651,
+    "Line": 652,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 716,
+    "Line": 717,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 722,
+    "Line": 723,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
-    "Line": 742,
+    "Line": 743,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, questMessage)"

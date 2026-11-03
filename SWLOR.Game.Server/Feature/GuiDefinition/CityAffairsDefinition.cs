@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// City Affairs: the mayor and officers decide the city's open situations, and the mayor appoints officers. Opened from
     /// the Citizenship and Manage City windows at City Hall.
     /// </summary>
-    public class CityAffairsDefinition : IGuiWindowDefinition
+    public partial class CityAffairsDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<CityAffairsViewModel> _builder = new();
 
@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .DefinePartialView(CityAffairsViewModel.SituationsTabPartial, AddSituationsTab)
                 .DefinePartialView(CityAffairsViewModel.OfficersTabPartial, AddOfficersTab)
-                .DefinePartialView(CityAffairsViewModel.StoryTabPartial, AddStoryTab);
+                .DefinePartialView(CityAffairsViewModel.StoryTabPartial, AddStoryTab)
+                .DefinePartialView(CityAffairsViewModel.BountiesTabPartial, AddBountiesTab);
 
             window.AddStandardLayout(layout =>
             {
@@ -56,8 +57,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Situations")
                         .AddOption("Officers")
                         .AddOption("Story Request")
+                        .AddOption("Bounties")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(420f)
+                        .SetWidth(540f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(CityAffairsViewModel.TabContentElement);

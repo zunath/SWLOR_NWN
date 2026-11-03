@@ -200,7 +200,7 @@ public class DerelictBoardingTests
         DerelictRules.DescribeRefusal(DerelictRefusal.TeamAlreadyOut).Should().Contain("salvage team is still out");
 
         var source = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDerelicts.cs"));
-        source.Should().Contain("SalvageTeamOut = _derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == ship.Id),");
+        source.Should().Contain("SalvageTeamOut = IsSalvageTeamOut(ship.Id),");
     }
 
     [Test]
@@ -535,5 +535,26 @@ public class DerelictBoardingTests
         ((double)DerelictTuning.SalvageCreditsPerHour[tierIndex] / boarding).Should().BeInRange(0.60, 0.70, "a salvage team pays 60-70% of boarding");
         DerelictTuning.StrongboxCredits[tierIndex].Should().BePositive();
         DerelictTuning.SalvageCredits[tierIndex].Should().BePositive();
+    }
+
+    [Test]
+    public void ASalvageTeamsDroids_CannotBeRecalledOrJoined_UntilTheTeamIsBack()
+    {
+        // A droid on the team keeps its Industry in the salvage work, so recalling and reposting it would let it work a
+        // station during the contested waves too.
+        var crew = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDroidCrew.cs")).Replace("\r\n", "\n");
+        foreach (var method in new[] { "public static bool PostDroid(", "public static bool RecallDroid(" })
+        {
+            var start = crew.IndexOf(method, StringComparison.Ordinal);
+            start.Should().BeGreaterThan(0, method);
+            var body = crew[start..crew.IndexOf("\n        }\n", start, StringComparison.Ordinal)];
+            body.IndexOf("if (IsSalvageTeamOut(dbShip.Id))", StringComparison.Ordinal).Should().BeGreaterThan(0, method);
+            body.IndexOf("if (IsSalvageTeamOut(dbShip.Id))", StringComparison.Ordinal)
+                .Should().BeLessThan(Math.Max(body.IndexOf("DB.Set(dbShip);", StringComparison.Ordinal), body.IndexOf("EndDroidPosting(", StringComparison.Ordinal)), method);
+        }
+
+        var derelicts = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDerelicts.cs")).Replace("\r\n", "\n");
+        derelicts.Should().Contain("_derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == shipId)");
+        derelicts.Should().Contain("SalvageTeamOut = IsSalvageTeamOut(ship.Id),");
     }
 }

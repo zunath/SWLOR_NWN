@@ -187,6 +187,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             var dbShip = GetInteriorShip(player, out _);
+            if (IsSalvageTeamOut(dbShip.Id))
+            {
+                SendMessageToPC(player, ColorToken.Red("This ship's droids are out on a salvage team. Post droids once the team is back."));
+                return false;
+            }
+
             var details = Droid.LoadDroidItemPropertyDetails(controller);
             var posting = new ShipDroidCrew
             {
@@ -276,6 +282,12 @@ namespace SWLOR.Game.Server.Service
             if (posting.OwnerPlayerId != GetObjectUUID(player) && !HasCrewStationPermission(player, propertyId))
             {
                 SendMessageToPC(player, ColorToken.Red("You do not have permission to crew this starship."));
+                return false;
+            }
+
+            if (IsSalvageTeamOut(dbShip.Id))
+            {
+                SendMessageToPC(player, ColorToken.Red($"{posting.Name} is out on a salvage team. Recall it once the team is back."));
                 return false;
             }
 

@@ -114,12 +114,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     continue;
                 }
 
-                if (Planet.TryGetClosedMessage(type, out var closedMessage))
-                {
-                    page.Header += "\n\n" + closedMessage;
-                    continue;
-                }
-
                 var fare = GalaxyMap.GetFare(origin, type);
                 var tax = (int)(model.Tax * fare);
                 var price = fare + tax;

@@ -122,6 +122,24 @@ public class ShipSalvageTests
     }
 
     [Test]
+    public void TheExtractionHold_LastsUntilTheShipsLastOverlappingCycleEnds()
+    {
+        var actions = ReadSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
+        var hold = ExtractMethod(actions, "public static void HoldExtraction(");
+        hold.Should().Contain("if (GetLocalObject(target, Mined) == activator)")
+            .And.Contain("SetLocalInt(target, MinedCycles, GetLocalInt(target, MinedCycles) + 1);")
+            .And.Contain("SetLocalInt(target, MinedCycles, 1);");
+
+        var release = ExtractMethod(actions, "public static void ReleaseExtraction(");
+        var countDown = release.IndexOf("var cycles = GetLocalInt(target, MinedCycles) - 1;", StringComparison.Ordinal);
+        countDown.Should().BeGreaterThan(0);
+        release.IndexOf("if (cycles > 0)", StringComparison.Ordinal).Should().BeGreaterThan(countDown);
+        release.IndexOf("DeleteLocalObject(target, Mined);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(release.IndexOf("if (cycles > 0)", StringComparison.Ordinal),
+                "an older cycle's end must not release a newer cycle's hold");
+    }
+
+    [Test]
     public void TheStripMiner_ChecksTheShipAfterItsDelayAndAlwaysChecksTheTier()
     {
         var actions = ReadSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");

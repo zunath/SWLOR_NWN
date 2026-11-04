@@ -79,6 +79,11 @@ namespace SWLOR.Game.Server.Service
             if (!SpaceSlicingRules.UsesDataAnalyzer(source))
                 return "This slicing target has an invalid security profile.";
 
+            // The Data Analyzer cannot run while the ship cloaks, so an open session cannot go on hidden either.
+            var cloakBlock = GetCloakAbilityBlock(ship);
+            if (!string.IsNullOrEmpty(cloakBlock))
+                return cloakBlock;
+
             if (GetArea(ship) != GetArea(target) || !SpaceSlicingRules.IsInAnalyzerRange(GetDistanceBetween(ship, target)))
                 return $"The target is out of your Data Analyzer's range ({SpaceSlicingTuning.AnalyzerRange:0} m).";
 
@@ -241,7 +246,8 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(ship, DroidSlicingChannelVariable, channel);
                 SetLocalInt(ship, DroidSlicingReadyVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + DroidCrewRules.SlicingSeconds);
                 SendMessageToPC(ship, ColorToken.Cyan($"Your droid starts slicing. Hold within {SpaceSlicingTuning.AnalyzerRange:0} m of the target and out of combat for {DroidCrewRules.SlicingSeconds} seconds."));
-                RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, DroidCrewRules.SlicingSeconds);
+                RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, droidContext.Seat, droidContext.Droid.DroidItemId,
+                    DroidCrewRules.SlicingSeconds);
                 return;
             }
 
@@ -255,11 +261,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// One step of a droid's slice: every <see cref="DroidSlicingCheckSeconds"/> the ship must still fly the same slice,
-        /// hold in range of the target and stay out of combat, and the target must still hold what the slice is for.
+        /// with the same droid at its station, hold in range of the target, stay out of combat and uncloaked, and the target
+        /// must still hold what the slice is for (an empty station contributes nothing).
         /// Breaking off ends the slice with the target untouched, the droid free at once and the target's claim
         /// released; the last step resolves it.
         /// </summary>
-        private static void RunDroidSlicing(uint ship, uint target, SlicingSourceType source, int tier, bool succeeds, string channel, string claim, int secondsLeft)
+        private static void RunDroidSlicing(uint ship, uint target, SlicingSourceType source, int tier, bool succeeds, string channel, string claim,
+            ShipCrewSeat seat, string droidId, int secondsLeft)
         {
             if (!GetIsObjectValid(ship))
             {
@@ -281,6 +289,22 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A recalled droid leaves its station, and a cloaking ship runs no other module: either ends the slice.
+            if (SpaceCrew.GetSeatDroid(ship, seat)?.DroidItemId != droidId)
+            {
+                EndDroidSlicing(ship, target, claim);
+                SendMessageToPC(ship, ColorToken.Red("Your droid left its station, so the slice stops. The target is untouched."));
+                return;
+            }
+
+            var droidCloakBlock = GetCloakAbilityBlock(ship);
+            if (!string.IsNullOrEmpty(droidCloakBlock))
+            {
+                EndDroidSlicing(ship, target, claim);
+                SendMessageToPC(ship, ColorToken.Red($"Your droid stops slicing. {droidCloakBlock}"));
+                return;
+            }
+
             // Another ship may have opened the target or drained its core meanwhile; then the slice has nothing to take.
             var gone = GetDroidSliceTargetError(ship, target, source);
             if (!string.IsNullOrEmpty(gone))
@@ -294,7 +318,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SlicingSession.TouchClaim(claim, target);
                 var step = Math.Min(DroidSlicingCheckSeconds, secondsLeft);
-                DelayCommand(step, () => RunDroidSlicing(ship, target, source, tier, succeeds, channel, claim, secondsLeft - step));
+                DelayCommand(step, () => RunDroidSlicing(ship, target, source, tier, succeeds, channel, claim, seat, droidId, secondsLeft - step));
                 return;
             }
 

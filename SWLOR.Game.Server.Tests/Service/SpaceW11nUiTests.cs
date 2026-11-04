@@ -203,13 +203,23 @@ public class SpaceW11nUiTests
         slicing.Should().Contain("GetDroidSlicingError(ship, target, source, tier, droid)");
         slicing.Should().Contain("DroidCrewRules.SlicingSucceeds(");
         slicing.Should().Contain("OnSlicingTargetDestroyed(target, source);", "a droid's miss is a failed slice, as for a player");
-        slicing.Should().Contain("RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, DroidCrewRules.SlicingSeconds);",
+        slicing.Should().Contain("RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, droidContext.Seat, droidContext.Droid.DroidItemId,",
             "a droid's slice is a channel the pilot waits out");
         var step = slicing[slicing.IndexOf("private static void RunDroidSlicing(", System.StringComparison.Ordinal)..];
         step.IndexOf("SpaceSlicingRules.IsInAnalyzerRange(", System.StringComparison.Ordinal).Should()
             .BeLessThan(step.IndexOf("CompleteSlicing(ship, target, source, tier);", System.StringComparison.Ordinal),
                 "leaving range breaks the slice off before any result");
         step.Should().Contain("IsShipInCombat(ship) || GetIsInCombat(ship)");
+        step.IndexOf("if (SpaceCrew.GetSeatDroid(ship, seat)?.DroidItemId != droidId)", System.StringComparison.Ordinal).Should()
+            .BeInRange(0, step.IndexOf("CompleteSlicing(ship, target, source, tier);", System.StringComparison.Ordinal),
+                "a droid recalled mid-slice leaves an empty station, which contributes nothing");
+        step.IndexOf("var droidCloakBlock = GetCloakAbilityBlock(ship);", System.StringComparison.Ordinal).Should()
+            .BeInRange(0, step.IndexOf("CompleteSlicing(ship, target, source, tier);", System.StringComparison.Ordinal));
+
+        var targetError = slicing[slicing.IndexOf("public static string GetSlicingTargetError(", System.StringComparison.Ordinal)..];
+        targetError = targetError[..targetError.IndexOf("private static string GetSourceTargetError(", System.StringComparison.Ordinal)];
+        targetError.Should().Contain("var cloakBlock = GetCloakAbilityBlock(ship);",
+            "an open slicing session is revalidated through this on every action, so cloaking stops it");
 
         ReadServerSource("Service", "SpaceDroidCrew.cs").Should().Contain("RunDroidDataAnalyzer(pilot, slots, posted, target)");
     }

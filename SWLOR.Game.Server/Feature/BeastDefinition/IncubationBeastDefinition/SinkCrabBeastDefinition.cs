@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.GreenbulkWallow)
 				.MutationWeight(10)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 3)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday)
 
                 ;
 

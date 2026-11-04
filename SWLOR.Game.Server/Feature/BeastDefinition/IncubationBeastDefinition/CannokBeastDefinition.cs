@@ -32,10 +32,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.GraymireAmalgam)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 3)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
                 ;
 

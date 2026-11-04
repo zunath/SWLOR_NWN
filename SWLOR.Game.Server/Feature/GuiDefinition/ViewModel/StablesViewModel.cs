@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IGuiRefreshable<QuestCompletedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshBeastCount(int beastCount)
         {
-            var capacity = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
+            var capacity = BeastStableCapacity.GetCapacity(Player);
             BeastCount = $"Beasts: {beastCount} / {capacity}";
         }
 
@@ -406,6 +407,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(PerkRefundedRefreshEvent payload)
         {
             if (payload.Type != PerkType.Stabling)
+                return;
+
+            RefreshBeastCount(_beastIds.Count);
+        }
+
+        public void Refresh(QuestCompletedRefreshEvent payload)
+        {
+            if (!BeastStableCapacity.IsStableSlotQuest(payload.QuestId))
                 return;
 
             RefreshBeastCount(_beastIds.Count);
@@ -622,10 +631,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var beastCount = DB.SearchCount(dbQuery);
-            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
-            if (perkLevel < beastCount)
+            var capacity = BeastStableCapacity.GetCapacity(Player);
+            if (capacity < beastCount)
             {
-                Instructions = "Stabling perk level too low. Purchase the perk and try again.";
+                Instructions = "You own more beasts than your stables can hold. Raise your Stabling perk or release a beast.";
                 return;
             }
 

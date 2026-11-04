@@ -108,17 +108,17 @@ namespace SWLOR.Game.Server.Service.FishingService
         RuddySeema = 50,
         [Fish("Frigorifish", "frigorifish", 50, true)]
         Frigorifish = 51,
-        [Fish("Mercanbaligi", "mercanbaligi", 52, false)]
+        [Fish("Mercanbaligi", "mercanbaligi", 52, false, rarity: FishRarity.Rare)]
         Mercanbaligi = 52,
-        [Fish("Nashmau", "nashmau", 52, false)]
+        [Fish("Nashmau", "nashmau", 52, false, rarity: FishRarity.Rare)]
         Nashmau = 53,
-        [Fish("Rhinochimera", "rhinochimera", 52, false)]
+        [Fish("Rhinochimera", "rhinochimera", 52, false, rarity: FishRarity.Rare)]
         Rhinochimera = 54,
-        [Fish("Mhaura", "mhaura", 52, false)]
+        [Fish("Mhaura", "mhaura", 52, false, rarity: FishRarity.Rare)]
         Mhaura = 55,
-        [Fish("Zi'tah", "zitah", 52, false)]
+        [Fish("Zi'tah", "zitah", 52, false, rarity: FishRarity.Rare)]
         Zitah = 56,
-        [Fish("Al'zabi", "alzabi", 52, false)]
+        [Fish("Al'zabi", "alzabi", 52, false, rarity: FishRarity.Rare)]
         Alzabi = 57
     }
 
@@ -129,6 +129,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         public int Level { get; set; }
         public ObjectType ObjectType { get; set; }
         public bool DisplayInDescription { get; set; }
+        public FishRarity Rarity { get; set; }
 
 
         public FishAttribute(
@@ -136,13 +137,15 @@ namespace SWLOR.Game.Server.Service.FishingService
             string resref,
             int level,
             bool displayInDescription,
-            ObjectType objectType = ObjectType.Item)
+            ObjectType objectType = ObjectType.Item,
+            FishRarity rarity = FishRarity.Common)
         {
             Name = name;
             Resref = resref;
             Level = level;
             DisplayInDescription = displayInDescription;
             ObjectType = objectType;
+            Rarity = rarity;
         }
     }
 }

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Republic Base - Entrance"
+      "0": "Viscara - Republic Base - Headquarters"
     }
   },
   "NoRest": {
@@ -345,7 +345,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -388,7 +388,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -560,7 +560,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -603,7 +603,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2409,7 +2409,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2581,7 +2581,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2925,7 +2925,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -3183,7 +3183,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -3226,7 +3226,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -8300,7 +8300,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 13
+          "value": 0
         },
         "Tile_MainLight1": {
           "type": "byte",

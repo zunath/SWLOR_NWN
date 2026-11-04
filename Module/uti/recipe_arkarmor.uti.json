@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Schematics for crafting an Arkanian Dragon Breastplate. Studying this blueprint unlocks the recipe, which uses scales and trophies recovered from the Great Arkanian Dragon."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Schematics for crafting an Arkanian Dragon Breastplate. Studying this blueprint unlocks the recipe, which uses scales and trophies recovered from the Great Arkanian Dragon."
     }
   },
   "Identified": {
@@ -124,21 +126,6 @@
         "Value": {
           "type": "cexostring",
           "value": "566"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NO_ECONOMY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
         }
       }
     ]

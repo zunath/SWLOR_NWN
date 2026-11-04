@@ -783,21 +783,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_8"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "PAZAAK_CARDS_BOSS,5,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "LOOT_TABLE_7"
         },
         "Type": {
@@ -807,6 +792,21 @@
         "Value": {
           "type": "cexostring",
           "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_SCALES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_8"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "PAZAAK_CARDS_BOSS,5,1"
         }
       },
       {

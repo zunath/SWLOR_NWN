@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 4)
                 .Component("fiberp_good", 2)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 41, coolingRate: 5, startingThermal: 50, shapeShare: 70);
 
             // Shatterhide Wraps
             _builder.Create(RecipeType.ShatterhideWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 39, coolingRate: 3, startingThermal: 33, shapeShare: 62);
 
             // Shatterhide Treads
             _builder.Create(RecipeType.ShatterhideTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 1, startingThermal: 31, shapeShare: 62);
 
             // Shatterhide Sash
             _builder.Create(RecipeType.ShatterhideSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 4, startingThermal: 24, shapeShare: 54);
 
             // Shatterhide Mantle
             _builder.Create(RecipeType.ShatterhideMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 43, coolingRate: 6, startingThermal: 47, shapeShare: 54);
 
             // Shatterhide Gorget
             _builder.Create(RecipeType.ShatterhideGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 37, coolingRate: 2, startingThermal: 42, shapeShare: 38);
 
             // Shatterhide Band
             _builder.Create(RecipeType.ShatterhideBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 36, coolingRate: 7, startingThermal: 46, shapeShare: 38);
 
             // Shatterhide Guard
             _builder.Create(RecipeType.ShatterhideGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 39, coolingRate: 5, startingThermal: 46, shapeShare: 62);
 
             // Shatterhide Visor
             _builder.Create(RecipeType.ShatterhideVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 3)
                 .Component("fiberp_good", 2)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 43, coolingRate: 5, startingThermal: 47, shapeShare: 62);
 
             // Shatterhide Charm
             _builder.Create(RecipeType.ShatterhideCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
-                .Component("sh_chitin", 1);
+                .Component("sh_chitin", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 39, coolingRate: 6, startingThermal: 47, shapeShare: 38);
         }
     }
 }

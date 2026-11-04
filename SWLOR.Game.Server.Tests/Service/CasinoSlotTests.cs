@@ -12,11 +12,11 @@ public class CasinoSlotTests
         var payouts = Enumerable.Range(0, 10000).Select(CasinoSlot.GetPayout).ToArray();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(payouts.Count(p => p == 0), Is.EqualTo(7000));
+            Assert.That(payouts.Count(p => p == 0), Is.EqualTo(6919));
             Assert.That(payouts.Count(p => p == 100), Is.EqualTo(2000));
             Assert.That(payouts.Count(p => p == 500), Is.EqualTo(800));
-            Assert.That(payouts.Count(p => p == 1000), Is.EqualTo(190));
-            Assert.That(payouts.Count(p => p == 10000), Is.EqualTo(10));
+            Assert.That(payouts.Count(p => p == 1000), Is.EqualTo(280));
+            Assert.That(payouts.Count(p => p == 10000), Is.EqualTo(1));
             Assert.That(payouts.Max(), Is.EqualTo(CasinoSlot.MaximumPayout));
             Assert.That(payouts.Average(), Is.EqualTo(89));
             Assert.That(CasinoSlot.SpinCost, Is.EqualTo(100));

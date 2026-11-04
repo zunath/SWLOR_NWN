@@ -21,10 +21,10 @@ namespace SWLOR.Game.Server.Service
 
             return roll switch
             {
-                < 7000 => 0,
-                < 9000 => 100,
-                < 9800 => 500,
-                < 9990 => 1000,
+                < 6919 => 0,
+                < 8919 => 100,
+                < 9719 => 500,
+                < 9999 => 1000,
                 _ => MaximumPayout
             };
         }

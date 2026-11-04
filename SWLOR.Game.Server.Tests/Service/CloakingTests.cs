@@ -223,6 +223,19 @@ public class CloakingTests
             "the toggle loop validates the running device every cycle, so cargo picked up mid-cloak switches it off");
     }
 
+    [Test]
+    public void ACloakCannotHideASpoolingSignatureJump()
+    {
+        var error = ExtractMethod(ReadSource("Service", "SpaceCloak.cs").Replace("\r\n", "\n"), "public static string CloakError(");
+        error.Should().Contain("if (IsSpoolingSignatureJump(ship))\n                return ShipCloakRules.SpoolingMessage;");
+
+        var complete = ExtractMethod(ReadSource("Service", "SpaceSignatureJump.cs"), "private static void CompleteSignatureJump(");
+        complete.IndexOf("var cloakBlock = GetCloakAbilityBlock(player);", StringComparison.Ordinal).Should()
+            .BeGreaterThan(0).And.BeLessThan(complete.IndexOf("CrossRift(player, signature);", StringComparison.Ordinal),
+                "a ship that cloaked mid-spool does not jump");
+        ShipCloakRules.SpoolingMessage.Should().MatchRegex("^[ -~]+$");
+    }
+
     // Phases
 
     [Test]

@@ -399,6 +399,11 @@ public class SpaceTransferCrashSafetyTests
             "dbPlayer.ActiveShipId = Guid.Empty.ToString();", "UndockAllToStarport(dbShip, \"was unregistered\");",
             "ReturnShipDroidCrew(dbShip, \"was unregistered\");", "ShipTransfer.RemoveListings(shipId);",
             "dbProperty.IsQueuedForDeletion = true;", "DB.Delete<PlayerShip>(shipId);");
+        // The ship's payment acknowledgements become receipts before it goes, so a completed repair or refit whose payer's
+        // mark a restart left behind is not refunded once the ship is unregistered.
+        InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
+            "foreach (var (payerId, paymentId) in dbShip.PaymentIds ?? new Dictionary<string, string>())",
+            "CreditPayments.SaveReceipt(paymentId, payerId);", "DB.Delete<PlayerShip>(shipId);");
 
         moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleShipItemMoves()");
         var settle = Method(moves, "public static void SettleShipItemMoves(");

@@ -521,6 +521,13 @@ public class RiftRunTests
         RiftRunRules.Forget(run, "enrolled");
         RiftRunRules.CanRejoin(run, "enrolled").Should().BeFalse();
 
+        // Leaving the controls (/exit) keeps the ship waiting in the run too, before the pilot leaves space mode.
+        var space = ReadSource("Service", "Space.cs").Replace("\r\n", "\n");
+        var warp = space.Substring(space.IndexOf("public static void WarpPlayerInsideShip(uint player)", StringComparison.Ordinal));
+        warp.IndexOf("MarkRiftRunPilotAway(player);", StringComparison.Ordinal).Should()
+            .BeGreaterThan(0).And.BeLessThan(warp.IndexOf("ExitSpaceMode(player);", StringComparison.Ordinal),
+                "/exit between waves must leave a rejoin location, since the pocket template cannot be found by resref");
+
         var docking = ReadSource("Service", "SpaceDocking.cs").Replace("\r\n", "\n");
         var dock = docking.Substring(docking.IndexOf("public static bool DockWithTarget(", StringComparison.Ordinal));
         dock = dock.Substring(0, dock.IndexOf("// Undocking", StringComparison.Ordinal));

@@ -155,8 +155,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A pilot logging out of a run, or docking their ship aboard another ship: their ship waits in the run for them
-        /// to rejoin (W11k). This runs at logout because the run's next check can still see the leaving pilot's creature
+        /// A pilot logging out of a run, docking their ship aboard another ship, or leaving the controls (/exit): their ship
+        /// waits in the run for them to rejoin (W11k). This runs at logout because the run's next check can still see the leaving pilot's creature
         /// after its ship is unregistered, and would then drop the pilot without keeping their ship (W11m live check).
         /// </summary>
         private static void MarkRiftRunPilotAway(uint pilot)

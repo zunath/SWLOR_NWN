@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const string FitMessage = "A Cloaking Device fits only Small hulls and Blockade Runners.";
         public const string CargoMessage = "Only Blockade Runners can cloak with cargo aboard.";
         public const string HullMessage = "This hull cannot cloak.";
+        public const string SpoolingMessage = "Your jump drive is spooling. Cloak after the jump.";
         public const string DockedMessage = "You cannot cloak while your ship is docked aboard another ship.";
 
         /// <summary>Whether a hull accepts a Cloaking Device: every Small hull and the Blockade Runner.</summary>

@@ -1081,6 +1081,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void WarpPlayerInsideShip(uint player)
         {
+            // A pilot leaving the controls of a ship flown in a Rift Run leaves it waiting in the run, as logging out and
+            // docking aboard do, so taking the controls again launches back into the run's chamber.
+            MarkRiftRunPilotAway(player);
             ExitSpaceMode(player);
             Ability.ReapplyPlayerAuraAOE(player);
 

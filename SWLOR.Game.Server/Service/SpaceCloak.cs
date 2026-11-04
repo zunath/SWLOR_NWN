@@ -116,6 +116,10 @@ namespace SWLOR.Game.Server.Service
             if (status.IsInterdicted(DateTime.UtcNow))
                 return ShipElectronicWarfareRules.InterdictedMessage;
 
+            // A jump to a signature spools in the open: a cloaked ship cannot jump, so it cannot hide while it spools.
+            if (IsSpoolingSignatureJump(ship))
+                return ShipCloakRules.SpoolingMessage;
+
             // A ship docked aboard a host (or at a derelict) is out of space; refuse it outright (W11n).
             var activeShip = GetIsPC(ship) ? Trade.GetActiveShip(ship) : null;
             var hasCargo = Trade.GetUsedVolume(activeShip) > 0;

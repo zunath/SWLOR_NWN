@@ -7673,21 +7673,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2362,
+    "Line": 2365,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2930,
+    "Line": 2933,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2936,
+    "Line": 2939,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -7708,35 +7708,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 160,
+    "Line": 164,
     "Member": "BeginCloak",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Cyan($\"Cloaking: your ship vanishes in {profile.EngageSeconds:0.#} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 183,
+    "Line": 187,
     "Member": "CompleteCloak",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Cyan(\"Your ship is cloaked.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 221,
+    "Line": 225,
     "Member": "EndCloak",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 223,
+    "Line": 227,
     "Member": "EndCloak",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, end == ShipCloakEnd.Decloaked\n                    ? ColorToken.Cyan($\"Your ship is visible again. Weapons are locked for {CloakTuning.DecloakLockSeconds:0} seconds.\")\n                    : ColorToken.Cyan(\"The cloak failed.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 450,
+    "Line": 454,
     "Member": "RedirectSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"Only a Cloaking Device hides a ship in space.\"))"
@@ -8555,7 +8555,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceShipItemMoves.cs",
-    "Line": 313,
+    "Line": 318,
     "Member": "SettleModuleRemovals",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"A ship module you removed before a restart is waiting for you. Make room in your inventory and log in again.\")"
@@ -8611,63 +8611,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 182,
+    "Line": 178,
+    "Member": "CompleteSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 190,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 204,
+    "Line": 212,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Jumped to the {ScanningRules.TypeName(signature.Type)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 235,
+    "Line": 243,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Only the pilot can run a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 242,
+    "Line": 250,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A Sensor Sweep needs a Probe Launcher fitted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 250,
+    "Line": 258,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A Sensor Sweep needs someone qualified working the station with the Probe Launcher.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 257,
+    "Line": 265,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 265,
+    "Line": 273,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The Sensor Sweep is recharging: {SensorSweepRules.SecondsLeft(last, now)} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 271,
+    "Line": 279,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Not enough capacitor for a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 312,
+    "Line": 320,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"
@@ -9199,70 +9206,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 133,
+    "Line": 134,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 150,
+    "Line": 151,
     "Member": "CompleteBuy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotEnoughCredits)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 170,
+    "Line": 171,
     "Member": "CompleteBuy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Bought {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}{reduced}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 194,
+    "Line": 195,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 219,
+    "Line": 220,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 252,
+    "Line": 253,
     "Member": "SaveTradeGold",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the trade did not go through.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 339,
+    "Line": 340,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 345,
+    "Line": 346,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 352,
+    "Line": 353,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 358,
+    "Line": 359,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"

@@ -174,6 +174,11 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbProperty);
             }
 
+            // The payments the ship acknowledged (repairs, refits, fines) outlive it as receipts, so a payer whose mark a
+            // restart left behind is not refunded for a change the ship saved (CreditPayments.SettleInterruptedPayment).
+            foreach (var (payerId, paymentId) in dbShip.PaymentIds ?? new Dictionary<string, string>())
+                CreditPayments.SaveReceipt(paymentId, payerId);
+
             DB.Delete<PlayerShip>(shipId);
         }
 

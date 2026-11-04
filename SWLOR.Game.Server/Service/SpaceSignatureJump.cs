@@ -171,6 +171,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player) || !IsPlayerInSpaceMode(player))
                 return;
 
+            // A ship that cloaked during the spool cannot jump, as it cannot start one cloaked.
+            var cloakBlock = GetCloakAbilityBlock(player);
+            if (!string.IsNullOrEmpty(cloakBlock))
+            {
+                SendMessageToPC(player, ColorToken.Red(cloakBlock));
+                return;
+            }
+
             var signature = FindSignature(pending.SignatureId);
             var refusal = SignatureJumpRules.GetCompletionRefusal(
                 false,

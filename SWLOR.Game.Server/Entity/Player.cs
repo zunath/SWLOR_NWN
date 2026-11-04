@@ -236,10 +236,10 @@ namespace SWLOR.Game.Server.Entity
         public string LastAgentPurchaseId { get; set; }
 
         /// <summary>
-        /// The last space lockbox grant whose agent intel was kept, saved with the intel, so a grant kept again after a
+        /// The space lockbox grants whose agent intel was kept last, saved with the intel, so a grant kept again after a
         /// restart adds none. Older records load empty.
         /// </summary>
-        public string LastLockboxGrantId { get; set; } = string.Empty;
+        public List<string> KeptLockboxGrantIds { get; set; } = new();
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }

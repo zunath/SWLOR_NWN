@@ -244,7 +244,26 @@ public class SpaceTransferCrashSafetyTests
         SpaceLockboxGrant.TryParse("g1|-1|", out _).Should().BeFalse();
         SpaceLockboxGrant.TryParse("g1|1", out _).Should().BeFalse();
         SpaceLockboxGrant.TryParse("g1|1|res~x", out _).Should().BeFalse();
-        new Player().LastLockboxGrantId.Should().BeEmpty();
+        new Player().KeptLockboxGrantIds.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ALockboxMark_KeepsEveryGrantStillWaitingForASave()
+    {
+        var first = new SpaceLockboxGrant { Id = "g1", Intel = 1 };
+        var second = new SpaceLockboxGrant
+        {
+            Id = "g2",
+            Intel = 0,
+            Unplaced = new List<(string Resref, ShipComponentTraitType? Trait)> { ("sc_emitter_1", ShipComponentTraitType.Overcharged) },
+        };
+
+        var mark = SpaceLockboxGrant.Append(SpaceLockboxGrant.Append(string.Empty, first), second);
+        SpaceLockboxGrant.ParseAll(mark).Should().BeEquivalentTo(new[] { first, second }, options => options.WithStrictOrdering(),
+            "a second lockbox opened before the first one's save succeeds joins the mark instead of replacing it");
+        SpaceLockboxGrant.Append(null, first).Should().Be(first.Serialize());
+        SpaceLockboxGrant.ParseAll(null).Should().BeEmpty();
+        SpaceLockboxGrant.ParseAll(first.Serialize() + "#bad").Should().BeEquivalentTo(new[] { first });
     }
 
     [Test]
@@ -261,22 +280,27 @@ public class SpaceTransferCrashSafetyTests
             "ShipHold.KeepUnplacedYield(player, unplaced);");
 
         InOrder(Method(slicing, "private static void KeepLockboxGrantAfterSave("),
-            "ObjectPlugin.SetString(player, LockboxGrantVariable, grant.Serialize(), true);",
+            "SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);",
             "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
             "if (!GetIsObjectValid(player))",
             "if (!CharacterCheckpoint.Save(player))",
             "return;",
-            "KeepLockboxGrant(player, grant);");
-        InOrder(Method(slicing, "private static void KeepLockboxGrant("),
-            "FactionAgents.GrantLockboxIntel(player, grant.Intel, grant.Id);",
+            "KeepLockboxGrants(player);");
+        InOrder(Method(slicing, "private static void KeepLockboxGrants("),
+            "SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));",
+            "FactionAgents.GrantLockboxIntel(player, grants);",
             "ShipHold.KeepUnplacedYield(player, grant.Unplaced, grant.Id);",
             "ObjectPlugin.DeleteString(player, LockboxGrantVariable);",
             "ExportSingleCharacter(player);");
+        InOrder(Method(slicing, "public static void SettleLockboxGrant("),
+            "SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));",
+            "KeepLockboxGrants(player);");
         slicing.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleLockboxGrant()");
 
         // Keeping a grant again changes nothing: its intel is saved with its id, and its hold entries are named from it.
         InOrder(Method(Source("Service", "FactionAgents.cs"), "public static void GrantLockboxIntel("),
-            "dbPlayer.LastLockboxGrantId == grantId", "dbPlayer.AgentIntel += count;", "dbPlayer.LastLockboxGrantId = grantId;", "DB.Set(dbPlayer);");
+            "!dbPlayer.KeptLockboxGrantIds.Contains(grant.Id)", "dbPlayer.AgentIntel += count;",
+            "dbPlayer.KeptLockboxGrantIds = grants.Select(grant => grant.Id).ToList();", "DB.Set(dbPlayer);");
         var hold = Source("Service", "ShipHold.cs");
         Method(hold, "public static void KeepUnplacedYield(").Should()
             .Contain("string NextKey() => entryPrefix == null ? null : $\"{entryPrefix}:{entry++}\";")
@@ -421,7 +445,7 @@ public class SpaceTransferCrashSafetyTests
 
         var slicing = Source("Service", "SpaceSlicing.cs");
         Regex.Matches(slicing, Regex.Escape("ExportSingleCharacter(")).Count.Should().Be(1);
-        Method(slicing, "private static void KeepLockboxGrant(").Should().Contain("ExportSingleCharacter(player);");
+        Method(slicing, "private static void KeepLockboxGrants(").Should().Contain("ExportSingleCharacter(player);");
     }
 
     [TestCase(true, true, ShipModuleRemovalOutcome.Finished)]

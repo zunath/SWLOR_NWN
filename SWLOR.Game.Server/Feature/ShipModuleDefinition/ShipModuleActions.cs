@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         /// <summary>The ship running an extraction cycle on an asteroid, gas cloud or wreck.</summary>
         private const string Mined = "BEING_MINED_BY";
+        private const string MinedCycles = "BEING_MINED_CYCLES";
 
         // Ammo
 
@@ -448,17 +449,38 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return GetIsObjectValid(holder) && holder != activator;
         }
 
-        /// <summary>Holds the target for the ship's extraction cycle until <see cref="ReleaseExtraction"/>.</summary>
+        /// <summary>
+        /// Holds the target for the ship's extraction cycle until <see cref="ReleaseExtraction"/>. The hold counts the
+        /// ship's running cycles (several modules, or a toggle's next cycle starting while the last one pays out), so it
+        /// lasts until the last of them ends.
+        /// </summary>
         public static void HoldExtraction(uint target, uint activator)
         {
+            if (GetLocalObject(target, Mined) == activator)
+            {
+                SetLocalInt(target, MinedCycles, GetLocalInt(target, MinedCycles) + 1);
+                return;
+            }
+
             SetLocalObject(target, Mined, activator);
+            SetLocalInt(target, MinedCycles, 1);
         }
 
-        /// <summary>Ends the ship's hold on the target, unless another ship holds it now.</summary>
+        /// <summary>Ends one of the ship's cycles on the target, and the hold with its last, unless another ship holds it now.</summary>
         public static void ReleaseExtraction(uint target, uint activator)
         {
-            if (GetIsObjectValid(target) && GetLocalObject(target, Mined) == activator)
-                DeleteLocalObject(target, Mined);
+            if (!GetIsObjectValid(target) || GetLocalObject(target, Mined) != activator)
+                return;
+
+            var cycles = GetLocalInt(target, MinedCycles) - 1;
+            if (cycles > 0)
+            {
+                SetLocalInt(target, MinedCycles, cycles);
+                return;
+            }
+
+            DeleteLocalObject(target, Mined);
+            DeleteLocalInt(target, MinedCycles);
         }
 
         /// <summary>An error message when the target is not an asteroid this mining laser can mine.</summary>

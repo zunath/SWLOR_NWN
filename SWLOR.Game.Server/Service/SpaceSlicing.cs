@@ -506,49 +506,55 @@ namespace SWLOR.Game.Server.Service
                 ShipHold.KeepUnplacedYield(player, unplaced);
         }
 
-        /// <summary>The character-file local naming a space lockbox's rewards the database keeps (<see cref="SpaceLockboxGrant"/>).</summary>
+        /// <summary>The character-file local naming the space lockbox rewards the database keeps (<see cref="SpaceLockboxGrant"/>).</summary>
         private const string LockboxGrantVariable = "SPACE_LOCKBOX_GRANT";
 
         /// <summary>
         /// The lockbox leaves the character file only after this script, so what the database keeps waits for a save
         /// without it, with a mark naming the grant: a restart before that save leaves the lockbox to open again, and one
-        /// after keeps the grant at the next login (<see cref="SettleLockboxGrant"/>).
+        /// after keeps the grant at the next login (<see cref="SettleLockboxGrant"/>). The grant joins any the mark still
+        /// holds (a save that failed), and the next save keeps them all.
         /// </summary>
         private static void KeepLockboxGrantAfterSave(uint player, SpaceLockboxGrant grant)
         {
             if (grant.IsEmpty)
                 return;
 
-            ObjectPlugin.SetString(player, LockboxGrantVariable, grant.Serialize(), true);
+            ObjectPlugin.SetString(player, LockboxGrantVariable,
+                SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);
             AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
             {
                 // A player who logged out first saved the mark without the lockbox; their next login keeps the grant.
                 if (!GetIsObjectValid(player))
                     return;
 
-                // A save that fails leaves the mark: the next login keeps the grant once a later save holds it.
+                // A save that fails leaves the mark: the next login, or the next lockbox's save, keeps the grant.
                 if (!CharacterCheckpoint.Save(player))
                     return;
 
-                KeepLockboxGrant(player, grant);
+                KeepLockboxGrants(player);
             }));
         }
 
-        /// <summary>Keeps a lockbox grant (again after a restart, changing nothing kept before), then retires its mark.</summary>
-        private static void KeepLockboxGrant(uint player, SpaceLockboxGrant grant)
+        /// <summary>
+        /// Keeps every grant the mark holds, which the last save holds too (again after a restart, changing nothing kept
+        /// before), then retires the mark.
+        /// </summary>
+        private static void KeepLockboxGrants(uint player)
         {
-            FactionAgents.GrantLockboxIntel(player, grant.Intel, grant.Id);
-            if (grant.Unplaced.Count > 0)
-                ShipHold.KeepUnplacedYield(player, grant.Unplaced, grant.Id);
-
-            if (ObjectPlugin.GetString(player, LockboxGrantVariable) != grant.Serialize())
+            var grants = SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));
+            if (grants.Count == 0)
                 return;
+
+            FactionAgents.GrantLockboxIntel(player, grants);
+            foreach (var grant in grants.Where(grant => grant.Unplaced.Count > 0))
+                ShipHold.KeepUnplacedYield(player, grant.Unplaced, grant.Id);
 
             ObjectPlugin.DeleteString(player, LockboxGrantVariable);
             ExportSingleCharacter(player);
         }
 
-        /// <summary>Keeps the lockbox grant a restart interrupted after the character file was saved without the lockbox.</summary>
+        /// <summary>Keeps the lockbox grants a restart interrupted after the character file was saved without the lockboxes.</summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleLockboxGrant()
         {
@@ -556,11 +562,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (!SpaceLockboxGrant.TryParse(ObjectPlugin.GetString(player, LockboxGrantVariable), out var grant))
+            var grants = SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));
+            if (grants.Count == 0)
                 return;
 
-            KeepLockboxGrant(player, grant);
-            Log.Write(LogGroup.Space, $"SPACE LOCKBOX - {PlayerName.GetAuditName(player)} - kept grant {grant.Id} ({grant.Intel} intel, {grant.Unplaced.Count} item(s)) after a restart");
+            KeepLockboxGrants(player);
+            foreach (var grant in grants)
+                Log.Write(LogGroup.Space, $"SPACE LOCKBOX - {PlayerName.GetAuditName(player)} - kept grant {grant.Id} ({grant.Intel} intel, {grant.Unplaced.Count} item(s)) after a restart");
         }
 
         private static string DescribeRewards(IEnumerable<SpaceSlicingReward> rewards)

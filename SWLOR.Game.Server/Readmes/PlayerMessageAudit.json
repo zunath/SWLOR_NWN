@@ -3802,28 +3802,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 623,
+    "Line": 645,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 637,
+    "Line": 659,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 706,
+    "Line": 728,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 841,
+    "Line": 863,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
@@ -5384,91 +5384,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 105,
+    "Line": 106,
     "Member": "RegisterHeldMissions",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    \"A courier run you took was cancelled because the server restarted before its sealed load was aboard. You may take it again.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 159,
+    "Line": 160,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 188,
+    "Line": 189,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent.Name}: {FactionAgentRules.Describe(mission)}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 200,
+    "Line": 201,
     "Member": "LoadCourier",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(AgentRefusal.NotEnoughRoom)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 320,
+    "Line": 321,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so this mission's credits are paid at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 332,
+    "Line": 333,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 359,
+    "Line": 360,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 398,
+    "Line": 399,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 411,
+    "Line": 418,
     "Member": "GrantLockboxIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 430,
+    "Line": 437,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 438,
+    "Line": 445,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 463,
+    "Line": 470,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so nothing was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 470,
+    "Line": 477,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
@@ -8779,14 +8779,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 628,
+    "Line": 636,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 652,
+    "Line": 660,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"

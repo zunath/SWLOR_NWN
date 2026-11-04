@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
     /// <summary>
     /// The rewards of a sliced space lockbox that the database keeps (agent intel, and items a full inventory refused,
     /// packed into the hold). They are saved in the character file as a mark once the file no longer holds the lockbox,
-    /// then kept under this id so keeping them again after a restart changes nothing, and the mark is retired.
+    /// then kept under this id so keeping them again after a restart changes nothing, and the mark is retired. The mark
+    /// holds every grant still waiting for a save (<see cref="Append"/>), so opening another lockbox first loses none.
     /// </summary>
     public sealed class SpaceLockboxGrant
     {
@@ -24,6 +25,26 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 string.Join(";", Unplaced.Select(x => x.Trait == null
                     ? x.Resref
                     : $"{x.Resref}~{((int)x.Trait.Value).ToString(CultureInfo.InvariantCulture)}")));
+
+        /// <summary>Separates the grants in a mark; a grant never holds it.</summary>
+        private const char GrantSeparator = '#';
+
+        /// <summary>The mark with <paramref name="grant"/> added after the grants it already holds.</summary>
+        public static string Append(string mark, SpaceLockboxGrant grant) =>
+            string.IsNullOrEmpty(mark) ? grant.Serialize() : mark + GrantSeparator + grant.Serialize();
+
+        /// <summary>The grants a mark holds, in the order they were added; an entry that does not parse is left out.</summary>
+        public static List<SpaceLockboxGrant> ParseAll(string mark)
+        {
+            var grants = new List<SpaceLockboxGrant>();
+            foreach (var entry in (mark ?? string.Empty).Split(GrantSeparator, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (TryParse(entry, out var grant))
+                    grants.Add(grant);
+            }
+
+            return grants;
+        }
 
         public static bool TryParse(string value, out SpaceLockboxGrant grant)
         {

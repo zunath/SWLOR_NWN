@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.TransferService;
@@ -398,17 +399,23 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, ColorToken.Green($"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead."));
         }
 
-        /// <summary>A space lockbox's agent intel, kept once per grant: the grant's id is saved with the intel.</summary>
-        public static void GrantLockboxIntel(uint player, int count, string grantId)
+        /// <summary>
+        /// The agent intel of the space lockbox grants a save just kept, each kept once: the grants' ids are saved with
+        /// the intel. Only these grants can be kept again (the mark that names them outlives them only until the next
+        /// save), so the ids replace those of the last grants kept.
+        /// </summary>
+        public static void GrantLockboxIntel(uint player, IReadOnlyCollection<SpaceLockboxGrant> grants)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer == null || count <= 0 || dbPlayer.LastLockboxGrantId == grantId)
+            if (dbPlayer == null)
                 return;
 
+            var count = grants.Where(grant => !dbPlayer.KeptLockboxGrantIds.Contains(grant.Id)).Sum(grant => grant.Intel);
             dbPlayer.AgentIntel += count;
-            dbPlayer.LastLockboxGrantId = grantId;
+            dbPlayer.KeptLockboxGrantIds = grants.Select(grant => grant.Id).ToList();
             DB.Set(dbPlayer);
-            SendMessageToPC(player, ColorToken.Green($"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead."));
+            if (count > 0)
+                SendMessageToPC(player, ColorToken.Green($"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead."));
         }
 
         // Faction token stores

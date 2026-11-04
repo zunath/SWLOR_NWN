@@ -1212,13 +1212,20 @@ public class CombatUpgradeBibleSyncTests
     {
         // Heals and temporary HP scale through AbilityEffectScaling.ScaleRestorativeEffect, which can lower the
         // listed amount at low WIL, so their text must not read as an additive "plus WIL scaling" bonus.
+        const int BaselineWillpower = 10;
+        const int CapWillpower = 26;
+        var baseline = AbilityEffectScaling.RestorativeMultiplierAtBaseline;
+        var cap = AbilityEffectScaling.RestorativeMultiplierAtCap;
         var range = string.Format(
             CultureInfo.InvariantCulture,
-            "x{0:0.###} at 10 WIL or less, rising evenly to x{1:0.###} at 26 WIL.",
-            AbilityEffectScaling.RestorativeMultiplierAtBaseline,
-            AbilityEffectScaling.RestorativeMultiplierAtCap);
-        var healSentence = $"WIL multiplies healing: {range}";
-        var shieldSentence = $"WIL multiplies temporary HP: {range}";
+            "is {0:0.#}% of this at {1} WIL and rises {2:0.#}% per WIL point, up to {3:0.#}% at {4} WIL.",
+            baseline * 100f,
+            BaselineWillpower,
+            (cap - baseline) / (CapWillpower - BaselineWillpower) * 100f,
+            cap * 100f,
+            CapWillpower);
+        var healSentence = $"Healing {range}";
+        var shieldSentence = $"Temporary HP {range}";
         var expectedHealRows = new[]
         {
             "Benevolence I", "Benevolence II", "Benevolence III", "Renewal I", "Renewal II", "Renewal III",
@@ -1240,9 +1247,9 @@ public class CombatUpgradeBibleSyncTests
 
         var failures = rows
             .Where(entry => entry.Description.Contains("HP plus WIL scaling", StringComparison.OrdinalIgnoreCase))
-            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; replace 'plus WIL scaling' with the multiplier sentence.")
+            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; replace 'plus WIL scaling' with the per-point WIL sentence.")
             .Concat(rows
-                .Where(entry => entry.Description.Contains("WIL multiplies", StringComparison.Ordinal) &&
+                .Where(entry => entry.Description.Contains("per WIL point", StringComparison.Ordinal) &&
                                 !entry.Description.Contains(healSentence, StringComparison.Ordinal) &&
                                 !entry.Description.Contains(shieldSentence, StringComparison.Ordinal))
                 .Select(entry => $"{Describe(entry.Row)}: WIL multiplier text must match AbilityEffectScaling: '{range}'"))

@@ -259,13 +259,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshEnzymeTotals(job);
             RefreshPurities(hasPendingStage);
             RefreshMutation(job, hasPendingStage);
-            RefreshRecipes(job, now, hasPendingStage);
+            RefreshRecipes(job, hasPendingStage);
             RefreshOutcomes(job, now);
         }
 
         private void RefreshHeader(IncubationJob job, DateTime now)
         {
-            ServerDayText = $"Server day: {now.DayOfWeek} (UTC)";
+            var playerId = GetObjectUUID(Player);
+            ServerDayText = IncubationTestTools.HasDayOverride(playerId)
+                ? $"Server day: {IncubationTestTools.GetServerDay(playerId)} (test override)"
+                : $"Server day: {now.DayOfWeek} (UTC)";
             IsDNASlotEnabled = job == null;
             DNASlotTooltip = job == null
                 ? (string.IsNullOrWhiteSpace(_dnaItem) ? "Add DNA" : "Remove DNA")
@@ -459,7 +462,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MutationChanceColor = GuiColor.White;
         }
 
-        private void RefreshRecipes(IncubationJob job, DateTime now, bool hasPendingStage)
+        private void RefreshRecipes(IncubationJob job, bool hasPendingStage)
         {
             var lines = new GuiBindingList<string>();
             var colors = new GuiBindingList<GuiColor>();
@@ -483,6 +486,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 hasPendingStage);
 
             var unknown = 0;
+            var today = IncubationTestTools.GetServerDay(GetObjectUUID(Player));
             foreach (var mutation in beast.PossibleMutations)
             {
                 if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||
@@ -492,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
                 }
 
-                var report = projection.Evaluate(mutation, now);
+                var report = projection.Evaluate(mutation, today);
                 lines.Add(BeastMastery.GetBeastDetail(mutation.Type).Name);
                 colors.Add(GuiColor.White);
 
@@ -548,7 +552,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     colors.Add(outcome.Type == job.BeastDNAType ? GuiColor.White : MetColor);
                 }
 
-                OutcomeHeader = $"Outcomes if completed now ({now.DayOfWeek} UTC)";
+                OutcomeHeader = $"Outcomes if completed now ({IncubationTestTools.GetServerDay(job.PlayerId)} UTC)";
             }
             else
             {

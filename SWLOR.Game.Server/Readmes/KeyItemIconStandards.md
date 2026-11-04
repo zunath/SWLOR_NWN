@@ -1,6 +1,6 @@
 # Key Item Icon Standards
 
-Key Item icons use the `iki_` prefix, are stored in `SWLOR_Haks/sw_item`, and are displayed at 40 x 40 pixels in the Key Items window. Final assets are uncompressed 64 x 64 true-color TGA files and must stay within NWN's 16-character resource-name limit.
+Key Item icons use the `iki_` prefix, are stored in `SWLOR_Haks/sw_item`, and are displayed at 40 x 40 pixels in the Key Items window. Final assets are uncompressed 64 x 64 true-color TGA files and must stay within NWN's 16-character resource-name limit. Check every new or changed icon upright in the Key Items window before handoff, as `IconStandards.md` (Orientation) describes.
 
 ## Shared Art Direction
 

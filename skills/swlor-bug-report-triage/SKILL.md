@@ -37,12 +37,15 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 | Already fixed, waiting on a deploy | all reactions removed | `[AI bot]` outcome: already fixed, arrives with the next server update; then Close Post |
 | Not a bug, or works as designed | none | `[AI bot]` explanation, then Close Post |
 | Flagged | none; post locked | `[AI bot] @zunath This post has been flagged for further review.` |
+| Parts or appearance issue, waiting on Xisifer's confirmation | 🎨 (`art`) | `[AI bot] @Xisifer ( Iskellia / Daria )` confirmation request (see step 6) |
+| Parts or appearance issue Xisifer is fixing | 🇽 (`regional_indicator_x`) only; post stays open | Xisifer's reply saying he will fix it |
 
 ## Process
 
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts" along with their reactions.
    - Count a reaction as a marker only when the owner's account added it. Its aria-label ends in `press to remove your reaction`. Players can add the same emoji.
    - Skip posts that are locked or that carry the flagged message. They are waiting on the owner.
+   - Posts marked 🎨 or 🇽 are with Xisifer. Recheck them only as step 3 says, even when new replies reopen them.
    - Never look below the divider, even for posts that carry a marker. The owner treats everything there as done.
 2. **Recheck 👀 posts.** Read the PR URLs from each post's `[AI bot] @zunath Fix ready for review` message. Check every PR, companions included, with `gh pr view <url> --json state,mergedAt,headRefOid`.
    - **All merged:**
@@ -51,7 +54,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      3. Note in your report if Codex never reviewed the merged head.
    - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, new findings appeared, or a PR now has merge conflicts, put the post back on 🇶 and send the worker back.
    - **Closed without merging:** leave the post on 👀 and ask the owner what to do.
-3. **Recheck 🇶, ❓, and ⏳ posts.**
+3. **Recheck 🇶, ❓, ⏳, 🎨, and 🇽 posts.**
    - **🇶:** find the post's worker session in your agent's session list, by the thread id in its brief or its branch, and any PR that names the ticket.
      - **Worker finished with a PR:** verify it as in step 9.
      - **Worker still working:** leave it.
@@ -62,9 +65,20 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      - **Answered:** screen the reply (step 5) and triage the post again (step 6). Remove ❓ only when the new state is decided, and set that state's marker.
      - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
    - **⏳:** check whether the owner has answered, in chat or in the thread. If so, act on the decision. If the decision makes it a bug, swap ⏳ for 🇶 and start a worker. Otherwise repeat the question in your report.
+   - **🎨:** read the thread for Xisifer's reply to your confirmation request.
+     - **No reply:** leave it, and list it in your report as waiting on Xisifer.
+     - **Not a bug:** reply to the reporter with his explanation in player language, remove all reactions, then Close Post.
+     - **A bug he will fix:** swap 🎨 for 🇽 and leave it with him.
+     - **A bug he wants the bot to fix:** swap 🎨 for 🇶 and start a worker with his notes in the brief.
+     - **A bug, but he didn't say who fixes it:** reply `[AI bot] @Xisifer ( Iskellia / Daria ) Thanks! Will you fix this, or should the bot?` and keep 🎨.
+     - **Belongs to someone else and it's unclear who:** swap 🎨 for ⏳ and ask the owner for the next step.
+   - **🇽:** Xisifer is fixing it. Act only when he replies in the thread that the bot should do something, such as take over the fix or close the post. Otherwise leave it.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
+   - **Parts or appearance issue:** a problem with how a part or appearance looks, such as armor, clothing, weapon or head parts, models, textures, or dyes and colors. Xisifer confirms these before anyone works on them (owner, 2026-11-03).
+     1. Post `[AI bot] @Xisifer ( Iskellia / Daria ) <one-line summary>. Can you confirm whether this is a bug? If it is, will you fix it, or should the bot?` in the thread. Pick the mention suggestion so it pings him.
+     2. Add 🎨, then move on to the next post. Don't start a worker or close the post until he answers (step 3).
    - **Bug:** queue it.
    - **Balance suggestion, or works as designed:** confirm against the Design Bible and code. Reply with the facts, point the reporter to `#feedback`, and close the post.
    - **Already fixed, waiting on a deploy:** confirm the fix merged after the last release. Reply with the outcome, close the post, and tell the owner the deploy step.

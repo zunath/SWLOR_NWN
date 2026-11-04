@@ -32,27 +32,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Med Kit")
 
                 .AddPerkLevel()
-                .Description("Restores 11 HP plus 2% of the target's maximum HP to a single target. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Restores 7 HP plus 1.25% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(2)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.MedKit1)
 
                 .AddPerkLevel()
-                .Description("Restores 42 HP plus 3.5% of the target's maximum HP to a single target. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Restores 26 HP plus 2.19% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
                 .DroidAISlots(2)
                 .GrantsFeat(FeatType.MedKit2)
 
                 .AddPerkLevel()
-                .Description("Restores 80 HP plus 5% of the target's maximum HP to a single target. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Restores 50 HP plus 3.13% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 40)
                 .DroidAISlots(3)
                 .GrantsFeat(FeatType.MedKit3)
 
                 .AddPerkLevel()
-                .Description("Restores 108 HP plus 6% of the target's maximum HP to a single target. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Restores 68 HP plus 3.75% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 48)
                 .DroidAISlots(4)
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EmergencySealantTrait)
-                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores 5 HP plus 0.25% of maximum HP every 3 seconds for 30 seconds. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores 3 HP plus 0.16% of maximum HP every 3 seconds for 30 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12);
@@ -124,14 +124,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kolto Mist")
 
                 .AddPerkLevel()
-                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2 HP plus 0.25% of maximum HP every 3 seconds. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1 HP plus 0.16% of maximum HP every 3 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.KoltoMist1)
 
                 .AddPerkLevel()
-                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 9 HP plus 0.5% of maximum HP every 3 seconds. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 6 HP plus 0.31% of maximum HP every 3 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .DroidAISlots(2)
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Resuscitation1)
 
                 .AddPerkLevel()
-                .Description("Revives an unconscious target with 20% HP. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes.")
+                .Description("Revives an unconscious target with 12.5% HP. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .DroidAISlots(2)
@@ -164,14 +164,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Infusion")
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 7 HP plus 0.5% of maximum HP every 3 seconds for 30 seconds. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 4 HP plus 0.31% of maximum HP every 3 seconds for 30 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 28)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Infusion1)
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 14 HP plus 0.75% of maximum HP every 3 seconds for 30 seconds. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 9 HP plus 0.47% of maximum HP every 3 seconds for 30 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .DroidAISlots(2)
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Triage")
 
                 .AddPerkLevel()
-                .Description("Restores 81 HP plus 4.5% of the target's maximum HP instantly. Healing is 62.5% of this at 10 WIL and rises 3.9% per WIL point, up to 125% at 26 WIL. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.")
+                .Description("Restores 51 HP plus 2.81% of the target's maximum HP instantly. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .DroidAISlots(1)

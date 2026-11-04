@@ -1208,67 +1208,69 @@ public class CombatUpgradeBibleSyncTests
     }
 
     [Test]
-    public void CombatUpgradeBibleManifest_DescribesWillpowerHealingAsAMultiplier()
+    public void CombatUpgradeBibleManifest_DescribesWillpowerHealingAtBaseline()
     {
-        // Heals and temporary HP scale through AbilityEffectScaling.ScaleRestorativeEffect, which can lower the
-        // listed amount at low WIL, so their text must not read as an additive "plus WIL scaling" bonus.
+        // Heals and temporary HP scale through AbilityEffectScaling.ScaleRestorativeEffect. Their descriptions list
+        // the 10 WIL amount (base x RestorativeMultiplierAtBaseline) and say how much each WIL point adds, so the
+        // listed number is the minimum any character gets.
         const int BaselineWillpower = 10;
         const int CapWillpower = 26;
-        var baseline = AbilityEffectScaling.RestorativeMultiplierAtBaseline;
-        var cap = AbilityEffectScaling.RestorativeMultiplierAtCap;
-        var range = string.Format(
-            CultureInfo.InvariantCulture,
-            "is {0:0.#}% of this at {1} WIL and rises {2:0.#}% per WIL point, up to {3:0.#}% at {4} WIL.",
-            baseline * 100f,
-            BaselineWillpower,
-            (cap - baseline) / (CapWillpower - BaselineWillpower) * 100f,
-            cap * 100f,
-            CapWillpower);
-        var healSentence = $"Healing {range}";
-        var shieldSentence = $"Temporary HP {range}";
-        var expectedHealRows = new[]
+        var baseline = (decimal)AbilityEffectScaling.RestorativeMultiplierAtBaseline;
+        var cap = (decimal)AbilityEffectScaling.RestorativeMultiplierAtCap;
+        cap.Should().Be(baseline * 2, "the descriptions say WIL doubles the amount at 26");
+        var perPoint = ((cap - baseline) / baseline / (CapWillpower - BaselineWillpower) * 100m)
+            .ToString("0.##", CultureInfo.InvariantCulture);
+        string Sentence(string noun) =>
+            $"Each WIL point above {BaselineWillpower} adds {perPoint}% to the {noun}, up to double at {CapWillpower} WIL.";
+
+        // Base amounts passed to HealAmount in the ability definitions: (perk, flat HP, % of max HP, temporary HP).
+        var rows = new (string PerkName, decimal? Flat, decimal Percent, bool TemporaryHP)[]
         {
-            "Benevolence I", "Benevolence II", "Benevolence III", "Renewal I", "Renewal II", "Renewal III",
-            "Force Mend", "Force Sanctuary", "Harmonic Restoration", "Purifying Wave",
-            "Med Kit I", "Med Kit II", "Med Kit III", "Med Kit IV", "Emergency Sealant", "Kolto Mist I",
-            "Kolto Mist II", "Infusion I", "Infusion II", "Resuscitation II", "Emergency Triage"
-        };
-        var expectedShieldRows = new[]
-        {
-            "Guardian Ward I", "Guardian Ward II", "Guardian Ward III", "Guardian Ward IV", "Last Stand of the Light",
-            "Pain Suppressant I", "Pain Suppressant II", "Emergency Cocktail"
+            ("Purifying Wave", 36m, 2m, false), ("Last Stand of the Light", 68m, 3.75m, true),
+            ("Benevolence I", 6m, 1.5m, false), ("Benevolence II", 26m, 2.5m, false), ("Benevolence III", 63m, 3.5m, false),
+            ("Guardian Ward I", 6m, 1.5m, true), ("Guardian Ward II", 22m, 2.25m, true),
+            ("Guardian Ward III", 44m, 3m, true), ("Guardian Ward IV", 68m, 3.75m, true),
+            ("Renewal I", 1m, 0.25m, false), ("Renewal II", 6m, 0.5m, false), ("Renewal III", 14m, 0.75m, false),
+            ("Force Mend", 27m, 1.5m, false), ("Force Sanctuary", 9m, 0.5m, false), ("Harmonic Restoration", 27m, 1.5m, false),
+            ("Med Kit I", 11m, 2m, false), ("Med Kit II", 42m, 3.5m, false), ("Med Kit III", 80m, 5m, false),
+            ("Med Kit IV", 108m, 6m, false), ("Emergency Sealant", 5m, 0.25m, false),
+            ("Kolto Mist I", 2m, 0.25m, false), ("Kolto Mist II", 9m, 0.5m, false),
+            ("Infusion I", 7m, 0.5m, false), ("Infusion II", 14m, 0.75m, false),
+            ("Resuscitation II", null, 20m, false), ("Emergency Triage", 81m, 4.5m, false),
+            ("Pain Suppressant I", 24m, 2.5m, true), ("Pain Suppressant II", 68m, 3.75m, true),
+            ("Emergency Cocktail", 54m, 3m, true)
         };
 
         var root = FindRepositoryRoot();
-        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
             .Where(row => row.Tab is "Force" or "First Aid")
             .Select(row => (Row: row, Description: string.Join(" ", row.Description.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))))
             .ToArray();
 
-        var failures = rows
+        var failures = manifest
             .Where(entry => entry.Description.Contains("HP plus WIL scaling", StringComparison.OrdinalIgnoreCase))
-            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; replace 'plus WIL scaling' with the per-point WIL sentence.")
-            .Concat(rows
-                .Where(entry => entry.Description.Contains("per WIL point", StringComparison.Ordinal) &&
-                                !entry.Description.Contains(healSentence, StringComparison.Ordinal) &&
-                                !entry.Description.Contains(shieldSentence, StringComparison.Ordinal))
-                .Select(entry => $"{Describe(entry.Row)}: WIL multiplier text must match AbilityEffectScaling: '{range}'"))
+            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; list the 10 WIL amount and the per-point WIL sentence instead of 'plus WIL scaling'.")
             .ToList();
 
-        void AssertSentence(IEnumerable<string> perkNames, string sentence)
+        foreach (var (perkName, flat, percent, temporaryHP) in rows)
         {
-            foreach (var perkName in perkNames)
+            var listedPercent = Math.Round(percent * baseline, 2, MidpointRounding.AwayFromZero)
+                .ToString("0.##", CultureInfo.InvariantCulture);
+            var amount = flat.HasValue
+                ? $"{Math.Round(flat.Value * baseline, MidpointRounding.AwayFromZero):0}{(temporaryHP ? " temporary" : string.Empty)} HP plus {listedPercent}% of "
+                : $"{listedPercent}% HP";
+            var sentence = Sentence(temporaryHP ? "temporary HP" : "healing");
+            var matches = manifest.Where(entry => entry.Row.PerkName == perkName).ToArray();
+            if (matches.Length == 0)
+                failures.Add($"{perkName}: missing from the Force and First Aid manifest rows.");
+            foreach (var (row, description) in matches)
             {
-                var matches = rows.Where(entry => entry.Row.PerkName == perkName).ToArray();
-                if (matches.Length == 0)
-                    failures.Add($"{perkName}: missing from the Force and First Aid manifest rows.");
-                else if (matches.Any(entry => !entry.Description.Contains(sentence, StringComparison.Ordinal)))
-                    failures.Add($"{perkName}: description must state '{sentence}'");
+                if (!description.Contains(amount, StringComparison.Ordinal))
+                    failures.Add($"{Describe(row)}: must list the 10 WIL amount '{amount}'.");
+                if (!description.Contains(sentence, StringComparison.Ordinal))
+                    failures.Add($"{Describe(row)}: must state '{sentence}'");
             }
         }
-
-        AssertSentence(expectedHealRows, healSentence);
-        AssertSentence(expectedShieldRows, shieldSentence);
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }

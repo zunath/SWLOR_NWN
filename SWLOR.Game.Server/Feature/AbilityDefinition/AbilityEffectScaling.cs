@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// <summary>
         /// Heals and shields are multiplied by this at a scaling stat of 10 or below, rising in a straight line to
         /// <see cref="RestorativeMultiplierAtCap"/> at 26: a healer with 10 WIL heals half as much as one with 26.
+        /// Player descriptions list the 10 WIL amount (the base amount times this), so each WIL point adds 6.25% of it.
         /// </summary>
         public const float RestorativeMultiplierAtBaseline = 0.625f;
         public const float RestorativeMultiplierAtCap = 1.25f;

@@ -936,10 +936,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         CrossfireStance = 578,
 
         [RecastGroup("Ace Disabling Shot", "Disabling Shot", true)]
-        AceDisablingShot = 585,
+        AceDisablingShot = 602,
 
         [RecastGroup("Ace Double Shot", "Ace Dbl. Shot", true)]
-        AceDoubleShot = 586,
+        AceDoubleShot = 603,
 
         [RecastGroup("Ace Point Blank Burst", "Ace Burst", true)]
         AcePointBlankBurst = 587,
@@ -985,6 +985,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Command Formation", "Formation", true)]
         CommandFormation = 601,
+
+        [RecastGroup("Force Decoy", "Force Decoy", true)]
+        ForceDecoy = 585,
+
+        [RecastGroup("Cloud Mind", "Cloud Mind", true)]
+        CloudMind = 586,
 
     }
 

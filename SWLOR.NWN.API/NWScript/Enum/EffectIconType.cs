@@ -486,6 +486,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         OpeningStatusEffect = 508,
         FinishStatusEffect = 509,
         PaybackStatusEffect = 510,
+        InspiredStatusEffect = 525,
         SlipAwayStatusEffect = 486,
         PressForwardStatusEffect = 487,
         RetaliationStatusEffect = 488,
@@ -517,6 +518,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ColdWorkingStatusEffect = 514,
         StripMiningStatusEffect = 519,
         CarefulHandsStatusEffect = 520,
+        CloudedMindStatusEffect = 521,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

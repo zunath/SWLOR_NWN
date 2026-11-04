@@ -16,8 +16,7 @@ public class PlayerMigrationTests
     // items or quickbar, so the migrations they reach read and write the file without the game engine.
     private const int RebuildTokens = 3;
 
-    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 26 (crafting perk conversion) and 27 (space revamp) each grant one rebuild token;
-    // 25 (pelvis consolidation) grants none.
+    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 26 (crafting perk conversion) and 27 (space revamp) each grant one rebuild token.
     private const int UnarmedTwinPistolTokenVersion = 24;
     private const int PerkConversionTokenVersion = 26;
 
@@ -39,7 +38,7 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull("the file and the record are behind the latest migration");
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "only the tokens of migrations 24, 25 and 26 are still ahead of the record");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "only the tokens of migrations 24, 26 and 27 are still ahead of the record");
         CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
     }
 
@@ -64,7 +63,7 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull();
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4, "migrations 15, 24, 25 and 26 each grant one");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4, "migrations 15, 24, 26 and 27 each grant one");
         upgraded.File.Should().Equal(file, "a file that is not behind any migration is not changed");
         CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
         upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4);

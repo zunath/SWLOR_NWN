@@ -7,6 +7,11 @@ namespace SWLOR.Game.Server.Service
     {
         public delegate string BuildMessageDelegate(uint receiver);
 
+        public static bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed)
+        {
+            return !senderConcealed && !actorConcealed;
+        }
+
         /// <summary>
         /// Sends a message to all nearby players within a certain distance.
         /// </summary>
@@ -20,8 +25,27 @@ namespace SWLOR.Game.Server.Service
 
         public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f)
         {
+            SendMessageNearbyToPlayers(sender, buildMessage, range, OBJECT_INVALID);
+        }
+
+        /// <summary>
+        /// Sends a message to the sender and every player within range. While the sender, or the
+        /// <paramref name="concealedActor"/> the message names, is in stealth or invisible, the message
+        /// goes only to the sender and that actor instead, so it never tells nearby players a hidden
+        /// creature is there.
+        /// </summary>
+        public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range, uint concealedActor)
+        {
             if (buildMessage == null)
                 throw new ArgumentNullException(nameof(buildMessage));
+
+            if (!ShouldDeliverNearby(Stealth.IsConcealed(sender), Stealth.IsConcealed(concealedActor)))
+            {
+                SendMessageToPC(sender, buildMessage(sender));
+                if (GetIsObjectValid(concealedActor) && concealedActor != sender && GetIsPC(concealedActor))
+                    SendMessageToPC(concealedActor, buildMessage(concealedActor));
+                return;
+            }
 
             var profile = FrameProfiler.Start();
             SendMessageToPC(sender, buildMessage(sender));

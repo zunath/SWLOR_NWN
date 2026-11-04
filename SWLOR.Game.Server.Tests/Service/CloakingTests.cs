@@ -575,7 +575,8 @@ public class CloakingTests
         var gate = ExtractMethod(ReadSource("Service", "Stealth.cs"), "public static void GateStealthEntry(");
         gate.Should().Contain("if (Space.IsPlayerInSpaceMode(creature))");
         gate.IndexOf("Space.IsPlayerInSpaceMode(creature)", StringComparison.Ordinal)
-            .Should().BeLessThan(gate.IndexOf("PerkType.Stealth", StringComparison.Ordinal));
+            .Should().BeLessThan(gate.IndexOf("CanUseStealth(creature)", StringComparison.Ordinal),
+                "the space check comes before the ground stealth check (CanUseStealth, which reads the Stealth perk)");
     }
 
     // Ship HUD

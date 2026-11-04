@@ -69,16 +69,30 @@ public class IncubationTestToolsTests
     }
 
     [Test]
-    public void Commands_AreOpenToTestersAndAdminOnly()
+    public void Commands_OnTheTestServer_AreOpenToEveryTester()
     {
-        var commands = new IncubationTestChatCommand().BuildChatCommands();
+        var commands = new IncubationTestChatCommand().BuildChatCommands(ServerEnvironmentType.Test, true);
 
         foreach (var name in new[] { "incubationfinish", "incfinish", "incubationday", "incday" })
         {
             commands.Should().ContainKey(name);
             commands[name].Authorization.Should().Be(AuthorizationLevel.Admin);
             commands[name].AvailableToAllOnTestEnvironment.Should().BeTrue();
-            commands[name].ValidateArguments.Should().NotBeNull();
         }
+    }
+
+    [TestCase(ServerEnvironmentType.Production, true)]
+    [TestCase(ServerEnvironmentType.Development, false)]
+    public void Commands_OnProductionOrAnUnnamedEnvironment_DoNotExist(ServerEnvironmentType environment, bool isExplicit)
+    {
+        IncubationTestChatCommand.IsAvailable(environment, isExplicit).Should().BeFalse();
+        new IncubationTestChatCommand().BuildChatCommands(environment, isExplicit).Should().BeEmpty();
+    }
+
+    [TestCase(ServerEnvironmentType.Test)]
+    [TestCase(ServerEnvironmentType.Development)]
+    public void Commands_OnANamedTestOrDevServer_Exist(ServerEnvironmentType environment)
+    {
+        IncubationTestChatCommand.IsAvailable(environment, true).Should().BeTrue();
     }
 }

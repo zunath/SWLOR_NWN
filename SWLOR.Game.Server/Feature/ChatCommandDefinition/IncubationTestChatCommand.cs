@@ -13,27 +13,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     /// <summary>
     /// Test-server shortcuts for incubation: end a running stage now, and pick the weekday mutations check.
-    /// Every player can use them on the test server; they never run on production.
+    /// They exist only on a server whose SWLOR_ENVIRONMENT is explicitly test (every player) or dev (Admin).
+    /// Production never registers them, and neither does an unset or mistyped environment.
     /// </summary>
     public class IncubationTestChatCommand: IChatCommandListDefinition
     {
-        public const string NotOnProductionMessage = "Incubation test commands are disabled on the live server.";
-
         private readonly ChatCommandBuilder _builder = new();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
+            var settings = ApplicationSettings.Get();
+            return BuildChatCommands(settings.ServerEnvironment, settings.ServerEnvironmentIsExplicit);
+        }
+
+        public Dictionary<string, ChatCommandDetail> BuildChatCommands(ServerEnvironmentType environment, bool environmentIsExplicit)
+        {
+            if (!IsAvailable(environment, environmentIsExplicit))
+                return new Dictionary<string, ChatCommandDetail>();
+
             FinishStage();
             SetDay();
 
             return _builder.Build();
         }
 
-        private static string RejectOnProduction(uint user, params string[] args)
+        /// <summary>Only an explicitly named test or development server gets these commands.</summary>
+        public static bool IsAvailable(ServerEnvironmentType environment, bool environmentIsExplicit)
         {
-            return ApplicationSettings.Get().ServerEnvironment == ServerEnvironmentType.Production
-                ? NotOnProductionMessage
-                : string.Empty;
+            return environmentIsExplicit &&
+                   environment is ServerEnvironmentType.Test or ServerEnvironmentType.Development;
         }
 
         private void FinishStage()
@@ -42,7 +50,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Test server: ends the running stage of each of your incubation jobs now.")
                 .Permissions(AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
-                .Validate(RejectOnProduction)
                 .Action((user, target, location, args) =>
                 {
                     var playerId = GetObjectUUID(user);
@@ -77,10 +84,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Validate((user, args) =>
                 {
-                    var error = RejectOnProduction(user, args);
-                    if (!string.IsNullOrEmpty(error))
-                        return error;
-
                     if (args.Length < 1)
                         return "Name a day, such as /incubationday Monday, or /incubationday clear.";
 

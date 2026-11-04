@@ -23,13 +23,14 @@ public class CraftingPerkIconOrientationTests
     };
 
     // The space and city revamps' Gathering and Farmer icons (ife_broil, ife_cred_find, ife_garlic_jeste, ife_hasty_touch,
-    // ife_morbol_seedl, ife_stars_minin, ife_tomato_king) were checked upright from their decoded pixels, not yet in the game client.
+    // ife_morbol_seedl, ife_stars_minin, ife_tomato_king): five were legacy art haks master turned upright (#657), and ife_cred_find
+    // and ife_stars_minin are newer art it left as it was. Not yet checked in the game client.
     private static readonly Dictionary<string, string> UprightPixelHashes = new(StringComparer.OrdinalIgnoreCase)
     {
         ["ife_alchemist"] = "85a7e3a2f9872b954d4458f62246514224fe51a99ac1e49b8b421aff99065944",
         ["ife_armorer"] = "6a87a2a08c7cb214d325ce8be9871bf7987bc71d2e360999c0850a728d56c101",
         ["ife_blacksmith"] = "99b26b1776b33b21f79c46475882c2ae0913e0b355dc8769306aba874387ccc3",
-        ["ife_broil"] = "56d8d21682e3eb22e0f7bce831cddaa2ccee029aadb38d9275e2518e0b73051c",
+        ["ife_broil"] = "abc7e8a3f8dd37e442066233b4cd741db31fe2baf80b1b664fba358a6de38e55",
         ["ife_buildrobot"] = "ecb4703900cce351eed8a6067cb0ffae3ba765bbf418de755ed330571e4bcb5d",
         ["ife_carve_and_sp"] = "919893a3bb46f54e01c0405617e47ed34896919958b4dc89d8a2a56781a88c72",
         ["ife_coolfire"] = "f81240c06f7df9c74b52ff7e4997fce51c0956a2571cf9775f1677f0a7c9c940",
@@ -41,16 +42,16 @@ public class CraftingPerkIconOrientationTests
         ["ife_firestarter"] = "e6c7b6cb0fa6751c8960e469c22f7154d51c1012cc30b330b647acfb2111cf90",
         ["ife_fish_eyes"] = "f9e6d9d4cf495b4d42190baa452215c7b616cd90c249e18f52a0bb53c7766c51",
         ["ife_fish_whisper"] = "a076a9a9736df9089a9def1fbcd5ad1e34b4ea03548a59875848850c645c59c7",
-        ["ife_garlic_jeste"] = "f6960f33904deaf928a4adfdceb243a41ae6dca21e96873de5a3d414e6c8dc09",
+        ["ife_garlic_jeste"] = "41cc477d06c3f5ffdc4dfaa36e61ec0d3acd8ea3cbd1630dc556961c995afde8",
         ["ife_gearhead"] = "b968a3a83b1ea572963bde56a7c3dba53b6fc361c8163c88741c5d313d95de39",
-        ["ife_hasty_touch"] = "c8dda4a7bbc6fcadd43e11575cd253f77a668763f037ba37a15e75d794365dff",
+        ["ife_hasty_touch"] = "146d046315d9963d692d99728416a945ff0ee9e9cd678da4cb7fc8dc0e16e363",
         ["ife_hook"] = "50aa024a328feb45572d845778a0823d72376c4a29339eb0edce885ba458f19b",
         ["ife_infusion"] = "94b861984c5ae762080b859ec3294fc78a2ee01d2db52e280a6c0a8b4d84b361",
         ["ife_laurel_goobb"] = "592f28e4b3544c2b3569238619228fbaff16d4fc0fca4b6879bfc4422cdca995",
         ["ife_mastercraft"] = "bf66ef01cda73cdf9678926e1627b5255f38a02d5812f1768386481887611fc9",
         ["ife_min_light"] = "d125f93512ca4da32df9a5ee9ea3c91645f9e5577bdfb12fa21aaf55833029b5",
         ["ife_miner"] = "e1937c6ce4b16e0ece22a38b3e7405c89e6c8afe7986a9ce799e21156faad8bf",
-        ["ife_morbol_seedl"] = "2769319be610a5bd398f27fd54b9cbdf61c445f75219e037b4c650fe395ef99f",
+        ["ife_morbol_seedl"] = "73b06553719ab04e89a92189b8513d2ebf8dc7cdb7248548ea2369066d8d3526",
         ["ife_observe"] = "bee7b2bb2b8a17f9e4cbfacc112f3833fcacacc7da33bd7f1e00f0f49ab5e61f",
         ["ife_preparation"] = "5d6b5163621eb814e4b28f6ba0f34610f9bf9766a7c6de1ba68ffd9f066695d3",
         ["ife_prune"] = "5300de3fdcb7fb3f17f05956ef0137f870568469c666bbcba4a20588cc626c66",
@@ -67,7 +68,7 @@ public class CraftingPerkIconOrientationTests
         ["ife_steam-powere"] = "3babaa7e28851615e8b1a2529e15f106adbd0d16b0511f9ef80469ca02cd3c41",
         ["ife_tackle_maste"] = "aeccccc5ee83cb4ea79ff1b179e784267acc5c22dcc72ec3f97b522d3d25c557",
         ["ife_tiny_bulb"] = "957e37beaa0ababa35a1fbd2651b0ed6ce0718184ccfc0897c80c8712d225ceb",
-        ["ife_tomato_king"] = "ba61e6b39b3b4afd0b1ed37a142f67052356a7cfd52fc23d05f5c70571096b4a",
+        ["ife_tomato_king"] = "b6d752d61c8458ec0275ceb1c2431a552683e42e5eb98bd23f40eda35aa8a388",
         ["ife_treas_hunt"] = "a619f416906431674d0268734fd781818f67912f072edf93b6ab679518ff6da0",
         ["ife_treasure_box"] = "0e3ac6d52e42fb3b2d83875a3677f027d5b3c8d795e30e427ffee51bfe256bbf",
     };
@@ -111,7 +112,7 @@ public class CraftingPerkIconOrientationTests
     }
 
     /// <summary>The pixels of an uncompressed or run-length true-color TGA as stored per pixel, top row first, honoring its origin bit.</summary>
-    private static byte[] DecodeTopRowFirst(byte[] tga)
+    internal static byte[] DecodeTopRowFirst(byte[] tga)
     {
         int idLength = tga[0], colorMapType = tga[1], imageType = tga[2];
         colorMapType.Should().Be(0, "gameplay icons are true-color TGAs");

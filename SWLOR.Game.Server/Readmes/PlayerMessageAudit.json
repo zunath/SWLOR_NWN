@@ -14,6 +14,27 @@
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Successfully tamed {GetName(target)}!\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/CloudMindAbilityDefinition.cs",
+    "Line": 102,
+    "Member": "TryCloud",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"Your cloud mind was resisted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/CloudMindAbilityDefinition.cs",
+    "Line": 115,
+    "Member": "TryCloud",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, $\"You cloud the mind of {PlayerName.GetDisplayName(activator, target)}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/SharedPresenceAbilityDefinition.cs",
+    "Line": 74,
+    "Member": "ApplySharedPresence",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(member, $\"{PlayerName.GetDisplayName(member, activator)}'s Shared Presence hides you for up to {(int)StealthWindowSeconds} seconds.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Force/MindTrickAbilityDefinition.cs",
     "Line": 108,
     "Member": "ApplyMindTrickImpact",
@@ -414,28 +435,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs",
-    "Line": 82,
+    "Line": 83,
     "Member": "MoveDoor",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{orientationOverride} {sqrtValue}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs",
-    "Line": 124,
+    "Line": 146,
     "Member": "KitchenTester",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{args[0]} is not a recipe.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs",
-    "Line": 130,
+    "Line": 152,
     "Member": "KitchenTester",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"The Kitchen cooks Agriculture recipes only.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs",
-    "Line": 174,
+    "Line": 196,
     "Member": "GetObjectId",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{GetName(target)} oid = {target}\")"
@@ -2618,6 +2639,13 @@
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"A category named '{name}' already exists.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs",
+    "Line": 171,
+    "Member": "OnApply",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"Performance options applied.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
     "Line": 1216,
     "Member": "OnClickBuyUpgrade",
@@ -4130,8 +4158,15 @@
     "Call": "SendMessageToPC(source, ColorToken.Combat($\"You are guarding {guardedName}.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/InspiredStatusEffect.cs",
+    "Line": 174,
+    "Member": "HealStandingOvation",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, \"A standing ovation lifts you, restoring your health.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/StealthStatusEffect.cs",
-    "Line": 74,
+    "Line": 81,
     "Member": "Tick",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You are too exhausted to remain hidden.\"))"
@@ -4215,49 +4250,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 463,
+    "Line": 469,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                            activator,\n                            receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 482,
+    "Line": 488,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 489,
+    "Line": 495,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 521,
+    "Line": 527,
     "Member": "TryUseCrewStationAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(crewMember, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 544,
+    "Line": 550,
     "Member": "TryUseCrewStationAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                    ship,\n                    receiver => GetIsObjectValid(target) && target != ship\n                        ? $\"{PlayerName.GetDisplayName(receiver, crewMember)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\"\n                        : $\"{PlayerName.GetDisplayName(receiver, crewMember)} readies {ability.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1271,
+    "Line": 1282,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                    target,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1275,
+    "Line": 1286,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"
@@ -4313,35 +4348,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 783,
+    "Line": 817,
     "Member": "CanUseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, reason)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1261,
+    "Line": 1295,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1325,
+    "Line": 1359,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3086,
+    "Line": 3120,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f,\n                activator)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3105,
+    "Line": 3140,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
@@ -5013,21 +5048,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 96,
+    "Line": 129,
     "Member": "ApplySubdual",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 97,
+    "Line": 130,
     "Member": "ApplySubdual",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                player,\n                receiver => hasSubduer\n                    ? $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, subduer)}.\"\n                    : $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 305,
+    "Line": 300,
+    "Member": "ApplyPenalties",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Death.cs",
+    "Line": 345,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
@@ -5727,56 +5769,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 272,
+    "Line": 273,
     "Member": "CallPlayer",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, receiver)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 282,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+    "Call": "FloatingTextStringOnCreature(message, receiver, !Stealth.IsConcealed(receiver))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
     "Line": 283,
     "Member": "CallPlayer",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 306,
-    "Member": "SetIsInCall",
+    "Line": 284,
+    "Member": "CallPlayer",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, message)"
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
     "Line": 307,
     "Member": "SetIsInCall",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 308,
+    "Member": "SetIsInCall",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 484,
+    "Line": 485,
     "Member": "EndAttempt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 530,
+    "Line": 531,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 553,
+    "Line": 554,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
@@ -5888,21 +5930,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 18,
+    "Line": 23,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageNearbyToPlayers(sender, _ => message, range)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 27,
+    "Line": 28,
+    "Member": "SendMessageNearbyToPlayers",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageNearbyToPlayers(sender, buildMessage, range, OBJECT_INVALID)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Messaging.cs",
+    "Line": 44,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, buildMessage(sender))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 36,
+    "Line": 46,
+    "Member": "SendMessageNearbyToPlayers",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(concealedActor, buildMessage(concealedActor))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Messaging.cs",
+    "Line": 51,
+    "Member": "SendMessageNearbyToPlayers",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, buildMessage(sender))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Messaging.cs",
+    "Line": 60,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(nearby, buildMessage(nearby))"
@@ -6004,6 +6067,90 @@
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{record.Reason} ({record.Credits} credits)\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 306,
+    "Member": "EndPerformance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 398,
+    "Member": "Toggle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 421,
+    "Member": "StartPerformance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You cannot perform right now.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 463,
+    "Member": "StartPerformance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, kind == PerformanceKind.Dance\n                ? \"You begin to dance. Use the step buttons on your hot bar to match the cues.\"\n                : \"You begin to play. Use the note buttons on your hot bar to match the cues.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 571,
+    "Member": "ApplyTempo",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(\n                session.Performer,\n                $\"Tempo: {tempo} ({tempo.GetBeatSeconds():0.0}s beats, x{tempo.GetXPMultiplier():0.##} XP).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 581,
+    "Member": "TryFlourish",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(performer, $\"Flourish is not ready ({session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Performance.cs",
+    "Line": 588,
+    "Member": "TryFlourish",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(performer, \"Flourish!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceAudience.cs",
+    "Line": 402,
+    "Member": "PayWatcher",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(watcher, $\"The performance inspires you. (+{composition.XPBonusPercent}% skill XP while Inspired)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceAudience.cs",
+    "Line": 426,
+    "Member": "ClearDebt",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(watcher, $\"The performance clears {cleared} XP of your debt. (Remaining: {dbPlayer.XPDebt})\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceAudience.cs",
+    "Line": 956,
+    "Member": "BankFlourish",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(watcher, $\"The flourish thrills you. (+{addedMinutes:0.#} min of Inspired)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceWindows.cs",
+    "Line": 37,
+    "Member": "ShowFallbackStrip",
+    "Delivery": "Retained",
+    "Call": "PostString(performer, text, -text.Length / 2, FallbackStripRow, ScreenAnchor.Center,\n                beatSeconds + FallbackStripOverlapSeconds, Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceWindows.cs",
+    "Line": 43,
+    "Member": "ClearFallbackStrip",
+    "Delivery": "Retained",
+    "Call": "PostString(performer, string.Empty, 0, FallbackStripRow, ScreenAnchor.Center, 0.1f,\n                Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",
@@ -8751,14 +8898,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Stat.cs",
-    "Line": 402,
+    "Line": 403,
     "Member": "RestoreFP",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"FP\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stat.cs",
-    "Line": 511,
+    "Line": 512,
     "Member": "RestoreStamina",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"STM\")"
@@ -8898,70 +9045,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 755,
+    "Line": 775,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature, receiver =>\n                {\n                    var name = PlayerName.GetDisplayName(receiver, creature);\n                    var effectName = statusEffect.Name;\n                    var applicationMessage = $\"{name} receives the effect of {effectName}\";\n                    if (GetIsObjectValid(source) && source != creature)\n                    {\n                        var sourceName = PlayerName.GetDisplayName(receiver, source);\n                        if (!string.IsNullOrWhiteSpace(sourceName))\n                        {\n                            applicationMessage = $\"{applicationMessage} from {sourceName}\";\n                        }\n                    }\n\n                    return applicationMessage;\n                })"
+    "Call": "Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 924,
+    "Line": 780,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
+    "Line": 782,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
+    "Line": 946,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1095,
+    "Line": 1117,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1472,
+    "Line": 1494,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1481,
+    "Line": 1503,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 2039,
+    "Line": 2064,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
+    "Line": 2066,
+    "Member": "RemoveStatusEffectInstance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 56,
+    "Line": 60,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You have not learned to move unseen. The Stealth perk is required.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 63,
+    "Line": 67,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You cannot enter stealth while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 222,
+    "Line": 228,
     "Member": "BreakStealthOnDamageDealt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, \"Your attack gives away your position.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 530,
+    "Line": 667,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"

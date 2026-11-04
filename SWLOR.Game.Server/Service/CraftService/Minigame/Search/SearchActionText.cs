@@ -3,27 +3,6 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
-/// <summary>Which colour a row of the Search window takes.</summary>
-public enum SearchActionKind
-{
-    Normal = 0,
-
-    /// <summary>The action may spoil the spot.</summary>
-    Risky = 1,
-
-    /// <summary>The action cannot be used now.</summary>
-    Unavailable = 2,
-
-    /// <summary>The action is the last search of the site.</summary>
-    LastSearch = 3
-}
-
-/// <summary>An action as the window shows it before the click.</summary>
-/// <param name="Summary">The exact result: the chances, what it costs, and any ending it causes.</param>
-/// <param name="Tooltip">What the action does.</param>
-/// <param name="Kind">Which colour the row takes.</param>
-public sealed record SearchActionView(string Summary, string Tooltip, SearchActionKind Kind);
-
 /// <summary>
 /// The words the Search window shows for the engine's previews and for the board. A spot's chance of a find is the one thing the
 /// hidden layout decides, so the text for ground the scavenger has not learned about names both chances and never the true one.

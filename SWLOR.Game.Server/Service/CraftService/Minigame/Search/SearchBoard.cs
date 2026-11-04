@@ -2,19 +2,6 @@ using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
-/// <summary>What the player knows about a spot's ground.</summary>
-public enum SearchSpotKnowledge
-{
-    /// <summary>Nothing yet: the ground may be promising or ordinary.</summary>
-    Unknown = 0,
-
-    /// <summary>The ground is promising: a Search there finds more often.</summary>
-    Promising = 1,
-
-    /// <summary>The ground is ordinary.</summary>
-    Ordinary = 2
-}
-
 /// <summary>
 /// The 3x3 board as one immutable value: which spots are promising (hidden from the player), which the player has learned about,
 /// and what has been done at each spot. Each field is a mask with bit <c>n</c> for spot <c>n</c>; the dig counts take two bits a spot.

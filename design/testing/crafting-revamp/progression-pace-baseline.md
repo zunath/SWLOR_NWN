@@ -76,9 +76,9 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Recipe rank requirement | `Craft.cs:327-331` |
 | Harvests per node | `ProspectingNode.cs:67` |
 | Harvest XP | `GatheringLevels.cs:20-23` |
-| Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:38-49` |
-| Scavenge second attempt | `ScavengeQuickSearch.cs:97-99` |
-| Scavenge success roll and DC | `ScavengeQuickSearch.cs:101-108` |
+| Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:23-34` |
+| Scavenge second attempt | `ScavengeQuickSearch.cs:82-84` |
+| Scavenge success roll and DC | `ScavengeQuickSearch.cs:86-93` |
 | Scavenge XP level | `ScavengePoint.cs:93` |
 | Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
 | Refinery batch size | `RefineryViewModel.cs:61` |

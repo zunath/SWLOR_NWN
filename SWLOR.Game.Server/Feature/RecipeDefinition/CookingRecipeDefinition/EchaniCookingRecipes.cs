@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_pickles", 2)
                 .Component("esh_egg", 1)
                 .Component("distilled_water", 2)
-                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 23, targetSweet: 12, targetSpice: 5, innerRadius: 4, outerRadius: 20, freshness: 97);
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 19, targetSweet: 14, targetSpice: 1, innerRadius: 4, outerRadius: 20, freshness: 97);
 
             // Echani Marbled Eggs
             _builder.Create(RecipeType.EchaniMarbledEggs, SkillType.Agriculture)
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_egg", 3)
                 .Component("herb_x", 2)
                 .Component("distilled_water", 1)
-                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 24, targetSweet: 4, targetSpice: 15, innerRadius: 4, outerRadius: 18, freshness: 92);
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 22, targetSweet: 4, targetSpice: 15, innerRadius: 4, outerRadius: 18, freshness: 92);
 
             // Echani Ginger-Steamed Fish
             _builder.Create(RecipeType.EchaniGingerFish, SkillType.Agriculture)

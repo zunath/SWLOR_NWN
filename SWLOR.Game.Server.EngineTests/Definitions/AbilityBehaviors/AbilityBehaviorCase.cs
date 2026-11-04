@@ -248,5 +248,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// </summary>
         public string SkipReason { get; set; }
         public bool RequiresPlayerBeastFixture { get; set; }
+
+        /// <summary>
+        /// The ability only works for a player (Performance toggles refuse NPCs), so the executor
+        /// hands the case to PerformanceAbilityEngineTests, which drives it through a native
+        /// player fixture and asserts the performance mode it starts and stops.
+        /// </summary>
+        public bool RequiresPlayerPerformanceFixture { get; set; }
     }
 }

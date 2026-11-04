@@ -1,8 +1,5 @@
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 
-/// <summary>How far one sub-assembly has come: its progress toward its size, and its quality from 0 to 100.</summary>
-public readonly record struct SubAssemblyState(int Progress, int Quality);
-
 /// <summary>
 /// Everything the Fabricator knows about an attempt. The shared meters sum or summarize the three sub-assemblies: the progress
 /// meter is the sum of their progress and the quality meter is their average capped at the weakest + 20, and the engine keeps both

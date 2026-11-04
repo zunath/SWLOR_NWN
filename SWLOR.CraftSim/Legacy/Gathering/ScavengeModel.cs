@@ -11,15 +11,15 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public const int LastSiteLevel = 5;
         public const int MaximumHardLook = 5;
 
-        /// <summary>ScavengeQuickSearch.cs:44-45: d100 &lt;= Hard Look x 10 + Perception modifier x 5.</summary>
+        /// <summary>ScavengeQuickSearch.cs:29-30: d100 &lt;= Hard Look x 10 + Perception modifier x 5.</summary>
         public static double SecondAttemptChance(int hardLook, int perceptionModifier) =>
             Math.Clamp(hardLook * 10 + perceptionModifier * 5, 0, 100) / 100.0;
 
-        /// <summary>ScavengeQuickSearch.cs:49: the chance that d20 + Perception modifier reaches the DC.</summary>
+        /// <summary>ScavengeQuickSearch.cs:34: the chance that d20 + Perception modifier reaches the DC.</summary>
         public static double SuccessChance(int dc, int perceptionModifier) =>
             Math.Clamp(21 - (dc - perceptionModifier), 0, 20) / 20.0;
 
-        /// <summary>The second attempt's success chance, averaged over the d3 the DC rose by (ScavengeQuickSearch.cs:108).</summary>
+        /// <summary>The second attempt's success chance, averaged over the d3 the DC rose by (ScavengeQuickSearch.cs:93).</summary>
         public static double SecondAttemptSuccessChance(int perceptionModifier)
         {
             var total = 0.0;
@@ -39,7 +39,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         /// <summary>The level XP is measured at: 10 x the site's level (ScavengePoint.cs:93).</summary>
         public static int SiteXpLevel(int siteLevel) => 10 * siteLevel;
 
-        /// <summary>XP for a successful attempt, from the server's own chart; a failed attempt pays a quarter (ScavengeQuickSearch.cs:107).</summary>
+        /// <summary>XP for a successful attempt, from the server's own chart; a failed attempt pays a quarter (ScavengeQuickSearch.cs:92).</summary>
         public static int SuccessXp(int siteLevel, int gatheringRank) => ServerXp.ForDelta(SiteXpLevel(siteLevel) - gatheringRank);
 
         public static double ExpectedXpPerSite(int siteLevel, int gatheringRank, int hardLook, int perceptionModifier)

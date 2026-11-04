@@ -256,6 +256,7 @@ public class CombatUpgradeBibleSyncTests
         ["Leadership"] = SkillType.Leadership,
         ["Lightsaber"] = SkillType.Lightsaber,
         ["Mimicry"] = SkillType.Mimicry,
+        ["Performance"] = SkillType.Performance,
         ["Piloting"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
         ["Twin Pistol"] = SkillType.TwinPistol,
@@ -2938,6 +2939,10 @@ public class CombatUpgradeBibleSyncTests
             ("Piloting", "Ordnance") => PerkCategoryType.PilotingOrdnance,
             ("Piloting", "Bulwark") => PerkCategoryType.PilotingBulwark,
             ("Piloting", "Command") => PerkCategoryType.PilotingCommand,
+
+            ("Performance", "Dancing") => PerkCategoryType.PerformanceDancing,
+            ("Performance", "Instruments") => PerkCategoryType.PerformanceInstruments,
+            ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,

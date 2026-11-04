@@ -81,7 +81,7 @@ public sealed class LegacySpaceItemSweep
     {
         foreach (var (recordType, id, ownerId, credits) in _storedConfigurations)
         {
-            if (recordType != typeof(InventoryItem) && recordType != typeof(MarketItem))
+            if (recordType != typeof(InventoryItem) && recordType != typeof(MarketItem) && recordType != typeof(OverflowItem))
                 throw new InvalidOperationException($"No removal is known for stored {recordType.Name} records.");
             if (!string.IsNullOrWhiteSpace(ownerId) && credits > 0)
                 _pending.Add((ownerId, $"{recordType.Name}:{id}#root", credits, Array.Empty<string>()));
@@ -92,6 +92,8 @@ public sealed class LegacySpaceItemSweep
         {
             if (recordType == typeof(InventoryItem))
                 DB.Delete<InventoryItem>(id);
+            else if (recordType == typeof(OverflowItem))
+                DB.Delete<OverflowItem>(id);
             else
                 DB.Delete<MarketItem>(id);
         }

@@ -365,4 +365,23 @@ public class SpaceItemMigrationTests
             variables.Where(v => Int(v, "Type") == 3).ToDictionary(v => (string)v.Fields.First(f => f.Label == "Name").Value!,
                 v => (string)v.Fields.First(f => f.Label == "Value").Value!));
     }
+
+    [Test]
+    public void TheSpaceSweep_AlsoConvertsOverflowStorage_AndRefundsAStoredConfigurationModule()
+    {
+        // Retired ship deeds and modules an earlier character upgrade put in overflow storage wait there unclaimed.
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (!File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent!;
+        string Read(string name) => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition", name)).Replace("\r\n", "\n");
+
+        var sweep = Read("StoredItemSweep.cs");
+        sweep.Should().Contain("var progress = new ServerMigrationProgress(version, CountSections(space != null));");
+        sweep.Should().Contain("return overflow ? sections.Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray() : sections;");
+        sweep.Should().Contain("if (space != null)\n            changed += pass.Process<OverflowItem>(item => space.Migrate(item.Data, value => item.Data = value, item.PlayerId,");
+        sweep.Should().Contain("credits => space.QueueRemoval<OverflowItem>(item.Id, item.PlayerId, credits)), space.Flush);");
+
+        var legacy = Read("LegacySpaceItemSweep.cs");
+        legacy.Should().Contain("recordType != typeof(OverflowItem)").And.Contain("DB.Delete<OverflowItem>(id);");
+    }
 }

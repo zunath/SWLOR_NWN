@@ -8586,7 +8586,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)
         {
-            if (GetAbilitySkillType(activator, ability) != SkillType.Force ||
+            if (!Ability.IsForcePower(activator, ability) ||
                 !ability.Requirements.OfType<AbilityRequirementFP>().Any(x => x.RequiredFP > 0))
             {
                 return;

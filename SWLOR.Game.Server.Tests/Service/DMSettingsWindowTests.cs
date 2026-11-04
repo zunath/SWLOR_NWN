@@ -77,7 +77,19 @@ public class DMSettingsWindowTests
 
             public static class Communication
             {
-                {{Method("Service/Communication.cs", "SetEmoteStyle")}}
+                // The service's injected database and DM preferences, as this harness models them.
+                private static readonly Database _db = new();
+                private static readonly Preferences _dmPreference = new();
+                private sealed class Database
+                {
+                    public T Get<T>(string id) where T : class => DB.Get<T>(id);
+                    public void Set(Player player) => DB.Set(player);
+                }
+                private sealed class Preferences
+                {
+                    public bool Update(uint actor, System.Action<DMPreferences> change) => DMPreference.Update(actor, change);
+                }
+                {{InstanceMethod("Domain/Core/CommunicationService.cs", "SetEmoteStyle")}}
             }
 
             public static class ArmorDisplay

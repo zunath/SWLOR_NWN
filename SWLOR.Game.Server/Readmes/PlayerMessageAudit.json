@@ -98,6 +98,48 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 199,
+    "Member": "ProcessChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "ChatPlugin.SendMessage(ChatChannel.ServerMessage, \"(Sent to DM) \" + message, sender, sender)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 212,
+    "Member": "ProcessChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 218,
+    "Member": "ProcessChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"You cannot speak while dead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 326,
+    "Member": "ProcessChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 528,
+    "Member": "SendProcessedChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "Line": 544,
+    "Member": "SendProcessedChatMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
     "Line": 1511,
     "Member": "ExecuteAction",
@@ -5003,48 +5045,6 @@
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 183,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "ChatPlugin.SendMessage(ChatChannel.ServerMessage, \"(Sent to DM) \" + message, sender, sender)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 196,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 202,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"You cannot speak while dead.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 331,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 497,
-    "Member": "SendProcessedChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 513,
-    "Member": "SendProcessedChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)"
   },
   {
     "File": "SWLOR.Game.Server/Service/CompanionControlService/CompanionControl.cs",

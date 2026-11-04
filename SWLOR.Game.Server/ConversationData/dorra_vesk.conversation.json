@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can register one more stable slot under your name, honored at every stables terminal. But I don't sign for soft animals.\n\nSand Demons are gutting dewbacks on the caravan routes. Put down eight with your beast in the fight; it must hit each one before it drops.\n\nThen extract DNA from three beasts of level 40 or higher.",
+          "Text": "I can register one more stable slot under your name, honored at every stables terminal. But I don't sign for soft animals.\n\nSand Demons are gutting dewbacks on the caravan routes. Put down eight with your beast in the fight; it must hit each one before it drops.\n\nThen extract DNA from three seasoned beasts.",
           "Style": 0,
           "Color": null
         }
@@ -277,7 +277,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I breed what I stable, and a herd that only breeds with itself goes wrong. Sequences from strong wild animals keep it honest.\n\nYou'll need an extractor that can take a level-40 corpse and the training to use it. If you can't extract, you can't breed. If you can't breed, you don't need more slots.",
+          "Text": "I breed what I stable, and a herd that only breeds with itself goes wrong. Sequences from strong wild animals keep it honest.\n\nYou'll need an extractor that can take a seasoned beast's corpse and the training to use it. If you can't extract, you can't breed. If you can't breed, you don't need more slots.",
           "Style": 0,
           "Color": null
         }
@@ -371,7 +371,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Still short. Eight Sand Demons with your beast in every fight, and DNA from three beasts of level 40 or higher.",
+          "Text": "Still short. Eight Sand Demons with your beast in every fight, and DNA from three seasoned beasts.",
           "Style": 0,
           "Color": null
         }
@@ -543,7 +543,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One more stable slot, the last I can give. For that I want three things.\n\nDathomir first. Ssurians nest in the Grottos, the Grotto Caverns and the Mountain Caves. Six of them, your beast in every fight. Then DNA from three beasts of level 45 or higher.\n\nThen the worm.",
+          "Text": "One more stable slot, the last I can give. For that I want three things.\n\nDathomir first. Ssurians nest in the Grottos, the Grotto Caverns and the Mountain Caves. Six of them, your beast in every fight. Then DNA from three beasts in their prime.\n\nThen the worm.",
           "Style": 0,
           "Color": null
         }
@@ -675,7 +675,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Ssurians on Dathomir, DNA from three beasts of level 45 or higher, and the Ancient Sand Worm. Your beast in every one of those fights.",
+          "Text": "Six Ssurians on Dathomir, DNA from three beasts in their prime, and the Ancient Sand Worm. Your beast in every one of those fights.",
           "Style": 0,
           "Color": null
         }

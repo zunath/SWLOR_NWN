@@ -208,8 +208,9 @@ public class FertilizerRulesTests
         var check = source.IndexOf("FarmingRules.CheckPlant(", plant, StringComparison.Ordinal);
         var refusal = source.IndexOf("FertilizerRules.GetRefusal(", plant, StringComparison.Ordinal);
         var returned = source.IndexOf("return FarmingResult.Refused(refusal);", plant, StringComparison.Ordinal);
-        var useSeed = source.IndexOf("UseUpOne(seed);", plant, StringComparison.Ordinal);
-        var useFertilizer = source.IndexOf("UseUpOne(fertilizer);", plant, StringComparison.Ordinal);
+        // The seed and the fertilizer are taken together, through the journal, once every check has passed.
+        var useSeed = source.IndexOf("TransferJournal.TakeAndSave(player, consumed)", plant, StringComparison.Ordinal);
+        var useFertilizer = source.IndexOf("(fertilizerResref, 1)", plant, StringComparison.Ordinal);
         var record = source.IndexOf("Fertilized = fertilized,", plant, StringComparison.Ordinal);
         var end = source.IndexOf("public static FarmingResult Tend(", plant, StringComparison.Ordinal);
 
@@ -219,8 +220,8 @@ public class FertilizerRulesTests
         returned.Should().BeGreaterThan(refusal, "a refusal returns before anything is used up");
         useSeed.Should().BeGreaterThan(returned);
         useFertilizer.Should().BeGreaterThan(returned, "a refused planting costs the planter nothing, the fertilizer included");
-        record.Should().BeGreaterThan(useFertilizer).And.BeLessThan(end, "the plot's record says it was fertilized");
-        source.Substring(plant, useSeed - plant).Should().NotContain("UseUpOne(fertilizer)");
+        useSeed.Should().BeGreaterThan(useFertilizer, "the fertilizer is in the set the journal takes");
+        record.Should().BeGreaterThan(useSeed).And.BeLessThan(end, "the plot's record says it was fertilized, after the take is saved");
     }
 
     [Test]
@@ -232,7 +233,8 @@ public class FertilizerRulesTests
         var body = source.Substring(plant, end - plant);
 
         body.Should().Contain("var fertilized = GetIsObjectValid(fertilizer);");
-        body.Should().Contain("if (fertilized)");
+        body.Should().Contain("var consumed = fertilized");
+        body.Should().Contain("(fertilizerResref, 1)", "only a found fertilizer is taken");
         body.Should().Contain("DescribePlanted(crop.Name, crop.GrowHours, fertilized)");
     }
 

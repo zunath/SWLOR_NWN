@@ -224,7 +224,7 @@ public class WoodlotContentTests
         var plant = source.IndexOf("public static FarmingResult Plant(", StringComparison.Ordinal);
         var refusal = source.IndexOf("WoodlotRules.GetFertilizerRefusal(", plant, StringComparison.Ordinal);
         var check = source.IndexOf("FarmingRules.CheckPlant(", plant, StringComparison.Ordinal);
-        var useUp = source.IndexOf("UseUpOne(seed);", plant, StringComparison.Ordinal);
+        var useUp = source.IndexOf("TransferJournal.TakeAndSave(player, consumed)", plant, StringComparison.Ordinal);
 
         plant.Should().BeGreaterThan(0);
         source.Substring(plant, 200).Should().Contain("string fertilizerResref", "Plant takes the fertilizer the planter offers");

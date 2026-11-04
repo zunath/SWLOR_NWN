@@ -65,8 +65,8 @@ public interface ICraftSessionWorld
     List<CraftedUnit> PrepareUnits(uint player, uint item, RecipeDetail recipe);
 
     /// <summary>
-    /// Puts a prepared unit in the player's inventory. Returns false, and destroys the unit, when it does not fit or could not be made;
-    /// the caller then holds its serialized form.
+    /// Puts a prepared unit in the player's inventory, as an item made from its serialized form; the unit's own item is destroyed. Returns
+    /// false when it does not fit or could not be made; the caller then holds its serialized form.
     /// </summary>
     bool DeliverUnit(uint player, CraftedUnit unit);
 

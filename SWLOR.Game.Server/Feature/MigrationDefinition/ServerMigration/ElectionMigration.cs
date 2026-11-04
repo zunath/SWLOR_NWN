@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The election part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): gives an
+/// The election part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): gives an
 /// election that is already open its kind and stage dates, and gives current citizens a citizen-since time so they
 /// can vote at once. An election that is running keeps the calendar it opened under (14 days of registration, 7 of
 /// voting), so the shorter calendar never moves its cutoff. It adds no platforms: an election already in Voting finishes

@@ -108,24 +108,21 @@ public class EdictEffectsWiringTests
 
         method.Should().Contain("EdictEffects.HasBreedersCharter(");
         method.Should().Contain("EdictBonusRules.GetBreedersCharterBonus(stageGain, MaxStageIncrease)");
+        method.Should().Contain("return GetStageTotal(stat, BreedersBonus(stageGain));");
 
-        var withBonus = new[]
-        {
-            "_attack", "_accuracy", "_evasion", "_learning", "_physicalDefense", "_forceDefense", "_iceResistance", "_fireResistance",
-            "_poisonResistance", "_electricalResistance", "_mindResistance", "_mobilityResistance", "_traumaResistance", "_disruptionResistance"
-        };
-        foreach (var stat in withBonus)
-        {
-            var stage = "_stage" + char.ToUpperInvariant(stat[1]) + stat[2..];
-            method.Should().Contain($"BreedersBonus({stage})", $"{stat} gets the bonus");
-        }
+        foreach (var stat in new[] { "AttackPurity", "AccuracyPurity", "EvasionPurity", "LearningPurity", "PhysicalDefensePurity", "ForceDefensePurity" })
+            method.Should().Contain($"PurityTotal(IncubationStatType.{stat})", $"{stat} gets the bonus");
+        method.Should().Contain("job.ResistancePurities[IncubationProjection.GetResistanceType(stat)] = PurityTotal(stat);",
+            "every resistance purity gets the bonus");
 
-        method.Should().NotContain("BreedersBonus(_stageMutationChance)");
-        method.Should().NotContain("BreedersBonus(_stageXPPenalty)");
+        // Mutation chance and the XP penalty never get it.
+        method.Should().Contain("job.XPPenalty = GetStageTotal(IncubationStatType.XPPenalty);");
+        method.Should().Contain("job.MutationChance = GetProjectedMutationChance(");
+        method.Should().NotContain("PurityTotal(IncubationStatType.XPPenalty)").And.NotContain("PurityTotal(IncubationStatType.MutationChance)");
 
         // The bonus is added after the stage cap and before the 100% cap.
-        method.Should().Contain("MaxStageIncrease : _stageAttack) + BreedersBonus(_stageAttack);");
-        method.Should().Contain("attackPurity > MaxStat ? MaxStat : attackPurity");
+        ExtractMethod(ReadServerSource("Feature", "GuiDefinition", "ViewModel", "IncubatorViewModel.cs"), "private int GetStageTotal(")
+            .Should().Contain("return Math.Min(baseValue + Math.Clamp(stageValue, 0, MaxStageIncrease) + bonus, MaxStat);");
     }
 
     [Test]

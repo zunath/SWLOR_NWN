@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// converts deeds and modules in banks, storage, the market, saved creatures and contracts. Characters' own items,
 /// perks and Rebuild Token follow in the character upgrade (<c>_27_ConvertSpaceItems</c>).
 /// </summary>
-public sealed class _31_ConvertSpaceItems : IServerMigration
+public sealed class _32_ConvertSpaceItems : IServerMigration
 {
-    public int Version => 31;
+    public int Version => 32;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
     public void Migrate()

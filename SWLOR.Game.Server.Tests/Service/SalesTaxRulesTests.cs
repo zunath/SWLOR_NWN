@@ -200,7 +200,7 @@ public class SalesTaxRulesTests
     public void TheReleaseMigration_RunsTheSalesTaxStep()
     {
         var source = File.ReadAllText(Path.Combine(
-            Root, "SWLOR.Game.Server", "Feature", "MigrationDefinition", "ServerMigration", "_32_PlayerCityRevamp.cs"));
+            Root, "SWLOR.Game.Server", "Feature", "MigrationDefinition", "ServerMigration", "_33_PlayerCityRevamp.cs"));
 
         source.Should().Contain("SalesTaxMigration.Run(Version);");
     }

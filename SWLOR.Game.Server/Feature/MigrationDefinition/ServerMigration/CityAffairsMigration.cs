@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The City Affairs part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): gives every
+/// The City Affairs part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): gives every
 /// city permission record the Handle City Affairs key (true for the mayor, false for everyone else) and starts each
 /// city's officers, modifiers, and neglect counts empty. Situations are a new record type, so none exist yet.
 /// </summary>

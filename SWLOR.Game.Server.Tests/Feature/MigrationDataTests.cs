@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class MigrationDataTests
 {
     // Production has run player migration 25 and server migration 30. The next release adds player migration
-    // NextPlayerVersion and server migration NextServerVersion; update these at each post-release cleanup.
-    // The crafting revamp ships first with player migration NextPlayerVersion; the space revamp follows it with player
-    // migration NextPlayerVersion + 1 and server migration NextServerVersion.
+    // NextPlayerVersion (crafting perk conversion and enzyme resize) and server migration NextServerVersion (enzyme resize);
+    // update these at each post-release cleanup. The space revamp follows it with player migration NextPlayerVersion + 1 and
+    // server migration NextServerVersion + 1, and the city revamp, launched with space, adds server migration NextServerVersion + 2.
     private const int ReleasedPlayerVersion = 25;
     private const int ReleasedServerVersion = 30;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
@@ -129,12 +129,15 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_31_ConvertSpaceItems), typeof(_32_PlayerCityRevamp) },
-            $"the space revamp's release adds one combined stored-item pass as server migration {NextServerVersion}, and the city revamp's one pass follows it");
-        new _31_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _31_ConvertSpaceItems().Version.Should().Be(NextServerVersion);
-        new _32_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
-        new _32_PlayerCityRevamp().Version.Should().Be(NextServerVersion + 1);
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(
+            new[] { typeof(_31_ShrinkEnzymes), typeof(_32_ConvertSpaceItems), typeof(_33_PlayerCityRevamp) },
+            $"the next release adds one combined stored-item pass as server migration {NextServerVersion}, the space revamp's " +
+            "stored-item pass follows it, and the city revamp's one pass follows that");
+        new _31_ShrinkEnzymes().Version.Should().Be(NextServerVersion);
+        new _32_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _32_ConvertSpaceItems().Version.Should().Be(NextServerVersion + 1);
+        new _33_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
+        new _33_PlayerCityRevamp().Version.Should().Be(NextServerVersion + 2);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.GuiService;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Server migration 32's Acting Mayor step: every city starts with no Acting Mayor, no step-down, no story request, and no
+/// Server migration 33's Acting Mayor step: every city starts with no Acting Mayor, no step-down, no story request, and no
 /// council summons, and the ids the Acting Mayor slice reserved are used as assigned.
 /// </summary>
 public class ActingMayorMigrationTests
@@ -72,9 +72,9 @@ public class ActingMayorMigrationTests
     [Test]
     public void TheStepRunsInsideTheOneCityRevampVersion()
     {
-        typeof(_32_PlayerCityRevamp).Assembly.GetTypes()
+        typeof(_33_PlayerCityRevamp).Assembly.GetTypes()
             .Where(type => typeof(SWLOR.Game.Server.Service.MigrationService.IServerMigration).IsAssignableFrom(type) && type.Name.StartsWith("_32_"))
-            .Should().ContainSingle("the Acting Mayor adds a step to the existing version 32 class, never a second one");
+            .Should().ContainSingle("the Acting Mayor adds a step to the existing version 33 class, never a second one");
     }
 
     [Test]

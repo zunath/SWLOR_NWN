@@ -15,7 +15,9 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class SpaceAchievementTests
 {
-    private static readonly AchievementType[] Space = Enum.GetValues<AchievementType>().Where(x => (int)x >= 209).ToArray();
+    // Master's later achievements (Stablemaster, 260) are numbered above the space block, which ends with SpaceAceEshan.
+    private static readonly AchievementType[] Space = Enum.GetValues<AchievementType>()
+        .Where(x => (int)x >= 209 && (int)x <= (int)AchievementType.SpaceAceEshan).ToArray();
 
     [Test]
     public void SpaceAchievements_FollowTheGroundOnesAndAreActive()

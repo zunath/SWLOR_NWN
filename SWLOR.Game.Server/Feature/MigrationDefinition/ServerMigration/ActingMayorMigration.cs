@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The Acting Mayor part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): starts every
+/// The Acting Mayor part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): starts every
 /// city's Acting Mayor and step-down empty. The story request and council summons start empty on their own, since an older
 /// record loads with none.
 /// </summary>

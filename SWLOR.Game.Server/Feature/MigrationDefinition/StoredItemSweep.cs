@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 internal static class StoredItemSweep
 {
     /// <summary>The first server migration whose sweep also converts retired ship deeds and modules.</summary>
-    internal const int LegacySpaceItemsVersion = 31;
+    internal const int LegacySpaceItemsVersion = 32;
 
     internal static void Migrate(int version)
     {
@@ -41,6 +41,19 @@ internal static class StoredItemSweep
         var sections = BaseSections();
         return overflow ? sections.Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray() : sections;
     }
+
+    /// <summary>Moves incubation enzymes in every stored item record, including overflow storage, to the 1x1 enzyme item.</summary>
+    internal static void MigrateEnzymes(int version)
+    {
+        var sections = BaseSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
+        var progress = new ServerMigrationProgress(version, sections);
+        var pass = new ParallelStoredItemPass(progress);
+        var converter = EnzymeStoredItemConverter.Instance;
+        var changed = Sweep(pass, converter, null);
+        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Moved incubation enzymes to the 1x1 enzyme item in {changed} stored records.", true);
+    }
+
 
     private static (string Name, int Count)[] BaseSections() => new[]
     {
@@ -143,6 +156,8 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
+        if (converter is EnzymeStoredItemConverter)
+            return changed | EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;

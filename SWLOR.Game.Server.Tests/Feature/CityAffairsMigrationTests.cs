@@ -12,7 +12,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Server migration 32's City Affairs step, and the ids City Affairs reserved: the permission on every city permission
+/// Server migration 33's City Affairs step, and the ids City Affairs reserved: the permission on every city permission
 /// record, officers and counts starting empty.
 /// </summary>
 public class CityAffairsMigrationTests
@@ -132,12 +132,12 @@ public class CityAffairsMigrationTests
     [Test]
     public void TheMigrationRunsInTheOneCityRevampVersion()
     {
-        var migration = new _32_PlayerCityRevamp();
+        var migration = new _33_PlayerCityRevamp();
 
-        migration.Version.Should().Be(32);
-        typeof(_32_PlayerCityRevamp).Assembly.GetTypes()
+        migration.Version.Should().Be(33);
+        typeof(_33_PlayerCityRevamp).Assembly.GetTypes()
             .Where(type => typeof(SWLOR.Game.Server.Service.MigrationService.IServerMigration).IsAssignableFrom(type) && type.Name.StartsWith("_32_"))
-            .Should().ContainSingle("City Affairs adds a step to the existing version 32 class, never a second one");
+            .Should().ContainSingle("City Affairs adds a step to the existing version 33 class, never a second one");
     }
 
     [Test]

@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The Edict part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): gives every city
+/// The Edict part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): gives every city
 /// permission record the Manage Edicts key, true for the mayor and false for everyone else. A city's Edicts, mayor
 /// record, restricted treasury and escrow start empty on their own, since an older record loads with those defaults.
 /// </summary>

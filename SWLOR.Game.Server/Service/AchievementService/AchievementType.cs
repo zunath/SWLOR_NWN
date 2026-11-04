@@ -618,6 +618,8 @@ namespace SWLOR.Game.Server.Service.AchievementService
         [Achievement("Vell Downed", "Helped destroy the ace Tarsa Vell in Eshan orbit.", true)]
         SpaceAceEshan = 250,
         // END space achievements
+        [Achievement("Stablemaster", "Earned both extra stable slots from Dorra Vesk at the Anchorhead stables on Tatooine.", true)]
+        Stablemaster = 260,
 	}
 
     public class AchievementAttribute: Attribute

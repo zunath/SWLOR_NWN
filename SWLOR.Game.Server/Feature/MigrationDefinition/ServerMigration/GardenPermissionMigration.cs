@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The garden part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): adds the Tend Gardens
+/// The garden part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): adds the Tend Gardens
 /// permission to every existing House and City permission record, true for a city's mayor and for a house's keeper (the player
 /// who holds its Edit Structures permission with the right to grant it, as the player who placed it does) and its owner of
 /// record, and false for everyone else. A house in a city is owned by the mayor at the time, whoever placed it, so the owner

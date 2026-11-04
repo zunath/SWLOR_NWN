@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// The Sales tax part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): gives every city
+/// The Sales tax part of the Player City Revamp server migration (<see cref="_33_PlayerCityRevamp"/>): gives every city
 /// the Sales tax key, at 0, so no existing city starts charging. Stores read a missing key as 0 as well, so the step
 /// only keeps the saved taxes complete.
 /// </summary>

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-/// <summary>Server migration 32's Edict step: the Manage Edicts key on every city permission record.</summary>
+/// <summary>Server migration 33's Edict step: the Manage Edicts key on every city permission record.</summary>
 public class EdictMigrationTests
 {
     private const string Mayor = "mayor";

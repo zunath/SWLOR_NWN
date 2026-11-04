@@ -764,6 +764,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks an ability of another skill (Force Sensitive Espionage) as a Force power, so Force
+        /// Disruption blocks it and FP-spend triggers fire, while its skill stays unchanged.
+        /// </summary>
+        public AbilityBuilder IsForcePower()
+        {
+            _activeAbility.IsForcePower = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Declares which status categories the ability's impact applies for an activator, so next-ability
         /// bonuses that require a category (such as Control) know whether this ability qualifies.
         /// </summary>

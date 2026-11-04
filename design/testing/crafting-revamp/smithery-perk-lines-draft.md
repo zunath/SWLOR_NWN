@@ -1,0 +1,171 @@
+# Smithery perk lines: draft for owner approval
+
+The owner approved these rows in October 2026 and the lines are implemented: see "As implemented" at the end for the IDs, the decisions that settled what the draft left open, and the magnitudes CraftSim changed. The tables below are the draft as approved; where the implementation differs the last section says so. Every magnitude and cost below was a proposal, scaled to the tuned base values in "The base minigame these perks build on"; the perk pull request tunes them with CraftSim.
+
+Source: `Readmes/CraftingRevampPlan.md` ("Smithery: the Plasma Forge", "Line schedule", the Forgemaster and Artisan rows under "Lines"). Rules: `Readmes/SkillPerkStandards.md`. The engine these perks act on is `Service/CraftService/Minigame/Forge/` (`ForgeEngine`, `ForgeRules`).
+
+## Structure
+
+- Smithery has two independent, optional lines, 25 SP each, 50 SP in all: **Forgemaster** (fast, hot work) and **Artisan** (precise finishing).
+- Each line has 10 purchases at Smithery ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP.
+- Rank 20 is the line's **style**, the crafting equivalent of a stance. A character can own both styles, but only one is active, and it is toggled on the Plasma Forge setup page before the craft is committed. It cannot change once the craft starts. Smithery's two styles are not alternatives inside one line, so `PerkRequirementCannotHavePerk` is not used between them.
+- Rank 50 is the capstone, with no quest requirement.
+- Every perk acts only on the Plasma Forge. Nothing here changes a recipe's items, stats or components, and nothing here is needed to reach maximum quality: an unperked rank-50 crafter with good gear can still reach 100% on at-level recipes, and perks change how, and how efficiently.
+- Smithery has no registered perks today, so nothing is refunded.
+- A higher rank of a perk restates the earlier rank's benefit, because only the purchased rank's stat bonuses apply.
+
+## How perks reach the engine
+
+- Each perk grants `StatType` adjustments. When a craft starts, the window reads the character's totals for the Forge stats listed below and builds one immutable `ForgePerkStats` record next to `ForgeSetup`. The engine reads only that record; it never checks a perk by name.
+- A style's stats count only while that style is the active one, as a stance's stats do.
+- Per-craft counters (Hammer Rhythm's streak, Red Line's charge, Temper Hold's remaining actions, Overdrive Press's last-action flag) live in `ForgeState`, so previews and results keep sharing one rules path.
+- New actions (Overdrive Press, Surge Plasma, Micro-Hone, Temper Hold, Red Line Press) are added to the engine's action list only when the matching stat is above 0, so the window lists them with the same exact previews as the base actions.
+- Each new `StatType` declares its category on its enum entry: `BeneficialWhenPositive` for every stat here (a style's negative value is its trade-off), with additive aggregation. New stats start at ID 1168. The names below are proposals; final IDs are assigned against current master and the HAK when the owner approves the rows.
+- Proposed PerkType names are the perk names below with a `Smithery` prefix (for example `SmitheryHeatRetention`). The next free PerkType at `e77fca53` is 844; the final IDs follow the same rule as the StatTypes.
+
+## The base minigame these perks build on
+
+The Plasma Forge (`ForgeEngine`, starting values for the simulator to tune): Thermal 0-100 with the recipe's working range marked, Shape (progress), Finish (quality), Integrity 100 and CP. Thermal falls by the recipe's cooling rate after every action, and the only chance is the telegraphed Stable Containment (35% to be announced for the next action, +50% to that action's Hydro-Press or Vibro-Hone). Gear: Craftsmanship adds 1% to Shape gains per point and Control 1% to Finish gains per point; CP is gear CP plus 0.75 per rank, plus 31 from rank 25. The CraftSim gates run on these values (`design/testing/crafting-revamp/forge-gates.md`).
+
+| Action | Unlocks at Smithery rank | Cost | Result |
+| --- | --- | --- | --- |
+| Hydro-Press | 0 | 10 Integrity in range; 12 or more below it, 20 or more above it | Shape 190 x (0.7 at the cool edge rising to 1.2 at the hot edge; 1.2 up to 1.6 above the range; 0.1 below) |
+| Vibro-Hone | 0 | 8 Integrity | Finish 90 x (1.0 in the cool half, falling to 0.6 at the hot edge; 0.1 outside) |
+| Ramp Plasma | 0 | 3 CP plus 0.35 per recipe level (10 CP at level 20), 3 Integrity | Thermal +22 |
+| Rebond | 10 | 6 CP plus 0.4 per recipe level (14 CP at level 20), 12 Thermal | Integrity +25 |
+| Cryo-Quench | 20 | 6 Integrity | Once per craft, at 80% Shape or more: Finish +600 at the center of the range, 180 at an edge, 90 outside it. Then Ramp Plasma and Hydro-Press are disabled and Vibro-Hone gives a flat 84 Finish and 48 Shape |
+
+Shape and Finish are 1000 at an even split. A recipe's Shape share (25-75%) scales the Shape meter up and the Finish meter down, so armor needs much more Shape and weapons much more Finish. Leather and synthweave goods are heat-sealed: a low, wide range that cools slowly. Recipes of one level band differ in range width, cooling rate (light goods cool faster than heavy ones), starting Thermal and Shape share, so no single sequence of actions serves them all; some start outside their range.
+
+## Shared Forge stats
+
+Both lines use these. Style stats are granted by the active style only.
+
+| Proposed StatType | Meaning | Read by |
+| --- | --- | --- |
+| `ForgeRangeShift` | Moves the working range up (positive) or down (negative) by this many Thermal points, kept inside 0-100. | `ForgeSetup.RangeLow` and `RangeHigh` |
+| `ForgePressOutputPercent` | Percent change to every Hydro-Press Shape gain, including the post-quench trim. | Hydro-Press, set-piece Vibro-Hone |
+| `ForgeHoneOutputPercent` | Percent change to every Vibro-Hone Finish gain. | Vibro-Hone |
+
+## Forgemaster: fast, hot work
+
+The Forgemaster shapes quickly while the piece is hot, spends CP on heat and trades Integrity for tempo. It pairs with Hot Forging, whose higher range suits Hydro-Press, and with armor, which is mostly Shape.
+
+| Rank | SP | Perk | Type | Player-facing effect (starting values) | StatType(s) the engine reads |
+| --- | --- | --- | --- | --- | --- |
+| 5 | 1 | Plasma Efficiency | trait | Ramp Plasma costs 2 less CP (10 becomes 8 at level 20), never less than 1. | `ForgeRampCpReduction` +2 |
+| 10 | 1 | Heat Retention I | trait | The piece loses 1 less Thermal after every action, never less than 1. | `ForgeCoolingReduction` +1 |
+| 15 | 2 | Overdrive Press | active | A new action. A large Shape gain: 175% of a Hydro-Press at the current Thermal, using the same range rules. Costs 12 CP and twice the press's Integrity. Cannot be used twice in a row. | `ForgeOverdrivePressPercent` 75 (the action is available when above 0) |
+| 20 | 2 | Hot Forging | style | The working range moves up 10 Thermal. Hydro-Press gains +25% Shape and Vibro-Hone gains -25% Finish. Only one style is active at a time. | `ForgeRangeShift` +10, `ForgePressOutputPercent` +25, `ForgeHoneOutputPercent` -25 (while active) |
+| 25 | 3 | Hammer Rhythm | trait | A Hydro-Press right after another Hydro-Press gains +8% Shape, stacking up to +24%. Any other action resets it. | `ForgePressStreakPercent` 8, `ForgePressStreakMax` 3 |
+| 30 | 3 | Heat Retention II | trait | The piece loses 2 less Thermal after every action, never less than 1. Replaces Heat Retention I. | `ForgeCoolingReduction` +2 |
+| 35 | 3 | Scorch Guard | trait | A Hydro-Press above the working range cracks 25% less Integrity. | `ForgePressOverheatIntegrityReductionPercent` 25 |
+| 40 | 3 | Surge Plasma | active | A new action. Raises Thermal by 44 for 1.5 times a Ramp Plasma's CP and 3 Integrity, one action instead of two Ramp Plasmas. | `ForgeSurgePlasmaThermal` 44 (the action is available when above 0) |
+| 45 | 3 | Fast Rebond | trait | Rebond costs 6 less Thermal and 3 less CP (14 becomes 11 at level 20). | `ForgeRebondThermalReduction` 6, `ForgeRebondCpReduction` 3 |
+| 50 | 4 | Red Line | active (capstone) | Once per craft, a Red Line Press: a Hydro-Press that is only available while Thermal is above the working range. It costs no Integrity and gives double Shape. | `ForgeRedLineCharges` 1 (the action is available when above 0, and per craft while a charge remains) |
+
+Notes on the Forgemaster rows:
+
+- **Why Overdrive Press and Surge Plasma are actives:** they add tempo choices (fewer actions, more CP and Integrity) the base five actions do not offer, and each shows an exact preview.
+- **Heat Retention I and II** are two purchases of one anchor perk. Retention matters most at high levels, where light goods cool 5-10 per action and a single Ramp Plasma covers about three actions; at level 1 cooling is already 1.
+- **Red Line is an action, not an automatic trigger,** so a player never spends the charge by accident. It is disabled whenever Thermal is inside or below the range, and the window shows why.
+- **Hot Forging** raises the range, which helps Hydro-Press (best hot) and hurts Vibro-Hone (best cool), and the style's -25% Finish makes that trade explicit. Pair it with Shape-heavy recipes (armor) and Hammer Rhythm.
+
+## Artisan: precise finishing
+
+The Artisan finishes carefully: steadier Thermal, more Stable Containment, and Finish that does not depend on a perfect range. It pairs with Cold Working, whose lower range suits Vibro-Hone, and with weapons and jewelry, which are mostly Finish.
+
+| Rank | SP | Perk | Type | Player-facing effect (starting values) | StatType(s) the engine reads |
+| --- | --- | --- | --- | --- | --- |
+| 5 | 1 | Steady Hands | trait | Vibro-Hone costs 2 less Integrity (8 becomes 6). | `ForgeHoneIntegrityReduction` +2 |
+| 10 | 1 | Clean Containment I | trait | Stable Containment is announced 10 percentage points more often (35% becomes 45%). | `ForgeContainmentChancePercent` +10 |
+| 15 | 2 | Micro-Hone | active | A new action. Finish at 80% of a Vibro-Hone's best result whatever the Thermal, for 4 CP and 6 Integrity. Works after a Cryo-Quench too. Stable Containment applies. | `ForgeMicroHonePercent` 80 (the action is available when above 0) |
+| 20 | 2 | Cold Working | style | The working range moves down 10 Thermal. Vibro-Hone gains +25% Finish and Hydro-Press gains -25% Shape. Only one style is active at a time. | `ForgeRangeShift` -10, `ForgeHoneOutputPercent` +25, `ForgePressOutputPercent` -25 (while active) |
+| 25 | 3 | Clean Containment II | trait | Stable Containment is announced 20 percentage points more often (35% becomes 55%). Replaces Clean Containment I. | `ForgeContainmentChancePercent` +20 |
+| 30 | 3 | Steady Quench | trait | Cryo-Quench loses less toward the edges of the range: at an edge it gives 70% of its center bonus instead of 30%. | `ForgeQuenchEdgePercent` +40 |
+| 35 | 3 | Cool Hand | trait | Vibro-Hone in the hot half of the range falls to 80% of its best result at the hot edge instead of 60%. | `ForgeHoneHotEdgePercent` +20 |
+| 40 | 3 | Temper Hold | active | A new action. For the next 2 actions the piece does not cool. Costs 10 CP. | `ForgeTemperHoldActions` 2 (the action is available when above 0) |
+| 45 | 3 | Containment Focus | trait | Stable Containment gives Vibro-Hone +75% instead of +50%. | `ForgeContainmentHonePercent` +25 |
+| 50 | 4 | Perfect Temper | trait (capstone) | A Cryo-Quench with Thermal within 2 of the range's center gives +50% Finish. | `ForgePerfectTemperPercent` 50, `ForgePerfectTemperWindow` 2 |
+
+Notes on the Artisan rows:
+
+- **Clean Containment I and II** are two purchases of one anchor perk. Stable Containment is the only chance in the Forge, so its frequency is the Artisan's main lever: at 55% it is announced on more than half of the actions.
+- **Micro-Hone** answers the Forge's hardest choice (when to hone) by making Finish available at any Thermal, at a CP price. Its 80% rate stays below a well-timed Vibro-Hone, so it does not replace Thermal management.
+- **Temper Hold** gives the Artisan the steadiness that a Forgemaster buys with Heat Retention, for a CP price instead of a permanent trait.
+- **Perfect Temper** needs the Thermal within 2 of the center when the piece is at least 80% shaped. The preview shows the bonus before the click.
+
+## Why a player picks one or the other
+
+| Choice | Forgemaster | Artisan |
+| --- | --- | --- |
+| Best recipes | Armor and shields (mostly Shape) | Weapons, lightsabers and jewelry (mostly Finish) |
+| Spends | CP and Integrity for fewer actions | CP for steadier, cheaper Finish |
+| Stable Containment | Takes it as it comes | Raises its frequency and its Vibro-Hone bonus |
+| Style trade | Hot Forging: range up, Hydro-Press +25%, Vibro-Hone -25% | Cold Working: range down, Vibro-Hone +25%, Hydro-Press -25% |
+
+A character who owns both styles toggles whichever suits the recipe. The styles are not alternatives of one purchase, so owning both costs the full 50 SP (all 20 purchases).
+
+## Mechanical contract
+
+- **Triggers and scope.** Every effect applies to the Plasma Forge only, to the owner's own craft, and to the named action. Hammer Rhythm counts Hydro-Press actions that were performed, not previews. Style effects count while the style is active.
+- **Resources and state.** Red Line has one charge per craft, spent when a Red Line Press is performed. Temper Hold's remaining actions count down once per performed action. Overdrive Press cannot follow itself, tracked by a per-craft flag. All of it resets when a craft ends.
+- **Costs.** CP and Integrity costs are paid when the action is performed and shown in the preview. A refused action spends nothing.
+- **No refund loops.** Fast Rebond lowers Rebond's CP cost by 3; the Integrity it restores cannot exceed the meter's maximum, and Rebond is refused at full Integrity.
+- **Lifecycle.** A craft that ends early (window closed, death, restart) settles as a failure under the 65% rule; per-craft counters die with it. Gear and perk stats are read once, when the craft starts, so changing gear mid-craft changes nothing.
+- **Stacking.** Output percentages add together before they scale a gain. The Stable Containment bonus multiplies afterward. Range shift moves both edges and is clamped to 0-100.
+
+## Balance evidence the perk PR must bring
+
+Under `SkillPerkStandards.md`, with `SWLOR.CraftSim`:
+
+- Perks optional: an unperked rank-50 crafter with good gear reaches maximum quality on at-level recipes; report the average quality, actions, CP and Integrity with and without each line.
+- Style balance: for Hot Forging against Cold Working, each is the better choice on at least 30% of recipes and neither leads by more than about 5 quality points on average.
+- Length: 10-20 actions with each line's purchases.
+- No fixed rotation: adaptive play clearly beats the best fixed sequence, with and without perks, at the same 10-point target. Clean Containment raises the weight of the one chance in the minigame, so report it separately.
+- Setup cost: report the SP, rank and gear assumptions of each build and the preparation cost of Red Line and Perfect Temper, whose bonuses need the Thermal in a narrow window.
+
+## As implemented (October 23, 2026)
+
+Code: `SmitheryPerkDefinition`, `ForgePerkRules` (every magnitude), `ForgePerkStats`, `ForgePerkLines`, `ForgeStyles`, the two `*StatusEffect` classes, `ForgeEngine`, `ForgeSetup` and `ForgeState`, and the Plasma Forge window (`ForgeViewModel`, `ForgeDefinition`). The balance evidence is `smithery-perk-gates.md`.
+
+IDs: PerkType 884-901 (`SmitheryPlasmaEfficiency`, `SmitheryHeatRetention`, `SmitheryOverdrivePress`, `HotForgingStyle`, `SmitheryHammerRhythm`, `SmitheryScorchGuard`, `SmitherySurgePlasma`, `SmitheryFastRebond`, `SmitheryRedLine`, `SmitherySteadyHands`, `SmitheryCleanContainment`, `SmitheryMicroHone`, `ColdWorkingStyle`, `SmitherySteadyQuench`, `SmitheryCoolHand`, `SmitheryTemperHold`, `SmitheryContainmentFocus`, `SmitheryPerfectTemper`; 902-903 stay free), StatType 1208-1227 (the twenty `Forge*` stats of "Shared Forge stats" and the two lines), `EffectIconType` 513 and 514 with `effecticons.2da` rows 513 and 514, TLK 192754 and 192755 (192756-192759 stay free). Two ranked perks, Heat Retention and Clean Containment, spend two purchases each, so each line is nine perks and ten purchases.
+
+The draft proposed 22 stats and the reservation holds 20: Hammer Rhythm's cap (3 presses in a row) and Perfect Temper's window (2 Thermal) are constants in `ForgePerkRules`, not stats.
+
+Where the draft was silent:
+
+- Overdrive Press takes the style's Hydro-Press percent and Stable Containment's bonus. It is not a Hydro-Press for Hammer Rhythm: it neither takes the bonus nor continues the count, and it ends it. Its Integrity is twice the Hydro-Press's at the same Thermal after Scorch Guard.
+- Hammer Rhythm counts the Hydro-Press and the Red Line Press. The bonus adds to the style's percent before it scales the gain, and Stable Containment multiplies afterward.
+- Scorch Guard also lowers an Overdrive Press above the range. The Red Line Press costs no Integrity and no CP.
+- Micro-Hone gives Finish only and never Shape. On a set piece it gives 80% of the flat 84 Finish. The style's Vibro-Hone percent and Stable Containment (with Containment Focus) apply to it; Steady Hands does not lower its own 6 Integrity.
+- Temper Hold cools as usual on the turn it is used; the next two actions do not cool. It cannot be used while a hold runs, and it costs no Integrity.
+- Perfect Temper multiplies the quench's Finish at its Thermal, so a quench 2 from the center gives 1.5 times a slightly lower base than one at the center.
+- Heat Retention takes at most all but 1 of the recipe's cooling; a recipe that cools 1 per action cools 1 per action. Plasma Efficiency and Fast Rebond stop at 1 CP, and Surge Plasma costs 1.5 times the reduced Ramp Plasma.
+- A style's range shift moves the whole range and is limited to the room the range has on its side of the meter; a zero shift moves nothing.
+- Both styles are owned by purchase and toggled on the Plasma Forge window's setup page, one active at a time; the choice is stored through `CraftingStyleSelection` and applied again after a death or a login. The stats are read when the craft starts.
+- A refunded style perk removes its status effect and forgets the selection (`ForgeStyles.RemoveUnowned`).
+
+Magnitudes, first tuning pass: every value was as drafted except the two styles. CraftSim's style balance gate (gate 2) failed the draft for a crafter with no line perks: with Hot Forging at +25% Hydro-Press and -25% Vibro-Hone and Cold Working at the mirror, Cold Working led by 6 to 8 points at mid and best gear, because a point of Finish is worth more than a point of Shape (the craft ends when Shape is full, so Finish is what the quality is made of). Cutting the two Finish numbers balanced plain crafts, but then Cold Working's -25% Hydro-Press made it earn only 0.4 to 0.9 times the XP rate of a crafter with no style in crafts with one to three enhancements (mean 0.63, gate 6): the extra Shape an enhancement asks for is expensive for it, and in the style stress it failed to make the item in 5 to 35% of the crafts that were under-ranked or heavily enhanced. Both styles were then made small, which kept gate 2 and brought Cold Working to 0.88 to 1.04 times (mean 0.97) in the same crafts.
+
+| Style | Draft | First tuning (gate 2 and the enhanced-craft XP rate) | Now (gates 4 and 6) |
+| --- | --- | --- | --- |
+| Hot Forging | range +10, Hydro-Press +25%, Vibro-Hone -25% | range +5, Hydro-Press +25%, Vibro-Hone -5% | Hydro-Press +20% |
+| Cold Working | range -10, Vibro-Hone +25%, Hydro-Press -25% | range -5, Vibro-Hone +5%, Hydro-Press -5% | range -5, Vibro-Hone +4% |
+
+Gates 4 and 6 for perked builds (owner decisions of October 24, 2026): every perked build keeps an 8-action floor, and no perk or style may cost XP per hour. The first needed the strongest perks cut, because the adaptive player turns any spare power into fewer actions; the second removed every style cost, since a style that costs anything falls under 1.0x in the cells where the unperked Forge is already at 1.00x. The values that changed:
+
+| Perk | Before | Now |
+| --- | --- | --- |
+| Overdrive Press (Forgemaster 15) | a Hydro-Press with 175% of the Shape | 110% |
+| Hammer Rhythm (25) | +8% per press in a row, up to +24% | +4%, up to +12% |
+| Steady Quench (Artisan 30) | keeps 40 points more of its bonus at the range's edge | 10 points |
+| Cool Hand (35) | 20 points more at the hot edge | 10 points |
+| Containment Focus (45) | +25 points to the Stable Containment bonus | +10 points |
+| Perfect Temper (50) | +50% Finish at the center | +15% |
+| Hot Forging (20) | range +5, Hydro-Press +25%, Vibro-Hone -5% | Hydro-Press +20% |
+| Cold Working (20) | range -5, Vibro-Hone +5%, Hydro-Press -5% | range -5, Vibro-Hone +4% |
+
+Every other value is as drafted. A style with a zero is not granted that stat, and its description names only what it does.
+
+`smithery-perk-gates.md` has the sweeps and the gate results.

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -35,6 +37,16 @@ public static class EnzymeBaseItemMigration
         StoredObjectData.MigrateEnzymeData(original, out migrated);
 
     /// <summary>True for an enzyme still on its 2x2 base item; <paramref name="model"/> is its new appearance.</summary>
+    /// <summary>Moves the enzymes a character carries, wears or holds in bags to the 1x1 enzyme item.</summary>
+    internal static void MigrateCharacter(SavedCharacter character)
+    {
+        var visited = new HashSet<StoredObjectData.Node>();
+        StoredObjectData.MigrateEnzymeNode(character.Root, false, visited);
+        // Items waiting in overflow storage hang off the character separately from its inventory lists.
+        foreach (var item in character.Carried.Concat(character.Equipped))
+            StoredObjectData.MigrateEnzymeNode(item.Node, true, visited);
+    }
+
     internal static bool TryGetConversion(string resref, BaseItem baseItem, out int model)
     {
         model = 0;

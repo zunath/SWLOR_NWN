@@ -112,14 +112,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             return string.Equals(arg, "clear", StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>Accepts a day name only, never a number, so "7" or "-1" are rejected.</summary>
+        /// <summary>
+        /// Accepts one whole day name only. Enum.TryParse would also take numbers ("7") and comma lists
+        /// ("Monday,Tuesday" combines to Wednesday), so the name is matched exactly.
+        /// </summary>
         public static bool TryParseDay(string arg, out DayOfWeek day)
         {
+            foreach (var candidate in Enum.GetValues<DayOfWeek>())
+            {
+                if (string.Equals(candidate.ToString(), arg?.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    day = candidate;
+                    return true;
+                }
+            }
+
             day = default;
-            return !string.IsNullOrWhiteSpace(arg) &&
-                   !int.TryParse(arg, out _) &&
-                   Enum.TryParse(arg, true, out day) &&
-                   Enum.IsDefined(day);
+            return false;
         }
     }
 }

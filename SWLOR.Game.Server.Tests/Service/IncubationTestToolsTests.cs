@@ -58,6 +58,9 @@ public class IncubationTestToolsTests
     [TestCase("7", false, DayOfWeek.Sunday)]
     [TestCase("-1", false, DayOfWeek.Sunday)]
     [TestCase("funday", false, DayOfWeek.Sunday)]
+    [TestCase("Monday,Tuesday", false, DayOfWeek.Sunday)]
+    [TestCase("Wednesday, Monday", false, DayOfWeek.Sunday)]
+    [TestCase("", false, DayOfWeek.Sunday)]
     public void TryParseDay_AcceptsDayNamesOnly(string arg, bool valid, DayOfWeek expected)
     {
         IncubationTestChatCommand.TryParseDay(arg, out var day).Should().Be(valid);

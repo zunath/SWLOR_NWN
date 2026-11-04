@@ -430,32 +430,32 @@ public class FirstAidCombatUpgradeTests
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
-            (FeatType.MedKit1, "Restores 11 HP plus 2% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit1, "Restores 7 HP plus 1.25% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2 HP plus 0.25% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1 HP plus 0.16% of maximum HP every 3 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
-            (FeatType.MedKit2, "Restores 42 HP plus 3.5% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.Infusion1, "Grants a single target regeneration, healing 7 HP plus 0.5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 9 HP plus 0.5% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
-            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
-            (FeatType.MedKit3, "Restores 80 HP plus 5% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit2, "Restores 26 HP plus 2.19% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
+            (FeatType.Infusion1, "Grants a single target regeneration, healing 4 HP plus 0.31% of maximum HP every 3 seconds for 30 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 6 HP plus 0.31% of maximum HP every 3 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
+            (FeatType.Resuscitation2, "Revives an unconscious target with 12.5% HP. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
+            (FeatType.MedKit3, "Restores 50 HP plus 3.13% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
-            (FeatType.EmergencyTriage1, "Restores 81 HP plus 4.5% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
-            (FeatType.Infusion2, "Grants a single target regeneration, healing 14 HP plus 0.75% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.MedKit4, "Restores 108 HP plus 6% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.EmergencyTriage1, "Restores 51 HP plus 2.81% of the target's maximum HP instantly. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
+            (FeatType.Infusion2, "Grants a single target regeneration, healing 9 HP plus 0.47% of maximum HP every 3 seconds for 30 seconds. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
+            (FeatType.MedKit4, "Restores 68 HP plus 3.75% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies."),
             (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant1, "Grants 24 temporary HP plus 2.5% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant1, "Grants 15 temporary HP plus 1.56% of the target's maximum HP and 10% damage reduction for 30 seconds. Each WIL point above 10 adds 6.25% to the temporary HP, up to double at 26 WIL. Consumes a stim pack."),
             (FeatType.Antitoxin1, "Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant2, "Grants 68 temporary HP plus 3.75% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant2, "Grants 43 temporary HP plus 2.34% of the target's maximum HP and 15% damage reduction for 30 seconds. Each WIL point above 10 adds 6.25% to the temporary HP, up to double at 26 WIL. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants 54 temporary HP plus 3% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants 34 temporary HP plus 1.88% of maximum HP, reduces damage taken by 12%, and grants 50% Poison Resistance. Each WIL point above 10 adds 6.25% to the temporary HP, up to double at 26 WIL.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

@@ -372,6 +372,11 @@ checked-in redirects again. Overrides of base-game model names stay MDLs and are
 listed as `native_overrides`: an MDL-first lookup would otherwise load the stock model.
 The check fails if one of those MDLs is deleted, or if a redirect's name or target
 is defined by more than one HAK, since HAK priority could then load an unvalidated model.
+`--apply` rebuilds the list from the game data, so it goes stale when models that
+replace base-game ones are added without rerunning it: by November 2026 it lacked
+3,675 of them. `ModelLodAssets.py --check --game-data "<NWN>/data"` also fails until the
+list names exactly the HAK models that share a base-game name. `BuildHaks.cmd` runs the
+check without game data, so run it with game data after adding or removing such models.
 This is an authoring operation. Normal builds validate the checked-in LOD assets
 and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
 `CheckPackedLods.py` then fails the build if a packer without that option dropped

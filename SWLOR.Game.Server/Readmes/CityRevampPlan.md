@@ -636,7 +636,7 @@ PvP is rare and opt-in, so cities get a place and a reason to fight instead of c
 
 ## Planetary industry
 
-Once the space revamp's trade and holdings work ships, each city becomes the industry hub for its planet. This release ships after the space revamp, so that work is already live.
+With the space revamp's trade and holdings work, each city becomes the industry hub for its planet. The two revamps launch together in one release (owner, 2026-11-03), so that work ships alongside it.
 
 - **Starport trade tariff.** This is already in the space revamp plan: a city Starport's Trade Exchange charges a mayor-set tariff paid into the treasury. Cities get income beyond citizen taxes.
 - **Planetary Depot.** The space revamp already sells holdings at a city's Starport, lets owners collect and deliver there, and moves a holding to the NPC dock if its Starport is lost. The Depot adds one thing: a citizen can move an existing holding, bought at the NPC dock, to the city Starport and back, once every 7 days. It changes where output waits, not how much. Unlocked at Starport level 2.
@@ -780,7 +780,7 @@ Every number in this plan is a proposal until approved. Edict effects and costs 
 
 ## Build order and release
 
-Everything ships together in one release. It is built in the order below because later parts reuse earlier ones. It ships after the space revamp is released, so Shadowport, Industrial Charter, the Planetary Depot, and stations build on its live trade and holdings. The one open item before release is players agreeing on the bounty rules.
+Everything ships together in one release. It is built in the order below because later parts reuse earlier ones. It launches together with the space revamp in one release (owner, 2026-11-03), so Shadowport, Industrial Charter, the Planetary Depot, and stations build on its trade and holdings. The one open item before release is players agreeing on the bounty rules.
 
 Before building, players review this plan and the owner approves its values, including:
 
@@ -858,6 +858,7 @@ Every open question now has a decision for the player review. The rules behind t
 ### Delivery and coordination
 
 - Branch `feature/city-revamp`, cut from `feature/space-revamp` at d690216. Order to master: the crafting revamp (#2873) first, then the space revamp, then this plan. Merge space forward into this branch as it lands; space merges crafting forward.
+- Combined launch (owner, 2026-11-03): the city revamp merges into `feature/space-revamp` (#3146) and reaches master with the space revamp's pull request (#3003) in one release. Server migrations 31 (space) and 32 (city) run in that release.
 - One branch and pull request per slice into `feature/city-revamp`. Never into master.
 - Migrations: player 28 and server 32, if needed. Crafting holds player 26, space holds player 27 and server 31, and master's next release holds server 30.
 - Reserved IDs:

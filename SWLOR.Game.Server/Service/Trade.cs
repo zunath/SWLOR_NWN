@@ -58,11 +58,12 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether the ship sits at the dock (not in space, not aboard a host). An NPC dock is its landing area resref; a
-        /// player city's starport is its property id, which a ship docked there keeps in its dock position.
+        /// player city's starport is its property id, which a ship docked there keeps in its dock position. A ship docked at
+        /// a derelict keeps the dock position of the starport it left, so it is turned away first.
         /// </summary>
         public static bool IsDockedAt(PlayerShip ship, string dockId)
         {
-            if (ship == null || string.IsNullOrWhiteSpace(dockId) || Space.IsDockedAboardHost(ship, out _))
+            if (ship == null || string.IsNullOrWhiteSpace(dockId) || Space.IsDockedAtDerelict(ship, out _) || Space.IsDockedAboardHost(ship, out _))
                 return false;
 
             var property = DB.Get<WorldProperty>(ship.PropertyId);

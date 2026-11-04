@@ -391,6 +391,22 @@ public class TradeTests
     // Wiring
 
     [Test]
+    public void Wiring_AShipDockedAtADerelictIsNotAtTheStarportItLeft()
+    {
+        // Boarding a derelict removes the ship's current position but keeps the starport's dock position, so the dock
+        // check turns derelict-docked ships away before it reads that position. Every exchange path asks it.
+        var trade = ReadServerSource("Service", "Trade.cs").Replace("\r\n", "\n");
+        var check = trade.Substring(trade.IndexOf("public static bool IsDockedAt(PlayerShip ship, string dockId)", StringComparison.Ordinal));
+        check.IndexOf("Space.IsDockedAtDerelict(ship, out _)", StringComparison.Ordinal)
+            .Should().BeInRange(0, check.IndexOf("PropertyLocationType.DockPosition", StringComparison.Ordinal));
+        trade.Should().Contain(".Where(ship => IsDockedAt(ship, dockId))");
+        trade.Should().Contain("ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId)");
+        ReadServerSource("Service", "TradeFreight.cs").Should().Contain("ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId)");
+        ReadServerSource("Service", "SpaceDerelicts.cs").Replace("\r\n", "\n").Should()
+            .Contain("boarding.Mode == DerelictMode.Boarding && boarding.DockedShipIds.Contains(ship.Id)");
+    }
+
+    [Test]
     public void Wiring_DeathSpillsTheCargoAndTheDockMasterOpensTheExchange()
     {
         var death = ReadServerSource("Service", "SpaceDeath.cs");

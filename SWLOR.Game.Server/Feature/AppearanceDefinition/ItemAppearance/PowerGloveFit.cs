@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
@@ -133,12 +134,17 @@ public static class PowerGloveFit
         return robe > 0 ? TintMapModelResolver.GetCurrentRobeModelResref(creature, robe) : string.Empty;
     }
 
-    /// <summary>The hand model the wearer shows on this side, and the natural hand beneath any armor hand.</summary>
-    private static (string Worn, string Natural) GetHandModels(uint creature, CreaturePart part, string side)
+    /// <summary>
+    /// The hand model the wearer shows on this side, the natural hand beneath any armor hand, and the species'
+    /// standard hand.
+    /// </summary>
+    private static (string Worn, string Natural, string Standard) GetHandModels(uint creature, CreaturePart part,
+        string side)
     {
-        var appearance = (int)GetAppearanceType(creature);
+        var appearanceType = GetAppearanceType(creature);
+        var appearance = (int)appearanceType;
         if (!Get2DAString("appearance", "MODELTYPE", appearance).StartsWith("P", StringComparison.OrdinalIgnoreCase))
-            return (string.Empty, string.Empty);
+            return (string.Empty, string.Empty, string.Empty);
         var armor = GetItemInSlot(InventorySlot.Chest, creature);
         var armorPart = GetIsObjectValid(armor)
             ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part)
@@ -149,19 +155,36 @@ public static class PowerGloveFit
         var naturalPart = GetCreatureBodyPart(part, creature);
         var worn = ResolveHandModel(race, gender, phenotype, side, naturalPart, armorPart);
         var natural = ResolveHandModel(race, gender, phenotype, side, naturalPart, 0);
+        var standard = ResolveHandModel(race, gender, phenotype, side, GetStandardHandPart(appearanceType, part), 0);
         return (ResolveAvailableHandModel(worn, phenotype, ModelResource.Exists),
-            ResolveAvailableHandModel(natural, phenotype, ModelResource.Exists));
+            ResolveAvailableHandModel(natural, phenotype, ModelResource.Exists),
+            ResolveAvailableHandModel(standard, phenotype, ModelResource.Exists));
+    }
+
+    /// <summary>The first hand the species offers in the Appearance Editor, or the base hand for other bodies.</summary>
+    private static int GetStandardHandPart(AppearanceType appearanceType, CreaturePart part)
+    {
+        if (!RacialAppearanceRegistry.TryGet(appearanceType, out var definition))
+            return 1;
+        var hands = part == CreaturePart.RightHand ? definition.RightHand : definition.LeftHand;
+        return hands is { Length: > 0 } ? hands[0] : 1;
     }
 
     /// <summary>
-    /// Selects the hand whose measurements fit the glove. Only a few armor hands are measured; any other armor
-    /// hand fits like the wearer's own measured hand instead of the oversized clearance used for unknown hands.
+    /// Selects the hand whose measurements fit the glove. Only a few hands are measured. An unmeasured armor hand
+    /// fits like the wearer's natural hand, and an unmeasured natural hand fits like the species' standard hand,
+    /// instead of taking the oversized clearance used for unknown hands.
     /// </summary>
-    private static string ResolveFitHandModel(string worn, string natural, int appearance) =>
-        !string.IsNullOrWhiteSpace(natural) && !PowerGloveHandFitCatalog.HasMeasuredFit(worn, appearance) &&
-        PowerGloveHandFitCatalog.HasMeasuredFit(natural, appearance)
-            ? natural
+    private static string ResolveFitHandModel(string worn, string natural, string standard, int appearance)
+    {
+        if (PowerGloveHandFitCatalog.HasMeasuredFit(worn, appearance))
+            return worn;
+        if (!string.IsNullOrWhiteSpace(natural) && PowerGloveHandFitCatalog.HasMeasuredFit(natural, appearance))
+            return natural;
+        return !string.IsNullOrWhiteSpace(standard) && PowerGloveHandFitCatalog.HasMeasuredFit(standard, appearance)
+            ? standard
             : worn;
+    }
 
     private static string ResolveHandModel(string race, Gender gender, int phenotype, string side, int naturalPart, int armorPart)
     {
@@ -183,15 +206,17 @@ public static class PowerGloveFit
         return modelExists(normalModel) ? normalModel : model;
     }
 
-    private static void Fit(uint item, (string Worn, string Natural) rightHandModels,
-        (string Worn, string Natural) leftHandModels, string costumeModel, bool rightHand)
+    private static void Fit(uint item, (string Worn, string Natural, string Standard) rightHandModels,
+        (string Worn, string Natural, string Standard) leftHandModels, string costumeModel, bool rightHand)
     {
         if (!IsPowerGlove(item))
             return;
         var appearance = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle) * 100 +
                          GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-        var rightModel = ResolveFitHandModel(rightHandModels.Worn, rightHandModels.Natural, appearance);
-        var leftModel = ResolveFitHandModel(leftHandModels.Worn, leftHandModels.Natural, appearance);
+        var rightModel = ResolveFitHandModel(rightHandModels.Worn, rightHandModels.Natural,
+            rightHandModels.Standard, appearance);
+        var leftModel = ResolveFitHandModel(leftHandModels.Worn, leftHandModels.Natural,
+            leftHandModels.Standard, appearance);
         var fit = ResolveFit(rightHand ? rightModel : leftModel, rightModel, leftModel, costumeModel, rightHand, appearance);
         SetScale(item, fit.Scale);
         ApplyTranslation(item, fit.Translation);

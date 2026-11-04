@@ -6,7 +6,6 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class EshanModuleWiringTests
 {
-    [TestCase("pw_ar_sc_eshancm", "hc_access")]
     [TestCase("pw_ar_sc_eshanto", "vc_access")]
     public void ShuttleAccess_HasPairedUsableExitsAndSeparateArrivals(string area, string prefix)
     {

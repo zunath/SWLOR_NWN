@@ -403,7 +403,10 @@ public class SpaceTransferCrashSafetyTests
         // mark a restart left behind is not refunded once the ship is unregistered.
         InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
             "foreach (var (payerId, paymentId) in dbShip.PaymentIds ?? new Dictionary<string, string>())",
-            "CreditPayments.SaveReceipt(paymentId, payerId);", "DB.Delete<PlayerShip>(shipId);");
+            "CreditPayments.SaveReceipt(paymentId, payerId);",
+            "foreach (var (instanceId, fitterId) in dbShip.FittingAcknowledgements ?? new Dictionary<string, string>())",
+            "DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = fitterId, ShipId = shipId });",
+            "DB.Delete<PlayerShip>(shipId);");
 
         moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleShipItemMoves()");
         var settle = Method(moves, "public static void SettleShipItemMoves(");

@@ -179,6 +179,11 @@ namespace SWLOR.Game.Server.Service
             foreach (var (payerId, paymentId) in dbShip.PaymentIds ?? new Dictionary<string, string>())
                 CreditPayments.SaveReceipt(paymentId, payerId);
 
+            // So do the fittings it acknowledged but whose receipts a restart cut off: the fitter's next login then removes
+            // the marked module from their inventory instead of keeping a second copy.
+            foreach (var (instanceId, fitterId) in dbShip.FittingAcknowledgements ?? new Dictionary<string, string>())
+                DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = fitterId, ShipId = shipId });
+
             DB.Delete<PlayerShip>(shipId);
         }
 

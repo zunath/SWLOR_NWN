@@ -271,11 +271,10 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         if (!GetIsObjectValid(unit.Item))
             return false;
 
-        if (Item.FitsInInventory(player, unit.Item) && ObjectPlugin.AcquireItem(player, unit.Item))
-            return true;
-
+        // The engine will not acquire an item that the temporary storage holds, even into an empty inventory, so the unit is
+        // delivered as a copy made from the serialized form the record lists, which nothing holds.
         DestroyObject(unit.Item);
-        return false;
+        return Item.TryAcquireItem(player, ObjectPlugin.Deserialize(unit.Serialized));
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);

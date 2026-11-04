@@ -156,7 +156,7 @@ public class PassivePerkIconTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
     }
 
-    private static IReadOnlyCollection<PerkRecord> BuildPerksWithout2daLookup()
+    internal static IReadOnlyCollection<PerkRecord> BuildPerksWithout2daLookup()
     {
         var result = new List<PerkRecord>();
         var definitionTypes = typeof(IPerkListDefinition).Assembly
@@ -189,7 +189,7 @@ public class PassivePerkIconTests
         return result;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
+    internal static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
 
@@ -271,5 +271,5 @@ public class PassivePerkIconTests
         }
     }
 
-    private sealed record PerkRecord(PerkType Type, PerkDetail Detail);
+    internal sealed record PerkRecord(PerkType Type, PerkDetail Detail);
 }

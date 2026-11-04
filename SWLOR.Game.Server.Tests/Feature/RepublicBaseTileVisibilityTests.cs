@@ -48,8 +48,9 @@ public class RepublicBaseTileVisibilityTests
         var floors = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
             .Where(p => Appearances.Value.GetValue((int)Number(p, "Appearance"), "Label") is { } label
                 && label.Contains("Floor") && !label.Contains("Unwalkable"))
-            .Select(p => (Transform: Placement(p), Bounds: ModelBounds(Model(p))))
-            .Where(f => f.Bounds != null)
+            .Select(p => (Placement: Placement(p), Bounds: ModelBounds(Model(p))))
+            .Where(f => f.Bounds != null && Matrix4x4.Invert(f.Placement, out _))
+            .Select(f => (Inverse: Matrix4x4.Invert(f.Placement, out var inverse) ? inverse : default, Bounds: f.Bounds!.Value))
             .ToList();
         var problems = new List<string>();
         for (var x = 0; x < map.Width; x++)
@@ -61,10 +62,9 @@ public class RepublicBaseTileVisibilityTests
             for (var j = 0; j < 10; j++)
             {
                 var point = new Vector3(x * 10 + .5f + i, y * 10 + .5f + j, 0);
-                if (floors.Any(f => Matrix4x4.Invert(f.Transform, out var inverse)
-                        && Vector3.Transform(point, inverse) is var local
-                        && local.X >= f.Bounds!.Value.Min.X && local.X <= f.Bounds.Value.Max.X
-                        && local.Y >= f.Bounds.Value.Min.Y && local.Y <= f.Bounds.Value.Max.Y))
+                if (floors.Any(f => Vector3.Transform(point, f.Inverse) is var local
+                        && local.X >= f.Bounds.Min.X && local.X <= f.Bounds.Max.X
+                        && local.Y >= f.Bounds.Min.Y && local.Y <= f.Bounds.Max.Y))
                     covered++;
             }
 

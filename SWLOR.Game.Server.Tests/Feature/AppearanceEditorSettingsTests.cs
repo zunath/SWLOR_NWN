@@ -14,6 +14,7 @@ public class AppearanceEditorSettingsTests
     private MethodInfo _execute = null!;
     private MethodInfo _adjustScale = null!;
     private MethodInfo _loadDMItems = null!;
+    private MethodInfo _commandThenSave = null!;
 
     [OneTimeSetUp]
     public void CompileSettingsWithRecordingEngineAndDatabase()
@@ -27,7 +28,9 @@ public class AppearanceEditorSettingsTests
         var names = new[] { "InitializeSettings", "LoadSettings", "LoadDMArmorDisplay", "OnClickSaveSettings", "SendScaleMessage",
             "OnIncreaseAppearanceScale", "OnDecreaseAppearanceScale", "OnIncreaseHeadScale", "OnDecreaseHeadScale" };
         var methods = string.Concat(CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Where(node => names.Contains(node.Identifier.Text))
+            .OfType<MethodDeclarationSyntax>().Where(node => names.Contains(node.Identifier.Text) ||
+                node.Identifier.Text == "Refresh" &&
+                node.ParameterList.Parameters.Single().Type!.ToString() == "ArmorDisplayChangedRefreshEvent")
             .Select(node => node.ToFullString()));
         var armorDisplaySource = File.ReadAllText(Path.Combine(directory.FullName,
             "SWLOR.Game.Server", "Feature", "ArmorDisplay.cs"));
@@ -39,6 +42,7 @@ public class AppearanceEditorSettingsTests
             using System;
             using System.Linq.Expressions;
             using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+            using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
             using SWLOR.NWN.API.NWScript.Enum;
             using DMPreferences = SWLOR.Game.Server.Entity.DMPreferences;
             using Player = SWLOR.Game.Server.Entity.Player;
@@ -150,6 +154,25 @@ public class AppearanceEditorSettingsTests
                     harness.InitializeSettings();
                     return (harness.ShowHelmet, harness.ShowCloak, DMPreference.Reads);
                 }
+                public static (bool Saved, bool Shown, bool OtherSaved) CommandThenSave(bool helmet, uint creature)
+                {
+                    ViewerDM = ViewerPossessed = TargetDM = TargetPossessed = false;
+                    TargetPC = true;
+                    DB.Record = new Player { AppearanceScale = 1f, HeadAppearanceScale = 1f };
+                    DB.Record.Settings.ShowHelmet = false;
+                    DB.Record.Settings.ShowCloak = false;
+                    var harness = new Harness();
+                    harness.InitializeSettings();
+                    // /helm or /cloak saves the new setting, then tells the open editor.
+                    if (helmet) DB.Record.Settings.ShowHelmet = true;
+                    else DB.Record.Settings.ShowCloak = true;
+                    harness.Refresh(new ArmorDisplayChangedRefreshEvent(creature, helmet, true));
+                    var shown = helmet ? harness.ShowHelmet : harness.ShowCloak;
+                    harness.OnClickSaveSettings()();
+                    return helmet
+                        ? (DB.Record.Settings.ShowHelmet, shown, DB.Record.Settings.ShowCloak)
+                        : (DB.Record.Settings.ShowCloak, shown, DB.Record.Settings.ShowHelmet);
+                }
                 public static (uint Recipient, string Message, float Height, float Head)
                     AdjustScale(string operation, bool possessed, float scale)
                 {
@@ -176,6 +199,26 @@ public class AppearanceEditorSettingsTests
         _execute = harnessType.GetMethod("Execute")!;
         _loadDMItems = harnessType.GetMethod("LoadDMItems")!;
         _adjustScale = harnessType.GetMethod("AdjustScale")!;
+        _commandThenSave = harnessType.GetMethod("CommandThenSave")!;
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ChatCommandToggle_UpdatesTheOpenEditorSoSaveSettingsKeepsIt(bool helmet)
+    {
+        var (saved, shown, otherSaved) = ((bool, bool, bool))_commandThenSave.Invoke(null, [helmet, 2u])!;
+
+        shown.Should().BeTrue("the open editor's checkbox follows /helm and /cloak");
+        saved.Should().BeTrue("Save Settings must not restore the setting the command replaced");
+        otherSaved.Should().BeFalse("the other checkbox keeps its own setting");
+    }
+
+    [Test]
+    public void ChatCommandToggle_ForAnotherCreature_LeavesTheEditorAlone()
+    {
+        var (_, shown, _) = ((bool, bool, bool))_commandThenSave.Invoke(null, [true, 7u])!;
+
+        shown.Should().BeFalse("the editor shows a different creature's setting");
     }
 
     [TestCase(true, false, false, false, false, false)]

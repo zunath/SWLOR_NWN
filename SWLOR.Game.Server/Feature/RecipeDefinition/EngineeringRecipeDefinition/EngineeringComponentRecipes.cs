@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Logic Unit Alpha
             _builder.Create(RecipeType.LogicUnitAlpha, SkillType.Engineering)
@@ -41,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Caching Unit Alpha
             _builder.Create(RecipeType.CachingUnitAlpha, SkillType.Engineering)
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Droid Brain Alpha
             _builder.Create(RecipeType.DroidBrainAlpha, SkillType.Engineering)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Sensor Alpha
             _builder.Create(RecipeType.DroidSensorAlpha, SkillType.Engineering)
@@ -74,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Manipulator Arm Alpha
             _builder.Create(RecipeType.ManipulatorArmAlpha, SkillType.Engineering)
@@ -85,7 +90,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Discharge Unit Alpha
             _builder.Create(RecipeType.DischargeUnitAlpha, SkillType.Engineering)
@@ -96,7 +102,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Motive System Alpha
             _builder.Create(RecipeType.DroidMotiveSystemAlpha, SkillType.Engineering)
@@ -107,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Diagnostic Circuit Alpha
             _builder.Create(RecipeType.DiagnosticCircuitAlpha, SkillType.Engineering)
@@ -118,7 +126,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // Droid Power Supply Alpha
             _builder.Create(RecipeType.DroidPowerSupplyAlpha, SkillType.Engineering)
@@ -129,7 +138,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Chassis Alpha
             _builder.Create(RecipeType.DroidChassisAlpha, SkillType.Engineering)
@@ -140,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 1)
                 .Component("elec_ruined", 2)
                 .Component("jade", 1)
-                .Component("quadrenium", 1);
+                .Component("quadrenium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 54);
 
         }
 
@@ -155,7 +166,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Logic Unit Beta
             _builder.Create(RecipeType.LogicUnitBeta, SkillType.Engineering)
@@ -166,7 +178,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Caching Unit Beta
             _builder.Create(RecipeType.CachingUnitBeta, SkillType.Engineering)
@@ -177,7 +190,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Brain Beta
             _builder.Create(RecipeType.DroidBrainBeta, SkillType.Engineering)
@@ -188,7 +202,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Sensor Beta
             _builder.Create(RecipeType.DroidSensorBeta, SkillType.Engineering)
@@ -199,7 +214,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Manipulator Arm Beta
             _builder.Create(RecipeType.ManipulatorArmBeta, SkillType.Engineering)
@@ -210,7 +226,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Discharge Unit Beta
             _builder.Create(RecipeType.DischargeUnitBeta, SkillType.Engineering)
@@ -221,7 +238,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Droid Motive System Beta
             _builder.Create(RecipeType.DroidMotiveSystemBeta, SkillType.Engineering)
@@ -232,7 +250,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Diagnostic Circuit Beta
             _builder.Create(RecipeType.DiagnosticCircuitBeta, SkillType.Engineering)
@@ -243,7 +262,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Power Supply Beta
             _builder.Create(RecipeType.DroidPowerSupplyBeta, SkillType.Engineering)
@@ -254,7 +274,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Droid Chassis Beta
             _builder.Create(RecipeType.DroidChassisBeta, SkillType.Engineering)
@@ -265,7 +286,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 2)
                 .Component("elec_flawed", 3)
                 .Component("agate", 2)
-                .Component("vintrium", 1);
+                .Component("vintrium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
         }
 
         private void Tier3()
@@ -279,7 +301,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Logic Unit Gamma
             _builder.Create(RecipeType.LogicUnitGamma, SkillType.Engineering)
@@ -290,7 +313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Caching Unit Gamma
             _builder.Create(RecipeType.CachingUnitGamma, SkillType.Engineering)
@@ -301,7 +325,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Brain Gamma
             _builder.Create(RecipeType.DroidBrainGamma, SkillType.Engineering)
@@ -312,7 +337,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Sensor Gamma
             _builder.Create(RecipeType.DroidSensorGamma, SkillType.Engineering)
@@ -323,7 +349,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Manipulator Arm Gamma
             _builder.Create(RecipeType.ManipulatorArmGamma, SkillType.Engineering)
@@ -334,7 +361,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // Discharge Unit Gamma
             _builder.Create(RecipeType.DischargeUnitGamma, SkillType.Engineering)
@@ -345,7 +373,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Droid Motive System Gamma
             _builder.Create(RecipeType.DroidMotiveSystemGamma, SkillType.Engineering)
@@ -356,7 +385,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Diagnostic Circuit Gamma
             _builder.Create(RecipeType.DiagnosticCircuitGamma, SkillType.Engineering)
@@ -367,7 +397,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Droid Power Supply Gamma
             _builder.Create(RecipeType.DroidPowerSupplyGamma, SkillType.Engineering)
@@ -378,7 +409,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Droid Chassis Gamma
             _builder.Create(RecipeType.DroidChassisGamma, SkillType.Engineering)
@@ -389,7 +421,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
                 .Component("citrine", 2)
-                .Component("ionite", 2);
+                .Component("ionite", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 45);
         }
 
         private void Tier4()
@@ -403,7 +436,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Logic Unit Delta
             _builder.Create(RecipeType.LogicUnitDelta, SkillType.Engineering)
@@ -414,7 +448,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // Caching Unit Delta
             _builder.Create(RecipeType.CachingUnitDelta, SkillType.Engineering)
@@ -425,7 +460,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Droid Brain Delta
             _builder.Create(RecipeType.DroidBrainDelta, SkillType.Engineering)
@@ -436,7 +472,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // Droid Sensor Delta
             _builder.Create(RecipeType.DroidSensorDelta, SkillType.Engineering)
@@ -447,7 +484,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Manipulator Arm Delta
             _builder.Create(RecipeType.ManipulatorArmDelta, SkillType.Engineering)
@@ -458,7 +496,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Discharge Unit Delta
             _builder.Create(RecipeType.DischargeUnitDelta, SkillType.Engineering)
@@ -469,7 +508,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Motive System Delta
             _builder.Create(RecipeType.DroidMotiveSystemDelta, SkillType.Engineering)
@@ -480,7 +520,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // Diagnostic Circuit Delta
             _builder.Create(RecipeType.DiagnosticCircuitDelta, SkillType.Engineering)
@@ -491,7 +532,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Power Supply Delta
             _builder.Create(RecipeType.DroidPowerSupplyDelta, SkillType.Engineering)
@@ -502,7 +544,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Chassis Delta
             _builder.Create(RecipeType.DroidChassisDelta, SkillType.Engineering)
@@ -513,7 +556,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
-                .Component("katrium", 3);
+                .Component("katrium", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 53);
         }
 
         private void Tier5()
@@ -527,7 +571,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Logic Unit Epsilon
             _builder.Create(RecipeType.LogicUnitEpsilon, SkillType.Engineering)
@@ -538,7 +583,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // Caching Unit Epsilon
             _builder.Create(RecipeType.CachingUnitEpsilon, SkillType.Engineering)
@@ -549,7 +595,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // Droid Brain Epsilon
             _builder.Create(RecipeType.DroidBrainEpsilon, SkillType.Engineering)
@@ -560,7 +607,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // Droid Sensor Epsilon
             _builder.Create(RecipeType.DroidSensorEpsilon, SkillType.Engineering)
@@ -571,7 +619,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Manipulator Arm Epsilon
             _builder.Create(RecipeType.ManipulatorArmEpsilon, SkillType.Engineering)
@@ -582,7 +631,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Discharge Unit Epsilon
             _builder.Create(RecipeType.DischargeUnitEpsilon, SkillType.Engineering)
@@ -593,7 +643,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Droid Motive System Epsilon
             _builder.Create(RecipeType.DroidMotiveSystemEpsilon, SkillType.Engineering)
@@ -604,7 +655,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Diagnostic Circuit Epsilon
             _builder.Create(RecipeType.DiagnosticCircuitEpsilon, SkillType.Engineering)
@@ -615,7 +667,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Power Supply Epsilon
             _builder.Create(RecipeType.DroidPowerSupplyEpsilon, SkillType.Engineering)
@@ -626,7 +679,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Chassis Epsilon
             _builder.Create(RecipeType.DroidChassisEpsilon, SkillType.Engineering)
@@ -637,7 +691,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
-                .Component("zinsiam", 4);
+                .Component("zinsiam", 4)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 55);
         }
     }
 }

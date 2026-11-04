@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .SkillType(SkillType.Espionage)
                 .HasImpactAction(ApplyGhostProtocol)
                 .IsCastedAbility()
+                // The "readies" line would tell nearby players someone is entering stealth.
+                .HideActivationMessage()
                 .RequirementStamina(15);
 
             return builder.Build();
@@ -78,8 +80,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 StealthWindowSeconds,
                 PrimedCriticalModifierGroup);
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghost_Smoke), activator);
-            Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
+            // The caster is vanishing: its smoke and burst would show everyone where it went, so only
+            // the caster sees them.
+            Ability.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
+            Ability.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
         }
     }
 }

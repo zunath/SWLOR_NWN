@@ -73656,7 +73656,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -73668,7 +73668,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -75681,7 +75681,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -75693,7 +75693,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -76131,7 +76131,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -76143,7 +76143,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -77481,7 +77481,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -77493,7 +77493,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -77931,7 +77931,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -77943,7 +77943,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -79506,7 +79506,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -79518,7 +79518,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -80856,7 +80856,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -80868,7 +80868,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -82431,7 +82431,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -82443,7 +82443,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -83556,7 +83556,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -83568,7 +83568,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -84906,7 +84906,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -84918,7 +84918,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -86031,7 +86031,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -86043,7 +86043,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -86481,7 +86481,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -86493,7 +86493,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -87381,7 +87381,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -87393,7 +87393,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -88056,7 +88056,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -88068,7 +88068,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -89181,7 +89181,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -89193,7 +89193,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -89631,7 +89631,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -89643,7 +89643,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -92106,7 +92106,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -92118,7 +92118,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -93006,7 +93006,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -93018,7 +93018,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -93456,7 +93456,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -93468,7 +93468,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -96831,7 +96831,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -96843,7 +96843,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -97281,7 +97281,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -97293,7 +97293,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -99306,7 +99306,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -99318,7 +99318,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -99531,7 +99531,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -99543,7 +99543,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -99756,7 +99756,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -99768,7 +99768,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -99981,7 +99981,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -99993,7 +99993,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -100206,7 +100206,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -100218,7 +100218,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -100431,7 +100431,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -100443,7 +100443,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -100656,7 +100656,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -100668,7 +100668,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -100881,7 +100881,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -100893,7 +100893,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -101106,7 +101106,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -101118,7 +101118,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -101331,7 +101331,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -101343,7 +101343,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -103806,7 +103806,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -103818,7 +103818,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -104031,7 +104031,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -104043,7 +104043,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -104931,7 +104931,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -104943,7 +104943,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -108306,7 +108306,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -108318,7 +108318,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -108531,7 +108531,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -108543,7 +108543,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -110556,7 +110556,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -110568,7 +110568,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -110781,7 +110781,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -110793,7 +110793,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -111906,7 +111906,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -111918,7 +111918,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -113031,7 +113031,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -113043,7 +113043,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -114156,7 +114156,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -114168,7 +114168,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -114381,7 +114381,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -114393,7 +114393,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -115731,7 +115731,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -115743,7 +115743,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -116856,7 +116856,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -116868,7 +116868,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -117081,7 +117081,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -117093,7 +117093,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -117306,7 +117306,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -117318,7 +117318,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -117531,7 +117531,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -117543,7 +117543,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -117756,7 +117756,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -117768,7 +117768,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -119331,7 +119331,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -119343,7 +119343,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -119556,7 +119556,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -119568,7 +119568,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -121131,7 +121131,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -121143,7 +121143,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -122031,7 +122031,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -122043,7 +122043,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -122256,7 +122256,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -122268,7 +122268,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -122481,7 +122481,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -122493,7 +122493,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -122706,7 +122706,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -122718,7 +122718,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -122931,7 +122931,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -122943,7 +122943,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -124506,7 +124506,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -124518,7 +124518,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -125631,7 +125631,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -125643,7 +125643,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -126756,7 +126756,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -126768,7 +126768,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -127881,7 +127881,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -127893,7 +127893,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -128331,7 +128331,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -128343,7 +128343,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -129231,7 +129231,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -129243,7 +129243,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -129456,7 +129456,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -129468,7 +129468,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -129906,7 +129906,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -129918,7 +129918,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -131256,7 +131256,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -131268,7 +131268,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -132606,7 +132606,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -132618,7 +132618,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -132831,7 +132831,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -132843,7 +132843,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -134631,7 +134631,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -134643,7 +134643,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -135981,7 +135981,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -135993,7 +135993,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -136206,7 +136206,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -136218,7 +136218,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -137106,7 +137106,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -137118,7 +137118,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -137331,7 +137331,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -137343,7 +137343,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -137556,7 +137556,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -137568,7 +137568,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -138006,7 +138006,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -138018,7 +138018,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -139356,7 +139356,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -139368,7 +139368,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -139581,7 +139581,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -139593,7 +139593,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -143005,7 +143005,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2031399309635162
+          "value": -0.1000000014901161
         }
       },
       {
@@ -143841,7 +143841,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -143853,7 +143853,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -144066,7 +144066,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -144078,7 +144078,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -144291,7 +144291,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -144303,7 +144303,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -145866,7 +145866,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -145878,7 +145878,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -148831,7 +148831,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -149058,7 +149058,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -149894,7 +149894,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -149906,7 +149906,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -150189,7 +150189,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -150416,7 +150416,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -150573,7 +150573,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -150585,7 +150585,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -151093,7 +151093,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -151320,7 +151320,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -151547,7 +151547,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -151774,7 +151774,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -152001,7 +152001,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -152228,7 +152228,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.25
+          "value": -0.09000000357627869
         }
       },
       {
@@ -152455,7 +152455,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -152682,7 +152682,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -152909,7 +152909,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -153136,7 +153136,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -153363,7 +153363,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -153590,7 +153590,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -153817,7 +153817,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -154044,7 +154044,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -154271,7 +154271,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -154498,7 +154498,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -154725,7 +154725,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -154952,7 +154952,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -155179,7 +155179,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -155338,7 +155338,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -155350,7 +155350,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -155406,7 +155406,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -155633,7 +155633,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -155860,7 +155860,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -156087,7 +156087,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -156314,7 +156314,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -156541,7 +156541,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -156768,7 +156768,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -156995,7 +156995,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -157222,7 +157222,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -157449,7 +157449,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -157608,7 +157608,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -157620,7 +157620,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -157676,7 +157676,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -157903,7 +157903,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -158130,7 +158130,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -158287,7 +158287,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -158299,7 +158299,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -158512,7 +158512,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -158524,7 +158524,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -158737,7 +158737,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -158749,7 +158749,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -158962,7 +158962,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -158974,7 +158974,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -159187,7 +159187,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -159199,7 +159199,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -159412,7 +159412,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -159424,7 +159424,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -159637,7 +159637,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -159649,7 +159649,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -159864,7 +159864,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -159876,7 +159876,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -160838,7 +160838,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -161065,7 +161065,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -163096,7 +163096,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -163255,7 +163255,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -163267,7 +163267,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -163323,7 +163323,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -163482,7 +163482,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -163494,7 +163494,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -163550,7 +163550,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -163777,7 +163777,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -163936,7 +163936,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -163948,7 +163948,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -164004,7 +164004,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -164231,7 +164231,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -175876,7 +175876,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -175888,7 +175888,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -176103,7 +176103,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -176115,7 +176115,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -176171,7 +176171,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -176398,7 +176398,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -176625,7 +176625,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -176852,7 +176852,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -190874,7 +190874,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -191101,7 +191101,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -195388,7 +195388,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.09000000357627869
         }
       },
       {
@@ -195615,7 +195615,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -195842,7 +195842,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -196069,7 +196069,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -196750,7 +196750,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -196977,7 +196977,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.300000011920929
+          "value": -0.1000000014901161
         }
       },
       {
@@ -200834,7 +200834,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -201061,7 +201061,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -218659,7 +218659,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.1000000014901161
         }
       },
       {
@@ -223324,7 +223324,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -223336,7 +223336,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -223549,7 +223549,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -223561,7 +223561,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -223774,7 +223774,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -223786,7 +223786,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -223999,7 +223999,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -224011,7 +224011,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -224224,7 +224224,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -224236,7 +224236,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -224449,7 +224449,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -224461,7 +224461,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -224674,7 +224674,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -224686,7 +224686,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -242272,7 +242272,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -242284,7 +242284,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -272738,7 +272738,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -272750,7 +272750,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -276281,7 +276281,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -276293,7 +276293,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -281255,7 +281255,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -281267,7 +281267,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -281482,7 +281482,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -281494,7 +281494,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -292141,7 +292141,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.09000000357627869
         }
       },
       {
@@ -292368,7 +292368,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -292527,7 +292527,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -292539,7 +292539,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -292595,7 +292595,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.1000000014901161
         }
       },
       {
@@ -292822,7 +292822,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -293049,7 +293049,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -293208,7 +293208,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -293220,7 +293220,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -293276,7 +293276,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -294570,7 +294570,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -294582,7 +294582,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -295478,7 +295478,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -295490,7 +295490,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -296386,7 +296386,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -296398,7 +296398,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -296613,7 +296613,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -296625,7 +296625,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -300466,7 +300466,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -300478,7 +300478,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -300693,7 +300693,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -300705,7 +300705,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -300920,7 +300920,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -300932,7 +300932,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -304486,7 +304486,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -304498,7 +304498,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -313939,7 +313939,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.3767393529415131
+          "value": -0.1000000014901161
         }
       },
       {
@@ -314393,7 +314393,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.3700000047683716
+          "value": -0.1000000014901161
         }
       },
       {
@@ -314847,7 +314847,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.3700000047683716
+          "value": -0.1000000014901161
         }
       },
       {
@@ -315301,7 +315301,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.3700000047683716
+          "value": -0.1000000014901161
         }
       },
       {
@@ -316141,7 +316141,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -316153,7 +316153,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -318184,7 +318184,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -318196,7 +318196,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -318638,7 +318638,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -318650,7 +318650,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -319092,7 +319092,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -319104,7 +319104,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -320227,7 +320227,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -320239,7 +320239,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -325462,7 +325462,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -325689,7 +325689,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -325916,7 +325916,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -326143,7 +326143,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -326370,7 +326370,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -326597,7 +326597,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -326824,7 +326824,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -327051,7 +327051,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -359250,7 +359250,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -363551,7 +363551,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -404826,7 +404826,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2360796928405762
+          "value": -0.09000000357627869
         }
       },
       {
@@ -405053,7 +405053,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -405280,7 +405280,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -405507,7 +405507,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -405734,7 +405734,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.09000000357627869
         }
       },
       {
@@ -405961,7 +405961,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -411017,7 +411017,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -411176,7 +411176,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -411188,7 +411188,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -411244,7 +411244,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -411471,7 +411471,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -411630,7 +411630,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -411642,7 +411642,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -411698,7 +411698,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.1000000014901161
         }
       },
       {
@@ -411857,7 +411857,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -411869,7 +411869,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -411925,7 +411925,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -412084,7 +412084,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -412096,7 +412096,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -412152,7 +412152,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.1000000014901161
         }
       },
       {
@@ -412379,7 +412379,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -412538,7 +412538,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -412550,7 +412550,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -412606,7 +412606,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -412765,7 +412765,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -412777,7 +412777,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -412833,7 +412833,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -413060,7 +413060,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -413219,7 +413219,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -413231,7 +413231,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -413287,7 +413287,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -413514,7 +413514,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -413741,7 +413741,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -413968,7 +413968,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -414195,7 +414195,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -414422,7 +414422,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -414649,7 +414649,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -419109,7 +419109,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -419121,7 +419121,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -419334,7 +419334,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -419346,7 +419346,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -420083,7 +420083,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -420310,7 +420310,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -420537,7 +420537,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -449843,7 +449843,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -449855,7 +449855,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -450068,7 +450068,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -450080,7 +450080,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -450293,7 +450293,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -450305,7 +450305,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -450968,7 +450968,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -450980,7 +450980,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -451193,7 +451193,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -451205,7 +451205,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -451418,7 +451418,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -451430,7 +451430,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -451643,7 +451643,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -451655,7 +451655,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -452543,7 +452543,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -452555,7 +452555,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -452768,7 +452768,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -452780,7 +452780,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -452993,7 +452993,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -453005,7 +453005,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -453218,7 +453218,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -453230,7 +453230,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -453443,7 +453443,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -453455,7 +453455,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -453668,7 +453668,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -453680,7 +453680,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -454118,7 +454118,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -454130,7 +454130,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -454343,7 +454343,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -454355,7 +454355,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -454568,7 +454568,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -454580,7 +454580,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -454793,7 +454793,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -454805,7 +454805,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -455018,7 +455018,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -455030,7 +455030,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -455243,7 +455243,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -455255,7 +455255,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -455468,7 +455468,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -455480,7 +455480,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -455918,7 +455918,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -455930,7 +455930,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -456368,7 +456368,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -456380,7 +456380,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -456593,7 +456593,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -456605,7 +456605,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -456818,7 +456818,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -456830,7 +456830,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -458168,7 +458168,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -458180,7 +458180,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -458393,7 +458393,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -458405,7 +458405,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -458618,7 +458618,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -458630,7 +458630,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -458843,7 +458843,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -458855,7 +458855,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -459068,7 +459068,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -459080,7 +459080,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -459293,7 +459293,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -459305,7 +459305,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -459518,7 +459518,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -459530,7 +459530,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -459743,7 +459743,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -459755,7 +459755,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -459968,7 +459968,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -459980,7 +459980,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -460193,7 +460193,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -460205,7 +460205,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -461093,7 +461093,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -461105,7 +461105,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -461543,7 +461543,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -461555,7 +461555,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -465818,7 +465818,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -465830,7 +465830,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -466043,7 +466043,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -466055,7 +466055,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -466268,7 +466268,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -466280,7 +466280,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -466493,7 +466493,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -466505,7 +466505,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -466718,7 +466718,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -466730,7 +466730,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -466943,7 +466943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -466955,7 +466955,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -471668,7 +471668,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -471680,7 +471680,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -471893,7 +471893,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -471905,7 +471905,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -472118,7 +472118,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -472130,7 +472130,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -472343,7 +472343,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -472355,7 +472355,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -472568,7 +472568,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -472580,7 +472580,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -472793,7 +472793,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -472805,7 +472805,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -474818,7 +474818,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -474830,7 +474830,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -475043,7 +475043,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -475055,7 +475055,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -475718,7 +475718,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -475730,7 +475730,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -475943,7 +475943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -475955,7 +475955,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -476168,7 +476168,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -476180,7 +476180,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -476393,7 +476393,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -476405,7 +476405,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -476618,7 +476618,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -476630,7 +476630,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -476843,7 +476843,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -476855,7 +476855,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -477068,7 +477068,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -477080,7 +477080,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -477293,7 +477293,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -477305,7 +477305,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -477518,7 +477518,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -477530,7 +477530,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -477743,7 +477743,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -477755,7 +477755,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -477968,7 +477968,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -477980,7 +477980,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -478193,7 +478193,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -478205,7 +478205,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -478418,7 +478418,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -478430,7 +478430,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -478643,7 +478643,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -478655,7 +478655,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -478868,7 +478868,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -478880,7 +478880,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -479093,7 +479093,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -479105,7 +479105,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -479543,7 +479543,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -479555,7 +479555,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -480668,7 +480668,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -480680,7 +480680,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -480893,7 +480893,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -480905,7 +480905,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -481118,7 +481118,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -481130,7 +481130,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -481568,7 +481568,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -481580,7 +481580,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -481793,7 +481793,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -481805,7 +481805,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -482018,7 +482018,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -482030,7 +482030,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -482243,7 +482243,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -482255,7 +482255,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -482468,7 +482468,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -482480,7 +482480,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -482693,7 +482693,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -482705,7 +482705,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -483143,7 +483143,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -483155,7 +483155,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -483368,7 +483368,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -483380,7 +483380,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -483593,7 +483593,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -483605,7 +483605,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -484043,7 +484043,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -484055,7 +484055,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -484268,7 +484268,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -484280,7 +484280,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -484493,7 +484493,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -484505,7 +484505,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -484718,7 +484718,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -484730,7 +484730,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -484943,7 +484943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -484955,7 +484955,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -485168,7 +485168,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -485180,7 +485180,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -485393,7 +485393,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -485405,7 +485405,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -485618,7 +485618,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -485630,7 +485630,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -485843,7 +485843,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -485855,7 +485855,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -486068,7 +486068,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -486080,7 +486080,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -486293,7 +486293,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -486305,7 +486305,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -486518,7 +486518,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -486530,7 +486530,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -486743,7 +486743,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -486755,7 +486755,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -486968,7 +486968,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -486980,7 +486980,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -487193,7 +487193,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -487205,7 +487205,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -487418,7 +487418,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -487430,7 +487430,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -487643,7 +487643,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -487655,7 +487655,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -487868,7 +487868,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -487880,7 +487880,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -488093,7 +488093,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -488105,7 +488105,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -488318,7 +488318,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -488330,7 +488330,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -490343,7 +490343,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -490355,7 +490355,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -490568,7 +490568,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -490580,7 +490580,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -490793,7 +490793,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -490805,7 +490805,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -491018,7 +491018,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -491030,7 +491030,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -491243,7 +491243,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -491255,7 +491255,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -491468,7 +491468,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -491480,7 +491480,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -491693,7 +491693,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -491705,7 +491705,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -491918,7 +491918,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -491930,7 +491930,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -492143,7 +492143,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -492155,7 +492155,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -492368,7 +492368,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -492380,7 +492380,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -492593,7 +492593,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -492605,7 +492605,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -493718,7 +493718,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -493730,7 +493730,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -493943,7 +493943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -493955,7 +493955,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -494393,7 +494393,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -494405,7 +494405,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -494618,7 +494618,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -494630,7 +494630,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -494843,7 +494843,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -494855,7 +494855,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -495068,7 +495068,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -495080,7 +495080,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -495293,7 +495293,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -495305,7 +495305,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -495518,7 +495518,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -495530,7 +495530,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -495743,7 +495743,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -495755,7 +495755,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -495968,7 +495968,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -495980,7 +495980,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -496418,7 +496418,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -496430,7 +496430,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -496643,7 +496643,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -496655,7 +496655,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -496868,7 +496868,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -496880,7 +496880,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -497093,7 +497093,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -497105,7 +497105,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -497318,7 +497318,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -497330,7 +497330,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -497543,7 +497543,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -497555,7 +497555,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -497768,7 +497768,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -497780,7 +497780,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -497993,7 +497993,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -498005,7 +498005,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -498218,7 +498218,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -498230,7 +498230,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -498443,7 +498443,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -498455,7 +498455,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -498668,7 +498668,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -498680,7 +498680,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -498893,7 +498893,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -498905,7 +498905,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -500243,7 +500243,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -500255,7 +500255,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -542950,7 +542950,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -542962,7 +542962,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -543175,7 +543175,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -543187,7 +543187,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -543400,7 +543400,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -543412,7 +543412,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -543625,7 +543625,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -543637,7 +543637,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -543850,7 +543850,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -543862,7 +543862,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -544075,7 +544075,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -544087,7 +544087,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -544300,7 +544300,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -544312,7 +544312,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -561504,7 +561504,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -561731,7 +561731,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -561958,7 +561958,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -562185,7 +562185,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.09000000357627869
         }
       },
       {
@@ -562412,7 +562412,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -562864,7 +562864,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -563091,7 +563091,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -563318,7 +563318,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -563545,7 +563545,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -563772,7 +563772,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -563999,7 +563999,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -564226,7 +564226,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -564453,7 +564453,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -572978,7 +572978,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.09000000357627869
         }
       },
       {
@@ -573657,7 +573657,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -573884,7 +573884,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -574111,7 +574111,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -574338,7 +574338,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -574565,7 +574565,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.09000000357627869
         }
       },
       {
@@ -574792,7 +574792,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -575019,7 +575019,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -575473,7 +575473,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.09000000357627869
         }
       },
       {
@@ -575700,7 +575700,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2000000029802322
+          "value": -0.09000000357627869
         }
       },
       {
@@ -575927,7 +575927,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -576154,7 +576154,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -576381,7 +576381,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -584487,7 +584487,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -584714,7 +584714,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -584941,7 +584941,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -585395,7 +585395,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -585622,7 +585622,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -585849,7 +585849,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -586076,7 +586076,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -586303,7 +586303,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -586530,7 +586530,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -587209,7 +587209,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.09000000357627869
         }
       },
       {
@@ -587436,7 +587436,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -587663,7 +587663,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.09000000357627869
         }
       },
       {
@@ -587890,7 +587890,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -588117,7 +588117,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.239999994635582
+          "value": -0.1000000014901161
         }
       },
       {
@@ -588344,7 +588344,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -588571,7 +588571,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2199999988079071
+          "value": -0.1000000014901161
         }
       },
       {
@@ -588798,7 +588798,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.1000000014901161
         }
       },
       {
@@ -589025,7 +589025,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -592183,7 +592183,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2300000041723251
+          "value": -0.09000000357627869
         }
       },
       {
@@ -594872,7 +594872,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.2099999934434891
+          "value": -0.1000000014901161
         }
       },
       {
@@ -605622,7 +605622,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -605634,7 +605634,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -621256,7 +621256,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",

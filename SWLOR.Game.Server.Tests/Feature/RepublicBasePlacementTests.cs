@@ -1,8 +1,11 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -131,6 +134,52 @@ public class RepublicBasePlacementTests
     }
 
     [Test]
+    public void FrontEntrance_LeadsToTheHeadquartersAndItsExitReturnsThere()
+    {
+        using var exterior = Read("v_repubbase_ext");
+        using var headquarters = Read("visredrepbase");
+        var entrance = List(exterior, "Placeable List").Single(obj => Text(obj, "Tag") == "RepBaseExtEntrance");
+        List(headquarters, "WaypointList").Should().ContainSingle(obj =>
+            Text(obj, "Tag") == Local(entrance, "DESTINATION"),
+            "the base's front door must open into the Headquarters, not the original entrance hall");
+
+        var exit = List(headquarters, "Placeable List").Single(obj =>
+            Text(obj, "OnUsed") == "teleport" && Local(obj, "DESTINATION") == "RepBase_Exit");
+        var arrival = List(exterior, "WaypointList").Single(obj => Text(obj, "Tag") == Local(exit, "DESTINATION"));
+        var distance = MathF.Sqrt(MathF.Pow(Number(arrival, "XPosition") - Number(entrance, "X"), 2) +
+                                  MathF.Pow(Number(arrival, "YPosition") - Number(entrance, "Y"), 2));
+        distance.Should().BeLessThan(3f, "leaving the Headquarters must return players to its front door");
+    }
+
+    // The engine ignores a placeable walkmesh lying more than 0.1 m below the floor, so a sunk wall piece
+    // with a flat walkmesh at its base stops blocking movement.
+    [TestCase("visredrepbase")]
+    [TestCase("visrephanger")]
+    public void ModularWalls_KeepTheirWalkmeshWithinTheEngineCollisionTolerance(string name)
+    {
+        var root = RepositoryRoot();
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        using var area = Read(name);
+        var checkedWalls = 0;
+        foreach (var placeable in List(area, "Placeable List"))
+        {
+            var row = (int)Number(placeable, "Appearance");
+            if (appearances.GetValue(row, "Label")?.StartsWith("[SWLOR] Wall, Modular") != true) continue;
+            var z = Number(placeable, "Z");
+            // Pieces sunk further are deliberately shortened and need a separate blocker.
+            if (z < -.5f) continue;
+            var walkmeshTop = ReadWalkmeshHeights(meshes[appearances.GetValue(row, "ModelName")!]).Max();
+            (z + walkmeshTop).Should().BeGreaterThanOrEqualTo(-.09f,
+                $"the wall at ({Number(placeable, "X")}, {Number(placeable, "Y")}) must keep its collision");
+            checkedWalls++;
+        }
+
+        checkedWalls.Should().BePositive();
+    }
+
+    [Test]
     public void NewHangar_ReturnsToTheBaseThroughOneGroundLevelPortal()
     {
         using var hangar = Read("visrephanger");
@@ -163,6 +212,23 @@ public class RepublicBasePlacementTests
             .Be(List(hangar, "Placeable List").Length);
     }
 
+    private static IEnumerable<float> ReadWalkmeshHeights(string file)
+    {
+        foreach (Match node in Regex.Matches(File.ReadAllText(file), @"(?is)node\s+trimesh\s+\S+\s+(.*?)endnode"))
+        {
+            var lines = node.Groups[1].Value.Split('\n')
+                .Select(line => line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
+                .Where(line => line.Length > 0).ToArray();
+            var verts = Array.FindIndex(lines, line => line[0] == "verts");
+            if (verts < 0) continue;
+            var offset = lines.FirstOrDefault(line => line[0] == "position") is { } position
+                ? float.Parse(position[3], CultureInfo.InvariantCulture)
+                : 0f;
+            foreach (var vertex in lines.Skip(verts + 1).Take(int.Parse(lines[verts][1])))
+                yield return offset + float.Parse(vertex[2], CultureInfo.InvariantCulture);
+        }
+    }
+
     private static string Local(JsonElement element, string name) =>
         List(element, "VarTable").Where(variable => Text(variable, "Name") == name)
             .Select(variable => variable.GetProperty("Value").GetProperty("value").ToString())
@@ -182,11 +248,14 @@ public class RepublicBasePlacementTests
 
     private static JsonDocument Read(string area) => JsonDocument.Parse(File.ReadAllText(ModulePath("git", area)));
 
-    private static string ModulePath(string kind, string resref)
+    private static string ModulePath(string kind, string resref) =>
+        Path.Combine(RepositoryRoot(), "Module", kind, $"{resref}.{kind}.json");
+
+    private static string RepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module"))) directory = directory.Parent;
         if (directory == null) throw new DirectoryNotFoundException("Module directory not found.");
-        return Path.Combine(directory.FullName, "Module", kind, $"{resref}.{kind}.json");
+        return directory.FullName;
     }
 }

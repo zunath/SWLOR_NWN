@@ -1947,119 +1947,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 318,
+    "Line": 164,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(HeldElsewhereMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 649,
+    "Line": 740,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 659,
+    "Line": 750,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only DNA items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 666,
+    "Line": 757,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 905,
-    "Member": "OnClickHydrolase",
+    "Line": 875,
+    "Member": "OnClickEnzyme",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 928,
-    "Member": "OnClickHydrolase",
+    "Line": 892,
+    "Member": "OnClickEnzyme",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Only Hydrolase items may be selected.\", Player, false)"
+    "Call": "FloatingTextStringOnCreature($\"Only {name} items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 935,
-    "Member": "OnClickHydrolase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(error, Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 958,
-    "Member": "OnClickLyase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 980,
-    "Member": "OnClickLyase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Only Lyase items may be selected.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 987,
-    "Member": "OnClickLyase",
+    "Line": 899,
+    "Member": "OnClickEnzyme",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1010,
-    "Member": "OnClickIsomerase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1032,
-    "Member": "OnClickIsomerase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Only Isomerase items may be selected.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1039,
-    "Member": "OnClickIsomerase",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(error, Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1160,
+    "Line": 1056,
     "Member": "StartJob",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Incubation job started!\", Player, false)"
+    "Call": "FloatingTextStringOnCreature($\"Incubation stage {job.CurrentStage} started!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1164,
+    "Line": 1060,
     "Member": "StartJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Unable to start Incubation Job. Reason: {validationError}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1210,
+    "Line": 1106,
     "Member": "OnClickCancelJob",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Incubation job cancelled!\", Player, false)"
+    "Call": "FloatingTextStringOnCreature(\"Incubation job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1238,
+    "Line": 1146,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.ItemsHeldMessage)"
@@ -4026,7 +3984,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 1012,
+    "Line": 998,
     "Member": "UseExtractDNAObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"

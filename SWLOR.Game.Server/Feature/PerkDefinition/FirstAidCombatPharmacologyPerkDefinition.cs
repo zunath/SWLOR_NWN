@@ -105,14 +105,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Pain Suppressant")
 
                 .AddPerkLevel()
-                .Description("Grants 24 temporary HP plus 2.5% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack.")
+                .Description("Grants 24 temporary HP plus 2.5% of the target's maximum HP and 10% damage reduction for 30 seconds. WIL multiplies temporary HP: x0.625 at 10 WIL or less, rising evenly to x1.25 at 26 WIL. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.PainSuppressant1)
 
                 .AddPerkLevel()
-                .Description("Grants 68 temporary HP plus 3.75% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack.")
+                .Description("Grants 68 temporary HP plus 3.75% of the target's maximum HP and 15% damage reduction for 30 seconds. WIL multiplies temporary HP: x0.625 at 10 WIL or less, rising evenly to x1.25 at 26 WIL. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .DroidAISlots(2)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Cocktail")
 
                 .AddPerkLevel()
-                .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants 54 temporary HP plus 3% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
+                .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants 54 temporary HP plus 3% of maximum HP, reduces damage taken by 12%, and grants 50% Poison Resistance. WIL multiplies temporary HP: x0.625 at 10 WIL or less, rising evenly to x1.25 at 26 WIL.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .GrantsFeat(FeatType.EmergencyCocktail1)

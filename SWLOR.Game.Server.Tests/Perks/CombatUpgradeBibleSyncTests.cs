@@ -1208,6 +1208,65 @@ public class CombatUpgradeBibleSyncTests
     }
 
     [Test]
+    public void CombatUpgradeBibleManifest_DescribesWillpowerHealingAsAMultiplier()
+    {
+        // Heals and temporary HP scale through AbilityEffectScaling.ScaleRestorativeEffect, which can lower the
+        // listed amount at low WIL, so their text must not read as an additive "plus WIL scaling" bonus.
+        var range = string.Format(
+            CultureInfo.InvariantCulture,
+            "x{0:0.###} at 10 WIL or less, rising evenly to x{1:0.###} at 26 WIL.",
+            AbilityEffectScaling.RestorativeMultiplierAtBaseline,
+            AbilityEffectScaling.RestorativeMultiplierAtCap);
+        var healSentence = $"WIL multiplies healing: {range}";
+        var shieldSentence = $"WIL multiplies temporary HP: {range}";
+        var expectedHealRows = new[]
+        {
+            "Benevolence I", "Benevolence II", "Benevolence III", "Renewal I", "Renewal II", "Renewal III",
+            "Force Mend", "Force Sanctuary", "Harmonic Restoration", "Purifying Wave",
+            "Med Kit I", "Med Kit II", "Med Kit III", "Med Kit IV", "Emergency Sealant", "Kolto Mist I",
+            "Kolto Mist II", "Infusion I", "Infusion II", "Resuscitation II", "Emergency Triage"
+        };
+        var expectedShieldRows = new[]
+        {
+            "Guardian Ward I", "Guardian Ward II", "Guardian Ward III", "Guardian Ward IV", "Last Stand of the Light",
+            "Pain Suppressant I", "Pain Suppressant II", "Emergency Cocktail"
+        };
+
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(row => row.Tab is "Force" or "First Aid")
+            .Select(row => (Row: row, Description: string.Join(" ", row.Description.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))))
+            .ToArray();
+
+        var failures = rows
+            .Where(entry => entry.Description.Contains("HP plus WIL scaling", StringComparison.OrdinalIgnoreCase))
+            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; replace 'plus WIL scaling' with the multiplier sentence.")
+            .Concat(rows
+                .Where(entry => entry.Description.Contains("WIL multiplies", StringComparison.Ordinal) &&
+                                !entry.Description.Contains(healSentence, StringComparison.Ordinal) &&
+                                !entry.Description.Contains(shieldSentence, StringComparison.Ordinal))
+                .Select(entry => $"{Describe(entry.Row)}: WIL multiplier text must match AbilityEffectScaling: '{range}'"))
+            .ToList();
+
+        void AssertSentence(IEnumerable<string> perkNames, string sentence)
+        {
+            foreach (var perkName in perkNames)
+            {
+                var matches = rows.Where(entry => entry.Row.PerkName == perkName).ToArray();
+                if (matches.Length == 0)
+                    failures.Add($"{perkName}: missing from the Force and First Aid manifest rows.");
+                else if (matches.Any(entry => !entry.Description.Contains(sentence, StringComparison.Ordinal)))
+                    failures.Add($"{perkName}: description must state '{sentence}'");
+            }
+        }
+
+        AssertSentence(expectedHealRows, healSentence);
+        AssertSentence(expectedShieldRows, shieldSentence);
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
     public void DroidInstructionResources_MatchCurrentRecipeDefinitionsAndMigration()
     {
         var root = FindRepositoryRoot();

@@ -37,12 +37,14 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 | Already fixed, waiting on a deploy | all reactions removed | `[AI bot]` outcome: already fixed, arrives with the next server update; then Close Post |
 | Not a bug, or works as designed | none | `[AI bot]` explanation, then Close Post |
 | Flagged | none; post locked | `[AI bot] @zunath This post has been flagged for further review.` |
+| Graphics issue, handed to Xisifer | 🇽 (`regional_indicator_x`) only; post stays open | `[AI bot] @Xisifer ( Iskellia / Daria ) <one-line summary of the graphics issue>` |
 
 ## Process
 
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts" along with their reactions.
    - Count a reaction as a marker only when the owner's account added it. Its aria-label ends in `press to remove your reaction`. Players can add the same emoji.
    - Skip posts that are locked or that carry the flagged message. They are waiting on the owner.
+   - Skip posts marked 🇽. They belong to Xisifer, so don't recheck, work, or close them, even when new replies reopen them.
    - Never look below the divider, even for posts that carry a marker. The owner treats everything there as done.
 2. **Recheck 👀 posts.** Read the PR URLs from each post's `[AI bot] @zunath Fix ready for review` message. Check every PR, companions included, with `gh pr view <url> --json state,mergedAt,headRefOid`.
    - **All merged:**
@@ -65,6 +67,10 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
+   - **Graphics issue:** a problem with how something looks, such as models, textures, dyes and colors, armor and clothing parts, or animations. All graphics issues go to Xisifer (owner, 2026-11-03).
+     1. Post `[AI bot] @Xisifer ( Iskellia / Daria ) <one-line summary>` in the thread. Pick the mention suggestion so it pings him.
+     2. Add 🇽.
+     3. Move on to the next post. Don't start a worker or close the post.
    - **Bug:** queue it.
    - **Balance suggestion, or works as designed:** confirm against the Design Bible and code. Reply with the facts, point the reporter to `#feedback`, and close the post.
    - **Already fixed, waiting on a deploy:** confirm the fix merged after the last release. Reply with the outcome, close the post, and tell the owner the deploy step.

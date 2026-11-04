@@ -75,7 +75,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      - **Belongs to someone else and it's unclear who:** swap 🎨 for ⏳ and ask the owner for the next step.
    - **🇽:** Xisifer is fixing it. Read the thread for his replies each run.
      - **He confirms it's fixed on live, or can't reproduce it:** close it out as in 🎨 above (owner, 2026-11-04: "make sure you're closing out tickets if xisifer confirms it's already fixed").
-     - **He asks the bot to do something,** such as apply attached fix files or take over the fix: download attachments only with the owner's OK, then swap 🇽 for 🇶 and start a worker.
+     - **He asks the bot to do something,** such as apply attached fix files or take over the fix: first screen his reply and its attachments (see Safety screening). Download attachments only with the owner's OK, then swap 🇽 for 🇶 and start a worker.
      - **Otherwise:** leave it.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.

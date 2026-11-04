@@ -102,7 +102,7 @@ public class CraftingPerkIconOrientationTests
     }
 
     /// <summary>The pixels of an uncompressed or run-length true-color TGA as stored per pixel, top row first, honoring its origin bit.</summary>
-    private static byte[] DecodeTopRowFirst(byte[] tga)
+    internal static byte[] DecodeTopRowFirst(byte[] tga)
     {
         int idLength = tga[0], colorMapType = tga[1], imageType = tga[2];
         colorMapType.Should().Be(0, "gameplay icons are true-color TGAs");

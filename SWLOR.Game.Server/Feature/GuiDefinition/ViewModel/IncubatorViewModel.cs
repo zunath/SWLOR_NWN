@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var hasPendingStage = job == null || (now >= job.DateCompleted && job.CurrentStage < NumberOfStages);
 
             RefreshButtons(job);
-            RefreshHeader(job, now);
+            RefreshHeader(job);
             RefreshStageTracker(job, now);
             RefreshEnzymeTotals(job);
             RefreshPurities(hasPendingStage);
@@ -263,12 +263,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshOutcomes(job, now);
         }
 
-        private void RefreshHeader(IncubationJob job, DateTime now)
+        private void RefreshHeader(IncubationJob job)
         {
-            var playerId = GetObjectUUID(Player);
-            ServerDayText = IncubationTestTools.HasDayOverride(playerId)
-                ? $"Server day: {IncubationTestTools.GetServerDay(playerId)} (test override)"
-                : $"Server day: {now.DayOfWeek} (UTC)";
+            ServerDayText = $"Server day: {DescribeServerDay(GetObjectUUID(Player))}";
             IsDNASlotEnabled = job == null;
             DNASlotTooltip = job == null
                 ? (string.IsNullOrWhiteSpace(_dnaItem) ? "Add DNA" : "Remove DNA")
@@ -286,6 +283,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beast = BeastMastery.GetBeastDetail(_dnaType);
             BeastName = $"{beast.Name} DNA";
             BeastSubtitle = $"{beast.Role} role";
+        }
+
+        /// <summary>"Wednesday (UTC)", or "Sunday (test)" while a tester's /incubationday override is set.</summary>
+        private static string DescribeServerDay(string playerId)
+        {
+            var suffix = IncubationTestTools.HasDayOverride(playerId) ? "test" : "UTC";
+            return $"{IncubationTestTools.GetServerDay(playerId)} ({suffix})";
         }
 
         private void RefreshStageTracker(IncubationJob job, DateTime now)
@@ -552,7 +556,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     colors.Add(outcome.Type == job.BeastDNAType ? GuiColor.White : MetColor);
                 }
 
-                OutcomeHeader = $"Outcomes if completed now ({IncubationTestTools.GetServerDay(job.PlayerId)} UTC)";
+                OutcomeHeader = $"Outcomes if completed now - {DescribeServerDay(job.PlayerId)}";
             }
             else
             {

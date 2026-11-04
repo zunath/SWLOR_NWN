@@ -67,6 +67,15 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(ship);
         }
 
+        /// <summary>
+        /// The deed was saved as this ship: its receipt outlives the ship until the registering player's next login has
+        /// settled their marked deeds (<see cref="ShipRegistrationReceipt"/>).
+        /// </summary>
+        public static void SaveRegistrationReceipt(uint player, string shipId)
+        {
+            DB.Set(new ShipRegistrationReceipt { Id = shipId, OwnerPlayerId = GetObjectUUID(player) });
+        }
+
         /// <summary>Whether the ship saved this module as fitted at some point: it still has it, or it acknowledged the fitting.</summary>
         private static bool WasFitted(PlayerShip ship, string instanceId) =>
             FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true;
@@ -208,7 +217,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     settled = true;
                     DeleteLocalString(item, DeedRegisteringVariable);
-                    if (DB.Get<PlayerShip>(registering) != null)
+                    if (DB.Get<ShipRegistrationReceipt>(registering) != null || DB.Get<PlayerShip>(registering) != null)
                     {
                         DestroyObject(item);
                         Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - removed deed already registered as ship {registering} after a restart.");
@@ -241,7 +250,13 @@ namespace SWLOR.Game.Server.Service
             var receiptIds = receiptCount <= 0
                 ? new List<string>()
                 : DB.Search(receiptQuery.AddPaging(receiptCount, 0)).Select(x => x.Id).ToList();
-            if (!settled && receiptIds.Count == 0)
+            var registrationQuery = new DBQuery<ShipRegistrationReceipt>()
+                .AddFieldSearch(nameof(ShipRegistrationReceipt.OwnerPlayerId), playerId, false);
+            var registrationCount = (int)DB.SearchCount(registrationQuery);
+            var registrationIds = registrationCount <= 0
+                ? new List<string>()
+                : DB.Search(registrationQuery.AddPaging(registrationCount, 0)).Select(x => x.Id).ToList();
+            if (!settled && receiptIds.Count == 0 && registrationIds.Count == 0)
                 return;
 
             DelayCommand(1f, () =>
@@ -255,6 +270,8 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var receiptId in receiptIds)
                     DB.Delete<ShipModuleReceipt>(receiptId);
+                foreach (var registrationId in registrationIds)
+                    DB.Delete<ShipRegistrationReceipt>(registrationId);
                 foreach (var removalId in givenAgain)
                     DB.Delete<ShipModuleRemoval>(removalId);
                 foreach (var (ackShipId, ackInstanceId) in acknowledged)

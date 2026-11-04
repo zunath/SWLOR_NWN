@@ -581,7 +581,10 @@ public class StationBuildingTests
         var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
         var check = service.Substring(service.IndexOf("public static bool HasStationPower(", StringComparison.Ordinal));
         check = check.Substring(0, check.IndexOf("public static bool IsCitizen(", StringComparison.Ordinal));
-        check.Should().Contain("CityPowers.Can(station, GetObjectUUID(player), power)").And.NotContain("HasPropertyPermission(");
+        check.Should().Contain("CityPowers.Can(current, GetObjectUUID(player), power)").And.NotContain("HasPropertyPermission(");
+        check.IndexOf("var current = station == null ? null : DB.Get<WorldProperty>(station.Id);", StringComparison.Ordinal)
+            .Should().BeInRange(0, check.IndexOf("CityPowers.Can(", StringComparison.Ordinal),
+                "a menu left open since a step-down asks the station's current roles, not the snapshot it loaded");
         check.IndexOf("GetIsDM(player)", StringComparison.Ordinal).Should().BeLessThan(check.IndexOf("CityPowers.Can(", StringComparison.Ordinal),
             "staff keep the access they have through HasPropertyPermission");
     }

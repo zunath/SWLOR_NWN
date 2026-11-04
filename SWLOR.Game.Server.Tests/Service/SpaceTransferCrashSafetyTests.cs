@@ -376,7 +376,8 @@ public class SpaceTransferCrashSafetyTests
             "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
 
         InOrder(Method(viewModel, "public Action OnClickRegisterShip()"),
-            "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkDeedRegistering(Player, item, ship.Id))", "return;", "DB.Set(ship);", "DestroyObject(item);");
+            "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkDeedRegistering(Player, item, ship.Id))", "return;", "DB.Set(ship);",
+            "Space.SaveRegistrationReceipt(Player, ship.Id);", "DestroyObject(item);");
         var unregister = Method(viewModel, "public Action OnClickUnregisterShip()");
         InOrder(unregister, "if (!Item.TryAcquireItem(Player, deed))", "if (!Space.MarkDeedUnregistered(Player, deed, shipId))", "return;",
             "Space.RemoveUnregisteredShip(shipId);", "Space.ClearDeedUnregistered(deed);");
@@ -417,7 +418,16 @@ public class SpaceTransferCrashSafetyTests
         new ShipModuleRemoval().OwnerPlayerId.Should().BeEmpty();
         typeof(ShipModuleRemoval).GetProperty(nameof(ShipModuleRemoval.OwnerPlayerId))!
             .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
-        InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)", "if (DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
+        // A ship sold and unregistered by its buyer before the registering player's login leaves the receipt, so the marked
+        // deed still goes and the hull is not duplicated.
+        InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)",
+            "if (DB.Get<ShipRegistrationReceipt>(registering) != null || DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
+        InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipRegistrationReceipt>(registrationId);");
+        new ShipRegistrationReceipt().OwnerPlayerId.Should().BeEmpty();
+        typeof(ShipRegistrationReceipt).GetProperty(nameof(ShipRegistrationReceipt.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
+        Method(Source("Service", "SpaceShipItemMoves.cs"), "public static void RemoveUnregisteredShip(")
+            .Should().NotContain("ShipRegistrationReceipt", "unregistering keeps the receipt for the registering player's login");
         InOrder(settle, "GetLocalString(item, DeedUnregisteredVariable)", "ship.OwnerPlayerId == playerId",
             "RemoveUnregisteredShip(unregistered);");
     }

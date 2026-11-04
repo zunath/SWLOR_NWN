@@ -118,6 +118,8 @@ public class WildSpaceTests
         wild.Should().Contain("TemporaryStatModifier.Consume(ship, stat, WildSpaceEnvironmentGroup)");
         wild.Should().Contain("Stat.ApplyCreatureMovementRate(ship)", "the Black Hole's speed reaches the movement rate");
         wild.Should().Contain("RemoveWildSpaceEnvironment(ship);\n            var ignorePenalties = IsProwlerShip(ship);", "entering again replaces, never stacks");
+        wild.Should().Contain("if (GetIsObjectValid(ship) && GetArea(ship) == area && !IsAtCrewStation(ship))",
+            "a crew member's station already takes the ship's environment, so a second copy would double it");
 
         var space = ReadServerSource("Service", "Space.cs");
         space.Should().Contain("Stat.GetStatAdjustment(target, StatType.SpaceShieldDamageTakenPercentAdjustment)");

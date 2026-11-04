@@ -50,10 +50,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // A pilot's hull is known once the launch or jump has finished.
+            // A pilot's hull is known once the launch or jump has finished. A crew member at a station is moved into the
+            // pilot's area but is not a ship: their station uses the ship's environment, so they take none of their own.
             DelayCommand(WildSpaceEnvironmentDelaySeconds, () =>
             {
-                if (GetIsObjectValid(ship) && GetArea(ship) == area)
+                if (GetIsObjectValid(ship) && GetArea(ship) == area && !IsAtCrewStation(ship))
                     ApplyWildSpaceEnvironment(ship, environment, true);
             });
         }

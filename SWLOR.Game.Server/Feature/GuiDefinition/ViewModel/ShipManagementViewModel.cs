@@ -1875,6 +1875,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DB.Set(ship);
+                // The receipt keeps the deed's removal at the next login even if the ship is sold and unregistered first.
+                Space.SaveRegistrationReceipt(Player, ship.Id);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {registeredShipCount + 1} / {Space.MaxRegisteredShips}";

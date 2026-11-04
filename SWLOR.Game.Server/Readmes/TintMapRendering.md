@@ -508,38 +508,37 @@ scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement. CleanModels composes these transforms
 directly; the current adapter does not apply that legacy postcompile repair.
 
-Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
-meshes despite having zero constraints on every
-vertex, sending an immobile panel through the cloth-physics renderer. A September
-16 report showed that panel displaced above the hood; skeleton and inverse-bind
-checks alone did not cover that renderer path. The correction keeps the authored
-vertices, materials, transforms, animation IDs and skin bindings, while removing
-cloth simulation from these static panels. Both native phenotype 0/22 models and
-generated RGB body roots are covered; the elf variants were already rigid.
-`SWLOR_Haks/tools/MakeRobePanelsRigid.py --robe 236 --game-data "<NWN data>" --apply`
-recompiles and validates the affected models before installing any output. It
-reports and skips ASCII targets, whose inverse bindings cannot be preserved by
-the compiled-model audit, while continuing with compiled targets for the robe. It
-refreshes owned resource hashes and drops affected cached build proofs. Run
-`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRigidRobePanels.py"`
-to check all native and RGB variants. In-game confirmation is still required for
-the reported displacement after deploying the updated `sw_pt_robe` and
-`sw_pt_root` HAKs.
+Robe 236 (Long Duster) keeps the models released with the Combat Upgrade
+(SWLOR_NWN #2277, SWLOR_Haks `8a1ab83c7f`). After that release its torso covering
+was made rigid (#432), then skinned to the torso with the hood and belt (#455), and its
+generated skirts were re-weighted (#539, #549). Players found the result worse than
+the released robe, so it was reverted in November 2026.
+`SWLOR_Haks/tools/RestoreRobe236Release.py --apply` rebuilds the 16 native phenotype
+0/22 models from pinned release blobs and keeps three later corrections: animation part
+IDs follow the current coat animation parents; the female Ewok/Ugnaught model keeps its
+own sit and sitdown clips as `AlignRobeAnimations.py` aligned them (its released geometry
+is recompiled with the aligned clips' exact controller values, because released clips
+would fork the animation bridge shared by every female-dwarf robe); and the male
+Ewok/Ugnaught right sleeve keeps its forearm cuff weights. Then regenerate the `p??200`
+RGB roots from those models with `GenerateRobeRgbModels.py`, so normal bodies draw the released coverings:
+a cloth-physics torso panel (rigid on elves) and a hood and belt that ride the torso
+joint without skin weights. `BindRobePanels.py --all` skips robe 236, and both panel
+tools refuse `--robe 236`. `TestRobe236Release.py` checks the native bytes, part IDs,
+generated coverings and these exclusions. Accepted trade-off: the reports behind the
+reverted repairs (a September 16 report of the torso panel displaced above the hood,
+and a later one of the upper robe displaced after movement or a skill) can recur. The
+November live check on all eight bodies showed no displacement after conjure, walking
+or idle, but it did not cover every ability clip.
 
-A subsequent player report after that update still showed the upper robe
-displaced after movement or a skill. The torso covering, hood (`hood002`) and
-belt (`beltjr`) now use skin meshes with a single full torso weight, matching the
-bone-following renderer used by the sleeves and skirt. Their rigid shapes,
-materials, local transforms, animation IDs and existing sleeve/skirt inverse
-bindings are preserved. New panel inverse binds are calculated from the compiled
-world transforms rather than relying on the legacy compiler's calculation.
-This covers all 24 native and RGB models across eight body families.
-Run `SWLOR_Haks/tools/BindRobePanels.py --robe 236 --panel coat_top --panel coat_top2
---panel hood002 --panel beltjr --game-data "<NWN data>" --apply` to reproduce the
-repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePanels.py"`
-checks all 72 panel bindings and compiled vertex placement through movement,
-skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
-client's animation transitions remains an in-game check.
+The panel tools still own every other robe. `MakeRobePanelsRigid.py --robe <id>
+--game-data "<NWN data>" --apply` removes cloth simulation from static panels whose
+dangly constraints are all zero, keeping the authored vertices, materials, transforms,
+animation IDs and skin bindings; it skips ASCII targets. `BindRobePanels.py --all
+--game-data "<NWN data>" --apply` gives each static attachment in the catalog a single
+full weight on its body bone, so it uses the bone-following renderer instead of drifting
+after animation changes. New inverse binds come from the compiled world transforms.
+Run `TestRigidRobePanels.py` and `TestBoundRobePanels.py`, then rebuild `sw_pt_robe`
+and `sw_pt_root`.
 
 Normal-body robe 236 uses the generated `p??200` roots, whether or not the
 item has custom RGB. Its skirts are weighted to separate coat helpers, as in the native robe.

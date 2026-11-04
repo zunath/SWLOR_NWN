@@ -1478,8 +1478,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardedHitNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
-        add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
-        add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
+        add_stat(stats, "StatusAppliedTargetAttackingAllyEnmityDurationSeconds", parse_duration(description) or 30)
     if base == "Covering Presence":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
@@ -1492,6 +1492,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "DamageTakenNextSkillAbilitySkillType", skill_expr)
         add_stat(stats, "DamageTakenNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "DamageTakenNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        if "next control ability" in lowered:
+            add_stat(stats, "DamageTakenNextSkillAbilityRequiredCategory", status_category_expression("Control"))
     if base == "Covering Claws":
         if "ally-protection abilities" in lowered:
             add_stat(stats, "AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId", "(int)PerkCategoryType.KatarIronGuard")
@@ -2578,10 +2580,9 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("ExtraDamageIfRecentGuardedHit", str(max(0, guarded_damage - base_damage)))
         add_profile_property("RecentGuardedHitWindowSeconds", recent_guard_counter.group(1))
         if recent_guard_counter.group(3):
-            add_profile_property("ProtectedTargetHitWindowSeconds", recent_guard_counter.group(1))
-            add_profile_property("RequireRecentGuardedHitForConditionalStatus", "true")
-            add_profile_property("ConditionalTargetStatusEffect", "typeof(DazedStatusEffect)")
-            add_profile_property("ConditionalTargetStatusDurationSeconds", recent_guard_counter.group(3))
+            # The impact's own status, so Control perks count the guarded Daze like Joint Lock's.
+            add_profile_property("RecentGuardedHitStatusEffect", "typeof(DazedStatusEffect)")
+            add_profile_property("RecentGuardedHitStatusDurationSeconds", recent_guard_counter.group(3))
 
     ward_daze = re.search(
         r"If the target attacked your ward in the last (\d+) seconds, also inflicts Dazed for (\d+) seconds",

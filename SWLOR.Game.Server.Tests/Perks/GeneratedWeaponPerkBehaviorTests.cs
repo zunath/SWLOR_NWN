@@ -902,7 +902,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackWindowSeconds, "30");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.LowHPGuard, "25");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedRequiredCategory, "(int)StatusEffectCategory.Control");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedSelfEnmityPercentAdjustment, "15");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment, "15");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.OutgoingDebuffDurationPercentAdjustment, "20");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.DamageTakenNextSkillAbilityDamageBonus, "20");
 
@@ -1191,8 +1191,8 @@ public class GeneratedWeaponPerkBehaviorTests
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 8");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 12");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 17");
-        guardCounterSource.Should().Contain("RequireRecentGuardedHitForConditionalStatus = true");
-        guardCounterSource.Should().Contain("ConditionalTargetStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().Contain("RecentGuardedHitStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().NotContain("ConditionalTargetStatusEffect");
 
         var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
         foreach (var feat in new[]

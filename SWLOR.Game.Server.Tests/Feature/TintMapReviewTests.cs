@@ -186,7 +186,7 @@ public class TintMapReviewTests
         definitionMethods["BuildColours"].ToString().Should().Contain("row.AddGroup(BuildColorPalette)",
             "appearance and equipment presets must share the same individual-button palette construction");
         definitionMethods["BuildAppearanceEditor"].ToString().Should().Contain("BuildColours(colours, BuildBodySwatches)");
-        definitionMethods["BuildEquipmentEditor"].ToString().Should().Contain("BuildColours(colours, BuildItemSwatches)");
+        definitionMethods["BuildEquipmentEditor"].ToString().Should().Contain("BuildColours(colours, BuildItemSwatches, ItemSwatchesHeight)");
         definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
         definition.Should().NotContain(".SetText(\"Custom Color\")");
         definition.Should().NotContain("CustomTintSelectionText");

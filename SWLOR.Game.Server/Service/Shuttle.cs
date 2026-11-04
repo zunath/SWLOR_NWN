@@ -726,6 +726,12 @@ namespace SWLOR.Game.Server.Service
                 origin == destination)
                 return false;
 
+            if (Planet.TryGetClosedMessage(destination, out var closedMessage))
+            {
+                SendMessageToPC(player, ColorToken.Red(closedMessage));
+                return false;
+            }
+
             var playerId = GetObjectUUID(player);
             var existingRide = GetRide(playerId);
             if (existingRide != null)

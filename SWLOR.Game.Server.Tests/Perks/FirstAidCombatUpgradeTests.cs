@@ -108,8 +108,9 @@ public class FirstAidCombatUpgradeTests
 
         var requirementSource = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementItem.cs").FullName);
-        requirementSource.Should().Contain("GetItemPossessedBy(player, ItemResref)");
-        requirementSource.Should().NotContain("GetFirstItemInInventory(player)");
+        // Supplies match by tag in every stack and bag, so the merchant stacks' tags must be the requirement names.
+        requirementSource.Should().Contain("GetTag(item) == ItemResref");
+        requirementSource.Should().Contain("total += GetItemStackSize(item)");
         requirementSource.Should().NotContain("CountItems");
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -161,6 +162,254 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Combat.SetAbilityHitResolutionOverride(null);
             }
+        }
+
+        [EngineTest("Guard Counter III counts as a Control ability only after a guarded hit", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task GuardCounterGuardedDazeCountsAsControl(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var unguardedTarget = ctx.SpawnCreature("nw_rat001", 2f);
+            var guardedTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var target in new[] { unguardedTarget, guardedTarget })
+                Prepare(ctx, target);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.GuardTraining, 1);
+            ctx.AssertEqual((int)StatusEffectCategory.Control,
+                Stat.GetStatAdjustment(caster, StatType.StatusAppliedRequiredCategory),
+                "Guard Training declares the Control rider category");
+
+            var guardCounter = Ability.GetAbilityDetail(FeatType.GuardCounter3);
+            async Task ApplyGuardCounter(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, guardCounter);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => guardCounter.ImpactAction(caster, target, 3, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            var defense = Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment);
+            ctx.Assert(!Combat.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
+            await ApplyGuardCounter(unguardedTarget);
+            ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(unguardedTarget),
+                "without a guarded hit Guard Counter III inflicts no Daze");
+            ctx.AssertEqual(defense, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
+                "without its Daze Guard Counter III is not a Control ability for Guard Training");
+
+            Combat.TrackGuardedHit(caster);
+            await ApplyGuardCounter(guardedTarget);
+            ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(guardedTarget),
+                "after a guarded hit Guard Counter III inflicts Daze");
+            ctx.AssertEqual(defense + 10, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
+                "the guarded Daze makes Guard Counter III a Control ability for Guard Training");
+        }
+
+        [EngineTest("Scrapper Control accuracy reaches queued Guard Counter III only after a guarded hit", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task ScrapperControlAccuracyReachesQueuedGuardCounter(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.ScrapperControl, 1);
+
+            // Queued abilities roll with the weapon attack, so the category accuracy must be added there.
+            int QueuedHitChance(FeatType feat) => Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                caster, SkillType.Katar, Ability.GetAbilityDetail(feat));
+            var baseline = QueuedHitChance(FeatType.GuardCounter1);
+            ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
+                "without a guarded hit Guard Counter III is not a control ability for Scrapper Control");
+
+            Combat.TrackGuardedHit(caster);
+            ctx.AssertEqual(baseline + 3, QueuedHitChance(FeatType.GuardCounter3),
+                "after a guarded hit Scrapper Control adds +3% Ability Accuracy to Guard Counter III's queued roll");
+            ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter1),
+                "Guard Counter I never applies a control status");
+        }
+
+        [EngineTest("A conditional Control status counts for Control riders when it lands", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task ConditionalControlStatusTriggersControlRiders(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var quietTarget = ctx.SpawnCreature("nw_rat001", 2f);
+            var attackingTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var target in new[] { quietTarget, attackingTarget })
+                Prepare(ctx, target);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.ChargedBlows, 1);
+
+            // Reprisal has no status of its own: it Dazes (a Control status) only a target that recently damaged you.
+            var reprisal = Ability.GetAbilityDetail(FeatType.Reprisal1);
+            ctx.AssertEqual(StatusEffectCategory.None, reprisal.ResolveImpactStatusCategories(caster),
+                "Reprisal authors no impact status, so only its conditional Daze can make it Control");
+            async Task ApplyReprisal(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, reprisal);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => reprisal.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ApplyReprisal(quietTarget);
+                ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(quietTarget),
+                    "Reprisal does not Daze a target that has not damaged you");
+                ctx.AssertEqual(0, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "without its Daze Reprisal does not trigger Charged Blows");
+
+                Combat.ApplyDamageDealtEffects(attackingTarget, caster, 5, SkillType.Invalid);
+                ctx.Assert(Combat.HasRecentDamageTarget(attackingTarget, caster, 30f), "the target recently damaged the caster");
+                await ApplyReprisal(attackingTarget);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(attackingTarget),
+                    "Reprisal Dazes a target that recently damaged you");
+                ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "the conditional Daze triggers Charged Blows like any applied Control status");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("Redirecting Guard draws Enmity only from a controlled target attacking an ally", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task RedirectingGuardRequiresTargetAttackingAlly(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var ally = ctx.SpawnCreature("nw_bandit001", 1.5f);
+            var allyAttacker = ctx.SpawnCreature("nw_rat001", 2f);
+            var casterAttacker = ctx.SpawnCreature("nw_rat001", 2.5f);
+            var idleTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            var challengedTarget = ctx.SpawnCreature("nw_rat001", 3.5f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, ally, allyAttacker, casterAttacker, idleTarget, challengedTarget })
+                Prepare(ctx, creature);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.RedirectingGuard, 1);
+            ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.StatusAppliedSelfEnmityPercentAdjustment),
+                "Redirecting Guard no longer raises the caster's Enmity against every enemy");
+
+            await ctx.ExecuteInCreatureContextAsync(caster, () => AddHenchman(caster, ally));
+            await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the ally to join the caster's party");
+
+            var jointLock = Ability.GetAbilityDetail(FeatType.JointLock1);
+            async Task ApplyJointLock(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, jointLock);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => jointLock.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            int ChallengeFromCaster(uint target) => StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Where(effect => effect is ChallengeEnmityStatusEffect && effect.Source == caster && !effect.IsFlaggedForRemoval)
+                .Select(effect => effect.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment))
+                .DefaultIfEmpty(0)
+                .Max();
+
+            // A small lead, so Joint Lock's own damage and Enmity would make the caster the top target
+            // if the check ran after the hit.
+            Enmity.ModifyEnmity(ally, allyAttacker, 1);
+            Enmity.ModifyEnmity(caster, casterAttacker, 100);
+            Enmity.ModifyEnmity(ally, challengedTarget, 1);
+            StatusEffect.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ApplyJointLock(allyAttacker);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(allyAttacker), "Joint Lock Dazes the ally's attacker");
+                ctx.AssertEqual(15, ChallengeFromCaster(allyAttacker),
+                    "controlling a target attacking an ally gives +15% Enmity toward the caster on that target");
+                ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.EnmityPercentAdjustment),
+                    "the caster's Enmity against other enemies is unchanged");
+
+                await ApplyJointLock(casterAttacker);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(casterAttacker), "Joint Lock Dazes the caster's attacker");
+                ctx.AssertEqual(0, ChallengeFromCaster(casterAttacker), "a target attacking the caster is not attacking an ally");
+
+                await ApplyJointLock(idleTarget);
+                ctx.AssertEqual(0, ChallengeFromCaster(idleTarget), "a target attacking no one is not attacking an ally");
+
+                await ApplyJointLock(challengedTarget);
+                ctx.AssertEqual(25, ChallengeFromCaster(challengedTarget),
+                    "Redirecting Guard does not replace a stronger Challenge from the same caster");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("Breaker Reversal's bonus waits for the next Katar control ability", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task BreakerReversalRequiresControlAbility(EngineTestContext ctx)
+        {
+            var defender = ctx.SpawnCreature("nw_bandit001");
+            var attacker = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, defender);
+            Prepare(ctx, attacker);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(defender, perk, 0);
+            ctx.SetNPCPerkLevel(defender, PerkType.BreakerReversal, 1);
+            ctx.AssertEqual((int)StatusEffectCategory.Control,
+                Stat.GetStatAdjustment(defender, StatType.DamageTakenNextSkillAbilityRequiredCategory),
+                "Breaker Reversal requires a Control ability");
+
+            StatusEffectCategory Categories(FeatType feat) =>
+                Ability.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
+
+            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
+                "a Katar ability without a Control status does not spend Breaker Reversal");
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+                "Guard Counter III without a guarded hit is not a Control ability");
+            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+                "the next Katar control ability spends Breaker Reversal's +20 DMG");
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+                "the bonus is spent once");
+
+            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
+            Combat.TrackGuardedHit(defender);
+            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+                "Guard Counter III after a guarded hit is a control ability for Breaker Reversal");
         }
 
         [EngineTest("Beast areas select a single enemy and self-centered impacts select the beast", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]

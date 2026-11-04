@@ -319,12 +319,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -668,7 +670,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -727,7 +729,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -743,7 +745,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -837,6 +839,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -1629,12 +1662,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -1978,7 +2013,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -2037,7 +2072,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -2053,7 +2088,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -2147,6 +2182,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -2939,12 +3005,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -3288,7 +3356,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -3347,7 +3415,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -3363,7 +3431,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -3457,6 +3525,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -4249,11 +4348,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4818,7 +4921,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -4877,7 +4980,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -4893,7 +4996,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -4987,6 +5090,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -5779,12 +5913,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -6128,7 +6264,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -6187,7 +6323,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -6203,7 +6339,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -6297,6 +6433,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -8838,12 +9005,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -9187,7 +9356,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -9246,7 +9415,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -9262,7 +9431,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -9356,6 +9525,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -12405,7 +12605,9 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -12586,7 +12788,7 @@
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A standard issue Republic Blaster Rifle!"
                 }
               },
               "Identified": {
@@ -12627,7 +12829,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -12643,7 +12845,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -12772,6 +12974,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   }
                 ]
@@ -13822,7 +14055,9 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -14042,7 +14277,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -14058,7 +14293,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -14166,11 +14401,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -14182,7 +14417,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -14218,6 +14453,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   }
                 ]
@@ -15712,12 +15978,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -16061,7 +16329,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -16120,7 +16388,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -16136,7 +16404,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -16230,6 +16498,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -17147,7 +17446,9 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -17367,7 +17668,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -17383,7 +17684,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -17491,11 +17792,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -17507,7 +17808,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -17543,6 +17844,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   }
                 ]
@@ -18579,7 +18911,9 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -18799,7 +19133,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -18815,7 +19149,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -18923,11 +19257,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -18939,7 +19273,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -18975,6 +19309,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   }
                 ]
@@ -88818,231 +89183,6 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 6968
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": -3.141592502593994
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 10
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 3
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 5
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 1
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dice, Dots"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "_mdrn_pl_dicedot"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "_mdrn_pl_dicedot"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 16.75946044921875
-        },
-        "Y": {
-          "type": "float",
-          "value": 59.16189956665039
-        },
-        "Z": {
-          "type": "float",
-          "value": 0.6263946890830994
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
           "value": 20561
         },
         "AutoRemoveKey": {
@@ -89258,231 +89398,6 @@
         "Z": {
           "type": "float",
           "value": 0.6250103712081909
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 6969
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": -3.141592502593994
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 10
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 3
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 5
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 1
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dice, Cuts"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "_mdrn_pl_dicecut"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "_mdrn_pl_dicecut"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 16.88167572021484
-        },
-        "Y": {
-          "type": "float",
-          "value": 59.19428634643555
-        },
-        "Z": {
-          "type": "float",
-          "value": 0.6263946890830994
         }
       },
       {

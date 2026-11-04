@@ -40,8 +40,8 @@ public class KeyItemIconTests
             .Where(x => x.Detail.Category == KeyItemCategoryType.Music)
             .ToList();
 
-        entries.Should().HaveCount(817);
-        uniqueIcons.Should().HaveCount(200);
+        entries.Should().HaveCount(818);
+        uniqueIcons.Should().HaveCount(201);
         maps.Should().HaveCount(100);
         fieldNotes.Should().HaveCount(139);
         songs.Should().HaveCount(378);

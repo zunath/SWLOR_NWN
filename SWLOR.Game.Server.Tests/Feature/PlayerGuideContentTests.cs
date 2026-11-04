@@ -33,6 +33,7 @@ public class PlayerGuideContentTests
         "Rebuilds",
         "Death & Recovery",
         "Combat Basics",
+        "Stat Caps",
         "Control & Harmful Effects",
         "Espionage",
         "Disguises",
@@ -291,6 +292,28 @@ public class PlayerGuideContentTests
     }
 
     [Test]
+    public void StatCapsTopic_PublishesTheCurrentCaps()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Stat Caps");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Where(character => character > 127).Should().BeEmpty("guide text must use ASCII punctuation");
+        text.Should().Contain($"between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent");
+        text.Should().Contain($"at most {Combat.MaximumCriticalRate} percent");
+        text.Should().Contain($"+{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
+        text.Should().Contain($"at most +{Combat.MaximumDamageBonusPercent} percent");
+        text.Should().Contain($"stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined");
+        text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
+        text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
+        text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
+        text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
+        text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");
+        text.Should().Contain($"stop at {Resistance.MaximumResistance - 1} percent for players");
+        text.Should().Contain("Movement speed stops at 150 percent of normal");
+        text.Should().Contain($"lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds");
+    }
+
+    [Test]
     public void AbilitiesTopic_PublishesTheHostileAbilityDelay()
     {
         var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Abilities");
@@ -369,6 +392,10 @@ public class PlayerGuideContentTests
 
     private static bool IsCombatManifestEntry(IReadOnlyDictionary<string, string> row)
     {
+        // The crafting and gathering lines have capstones too, but they are not combat trees.
+        if (row["Tab"] is "Smithery" or "Engineering" or "Fabrication" or "Agriculture" or "Gathering")
+            return false;
+
         if (row["Type"] is "Combat" or "Stance" or "Aura" or "Toggle" or "Capstone")
             return true;
 

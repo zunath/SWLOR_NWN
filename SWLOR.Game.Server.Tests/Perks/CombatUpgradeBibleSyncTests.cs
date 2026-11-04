@@ -1208,6 +1208,74 @@ public class CombatUpgradeBibleSyncTests
     }
 
     [Test]
+    public void CombatUpgradeBibleManifest_DescribesWillpowerHealingAtBaseline()
+    {
+        // Heals and temporary HP scale through AbilityEffectScaling.ScaleRestorativeEffect. Their descriptions list
+        // the 10 WIL amount (base x RestorativeMultiplierAtBaseline) and say how much each WIL point adds, so the
+        // listed number is the minimum any character gets.
+        const int BaselineWillpower = 10;
+        const int CapWillpower = 26;
+        var baseline = (decimal)AbilityEffectScaling.RestorativeMultiplierAtBaseline;
+        var cap = (decimal)AbilityEffectScaling.RestorativeMultiplierAtCap;
+        cap.Should().Be(baseline * 2, "the descriptions say WIL doubles the amount at 26");
+        var perPoint = ((cap - baseline) / baseline / (CapWillpower - BaselineWillpower) * 100m)
+            .ToString("0.##", CultureInfo.InvariantCulture);
+        string Sentence(string noun) =>
+            $"Each WIL point above {BaselineWillpower} adds {perPoint}% to the {noun}, up to double at {CapWillpower} WIL.";
+
+        // Base amounts passed to HealAmount in the ability definitions: (perk, flat HP, % of max HP, temporary HP).
+        var rows = new (string PerkName, decimal? Flat, decimal Percent, bool TemporaryHP)[]
+        {
+            ("Purifying Wave", 36m, 2m, false), ("Last Stand of the Light", 68m, 3.75m, true),
+            ("Benevolence I", 6m, 1.5m, false), ("Benevolence II", 26m, 2.5m, false), ("Benevolence III", 63m, 3.5m, false),
+            ("Guardian Ward I", 6m, 1.5m, true), ("Guardian Ward II", 22m, 2.25m, true),
+            ("Guardian Ward III", 44m, 3m, true), ("Guardian Ward IV", 68m, 3.75m, true),
+            ("Renewal I", 1m, 0.25m, false), ("Renewal II", 6m, 0.5m, false), ("Renewal III", 14m, 0.75m, false),
+            ("Force Mend", 27m, 1.5m, false), ("Force Sanctuary", 9m, 0.5m, false), ("Harmonic Restoration", 27m, 1.5m, false),
+            ("Med Kit I", 11m, 2m, false), ("Med Kit II", 42m, 3.5m, false), ("Med Kit III", 80m, 5m, false),
+            ("Med Kit IV", 108m, 6m, false), ("Emergency Sealant", 5m, 0.25m, false),
+            ("Kolto Mist I", 2m, 0.25m, false), ("Kolto Mist II", 9m, 0.5m, false),
+            ("Infusion I", 7m, 0.5m, false), ("Infusion II", 14m, 0.75m, false),
+            ("Resuscitation II", null, 20m, false), ("Emergency Triage", 81m, 4.5m, false),
+            ("Pain Suppressant I", 24m, 2.5m, true), ("Pain Suppressant II", 68m, 3.75m, true),
+            ("Emergency Cocktail", 54m, 3m, true)
+        };
+
+        var root = FindRepositoryRoot();
+        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(row => row.Tab is "Force" or "First Aid")
+            .Select(row => (Row: row, Description: string.Join(" ", row.Description.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))))
+            .ToArray();
+
+        var failures = manifest
+            .Where(entry => entry.Description.Contains("HP plus WIL scaling", StringComparison.OrdinalIgnoreCase))
+            .Select(entry => $"{Describe(entry.Row)}: WIL multiplies heals and temporary HP; list the 10 WIL amount and the per-point WIL sentence instead of 'plus WIL scaling'.")
+            .ToList();
+
+        foreach (var (perkName, flat, percent, temporaryHP) in rows)
+        {
+            var listedPercent = Math.Round(percent * baseline, 2, MidpointRounding.AwayFromZero)
+                .ToString("0.##", CultureInfo.InvariantCulture);
+            var amount = flat.HasValue
+                ? $"{Math.Round(flat.Value * baseline, MidpointRounding.AwayFromZero):0}{(temporaryHP ? " temporary" : string.Empty)} HP plus {listedPercent}% of "
+                : $"{listedPercent}% HP";
+            var sentence = Sentence(temporaryHP ? "temporary HP" : "healing");
+            var matches = manifest.Where(entry => entry.Row.PerkName == perkName).ToArray();
+            if (matches.Length == 0)
+                failures.Add($"{perkName}: missing from the Force and First Aid manifest rows.");
+            foreach (var (row, description) in matches)
+            {
+                if (!description.Contains(amount, StringComparison.Ordinal))
+                    failures.Add($"{Describe(row)}: must list the 10 WIL amount '{amount}'.");
+                if (!description.Contains(sentence, StringComparison.Ordinal))
+                    failures.Add($"{Describe(row)}: must state '{sentence}'");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
     public void DroidInstructionResources_MatchCurrentRecipeDefinitionsAndMigration()
     {
         var root = FindRepositoryRoot();

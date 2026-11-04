@@ -16,6 +16,12 @@ public static class WeaponFit
 {
     private const ObjectVisualTransformDataScopeType Scope = ObjectVisualTransformDataScopeType.Base;
 
+    private const string FittedRightVariable = "WEAPON_FIT_HELD_RIGHT";
+    private const string FittedLeftVariable = "WEAPON_FIT_HELD_LEFT";
+
+    [NWNEventHandler(ScriptName.OnModuleEquip)]
+    public static void OnModuleEquip() => Apply(GetPCItemLastEquippedBy());
+
     [NWNEventHandler(ScriptName.OnModuleUnequip)]
     public static void OnModuleUnequip() => Release(GetPCItemLastUnequipped());
 
@@ -56,15 +62,30 @@ public static class WeaponFit
     {
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             return;
-        ApplyHand(creature, InventorySlot.RightHand);
-        ApplyHand(creature, InventorySlot.LeftHand);
+        var right = GetItemInSlot(InventorySlot.RightHand, creature);
+        var left = GetItemInSlot(InventorySlot.LeftHand, creature);
+        // A replacement need not raise a separate unequip event for the displaced weapon.
+        ReleaseDisplaced(creature, FittedRightVariable, right, left);
+        ReleaseDisplaced(creature, FittedLeftVariable, right, left);
+        ApplyHand(creature, InventorySlot.RightHand, right, FittedRightVariable);
+        ApplyHand(creature, InventorySlot.LeftHand, left, FittedLeftVariable);
     }
 
-    private static void ApplyHand(uint creature, InventorySlot hand)
+    private static void ReleaseDisplaced(uint creature, string variable, uint right, uint left)
     {
-        var item = GetItemInSlot(hand, creature);
+        var previous = GetLocalObject(creature, variable);
+        if (GetIsObjectValid(previous) && previous != right && previous != left)
+            Release(previous);
+    }
+
+    private static void ApplyHand(uint creature, InventorySlot hand, uint item, string variable)
+    {
         if (!IsFittable(item))
+        {
+            DeleteLocalObject(creature, variable);
             return;
+        }
+        SetLocalObject(creature, variable, item);
         var owner = TwinPistolEquipment.ResolveAppearanceOwner(creature, item);
         if (!GetIsObjectValid(owner))
             owner = item;

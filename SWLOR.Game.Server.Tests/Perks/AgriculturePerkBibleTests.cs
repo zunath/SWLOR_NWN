@@ -3,17 +3,21 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.FarmingDefinition;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Tests.Perks.AgriculturePerkLines;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-/// <summary>Keeps the Agriculture tab of the Design Bible in step with the Chef and Angler perks the game registers.</summary>
+/// <summary>
+/// Keeps the Agriculture tab of the Design Bible in step with the Farmer, Chef and Angler perks the game registers, and with the
+/// crop table the farming system builds its crops from.
+/// </summary>
 public class AgriculturePerkBibleTests
 {
-    private static readonly string[] Lines = { "Chef", "Angler" };
+    private static readonly string[] Lines = { "Farmer", "Chef", "Angler" };
 
-    private static readonly string[] Roman = { "I", "II", "III" };
+    private static readonly string[] Roman = { "I", "II", "III", "IV", "V" };
 
     [Test]
     public void EveryPerkLevelHasItsBibleRowWithTheCodesPriceRankAndDescription()
@@ -22,7 +26,7 @@ public class AgriculturePerkBibleTests
         var failures = new List<string>();
         var expectedRows = 0;
 
-        foreach (var (line, perks) in new[] { ("Chef", Chef()), ("Angler", Angler()) })
+        foreach (var (line, perks) in new[] { ("Farmer", Farmer()), ("Chef", Chef()), ("Angler", Angler()) })
         {
             foreach (var (type, detail) in perks.OrderBy(pair => pair.Key))
             {
@@ -48,7 +52,7 @@ public class AgriculturePerkBibleTests
             }
         }
 
-        rows.Should().HaveCount(expectedRows, "the Bible holds one row per purchasable perk level and no other Chef or Angler rows");
+        rows.Should().HaveCount(expectedRows, "the Bible holds one row per purchasable perk level and no other Farmer, Chef or Angler rows");
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
@@ -62,12 +66,14 @@ public class AgriculturePerkBibleTests
         foreach (var name in new[] { "Signature Dish", "Trophy Catch" })
             rows.Single(row => row["C"] == name)["F"].Should().Be("Capstone", name);
         rows.Single(row => row["C"] == "Seasoned Palate I")["F"].Should().Be("Trait", "a Toggle row would need a combat animation plan entry");
+        rows.Where(row => row["A"] == "Farmer").Select(row => row["F"]).Should().OnlyContain(type => type == "Trait",
+            "the Farmer line has no style choice and no capstone");
         rows.Single(row => row["C"] == "Reduce I")["K"].Should().Be("12");
         rows.Single(row => row["C"] == "Reduce II")["K"].Should().Be("9");
     }
 
     [Test]
-    public void TheAgricultureTabTotalsTheTwoLinesAtFiftySp_BesideTheFarmingRowsNotStarted()
+    public void TheAgricultureTabTotalsTheThreeLinesAtTwentyFiveSpEach()
     {
         var rows = ReadAgricultureRows().ToList();
         var perkRows = rows.Where(row => Lines.Contains(row.GetValueOrDefault("A"))).ToList();
@@ -75,16 +81,62 @@ public class AgriculturePerkBibleTests
         foreach (var line in Lines)
         {
             var lineRows = perkRows.Where(row => row["A"] == line).ToList();
+            var styles = lineRows.Where(row => row["F"] == "Style").ToList();
+            if (line == "Farmer")
+            {
+                lineRows.Should().HaveCount(10, "ten purchases and no second style");
+                styles.Should().BeEmpty();
+                lineRows.Sum(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)).Should().Be(25m, line);
+                continue;
+            }
+
             lineRows.Should().HaveCount(11, "ten purchases and the second style");
-            var alternativeStyle = lineRows.Where(row => row["F"] == "Style").Skip(1).Single();
-            (lineRows.Sum(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)) - decimal.Parse(alternativeStyle["B"], CultureInfo.InvariantCulture))
+            (lineRows.Sum(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)) - decimal.Parse(styles.Skip(1).Single()["B"], CultureInfo.InvariantCulture))
                 .Should().Be(25m, line);
         }
 
         var totals = rows.Where(row => row.GetValueOrDefault("A") == "Total").ToList();
-        totals.Select(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)).Should().Equal(new[] { 9m, 25m, 25m }, "Farming, Chef and Angler");
+        totals.Select(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)).Should().Equal(new[] { 25m, 25m, 25m }, "Farmer, Chef and Angler");
         var header = rows.Single(row => row.GetValueOrDefault("C") == "Total SP");
-        decimal.Parse(header["D"], CultureInfo.InvariantCulture).Should().Be(59m, "Farming (not started) and the two lines");
+        decimal.Parse(header["D"], CultureInfo.InvariantCulture).Should().Be(75m, "the three lines");
+    }
+
+    [Test]
+    public void TheFarmerLineIsTheFirstLineOnTheTab_AndNoFarmingRowsRemainFromTheOldPlan()
+    {
+        var rows = ReadAgricultureRows().ToList();
+
+        rows.Should().NotContain(row => row.GetValueOrDefault("A") == "Farming");
+        rows.Should().NotContain(row => row.GetValueOrDefault("M") == "Not Started");
+        rows.Where(row => Lines.Contains(row.GetValueOrDefault("A"))).First()["A"].Should().Be("Farmer");
+    }
+
+    [Test]
+    public void TheCropTableListsEveryCropWithItsTierLevelGrowTimeSeedAndHarvestItem()
+    {
+        var crops = new CropListDefinition().BuildCrops().Values.ToList();
+        var rows = ReadAgricultureRows().Where(row => row.GetValueOrDefault("A") == "Crop").ToList();
+        var failures = new List<string>();
+
+        rows.Should().HaveCount(crops.Count, "one row per crop and no other crop rows");
+        foreach (var crop in crops)
+        {
+            var matches = rows.Where(row => row.GetValueOrDefault("C") == crop.Name).ToList();
+            if (matches.Count != 1)
+            {
+                failures.Add($"{crop.Type}: expected one Bible row named '{crop.Name}', found {matches.Count}.");
+                continue;
+            }
+
+            var row = matches[0];
+            Compare(failures, crop.Name, "Tier", decimal.Parse(row["B"], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture), crop.Tier.ToString(CultureInfo.InvariantCulture));
+            Compare(failures, crop.Name, "Crop Level", decimal.Parse(row["D"], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture), crop.Level.ToString(CultureInfo.InvariantCulture));
+            Compare(failures, crop.Name, "Grow (h)", decimal.Parse(row["E"], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture), crop.GrowHours.ToString(CultureInfo.InvariantCulture));
+            row["G"].Should().Contain($"Seed: {crop.SeedResref}.", crop.Name);
+            row["G"].Should().Contain($"({crop.HarvestResref})", crop.Name);
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
     private static void Compare(List<string> failures, string name, string column, string actual, string expected)

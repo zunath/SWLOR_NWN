@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.HouseSpecializationService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -469,7 +470,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var property = DB.Get<WorldProperty>(propertyId);
                 var itemCount = GetItemCount();
 
-                if (itemCount >= property.ItemStorageCount)
+                // Deposits stop at the limit, and stay stopped while a house that left its Storehouse is over it. Withdrawals never check.
+                if (!HouseSpecializationRules.CanDeposit(itemCount, property.ItemStorageCount))
                 {
                     Instructions = $"Property item storage limit reached!";
                     InstructionsColor = GuiColor.Red;

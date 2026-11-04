@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
 {
     public static class StructureChangedAction
     {
+        /// <summary>Local object on a building's placeable naming the entrance door placeable spawned for it.</summary>
+        public const string DoorVariable = "PROPERTY_DOOR";
+
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
         /// <summary>
@@ -39,6 +42,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.Shipyard, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.AsteroidDrill, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.JumpBeacon, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
+            Assign(StructureType.DuelingRing, StructureChangeType.PositionChanged, Duels.OnRingPlaced);
+            Assign(StructureType.MarketStall, StructureChangeType.PositionChanged, MarketStalls.OnStallPlaced);
+            Assign(StructureType.TravelersLodge, StructureChangeType.PositionChanged, Travelers.OnLodgePlaced);
+            Assign(StructureType.GardenPlot, StructureChangeType.PositionChanged, Farming.OnPlotSpawned);
+            Assign(StructureType.Corral, StructureChangeType.PositionChanged, Corrals.OnCorralSpawned);
+            Assign(StructureType.FermentationVat, StructureChangeType.PositionChanged, FermentationVats.OnVatSpawned);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -63,6 +72,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.Shipyard, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.AsteroidDrill, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.JumpBeacon, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
+            Assign(StructureType.DuelingRing, StructureChangeType.Retrieved, Duels.OnRingRetrieved);
+            Assign(StructureType.MarketStall, StructureChangeType.Retrieved, MarketStalls.OnStallRetrieved);
+            Assign(StructureType.GardenPlot, StructureChangeType.Retrieved, Farming.OnPlotRetrieved);
+            Assign(StructureType.Corral, StructureChangeType.Retrieved, Corrals.OnCorralRetrieved);
 
             return _actions;
         }
@@ -100,7 +113,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         {
             DestroyDoor(building);
             var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
-            SetLocalObject(building, "PROPERTY_DOOR", door);
+            SetLocalObject(building, DoorVariable, door);
 
             Property.AssignPropertyId(door, Property.GetPropertyId(building));
             SetName(door, name);
@@ -125,7 +138,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         private static void DestroyDoor(uint building)
         {
-            var door = GetLocalObject(building, "PROPERTY_DOOR");
+            var door = GetLocalObject(building, DoorVariable);
             if (GetIsObjectValid(door))
                 DestroyObject(door);
         }

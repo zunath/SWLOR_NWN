@@ -34,6 +34,12 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The player station the ride flies to, or empty when it flies to a planet. Older records load empty.</summary>
         public string DestinationStationId { get; set; } = string.Empty;
+
+        /// <summary>The city whose Starport the ride leaves from, or empty. A city's Starport is only a destination today, so it is always empty; it mirrors the destination so a route rebuilds the same way at both ends. Older records load empty.</summary>
+        public string OriginCityId { get; set; } = string.Empty;
+
+        /// <summary>The city whose Starport the ride flies to on a Home Port flight, or empty when it flies to a planet or a station. Older records load empty.</summary>
+        public string DestinationCityId { get; set; } = string.Empty;
         public int FarePaid { get; set; }
         public int TaxPaid { get; set; }
 

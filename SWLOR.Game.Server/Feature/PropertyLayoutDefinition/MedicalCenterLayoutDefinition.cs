@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityStaffService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
@@ -27,7 +28,11 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("medical_center")
-                .OnSpawn(RemoveRegistrationOutsideStations);
+                .OnSpawn(instance =>
+                {
+                    RemoveRegistrationOutsideStations(instance);
+                    CityStaff.Spawn(instance, CityStaffRole.Medic);
+                });
         }
 
         /// <summary>

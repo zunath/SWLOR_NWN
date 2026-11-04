@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PlanetIdentityService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -166,6 +168,25 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeBuilder RequirementShipyard()
         {
             _activeRecipe.Requirements.Add(new RecipeShipyardRequirement());
+            return this;
+        }
+
+        /// <summary>
+        /// Requires the recipe to be crafted at a crafting station inside a city on the planet (a planet's signature dishes and decor).
+        /// </summary>
+        /// <param name="planet">The planet the city must be on.</param>
+        public RecipeBuilder RequirementPlanet(PlanetType planet)
+        {
+            _activeRecipe.Requirements.Add(new RecipeIdentityRequirement(IdentityPlace.ForPlanet(planet)));
+            return this;
+        }
+
+        /// <summary>
+        /// Requires the recipe to be crafted at a crafting station on a player station (the stations' signature food and decor).
+        /// </summary>
+        public RecipeBuilder RequirementStation()
+        {
+            _activeRecipe.Requirements.Add(new RecipeIdentityRequirement(IdentityPlace.ForStation()));
             return this;
         }
 

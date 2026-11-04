@@ -140,6 +140,8 @@ public class EconomyObtainabilityCoverageTests
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
             @"(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*""([^""]+)""",
+            // The exclusive items city stores sell with a weekly allowance (CityStoreCatalog).
+            @"new\s+CityStoreLimitedItem\(\s*""([^""]+)""",
         };
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
 
@@ -174,10 +176,12 @@ public class EconomyObtainabilityCoverageTests
                     Add(m.Groups[1].Value);
         }
 
-        // Fixed resref constants that are granted directly.
+        // Fixed resref constants that are granted directly. The livestock crate and the manure are created by the livestock code
+        // from constants, not from a literal at a call site.
         foreach (var r in new[] { "beast_dna", "beast_egg", "blueprint", "survival_knife",
                                   "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
-                                  "ls_custom", "ss_custom" })
+                                  "ls_custom", "ss_custom", "livestock_crate",
+                                  "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5" })
             Add(r);
 
         return obtainable;

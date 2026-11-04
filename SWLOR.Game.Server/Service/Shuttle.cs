@@ -3,7 +3,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.ShuttleService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -172,7 +174,7 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
 
             var flightId = ShuttleSchedule.BuildFlightId(route, departureUtc);
-            var transitSeconds = ShuttleRouteRules.GetTransitSeconds(route);
+            var transitSeconds = HomePorts.GetTransitSeconds(route);
             var boardedAnyone = false;
 
             foreach (var playerId in ticketHolders)
@@ -374,6 +376,7 @@ namespace SWLOR.Game.Server.Service
                     // Still aboard the shuttle (or the instance is gone after a restart) - deliver them.
                     DeliverPassenger(player, landingLocation);
                     SendMessageToPC(player, $"The shuttle touches down at {destinationName}.");
+                    HomePorts.OnArrived(ride.PlayerId, flight.Route);
                 }
                 else
                 {
@@ -457,8 +460,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Records an offline passenger's landing location. Retains the elapsed ride until
         /// login so the passenger receives their destination notice before it is cleared.
-        /// A station's deck is an instance, which a saved location cannot name, so a passenger
-        /// to a station is recorded at its home port's landing.
+        /// A station's deck and a city's Starport are instances, which a saved location cannot name, so a passenger
+        /// to either is recorded at the planet's public landing (a station's home port). A Home Port passenger still
+        /// gets the departure pass, so the Starport's flights terminal lets them leave.
         /// </summary>
         private static void DeliverOfflinePassenger(ShuttleRide ride)
         {
@@ -478,6 +482,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            HomePorts.OnArrived(ride.PlayerId, GetRideRoute(ride));
             Log.Write(LogGroup.Server, $"Shuttle delivered offline passenger {ride.PlayerId} to {ride.Destination}.");
         }
 
@@ -651,33 +656,36 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns where passengers to a stop land: a planet's landing waypoint, or a station's Starport.
-        /// A station whose Starport is gone or not loaded lands its passengers at its home port.
+        /// Returns where passengers to a stop land: a planet's landing waypoint, a station's Starport, or a Home Port city's
+        /// Starport. A station or city whose Starport is gone or not loaded lands its passengers at the planet's landing
+        /// (a station's home port).
         /// </summary>
         private static Location GetLandingLocation(ShuttleStop destination)
         {
             if (destination.IsStation && Station.TryGetArrivalLocation(destination.StationId, out var stationLocation))
                 return stationLocation;
 
+            if (destination.IsCityStarport && HomePorts.TryGetArrivalLocation(destination.CityId, out var cityLocation))
+                return cityLocation;
+
             var waypoint = GetWaypointByTag(Planet.GetPlanetByType(destination.Planet).LandingWaypointTag);
             return GetLocation(waypoint);
         }
 
-        /// <summary>The route a ride record flies. A station that no longer exists keeps its home port and id.</summary>
+        /// <summary>
+        /// The route a ride record flies. A station that no longer exists keeps its home port and id, and a Home Port flight keeps
+        /// its city's id, so a ticket or a flight in the air survives a restart.
+        /// </summary>
         public static ShuttleRoute GetRideRoute(ShuttleRide ride)
         {
-            return new ShuttleRoute(
-                GetStop(ride.Origin, ride.OriginStationId),
-                GetStop(ride.Destination, ride.DestinationStationId));
-        }
-
-        private static ShuttleStop GetStop(PlanetType planet, string stationId)
-        {
-            if (string.IsNullOrWhiteSpace(stationId))
-                return ShuttleStop.ForPlanet(planet);
-
-            var stop = Station.GetShuttleStop(stationId);
-            return stop.IsStation ? stop : ShuttleStop.ForStation(stationId, planet, false);
+            return ShuttleRouteRules.BuildRideRoute(
+                ride.Origin,
+                ride.OriginStationId,
+                ride.OriginCityId,
+                ride.Destination,
+                ride.DestinationStationId,
+                ride.DestinationCityId,
+                Station.GetShuttleStop);
         }
 
         /// <summary>
@@ -777,6 +785,14 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Home Port is for citizens and their allies; the terminal only lists it to them, and this holds the line.
+            var homePortRefusal = HomePorts.GetRefusal(player, route);
+            if (!string.IsNullOrEmpty(homePortRefusal))
+            {
+                SendMessageToPC(player, ColorToken.Red(homePortRefusal));
+                return false;
+            }
+
             if (GetRide(GetObjectUUID(player)) != null)
             {
                 SendMessageToPC(player, ColorToken.Red("You already have a shuttle ticket."));
@@ -812,6 +828,8 @@ namespace SWLOR.Game.Server.Service
                 Destination = route.Destination.Planet,
                 OriginStationId = route.Origin.StationId ?? string.Empty,
                 DestinationStationId = route.Destination.StationId ?? string.Empty,
+                OriginCityId = route.Origin.CityId ?? string.Empty,
+                DestinationCityId = route.Destination.CityId ?? string.Empty,
                 FarePaid = fare,
                 TaxPaid = tax
             };
@@ -837,9 +855,13 @@ namespace SWLOR.Game.Server.Service
                 var dbCity = DB.Get<WorldProperty>(cityPropertyId);
                 if (dbCity != null)
                 {
-                    dbCity.Treasury += tax;
+                    // A dock workers' strike halves the city's income from the tax; the passenger pays the same.
+                    var income = EdictBonusRules.GetTransportationIncome(
+                        tax,
+                        CityAffairs.IsModifierActive(dbCity, CityModifierType.TransportationIncomeHalved));
+                    dbCity.Treasury += income;
                     DB.Set(dbCity);
-                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}.");
+                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}; {income} reached the treasury.");
                 }
             }
         }
@@ -963,6 +985,7 @@ namespace SWLOR.Game.Server.Service
             var route = GetRideRoute(ride);
             var location = GetLandingLocation(route.Destination);
             SendMessageToPC(player, $"Your shuttle has arrived at {Station.GetStopName(route.Destination)}.");
+            HomePorts.OnArrived(ride.PlayerId, route);
             DB.Delete<ShuttleRide>(ride.Id);
             Log.Write(LogGroup.Server, $"Shuttle delivered passenger {ride.PlayerId} to {ride.Destination} on login.");
             return location;

@@ -129,10 +129,12 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_31_ConvertSpaceItems) },
-            $"the space revamp's release adds one combined stored-item pass as server migration {NextServerVersion}");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_31_ConvertSpaceItems), typeof(_32_PlayerCityRevamp) },
+            $"the space revamp's release adds one combined stored-item pass as server migration {NextServerVersion}, and the city revamp's one pass follows it");
         new _31_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _31_ConvertSpaceItems().Version.Should().Be(NextServerVersion);
+        new _32_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
+        new _32_PlayerCityRevamp().Version.Should().Be(NextServerVersion + 1);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

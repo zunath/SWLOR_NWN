@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Service
                 CityName = city.CustomName,
                 TariffPercent = TradeTariffRules.ClampPercent(tariff),
                 StarportLevel = Property.GetEffectiveUpgradeLevel(city.Id, PropertyUpgradeType.StarportLevel),
+                ShadowportActive = EdictEffects.IsShadowportActive(city),
             };
         }
 

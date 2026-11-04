@@ -281,147 +281,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 384,
+    "Line": 388,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Your emote style could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 388,
+    "Line": 392,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Toggled emote style to {newStyle}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 411,
+    "Line": 415,
     "Member": "ToggleArmorVisibility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"Your {item} setting could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 415,
+    "Line": 419,
     "Member": "ToggleArmorVisibility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, shown ? $\"Your {item} is now shown.\" : $\"Your {item} is now hidden.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 484,
+    "Line": 488,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your appearance type does not support head scaling.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 497,
+    "Line": 501,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {current:0.##} (range {minScale}-{maxScale}). Use /headscale <value>, /headscale +, or /headscale -.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 519,
+    "Line": 523,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, newScale >= maxScale\n                            ? \"You cannot increase your head size any further.\"\n                            : \"You cannot decrease your head size any further.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 530,
+    "Line": 534,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {newScale:0.##}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 543,
+    "Line": 547,
     "Member": "AlwaysWalk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Walk mode {status}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 577,
+    "Line": 581,
     "Member": "AssociateCommands",
     "Delivery": "Retained",
     "Call": "SpeakString(message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 607,
+    "Line": 611,
     "Member": "Afk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, isAfk\n                        ? ColorToken.Purple(\"You are now AFK. Move or use /afk again when you return.\")\n                        : \"You are no longer AFK.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 628,
+    "Line": 632,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only name player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 636,
+    "Line": 640,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 644,
+    "Line": 648,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 651,
+    "Line": 655,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 672,
+    "Line": 676,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Private label saved as '{name}'. Only you can see this label.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 700,
+    "Line": 704,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only forget names for player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 706,
+    "Line": 710,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You cannot forget your own name.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 726,
+    "Line": 730,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"Private label removed. This changes only what you see.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 781,
+    "Line": 785,
     "Member": "ChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You can only change descriptions of items in your inventory with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 869,
+    "Line": 873,
     "Member": "ResetWindows",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"All window positions and sizes have been reset to their default values.\"))"
@@ -463,392 +463,392 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 114,
+    "Line": 115,
     "Member": "UnlockCapstoneQuests",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may unlock capstone quest gates.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 127,
+    "Line": 128,
     "Member": "UnlockCapstoneQuests",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user,\n                        $\"Marked {questIds.Count} perk-gating quest(s) complete. Quest-gated perks can now be purchased and their abilities tested.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 176,
+    "Line": 177,
     "Member": "LearnAllTechniques",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may learn Mimicry techniques.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 181,
+    "Line": 182,
     "Member": "LearnAllTechniques",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user,\n                        $\"Learned {learnedCount} new Mimicry technique(s). Open the Techniques window to equip them.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 197,
+    "Line": 198,
     "Member": "CopyTargetItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You can only copy items with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 202,
+    "Line": 203,
     "Member": "CopyTargetItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Item copied successfully.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 238,
+    "Line": 239,
     "Member": "GetPlot",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, GetPlotFlag(target) ? \"Target is marked plot.\" : \"Target is NOT marked plot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 335,
+    "Line": 336,
     "Member": "TeleportWaypoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Invalid waypoint tag. Did you enter the right tag?\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 377,
+    "Line": 378,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 384,
+    "Line": 385,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 405,
+    "Line": 406,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 412,
+    "Line": 413,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 433,
+    "Line": 434,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 440,
+    "Line": 441,
     "Member": "GetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 469,
+    "Line": 470,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 478,
+    "Line": 479,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Local float set: \" + variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 505,
+    "Line": 506,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 514,
+    "Line": 515,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Local integer set: \" + variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 535,
+    "Line": 536,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Targeting area instead.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 551,
+    "Line": 552,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Local string set: \" + variableName + \" = \" + value)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 571,
+    "Line": 572,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This command can only be used on the Teleport Object placeable.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 577,
+    "Line": 578,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Tag set to: \" + args[0] + \".\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 598,
+    "Line": 599,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Target is invalid. Please target a Teleport Object placeable.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 603,
+    "Line": 604,
     "Member": "SetLocalVariable",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Destination tag set to \" + args[0] + \".\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 633,
+    "Line": 634,
     "Member": "SetPortrait",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only creatures may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 638,
+    "Line": 639,
     "Member": "SetPortrait",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your portrait has been changed.\", target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 674,
+    "Line": 675,
     "Member": "SpawnItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Item not found! Did you enter the correct ResRef?\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 712,
+    "Line": 713,
     "Member": "SpawnBeastEgg",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 722,
+    "Line": 723,
     "Member": "SpawnBeastEgg",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Spawned '{GetName(egg)}' for beast type {beastType} ({beastDetail.Name}).\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 768,
+    "Line": 769,
     "Member": "GiveRPXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, $\"A DM has awarded you with {amount} roleplay XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 776,
+    "Line": 777,
     "Member": "GiveRPXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"A DM has awarded your beast with {amount} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 780,
+    "Line": 781,
     "Member": "GiveRPXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players or beasts may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 797,
+    "Line": 798,
     "Member": "ResetPerkCooldown",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 807,
+    "Line": 808,
     "Member": "ResetPerkCooldown",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, $\"A DM has reset your perk refund cooldown.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 841,
+    "Line": 842,
     "Member": "ResetAbilityRecastTimers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, \"Only players may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 856,
+    "Line": 857,
     "Member": "ResetAbilityRecastTimers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You have reset all of {targetName}'s cooldowns.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 857,
+    "Line": 858,
     "Member": "ResetAbilityRecastTimers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, \"A DM has reset all of your cooldowns.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 897,
+    "Line": 898,
     "Member": "AdjustFactionStanding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 908,
+    "Line": 909,
     "Member": "AdjustFactionStanding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{factionDetail.Name}: {standingDetail.Standing}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 924,
+    "Line": 925,
     "Member": "GetFactionStanding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 935,
+    "Line": 936,
     "Member": "GetFactionStanding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{factionDetail.Name}: {standingDetail.Standing}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1016,
+    "Line": 1017,
     "Member": "SetXPBonus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may be targeted with this command.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1027,
-    "Member": "SetXPBonus",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, $\"{GetName(target)}'s DM XP bonus set to {amount}%.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
     "Line": 1028,
     "Member": "SetXPBonus",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"{GetName(target)}'s DM XP bonus set to {amount}%.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
+    "Line": 1029,
+    "Member": "SetXPBonus",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(target, $\"Your DM XP bonus has been changed to {amount}%.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1043,
+    "Line": 1044,
     "Member": "GetXPBonus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Only players may be targeted with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1050,
+    "Line": 1051,
     "Member": "GetXPBonus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1065,
+    "Line": 1066,
     "Member": "GetPlayerId",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{GetName(target)}'s player Id is {playerId}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1080,
+    "Line": 1081,
     "Member": "GetTag",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Target's tag: {tag}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1161,
+    "Line": 1173,
     "Member": "Broadcast",
     "Delivery": "Retained",
     "Call": "ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, DMPresence.GetControlledCreature(onlinePlayer))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1190,
+    "Line": 1202,
     "Member": "AreaShout",
     "Delivery": "Retained",
     "Call": "ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, recipient)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1246,
+    "Line": 1258,
     "Member": "CommsFilter",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Your Comms filter could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1250,
+    "Line": 1262,
     "Member": "CommsFilter",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, filter == DMCommsFilter.AllParties\n                        ? \"Comms filter: showing every party's Comms.\"\n                        : \"Comms filter: showing only your own party's Comms. You see none while you are not in a party.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1285,
+    "Line": 1297,
     "Member": "SendDMShoutWebhookAsync",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"ERROR: Unable to queue DM shout Discord webhook. Please notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1336,
+    "Line": 1348,
     "Member": "SetScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{targetName} scaled to {shownValue}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1353,
+    "Line": 1365,
     "Member": "GetScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{targetName} has a scale of {shownScale}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DMChatCommand.cs",
-    "Line": 1380,
+    "Line": 1392,
     "Member": "ShipStats",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"{targetName} stats: \\n\" +\n                                $\"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \\n\" +\n                                $\"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \\n\" +\n                                $\"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \\n\" +\n                                $\"Shield Regen: {targetStatus.ShieldRechargeRate} \\n\" +\n                                $\"EM Damage Bonus: {targetStatus.EMDamage} \\n\" +\n                                $\"Thermal Damage Bonus: {targetStatus.ThermalDamage} \\n\" +\n                                $\"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \\n\" +\n                                $\"Accuracy: {targetStatus.Accuracy} \\n\" +\n                                $\"Evasion: {targetStatus.Evasion} \\n\" +\n                                $\"Thermal Defense: {targetStatus.ThermalDefense} \\n\" +\n                                $\"EM Defense: {targetStatus.EMDefense} \\n\" +\n                                $\"Explosive Defense: {targetStatus.ExplosiveDefense} \\n\" +\n                                $\"Skill Level: {level}\")"
@@ -952,6 +952,76 @@
     "Call": "SendMessageToPC(user, \"No recovery waypoint is available in this area. Please contact a DM.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/CityElectionNotices.cs",
+    "Line": 51,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(resultNotice))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/CityElectionNotices.cs",
+    "Line": 63,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(stageNotice))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/CityLeadershipNotices.cs",
+    "Line": 49,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(CityLeadershipNoticeText.BuildStepDownNotice(\n                    city.CustomName,\n                    ElectionRules.GetDaysLeft(now, city.StepDown.AcceptDeadlineUtc))))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/CityLeadershipNotices.cs",
+    "Line": 57,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(CityLeadershipNoticeText.BuildActingMayorNotice(\n                    city.CustomName,\n                    city.ActingMayorEndsUtc.Value,\n                    now)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/CityLeadershipNotices.cs",
+    "Line": 67,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(city.CouncilSummons.Text))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 169,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 189,
+    "Member": "AddCivicExchange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, failure)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 207,
+    "Member": "OpenBank",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, failure)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
+    "Line": 111,
+    "Member": "SendAwayPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
+    "Line": 142,
+    "Member": "PlacePageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CoxxionTerminalDialog.cs",
     "Line": 55,
     "Member": "MainPageInit",
@@ -971,6 +1041,34 @@
     "Member": "Initialization",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Could not locate item to destroy. Notify an admin.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/DuelingRingDialog.Tournaments.cs",
+    "Line": 359,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(error, Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/FarmhandDialog.cs",
+    "Line": 60,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(FarmhandRules.Describe(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/FarmhandDialog.cs",
+    "Line": 193,
+    "Member": "FeedPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Green($\"You loaded {loaded} {crop.Name} into the feed hopper.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/FermentationVatDialog.cs",
+    "Line": 45,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/GuildMasterDialog.cs",
@@ -1001,6 +1099,13 @@
     "Call": "FloatingTextStringOnCreature(message, player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/LivestockDialog.cs",
+    "Line": 54,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/LockedDoorDialog.cs",
     "Line": 52,
     "Member": "MainPageInit",
@@ -1013,6 +1118,13 @@
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Notify a DM that this market is improperly configured.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/MarketStallDialog.cs",
+    "Line": 82,
+    "Member": "ThemePageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/MedicalRegistrationDialog.cs",
@@ -1058,14 +1170,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/PlaceStationCoreDialog.cs",
-    "Line": 84,
+    "Line": 85,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The Station Core is no longer in your inventory.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/PlaceStationCoreDialog.cs",
-    "Line": 95,
+    "Line": 96,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationRules.DescribeFoundingRefusal(refusal), player, false)"
@@ -1093,140 +1205,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 130,
+    "Line": 134,
     "Member": "AddTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 232,
+    "Line": 236,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport no longer has a Trade Exchange.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 238,
+    "Line": 242,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 246,
+    "Line": 250,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 55,
+    "Line": 56,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(blockade))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 63,
+    "Line": 64,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 73,
+    "Line": 74,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 81,
+    "Line": 82,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 98,
+    "Line": 99,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 139,
+    "Line": 140,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot dock while being targeted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 154,
+    "Line": 155,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(blockade))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 179,
+    "Line": 180,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is no longer available for docking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 197,
+    "Line": 193,
+    "Member": "MainPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(FacilityAccessRules.DescribeRefusal(\n                                    access,\n                                    dockerRecord?.PropertyOwedTaxes ?? 0,\n                                    dockerRecord?.CitizenPropertyId == starportCity.Id,\n                                    FacilityAccessRules.StarportDockingNotWelcomeMessage)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
+    "Line": 216,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 210,
+    "Line": 229,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 223,
+    "Line": 242,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 113,
+    "Line": 118,
     "Member": "ShipyardPage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 164,
+    "Line": 170,
     "Member": "DrillPage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have permission to collect the ore.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 204,
+    "Line": 210,
     "Member": "DroidPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You may no longer recall the droid assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 240,
+    "Line": 246,
     "Member": "DroidPickPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have permission to assign droids here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 376,
+    "Line": 382,
     "Member": "ConfirmJumpPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That station is no longer available.\"))"
@@ -1954,38 +2073,80 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 155,
+    "Line": 424,
     "Member": "MainAction",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"You must be a registered citizen of this city to run in the election.\")"
+    "Call": "SendMessageToPC(Player, \"This election has ended.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 195,
+    "Line": 435,
     "Member": "MainAction",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"You have withdrawn from the race.\")"
+    "Call": "SendMessageToPC(Player, string.IsNullOrEmpty(error) ? \"You have withdrawn from the race.\" : error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 212,
-    "Member": "MainAction",
+    "Line": 466,
+    "Member": "CastConfidenceVote",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"You have entered the race!\")"
+    "Call": "SendMessageToPC(Player, \"This election has ended.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 227,
-    "Member": "MainAction",
+    "Line": 481,
+    "Member": "CastVoteAndReport",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"You have abstained from voting for this election.\")"
+    "Call": "SendMessageToPC(Player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 243,
-    "Member": "MainAction",
+    "Line": 493,
+    "Member": "CastVoteAndReport",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, $\"Your vote for {candidateName} has been cast.\")"
+    "Call": "SendMessageToPC(Player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
+    "Line": 500,
+    "Member": "ClearVoteAndReport",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, string.IsNullOrEmpty(error) ? \"You have abstained from voting for this election.\" : error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.Platform.cs",
+    "Line": 176,
+    "Member": "OpenPlatform",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"This election has ended.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.Platform.cs",
+    "Line": 184,
+    "Member": "OpenPlatform",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.Platform.cs",
+    "Line": 301,
+    "Member": "SubmitPlatform",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"This election has ended.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.Platform.cs",
+    "Line": 319,
+    "Member": "SubmitPlatform",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, string.IsNullOrEmpty(error) ? \"Your platform has been saved.\" : error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.Platform.cs",
+    "Line": 335,
+    "Member": "SubmitPlatform",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, string.IsNullOrEmpty(registerError) ? \"You have entered the race!\" : registerError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs",
@@ -2073,119 +2234,119 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 318,
+    "Line": 319,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(HeldElsewhereMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 649,
+    "Line": 650,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 659,
+    "Line": 660,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only DNA items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 666,
+    "Line": 667,
     "Member": "OnClickDNA",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 905,
+    "Line": 906,
     "Member": "OnClickHydrolase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 928,
+    "Line": 929,
     "Member": "OnClickHydrolase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only Hydrolase items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 935,
+    "Line": 936,
     "Member": "OnClickHydrolase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 958,
+    "Line": 959,
     "Member": "OnClickLyase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 980,
+    "Line": 981,
     "Member": "OnClickLyase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only Lyase items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 987,
+    "Line": 988,
     "Member": "OnClickLyase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1010,
+    "Line": 1011,
     "Member": "OnClickIsomerase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1032,
+    "Line": 1033,
     "Member": "OnClickIsomerase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only Isomerase items may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1039,
+    "Line": 1040,
     "Member": "OnClickIsomerase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1160,
+    "Line": 1166,
     "Member": "StartJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Incubation job started!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1164,
+    "Line": 1170,
     "Member": "StartJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Unable to start Incubation Job. Reason: {validationError}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1210,
+    "Line": 1216,
     "Member": "OnClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Incubation job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 1238,
+    "Line": 1244,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.ItemsHeldMessage)"
@@ -2290,49 +2451,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 153,
+    "Line": 158,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You are the mayor of this city and cannot revoke your citizenship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 208,
+    "Line": 214,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your citizenship has been revoked!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 221,
+    "Line": 227,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"5000 credits are needed to register as a citizen.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 228,
+    "Line": 234,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your character must be 30 days or older to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 234,
+    "Line": 240,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You must have acquired a minimum of 100 skill ranks to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 248,
+    "Line": 262,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You became a citizen of {dbCity.CustomName}!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 267,
+    "Line": 280,
     "Member": "PayTaxes",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have any credits.\", Player, false)"
@@ -2542,63 +2703,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 376,
+    "Line": 378,
     "Member": "OnClickSendTell",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 421,
+    "Line": 423,
     "Member": "OnClickToggleHostile",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, isHostile\n                ? $\"You marked {GetReference(selected)} as hostile.\"\n                : $\"You no longer mark {GetReference(selected)} as hostile.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 443,
+    "Line": 445,
     "Member": "OnClickJumpHere",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 469,
+    "Line": 471,
     "Member": "OnClickBoot",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"That player is no longer online.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 476,
+    "Line": 478,
     "Member": "OnClickBoot",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 509,
+    "Line": 511,
     "Member": "OnClickMakeLeader",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Party leadership could not be transferred.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 519,
+    "Line": 521,
     "Member": "OnClickLeaveParty",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 536,
+    "Line": 538,
     "Member": "CheckViewerAction",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 548,
+    "Line": 550,
     "Member": "CheckAction",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
@@ -2836,385 +2997,385 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1604,
+    "Line": 1605,
     "Member": "OnClickRefitDesign",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The ship already has that design.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1634,
+    "Line": 1635,
     "Member": "CompleteRefit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"You have not unlocked that design.\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1640,
+    "Line": 1641,
     "Member": "CompleteRefit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Not enough credits!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1647,
+    "Line": 1648,
     "Member": "CompleteRefit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so nothing was paid.\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1656,
+    "Line": 1657,
     "Member": "CompleteRefit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"Ship refitted to the {designName} design!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1720,
+    "Line": 1721,
     "Member": "GetShipDockedHere",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"That ship is no longer docked here.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1736,
+    "Line": 1737,
     "Member": "GetShipToRefit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You no longer have permission to refit that ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1796,
+    "Line": 1797,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1802,
+    "Line": 1803,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only ship deeds may be targeted.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1808,
+    "Line": 1809,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not meet the requirements necessary to register this ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1819,
+    "Line": 1820,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You may only have {Space.MaxRegisteredShips} ships registered at a time.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1872,
+    "Line": 1873,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so the ship was not registered.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1888,
+    "Line": 1889,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship registered!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1908,
+    "Line": 1909,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You no longer own this ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1918,
+    "Line": 1919,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Please uninstall all modules before unregistering your ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1924,
+    "Line": 1925,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please sell the cargo in the cargo bay before unregistering your ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1930,
+    "Line": 1931,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please deliver or abandon the sealed freight aboard before unregistering your ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1937,
+    "Line": 1938,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please repair your ship fully before unregistering it.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1944,
+    "Line": 1945,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1952,
+    "Line": 1953,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so the ship was not unregistered.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1968,
+    "Line": 1969,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship unregistered!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1988,
+    "Line": 1989,
     "Member": "OnClickTransferShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You no longer own this ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2017,
+    "Line": 2018,
     "Member": "OnClickSellShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You no longer own this ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2022,
+    "Line": 2023,
     "Member": "OnClickSellShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Listing cancelled.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2030,
+    "Line": 2031,
     "Member": "OnClickSellShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Enter an asking price above zero in the price box first.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2042,
+    "Line": 2043,
     "Member": "OnClickSellShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Ship listed for sale!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2051,
+    "Line": 2052,
     "Member": "OnClickSaveShipName",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"A ship name is required.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2077,
+    "Line": 2078,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only starship modules may be installed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2083,
+    "Line": 2084,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Item must be in your inventory.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2094,
+    "Line": 2095,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, fitError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2102,
+    "Line": 2103,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No high power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2110,
+    "Line": 2111,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No mid power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2118,
+    "Line": 2119,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No low power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2128,
+    "Line": 2129,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Cargo Expanders and Smuggling Compartments fit Helm slots only.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2139,
+    "Line": 2140,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, skillError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2196,
+    "Line": 2197,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"That slot already holds a module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2204,
+    "Line": 2205,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2215,
+    "Line": 2216,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2237,
+    "Line": 2238,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so the module was not installed.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2264,
+    "Line": 2265,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"That module is no longer in this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2274,
+    "Line": 2275,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Unload the cargo bay first: its cargo would not fit without this Cargo Expander.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2282,
+    "Line": 2283,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2319,
+    "Line": 2320,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"That slot already holds a module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2327,
+    "Line": 2328,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2339,
+    "Line": 2340,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2358,
+    "Line": 2359,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so the module was not installed.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2383,
+    "Line": 2384,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"That module is no longer in this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2392,
+    "Line": 2393,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2560,
+    "Line": 2561,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You are in combat.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2573,
+    "Line": 2574,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2612,
+    "Line": 2613,
     "Member": "OnClickRemoveAccess",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship access removed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2711,
+    "Line": 2712,
     "Member": "CompleteRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The repair bill has changed. Please try again.\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2717,
+    "Line": 2718,
     "Member": "CompleteRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Not enough credits!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2724,
+    "Line": 2725,
     "Member": "CompleteRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so nothing was paid.\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2734,
+    "Line": 2735,
     "Member": "CompleteRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Ship repaired!\"), player, false)"
@@ -3235,10 +3396,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/TrainingStoreViewModel.cs",
-    "Line": 132,
+    "Line": 214,
     "Member": "BuyItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Not enough XP to make that purchase!\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/TrainingStoreViewModel.cs",
+    "Line": 245,
+    "Member": "BuyCivicExchangeItem",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(failure, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/BeastEggItemDefinition.cs",
@@ -3515,52 +3683,45 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/BankLayoutDefinition.cs",
-    "Line": 36,
+    "Line": 37,
     "Member": "OpenPropertyBank",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 26,
+    "Line": 28,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players can access starport facilities.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 34,
+    "Line": 36,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 44,
+    "Line": 46,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 51,
+    "Line": 53,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 63,
-    "Member": "CanAccess",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Only citizens may use starport facilities.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
     "Line": 69,
     "Member": "CanAccess",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You owe {dbPlayer.PropertyOwedTaxes} credits in taxes to this city. You cannot use its facilities until these are paid. Use the Citizenship Terminal in City Hall to pay these.\")"
+    "Call": "SendMessageToPC(player, FacilityAccessRules.DescribeRefusal(\n                access,\n                dbPlayer.PropertyOwedTaxes,\n                dbPlayer.CitizenPropertyId == cityId,\n                FacilityAccessRules.StarportNotWelcomeMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/QuestDefinition/MimicryQuestDefinition.cs",
@@ -3578,7 +3739,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/RoleplayXP.cs",
-    "Line": 117,
+    "Line": 119,
     "Member": "ProcessPlayerRoleplayXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You gained {xp} roleplay XP.\")"
@@ -3641,28 +3802,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 623,
+    "Line": 645,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 637,
+    "Line": 659,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 706,
+    "Line": 728,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 841,
+    "Line": 863,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
@@ -4018,6 +4179,13 @@
     "Call": "SendMessageToPC(master, ColorToken.Red(\"Items cannot be directly sold from your henchman's inventory.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/TournamentNotices.cs",
+    "Line": 42,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(TournamentText.BuildSignUpNotice(\n                    city.CustomName, areaName, tournament.Prize, tournament.EntryFee, tournament.StartsUtc, now)))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/TrapDefinition/PitfallTrap.cs",
     "Line": 28,
     "Member": "TriggeringTrap",
@@ -4044,6 +4212,13 @@
     "Member": "AlertPlayer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Any item placed inside this trash can will be destroyed permanently.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/TravelerNotices.cs",
+    "Line": 33,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(notice))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/TwinPistolEquipmentValidation.cs",
@@ -4312,6 +4487,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/BountyConsent.cs",
+    "Line": 75,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"You accepted the bounty notice. Cities can now post a bounty on this identity while it shows the PvP flag.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/CasinoSlot.cs",
     "Line": 99,
     "Member": "Spin",
@@ -4375,6 +4557,90 @@
     "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/CityBounties.cs",
+    "Line": 439,
+    "Member": "TellTarget",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, ColorToken.Red(BountyText.BuildTargetNotice(city.CustomName, bounty.Reward, bounty.ExpiresUtc)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
+    "Line": 61,
+    "Member": "Donate",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(CityProjectDonationRules.BuildReturnedText(donation, CityProjectRules.GetName(project), CityProjects.GetItemName(resref))))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
+    "Line": 106,
+    "Member": "Tell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 279,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This store is closed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 289,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"{city.CustomName} has an embargo against your city. Its stores will not serve you.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 304,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, SalesTaxRules.Describe(percent))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 316,
+    "Member": "OpenNearest",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This store is not stocked yet.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 370,
+    "Member": "OnBuyBefore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(buyer, ColorToken.Red(\"That item is sold out here until the weekly restock.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 454,
+    "Member": "OnSellBefore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(seller, ColorToken.Red(\"City stores only sell. They do not buy from players.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
+    "Line": 102,
+    "Member": "BuyBuff",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You buy the {item.Name} for {item.PriceXp:N0} Available XP. {CivicExchangeCatalog.BuffSummary}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
+    "Line": 133,
+    "Member": "BuyCrate",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You open the {item.Name} and find: {DescribeContents(contents)}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
+    "Line": 135,
+    "Member": "BuyCrate",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{overflow} of the items did not fit in your inventory. Claim them with /overflow.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 536,
     "Member": "GetHighHPTargetCriticalDamageAdjustment",
@@ -4383,224 +4649,224 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 2186,
+    "Line": 2190,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 2391,
+    "Line": 2395,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3347,
+    "Line": 3351,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3662,
+    "Line": 3666,
     "Member": "PrepareAutoAttackCycleCriticalRate",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3970,
+    "Line": 3974,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3971,
+    "Line": 3975,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($\"Guard (-{preventedDamage})\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3977,
+    "Line": 3981,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3996,
+    "Line": 4000,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3997,
+    "Line": 4001,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4005,
+    "Line": 4009,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4131,
+    "Line": 4135,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4314,
+    "Line": 4318,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5013,
+    "Line": 5017,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5121,
+    "Line": 5125,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5153,
+    "Line": 5157,
     "Member": "ReadySameTargetPressure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 6705,
+    "Line": 6709,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 6706,
+    "Line": 6710,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Pinning Fire\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7001,
+    "Line": 7005,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7002,
+    "Line": 7006,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7043,
+    "Line": 7047,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7044,
+    "Line": 7048,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike ready ({maximumCount} {stackLabel})\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7070,
+    "Line": 7074,
     "Member": "ReportFirstStrikeCombatEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7890,
+    "Line": 7894,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 8122,
+    "Line": 8126,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 8715,
+    "Line": 8719,
     "Member": "ApplyGuardedHitNextAttackEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 9103,
+    "Line": 9107,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($\"Overwatch: +{adjustment}% Accuracy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 9104,
+    "Line": 9108,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 11335,
+    "Line": 11339,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 11349,
+    "Line": 11353,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12364,
+    "Line": 12368,
     "Member": "SendAbilityCriticalHitFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12397,
+    "Line": 12401,
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12989,
+    "Line": 12993,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
@@ -4676,57 +4942,71 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/Corrals.cs",
+    "Line": 743,
+    "Member": "Notify",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(text))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Corrals.cs",
+    "Line": 763,
+    "Member": "DeliverNotices",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1040,
+    "Line": 1058,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1048,
+    "Line": 1066,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1071,
+    "Line": 1089,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1075,
+    "Line": 1093,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 62,
+    "Line": 64,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 338,
+    "Line": 340,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 359,
+    "Line": 361,
     "Member": "ApplyShipBlueprintTraits",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 446,
+    "Line": 455,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -4740,59 +5020,73 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 84,
+    "Line": 113,
     "Member": "PayStationFounding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have the credits, so the station was not founded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 91,
+    "Line": 120,
     "Member": "PayStationFounding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the station was not founded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 150,
+    "Line": 179,
     "Member": "SettlePendingFoundings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    \"A restart stopped your station's founding before its price was paid, so the station was not founded. You keep the Station Core and your credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 177,
+    "Line": 210,
     "Member": "SettleInterruptedPayment",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 73,
-    "Member": "OnPlayerDeath",
+    "Line": 129,
+    "Member": "ApplySubdual",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 74,
-    "Member": "OnPlayerDeath",
+    "Line": 130,
+    "Member": "ApplySubdual",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        player,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                player,\n                receiver => hasSubduer\n                    ? $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, subduer)}.\"\n                    : $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 278,
+    "Line": 300,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 320,
+    "Line": 345,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Disguise.cs",
+    "Line": 433,
+    "Member": "Deactivate",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(queuedMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Disguise.cs",
+    "Line": 496,
+    "Member": "Retire",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\"You are in PvP combat, so you cannot retire the disguise you are showing yet.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/DMPresence.cs",
@@ -4849,6 +5143,90 @@
     "Member": "DroidOnDeath",
     "Delivery": "Retained",
     "Call": "SpeakString(personality.DeathPhrase())"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 79,
+    "Member": "UseRing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 159,
+    "Member": "Challenge",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(error, challenger, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 169,
+    "Member": "Challenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(challenger,\n                $\"You challenge {PlayerName.GetDisplayName(challenger, target)} to a duel. They have {DuelRules.ChallengeSeconds:0} seconds to answer.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 197,
+    "Member": "Decline",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(challenge.Challenger, $\"{PlayerName.GetDisplayName(challenge.Challenger, target)} declined your challenge.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 206,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"The challenge has expired.\", target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 214,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"The challenge is no longer valid.\", target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 216,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(error, challenge.Challenger, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 247,
+    "Member": "StartDuel",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(challenger, ColorToken.Combat(Rules))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 248,
+    "Member": "StartDuel",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, ColorToken.Combat(Rules))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 461,
+    "Member": "Cancel",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Combat(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 541,
+    "Member": "TellInterruption",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Combat(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 567,
+    "Member": "TellOutcome",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
@@ -5006,94 +5384,129 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 105,
+    "Line": 106,
     "Member": "RegisterHeldMissions",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    \"A courier run you took was cancelled because the server restarted before its sealed load was aboard. You may take it again.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 159,
+    "Line": 160,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 188,
+    "Line": 189,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent.Name}: {FactionAgentRules.Describe(mission)}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 200,
+    "Line": 201,
     "Member": "LoadCourier",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(AgentRefusal.NotEnoughRoom)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 320,
+    "Line": 321,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so this mission's credits are paid at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 332,
+    "Line": 333,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 359,
+    "Line": 360,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 398,
+    "Line": 399,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 411,
+    "Line": 418,
     "Member": "GrantLockboxIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 430,
+    "Line": 437,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 438,
+    "Line": 445,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 463,
+    "Line": 470,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so nothing was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 470,
+    "Line": 477,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 289,
+    "Member": "AssignDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} now works {(farmhand.TargetType == FarmhandTargetType.House ? \"your crops here\" : \"the corral\")}. It handles tier 1 to {farmhand.DroidTier}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 312,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{farmhand.DroidName} was sent back to its owner.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 319,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 338,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} returns to you.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farming.cs",
+    "Line": 460,
+    "Member": "OnPlotRetrieved",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
@@ -5244,17 +5657,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 105,
+    "Line": 107,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 116,
+    "Line": 118,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoldingCityAffairs.cs",
+    "Line": 119,
+    "Member": "TellOwner",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
@@ -5642,6 +6062,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PendingCredits.cs",
+    "Line": 142,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{record.Reason} ({record.Credits} credits)\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
     "Line": 306,
     "Member": "EndPerformance",
@@ -5733,260 +6160,281 @@
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PlanetaryCouncils.cs",
+    "Line": 88,
+    "Member": "Summon",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(online, ColorToken.Green(summons.Text))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlanetaryDepot.cs",
+    "Line": 51,
+    "Member": "MoveHere",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(PlanetaryDepotRules.GetRefusalMessage(\n                    refusal, PlanetaryDepotRules.GetDaysLeft(holding?.LastDepotMoveUtc ?? default, now))))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlanetaryDepot.cs",
+    "Line": 63,
+    "Member": "MoveHere",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {PlanetaryHoldings.GetHoldingName(holding)} now ships from {place}. It can move again in {PlanetaryDepotRules.CooldownDays} days.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 136,
+    "Line": 152,
     "Member": "Process",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetHoldingName(holding)}: {text}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 150,
+    "Line": 166,
     "Member": "Foreclose",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\n                    $\"Your {detail.Name} at {GetPlanetName(detail)} was foreclosed: {holding.UpkeepOwed} credits of upkeep went unpaid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 170,
+    "Line": 186,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 178,
+    "Line": 194,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"You bought {WithArticle(detail.Name)} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes \" +\n                $\"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship \" +\n                $\"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 221,
+    "Line": 237,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so you keep your holding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 227,
+    "Line": 243,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You gave up your {detail.Name} at {GetPlanetName(detail)} and received {refund} credits.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 284,
+    "Line": 300,
     "Member": "TakePayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You no longer have the credits, so the {name} was undone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 306,
+    "Line": 322,
     "Member": "TakePayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Your character could not be saved, so the {undone} was undone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 346,
+    "Line": 362,
     "Member": "SettlePendingPayments",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A restart interrupted the {name} of your {holdingName} before its {credits} credits were paid, so it was undone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 362,
+    "Line": 378,
     "Member": "PayUpkeep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotEnoughCredits)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 369,
+    "Line": 385,
     "Member": "PayUpkeep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You paid {paid} credits of upkeep for your {GetHoldingName(holding)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 384,
+    "Line": 400,
     "Member": "PayFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 392,
+    "Line": 408,
     "Member": "PayFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You paid the {fine} credit customs fine. The inspectors leave your stock alone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 419,
+    "Line": 435,
     "Member": "Collect",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 444,
+    "Line": 460,
     "Member": "Collect",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Loaded {loaded} from your {GetHoldingName(holding)}\" +\n                (upkeep > 0 ? $\", paying {upkeep} credits of upkeep\" : string.Empty) +\n                (left > 0 ? $\". {left} units stay in the warehouse.\" : \".\")))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 513,
+    "Line": 529,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 527,
+    "Line": 543,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Delivered {units} {TradeLookup.GetCommodity(commodity)?.Name} to your {GetHoldingName(holding)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 529,
+    "Line": 545,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{GetHoldingName(holding)}: {text}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 602,
+    "Line": 618,
     "Member": "Upgrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 611,
+    "Line": 627,
     "Member": "Upgrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {GetHoldingName(holding)} is now level {holding.Level} and makes {HoldingRules.GetDailyUnits(holding, detail)} units a day.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 626,
+    "Line": 642,
     "Member": "BuildPlant",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 634,
+    "Line": 650,
     "Member": "BuildPlant",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {GetHoldingName(holding)} has a Processing Plant. Deliver {TradeLookup.GetCommodity(detail.Chain.Input)?.Name} and it turns \" +\n                $\"its output into {TradeLookup.GetCommodity(detail.Chain.Refined)?.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 664,
+    "Line": 680,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.DroidAlreadyPosted)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 670,
+    "Line": 686,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 694,
+    "Line": 710,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the droid stays with you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 700,
+    "Line": 716,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"{holding.DroidName} now works your {GetHoldingName(holding)}. With Industry {holding.DroidIndustry} it adds \" +\n                $\"{HoldingRules.GetDroidPercent(holding)}% to the output. It stays at its post until recalled.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 729,
+    "Line": 745,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NoDroid)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 737,
+    "Line": 753,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{name} leaves your {GetHoldingName(holding)} and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 773,
+    "Line": 789,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotAtDock)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 781,
+    "Line": 797,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The holding's site cannot be reached right now.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 832,
+    "Line": 848,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(guest, ColorToken.Red(\"Only members of the owner's party can join a holding site, and only while the owner has it open at this dock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 838,
+    "Line": 854,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetName(guest)} joins you at your {GetHoldingName(holding)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 922,
+    "Line": 938,
     "Member": "CheckRaidRepelled",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(obj, ColorToken.Green($\"{GetHoldingName(holding)}: {result.Events.LastOrDefault()}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 948,
+    "Line": 964,
     "Member": "RehomeStrandedHoldings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your {GetHoldingName(holding)} lost its starport and now ships from this dock.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1067,
+    "Line": 1083,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} no longer works a holding and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1073,
+    "Line": 1089,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your holdings have goods waiting: \" +\n                                        string.Join(\", \", waiting.Select(x => $\"{GetHoldingName(x)} {x.Warehouse.Values.Sum()} units\")) + \".\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1109,
+    "Line": 1125,
     "Member": "EndStaffPostingOnControllerLoss",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{name} no longer works your {GetHoldingName(holding)}: its controller is gone.\")"
@@ -6056,7 +6504,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerList.cs",
-    "Line": 235,
+    "Line": 259,
     "Member": "SendTell",
     "Delivery": "Retained",
     "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
@@ -6119,168 +6567,196 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 734,
+    "Line": 775,
     "Member": "NotifyPropertyLoadWaiters",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 768,
+    "Line": 809,
     "Member": "NotifyPropertyLoadWaitersWithoutClearing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 774,
+    "Line": 815,
     "Member": "SendPropertyLoadingMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 779,
+    "Line": 820,
     "Member": "SendPropertyLoadFailedMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2729,
+    "Line": 3015,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3142,
+    "Line": 3428,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3231,
+    "Line": 3517,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3261,
+    "Line": 3547,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3325,
+    "Line": 3611,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3342,
+    "Line": 3628,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3355,
+    "Line": 3641,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3362,
+    "Line": 3648,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3415,
+    "Line": 3701,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3423,
+    "Line": 3709,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3430,
+    "Line": 3716,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3441,
+    "Line": 3728,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(stallError, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3739,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3750,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(lodgeError, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3762,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(corralError, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3773,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3455,
+    "Line": 3787,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3482,
+    "Line": 3814,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3619,
+    "Line": 3951,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3626,
+    "Line": 3958,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3659,
+    "Line": 3991,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3691,
+    "Line": 4029,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3710,
+    "Line": 4048,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3748,
+    "Line": 4081,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
@@ -6329,31 +6805,80 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 275,
+    "Line": 284,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 251,
+    "Line": 255,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(healingStep < 0\n                        ? \"You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage.\"\n                        : $\"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 263,
+    "Line": 267,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\n                    $\"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 297,
+    "Line": 301,
     "Member": "End",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 93,
+    "Member": "HoldFlagChange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\n                        $\"You are in PvP combat, so your PvP flag stays on. It turns off when PvP combat ends, in about {GetSecondsLeft(dbPlayer.Id)} seconds.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 98,
+    "Member": "HoldFlagChange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your request to turn the PvP flag off was cancelled. It stays on.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 104,
+    "Member": "HoldFlagChange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\"Your request to turn the PvP flag off is already waiting for PvP combat to end.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 144,
+    "Member": "CancelQueuedIdentity",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 174,
+    "Member": "ApplyQueued",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"PvP combat has ended. Your PvP flag is now off.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 183,
+    "Member": "ApplyQueued",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"PvP combat has ended. Your disguise is now off.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombatWindow.cs",
+    "Line": 188,
+    "Member": "ApplyQueued",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, result.IsSuccessful\n                ? \"PvP combat has ended. Your disguise is now on.\"\n                : result.ErrorMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
@@ -6924,161 +7449,168 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 227,
+    "Line": 229,
     "Member": "BoardPassengers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You board the shuttle to {destinationName}. Estimated flight time: {transit}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 283,
+    "Line": 285,
     "Member": "SendBoardingCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 297,
+    "Line": 299,
     "Member": "NotifyMissedBoarding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 376,
+    "Line": 378,
     "Member": "ProcessArrival",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 504,
+    "Line": 509,
     "Member": "ProcessTransitBroadcasts",
     "Delivery": "Retained",
     "Call": "SpeakString($\"Now arriving at {destinationName} in {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 776,
+    "Line": 784,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closedMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 782,
+    "Line": 792,
+    "Member": "CanPurchaseTicket",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(homePortRefusal))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
+    "Line": 798,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You already have a shuttle ticket.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 790,
+    "Line": 806,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have enough credits to purchase this flight!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 821,
+    "Line": 839,
     "Member": "CompleteTicketPurchase",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so no ticket was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 833,
+    "Line": 851,
     "Member": "CompleteTicketPurchase",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Ticket purchased! Your shuttle to {Station.GetStopName(route.Destination)} departs in {countdown}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 900,
+    "Line": 922,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so your ticket was not refunded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 909,
+    "Line": 931,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 965,
+    "Line": 987,
     "Member": "CompleteRideOnLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle has arrived at {Station.GetStopName(route.Destination)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 994,
+    "Line": 1017,
     "Member": "RestoreTicketedSession",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1047,
+    "Line": 1070,
     "Member": "EnterServer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {Station.GetStopName(GetRideRoute(ride).Destination)}. Estimated arrival: {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 263,
+    "Line": 269,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 265,
+    "Line": 271,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 289,
+    "Line": 295,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 312,
+    "Line": 318,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 317,
+    "Line": 323,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 341,
+    "Line": 347,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 376,
+    "Line": 382,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 441,
+    "Line": 447,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
@@ -8247,14 +8779,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 628,
+    "Line": 636,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 652,
+    "Line": 660,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"
@@ -8380,112 +8912,112 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Station.cs",
-    "Line": 269,
+    "Line": 272,
     "Member": "BeginFounding",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationRules.DescribeFoundingRefusal(refusal), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 266,
+    "Line": 291,
     "Member": "TakeShipyardFee",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Paid the {station.CustomName} Shipyard fee of {fee} credits.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 329,
+    "Line": 384,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 354,
+    "Line": 409,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 380,
+    "Line": 435,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Collected from the Asteroid Drill: {string.Join(\", \", collected)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 446,
+    "Line": 501,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A droid is already assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 452,
+    "Line": 507,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 471,
+    "Line": 526,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the droid stays with you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 486,
+    "Line": 541,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} now works the {detail.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 505,
+    "Line": 560,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{state.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 512,
+    "Line": 567,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 529,
+    "Line": 584,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the droid stays at its post.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 533,
+    "Line": 588,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} returns to you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 857,
+    "Line": 912,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 883,
+    "Line": 938,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 919,
+    "Line": 978,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"
@@ -8631,6 +9163,83 @@
     "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
   },
   {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 178,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 200,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your entry fee could not be saved, so you were not signed up. Please try again.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 222,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You signed up for the tournament{paid}. The entry fee is returned only if the tournament is cancelled.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 255,
+    "Member": "Begin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(online, ColorToken.Green(\"The tournament has begun. Stay near the Dueling Ring: you have 5 minutes to reach it once your match is called.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 203,
+    "Member": "EjectBarred",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 238,
+    "Member": "OnDuelInterrupted",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(interrupter, ColorToken.Red(\"You interrupted a tournament match. You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 329,
+    "Member": "TellMatchCalled",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Green(\n                    $\"Your match in {round} of the tournament is called against {GetName(duelist, tournament, opponentId)}. \" +\n                    $\"Stand in the Dueling Ring within {TournamentRules.NoShowMinutes:0} minutes or you forfeit.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 347,
+    "Member": "TellNoShow",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, missed\n                    ? ColorToken.Red(\"You did not reach the Dueling Ring in time, so you forfeited the match.\")\n                    : ColorToken.Green(\"Your opponent did not reach the Dueling Ring in time, so you advance.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 362,
+    "Member": "TellInterruption",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(official, ColorToken.Green(\"A tournament match was interrupted three times. Use the Dueling Ring to pick its winner.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 377,
+    "Member": "TellToDuelists",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Green(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Settlement.cs",
+    "Line": 126,
+    "Member": "Settle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(online, ColorToken.Red(\"The tournament you entered was cancelled.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
     "Line": 133,
     "Member": "Buy",
@@ -8660,42 +9269,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 216,
+    "Line": 219,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 249,
+    "Line": 252,
     "Member": "SaveTradeGold",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the trade did not go through.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 333,
+    "Line": 339,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 339,
+    "Line": 345,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 346,
+    "Line": 352,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 352,
+    "Line": 358,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"
@@ -8939,6 +9548,27 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Pirate raiders drop out of hyperspace, hunting your cargo!\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/TradeShadowport.cs",
+    "Line": 74,
+    "Member": "TryBustContrabandSale",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(taken.Count > 0\n                    ? $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine and they confiscate {CustomsRules.Describe(taken)}.\"\n                    : $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
+    "Line": 154,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TransferJournalRules.DescribeOverflow(entry)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TransferJournal.cs",
+    "Line": 197,
+    "Member": "Tell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
     "Line": 115,
     "Member": "TryPlaceTrap",
@@ -9000,6 +9630,13 @@
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Travelers.cs",
+    "Line": 126,
+    "Member": "OpenStore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This traveler has nothing for sale right now.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",

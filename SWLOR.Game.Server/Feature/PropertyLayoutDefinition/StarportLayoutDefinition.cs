@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityStoreService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -58,19 +60,18 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             if (!string.IsNullOrWhiteSpace(GetLocalString(terminal, Station.StationCityVariable)))
                 return true;
 
-            if (dbPlayer.CitizenPropertyId != cityId)
-            {
-                SendMessageToPC(player, "Only citizens may use starport facilities.");
-                return false;
-            }
+            // Embargo, citizenship, Alliance and Open Gates decide, in that order. A character who is refused may still take a flight
+            // out for 7 days after their ship docked here while they were allowed in (the departure pass).
+            var access = EdictEffects.GetFacilityAccess(dbPlayer, cityId);
+            if (FacilityAccessRules.CanUseFlightsTerminal(access, StarportDeparture.HasPass(dbPlayer, cityId), false))
+                return true;
 
-            if (dbPlayer.PropertyOwedTaxes > 0)
-            {
-                SendMessageToPC(player, $"You owe {dbPlayer.PropertyOwedTaxes} credits in taxes to this city. You cannot use its facilities until these are paid. Use the Citizenship Terminal in City Hall to pay these.");
-                return false;
-            }
-
-            return true;
+            SendMessageToPC(player, FacilityAccessRules.DescribeRefusal(
+                access,
+                dbPlayer.PropertyOwedTaxes,
+                dbPlayer.CitizenPropertyId == cityId,
+                FacilityAccessRules.StarportNotWelcomeMessage));
+            return false;
         }
 
         [NWNEventHandler(ScriptName.OnPropertyStarportTerminal)]
@@ -129,14 +130,17 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return GetNearestObjectByTag("STARSHIP_DOCKPOINT", referenceObject);
         }
 
-        private void SpawnDockhands(uint area, PlanetType planetType, string spaceWaypointTag)
+        private void SpawnDockhands(uint area, PlanetType planetType, string spaceWaypointTag, WorldProperty city)
         {
             void SpawnDockhand(uint waypoint)
             {
                 var location = GetLocation(waypoint);
                 var landingWaypoint = GetLandingWaypoint(area);
                 var npc = CreateObject(ObjectType.Creature, "spc_dockhand", location);
-                CreateObject(ObjectType.Store, "dockhand_store", location);
+
+                // The city's dockmaster cannot be harmed, and sells the Starport's ship supplies with the city's Sales tax.
+                SetPlotFlag(npc, true);
+                CityStores.Create(city, CityStoreKind.Starport, location);
 
                 SetLocalString(npc, "STARPORT_TELEPORT_WAYPOINT", spaceWaypointTag);
 
@@ -189,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     if (anchor != null)
                     {
                         SpawnStarportFlightTerminals(instance, anchor.HomePlanet, dbCity);
-                        SpawnDockhands(instance, anchor.HomePlanet, anchor.Tag);
+                        SpawnDockhands(instance, anchor.HomePlanet, anchor.Tag, dbCity);
                         Station.RegisterDockPoint(dbCity.Id, GetLandingWaypoint(instance), propertyId);
                         return;
                     }
@@ -201,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                         return;
 
                     SpawnStarportFlightTerminals(instance, planet);
-                    SpawnDockhands(instance, planet, Planet.GetPlanetByType(planet).SpaceOrbitWaypointTag);
+                    SpawnDockhands(instance, planet, Planet.GetPlanetByType(planet).SpaceOrbitWaypointTag, dbCity);
 
                     var dockPoint = GetLandingWaypoint(instance);
                     Space.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);

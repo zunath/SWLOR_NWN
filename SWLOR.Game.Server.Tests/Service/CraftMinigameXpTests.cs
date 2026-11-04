@@ -205,7 +205,8 @@ public class CraftMinigameXpTests
             .ToArray();
 
         // BaseXp is the only member that applies the pace; the fishing fight scales its own XP with the Line's band alone.
-        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs");
+        // An enzyme culture is an Agriculture recipe finished at a Fermentation Vat, so it pays craft XP the same way.
+        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs", "EnzymeCultureRules.cs");
         Mentioning("CraftingPaceMultiplier", "PaceMultiplierFor", "AppliesCraftingPace").Should().Equal("CraftMinigameXp.cs");
     }
 

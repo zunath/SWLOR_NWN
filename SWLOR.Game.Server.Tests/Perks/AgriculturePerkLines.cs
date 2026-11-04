@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-/// <summary>The two Agriculture perk lines as the game builds them, and the stat totals a crafter of a rank gets from owning them.</summary>
+/// <summary>The three Agriculture perk lines as the game builds them, and the stat totals a crafter of a rank gets from owning them.</summary>
 internal static class AgriculturePerkLines
 {
     public static readonly PerkType[] ChefPerks =
@@ -20,9 +20,13 @@ internal static class AgriculturePerkLines
         PerkType.StrongLine, PerkType.HardSet, PerkType.FishSense, PerkType.PatientAngler, PerkType.AggressiveAngler, PerkType.TrophyCatch
     };
 
+    public static readonly PerkType[] FarmerPerks = { PerkType.CropManagement, PerkType.BountifulHarvest, PerkType.SeedSaver };
+
     public static IReadOnlyDictionary<PerkType, PerkDetail> Chef() => new AgricultureChefPerkDefinition().BuildPerks();
 
     public static IReadOnlyDictionary<PerkType, PerkDetail> Angler() => new AgricultureAnglerPerkDefinition().BuildPerks();
+
+    public static IReadOnlyDictionary<PerkType, PerkDetail> Farmer() => new AgricultureFarmerPerkDefinition().BuildPerks();
 
     /// <summary>The highest level of a perk a crafter of the rank can own, or 0.</summary>
     public static int OwnedLevel(PerkDetail detail, int rank)

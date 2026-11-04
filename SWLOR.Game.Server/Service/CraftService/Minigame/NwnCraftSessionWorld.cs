@@ -33,6 +33,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public bool CanCraft(uint player, RecipeType recipe) => Craft.CanPlayerCraftRecipe(player, recipe);
 
+    public string GetRequirementProblem(uint player, RecipeType recipe) => Craft.GetRequirementProblem(player, recipe);
+
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe)
     {
         if (!GetIsObjectValid(blueprintItem) || GetItemPossessor(blueprintItem) != player)
@@ -389,6 +391,13 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     }
 
     public bool CanReceiveXp(uint player) => !GetIsDead(player) && GetCurrentHitPoints(player) > 0;
+
+    public string GetStationCityId(uint player) => Property.GetCityIdForArea(GetArea(player));
+
+    public int GetWorkshopBonus(uint player, SkillType skill) => HouseSpecializations.GetLiveWorkshopBonus(player, skill);
+
+    public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
+        EdictEffects.GetArtisansCharterPoints(dbPlayer, craftCityId);
 
     public void SaveRecord(Player dbPlayer) => DB.Set(dbPlayer);
 

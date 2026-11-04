@@ -596,6 +596,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The reason one of a recipe's own requirements (not its skill rank) stops a player from crafting it now, in the requirement's own
+        /// words, or an empty string when none does. A craft that is refused shows it, so the player learns what to do about it.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="recipeType">The recipe to check</param>
+        public static string GetRequirementProblem(uint player, RecipeType recipeType)
+        {
+            foreach (var requirement in GetRecipe(recipeType).Requirements)
+            {
+                var problem = requirement.CheckRequirements(player);
+                if (!string.IsNullOrWhiteSpace(problem))
+                    return problem;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Determines whether a player can research a specific recipe.
         /// </summary>
         /// <param name="player">The player to check</param>

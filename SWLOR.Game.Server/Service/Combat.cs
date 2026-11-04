@@ -635,6 +635,10 @@ namespace SWLOR.Game.Server.Service
             else if (isLandedAttack)
                 PvpCombat.RecordHit(attacker, defender);
 
+            // Before the damage lands, so a blow that kills a duelist already finds the duel voided and protected.
+            if (isLandedAttack)
+                Duels.RecordDamage(defender, attacker);
+
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
                 ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)

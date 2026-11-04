@@ -7,12 +7,18 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LivestockService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StationService;
+using SWLOR.Game.Server.Service.TravelerService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -104,15 +110,17 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Determines the number of days citizens have to register for an election.
         /// </summary>
-        public const int ElectionRegistrationDays = 14;
+        public const int ElectionRegistrationDays = ElectionRules.RegistrationDays;
 
         /// <summary>
         /// Determines the number of days all citizens have to vote for an election.
         /// </summary>
-        public const int ElectionVotingDays = 7;
+        public const int ElectionVotingDays = ElectionRules.VotingDays;
 
-        private static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
+        internal static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
         {
+            CityGazette.RecordPropertyBroadcast(city, title, details);
+
             var url = _appSettings.PropertyBroadcastWebhookUrl;
             if (string.IsNullOrWhiteSpace(url))
                 return;
@@ -153,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             return date.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture);
         }
 
-        private static string SanitizeDiscordText(string text)
+        public static string SanitizeDiscordText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
@@ -167,13 +175,16 @@ namespace SWLOR.Game.Server.Service
 
         public static void BroadcastCityUpkeepPaid(WorldProperty city)
         {
-            if (city.Upkeep > 0)
-                return;
+            // An Edict that resumed because of the payment adds its part-week to what the city owes next.
+            var resumedEdictsText = city.Upkeep > 0
+                ? $"**Owed For Resumed Edicts**: {city.Upkeep:N0} cr\n"
+                : string.Empty;
 
             BroadcastPropertyEvent(
                 city,
                 "City Upkeep Paid",
                 $"The outstanding city upkeep has been paid.\n" +
+                resumedEdictsText +
                 $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}");
         }
 
@@ -199,6 +210,7 @@ namespace SWLOR.Game.Server.Service
         {
             RefreshPermissions();
             ProcessCities();
+            CityProjects.ProcessAtServerStart();
             CleanUpData();
             LoadProperties();
         }
@@ -294,10 +306,13 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.TendGardens,
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
-                PropertyPermissionType.ManageUpkeep
+                PropertyPermissionType.ManageUpkeep,
+                PropertyPermissionType.ManageEdicts,
+                PropertyPermissionType.HandleCityAffairs
             };
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
@@ -346,6 +361,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
+                PropertyPermissionType.TendGardens,
             };
 
             _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
@@ -451,6 +467,31 @@ namespace SWLOR.Game.Server.Service
         public static string GetPropertyId(uint obj)
         {
             return GetLocalString(obj, "PROPERTY_ID");
+        }
+
+        /// <summary>
+        /// The id of the city an area belongs to: the city's own land (a planet area or a station deck), or the interior of a building
+        /// or house in it. Walks the instance, building, and city chain. An area outside any city, such as an apartment or a ship,
+        /// gives an empty string.
+        /// </summary>
+        /// <param name="area">The area to look up.</param>
+        public static string GetCityIdForArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                return string.Empty;
+
+            return GetCityIdForProperty(GetPropertyId(area));
+        }
+
+        /// <summary>
+        /// The id of the city a property belongs to: the city itself, a building or structure standing on its land, or the interior of a
+        /// building or house in it. Walks the interior, building, and city chain. A property outside any city, such as an apartment or a
+        /// ship, gives an empty string.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        public static string GetCityIdForProperty(string propertyId)
+        {
+            return PropertyHierarchyRules.FindCityId(propertyId, DB.Get<WorldProperty>);
         }
 
         /// <summary>
@@ -1431,6 +1472,9 @@ namespace SWLOR.Game.Server.Service
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 }
 
+                // A ship whose owner lost the right to use its Starport, and whose 7-day departure pass ran out, leaves it.
+                StarportDeparture.ReturnStrandedShip(property);
+
                 ReturnStarshipToSafeDock(property);
 
                 DB.Set(property);
@@ -1564,8 +1608,15 @@ namespace SWLOR.Game.Server.Service
             var cities = DB.Search(cityQuery.AddPaging(queryCount, 0));
             var now = DateTime.UtcNow;
 
+            // The travelers move to their hosts for the week first, so a situation drawn below sees who is where.
+            Travelers.Rotate(now);
+
             foreach (var city in cities)
             {
+                // Everything below can change what the Industrial Charter does (an election, disrepair, a tax debt, a level), so the
+                // holdings of the city's citizens settle first, under the Charter as it stood.
+                IndustrialCharter.SettleCity(city);
+
                 ProcessCityCitizenRequirement(now, city);
                 if (city.IsQueuedForDeletion)
                 {
@@ -1573,6 +1624,17 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 ProcessCityElections(now, city);
+
+                // A recall that found nobody using the city queues it for deletion.
+                if (city.IsQueuedForDeletion)
+                {
+                    continue;
+                }
+
+                // An Acting Mayor's term that ran out, and a step-down nobody accepted, end here.
+                CitySuccession.Process(now, city);
+
+                CityAffairs.Process(now, city);
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
                 {
@@ -1662,6 +1724,12 @@ namespace SWLOR.Game.Server.Service
             DB.Set(city);
         }
 
+        /// <summary>
+        /// Moves a city's election through its calendar (Player City Revamp, "Election changes"). A regular election
+        /// opens when the quiet period after the previous one ends; registration and voting close on the dates stored
+        /// on the election; and a result is decided by <see cref="ElectionRules"/> from the Plan's outcome tables.
+        /// Runs at server start, so anything due while the server was down resolves at the next start.
+        /// </summary>
         private static void ProcessCityElections(DateTime now, WorldProperty city)
         {
             var incumbentMayorId = city.OwnerPlayerId;
@@ -1691,191 +1759,355 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 DB.Set(winnerPermission);
+
+                // Officers and the permissions the old mayor granted end with the old mayor's term.
+                CityOfficers.EndAllOnNewMayor(city, winnerPlayerId);
+
+                // The record of promises kept and broken belongs to the mayor who made them.
+                city.MayorRecord = new MayorRecord();
             }
 
             // No reason to process deleted cities. Skip.
             if (city.IsQueuedForDeletion) return;
 
             Log.Write(LogGroup.Property, $"Election process starting for city {city.CustomName} ({city.Id})");
-            var election = DB.Search(new DBQuery<Election>()
-                .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
-                .SingleOrDefault();
+            var election = FindCurrentElection(now, city);
 
-            // Election hasn't started yet.
+            // Election hasn't started yet. It's time to start the next regular election.
             if (election == null)
             {
-                // It's time to start a new election.
                 if (now >= city.Dates[PropertyDateType.ElectionStart])
                 {
-                    election = new Election
-                    {
-                        PropertyId = city.Id,
-                        Stage = ElectionStageType.Registration
-                    };
-
-                    DB.Set(election);
-                    BroadcastPropertyEvent(
-                        city,
-                        "City Election Open",
-                        $"A new mayoral election has opened for candidate registration.\n" +
-                        $"**Registration Closes**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays))}\n" +
-                        $"**Voting Closes**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays + ElectionVotingDays))}");
+                    OpenElection(now, city, ElectionKind.Regular, null);
                 }
+
+                return;
             }
-            // Election has started. See if it's time to progress to the next stage.
-            else
+
+            // A restart can leave a step-down's snap election open with the step-down still pending.
+            CitySuccession.RepairAfterRestart(city, election);
+
+            AdvanceElection(now, city, election, TransferPermissions);
+        }
+
+        /// <summary>
+        /// The city's open election. A boot that finds an election its result has already been posted for (the server
+        /// stopped before the record was removed) removes it, and opens the snap election that result called for if
+        /// that was never created.
+        /// </summary>
+        private static Election FindCurrentElection(DateTime now, WorldProperty city)
+        {
+            var elections = DB.Search(new DBQuery<Election>()
+                    .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
+                .ToList();
+            var concluded = city.LastElectionResult;
+            var finishedElections = concluded == null
+                ? new List<Election>()
+                : elections.Where(x => x.Id == concluded.Id).ToList();
+
+            foreach (var finished in finishedElections)
             {
-                var registrationCutOff = city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays);
-                var votingCutOff = registrationCutOff.AddDays(ElectionVotingDays);
+                DB.Delete<Election>(finished.Id);
+                elections.Remove(finished);
+                Log.Write(LogGroup.Property, $"Removed election '{finished.Id}' for city '{city.CustomName}' ({city.Id}) because its result had already been posted.");
+            }
 
-                // We're past the voting stage.
-                // Count up the votes for each candidate and determine the winner.
-                // Adjust mayors if incumbent lost.
-                if (now >= votingCutOff)
+            if (finishedElections.Count > 0 && elections.Count == 0 && concluded.OpenedSnapElection)
+            {
+                return OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(concluded.Id));
+            }
+
+            if (finishedElections.Count > 0 && elections.Count == 0 && concluded.OpenedSecondRecall)
+            {
+                return OpenElection(now, city, ElectionKind.Recall, GetSecondRecallElectionId(concluded.Id));
+            }
+
+            return elections
+                .OrderByDescending(x => x.RegistrationOpenedUtc)
+                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// A snap election's id comes from the election that called for it, so opening it twice after a restart
+        /// replaces one record instead of creating two.
+        /// </summary>
+        private static string GetSnapElectionId(string concludedElectionId)
+        {
+            return $"{concludedElectionId}:snap";
+        }
+
+        /// <summary>The second recall's id comes from the empty recall that called for it, for the same reason.</summary>
+        private static string GetSecondRecallElectionId(string concludedElectionId)
+        {
+            return $"{concludedElectionId}:recall";
+        }
+
+        /// <summary>
+        /// Who counts as the incumbent in this election's result: the sitting mayor, or in a step-down snap election the
+        /// interim holder, who becomes mayor wherever the incumbent would stay.
+        /// </summary>
+        internal static string GetElectionIncumbentId(WorldProperty city, Election election)
+        {
+            return CitySuccession.GetIncumbentId(city, election.Kind);
+        }
+
+        /// <summary>
+        /// Opens an election for registration, with its stage dates fixed from now. Saves the election and the city.
+        /// </summary>
+        internal static Election OpenElection(DateTime now, WorldProperty city, ElectionKind kind, string electionId)
+        {
+            var registrationCloses = ElectionRules.GetRegistrationCloseUtc(now);
+            var election = new Election
+            {
+                PropertyId = city.Id,
+                Stage = ElectionStageType.Registration,
+                Kind = kind,
+                RegistrationOpenedUtc = now,
+                RegistrationClosesUtc = registrationCloses,
+                VotingClosesUtc = ElectionRules.GetVotingCloseUtc(registrationCloses)
+            };
+            if (!string.IsNullOrWhiteSpace(electionId))
+                election.Id = electionId;
+
+            DB.Set(election);
+
+            // While an election is open, the city's election date is the day it opened.
+            city.Dates[PropertyDateType.ElectionStart] = now;
+            DB.Set(city);
+
+            var opening = kind == ElectionKind.SnapConfidence
+                ? "A snap mayoral election has opened for candidate registration after citizens voted No on the mayor."
+                : kind == ElectionKind.SnapStepDown
+                    ? "A snap mayoral election has opened for candidate registration because the mayor stepped down."
+                    : kind == ElectionKind.Recall
+                        ? "A recall election has opened for candidate registration."
+                        : "A new mayoral election has opened for candidate registration.";
+            BroadcastPropertyEvent(
+                city,
+                "City Election Open",
+                $"{opening}\n" +
+                $"**Registration Closes**: {FormatUtcDate(election.RegistrationClosesUtc)}\n" +
+                $"**Voting Closes**: {FormatUtcDate(election.VotingClosesUtc)}");
+
+            return election;
+        }
+
+        /// <summary>
+        /// Takes an election through every step it is due for, using the dates stored on the election.
+        /// </summary>
+        private static void AdvanceElection(DateTime now, WorldProperty city, Election election, Action<string> transferPermissions)
+        {
+            while (true)
+            {
+                var action = ElectionRules.GetDueAction(election.Stage, now, election.RegistrationClosesUtc, election.VotingClosesUtc);
+                var incumbentId = GetElectionIncumbentId(city, election);
+
+                // Registration has closed. The ballot is fixed.
+                if (action == ElectionStageAction.CloseRegistration)
                 {
-                    var votes = new Dictionary<string, int>();
-                    foreach (var voter in election.VoterSelections.Values)
-                    {
-                        if (!votes.ContainsKey(voter.CandidatePlayerId))
-                            votes[voter.CandidatePlayerId] = 0;
+                    ElectionBallot.RemoveDepartedCandidates(election);
+                    var registration = ElectionRules.GetRegistrationResult(election.CandidatePlayerIds.Count);
 
-                        votes[voter.CandidatePlayerId]++;
+                    // Nobody ran. There is no vote and the incumbent stays.
+                    if (registration == ElectionRegistrationResult.NoCandidates)
+                    {
+                        Log.Write(LogGroup.Property, $"No one ran for this election. Existing mayor '{incumbentId}' stays in power.");
+                        ConcludeElection(now, city, election, ElectionRules.DecideNoCandidates(election.Kind, incumbentId), transferPermissions);
+                        return;
                     }
 
-                    var orderedVotes = votes.OrderByDescending(x => x.Value).ToList();
+                    // One candidate gets a Yes or No confidence vote. Two or more get a contested vote.
+                    election.Stage = ElectionStageType.Voting;
+                    election.IsConfidenceVote = registration == ElectionRegistrationResult.ConfidenceVote;
+                    DB.Set(election);
 
-                    // Nobody voted at all. Incumbent stays in power.
-                    if (orderedVotes.Count <= 0)
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                    if (now < election.VotingClosesUtc)
                     {
-                        Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
-                        BroadcastPropertyEvent(
-                            city,
-                            "City Election Concluded",
-                            $"The mayoral election has concluded. No votes were cast, so the incumbent mayor remains in office.\n" +
-                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
-                            $"**Total Votes Cast**: 0");
-                    }
-                    // If top two are tied, incumbent mayor wins.
-                    else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value == orderedVotes.ElementAt(1).Value)
-                    {
-                        Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
-                        BroadcastPropertyEvent(
-                            city,
-                            "City Election Concluded",
-                            $"The mayoral election has concluded in a tie. The incumbent mayor remains in office.\n" +
-                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
-                            $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
-                    }
-                    // Otherwise, take the person with the highest votes.
-                    else
-                    {
-                        var winnerPlayerId = orderedVotes.ElementAt(0).Key;
-                        TransferPermissions(winnerPlayerId);
-                        city.OwnerPlayerId = winnerPlayerId;
-                        Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
-                        BroadcastPropertyEvent(
-                            city,
-                            "New Mayor Elected",
-                            $"The mayoral election has concluded and a new mayor has been elected.\n" +
-                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
-                            $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
-                    }
-
-                    Log.Write(LogGroup.Property, $"Vote Counts:");
-                    foreach (var (candidatePlayerId, voteCount) in orderedVotes)
-                    {
-                        Log.Write(LogGroup.Property, $"{candidatePlayerId}: {voteCount} votes");
-                    }
-
-                    // The next election should occur in 3 weeks from the end of this election.
-                    // To avoid timing issues between server restarts, we use the start of this election as a reference point.
-                    city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
-                        .AddDays(ElectionRegistrationDays + ElectionVotingDays) // This gets us to the end of the election
-                        .AddDays(21); // Then add another 3 weeks.
-
-                    DB.Set(city);
-                    DB.Delete<Election>(election.Id);
-                }
-                // Registration cut-off has passed.
-                // If no one has registered, the incumbent mayor wins by default.
-                // If only one person has registered, they become mayor without proceeding to the voting stage.
-                //     -> If this was a different person from the incumbent, they receive mayor power immediately.
-                // Otherwise, the election proceeds to the voting stage.
-                else if (now >= registrationCutOff)
-                {
-                    // In the event that absolutely no one ran for election,
-                    // the incumbent mayor stays in power and another election is scheduled
-                    // three weeks from now.
-                    if (election.CandidatePlayerIds.Count <= 0)
-                    {
-                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
-                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
-                            .AddDays(21); // Then add another 3 weeks.
-
-                        DB.Set(city);
-
-                        DB.Delete<Election>(election.Id);
-                        Log.Write(LogGroup.Property, $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
-                        BroadcastPropertyEvent(
-                            city,
-                            "City Election Concluded",
-                            $"The mayoral election has concluded. No candidates registered, so the incumbent mayor remains in office.\n" +
-                            $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}");
-                    }
-                    // In the event only one person ran for election, they automatically win
-                    // and the power shift occurs immediately. Another election is scheduled
-                    // three weeks from now.
-                    else if(election.CandidatePlayerIds.Count == 1)
-                    {
-                        var winnerPlayerId = election.CandidatePlayerIds[0];
-
-                        // The winner was the incumbent mayor. No changes are needed.
-                        if (winnerPlayerId == incumbentMayorId)
-                        {
-                            Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
-                            BroadcastPropertyEvent(
-                                city,
-                                "City Election Concluded",
-                                $"The mayoral election has concluded. The incumbent mayor ran unopposed and remains in office.\n" +
-                                $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
-                        }
-                        // Someone new won. Transfer mayor permissions over to the new player.
-                        else
-                        {
-                            city.OwnerPlayerId = winnerPlayerId;
-                            TransferPermissions(winnerPlayerId);
-                            Log.Write(LogGroup.Property, $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
-                            BroadcastPropertyEvent(
-                                city,
-                                "New Mayor Elected",
-                                $"The mayoral election has concluded. A single candidate ran unopposed and has become mayor.\n" +
-                                $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
-                        }
-
-                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
-                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
-                            .AddDays(21); // Then add another 3 weeks.
-
-                        DB.Set(city);
-                        DB.Delete<Election>(election.Id);
-                    }
-                    // We're past the registration window. Move into the voting stage.
-                    else
-                    {
-                        election.Stage = ElectionStageType.Voting;
-
-                        DB.Set(election);
-                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
                         BroadcastPropertyEvent(
                             city,
                             "City Election Voting Open",
-                            $"Mayoral candidate registration has closed and voting is now open to citizens.\n" +
+                            (election.IsConfidenceVote
+                                ? $"Candidate registration has closed with one candidate, so citizens now vote Yes or No.\n"
+                                : $"Mayoral candidate registration has closed and voting is now open to citizens.\n") +
                             $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
-                            $"**Voting Closes**: {FormatUtcDate(votingCutOff)}");
+                            $"**Voting Closes**: {FormatUtcDate(election.VotingClosesUtc)}");
                     }
 
+                    continue;
                 }
+
+                // Voting has closed. Count the votes.
+                if (action == ElectionStageAction.CloseVoting)
+                {
+                    var (candidates, votes) = ElectionBallot.GetCountedBallot(election);
+                    var outcome = ElectionRules.DecideVoting(election.Kind, election.IsConfidenceVote, incumbentId, candidates, votes);
+
+                    Log.Write(LogGroup.Property, $"Vote counts for election '{election.Id}': {outcome.VotesCast} votes for {outcome.CandidateCount} candidates. Result: {outcome.Type}.");
+                    ConcludeElection(now, city, election, outcome, transferPermissions);
+                }
+
+                return;
             }
+        }
+
+        /// <summary>
+        /// Applies an election's result to the city, posts it, and schedules what follows: a snap election at once after
+        /// a failed confidence vote, otherwise the next regular election after the quiet period.
+        /// </summary>
+        private static void ConcludeElection(
+            DateTime now,
+            WorldProperty city,
+            Election election,
+            ElectionOutcome outcome,
+            Action<string> transferPermissions)
+        {
+            var endedUtc = ElectionRules.GetEndUtc(election.RegistrationClosesUtc, election.VotingClosesUtc, outcome.VoteWasHeld);
+            var opensSnapElection = outcome.OpensSnapElection;
+            var recallStep = CityRecall.Decide(city, election.Kind, outcome.IsEmpty, endedUtc);
+            var opensSecondRecall = recallStep == RecallStep.OpenSecondRecall;
+            DateTime? nextRegularUtc = opensSnapElection || opensSecondRecall
+                ? null
+                : ElectionRules.GetNextRegularElectionUtc(endedUtc);
+
+            // Someone new takes the seat. This is also where a step-down snap election that ended with the status quo
+            // seats the interim holder, so the new mayor path runs for them too.
+            var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
+            if (seatChanged)
+            {
+                transferPermissions(outcome.WinnerPlayerId);
+                city.OwnerPlayerId = outcome.WinnerPlayerId;
+                Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{outcome.WinnerPlayerId}'");
+            }
+
+            // An election that seats a mayor ends the Acting Mayor's term, and the end of a step-down election ends the step-down.
+            var successionChange = CitySuccession.ApplyElectionEnd(city, election.Kind, outcome.HasMandate, seatChanged);
+
+            // Edicts the election lets resume pay for the rest of the week, measured against what was billed before the pauses
+            // clear; holdings under the Industrial Charter settle up to the change first.
+            var billedBefore = Edict.GetBilledTypes(city);
+            IndustrialCharter.SettleCity(city);
+
+            // Only an outright win ends a No confidence pause; ties, No results and empty elections leave things as they were.
+            if (outcome.SetsNoConfidence && !city.NoConfidenceSinceUtc.HasValue)
+                city.NoConfidenceSinceUtc = now;
+            if (outcome.HasMandate)
+                city.NoConfidenceSinceUtc = null;
+
+            // Any election with a candidate and a vote ends a Neglect pause, whatever its result.
+            if (outcome.ClearsNeglect)
+                city.NeglectSinceUtc = null;
+
+            // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
+            CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
+            // Only an outright win enacts a platform, replacing every Edict over its lock. It comes after the pauses the
+            // election ends are cleared, so what still holds keeps the new Edicts paused. A winner with no platform (the
+            // election opened before platforms) leaves the Edicts as they are; a new mayor's inherited ones stop counting as promises.
+            var winnerPlatform = outcome.HasMandate
+                ? ElectionPlatformRules.GetPlatformToEnact(election.Platforms, outcome.WinnerPlayerId)
+                : null;
+            var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
+            if (platformEnactment == null && seatChanged)
+                EdictChanges.ClearPlatformOrigin(city);
+
+            // Without a platform to replace them, the Edicts the cleared pauses let resume pay for the days left in the week.
+            if (platformEnactment == null)
+                Edict.AddResumedBilling(city, billedBefore, now);
+
+            city.LastElectionResult = new ElectionResultRecord
+            {
+                Id = election.Id,
+                Kind = election.Kind,
+                Outcome = outcome.Type,
+                WinnerPlayerId = outcome.WinnerPlayerId,
+                CandidateCount = outcome.CandidateCount,
+                VotesCast = outcome.VotesCast,
+                OpenedSnapElection = opensSnapElection,
+                OpenedSecondRecall = opensSecondRecall,
+                NextElectionUtc = nextRegularUtc,
+                PostedUtc = now
+            };
+
+            if (nextRegularUtc.HasValue)
+                city.Dates[PropertyDateType.ElectionStart] = nextRegularUtc.Value;
+
+            // The result is saved first, so a restart before the election record is removed cannot count it twice.
+            DB.Set(city);
+            CitySuccession.AnnounceElectionEnd(city.Id, successionChange);
+
+            if (opensSnapElection)
+                OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(election.Id));
+
+            if (opensSecondRecall)
+                OpenElection(now, city, ElectionKind.Recall, GetSecondRecallElectionId(election.Id));
+
+            DB.Delete<Election>(election.Id);
+
+            BroadcastElectionResult(city, outcome, nextRegularUtc);
+            if (platformEnactment != null)
+                Edict.AnnouncePlatform(city, platformEnactment, outcome.WinnerPlayerId);
+
+            CityRecall.Announce(city, recallStep);
+        }
+
+        private static void BroadcastElectionResult(WorldProperty city, ElectionOutcome outcome, DateTime? nextRegularUtc)
+        {
+            string title;
+            string summary;
+            switch (outcome.Type)
+            {
+                case ElectionOutcomeType.NoCandidates:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded. No candidates registered, so the incumbent mayor remains in office.";
+                    break;
+                case ElectionOutcomeType.NoVotes:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded. No votes were cast, so the incumbent mayor remains in office.";
+                    break;
+                case ElectionOutcomeType.NewMayor:
+                    title = "New Mayor Elected";
+                    summary = "The mayoral election has concluded and a new mayor has been elected.";
+                    break;
+                case ElectionOutcomeType.IncumbentConfirmed:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded. The incumbent mayor won and remains in office.";
+                    break;
+                case ElectionOutcomeType.ChallengerRejected:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded. Citizens voted No on the lone candidate, so the incumbent mayor remains in office.";
+                    break;
+                case ElectionOutcomeType.NoConfidence:
+                    title = "City Election Concluded";
+                    summary = outcome.OpensSnapElection
+                        ? "The mayoral election has concluded. Citizens voted No on the incumbent mayor, and a snap election has opened."
+                        : "The mayoral election has concluded. Citizens voted No on the incumbent mayor, who remains in office until the next regular election.";
+                    break;
+                case ElectionOutcomeType.ConfidenceTie:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded. Yes and No tied, so the incumbent mayor remains in office.";
+                    break;
+                default:
+                    title = "City Election Concluded";
+                    summary = "The mayoral election has concluded in a tie. The incumbent mayor remains in office.";
+                    break;
+            }
+
+            // After a mayor stepped down, "the incumbent stays" means the interim holder takes the seat.
+            if (outcome.Kind == ElectionKind.SnapStepDown)
+            {
+                var stepDownSummary = ElectionNoticeText.BuildStepDownSummary(outcome.Type);
+                if (!string.IsNullOrEmpty(stepDownSummary))
+                    summary = stepDownSummary;
+            }
+
+            var details = $"{summary}\n" +
+                          $"**Candidates**: {outcome.CandidateCount:N0}\n" +
+                          $"**Total Votes Cast**: {outcome.VotesCast:N0}";
+            if (nextRegularUtc.HasValue)
+                details += $"\n**Next Election Opens**: {FormatUtcDate(nextRegularUtc.Value)}";
+
+            BroadcastPropertyEvent(city, title, details);
         }
 
         private static void ProcessCityLevel(WorldProperty city)
@@ -1937,7 +2169,19 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
+            Edict.ApplyCityLevelPauses(city, DateTime.UtcNow, billResumes: false);
+
+            // A smaller city can have fewer officers: the newest appointments above the new limit end.
+            CityOfficers.EndAppointmentsAboveLimit(city);
+
             DB.Set(city);
+            SpawnExclusion.InvalidateCity(city.Id);
+
+            // The street life follows the current level: townsfolk, guards, and critters are added or removed to match.
+            Townsfolk.OnCityChanged(city.Id);
+
+            // A smaller city closes its newest market stalls above the new limit, and a larger one reopens them.
+            MarketStalls.Refresh(city.Id);
 
             Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
@@ -2017,8 +2261,13 @@ namespace SWLOR.Game.Server.Service
                 city.Upgrades[PropertyUpgradeType.CantinaLevel],
                 city.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1));
 
+            // Edicts in effect, or paused only by a situation, add a full week. The check above already decided disrepair.
+            var edictBill = Edict.GetWeeklyBill(city);
+            var unbilledEdicts = EdictRules.GetUnbilledDescriptions(city.Edicts, Edict.GetConditions(city), now);
+
             Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {weeklyUpkeep} credits.");
             city.Upkeep += weeklyUpkeep;
+            city.Upkeep += CityUpkeepRules.GetEdictUpkeep(edictBill);
             DB.Set(city);
             Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
             BroadcastPropertyEvent(
@@ -2026,6 +2275,7 @@ namespace SWLOR.Game.Server.Service
                 "City Upkeep Due",
                 $"Weekly upkeep has been assessed for this city.\n" +
                 $"**Upkeep Status**: Payment due\n" +
+                CityUpkeepRules.BuildUpkeepBreakdownText(weeklyUpkeep, edictBill, unbilledEdicts, city.Upkeep) + "\n" +
                 $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep].AddDays(7))}");
 
             Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
@@ -2064,6 +2314,13 @@ namespace SWLOR.Game.Server.Service
 
             if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
                 StationBuildings.OnDeleted(property);
+
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.DuelingRing)
+                Tournaments.OnRingDeleted(property);
+
+            // A traveler hosted by a city that loses its Lodge waits at the hub until next week.
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.TravelersLodge)
+                Travelers.OnLodgeDeleted(property);
 
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
@@ -2134,6 +2391,10 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
 
+            // The city's citizens lose the Industrial Charter with their citizenship, so their holdings settle first.
+            if (property.PropertyType == PropertyType.City)
+                IndustrialCharter.SettleCity(property);
+
             // Clear any citizenship assignments on players who may be citizens of this property.
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
@@ -2144,8 +2405,23 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
+                citizen.CitizenSinceUtc = null;
                 citizen.PropertyOwedTaxes = 0;
                 DB.Set(citizen);
+            }
+
+            if (property.PropertyType == PropertyType.City)
+            {
+                CityGazette.DeleteAll(property.Id);
+                ElectionBallot.DeleteCityElections(property.Id);
+                Edict.OnCityDeleted(property);
+                Tournaments.OnCityDeleted(property);
+                CityBounties.OnCityDeleted(property);
+                CityProjects.OnCityDeleted(property);
+                CityAffairs.DeleteCityData(property.Id);
+                Townsfolk.OnCityDeleted(property.Id);
+                Travelers.OnCityDeleted(property.Id);
+                CityStockAllowances.DeleteAll(property.Id);
             }
 
             _propertyInstances.Remove(property.Id);
@@ -2162,6 +2438,13 @@ namespace SWLOR.Game.Server.Service
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+
+            // A deleted city, or a structure removed from one, changes where spawns may appear.
+            SpawnExclusion.InvalidateCity(property.PropertyType == PropertyType.City ? property.Id : property.ParentPropertyId);
+
+            // A building removed from a city changes where its street life walks.
+            if (property.PropertyType == PropertyType.Structure)
+                Townsfolk.OnStructureChanged(property);
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -2625,6 +2908,7 @@ namespace SWLOR.Game.Server.Service
                 location);
 
             dbPlayer.CitizenPropertyId = city.Id;
+            dbPlayer.CitizenSinceUtc = now;
             // A new citizenship must not inherit taxes from a previously deleted city.
             dbPlayer.PropertyOwedTaxes = 0;
             DB.Set(dbPlayer);
@@ -2658,6 +2942,7 @@ namespace SWLOR.Game.Server.Service
             property.Taxes[PropertyTaxType.Citizenship] = 0;
             property.Taxes[PropertyTaxType.Transportation] = 0;
             property.Taxes[PropertyTaxType.Exchange] = 0;
+            property.Taxes[PropertyTaxType.Sales] = 0;
 
             // Upgrades
             property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
@@ -2722,6 +3007,7 @@ namespace SWLOR.Game.Server.Service
                 SlotLocation(StationDeckSlotType.Starport));
 
             dbPlayer.CitizenPropertyId = station.Id;
+            dbPlayer.CitizenSinceUtc = now;
             // A new citizenship must not inherit taxes from a previously deleted city.
             dbPlayer.PropertyOwedTaxes = 0;
             DB.Set(dbPlayer);
@@ -3377,12 +3663,12 @@ namespace SWLOR.Game.Server.Service
 
             // Special Case: Cities differentiate between structures and buildings.
             // They use the BuildingLimit value for buildings and StructureLimit for everything else.
-            // Buildings are determined by structures whose restrictions are solely to "City" property types.
+            // A building is a city-only structure with an interior, or a station building; open-ground city
+            // structures (Dueling Ring, Market Stall, Corral, Traveler's Lodge) count as structures.
             if (property.PropertyType == PropertyType.City &&
-                structureDetail.RestrictedPropertyTypes == PropertyType.City)
+                CityBuildingRules.CountsAsBuilding(structureType))
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
-                                                       StationBuildingRules.IsStationBuilding(x.StructureType));
+                structureCount = structures.Count(x => CityBuildingRules.CountsAsBuilding(x.StructureType));
                 structureLimit = layout.BuildingLimit;
                 fixtureName = "Building";
             }
@@ -3428,6 +3714,52 @@ namespace SWLOR.Game.Server.Service
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
+                return;
+            }
+
+            // A city may place one market stall for each city level.
+            if (structureType == StructureType.MarketStall)
+            {
+                var stallError = MarketStallRules.GetPlacementError(
+                    property.Upgrades.GetValueOrDefault(PropertyUpgradeType.CityLevel, 1),
+                    structures.Count(x => x.StructureType == StructureType.MarketStall && !x.IsQueuedForDeletion));
+                if (!string.IsNullOrEmpty(stallError))
+                {
+                    FloatingTextStringOnCreature(stallError, player, false);
+                    return;
+                }
+            }
+
+            // A house holds a limited number of garden plots. A city's plots count against its structure limit alone.
+            if (structureType == StructureType.GardenPlot)
+            {
+                var plotLimit = FarmingRules.GetPlotLimit(property.PropertyType, Farming.IsGreenhouse(property));
+                if (structures.Count(x => x.StructureType == StructureType.GardenPlot) >= plotLimit)
+                {
+                    FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
+                    return;
+                }
+            }
+
+            // A city has one Traveler's Lodge.
+            var lodgeError = TravelerRules.GetLodgePlacementError(
+                structureType,
+                structures.Count(x => x.StructureType == StructureType.TravelersLodge && !x.IsQueuedForDeletion));
+            if (!string.IsNullOrWhiteSpace(lodgeError))
+            {
+                FloatingTextStringOnCreature(lodgeError, player, false);
+                return;
+            }
+
+            // A Corral stands in a planet city's open ground, never on a station deck, and a city has 2 per city level.
+            var corralError = LivestockRules.GetPlacementError(
+                structureType,
+                Station.IsStation(property),
+                structures.Count(x => x.StructureType == StructureType.Corral),
+                CityOfficers.GetCityLevel(property));
+            if (!string.IsNullOrWhiteSpace(corralError))
+            {
+                FloatingTextStringOnCreature(corralError, player, false);
                 return;
             }
 
@@ -3670,6 +4002,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="placeable">The placeable to target</param>
         public static void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
         {
+            // A placed, moved or retrieved structure changes where spawns may appear in its city.
+            SpawnExclusion.InvalidateCity(property?.ParentPropertyId);
+
+            // A building changes where the city's street life walks.
+            Townsfolk.OnStructureChanged(property);
+
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;
 
@@ -3702,12 +4040,13 @@ namespace SWLOR.Game.Server.Service
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
 
             // Player is a citizen of another city. Their citizenship needs to be revoked before
-            // they're able to access this terminal.
+            // they can manage citizenship here, but anyone can read the Gazette.
             if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
                 dbPlayer.CitizenPropertyId != Guid.Empty.ToString() &&
                 dbBuilding.ParentPropertyId != dbPlayer.CitizenPropertyId)
             {
-                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first."));
+                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette."));
+                CityGazette.OpenWindow(player, dbBuilding.ParentPropertyId, terminal);
             }
             else
             {
@@ -3729,17 +4068,11 @@ namespace SWLOR.Game.Server.Service
             var dbProperty = DB.Get<WorldProperty>(propertyId);
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
 
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
-                .SingleOrDefault();
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
 
-            // Player has at least one permission. Display the window.
-            if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
-                                       permission.Permissions[PropertyPermissionType.EditTaxes] ||
-                                       permission.Permissions[PropertyPermissionType.AccessTreasury] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpkeep]))
+            // The player holds a permission the window uses, is an Acting Mayor, or must answer a step-down. A mayor who
+            // stepped down has no powers, whatever their permission record says.
+            if (CityPowers.CanOpenManageCity(dbCity, playerId))
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }

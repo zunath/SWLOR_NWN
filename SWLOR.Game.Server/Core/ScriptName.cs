@@ -140,6 +140,11 @@ namespace SWLOR.Game.Server.Core
         public const string OnDerelictAirlockUsed = "derelict_airlock";
         public const string OnDerelictStrongboxUsed = "derelict_strbox";
 
+        // Farming events
+        public const string OnGardenPlotUsed = "garden_plot_used";
+        public const string OnCorralUsed = "corral_used";
+        public const string OnFermentationVatUsed = "ferment_vat_used";
+
         // Aura events
         public const string OnAuraEnter = "aura_enter";
         public const string OnAuraExit = "aura_exit";
@@ -232,6 +237,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnOpenCitizenship = "open_citizenship";
         public const string OnOpenCityManage = "open_city_manage";
         public const string OnOpenPropertyBank = "open_prop_bank";
+        public const string OnDuelingRingUsed = "duel_ring_used";
 
         // Quest events
         public const string OnQuestCollectOpen = "qst_collect_open";

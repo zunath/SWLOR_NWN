@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -55,6 +56,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool StandingVisible { get => Get<bool>(); set => Set(value); }
         public string TariffText { get => Get<string>(); set => Set(value); }
         public bool TariffVisible { get => Get<bool>(); set => Set(value); }
+        public string PortText { get => Get<string>(); set => Set(value); }
+        public bool PortVisible { get => Get<bool>(); set => Set(value); }
         public GuiBindingList<GuiComboEntry> ShipOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
 
         public int SelectedShipIndex
@@ -114,18 +117,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : _dock.IsCity
                     ? $"{_dock.CityName} Trade Exchange ({exchange.Name} market)"
                     : $"{exchange.Name} Trade Exchange";
-            _rows = exchange == null
-                ? new List<CommodityType>()
-                : exchange.Markets
-                    .OrderBy(x => x.Role == CommodityRole.Producer ? 0 : x.Role == CommodityRole.Consumer ? 1 : 2)
-                    .ThenBy(x => TradeLookup.GetCommodity(x.Commodity)?.Name)
-                    .Select(x => x.Commodity)
-                    .ToList();
+            _rows = BuildRows();
 
             StandingText = string.Empty;
             StandingVisible = false;
             TariffText = string.Empty;
             TariffVisible = false;
+            PortText = string.Empty;
+            PortVisible = false;
             // Sync quietly: a raw set runs SelectTab before UnitsText exists, and its restore then sends a null.
             TabToggles.SyncTo(MarketTabId, value => TabToggleValue = value);
             SelectedTabId = MarketTabId;
@@ -172,6 +171,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectTab(MarketTabId);
         }
 
+        /// <summary>
+        /// The commodities the window lists: what the exchange trades, then the banned goods a city door buys only as contraband
+        /// (sale only), which depend on the city's Shadowport Edict.
+        /// </summary>
+        private List<CommodityType> BuildRows()
+        {
+            var exchange = TradeLookup.GetExchange(_exchange);
+            if (exchange == null)
+                return new List<CommodityType>();
+
+            return exchange.Markets
+                .OrderBy(x => x.Role == CommodityRole.Producer ? 0 : x.Role == CommodityRole.Consumer ? 1 : 2)
+                .ThenBy(x => TradeLookup.GetCommodity(x.Commodity)?.Name)
+                .Select(x => x.Commodity)
+                .Concat(ShadowportRules.GetContrabandCommodities(exchange, Trade.GetShadowportStance(_dock, _exchange)))
+                .ToList();
+        }
+
         private void SelectTab(int tabId)
         {
             SelectedTabId = tabId;
@@ -211,6 +228,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Refresh()
         {
+            // The city's Edicts and tariff can change while the window is open.
+            _dock = Trade.GetDock(_dockId, _exchange);
+            _rows = BuildRows();
             var ship = GetSelectedShip();
             var hasShip = ship != null && Trade.IsDockedAt(ship, _dockId);
             HasShip = _shipIds.Count > 0;
@@ -244,6 +264,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             TariffText = _dock.IsCity ? TradeTariffRules.Describe(_dock.TariffPercent, _dock.CityName) : string.Empty;
             TariffVisible = _dock.IsCity;
+
+            PortText = ShadowportRules.Describe(Trade.GetShadowportStance(_dock, _exchange));
+            PortVisible = PortText.Length > 0;
         }
 
         private static string DescribeTier(TradeStandingTier tier)
@@ -276,23 +299,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var type in _rows)
             {
                 var commodity = TradeLookup.GetCommodity(type);
-                var market = TradePricing.WithPriceMultiplier(exchange?.FindMarket(type), Space.GetIncursionPriceMultiplier(exchange?.Type ?? TradeExchangeType.Invalid));
+                var sharedMarket = exchange?.FindMarket(type);
+                var saleOnly = sharedMarket == null;
+                var market = TradePricing.WithPriceMultiplier(
+                    sharedMarket ?? Trade.GetContrabandSaleMarket(_dock, _exchange, type),
+                    Space.GetIncursionPriceMultiplier(exchange?.Type ?? TradeExchangeType.Invalid));
                 if (commodity == null || market == null)
                     continue;
 
                 var pressure = Trade.GetPressure(state, type);
                 var units = CargoHoldRules.GetUnits(cargo, type);
                 names.Add(commodity.Name);
-                tooltips.Add(commodity.IsHoldingGood
-                    ? $"{commodity.Description} Volume {commodity.Volume} per unit. Only Planetary Holdings make it; exchanges buy it but never sell it."
-                    : $"{commodity.Description} Volume {commodity.Volume} per unit.");
-                roles.Add(GetRoleText(market.Role, commodity.Legality, exchange.IsBlackMarket));
-                buyPrices.Add(commodity.IsHoldingGood
+                tooltips.Add(saleOnly
+                    ? $"{commodity.Description} Volume {commodity.Volume} per unit. This port buys it as contraband and never sells it. Selling risks a customs bust."
+                    : commodity.IsHoldingGood
+                        ? $"{commodity.Description} Volume {commodity.Volume} per unit. Only Planetary Holdings make it; exchanges buy it but never sell it."
+                        : $"{commodity.Description} Volume {commodity.Volume} per unit.");
+                roles.Add(saleOnly ? "Contraband, sale only" : GetRoleText(market.Role, commodity.Legality, exchange.IsBlackMarket));
+                buyPrices.Add(saleOnly || commodity.IsHoldingGood
                     ? "-"
                     : TradeRules.GetQuotedBuyPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
-                sellPrices.Add(TradeRules.GetQuotedSellPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
+                sellPrices.Add(TradeRules.GetQuotedSellPrice(commodity, Trade.GetSaleMarket(_dock, _exchange, type, market), pressure, social, standingBonus, _dock.TariffPercent).ToString());
                 aboard.Add(units.ToString());
-                canBuy.Add(hasShip && capacity > 0 && !commodity.IsHoldingGood);
+                canBuy.Add(hasShip && capacity > 0 && !commodity.IsHoldingGood && !saleOnly);
                 canSell.Add(hasShip && units > 0);
             }
 
@@ -429,6 +458,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Trade.Sell(Player, shipId, _exchange, _dockId, _rows[index], GetOrderUnits());
 
             Refresh();
+
+            // A customs bust takes the fine and the cargo on the player's queue, after this handler.
+            if (!buying)
+                AssignCommand(Player, Refresh);
         }
 
         public Action OnClickBuy() => () => PlaceOrder(true);

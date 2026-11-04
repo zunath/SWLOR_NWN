@@ -25,5 +25,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// treasury. Cities without an entry charge none.
         /// </summary>
         Shipyard = 4,
+
+        /// <summary>
+        /// This is a whole percent (0 to 10) added to every price in the city's stores and paid into the treasury.
+        /// Cities created before the Sales tax have no entry, which counts as 0.
+        /// </summary>
+        Sales = 5,
     }
 }

@@ -3025,7 +3025,10 @@ namespace SWLOR.Game.Server.Service
                 .StatGroup
                 .CraftSkillBonuses[CraftSkillBonusType.Control][craftingSkillType];
 
-            return control + statusBonus;
+            // A house Workshop adds its bonus to a craft of its chosen skill; a craft that is open keeps the bonus it opened with.
+            var workshopBonus = HouseSpecializations.GetWorkshopBonus(player, dbPlayer, craftingSkillType);
+
+            return control + statusBonus + workshopBonus;
         }
         /// <summary>
         /// Calculates the total Craftsmanship for a player in a given crafting skill.
@@ -3054,7 +3057,10 @@ namespace SWLOR.Game.Server.Service
                 .StatGroup
                 .CraftSkillBonuses[CraftSkillBonusType.Craftsmanship][craftingSkillType];
 
-            return control + statusBonus;
+            // A house Workshop adds its bonus to a craft of its chosen skill; a craft that is open keeps the bonus it opened with.
+            var workshopBonus = HouseSpecializations.GetWorkshopBonus(player, dbPlayer, craftingSkillType);
+
+            return control + statusBonus + workshopBonus;
         }
 
         /// <summary>

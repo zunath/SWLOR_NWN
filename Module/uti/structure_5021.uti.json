@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A station jump beacon. Deploy it on a player station's deck: it jumps a ship docked at the station to another station's beacon for Station Fuel. Beacons never reach into or out of Wild Space."
+    }
   },
   "Description": {
     "type": "cexolocstring",

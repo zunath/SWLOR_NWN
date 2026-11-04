@@ -139,6 +139,9 @@ namespace SWLOR.Game.Server.Service
 
                     var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
 
+                    // Hunting Grounds adds points to the skill XP bonus of these awards, and no other XP.
+                    var huntingGroundsPoints = EdictEffects.GetHuntingGroundsPoints(dbPlayer, GetArea(player));
+
                     foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
                         var validSkills = skillsWithCP
@@ -172,7 +175,8 @@ namespace SWLOR.Game.Server.Service
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
                                 Skill.GiveSkillXP(player, skillType, (int)adjXP,
-                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID);
+                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID,
+                                    extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                         else
@@ -186,7 +190,7 @@ namespace SWLOR.Game.Server.Service
                             {
                                 float adjXP = Skill.GetDeltaXP(npcLevel - ps.Rank);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP, extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                     }

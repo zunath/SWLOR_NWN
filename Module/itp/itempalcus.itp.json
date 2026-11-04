@@ -23543,11 +23543,539 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Fermentation Vat"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5105"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Holo Star Globe"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5024"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Garden Plot"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5100"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Dueling Ring"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5101"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Corral"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5104"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Market Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5102"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Traveler's Lodge"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5103"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Veles Fountain Statue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5130"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Veles Street Lamp"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5131"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Orchard Planter"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5132"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Viscaran Fern Cluster"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5133"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tide Fountain"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5138"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Giant Reef Shell"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5139"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Reef Kolto Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5140"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Kelp Garden Planter"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5141"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Obelisk"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5146"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Standard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5147"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Sith Pedestal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5148"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tomb Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5149"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Mandalorian Armor Stand"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5154"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Rifle Rack"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5155"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Weapons Crate"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5156"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clan Hearth Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5157"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Moisture Vaporator"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5162"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Water Barrels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5163"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tusken Rifle Mount"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5164"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Desert Food Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5165"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Enclave Ruin Block"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5170"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Khoonda Dairy Vat"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5171"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Plains Crop Rows"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5172"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Grain Sacks"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5173"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Nightsister Cauldron"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5178"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Rancor Skull"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5179"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bone Tree"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5180"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Coven Brazier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5181"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Cryo Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5186"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Hydroponic Trough"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5187"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Cargo Crate Stack"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5188"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Crew Locker"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5189"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Banner, Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5190"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Banner, Gold"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5191"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Civic Wall Crest"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5192"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Archive Crest"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5193"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clinic Display Panel"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5194"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Clinic Bacta Tank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5195"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Spaceport Signpost"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5196"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Spaceport Wall Sign"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5197"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pavilion Banner"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5198"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Artisans' Guild Banner"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5199"
               }
             },
             {
@@ -34474,6 +35002,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Animal Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_crate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Anise I"
                     },
                     "RESREF": {
@@ -38929,6 +39468,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cornucopia Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_cornucopia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corylus"
                     },
                     "RESREF": {
@@ -39264,6 +39814,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_x"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Oregano Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_oregano"
                     }
                   },
                   {
@@ -44242,6 +44803,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fertilizer V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fertilizer_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fertilizer IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fertilizer_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fertilizer III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fertilizer_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fertilizer II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fertilizer_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fertilizer I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fertilizer_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fiberplast Padding"
                     },
                     "RESREF": {
@@ -44335,6 +44951,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "elec_flawed"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Fiber Shrub Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_fiber_2"
                     }
                   },
                   {
@@ -44704,6 +45331,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ginger Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_ginger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gloam Silk"
                     },
                     "RESREF": {
@@ -44720,6 +45358,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "elec_good"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Good Quality Fiber Shrub Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_fiber_3"
                     }
                   },
                   {
@@ -45353,6 +46002,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "High Quality Fiber Shrub Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_fiber_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "High Quality Fiberplast"
                     },
                     "RESREF": {
@@ -45474,6 +46134,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Acorn Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_acorn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hydrolase Enzyme - Blue"
                     },
                     "RESREF": {
@@ -45578,6 +46249,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "elec_imperfect"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperfect Fiber Shrub Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_fiber_4"
                     }
                   },
                   {
@@ -49775,6 +50457,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Thyme Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_thyme"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Vibroblade Parts"
                     },
                     "RESREF": {
@@ -49835,6 +50528,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "manip_arm3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manure V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manure_t5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manure IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manure_t4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manure III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manure_t3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manure II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manure_t2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manure I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manure_t1"
                     }
                   },
                   {
@@ -49989,6 +50737,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "melon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Melon Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_melon"
                     }
                   },
                   {
@@ -50226,6 +50985,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Calan Seaweed Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_seaweed"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moon Spice"
                     },
                     "RESREF": {
@@ -50297,6 +51067,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mushroom"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mushroom Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_mushroom"
                     }
                   },
                   {
@@ -50737,6 +51518,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "passion_fruit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Passion Fruit Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_passion"
                     }
                   },
                   {
@@ -52514,6 +53306,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ruined Fiber Shrub Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_fiber_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ruined Fiberplast"
                     },
                     "RESREF": {
@@ -54120,6 +54923,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Strange Pineapple Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_pineapple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stronidium"
                     },
                     "RESREF": {
@@ -54257,6 +55071,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tarnuinch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Desert Sage Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_desert_sage"
                     }
                   },
                   {
@@ -54472,6 +55297,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tomato Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_tomato"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Torporand Juice"
                     },
                     "RESREF": {
@@ -54620,6 +55456,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "turnip"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turnip Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_turnip"
                     }
                   },
                   {
@@ -54879,6 +55726,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vegetable Clump Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_veg_clump"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vegetables"
                     },
                     "RESREF": {
@@ -55066,6 +55924,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscaran Apple Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_apple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Flour"
                     },
                     "RESREF": {
@@ -55099,11 +55968,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscaran Lemon Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_lemon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Orange"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "v_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Pea Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_peas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Orange Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_orange"
                     }
                   },
                   {
@@ -55132,11 +56034,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscaran Pebble Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_pebble"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Rosemary"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Rosemary Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_rosemary"
                     }
                   },
                   {
@@ -55159,6 +56083,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "walnut"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Walnut Seeds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seed_walnut"
                     }
                   },
                   {
@@ -56331,6 +57266,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fine Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_fine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ancient Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_ancient"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aracia Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_aracia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hyphae Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_hyphae"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wood Baton Frame"
                     },
                     "RESREF": {
@@ -56985,6 +57975,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "esh_wolf_pelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Aradile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_arad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Gimpassa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_gimp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young K'lor'slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_klor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Thune"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_thune"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Valley Cairnmog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_cairn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Warocas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_waro"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Young Womp Rat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "livestock_womp"
                     }
                   }
                 ]
@@ -60955,6 +62022,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Acolyte's Roast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_korr_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Acorn Cookies"
                     },
                     "RESREF": {
@@ -61004,6 +62082,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ara_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Kelp Chowder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_mcal_dish"
                     }
                   },
                   {
@@ -61318,6 +62407,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Clan Hearth Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_hutl_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Coarse Fish Substitute I"
                     },
                     "RESREF": {
@@ -61582,6 +62682,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Coven Oregano Au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dath_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal Sushi"
                     },
                     "RESREF": {
@@ -61609,6 +62720,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dan_flapjack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Ginger Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_korr_drink"
                     }
                   },
                   {
@@ -61774,6 +62896,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pf_dryfruit_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dune Sage Melon Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_tato_drink"
                     }
                   },
                   {
@@ -62132,6 +63265,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "House Citrus Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_citrus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "House Reserve Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_reserve"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "House Sunrise Cream"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house_sunrise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydroponic Spacer Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_stat_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Idol Sushi"
                     },
                     "RESREF": {
@@ -62236,6 +63413,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keeb_binggona"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Khoonda Cream Au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dant_drink"
                     }
                   },
                   {
@@ -62550,6 +63738,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nightsister Cauldron Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dath_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Noodles"
                     },
                     "RESREF": {
@@ -62599,6 +63798,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "orange_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orchard Cider Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_visc_drink"
                     }
                   },
                   {
@@ -62665,6 +63875,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pine_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plains Harvest Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_dant_dish"
                     }
                   },
                   {
@@ -63056,6 +64277,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Stallkeeper's Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stall_pie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starchart Data Disk"
                     },
                     "RESREF": {
@@ -63342,6 +64574,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tidepool Pineapple Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_mcal_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tiger Pot Pie"
                     },
                     "RESREF": {
@@ -63441,6 +64684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Veles Orchard Roast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_visc_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Herb Soup"
                     },
                     "RESREF": {
@@ -63468,6 +64722,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warrior's Acorn Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_hutl_drink"
                     }
                   },
                   {
@@ -63606,6 +64871,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Womp Farmer's Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_tato_dish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Womp Rat Broth"
                     },
                     "RESREF": {
@@ -63633,6 +64909,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yellow_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zero-G Melon Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sig_stat_drink"
                     }
                   },
                   {

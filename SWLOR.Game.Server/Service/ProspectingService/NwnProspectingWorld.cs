@@ -255,6 +255,15 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public int GetGatheringRank(uint player) => Skill.GetCreatureSkillRank(player, SkillType.Gathering);
 
+        public HarvestBonusChances GetHarvestBonusChances(uint player)
+        {
+            if (!Journaled(player))
+                return HarvestBonusChances.None;
+
+            var chances = EdictEffects.GetHarvestBonusChances(DB.Get<Player>(GetObjectUUID(player)), GetArea(player));
+            return new HarvestBonusChances(chances.ProspectorsCharter, chances.HomeGround);
+        }
+
         public void GiveGatheringXp(uint player, int xp)
         {
             if (!Journaled(player))

@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.LogService;
@@ -165,19 +166,42 @@ namespace SWLOR.Game.Server.Service
 
         // Permissions and citizenship
 
+        /// <summary>
+        /// Whether the player holds a city power at the station, by their role or a permission they hold
+        /// (<see cref="CityPowers.Can"/>). A mayor who stepped down holds none, whatever their permission record says, so the
+        /// consoles ask here and not <see cref="Property.HasPropertyPermission"/>. Staff always do, as there.
+        /// </summary>
+        public static bool HasStationPower(uint player, WorldProperty station, CityPower power)
+        {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+
+            return GetIsPC(player) && station != null && CityPowers.Can(station, GetObjectUUID(player), power);
+        }
+
         public static bool IsCitizen(uint player, WorldProperty station)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             return dbPlayer != null && station != null && dbPlayer.CitizenPropertyId == station.Id;
         }
 
-        /// <summary>Whether the player is a citizen of one of the stations the beacon lists as allies.</summary>
+        /// <summary>
+        /// Whether the player is a citizen of one of the stations the beacon lists as allies, or of a city the station has an Alliance
+        /// Edict in effect with.
+        /// </summary>
         public static bool IsAllyCitizen(uint player, StationBuildingState beacon)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             return dbPlayer != null &&
                    !string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
-                   beacon.BeaconAllyStationIds.Contains(dbPlayer.CitizenPropertyId);
+                   (beacon.BeaconAllyStationIds.Contains(dbPlayer.CitizenPropertyId) ||
+                    EdictEffects.IsAllyOf(DB.Get<WorldProperty>(beacon.StationId), dbPlayer));
+        }
+
+        /// <summary>Whether the station has an Embargo in effect against the player's city, which refuses them at its Shipyard and Jump Beacon.</summary>
+        public static bool IsEmbargoed(uint player, WorldProperty station)
+        {
+            return EdictEffects.IsEmbargoedBy(station, DB.Get<Player>(GetObjectUUID(player)));
         }
 
         // The Shipyard
@@ -208,7 +232,8 @@ namespace SWLOR.Game.Server.Service
                 true,
                 GetState(building).ShipyardAccess,
                 IsCitizen(player, station),
-                dbPlayer?.PropertyOwedTaxes ?? 0);
+                dbPlayer?.PropertyOwedTaxes ?? 0,
+                IsEmbargoed(player, station));
             return StationBuildingRules.DescribeShipyardRefusal(refusal);
         }
 
@@ -293,12 +318,22 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void AccrueDrill(WorldProperty station, StationBuildingState state)
         {
+            AccrueDrill(station, state, DateTime.UtcNow);
+        }
+
+        /// <summary>
+        /// Adds the ore the drill mined up to <paramref name="nowUtc"/> and saves it. A Wild Space station whose Home Ground has completed by
+        /// then mines 5% faster.
+        /// </summary>
+        public static void AccrueDrill(WorldProperty station, StationBuildingState state, DateTime nowUtc)
+        {
             var anchor = Station.GetAnchor(station);
             if (anchor == null)
                 return;
 
+            var homeGround = StationBuildingRules.GetsDrillHomeGround(anchor.IsWildSpace, station.HomeGroundCompletedUtc, nowUtc);
             var stored = state.DrillStorage.Values.Sum();
-            var (units, next) = StationBuildingRules.AccrueDrill(stored, state.DrillLastAccrual, DateTime.UtcNow, GetDroidPercent(state));
+            var (units, next) = StationBuildingRules.AccrueDrill(stored, state.DrillLastAccrual, nowUtc, GetDroidPercent(state), homeGround);
             state.DrillLastAccrual = next;
 
             var totalWeight = StationBuildingRules.GetDrillTotalWeight(anchor.AreaResref);
@@ -314,6 +349,26 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(state);
+        }
+
+        /// <summary>
+        /// Settles every Asteroid Drill on the station up to <paramref name="completedUtc"/>, at the rate it had until then. Run just before
+        /// Home Ground completes, so the days before it never earn the 5%. A drill already read past that moment is left as it is.
+        /// </summary>
+        public static void SettleDrills(WorldProperty station, DateTime completedUtc)
+        {
+            var query = new DBQuery<StationBuildingState>()
+                .AddFieldSearch(nameof(StationBuildingState.StationId), station.Id, false)
+                .AddFieldSearch(nameof(StationBuildingState.StructureType), (int)StructureType.AsteroidDrill);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
+                return;
+
+            foreach (var state in DB.Search(query.AddPaging(count, 0)).ToList())
+            {
+                if (state.DrillLastAccrual < completedUtc)
+                    AccrueDrill(station, state, completedUtc);
+            }
         }
 
         /// <summary>
@@ -800,7 +855,7 @@ namespace SWLOR.Game.Server.Service
                 var anchor = Station.GetAnchor(station);
                 if (anchor == null || anchor.IsWildSpace || station.IsQueuedForDeletion ||
                     Station.GetDockPoints(station.Id).Count == 0 ||
-                    !StationBuildingRules.CanUseBeacon(beacon.BeaconAccess, IsCitizen(player, station), IsAllyCitizen(player, beacon)))
+                    !StationBuildingRules.CanUseBeacon(beacon.BeaconAccess, IsCitizen(player, station), IsAllyCitizen(player, beacon), IsEmbargoed(player, station)))
                     continue;
 
                 destinations.Add(station);
@@ -826,9 +881,9 @@ namespace SWLOR.Game.Server.Service
                 DestinationInWildSpace = Station.GetAnchor(destination)?.IsWildSpace ?? true,
                 SameStation = destination != null && destination.Id == origin.Id,
                 OriginPermits = originState != null &&
-                                StationBuildingRules.CanUseBeacon(originState.BeaconAccess, IsCitizen(player, origin), IsAllyCitizen(player, originState)),
+                                StationBuildingRules.CanUseBeacon(originState.BeaconAccess, IsCitizen(player, origin), IsAllyCitizen(player, originState), IsEmbargoed(player, origin)),
                 DestinationPermits = destinationState != null &&
-                                     StationBuildingRules.CanUseBeacon(destinationState.BeaconAccess, IsCitizen(player, destination), IsAllyCitizen(player, destinationState)),
+                                     StationBuildingRules.CanUseBeacon(destinationState.BeaconAccess, IsCitizen(player, destination), IsAllyCitizen(player, destinationState), IsEmbargoed(player, destination)),
                 OriginBeaconLevel = GetBeaconLevel(origin),
                 DestinationBeaconLevel = GetBeaconLevel(destination),
                 ShipSize = record == null ? ShipSize.Invalid : Space.GetShipSize(record),
@@ -909,6 +964,10 @@ namespace SWLOR.Game.Server.Service
             DB.Set(record);
 
             FinishJump(ship, record);
+
+            // The beacon's own access setting let the ship in, so its pilot and owner can board it and leave for 7 days whatever the
+            // Starport's access rules say.
+            StarportDeparture.OnArrived(GetObjectUUID(player), ship.OwnerPlayerId, dock.PropertyId);
 
             var landing = dock.Location;
             AssignCommand(player, () =>

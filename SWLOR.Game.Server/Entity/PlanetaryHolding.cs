@@ -48,6 +48,12 @@ namespace SWLOR.Game.Server.Entity
 
         public int Level { get; set; }
 
+        /// <summary>
+        /// When the Planetary Depot last moved the holding to another dock; the default time if it never has. Older records
+        /// load as never moved.
+        /// </summary>
+        public DateTime LastDepotMoveUtc { get; set; }
+
         /// <summary>What the holding cost, for the sell-back refund.</summary>
         public int PricePaid { get; set; }
 

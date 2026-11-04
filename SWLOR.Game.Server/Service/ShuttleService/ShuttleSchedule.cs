@@ -31,7 +31,9 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// The route hash of a shuttle route. A planet route hashes as before; a station route adds the station id to its
-        /// end: "{originId}:{stationId}&gt;{destinationId}" or "{originId}&gt;{destinationId}:{stationId}".
+        /// end: "{originId}:{stationId}&gt;{destinationId}" or "{originId}&gt;{destinationId}:{stationId}". A Home Port route to a
+        /// city's Starport adds the city id with its own separator, "{originId}&gt;{destinationId}#{cityId}", so it never shares a
+        /// schedule with the planet's NPC port.
         /// </summary>
         public static uint GetRouteHash(ShuttleRoute route)
         {
@@ -40,15 +42,23 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         private static string GetRouteKey(ShuttleRoute route)
         {
-            if (!route.IsStationRoute)
+            if (!route.IsStationRoute && !route.IsCityRoute)
                 return $"{(int)route.Origin.Planet}>{(int)route.Destination.Planet}";
 
             return $"{GetStopKey(route.Origin)}>{GetStopKey(route.Destination)}";
         }
 
-        private static string GetStopKey(ShuttleStop stop)
+        /// <summary>
+        /// The key of one end of a route: the planet id, "{planetId}:{stationId}" for a station, or "{planetId}#{cityId}" for a
+        /// city's Starport. The three forms never collide: a planet id is a number, and ':' and '#' differ.
+        /// </summary>
+        public static string GetStopKey(ShuttleStop stop)
         {
-            return stop.IsStation ? $"{(int)stop.Planet}:{stop.StationId}" : ((int)stop.Planet).ToString(CultureInfo.InvariantCulture);
+            var planet = ((int)stop.Planet).ToString(CultureInfo.InvariantCulture);
+            if (stop.IsStation)
+                return $"{planet}:{stop.StationId}";
+
+            return stop.IsCityStarport ? $"{planet}#{stop.CityId}" : planet;
         }
 
         private static uint HashRouteKey(string routeKey)
@@ -109,7 +119,7 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <summary>The next scheduled departure of a shuttle route; see the planet overload.</summary>
         public static DateTime GetNextDepartureUtc(ShuttleRoute route, DateTime utcNow, DateTime notBeforeUtc = default)
         {
-            if (!route.IsStationRoute)
+            if (!route.IsStationRoute && !route.IsCityRoute)
                 return GetNextDepartureUtc(route.Origin.Planet, route.Destination.Planet, utcNow, notBeforeUtc);
 
             var period = ShuttleRouteRules.GetPeriodSeconds(route);

@@ -26,6 +26,9 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// <summary>The city's effective starport upgrade level (0 at an NPC dock).</summary>
         public int StarportLevel { get; set; }
 
+        /// <summary>Whether the city has the Shadowport Edict in effect (false at an NPC dock).</summary>
+        public bool ShadowportActive { get; set; }
+
         /// <summary>Whether this dock has a Trade Exchange: an NPC dock always, a city one from the starport level that opens it.</summary>
         public bool HasExchange => Exchange != TradeExchangeType.Invalid && (!IsCity || TradeTariffRules.IsExchangeAvailable(StarportLevel));
 

@@ -58,6 +58,11 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;
 
+    /// <summary>What the fake says a failing requirement of the recipe is, in its own words. Empty for a plain refusal.</summary>
+    public string RequirementProblem { get; set; } = string.Empty;
+
+    public string GetRequirementProblem(uint player, RecipeType recipe) => RequirementProblem;
+
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe) => BlueprintProblem;
 
     public BlueprintDetail ChargeBlueprint(uint player, uint blueprintItem)
@@ -260,6 +265,25 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     /// <summary>True stops the server at the moment the lifecycle asks whether XP can be given: the record is saved, the award never runs.</summary>
     public bool StopBeforeXpGrant { get; set; }
+
+    /// <summary>The city the player's station stands in, which a craft records when it starts.</summary>
+    public string StationCityId { get; set; } = string.Empty;
+
+    /// <summary>The points Artisans' Charter adds at settlement, for a craft made in <see cref="CharterCityId"/>.</summary>
+    public int CharterPoints { get; set; }
+
+    /// <summary>The city whose citizens the charter pays; a craft made anywhere else gets nothing.</summary>
+    public string CharterCityId { get; set; } = string.Empty;
+
+    public string GetStationCityId(uint player) => StationCityId;
+
+    /// <summary>The Workshop bonus the house the player stands in gives a craft that starts now.</summary>
+    public int WorkshopBonus { get; set; }
+
+    public int GetWorkshopBonus(uint player, SkillType skill) => WorkshopBonus;
+
+    public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
+        !string.IsNullOrEmpty(craftCityId) && craftCityId == CharterCityId ? CharterPoints : 0;
 
     public bool CanReceiveXp(uint player)
     {

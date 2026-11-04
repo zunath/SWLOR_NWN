@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.Game.Server.Service.TradeService;
@@ -97,6 +98,8 @@ namespace SWLOR.Game.Server.Entity
             PendingHarvestReturns = new List<PendingHarvestReturn>();
             HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            StarportDeparturePasses = new Dictionary<string, DateTime>();
+            CityDepartures = new Dictionary<string, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
@@ -122,6 +125,7 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
+            PvpCombatRequests = new PvpCombatRequests();
             PaidShipSaleIds = new List<string>();
             LastAgentPurchaseId = string.Empty;
         }
@@ -136,6 +140,11 @@ namespace SWLOR.Game.Server.Entity
         public int CharacterFileVersion { get; set; }
         /// <summary>Messages from a character upgrade, shown to the player at their next login.</summary>
         public List<string> UpgradeNotices { get; set; } = new();
+        /// <summary>
+        /// The journal entries whose change to this record (an XP price paid at the Civic Exchange) it holds, saved in the same write as
+        /// the change (<see cref="Service.TransferService.TransferReceipts"/>). Older records load without any.
+        /// </summary>
+        public List<string> TransferReceipts { get; set; } = new();
         public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }
@@ -236,6 +245,33 @@ namespace SWLOR.Game.Server.Entity
         public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
+
+        /// <summary>
+        /// When the character became a citizen of <see cref="CitizenPropertyId"/>, reset each time it joins a city. A
+        /// character may vote in an election only if this is at or before the time registration opened. Null when the
+        /// character is not a citizen.
+        /// </summary>
+        public DateTime? CitizenSinceUtc { get; set; }
+
+        /// <summary>
+        /// The 7-day departure passes (Player City Revamp, "Who may use the Bank and Starport") by city id: when the character last had a
+        /// ship docked at that city's Starport while allowed to use it. Until 7 days after that time the character may still use the
+        /// Starport's flights terminal to leave, whatever happened to their access since.
+        /// </summary>
+        public Dictionary<string, DateTime> StarportDeparturePasses { get; set; }
+
+        /// <summary>
+        /// When the character stopped being a citizen of a city, by city id (Player City Revamp, "Livestock"): the 7 days after which the
+        /// mayor can send the animals they left in that city's corrals away start here. An entry ends when the character rejoins the
+        /// city. Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> CityDepartures { get; set; }
+
+        /// <summary>The id of the latest city election result this character has read at login.</summary>
+        public string SeenElectionResultId { get; set; }
+
+        /// <summary>The id of the latest planetary council summons this character has read. Older records load empty.</summary>
+        public string SeenCouncilSummonsId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }
@@ -257,6 +293,22 @@ namespace SWLOR.Game.Server.Entity
         public bool HasUndisguisedDescriptionSnapshot { get; set; }
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
+
+        /// <summary>
+        /// When the character accepted the one-time notice that cities can post bounties on the character's own identity
+        /// (Player City Revamp, "Conflict and PvP"); each disguise keeps its own. Unset for everyone at launch, so nobody can
+        /// be targeted before accepting.
+        /// </summary>
+        public DateTime? BountyNoticeAcceptedUtc { get; set; }
+
+        /// <summary>When a city bounty on the character's own identity was last claimed. Each disguise keeps its own.</summary>
+        public DateTime? LastBountyClaimedUtc { get; set; }
+
+        /// <summary>
+        /// Flag and identity changes the player asked for while their PvP combat window was open, applied when it ends.
+        /// Older records load empty.
+        /// </summary>
+        public PvpCombatRequests PvpCombatRequests { get; set; }
 
         /// <summary>The freight contracts the player holds (plan section 13). Older records load with none.</summary>
         public List<FreightContract> FreightContracts { get; set; } = new();

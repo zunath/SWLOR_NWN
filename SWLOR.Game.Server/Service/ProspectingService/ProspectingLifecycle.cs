@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Service.EdictService;
 
 namespace SWLOR.Game.Server.Service.ProspectingService
 {
@@ -26,6 +27,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public const string StillWorkingMessage = "You are still working.";
         public const string OverMessage = "The session is over.";
         public const string QuickHarvestTooLateMessage = "Quick Harvest is only offered before you begin working the node.";
+        public const string BonusItemMessage = "Your city's good fortune turns up an extra item in your harvest.";
+        public const string BonusItemsMessage = "Your city's good fortune turns up 2 extra items in your harvest.";
 
         /// <summary>How often a session in progress checks that the player is still there and still.</summary>
         public const float CheckSeconds = 1.0f;
@@ -337,8 +340,15 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             // then the harvest is delivered and the XP given. A stop after the reservation leaves the units and XP to be given at login,
             // and the node can never keep units already paid. A node the action ends is saved spent, and removed once the harvest is out.
             var xp = delivery.Items * XpPerItem(session);
-            var payout = delivery.IsEmpty ? null : _world.ReservePayout(session.Player, session.Request.LootTable, delivery, xp);
             var ending = engine.Ending;
+
+            // A session that ends with something gathered may roll for extra items (Prospectors' Charter, Home Ground). They join this
+            // action's delivery but not its XP, which is for the items the harvest itself gave.
+            var bonusItems = ending != ProspectingEnding.InProgress && session.Delivered.Items > 0 ? RollBonusItems(session) : 0;
+            if (bonusItems > 0)
+                delivery = delivery with { Rolls = delivery.Rolls + bonusItems };
+
+            var payout = delivery.IsEmpty ? null : _world.ReservePayout(session.Player, session.Request.LootTable, delivery, xp);
             var removed = ending is ProspectingEnding.MinedOut or ProspectingEnding.Collapsed;
             var after = engine.ToNode();
             _world.SaveNode(session.Node, (removed ? after.Take(after.Pool) : after).Serialize());
@@ -378,13 +388,18 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                     return;
 
                 var xp = ProspectingQuickHarvest.XpPerUnit(session.Request.NodeTier, _world.GetGatheringRank(session.Player));
+                var taken = node.Take(1);
+                var charges = session.HarvesterCharges - ProspectingQuickHarvest.Charges(1);
+
+                // The unit that finishes the Quick Harvest may roll for extra items (Prospectors' Charter, Home Ground), which pay no XP.
+                var bonusItems = taken.IsSpent || charges <= 0 ? RollBonusItems(session) : 0;
+
                 // As with a board action, the unit and its XP are reserved, then the node is saved, then the unit is delivered and its XP given.
-                var payout = _world.ReservePayout(session.Player, session.Request.LootTable, new HarvestDelivery(1, 0, 0), xp);
-                node = node.Take(1);
+                var payout = _world.ReservePayout(session.Player, session.Request.LootTable, new HarvestDelivery(1 + bonusItems, 0, 0), xp);
+                node = taken;
                 _world.SaveNode(session.Node, node.Serialize());
                 _world.GiveHarvest(session.Player, session.Node, payout);
                 session.QuickHarvested++;
-                var charges = session.HarvesterCharges - ProspectingQuickHarvest.Charges(1);
 
                 string message = null;
                 var finished = false;
@@ -417,6 +432,20 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 if (!finished)
                     QuickHarvestStep(session, node, onProgress);
             });
+        }
+
+        /// <summary>
+        /// Rolls the extra items a finished harvest may gain from the player's city (<see cref="EdictBonusRules.RollHarvestBonusItems"/>)
+        /// and tells the player when it gains any. Returns 0, 1 or 2.
+        /// </summary>
+        private int RollBonusItems(ProspectingSession session)
+        {
+            var chances = _world.GetHarvestBonusChances(session.Player);
+            var items = EdictBonusRules.RollHarvestBonusItems(chances.ProspectorsCharterPercent, chances.HomeGroundPercent, _random.D100);
+            if (items > 0)
+                _world.Message(session.Player, items == 1 ? BonusItemMessage : BonusItemsMessage);
+
+            return items;
         }
 
         /// <summary>Sets the harvester's charges, and destroys it when none is left, as a harvester always has been.</summary>

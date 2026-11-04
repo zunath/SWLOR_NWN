@@ -108,6 +108,13 @@ namespace SWLOR.Game.Server.Service.GuiService
         PerformanceOptions = 102,
         PerformanceWatching = 103,
 
+        CityGazette = 110,
+        CityAffairs = 111,
+        GardenPlot = 112,
+        DMCities = 113,
+        HouseSpecialization = 117,
+        CityProjects = 118,
+
         DebugEnmity = 900,
         DebugNuiGallery = 901,
         AnimationDebug = 902,

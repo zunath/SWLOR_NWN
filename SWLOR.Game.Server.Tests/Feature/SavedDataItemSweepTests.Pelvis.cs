@@ -161,19 +161,6 @@ public partial class SavedDataItemSweepTests
     }
 
     [Test]
-    public void PelvisConsolidation_OutfitListingIsIdempotentAndKeepsOtherParts()
-    {
-        var outfit = new PlayerOutfit { PelvisId = 35, TorsoId = 35, Name = "Saved colors" };
-        var migrate = typeof(PelvisAppearanceMigration).GetMethod("MigrateOutfitListing", BindingFlags.NonPublic | BindingFlags.Static)!;
-        migrate.Invoke(null, new object[] { outfit }).Should().Be(true);
-        outfit.PelvisId.Should().Be(34);
-        outfit.TorsoId.Should().Be(35);
-        outfit.Name.Should().Be("Saved colors");
-        migrate.Invoke(null, new object[] { outfit }).Should().Be(false);
-        migrate.Invoke(null, new object[] { outfit }).Should().Be(false);
-    }
-
-    [Test]
     public void PelvisConsolidation_ExtendedStyleWinsAndUnrelatedItemsStayUntouched()
     {
         var alreadyCurrent = Encode(Item("custom_armor", BaseItem.Armor, null,

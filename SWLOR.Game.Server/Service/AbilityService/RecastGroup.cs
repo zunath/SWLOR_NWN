@@ -935,6 +935,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Crossfire Stance", "Crossfire St.", true)]
         CrossfireStance = 578,
 
+        [RecastGroup("Force Decoy", "Force Decoy", true)]
+        ForceDecoy = 585,
+
+        [RecastGroup("Cloud Mind", "Cloud Mind", true)]
+        CloudMind = 586,
+
     }
 
     public class RecastGroupAttribute : Attribute

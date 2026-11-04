@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
-        IGuiRefreshable<AppearanceChangedRefreshEvent>
+        IGuiRefreshable<AppearanceChangedRefreshEvent>,
+        IGuiRefreshable<ArmorDisplayChangedRefreshEvent>
     {
         public enum ColorTarget
         {
@@ -3493,6 +3494,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(AppearanceChangedRefreshEvent payload)
         {
             RefreshTintMapEditorAfterAppearanceChange();
+        }
+
+        /// <summary>
+        /// /helm or /cloak changed the saved setting; show it so Save Settings keeps it.
+        /// </summary>
+        public void Refresh(ArmorDisplayChangedRefreshEvent payload)
+        {
+            if (!IsArmorDisplayVisible || payload.Creature != _target)
+                return;
+
+            if (payload.Helmet)
+                ShowHelmet = payload.Shown;
+            else
+                ShowCloak = payload.Shown;
         }
 
         private void RefreshTintMapEditorAfterAppearanceChange(bool refreshItemParts = false)

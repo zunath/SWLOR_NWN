@@ -23,12 +23,6 @@ public static class PelvisAppearanceMigration
     public static bool MigrateSavedObject(string original, out string migrated) =>
         StoredObjectData.MigratePelvisData(original, out migrated);
 
-    internal static bool MigrateOutfitListing(PlayerOutfit outfit)
-    {
-        if (outfit.PelvisId != Previous) return false;
-        outfit.PelvisId = Current;
-        return true;
-    }
 
     internal static TintMapLayerType DestinationLayer(TintMapLayerType layer) => layer switch
     {

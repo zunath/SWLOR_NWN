@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -14,8 +15,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private class OreDetail
         {
+            /// <summary>The ore's tier, 1 to 5. It gates the ore by Gathering rank and sets the level its refining XP falls off from.</summary>
             public int RequiredLevel { get; }
             public string RefinedItemResref { get; }
+
+            /// <summary>The XP one unit pays a refiner whose rank equals the ore's level; the rank scales it (<see cref="GatheringLevels.RefiningXp"/>).</summary>
             public int XPGranted { get; }
 
 
@@ -164,11 +168,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return kept;
         }
 
+        /// <summary>The items one power core refines: the base batch, what the Gathering rank adds, and what Bulk Refining adds.</summary>
+        public static int ItemsPerCore(int refineryManagementLevel, int bulkRefining) =>
+            BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel) + Math.Max(0, bulkRefining);
+
+        /// <summary>The power cores it takes to refine the items at the batch size, rounded up.</summary>
+        public static int PowerCoresFor(int itemCount, int itemsPerCore) =>
+            (int)Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore));
+
         private void CalculateCoresRequired()
         {
-            var refineryManagement = Perk.GetPerkLevel(Player, PerkType.RefineryManagement);
-            var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
-            _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
+            var refineryManagement = CraftRankMilestones.GetRefineryManagementLevel(Player);
+            var bulkRefining = Stat.GetStatAdjustment(Player, StatType.ProspectingRefineBatch);
+            _powerCoresRequired = PowerCoresFor(ItemCount, ItemsPerCore(refineryManagement, bulkRefining));
 
             if(_powerCoresRequired == 1)
                 RequiredPowerCores = $"{_powerCoresRequired}x Power Core Required";
@@ -217,11 +229,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return false;
                 }
 
-                // Player doesn't have prerequisite level.
-                var perkLevel = Perk.GetPerkLevel(Player, PerkType.Refining);
-                if (perkLevel < _ores[resref].RequiredLevel)
+                // Player doesn't have prerequisite Gathering rank.
+                var refiningTier = CraftRankMilestones.GetRefiningTier(Player);
+                if (refiningTier < _ores[resref].RequiredLevel)
                 {
-                    SendMessageToPC(Player, $"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.");
+                    SendMessageToPC(Player, $"Your Gathering rank must be at least {CraftRankMilestones.RequiredRankForTier(_ores[resref].RequiredLevel)} to refine that item.");
                     return false;
                 }
 
@@ -336,6 +348,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var xp = 0;
 
+                // Each unit pays its ore's flat XP at the ore's level, as it always has, scaled by harvesting's rank-difference curve:
+                // GetDeltaXP(ore level - rank) / GetDeltaXP(0), where an ore's level is the level of the vein of its tier (5, 15, 25,
+                // 35, 45). So refining at level pays what it paid, and cheap ore stops training high ranks.
+                var gatheringRank = Skill.GetCreatureSkillRank(Player, SkillType.Gathering);
+
                 for (var index = _inputItems.Count - 1; index >= 0; index--)
                 {
                     var oreResref = _inputItemResrefs[index];
@@ -345,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Spawn the refined item onto the player.
                     CreateItemOnObject(refinedItem.RefinedItemResref, Player, stackSize);
 
-                    xp += refinedItem.XPGranted * stackSize;
+                    xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");

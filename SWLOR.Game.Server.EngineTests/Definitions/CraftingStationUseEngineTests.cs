@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             new("korribanlandingp", "cookpot", 151.9f, 97.3f, 154.1f, 97.3f),
             new("korribanlandingp", "cookpot", 150.6f, 93.7f, 152.2f, 93.6f),
 
+            // Jedi Temple: the cauldron stood in the middle of a raised hearth, out of reach, so it now stands on the floor in front of it.
+            new("jeditemp_int", "cookpot", 72.2f, 23.55f, 70.6f, 23.5f),
+
             // Mandalorian refineries: they had no use script, only the retired container scripts.
             new("sol_mandaloriani", "cft_forge", 125.6f, 46.1f, 126.9f, 47.6f),
             new("sol_mandaloriani", "cft_forge", 115.9f, 85.5f, 117.5f, 86.9f),

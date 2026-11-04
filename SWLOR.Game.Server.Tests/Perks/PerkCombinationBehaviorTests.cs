@@ -2,6 +2,8 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -70,6 +72,65 @@ public class PerkCombinationBehaviorTests
             Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeTrue(skill.ToString());
         foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Force, SkillType.Devices, SkillType.Invalid })
             Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeFalse(skill.ToString());
+    }
+
+    [TestCase(nameof(PerkType.MobileFootwork), PerkType.MobileFootwork,
+        StatType.SecondaryAbilityUsedEvasionRangedOnly, StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType)]
+    [TestCase(nameof(PerkType.SnapRoll), PerkType.SnapRoll,
+        StatType.AbilityUsedRangedDeflectionRangedOnly, StatType.AbilityUsedRangedDeflectionSkillType)]
+    [TestCase(nameof(PerkType.KitingInstinct), PerkType.KitingInstinct,
+        StatType.AbilityUsedMovementSpeedRangedOnly, StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType)]
+    public void PistolSkirmisherTraits_TriggerFromEveryHostileRangedWeaponAbilityOnly(
+        string method,
+        PerkType perkType,
+        StatType rangedOnlyStat,
+        StatType skillSelectorStat)
+    {
+        foreach (var (level, perkLevel) in PerkLevels<PistolPerkDefinition>(method, perkType))
+        {
+            perkLevel.Description.Should().Contain("hostile ranged weapon ability", $"{perkType} rank {level}");
+            perkLevel.StatBonuses.Should().ContainSingle(bonus => bonus.Stat == rangedOnlyStat && bonus.Calculate(0) == 1,
+                $"{perkType} rank {level} must accept every hostile ranged weapon ability");
+            perkLevel.StatBonuses.Should().NotContain(bonus => bonus.Stat == skillSelectorStat,
+                $"{perkType} rank {level} must not be locked to Pistol abilities");
+        }
+
+        foreach (var skill in Enum.GetValues<SkillType>())
+        {
+            Combat.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
+                .Should().Be(Combat.IsRangedWeaponSkill(skill), skill.ToString());
+            Combat.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: false)
+                .Should().BeFalse($"a non-hostile {skill} ability is not a hostile ranged weapon ability");
+        }
+    }
+
+    [Test]
+    public void PistolSkirmisherTraits_DoNotTriggerFromForceOrMimicryRangedAttacks()
+    {
+        // Throw Rock and the Suppressing Shot technique are ranged attacks but not ranged weapon abilities.
+        var throwRock = new ThrowRockAbilityDefinition().BuildAbilities().Values;
+        var suppressingShot = new SuppressingShotTechniqueAbilityDefinition()
+            .BuildAbilities().Values;
+
+        foreach (var ability in throwRock.Concat(suppressingShot))
+        {
+            ability.IsHostileAbility.Should().BeTrue(ability.Name);
+            Combat.AbilityUsedTriggerSkillMatches(ability.SkillType, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
+                .Should().BeFalse($"{ability.Name} uses {ability.SkillType}, not a ranged weapon skill");
+        }
+    }
+
+    [Test]
+    public void AbilityUsedTrigger_WithoutRangedFlag_KeepsExactSkillMatching()
+    {
+        // Lateral Footwork still fires from Spear abilities only, hostile or not.
+        Combat.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Spear, false, false).Should().BeTrue();
+        Combat.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Spear, false, true).Should().BeFalse();
+        Combat.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Invalid, false, true).Should().BeFalse();
+
+        // A ranged-only trigger with a selector stays narrowed to that ranged weapon skill.
+        Combat.AbilityUsedTriggerSkillMatches(SkillType.Rifle, SkillType.Rifle, true, true).Should().BeTrue();
+        Combat.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Rifle, true, true).Should().BeFalse();
     }
 
     [Test]
@@ -349,6 +410,16 @@ public class PerkCombinationBehaviorTests
             .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(builder)!;
         return new StatAdjustmentSource(type.ToString(), perks[type].PerkLevels[1].StatBonuses
             .ToDictionary(bonus => bonus.Stat, bonus => bonus.Calculate(0)));
+    }
+
+    private static IReadOnlyDictionary<int, PerkLevel> PerkLevels<T>(string method, PerkType type) where T : new()
+    {
+        var definition = new T();
+        typeof(T).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(definition, null);
+        var builder = typeof(T).GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(definition)!;
+        var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+            .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(builder)!;
+        return perks[type].PerkLevels;
     }
 
     private static StatAdjustmentSource Source(params (StatType Stat, int Amount)[] stats) =>

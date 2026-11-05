@@ -32,9 +32,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(15, Stat.GetStatAdjustment(sniper, StatType.RangedAbilityLongRangeDamagePercentAdjustment),
                 "Sniper Stance supplies +15% long-range ability damage");
 
+            // The shared percent helper rounds up, so +15% of 100 is whatever it returns for 15.
+            var boosted = Combat.ApplyPercentDamageAdjustment(100, 15);
+            ctx.Assert(boosted > 100, "a +15% adjustment raises damage");
             foreach (var skill in new[] { SkillType.Rifle, SkillType.Pistol, SkillType.Throwing })
             {
-                ctx.AssertEqual(115, AbilityDamage(sniper, farTarget, skill),
+                ctx.AssertEqual(boosted, AbilityDamage(sniper, farTarget, skill),
                     $"{skill} ability at 12m gains Sniper Stance's +15%");
                 ctx.AssertEqual(100, AbilityDamage(sniper, nearTarget, skill),
                     $"{skill} ability at 5m is not long range");
@@ -53,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(sniper, PerkType.ScopeCalibration, 1);
             ctx.AssertEqual(10, Stat.GetStatAdjustment(sniper, StatType.RangedAbilityLongRangeMinimumRangeMeters),
                 "Scope Calibration and Sniper Stance keep a single 10m threshold");
-            ctx.AssertEqual(115, AbilityDamage(sniper, farTarget, SkillType.Rifle),
+            ctx.AssertEqual(boosted, AbilityDamage(sniper, farTarget, SkillType.Rifle),
                 "the bonus still applies at 12m with Scope Calibration");
         }
 

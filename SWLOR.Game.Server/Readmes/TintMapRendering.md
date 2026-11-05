@@ -183,9 +183,16 @@ row as coverage, and reflective cloaks use it only for metal, so a custom
 color can neither cut a cloak away nor make its cloth reflective. Helmet 101's
 authored-diffuse mode keeps its luminance-only RGB and first-row metal
 coverage. Authored normal, specular and roughness maps still pass through
-standard material lighting. The Toolset viewport (NWN.Toolset
-`AreaViewportControl`) still uses the older single-reference-row shading.
-Preset lookup and authored colors are unchanged.
+standard material lighting. Preset lookup and authored colors are unchanged.
+
+The Toolset shades RGB the same way. Its area viewport (NWN.Toolset
+`AreaViewportControl`, package 0.1.0-preview.6 or later) takes the swatch row
+the host passes as `PaletteRow`; `SwlorAreaViewportMaterialProvider` passes
+`GetClosestColorId`'s exact nearest swatch, so the 0.2% of colors the atlas
+lookup resolves to a farther swatch can differ slightly from the game. The
+cloak material sets `CustomColorsUseLayerCoverage`, which keeps the reflective
+cloak coverage rule; the viewport does not model cutout cloaks.
+`TintMapTextureRenderer` (CPU previews) applies the same swatch shading.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
@@ -194,7 +201,8 @@ installed palette row at every shade and layer. `TestPaletteSwatchLookup.py`
 checks the lookup rows without a GPU.
 `python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
 draws the Toolset's production desktop and ES shader pairs on Windows, checking
-RGB/preset coverage and lit metal reflection without normal or specular maps.
+swatch-row RGB shading and coverage, every fifth swatch sent as RGB against its
+palette row, and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak

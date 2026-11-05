@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
@@ -17,7 +15,7 @@ namespace SWLOR.Game.Server.Composition
         internal static TService Resolve<TService>()
             where TService : class
         {
-            return CompositionRoot.Current.GetRequiredService<TService>();
+            return FacadeCache<TService>.Get();
         }
     }
 }

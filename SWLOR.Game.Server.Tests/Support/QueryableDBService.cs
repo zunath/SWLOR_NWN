@@ -1,4 +1,5 @@
 using System.Globalization;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
@@ -38,6 +39,9 @@ public sealed class QueryableDBService : IDBService
 
     public bool Exists<T>(string id)
         where T : EntityBase => Store.Exists<T>(id);
+
+    public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
+        Store.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
 
     public IEnumerable<T> Search<T>(DBQuery<T> query)
         where T : EntityBase

@@ -5,6 +5,7 @@
     { "name": "Achievement", "domain": "Character" },
     { "name": "Area", "domain": "World" },
     { "name": "Authorization", "domain": "Core" },
+    { "name": "BackgroundJob", "domain": "Core" },
     { "name": "Bank", "domain": "Economy" },
     { "name": "BeastMastery", "domain": "Companions" },
     { "name": "Cache", "domain": "Core" },
@@ -37,7 +38,9 @@
     { "name": "Messaging", "domain": "Core" },
     { "name": "Music", "domain": "World" },
     { "name": "NPCGroup", "domain": "Creatures" },
+    { "name": "NamedAnimation", "domain": "Core" },
     { "name": "Notes", "domain": "World" },
+    { "name": "ObjectVisibility", "domain": "Core" },
     { "name": "OverflowStorage", "domain": "Items" },
     { "name": "Party", "domain": "Social" },
     { "name": "Planet", "domain": "World" },
@@ -51,6 +54,7 @@
     { "name": "Spawn", "domain": "Creatures" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Traps", "domain": "World" },
+    { "name": "Walkmesh", "domain": "Core" },
     { "name": "Wardrobe", "domain": "Items" },
     { "name": "Weather", "domain": "World" }
   ]

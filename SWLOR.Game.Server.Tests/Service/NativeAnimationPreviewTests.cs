@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Armor;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
@@ -99,7 +100,7 @@ public class NativeAnimationPreviewTests
         var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Service.PerkService.PerkType.ThrowLightsaber);
         Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, speed);
         configure.Should().Throw<ArgumentOutOfRangeException>();
-        Action preview = () => SWLOR.Game.Server.Service.NamedAnimation.PlayNativePreview(0, Animation.SaberThrow, speed);
+        Action preview = () => new NamedAnimationService().PlayNativePreview(0, Animation.SaberThrow, speed);
         preview.Should().Throw<ArgumentOutOfRangeException>();
     }
 

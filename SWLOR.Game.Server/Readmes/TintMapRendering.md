@@ -974,29 +974,98 @@ engine's complete include tree for each supported shader quality. A material
 test adapter that declares extra uniforms cannot validate this contract; keep
 its numerical lighting checks separate from the production compilation checks.
 
-## Declare and enforce single-level packed textures
+## Store a full mip chain in every packed mask
 
-Each generated ATI2/BC5 DDS stores only its base level. Set
-`DDSD_MIPMAPCOUNT` and `dwMipMapCount = 1`, and ship a same-resref TXI containing
-`mipmap 0` alongside every DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2`.
-The TXI is required: the installed 89.8193.37-17 client's compressed upload
-loop derives further levels from the texture dimensions when mipmaps are
-enabled, regardless of the DDS mip count. Merely fixing the header is
-insufficient. The mask's green channel contains categorical layer IDs, so
-filtered mipmap generation is inappropriate for this texture.
+Each generated ATI2/BC5 DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2` stores
+every mip level down to 1 x 1. Set `DDSD_MIPMAPCOUNT`, set `dwMipMapCount` to
+the number of levels stored, and ship a same-resref TXI containing `mipmap 1`.
+`write_packed_dds` does this. Masks, TXIs, and generated MTRs and models come
+from the tools in `SWLOR_Haks/tools/`: change the tool and regenerate, never
+hand-edit the output.
 
-The NPC-spawn crash dump confirmed a `glCompressedTexImage2D` call requesting
-the 512 x 512 first mip (262,144 bytes) from a pointer exactly 1,048,576 bytes
-after a 1024 x 1024 BC5 base level. That DDS contained no mip payload, and the
-driver faulted reading beyond the buffer. Inspection of the installed client
-confirmed that TXI `mipmap 0` controls the condition that skips this upload loop.
+A DDS must declare exactly the levels it stores. The installed 89.8193.37-17
+client's compressed upload loop derives further levels from the texture
+dimensions when mipmaps are enabled, regardless of the DDS mip count. An
+NPC-spawn crash dump confirmed a `glCompressedTexImage2D` call requesting the
+512 x 512 first mip (262,144 bytes) from a pointer exactly 1,048,576 bytes after
+a 1024 x 1024 BC5 base level. That DDS contained no mip payload, and the driver
+faulted reading beyond the buffer. So a base-only DDS with `mipmap 1` can crash
+the client. Inspection of the installed client confirmed that TXI `mipmap 0`
+controls the condition that skips this upload loop.
+
+These textures stay single-level with `mipmap 0`:
+
+- The cloak atlas (`mipmaps=False` in `CloakTintAssets.py`). `fs_cloaktint`
+  reads it with a `-10` bias and has no far-shade blend.
+- The palette atlas `plt_palette`. Its rows are categories.
 
 Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`
-to repair existing DDS headers and create the TXIs without recompressing
-pixels. Generation, relocation, deduplication, and removal must preserve each
-DDS/TXI pair. Both the asset audit and C# corpus test require the pair; the GPU
-test rejects missing or enabled-mipmap TXIs before issuing compressed uploads.
-Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
+to rebuild the chain and TXIs for existing masks. It leaves each base level byte
+for byte the same. Generation, relocation, deduplication, and removal must
+preserve each DDS/TXI pair. `tint_dds_layout` in `TestTintShaderMaterials.py`
+and the C# corpus test both reject a base-only header, a truncated chain, a
+missing TXI, and `mipmap 0`; keep the Python negative controls. Rebuild and deploy
+all three `sw_tint*.hak` archives after this repair.
+
+`RobeRgbModels.json` hashes `GenerateTintMapAssets.py`, so any generator edit
+fails `GenerateRobeRgbModels.py --check`. Regenerate the robes, or refresh the
+hash when the change cannot reach robe output.
+
+## Sample the shade and the layer id differently
+
+A packed mask holds two channels per texel that need opposite sampling. Most
+tint bugs come from mixing them up. These rules apply to `fs_plt_tinter`,
+`fs_plt_tinter_nm`, `fs_plt_hair_nm`, and the `fs_hav_*` shaders.
+
+- **Red is the shade: average it at a distance.** Up close, read the exact
+  base-level shade with `texture2D(texUnit7, wrappedUV, -10.0).r`. Once a texel
+  is smaller than a pixel, blend to the mipmapped shade,
+  `texture2D(texUnit7, vVertexTexCoords).r`, weighted by
+  `far = clamp(max(length(dFdx(texels)), length(dFdy(texels))) - 1.0, 0.0, 1.0)`
+  with `texels = vVertexTexCoords * tintMapSize`. A base-level shade at a distance
+  picks one texel per pixel, which shows as grain and glitter. A mipmapped shade
+  up close averages across a dye border, which makes the border fizz.
+- **Green is the layer id: never filter it.** Read it with
+  `texelFetch(texUnit7, texel, 0)` under `#if __VERSION__ >= 130`. Halfway between
+  two ids is a third, wrong layer. A texel-center `texture2D` read is not enough:
+  with mipmaps present, anisotropic filtering (16x is the client default) samples
+  several texels even at level 0. Lower mip levels of the green channel are
+  never read, so they just keep one id per block.
+- **Take derivatives from unwrapped UVs.** `fract(vVertexTexCoords)` jumps at a
+  UV seam, and a mip level picked from it there is the smallest one. Sample
+  mipmapped reads with `vVertexTexCoords`; the mask repeats.
+- **`ResolveTintTexel` takes a texel center.** Fetch that texel with `texelFetch`.
+  The smoothing path blends finished colors, never ids or shades.
+
+Known limit: far away, a pixel at a dye border averages the shades on both sides
+and colors the result with one layer's ramp, so the border color can blend a
+little. It only shows once a texel is smaller than a pixel.
+
+Robes render native palette colors through `useNativePalette`, but they still run
+the tint shader, so every sampling bug above shows on them. A robe is the quickest
+place to see grain and border fizz.
+
+## Check a shader or mask change in the client
+
+1. Build the override from the shader versions the live server ships, not from
+   `master`. A shader newer than the client's haks can fail to compile and turn
+   every dyed part magenta. Find the live version by hashing the shader in the
+   client's nwsync cache against `git log` of the file.
+2. Put the changed shaders, masks, and TXIs in the game's `development` folder,
+   which outranks every hak. Keep a list of what you put there, and remove exactly
+   that list afterward.
+3. Restart the client fully. A shader change does not show otherwise.
+4. Look at a dyed robe from far away (grain), the robe collar up close (border
+   fizz), a dyed helmet, dyed hair, and a cloak.
+5. Read `logs/nwengineLog.txt` in the game's user folder. `Failed to link material
+   custom parameter` for every row uniform means the shader did not compile.
+6. Compare with the override off before blaming a change. Split the override
+   (masks only, shaders only) to find which half causes a defect.
+
+`GenerateTintMapAssets.py --check`, `GenerateRobeRgbModels.py --check`,
+`TestTintMaterialProfiles.py`, and `TestDyeAppearance.py` run anywhere.
+`TestTintShaderMaterials.py` and `TestHelmetTintFiltering.py` render through WGL
+and need Windows and `--game-data`.
 
 ## Smooth dye edges on reported materials
 

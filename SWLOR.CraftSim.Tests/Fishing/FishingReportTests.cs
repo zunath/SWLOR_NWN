@@ -37,7 +37,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 FishingFightBoundGate.GateName,
                 GateNames.Length,
                 GateNames.XpRate,
-                "Evidence: XP rate at the fastest allowed pace",
+                "Evidence: XP rate with the first action at once",
                 $"{GateNames.Length} (Patient Angler (full line))",
                 $"{GateNames.XpRate} (Patient Angler (full line))",
                 $"{GateNames.Length} (Aggressive Angler (full line))",
@@ -46,7 +46,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 "Evidence: style balance");
             report.Should().StartWith("# " + FishingReport.Title);
             report.Should().Contain("## Inputs").And.Contain("## Verdicts").And.Contain("## Economy parity").And.Contain("## Fight bound").And.Contain("## Length").And.Contain("## XP rate")
-                .And.Contain("## Evidence: XP rate at the fastest allowed pace").And.Contain("## Evidence: Angler perk magnitudes").And.Contain("## Evidence: style balance")
+                .And.Contain("## Evidence: XP rate with the first action at once").And.Contain("## Evidence: Angler perk magnitudes").And.Contain("## Evidence: style balance")
                 .And.Contain("## Limitations");
             report.Should().Contain("Willpower scores 8, 10, 12, 14, 16, 18, 20");
             report.Should().Contain("Rank - fish level").And.Contain("Agriculture rank").And.Contain("Trophy Catch");
@@ -99,7 +99,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
             WriteReport(out var results);
 
             results.Single(result => result.Gate == GateNames.XpRate).Tables.Single().Rows.Should().HaveCount(5, "one case for each band of fish levels");
-            results.Single(result => result.Gate == "Evidence: XP rate at the fastest allowed pace").Tables.Single().Rows.Should().HaveCount(5);
+            results.Single(result => result.Gate == "Evidence: XP rate with the first action at once").Tables.Single().Rows.Should().HaveCount(5);
             results.Single(result => result.Gate == GateNames.EconomyParity).Tables.Should().HaveCount(3, "by rank above the fish's level, by rank over the pools, and per hour");
             results.Single(result => result.Gate == FishingFightBoundGate.GateName).Tables.Should().HaveCount(4, "no perks, over the pools, the Angler line, and the rare fish");
             results.Where(result => result.Gate.StartsWith("Evidence")).Should().OnlyContain(result => result.Verdict == GateVerdict.NotApplicable);

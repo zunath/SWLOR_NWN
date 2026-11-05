@@ -238,13 +238,39 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
-    public void TheCountedFightSeconds_AreTheTimeTheFightLasted_CappedAtTheTurnsTakenAtTheTunedPace()
+    public void TheFightXpShare_IsTheShareOfItsTurns_HeldToTheTimeTheFightTook()
     {
-        LineRules.CountedFightSeconds(100, 0).Should().Be(0);
-        LineRules.CountedFightSeconds(100, 3).Should().Be(3 * LineRules.TurnSeconds);
-        LineRules.CountedFightSeconds(10, 3).Should().Be(10, "a faster fight is measured as it lasted");
-        LineRules.CountedFightSeconds(-4, 3).Should().Be(0);
-        LineRules.XpShare(LineRules.CountedFightSeconds(600, 3)).Should().BeLessThan(1.0);
+        var turn = LineRules.TurnSeconds;
+        var full = LineRules.XpFullTurns;
+
+        LineRules.FightXpShare(100, 0).Should().Be(0);
+        LineRules.FightXpShare(-4, 3).Should().Be(0);
+        LineRules.FightXpShare(600, 3).Should().BeApproximately(LineRules.XpShare(3 * turn), 1e-9, "idling adds no turns");
+        LineRules.FightXpShare(3 * turn, 3).Should().BeApproximately(LineRules.XpShare(3 * turn), 1e-9, "the tuned pace earns the share of its turns");
+        LineRules.FightXpShare(10, 3).Should().BeApproximately(LineRules.XpShare(10), 1e-9, "a short fight played faster is measured as it lasted");
+        LineRules.FightXpShare(full * turn, full + 3).Should().BeApproximately((double)full / (full + 3), 1e-9,
+            "a long fight timed to the full turns' time is paid for that time, not the full share");
+        LineRules.FightXpShare((full + 3) * turn, full + 3).Should().Be(1);
+    }
+
+    [Test]
+    public void RushingAFight_NeverEarnsMoreXpPerHourThanTheTunedPace_OrQuickReel()
+    {
+        // XP per bite in units of the bite's XP: 1 at the bite, and up to the rest (a multiplier of 8 less the bite) when the fight ends.
+        const double castSeconds = 7;
+        const double rest = 7;
+        const double quickReel = 1 / castSeconds;
+        foreach (var turns in Enumerable.Range(1, 12))
+        {
+            var tunedSeconds = turns * LineRules.TurnSeconds;
+            var tuned = (1 + rest * LineRules.FightXpShare(tunedSeconds, turns)) / (castSeconds + tunedSeconds);
+            foreach (var fraction in new[] { 0.01, 0.25, 0.5, 0.75, 0.9 })
+            {
+                var seconds = tunedSeconds * fraction;
+                var rushed = (1 + rest * LineRules.FightXpShare(seconds, turns)) / (castSeconds + seconds);
+                rushed.Should().BeLessThanOrEqualTo(Math.Max(tuned, quickReel) + 1e-12, $"{turns} turns in {seconds} s");
+            }
+        }
     }
 
     [Test]
@@ -277,39 +303,32 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
-    public void TheFirstActionIsFree_AndEachOneAfterItWaitsTheTurnSeconds()
+    public void MovesTakenWithNoWaitBetweenThem_ArePaidForTheSecondsTheFightLasted_NotForTheirTurns()
     {
-        var lifecycle = Lifecycle();
-        var fight = lifecycle.Bite(EasyFish());
+        var rest = FightXp(20, 20) - BiteXp(20, 20);
+        var lifecycle = Lifecycle(Enumerable.Repeat(99, 200).ToArray());
+        var fight = lifecycle.Bite(Bite(level: 20, rank: 20, rod: FishingRodType.GlassFiber));
+        for (var turn = 0; turn < 30 && fight.Engine.Ending == LineEnding.InProgress; turn++)
+        {
+            Reel(fight);
+            lifecycle.TurnTaken(fight);
+        }
 
-        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0, "the first action of a fight is free");
-
-        lifecycle.TurnTaken(fight);
-
-        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds, 1e-9);
+        fight.Engine.Turn.Should().BeGreaterThan(1, "the moves resolved one after another with no time between them");
         _world.UtcNow = _world.UtcNow.AddSeconds(3);
-        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds - 3, 1e-9);
-        _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.TurnSeconds - 3);
-        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0);
-        _world.UtcNow = _world.UtcNow.AddSeconds(60);
-        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0, "waiting longer never stores up turns");
+        lifecycle.Settle(fight).Should().NotBeNull();
 
-        lifecycle.TurnTaken(fight);
-        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds, 1e-9);
+        var turns = fight.Engine.Turn;
+        LineRules.FightXpShare(3, turns).Should().BeLessThan(LineRules.XpShare(turns * LineRules.TurnSeconds));
+        _world.Xp.Sum().Should().Be(
+            BiteXp(20, 20) + (int)Math.Round(rest * LineRules.FightXpShare(3, turns), MidpointRounding.AwayFromZero),
+            "a rushed fight earns its share for the three seconds it lasted, never the share of its turns at the tuned pace");
     }
 
     [Test]
-    public void ASettledFight_OrNoFight_HasNoWait()
+    public void ATurnTakenNeedsAFight()
     {
-        var lifecycle = Lifecycle();
-        var fight = lifecycle.Bite(EasyFish());
-        lifecycle.TurnTaken(fight);
-
-        lifecycle.Abandon(fight, FishingFightEnd.WindowClosed);
-
-        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0);
-        lifecycle.SecondsUntilNextTurn(null).Should().Be(0);
-        var act = () => lifecycle.TurnTaken(null);
+        var act = () => Lifecycle().TurnTaken(null);
         act.Should().Throw<ArgumentNullException>();
     }
 

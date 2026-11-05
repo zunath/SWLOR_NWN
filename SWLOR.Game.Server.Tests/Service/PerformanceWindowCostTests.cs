@@ -24,7 +24,7 @@ public class PerformanceWindowCostTests
     {
         var baseSource = ViewModelSource("PerformanceCueViewModelBase.cs");
 
-        CountOf(baseSource, "ChangePartialView(").Should().Be(1, "only Initialize applies the layout");
+        CountOf(baseSource, "ChangePartialView(").Should().Be(1, "only Initialize and a mode switch apply the layout");
         CountOf(baseSource, "ShowModal(").Should().Be(0);
         ViewModelSource("PerformanceFootworkViewModel.cs").Should().NotContain("ChangePartialView(");
         ViewModelSource("PerformanceSessionViewModel.cs").Should().NotContain("ChangePartialView(");

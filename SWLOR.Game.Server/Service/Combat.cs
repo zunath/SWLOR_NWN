@@ -1100,6 +1100,7 @@ namespace SWLOR.Game.Server.Service
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplyPhysicalAbilityShapeDamageModifier(attacker, damageType, damage, isSingleTarget);
                 damage = ApplyAreaAbilityAfterDeflectionDamageModifier(attacker, skillType, damage, isArea);
+                damage = ApplyRangedAbilityLongRangeDamageModifier(attacker, defender, skillType, damage);
             }
 
             damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
@@ -1108,6 +1109,7 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyAbilityShapeDamageModifier(attacker, damage, isAbilityDamage, ability);
+            damage = ApplyThrowingSingleTargetDamageModifier(attacker, skillType, damage, isAbilityDamage, ability);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
 
             damage = ApplyTargetStatusDamageModifiers(
@@ -1185,6 +1187,34 @@ namespace SWLOR.Game.Server.Service
                     ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        /// <summary>
+        /// Applies ThrowingSingleTargetDamagePercentAdjustment to Throwing auto-attacks and
+        /// single-target hostile Throwing abilities, the Throwing-only form of the single-target
+        /// scope used by SingleTargetDamagePercentAdjustment.
+        /// </summary>
+        public static int ApplyThrowingSingleTargetDamageModifier(
+            uint attacker,
+            SkillType skillType,
+            int damage,
+            bool isAbilityDamage,
+            AbilityDetail ability)
+        {
+            if (damage <= 0 || skillType != SkillType.Throwing)
+                return damage;
+
+            var isSingleTarget = !isAbilityDamage ||
+                                 ability?.IsHostileAbility == true && Ability.IsSingleTargetImpact(attacker, ability);
+            if (!isSingleTarget)
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingSingleTargetDamagePercentAdjustment);
+            return adjustment == 0
+                ? damage
+                : ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         /// <summary>
@@ -4796,6 +4826,24 @@ namespace SWLOR.Game.Server.Service
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.SkillAreaAbilityDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        public static int ApplyRangedAbilityLongRangeDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !IsRangedAbilityLongRangeTarget(attacker, defender, skillType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.RangedAbilityLongRangeDamagePercentAdjustment);
             if (adjustment == 0)
                 return damage;
 
@@ -13055,6 +13103,28 @@ namespace SWLOR.Game.Server.Service
                 totalReduction,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
+        }
+
+        /// <summary>
+        /// Attack delay reduction that depends on the swing's target, such as Flurry Stance's Haste
+        /// for Throwing auto-attacks against bleeding targets. Positive values respect Haste suppression.
+        /// </summary>
+        public static int GetTargetAttackDelayReduction(uint attacker, uint target, SkillType skillType)
+        {
+            if (skillType != SkillType.Throwing ||
+                !GetIsObjectValid(target) ||
+                GetObjectType(target) != SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature ||
+                !StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding))
+            {
+                return 0;
+            }
+
+            var reduction = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingAttackDelayReductionToBleedingTargetPercent);
+            return reduction > 0 && IsAttackDelayReductionSuppressed(attacker)
+                ? 0
+                : reduction;
         }
 
         private static int GetDualWieldAttackDelayReduction(uint attacker) =>

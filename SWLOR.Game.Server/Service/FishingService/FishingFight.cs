@@ -33,15 +33,12 @@ namespace SWLOR.Game.Server.Service.FishingService
 
         /// <summary>
         /// The most Agriculture XP still to pay when the fight ends on its own: the bite's multiplied XP less what the bite already paid.
-        /// It is paid in proportion to how long the fight lasted (<c>LineRules.XpShare</c>), counted only up to the turns taken (<c>LineRules.CountedFightSeconds</c>), and an abandoned fight never pays it.
+        /// It is paid by the turns taken and how long the fight lasted against them (<c>LineRules.FightXpShare</c>), and an abandoned fight never pays it.
         /// </summary>
         public int XpOnFinish { get; internal set; }
 
         /// <summary>When the fish bit and the fight began.</summary>
         public DateTime StartedAt { get; internal set; }
-
-        /// <summary>The earliest time the angler's next action may resolve; null until they have taken the first, which is free.</summary>
-        public DateTime? NextTurnAt { get; internal set; }
 
         /// <summary>When the angler last acted (or the fish bit). A fight left this long without an action ends as idle.</summary>
         public DateTime LastActivityAt { get; internal set; }

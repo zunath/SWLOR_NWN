@@ -47,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Hold: drains the fish's Stamina. Strong against a Thrash.\n" +
             "Each button shows exactly what it will do against the move the fish announced.\n\n" +
             "THE PACE\n" +
-            "Your first move is free. After every move the fish needs " + TurnSecondsText + " seconds before your next one counts.\n\n" +
+            "There is no wait between moves. The XP paid when the fight ends grows with how long it lasted, counting at most " +
+            TurnSecondsText + " seconds for each move you take, so a fight rushed through pays less of it.\n\n" +
             "LOSING THE FISH\n" +
             "The bait and one of the fishing point's bites are spent when the fish bites, whether you land it or not. You are paid " +
             "Agriculture XP for the bite at once, and the rest when the fight ends on its own (you land the fish, the line snaps or " +

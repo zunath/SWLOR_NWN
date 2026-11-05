@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public string FollowingText { get; init; } = string.Empty;
         public string InspiringText { get; init; } = string.Empty;
 
+        /// <summary>What a follower of this performer leaves with and how fast it banks; see <see cref="PerformanceAudienceText.AudienceGets"/>.</summary>
+        public string AudienceGetsText { get; init; } = string.Empty;
+
         /// <summary>The band line of the Session window; empty for dancers.</summary>
         public string BandText { get; init; } = string.Empty;
 

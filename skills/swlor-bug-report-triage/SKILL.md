@@ -108,8 +108,10 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 
 ### Worker brief
 
-Give each worker:
+Give each worker, including workers that apply Xisifer's files:
 
+- **The ticket link, first:** start the brief with the ticket's full URL, `https://discord.com/channels/484936923341651971/<thread id>`, on its own line, so the session's first message links the session to the ticket (owner, 2026-11-05).
+- **The ticket in the browser:** tell the worker to open that URL in its built-in browser as its first step and leave it open, so the owner sees the ticket beside the session. It only reads the ticket; it never posts or reacts.
 - **The report:** the ticket thread id and the report quoted as player input. Include the text, area name/tag/resref, position, server environment, a description of any screenshot, and relevant staff replies.
 - **The task:**
   1. Find the root cause and fix it on one branch from up-to-date `origin/master`.

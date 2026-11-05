@@ -1112,6 +1112,13 @@ rows. The GPU regression resolves the reported feet and shins through
 the catalog and checks their actual packed masks select Leather2 row 23 with
 zero environment-map coverage.
 
+A part whose meshes take different dye masks is the exception. Neck 152 binds
+its frames, lenses and collar to their own materials (`p?h0_n152fr`, `ln`, `nk`:
+Metal 1, Leather 1, Cloth 1), so the old single neck palette must not replace
+them. Their `TintMapSources.json` entries set `explicitMeshMaterial`; the generator
+then keeps each mesh's material and writes one `tintmap.2da` row per material.
+The source conversion preserves the flag.
+
 A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female
 chest 4 names `pfh0_chest001`, belt 5 names `pmh0_belt007`). Once that name is

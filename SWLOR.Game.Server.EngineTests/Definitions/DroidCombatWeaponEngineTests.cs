@@ -198,6 +198,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Two associate commands in one frame must not hand the earlier event to the stock henchman AI, whose
+        /// weapon selection leaves a rifle droid without a melee weapon fighting unarmed.
+        /// </summary>
         [EngineTest("Droid keeps its rifle when owner combat commands arrive in the same frame", Category = "DroidCombat", TimeoutSeconds = 120f)]
         public static async Task SameFrameOwnerCommands(EngineTestContext ctx)
         {

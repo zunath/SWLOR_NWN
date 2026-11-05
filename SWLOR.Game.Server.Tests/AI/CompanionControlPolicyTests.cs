@@ -113,6 +113,7 @@ public class CompanionControlPolicyTests
             .BeTrue();
     }
 
+    /// <summary>An associate command event is handled as the command it was raised for.</summary>
     [TestCase(AssociateCommand.MasterUnderAttack)]
     [TestCase(AssociateCommand.MasterAttackedOther)]
     [TestCase(AssociateCommand.MasterGoingtobeAttacked)]
@@ -127,6 +128,7 @@ public class CompanionControlPolicyTests
         command.Should().Be(expected);
     }
 
+    /// <summary>Conversations and other listen patterns are left to the stock dialogue handler.</summary>
     [TestCase(-1)]
     [TestCase(0)]
     [TestCase(5)]

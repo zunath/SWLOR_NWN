@@ -101,8 +101,8 @@ public class FacadeForwardingTests
             return;
 
         FacadeMethods(service.Facade).Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
-            .Should().OnlyContain(method => method.ReturnType == typeof(void) && method.GetParameters().Length == 0,
-                "the script registry binds a handler as an Action");
+            .Should().OnlyContain(method => (method.ReturnType == typeof(void) || method.ReturnType == typeof(bool)) && method.GetParameters().Length == 0,
+                "the script registry binds a handler as an Action, or as a conditional script when it returns bool (Snippet.ConversationAppearsWhen)");
     }
 
     [Test]

@@ -1,8 +1,10 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -12,8 +14,11 @@ public sealed class ConversationGraphCorpusTests
     [Test]
     public void EmbeddedAuthoredGraphs_AreStructurallyValidAndUseRegisteredSnippets()
     {
-        Snippet.CacheData();
-        Conversation.CacheData();
+        // The real services of the server's container, the way the boot loads them: snippets first, graphs after.
+        using var container = new FacadeContainer();
+        container.Get<ISnippetService>().CacheData();
+        var conversations = container.Get<IConversationService>();
+        conversations.CacheData();
 
         var assembly = typeof(Conversation).Assembly;
         var resources = assembly.GetManifestResourceNames()
@@ -43,7 +48,7 @@ public sealed class ConversationGraphCorpusTests
 
             graph.Should().NotBeNull(resource);
             ConversationGraphValidator.Validate(graph!).Should().BeEmpty(resource);
-            Conversation.TryGetGraph(graph!.Id, out _).Should().BeTrue(resource);
+            conversations.TryGetGraph(graph!.Id, out _).Should().BeTrue(resource);
         }
     }
 }

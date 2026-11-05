@@ -965,8 +965,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // directly. Native watch events then route like a connected player's UI.
         private static WindowRegistration RegisterWindows(EngineTestContext ctx, PlayerAbilityFixture player)
         {
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
             var registered = DMWindowTypes.ToDictionary(type => type, type =>
             {

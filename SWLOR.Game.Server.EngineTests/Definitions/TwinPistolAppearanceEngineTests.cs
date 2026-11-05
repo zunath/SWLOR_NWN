@@ -30,8 +30,7 @@ public static class TwinPistolAppearanceEngineTests
         var playerWindow = template.CreatePlayerWindowAction();
         var editor = (AppearanceEditorViewModel)playerWindow.ViewModel;
         editor.Geometry = new GuiRectangle(25f, 20f, 590f, 660f);
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var windows = GuiInternals.PlayerWindows();
         ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
         windows.Add(player.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>
         {

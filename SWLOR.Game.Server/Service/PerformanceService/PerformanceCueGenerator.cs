@@ -8,19 +8,11 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public const double HornsRestChance = 0.40;
         public const double ChordChance = 0.20;
 
-        private static readonly PerformanceCue[] _danceLanes =
-        {
-            PerformanceCue.Left, PerformanceCue.Up, PerformanceCue.Down, PerformanceCue.Right
-        };
-
-        private static readonly PerformanceCue[] _musicLanes =
-        {
-            PerformanceCue.Low, PerformanceCue.Mid, PerformanceCue.High
-        };
-
         public static IReadOnlyList<PerformanceCue> GetLanes(PerformanceKind kind)
         {
-            return kind == PerformanceKind.Dance ? _danceLanes : _musicLanes;
+            return kind == PerformanceKind.Dance
+                ? new[] { PerformanceCue.Left, PerformanceCue.Up, PerformanceCue.Down, PerformanceCue.Right }
+                : new[] { PerformanceCue.Low, PerformanceCue.Mid, PerformanceCue.High };
         }
 
         /// <summary>

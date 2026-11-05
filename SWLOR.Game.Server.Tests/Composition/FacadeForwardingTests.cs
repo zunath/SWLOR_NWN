@@ -49,8 +49,9 @@ public class FacadeForwardingTests
     [TestCaseSource(nameof(Facades))]
     public void Every_facade_member_forwards_to_the_instance_with_the_same_arguments_and_returns_its_result(ConvertedServiceTypes service)
     {
-        foreach (var method in FacadeMethods(service.Facade!))
+        foreach (var openMethod in FacadeMethods(service.Facade!))
         {
+            var method = CloseGeneric(openMethod);
             var proxyInstance = RecordingProxy.Create(service.Contract, out var proxy);
             var provider = ContainerHost.Create(new ServiceCollection().AddSingleton(service.Contract, proxyInstance));
             var arguments = method.GetParameters().Select(parameter => SampleValue(parameter.ParameterType)).ToArray();
@@ -132,6 +133,25 @@ public class FacadeForwardingTests
         services.Should().OnlyContain(descriptor => descriptor.Lifetime == ServiceLifetime.Singleton);
         var build = () => ContainerHost.Create(services).Dispose();
         build.Should().NotThrow();
+    }
+
+    // A generic facade member (Gui.PublishRefreshEvent<T>) is closed over the first type of the server assembly that meets
+    // the constraint of each type parameter, or over object when it has none.
+    private static MethodInfo CloseGeneric(MethodInfo method)
+    {
+        if (!method.IsGenericMethodDefinition)
+            return method;
+
+        var arguments = method.GetGenericArguments().Select(parameter =>
+        {
+            var constraint = parameter.GetGenericParameterConstraints().FirstOrDefault();
+            return constraint == null
+                ? typeof(object)
+                : typeof(CompositionRoot).Assembly.GetTypes()
+                    .First(candidate => candidate.IsClass && !candidate.IsAbstract && !candidate.IsGenericTypeDefinition &&
+                                        constraint.IsAssignableFrom(candidate));
+        }).ToArray();
+        return method.MakeGenericMethod(arguments);
     }
 
     private static object? SampleValue(Type type)

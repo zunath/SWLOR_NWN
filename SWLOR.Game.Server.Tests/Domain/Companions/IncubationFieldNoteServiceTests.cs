@@ -20,6 +20,22 @@ namespace SWLOR.Game.Server.Tests.Domain.Companions;
 [TestFixture]
 public class IncubationFieldNoteServiceTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     private const string PlayerId = PlayerEngine.PlayerId;
     private const uint PlayerObject = 1001;
 

@@ -25,8 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var playerWindow = template.CreatePlayerWindowAction();
             var model = (ExamineItemViewModel)playerWindow.ViewModel;
             model.Geometry = new GuiRectangle(40f, 45f, 440f, 560f);
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(observer.Id), "headless fixture GUI registration must be isolated");
             windows.Add(observer.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.ExamineItem] = playerWindow });
             var snapshots = new JArray();

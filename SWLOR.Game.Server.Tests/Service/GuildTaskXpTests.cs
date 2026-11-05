@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -19,8 +20,24 @@ public class GuildTaskXpTests
         GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild
     };
 
+    private FacadeContainer _container = null!;
+    private IDisposable _scope = null!;
+
     [OneTimeSetUp]
-    public void LoadTheXpChart() => Skill.CacheXPChartData();
+    public void LoadTheXpChart()
+    {
+        Skill.CacheXPChartData();
+        _container = new FacadeContainer();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeTheContainer() => _container.Dispose();
+
+    [SetUp]
+    public void InstallTheContainer() => _scope = _container.Install();
+
+    [TearDown]
+    public void RemoveTheContainer() => _scope.Dispose();
 
     [Test]
     public void TheAwardIsFiftyPercentOfTheCharts()

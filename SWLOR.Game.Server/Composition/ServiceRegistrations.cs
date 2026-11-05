@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICasinoSlotService, CasinoSlotService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
             services.AddSingleton<IGuildService, GuildService>();
+            services.AddSingleton<IGuildTaskXpService, GuildTaskXpService>();
             services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
 
             // Items
@@ -90,6 +91,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IChatCommandService, ChatCommandService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
+            services.AddSingleton<IPerformanceService, PerformanceService>();
+            services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
+            services.AddSingleton<IPerformanceVenueService, PerformanceVenueService>();
+            services.AddSingleton<IPerformanceWindowsService, PerformanceWindowsService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // World

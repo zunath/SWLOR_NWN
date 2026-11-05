@@ -103,7 +103,7 @@ public class PerformanceAudienceCostTests
     [Test]
     public void AudienceTick_UsesOneModuleWideScheduleAndProfilesIt()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         CountOf(source, "Scheduler.ScheduleRepeating(").Should().Be(1);
         source.Should().Contain("FrameProfiler.Stop(FrameMetric.Scheduler, profilerStart, \"PerformanceAudienceTick\")");
@@ -112,13 +112,13 @@ public class PerformanceAudienceCostTests
     [Test]
     public void AudienceTick_FindsWatchersInOnePassOverOnlinePlayersAndReadsThePlayerOncePerWatcher()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         CountOf(source, "GetFirstPC()").Should().Be(1);
         source.Should().NotContain("GetFirstObjectInArea");
         source.Should().NotContain("GetNearestObject");
-        CountOf(source, "DB.Get<Player>(").Should().Be(1);
-        CountOf(source, "DB.Set(").Should().Be(1);
+        CountOf(source, "_db.Get<Player>(").Should().Be(1);
+        CountOf(source, "_db.Set(").Should().Be(1);
         CountOf(source, "Skill.GiveSkillXP(").Should().Be(1);
     }
 

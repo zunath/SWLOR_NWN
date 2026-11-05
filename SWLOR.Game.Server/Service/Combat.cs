@@ -5677,11 +5677,15 @@ namespace SWLOR.Game.Server.Service
             if (ability == null || !ability.IsHostileAbility)
                 return;
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    skillType,
+                    StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType,
+                    StatType.AbilityUsedMovementSpeedRangedOnly))
+            {
                 return;
+            }
 
             var movementSpeed = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedPercentAdjustment);
             var duration = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedDurationSeconds);
@@ -10882,7 +10886,8 @@ namespace SWLOR.Game.Server.Service
                 ability,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustment,
-                StatType.SecondaryAbilityUsedEvasionDurationSeconds);
+                StatType.SecondaryAbilityUsedEvasionDurationSeconds,
+                StatType.SecondaryAbilityUsedEvasionRangedOnly);
         }
 
         private static void ApplyAbilityUsedSkillEvasionChannel(
@@ -10890,14 +10895,18 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             StatType skillTypeStat,
             StatType evasionStat,
-            StatType durationStat)
+            StatType durationStat,
+            StatType? rangedOnlyStat = null)
         {
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                skillTypeStat));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    skillTypeStat,
+                    rangedOnlyStat))
+            {
                 return;
+            }
 
             var evasionPercent = Stat.GetStatAdjustment(
                 activator,
@@ -10920,12 +10929,15 @@ namespace SWLOR.Game.Server.Service
             if (ability?.IsHostileAbility != true)
                 return;
 
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflectionSkillType));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    StatType.AbilityUsedRangedDeflectionSkillType,
+                    StatType.AbilityUsedRangedDeflectionRangedOnly))
+            {
                 return;
+            }
 
             var deflection = Stat.GetStatAdjustment(
                 activator,
@@ -11825,6 +11837,43 @@ namespace SWLOR.Game.Server.Service
         private static bool SkillTypeMatchesOrGlobal(SkillType actualSkillType, SkillType requiredSkillType)
         {
             return requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType);
+        }
+
+        private static bool AbilityUsedTriggerSkillMatches(
+            uint activator,
+            AbilityDetail ability,
+            SkillType abilitySkillType,
+            StatType skillTypeStat,
+            StatType? rangedOnlyStat)
+        {
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(activator, skillTypeStat));
+            var rangedOnly = rangedOnlyStat.HasValue &&
+                             Stat.GetStatAdjustment(activator, rangedOnlyStat.Value) > 0;
+
+            return AbilityUsedTriggerSkillMatches(
+                abilitySkillType,
+                requiredSkillType,
+                rangedOnly,
+                ability?.IsHostileAbility == true);
+        }
+
+        /// <summary>
+        /// Decides whether an activated ability fires an "after using an ability" trigger. A ranged-only
+        /// trigger fires from any hostile ranged weapon ability (Pistol, Twin Pistol, Rifle or Throwing),
+        /// optionally narrowed by a skill selector; otherwise the ability's skill must match the selector.
+        /// </summary>
+        public static bool AbilityUsedTriggerSkillMatches(
+            SkillType abilitySkillType,
+            SkillType requiredSkillType,
+            bool rangedOnly,
+            bool isHostileAbility)
+        {
+            if (!rangedOnly)
+                return SkillTypeMatches(abilitySkillType, requiredSkillType);
+
+            return isHostileAbility &&
+                   IsRangedWeaponSkill(abilitySkillType) &&
+                   SkillTypeMatchesOrGlobal(abilitySkillType, requiredSkillType);
         }
 
         private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)

@@ -200,13 +200,13 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void TheFastestAllowedPace_TakesTheFirstActionAtOnce_SoAFightOfNActionsLastsNMinusOneTurns()
+        public void TheFirstActionAtOnce_SoAFightOfNActionsLastsNMinusOneTurns()
         {
             var parity = ReportParity.Value;
             var typical = new FishingXpRateCohort(parity);
             var fastest = new FishingXpRateCohort(parity, FishingParityOptions.Default with { FreeOpeningTurn = true });
 
-            fastest.Name.Should().Contain("fastest allowed pace");
+            fastest.Name.Should().Contain("first action at once");
             foreach (var xpCase in typical.Cases(Context()))
             {
                 var typicalSample = typical.PlayReplacement(xpCase, Context());
@@ -218,16 +218,19 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void TheFastestAllowedPace_EarnsAtLeastTodaysXpPerHour_SoTheMultipliersDoNotUnderpayIt()
+        public void TheFirstActionAtOnce_EarnsNoMoreXpPerHourThanTheTypicalPace_AndStaysNearTodays()
         {
+            var typical = new FishingXpRateCohort(ReportParity.Value);
             var fastest = new FishingXpRateCohort(ReportParity.Value, FishingParityOptions.Default with { FreeOpeningTurn = true });
 
             foreach (var xpCase in fastest.Cases(Context()))
             {
                 var legacyRate = fastest.PlayLegacy(xpCase, Context()).XpPerHour(fastest.LegacyTiming);
+                var typicalRate = typical.PlayReplacement(xpCase, Context()).XpPerHour(typical.ReplacementTiming);
                 var fastestRate = fastest.PlayReplacement(xpCase, Context()).XpPerHour(fastest.ReplacementTiming);
 
-                (fastestRate / legacyRate).Should().BeInRange(1.0, 1.15, $"{xpCase.Group}: not below today's, and the free first action buys only a few percent");
+                fastestRate.Should().BeLessThanOrEqualTo(typicalRate, $"{xpCase.Group}: moves are never held back, so a faster pace must not earn more per hour");
+                (fastestRate / legacyRate).Should().BeInRange(0.9, 1.15, $"{xpCase.Group}: answering the bite at once costs only a few percent against today's");
             }
         }
 

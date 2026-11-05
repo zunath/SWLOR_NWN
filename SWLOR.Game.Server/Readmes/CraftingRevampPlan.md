@@ -459,6 +459,7 @@ Today (`Fishing.cs`): a bite spends one bait, then lands the fish at `40 + (Agri
   - Fish level against rank sets Stamina and aggression.
   - Rare fish get trickier move patterns.
 - **Unchanged:** bait use, point bite counts, and respawn timers, which are randomized at restart on purpose. Today's XP is still awarded at the bite, caught or not; a fought bite adds the rest of its multiplied XP when the fight ends on its own.
+- **Pace (owner decision after player feedback, November 2026):** moves are never held back; the 8 s wait between moves is gone. The rest of the XP is paid by `LineRules.FightXpShare`: the share of the fight's turns at 8 s each (up to `XpFullTurns`), scaled by the time the fight took against those turns. So no pace earns more XP per hour than the tuned pace or Quick Reel; without the scaling, a fight of six or more moves timed to last exactly 40 s earned 1.18-1.27x of today's in CraftSim. A player who answers the first move at once and takes every later one at 8 s earns 0.97-0.98x (it was 1.03x with the wait); the gate cohort is unchanged.
 - **Animations:** reel, give line, hold, land, added to the existing fishing animation set.
 
 ## Progression and perks

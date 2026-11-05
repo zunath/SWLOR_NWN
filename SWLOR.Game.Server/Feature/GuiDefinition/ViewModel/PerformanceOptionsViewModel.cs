@@ -11,12 +11,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     /// <summary>
     /// The Perform window, opened by the Options button on the performance hot bar: pick the routine or set, a second one with
-    /// the capstone, the song, and the tempo, then Apply. Nothing changes until Apply.
+    /// the capstone, the song, the tempo, and active or Roleplay mode, then Apply. Nothing changes until Apply.
     /// </summary>
     public class PerformanceOptionsViewModel : GuiViewModelBase<PerformanceOptionsViewModel, GuiPayloadBase>
     {
         private const int DanceTabId = 0;
         private const int InstrumentTabId = 1;
+        private const int ActiveModeValue = 0;
+        private const int RoleplayModeValue = 1;
         public const string TabContentElement = "performance_options_tab_content";
         public const string DanceTabPartial = "PERFORMANCE_OPTIONS_TAB_DANCE";
         public const string InstrumentTabPartial = "PERFORMANCE_OPTIONS_TAB_INSTRUMENT";
@@ -77,6 +79,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public int TempoValue { get => Get<int>(); set => Set(value); }
 
+        /// <summary>0 for active play, 1 for Roleplay mode.</summary>
+        public int ModeValue { get => Get<int>(); set => Set(value); }
+
         public string VenueHeaderText { get => Get<string>(); set => Set(value); }
         public string VenueAreaText { get => Get<string>(); set => Set(value); }
         public string VenueFloorText { get => Get<string>(); set => Set(value); }
@@ -90,12 +95,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Rule R3: assign every watched property before WatchOnClient. Each tab loads its own lists when it is selected.
             TabToggles.SyncTo(firstTab, value => TabToggleValue = value);
             TempoValue = (int)Performance.GetPreference(Player).Tempo;
+            ModeValue = Performance.GetPreference(Player).Roleplay ? RoleplayModeValue : ActiveModeValue;
             SecondRoutineIndex = 0;
             SecondSetIndex = 0;
             SongIndex = 0;
 
             WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.TempoValue);
+            WatchOnClient(model => model.ModeValue);
             WatchOnClient(model => model.SecondRoutineIndex);
             WatchOnClient(model => model.SecondSetIndex);
             WatchOnClient(model => model.SongIndex);
@@ -118,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             TabToggles.SyncTo(SelectedTabId, value => TabToggleValue = value);
             TempoValue = TempoValue;
+            ModeValue = ModeValue;
             SecondRoutineIndex = SecondRoutineIndex;
             SecondSetIndex = SecondSetIndex;
             SongIndex = SongIndex;
@@ -167,6 +175,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var tempo = (PerformanceTempo)Math.Clamp(TempoValue, 0, System.Enum.GetValues<PerformanceTempo>().Length - 1);
             if (tempo != Performance.GetPreference(Player).Tempo)
                 Performance.SetTempo(Player, tempo);
+
+            var roleplay = ModeValue == RoleplayModeValue;
+            if (roleplay != Performance.GetPreference(Player).Roleplay)
+                Performance.SetRoleplay(Player, roleplay);
 
             SendMessageToPC(Player, "Performance options applied.");
             RefreshAudienceText(SelectedTabId);

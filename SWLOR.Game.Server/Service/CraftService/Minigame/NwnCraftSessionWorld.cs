@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -22,6 +23,13 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     public static readonly NwnCraftSessionWorld Instance = new();
 
     private static readonly BlueprintBonuses BlueprintBonusPicker = new();
+
+    /// <summary>
+    /// The properties a finished item will carry, settled in memory while the craft applies its enhancements and blueprint bonuses and
+    /// written once in <see cref="PrepareUnits"/> (see <see cref="Craft.MergeCraftedItemProperty"/> for why the item is never edited
+    /// in place).
+    /// </summary>
+    private readonly Dictionary<uint, List<ItemProperty>> _craftedProperties = new();
 
     private const string StationAnimationVariable = "CRAFT_STATION_ANIMATION";
     private const string PersistPendingVariable = "CRAFT_PERSIST_PENDING";
@@ -249,6 +257,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             return units;
         }
 
+        item = WriteCraftedProperties(item);
         var made = new List<uint> { item };
         var stacks = StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
         if (!stacks)
@@ -288,8 +297,49 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         var reading = CraftEnhancementReader.Read(enhancement, recipe);
         DestroyObject(enhancement);
 
+        var properties = CraftedProperties(item);
         foreach (var property in reading.Properties)
-            Craft.ApplyCraftedItemProperty(item, property);
+            Craft.MergeCraftedItemProperty(properties, property);
+    }
+
+    /// <summary>The properties the finished item will carry, starting from the ones its template gave it.</summary>
+    private List<ItemProperty> CraftedProperties(uint item)
+    {
+        if (_craftedProperties.TryGetValue(item, out var properties))
+            return properties;
+
+        properties = new List<ItemProperty>();
+        for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            properties.Add(ip);
+        _craftedProperties[item] = properties;
+        return properties;
+    }
+
+    /// <summary>
+    /// Writes the settled properties onto the finished item without removing any: the item is remade from its own saved form with an
+    /// empty property list, so everything else it carries (locals, description, charges, vendor value) is kept, and each settled
+    /// property is added once. Returns the item to deliver, which is the same item when the craft changed no property.
+    /// </summary>
+    private uint WriteCraftedProperties(uint item)
+    {
+        if (!_craftedProperties.Remove(item, out var properties))
+            return item;
+
+        var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
+        var saved = ObjectToJson(item, true);
+        var list = JsonParse("{\"type\":\"list\",\"value\":[]}");
+        var remade = JsonToObject(JsonObjectSet(saved, "PropertiesList", list), GetLocation(storage), storage, true);
+        if (!GetIsObjectValid(remade))
+        {
+            Log.Write(LogGroup.Error, $"The finished item '{GetResRef(item)}' could not be remade with its crafted properties.", true);
+            return item;
+        }
+
+        foreach (var property in properties)
+            AddItemProperty(DurationType.Permanent, property, remade);
+
+        DestroyObject(item);
+        return remade;
     }
 
     public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges)
@@ -329,7 +379,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
                 continue;
 
             foreach (var ip in Craft.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
-                Craft.ApplyCraftedItemProperty(item, ip);
+                Craft.MergeCraftedItemProperty(CraftedProperties(item), ip);
 
             var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
             var bonusName = bonus.DamageType != CombatDamageType.Invalid &&
@@ -339,12 +389,14 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             SendMessageToPC(player, ColorToken.Green($"Blueprint Bonus applied: {bonusName} +{bonus.Amount}"));
         }
 
+        var properties = CraftedProperties(item);
         foreach (var ip in blueprint.GuaranteedBonuses)
-            Craft.ApplyCraftedItemProperty(item, ip);
+            Craft.MergeCraftedItemProperty(properties, ip);
 
-        // Identify the blueprint level on the finished item.
-        var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprint.Level);
-        BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+        // Identify the blueprint level on the finished item, replacing any it already names.
+        properties.RemoveAll(property => GetItemPropertyType(property) == ItemPropertyType.Blueprint &&
+                                         GetItemPropertySubType(property) == (int)BlueprintSubType.Level);
+        properties.Add(ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprint.Level));
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 
 namespace SWLOR.Game.Server.Service.CompanionControlService
 {
@@ -10,6 +11,17 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         public const float AttackNearestRangeMeters = 15f;
         public const float PathingTimeoutSeconds = 5f;
         public const float ProgressDistanceMeters = 0.25f;
+
+        /// <summary>
+        /// Reads the associate command an OnDialogue event was raised for. The engine records each command on the
+        /// companion as soon as it arrives but queues the event, so when two arrive in one frame the earlier event
+        /// sees the later command in GetLastAssociateCommand. The event's own listen pattern is its command.
+        /// </summary>
+        public static bool TryGetAssociateCommand(int listenPattern, out AssociateCommand command)
+        {
+            command = (AssociateCommand)listenPattern;
+            return listenPattern is <= (int)AssociateCommand.StandGround and >= (int)AssociateCommand.ToggleSearch;
+        }
 
         public static float GetTetherMeters(CompanionMode mode, CompanionEngagementType engagementType)
         {

@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 rows.Add(new PerformanceWatchRow(
                     candidate.Performer,
                     nameOf(candidate.Performer),
-                    PerformanceWatchText.RowDetail(DescribeProgram(candidate), candidate.Quality),
+                    PerformanceWatchText.RowDetail(DescribeProgram(candidate), candidate.Quality, candidate.IsRoleplay),
                     followed,
                     choice != 0 && candidate.Performer == choice));
             }

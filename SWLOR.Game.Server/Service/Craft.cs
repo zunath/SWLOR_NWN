@@ -1008,6 +1008,52 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Merges a crafted property into a list of properties by the rules <see cref="ApplyCraftedItemProperty"/> applies to an item:
+        /// a property of the same type (and subtype, when the incoming one has one) is summed into one, a weapon keeps one damage type,
+        /// and Force is never a weapon damage type. Working on a list lets a craft settle every property before any of them reaches
+        /// the item, so the item never has a property removed and re-added: a removal is not committed to the item's saved property
+        /// list until later, so a serialized form or copy taken in the same script would still carry the pre-merge property.
+        /// </summary>
+        public static void MergeCraftedItemProperty(List<ItemProperty> properties, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                if (subType == (int)CombatDamageType.Force)
+                    return;
+
+                var damageTypes = properties.Where(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType).ToList();
+                var keepExisting = damageTypes.Count > 0 &&
+                                   GetItemPropertySubType(damageTypes[0]) != subType &&
+                                   Random.D100(1) <= 50;
+                if (keepExisting)
+                    return;
+
+                properties.RemoveAll(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType);
+                properties.Add(ip);
+                return;
+            }
+
+            // The same matching as ApplyCraftedItemProperty: judged off the incoming property's subtype.
+            var amount = GetItemPropertyCostTableValue(ip);
+            var matches = properties
+                .Where(property => GetItemPropertyType(property) == type &&
+                                   (subType == -1 || GetItemPropertySubType(property) == subType))
+                .ToList();
+            foreach (var match in matches)
+            {
+                amount += GetItemPropertyCostTableValue(match);
+                properties.Remove(match);
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            properties.Add(ItemPropertyPlugin.PackIP(unpacked));
+        }
+
+        /// <summary>
         /// A weapon can only carry one damage type. If it already has a different
         /// type than the one being applied now, keep only one - chosen at random
         /// rather than always letting whichever enhancement was socketed last

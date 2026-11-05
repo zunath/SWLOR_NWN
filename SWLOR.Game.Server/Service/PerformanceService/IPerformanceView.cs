@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// <summary>The audience tick counted the performer's watchers.</summary>
         void ShowAudience(PerformerAudienceInfo info);
 
+        /// <summary>What a follower leaves with changed between ticks, because the performer changed their setup.</summary>
+        void ShowAudienceGets(string text);
+
+        /// <summary>The performer switched between active play and Roleplay mode; the window swaps to the matching layout.</summary>
+        void ShowMode(bool roleplay);
+
         /// <summary>The performance ended, so the beat loop stops pushing to this window.</summary>
         void MarkEnded();
     }

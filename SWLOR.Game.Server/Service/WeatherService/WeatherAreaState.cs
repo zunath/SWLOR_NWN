@@ -13,9 +13,10 @@ namespace SWLOR.Game.Server.Service.WeatherService
         public WeatherType? AppliedWeather { get; private set; }
 
         /// <summary>
-        /// Returns true when the area's native weather must be sent. Clients restart
-        /// precipitation as a light shower whenever SetWeather repeats the current
-        /// weather, so a front that keeps the same rain or snow must not resend it.
+        /// Returns true when the area's native weather must be sent. Every SetWeather
+        /// restarts the precipitation fade-in for the players in the area (its strength
+        /// comes from FadeTime in sw_2da/weathertypes.2da), so a front that keeps the same
+        /// rain or snow does not resend it.
         /// </summary>
         public bool TryApplyWeather(WeatherType target, Precipitation current)
         {

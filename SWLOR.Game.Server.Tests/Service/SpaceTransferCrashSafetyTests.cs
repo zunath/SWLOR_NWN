@@ -372,13 +372,13 @@ public class SpaceTransferCrashSafetyTests
         var power = Method(viewModel, "private void ProcessPower(");
         InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
             "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "Space.RetireModuleRemoval(item);", "DestroyObject(item);");
         InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "currentModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
         var config = Method(viewModel, "private void ProcessConfiguration(");
         InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
             "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "Space.RetireModuleRemoval(item);", "DestroyObject(item);");
         InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
 
@@ -398,6 +398,12 @@ public class SpaceTransferCrashSafetyTests
         InOrder(beginRemoval, "DB.Set(new ShipModuleRemoval", "SetLocalString(item, ModuleRemovedVariable,");
         beginRemoval.Should().NotContain("ExportSingleCharacter").And.NotContain("CharacterCheckpoint.Save", "the character is saved only after the ship drops the module");
         InOrder(Method(moves, "public static void FinishModuleRemoval("), "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleRemoval>(instanceId);");
+        // A removed module whose remover's save failed is refitted, traded or dropped: its record goes, so the next login
+        // does not give it again while the module also sits on another ship or with another player.
+        InOrder(Method(moves, "public static void RetireModuleRemoval("),
+            "if (!TryReadShipMark(item, ModuleRemovedVariable, out var shipId, out var instanceId))", "DB.Delete<ShipModuleRemoval>(instanceId);");
+        moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleUnacquire)]\n        public static void RetireRemovalOfLostModule()");
+        Method(moves, "public static void RetireRemovalOfLostModule(").Should().Contain("RetireModuleRemoval(item);");
         InOrder(Member(moves, "public static bool MarkDeedRegistering("), "SetLocalString(deed, DeedRegisteringVariable, shipId);", "() => CharacterCheckpoint.Save(player),",
             "() => DeleteLocalString(deed, DeedRegisteringVariable)");
         InOrder(Member(moves, "public static bool MarkDeedUnregistered("), "SetLocalString(deed, DeedUnregisteredVariable, shipId);", "() => CharacterCheckpoint.Save(player),",

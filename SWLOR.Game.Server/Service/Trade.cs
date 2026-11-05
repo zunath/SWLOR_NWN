@@ -111,19 +111,34 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void Buy(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity, int units)
         {
-            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out var ship, out var detail, out var market, out var dock))
+            if (!TryPlanBuy(player, shipId, exchangeType, dockId, commodity, units, out _, out _, out _, out _))
                 return;
 
-            var now = DateTime.UtcNow;
-            var state = GetExchangeState(exchangeType, now);
-            var capacity = GetCargoCapacity(ship);
-            var order = TradeRules.PlanBuy(
+            // TakeGoldFromCreature does nothing from a NUI handler (the module runs it), so the purchase completes on the
+            // player's action queue: the payment is saved in the character file with a mark naming the cargo change, then
+            // the cargo, so a restart in between leaves a mark the next login applies once (ApplyPendingTrade).
+            AssignCommand(player, () => CompleteBuy(player, shipId, exchangeType, dockId, commodity, units));
+        }
+
+        /// <summary>
+        /// Plans a purchase against the ship's free cargo volume, the market and the player's credits as they are now.
+        /// False, with the refusal sent, when nothing can be bought.
+        /// </summary>
+        private static bool TryPlanBuy(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity,
+            int units, out PlayerShip ship, out CommodityDetail detail, out TradeDock dock, out TradeOrder order)
+        {
+            order = default;
+            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out ship, out detail, out var market, out dock))
+                return false;
+
+            var state = GetExchangeState(exchangeType, DateTime.UtcNow);
+            order = TradeRules.PlanBuy(
                 detail,
                 market,
                 GetPressure(state, commodity),
                 GetAbilityScore(player, AbilityType.Social),
                 units,
-                capacity,
+                GetCargoCapacity(ship),
                 GetFreeVolume(ship),
                 GetGold(player),
                 GetPriceBonus(player, exchangeType),
@@ -132,25 +147,18 @@ namespace SWLOR.Game.Server.Service
             if (order.Refusal != TradeRefusal.None)
             {
                 SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)));
-                return;
+                return false;
             }
 
-            // TakeGoldFromCreature does nothing from a NUI handler (the module runs it), so the purchase completes on the
-            // player's action queue: the payment is saved in the character file with a mark naming the cargo change, then
-            // the cargo, so a restart in between leaves a mark the next login applies once (ApplyPendingTrade).
-            var shipRecordId = ship.Id;
-            AssignCommand(player, () => CompleteBuy(player, shipRecordId, exchangeType, commodity, detail, dock, order));
+            return true;
         }
 
-        private static void CompleteBuy(uint player, string shipId, TradeExchangeType exchangeType, CommodityType commodity,
-            CommodityDetail detail, TradeDock dock, TradeOrder order)
+        private static void CompleteBuy(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity, int units)
         {
-            var ship = DB.Get<PlayerShip>(shipId);
-            if (ship == null || GetGold(player) < order.Credits)
-            {
-                SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotEnoughCredits)));
+            // Planned again when it runs: purchases queued together each see the cargo the earlier ones loaded and the
+            // credits they spent, so none overfills the bay.
+            if (!TryPlanBuy(player, shipId, exchangeType, dockId, commodity, units, out var ship, out var detail, out var dock, out var order))
                 return;
-            }
 
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
             if (!SaveTradeGold(player, trade,

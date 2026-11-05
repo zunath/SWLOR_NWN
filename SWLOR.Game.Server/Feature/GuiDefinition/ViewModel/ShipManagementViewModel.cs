@@ -2244,6 +2244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));
                     DB.Set(dbShip);
                     Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));
+                    Space.RetireModuleRemoval(item);
                     Space.GrantModuleFittedAchievement(Player, moduleDetails);
 
                     DestroyObject(item);
@@ -2365,6 +2366,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));
                         DB.Set(dbShip);
                         Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));
+                        Space.RetireModuleRemoval(item);
 
                         DestroyObject(item);
                         LoadShip();

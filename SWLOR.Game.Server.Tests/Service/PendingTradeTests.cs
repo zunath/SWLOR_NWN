@@ -49,12 +49,15 @@ public class PendingTradeTests
         trade.Should().Contain("ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);\n                    return true;\n                },\n                () => CharacterCheckpoint.Save(player),",
                 "the gold and the mark are saved at once, before the cargo changes")
             .And.Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ApplyPendingTrade()")
-            .And.Contain("AssignCommand(player, () => CompleteBuy(player, shipRecordId, exchangeType, commodity, detail, dock, order));",
+            .And.Contain("AssignCommand(player, () => CompleteBuy(player, shipId, exchangeType, dockId, commodity, units));",
                 "TakeGoldFromCreature does nothing from a NUI handler, so the purchase completes on the player's queue");
 
         var complete = trade[trade.IndexOf("private static void CompleteBuy(", StringComparison.Ordinal)..];
         var save = complete.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal);
         save.Should().BeGreaterThan(0);
+        complete.IndexOf("if (!TryPlanBuy(player, shipId, exchangeType, dockId, commodity, units, out var ship, out var detail, out var dock, out var order))",
+                StringComparison.Ordinal)
+            .Should().BeInRange(0, save, "purchases queued together are planned against the cargo and credits as they are when each runs");
         complete.IndexOf("() => TakeGoldFromCreature(order.Credits, player, true),", StringComparison.Ordinal)
             .Should().BeGreaterThan(save, "the payment is taken inside the save, which puts it back when the file cannot be saved");
 

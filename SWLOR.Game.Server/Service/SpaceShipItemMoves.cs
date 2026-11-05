@@ -112,6 +112,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// A removed module whose removal the remover's save has not confirmed yet (a failed checkpoint kept its record) left
+        /// the inventory: fitted to a ship, traded, dropped or stored. The module now exists there, so its removal record goes
+        /// and the next login gives no second copy.
+        /// </summary>
+        public static void RetireModuleRemoval(uint item)
+        {
+            if (!TryReadShipMark(item, ModuleRemovedVariable, out var shipId, out var instanceId))
+                return;
+
+            DB.Delete<ShipModuleRemoval>(instanceId);
+            DeleteLocalString(item, ModuleRemovedVariable);
+            Log.Write(LogGroup.Space, $"Retired the removal record of module {instanceId} from ship {shipId}: the module left its remover's inventory.");
+        }
+
+        /// <summary>A removed module still awaiting its remover's save leaves the inventory: its removal record goes (<see cref="RetireModuleRemoval"/>).</summary>
+        [NWNEventHandler(ScriptName.OnModuleUnacquire)]
+        public static void RetireRemovalOfLostModule()
+        {
+            var lostBy = GetModuleItemLostBy();
+            var item = GetModuleItemLost();
+            if (!GetIsPC(lostBy) || GetIsDM(lostBy) || !GetIsObjectValid(item))
+                return;
+
+            RetireModuleRemoval(item);
+        }
+
+        /// <summary>
         /// Marks a deed about to be saved as a ship and saves the character at once. Call after serializing it. False, with the
         /// mark taken off again, when the character could not be saved: the ship must not be saved.
         /// </summary>

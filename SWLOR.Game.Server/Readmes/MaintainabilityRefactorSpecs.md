@@ -393,5 +393,14 @@ them is not an option before facade removal (P2-Z).
   call it on every script, closure and frame.
 - **Wave D, the hot core (last, short freeze each):** Character (`StatusEffect`, `Skill`, `Perk`, then `Stat`),
   Abilities (`Ability`), Combat (`Combat`, split by responsibility as it converts).
+  **Decision (coordinator, 2026-11-05, from P2-B9): static tables before the hot core (P2-D1).** The static-state rule
+  reports every `static readonly` field, so earlier items turned constant tables into getters that build a new value on
+  each read. That is behaviour-neutral when nothing writes the table, but it allocates per read, which the hot core
+  (read per attack) cannot afford. Before Wave D the rule accepts `static readonly` fields of deeply immutable types
+  (primitives, `string`, enums, `Regex`, frozen and immutable collections of such elements, records whose members are
+  init-only and immutable), and the rebuilt getters go back to such fields.
+  **Renamed handlers:** a handler that must change its name (for example, a folder class that cannot be an extra facade)
+  keeps its manifest position and is listed in `tools/Refactor/HandlerRenames.txt` in the same pull request, so the
+  parity check and the sync match master's name to the new one. P2-Z facade removal uses the same file.
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in
   content code with injection where the caller is itself converted, delete facades area by area.

@@ -135,6 +135,10 @@ public class MusicServiceTests
 
         public List<KeyItemType> Given { get; } = new();
 
+        public List<uint> ForgottenBandSongs { get; } = new();
+
+        protected override void ForgetBandSong(uint player) => ForgottenBandSongs.Add(player);
+
         protected override bool HasKeyItem(uint player, KeyItemType keyItem) =>
             _store.Get<Entity.Player>("uuid-" + player).KeyItems.ContainsKey(keyItem);
 
@@ -484,6 +488,7 @@ public class MusicServiceTests
         _service.PlayForPlayer(Player, 77);
 
         Stored().Settings.PersonalMusicTrackId.Should().Be(77);
+        _service.ForgottenBandSongs.Should().Equal(Player);
         _db.Saved.Should().ContainSingle();
         PluginCalls("MusicBackgroundChangeTimeToggle", "MusicBackgroundToggle").Should().Equal(
             Render("MusicBackgroundChangeTimeToggle", Player, 77, false),
@@ -508,6 +513,7 @@ public class MusicServiceTests
         _service.StopForPlayer(Player);
 
         Stored().Settings.PersonalMusicTrackId.Should().BeNull();
+        _service.ForgottenBandSongs.Should().Equal(Player);
         PluginCalls("MusicBackgroundChangeTimeToggle", "MusicBackgroundToggle").Should().Equal(
             Render("MusicBackgroundChangeTimeToggle", Player, DayTrack, false),
             Render("MusicBackgroundChangeTimeToggle", Player, NightTrack, true),
@@ -520,6 +526,56 @@ public class MusicServiceTests
         _service.StopInArea(Area);
 
         _service.StopForPlayer(Player);
+
+        PluginCalls("MusicBackgroundToggle").Should().Equal(
+            Render("MusicBackgroundToggle", Player, true),
+            Render("MusicBackgroundToggle", Player, false));
+    }
+
+    [Test]
+    public void A_temporary_track_plays_for_day_and_night_without_saving_anything()
+    {
+        _service.PlayTemporaryTrack(Player, 77);
+
+        _db.Saved.Should().BeEmpty();
+        Stored().Settings.PersonalMusicTrackId.Should().BeNull();
+        PluginCalls("MusicBackgroundChangeTimeToggle", "MusicBackgroundToggle").Should().Equal(
+            Render("MusicBackgroundChangeTimeToggle", Player, 77, false),
+            Render("MusicBackgroundChangeTimeToggle", Player, 77, true),
+            Render("MusicBackgroundToggle", Player, true));
+    }
+
+    [Test]
+    public void Restoring_the_music_puts_back_the_personal_track_when_there_is_one()
+    {
+        Stored().Settings.PersonalMusicTrackId = 77;
+
+        _service.RestoreBackgroundMusic(Player);
+
+        _db.Saved.Should().BeEmpty();
+        PluginCalls("MusicBackgroundChangeTimeToggle", "MusicBackgroundToggle").Should().Equal(
+            Render("MusicBackgroundChangeTimeToggle", Player, 77, false),
+            Render("MusicBackgroundChangeTimeToggle", Player, 77, true),
+            Render("MusicBackgroundToggle", Player, true));
+    }
+
+    [Test]
+    public void Restoring_the_music_without_a_personal_track_puts_back_the_music_of_the_area()
+    {
+        _service.RestoreBackgroundMusic(Player);
+
+        PluginCalls("MusicBackgroundChangeTimeToggle", "MusicBackgroundToggle").Should().Equal(
+            Render("MusicBackgroundChangeTimeToggle", Player, DayTrack, false),
+            Render("MusicBackgroundChangeTimeToggle", Player, NightTrack, true),
+            Render("MusicBackgroundToggle", Player, true));
+    }
+
+    [Test]
+    public void Restoring_the_music_in_an_area_whose_music_was_stopped_keeps_the_music_off()
+    {
+        _service.StopInArea(Area);
+
+        _service.RestoreBackgroundMusic(Player);
 
         PluginCalls("MusicBackgroundToggle").Should().Equal(
             Render("MusicBackgroundToggle", Player, true),

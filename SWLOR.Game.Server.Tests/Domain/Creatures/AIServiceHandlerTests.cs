@@ -17,11 +17,26 @@ public class AIServiceHandlerTests : AIServiceTestBase
 {
     private AISim _enemy = null!;
 
+    // The creature conversation handler asks the Conversation and ConversationMenu facades whether a graph or a menu
+    // has the name, so the fixture installs the server's registrations (nothing is cached: no graph or menu is known).
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void PlaceAnEnemy()
     {
+        _facadeScope = _facades.Install();
         _enemy = HostilePlayer("enemy", 4f);
     }
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
 
     private void Threat(int amount) => Service.SetEnmity(Npc.Id, _enemy.Id, amount);
 

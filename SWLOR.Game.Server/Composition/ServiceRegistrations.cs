@@ -27,10 +27,13 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
             services.AddSingleton<ICacheService, CacheService>();
             services.AddSingleton<ICommunicationService, CommunicationService>();
+            services.AddSingleton<IConversationMenuService, ConversationMenuService>();
+            services.AddSingleton<IConversationService, ConversationService>();
             services.AddSingleton<IMessagingService, MessagingService>();
             services.AddSingleton<INamedAnimationService, NamedAnimationService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
             services.AddSingleton<IPlayerFeedbackService, PlayerFeedbackService>();
+            services.AddSingleton<ISnippetService, SnippetService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
 
             // Administration

@@ -327,11 +327,7 @@ public class MaxHitPointsReconciliationTests
         var scripts = typeof(EquipmentStats).GetMethod(nameof(EquipmentStats.RefreshMaxHPAfterEquipmentChange))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).ToArray();
         scripts.Should().BeEquivalentTo([ScriptName.OnItemEquipValidateAfter, ScriptName.OnItemUnequipAfter]);
-
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.Body!.Statements.Select(statement => statement.ToString()).Should().Contain("Stat.RefreshPlayerMaxHP(player);");
+        // MigrationServiceTests pins that the login runs the max HP refresh.
     }
 
     private int MaxHP() => (int)Call("MaxHP")!;

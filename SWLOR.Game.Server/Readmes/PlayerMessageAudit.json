@@ -5502,8 +5502,8 @@
     "Call": "SendMessageToPC(nearby, buildMessage(nearby))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 231,
+    "File": "SWLOR.Game.Server/Domain/Core/MigrationService.cs",
+    "Line": 313,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"

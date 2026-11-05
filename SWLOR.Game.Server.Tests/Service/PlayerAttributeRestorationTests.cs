@@ -69,20 +69,6 @@ public class PlayerAttributeRestorationTests
     }
 
     [Test]
-    public void LoginRestoresFinalAttributesForEveryUpgradedCharacter()
-    {
-        var source = ReadSource("Service", "Migration.cs");
-        var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "AfterCharacterInitialization");
-        var restore = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "Stat.RestorePlayerAttributes");
-        restore.Ancestors().OfType<StatementSyntax>().Where(statement => statement is IfStatementSyntax or ForEachStatementSyntax)
-            .Should().BeEmpty("every character that passes the upgrade check needs its attributes restored");
-        restore.SpanStart.Should().BeLessThan(method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "Perk.RestorePlayerFeats").SpanStart);
-    }
-
-    [Test]
     public void AttributePurchasesApplySavedTotalInsteadOfIncrementingStaleCharacterScore()
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");

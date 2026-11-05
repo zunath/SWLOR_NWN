@@ -39,6 +39,7 @@
     { "name": "LightsaberWorkbench", "domain": "Items" },
     { "name": "Loot", "domain": "Items" },
     { "name": "Messaging", "domain": "Core" },
+    { "name": "Migration", "domain": "Core" },
     { "name": "Music", "domain": "World" },
     { "name": "NPCGroup", "domain": "Creatures" },
     { "name": "NamedAnimation", "domain": "Core" },

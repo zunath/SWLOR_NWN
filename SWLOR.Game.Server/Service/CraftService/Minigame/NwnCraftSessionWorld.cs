@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AnimationService;
@@ -34,7 +35,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     private const string PersistPendingVariable = "CRAFT_PERSIST_PENDING";
     private const float PersistDelaySeconds = 0.1f;
 
-    public DateTime UtcNow => DateTime.UtcNow;
+    public DateTime UtcNow => Clock.UtcNow;
 
     public RecipeDetail GetRecipe(RecipeType recipe) => Craft.GetRecipe(recipe);
 

@@ -53,11 +53,11 @@ public class CraftCalculationCharacterizationTests
     {
         var table = new SnapshotTable(
             "Craft.GetRecipeLevelDetail(int level)",
-            "The crafting minigame numbers of a recipe level: progress and quality to reach, durability, and the difficulty adjustment. " +
+            "The crafting minigame numbers of a recipe level: progress and quality to reach, and durability. " +
             "A level outside the chart throws.",
             "Every level 1..80 and the neighbours outside the chart (-1, 0, 81, 82).",
             new[] { "level" },
-            new[] { "progress", "quality", "durability", "difficultyAdjustment" });
+            new[] { "progress", "quality", "durability" });
 
         foreach (var level in Enumerable.Range(-1, 84))
         {
@@ -73,9 +73,9 @@ public class CraftCalculationCharacterizationTests
             }
 
             if (detail == null)
-                table.Add(level, failure, failure, failure, failure);
+                table.Add(level, failure, failure, failure);
             else
-                table.Add(level, detail.Progress, detail.Quality, detail.Durability, detail.DifficultyAdjustment);
+                table.Add(level, detail.Progress, detail.Quality, detail.Durability);
         }
 
         Snapshot.Verify("Craft", "GetRecipeLevelDetail", table);

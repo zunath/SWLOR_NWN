@@ -27,4 +27,5 @@ Service/AIService/**
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs
 Service/CraftService/Minigame/CraftSessionLifecycle.cs
+Service/CraftService/Minigame/NwnCraftSessionWorld.cs
 Entity/EntityBase.cs

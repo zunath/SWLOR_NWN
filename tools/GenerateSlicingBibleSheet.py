@@ -262,7 +262,7 @@ def build_sheet() -> Sheet:
         ["Combat/range", "Validated on actions", "", "", "", "", "", "Starting does not force combat. Terminal actions validate interaction range."],
         ["Terminal ownership", "Shared node; 3-minute stale claim", "", "", "", "", "", "One active owner. A stale committed claim resolves as a failure before another player may claim it."],
         ["Persistence", "Seed/failures/integrity on object", "", "", "", "", "", "Transferred lockboxes preserve their seed and failure state; retries use the same authored board."],
-        ["Success", "3-5 supplies + one weighted bonus + XP once", "", "", "", "", "", "Every success grants tier-appropriate supplies plus a tool or rare reward. Each tier grants XP until the next Slicing unlock (22/30/42/48/50). Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
+        ["Success", "Supplies + one weighted bonus + XP once", "", "", "", "", "", "Every success grants 3-5 tier-appropriate supplies (5-8 at tiers 4-5) plus a tool or rare reward. Each tier grants XP until the next Slicing unlock (22/30/42/48/50). Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
         ["Failure", "No reward or XP", "", "", "", "", "", "First failed attempt is free of destruction risk; subsequent attempts become progressively dangerous."],
         ["Direct reward rules", "Fixed-stat items", "", "", "", "", "", "Armor skill sets equipment requirements. No raw attributes, random affixes, sets, or direct-reward enhancement slots."],
     ])
@@ -273,19 +273,19 @@ def build_sheet() -> Sheet:
         [1, "3 x 3", 4, 0, 1, "0 / 5", 3, "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Each tier has 500 boards, each with its own START, GOAL, and route. Base trace equals the board's cheapest repair, proven by the board solver, plus extra trace. Cheapest repair: 5+ trace."],
         [2, "4 x 3", 3, 1, 2, "10 / 15", 3, "From tier 2, rotation alone cannot finish within base trace; every board needs at least one swap. Cheapest repair: 7+ trace."],
         [3, "4 x 4", 3, 2, 3, "20 / 25", 4, "Cheapest repair: 9+ trace."],
-        [4, "5 x 4", 2, 3, 4, "30 / 35", 4, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 11+ trace."],
-        [5, "5 x 5", 2, 4, 5, "40 / 45", 5, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 13+ trace."],
+        [4, "5 x 4", 3, 3, 4, "30 / 35", 8, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 11+ trace."],
+        [5, "5 x 5", 4, 4, 5, "40 / 45", 12, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 13+ trace."],
     ])
     sheet.blank()
 
     sheet.merged("Reward Weights and Failure Curve")
-    sheet.table(["Band", "Weight / Chance", "", "", "", "", "", "Notes"], [
-        ["Recovered supplies", "100%", "", "", "", "", "", "3-5 units of one tier-appropriate material, rolled independently and awarded alongside the weighted bonus."],
-        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier, split evenly across that tier's pool: a tier N pool holds one tier N copy of each tool type the source unlocks through tier N (1 tool at tier 1 up to 5 at tier 5). Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
-        ["Named item", "12%", "", "", "", "", "", "Exceptional item is a 0.5% absolute sub-band, one per source/tier."],
-        ["Schematic", "6%", "", "", "", "", "", "Lockbox and terminal schematic pools remain separate."],
-        ["Field note", "2%", "", "", "", "", "", "Fifteen DiscoveryOnly mutation notes become Slicing rewards."],
-        ["Legacy accessory", "2% absolute", "", "", "", "", "", "Lockbox named-item sub-band only; terminals never award legacy accessories."],
+    sheet.table(["Band", "Tiers 1-3", "Tiers 4-5", "", "", "", "", "Notes"], [
+        ["Recovered supplies", "100%, 3-5 units", "100%, 5-8 units", "", "", "", "", "Units of one tier-appropriate material, rolled independently and awarded alongside the weighted bonus."],
+        ["Tool bonus", "80%", "50%", "", "", "", "", "One tool matching the source and security tier, split evenly across that tier's pool: a tier N pool holds one tier N copy of each tool type the source unlocks through tier N (1 tool at tier 1 up to 5 at tier 5). Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
+        ["Named item", "12%", "30%", "", "", "", "", "Exceptional item is 1/24 of the named band (0.5% absolute at tiers 1-3, 1.25% at tiers 4-5), one per source/tier."],
+        ["Schematic", "6%", "12%", "", "", "", "", "Lockbox and terminal schematic pools remain separate."],
+        ["Field note", "2%", "8%", "", "", "", "", "Fifteen DiscoveryOnly mutation notes become Slicing rewards."],
+        ["Legacy accessory", "2% absolute", "5% absolute", "", "", "", "", "1/6 of the lockbox named-item band only; terminals never award legacy accessories."],
     ])
     sheet.table(["Failure Number", "Destruction Chance", "", "", "", "", "", "Integrity After Survival"], [
         [1, "0%", "", "", "", "", "", "100%"], [2, "10%", "", "", "", "", "", "90%"],

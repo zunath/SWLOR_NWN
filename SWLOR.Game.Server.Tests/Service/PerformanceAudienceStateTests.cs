@@ -205,7 +205,7 @@ public class PerformanceAudienceStateTests
     public void ASubdualDoesNotClaimRequiem()
     {
         var source = File.ReadAllText(SourcePath("Service", "Death.cs"));
-        var death = source.Substring(source.IndexOf("public void OnPlayerDeath()", StringComparison.Ordinal));
+        var death = source.Substring(source.IndexOf("public static void OnPlayerDeath()", StringComparison.Ordinal));
         death = death.Substring(0, death.IndexOf("StatusEffect.ClearStatusEffectsOnDeath(player);", StringComparison.Ordinal));
 
         death.Should().MatchRegex(@"if \(isSubdual\)\s+DeleteLocalInt\(player, DebtWaivedVariable\);\s+else\s+RecordDeathDebtWaiver\(player\);");

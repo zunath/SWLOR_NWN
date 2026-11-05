@@ -47,14 +47,10 @@ public sealed record GatheringLoadout(string Name, bool Prospector, bool Treasur
         (Prospector ? GatheringPerkLines.Prospector : Array.Empty<PerkType>())
         .Concat(TreasureSeeker ? GatheringPerkLines.TreasureSeeker : Array.Empty<PerkType>());
 
-    // The stat pipeline's attribute cache fills itself on first use and is not thread safe; the simulator asks from many threads.
-    private static object StatLock => new();
-
     /// <summary>The stat totals at a Gathering rank.</summary>
     public IReadOnlyDictionary<StatType, int> StatsAt(IReadOnlyDictionary<PerkType, PerkDetail> perks, int rank)
     {
-        // The stat pipeline attribute cache fills itself on first use and is not thread safe; the simulator asks from many threads, so
-        // every loadout takes the one lock of the type (a static lock object would be static state of the service).
+        // The stat pipeline's attribute cache is not thread safe and the simulator asks from many threads, so every loadout locks the type: a static lock object would be static state of the service.
         lock (typeof(GatheringLoadout))
             return GatheringPerkLines.StatsAt(perks, Owned.Where(perk => OwnsAtRank(perks, perk, rank)), rank, Style);
     }

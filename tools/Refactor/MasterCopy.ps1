@@ -342,6 +342,21 @@ function ConvertFrom-HandlerOrderText {
     return $scripts
 }
 
+# Renames master's handler names in a parsed handler order to the branch's names (see Read-HandlerRenames), in place.
+function Convert-HandlerOrderNames {
+    param($Parsed, $Renames)
+    if ($null -eq $Renames -or $Renames.Count -eq 0) { return $Parsed }
+    foreach ($script in @($Parsed.Keys)) {
+        foreach ($kind in @('action', 'conditional')) {
+            $list = $Parsed[$script][$kind]
+            for ($i = 0; $i -lt $list.Count; $i++) {
+                if ($Renames.ContainsKey($list[$i])) { $list[$i] = $Renames[$list[$i]] }
+            }
+        }
+    }
+    return $Parsed
+}
+
 function Get-HandlerCount {
     param($Parsed)
     $total = 0
@@ -403,10 +418,10 @@ function Format-HandlerLine {
 # A new handler whose method or type name matches a manifest line that master no longer has is a probable rename or
 # move: it is NOT inserted and is reported, because the manifest line keeps its position and a person edits the name.
 function Add-NewHandlersToManifest {
-    param([string]$ManifestText, [string]$ReferenceText)
+    param([string]$ManifestText, [string]$ReferenceText, $Renames = @{})
 
     $manifest = ConvertFrom-HandlerOrderText $ManifestText
-    $reference = ConvertFrom-HandlerOrderText $ReferenceText
+    $reference = Convert-HandlerOrderNames (ConvertFrom-HandlerOrderText $ReferenceText) $Renames
     $eol = "`n"
     if ($ManifestText.Contains("`r`n")) { $eol = "`r`n" }
     $lines = New-Object 'System.Collections.Generic.List[string]'

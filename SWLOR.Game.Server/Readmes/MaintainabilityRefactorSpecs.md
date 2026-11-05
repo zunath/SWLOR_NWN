@@ -370,8 +370,13 @@ them is not an option before facade removal (P2-Z).
   engine, NWNX, database or other-service calls (pure functions over their arguments and constants, e.g. `GameMath`) is a
   utility, not a service: it is not converted, gets no interface, and stays callable statically from everywhere. Each Wave C
   item lists which of its classes it classifies as utilities and why; a class that reads the engine or holds state is a
-  service and converts. `Random` converts (it holds the seeded generator the characterization tests rely on) and gets
-  Opus review; `Migration` (persistence) and `DB` get extra review. Suggested Wave C items: C1 `Log`, `Cache`,
+  service and converts, except the process-wide infrastructure listed below (`Log`, `FrameProfiler`, `Random`).
+  **`Random` stays static** (coordinator, 2026-11-05, from P2-C5's evidence): it is the process-wide seeded generator;
+  the characterization tests (no container) seed it through `Random.SetSeed`/`ResetSeed` in `Support/SeededRandom`,
+  `SWLOR.CLI` and `SWLOR.CombatSim` call it without a container, and about 185 call sites in 66 files include static
+  classes and native hooks; a tolerant facade would keep a static generator anyway and risk splitting the seeded stream.
+  Its seed seam already makes it testable. `Time` is a pure utility (formatting only). Revisit both with `Log` in Phase 4.
+  `Migration` (persistence) and `DB` get extra review. Suggested Wave C items: C1 `Log`, `Cache`,
   `Authorization`, `Messaging`, `PlayerFeedback`; C2 `Communication`; C3 `Conversation`, `ConversationMenu`, `Snippet`;
   C4 `ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `NamedAnimationPlayback`, `FrameProfiler`, `BackgroundJob`;
   C5 `Random`, `Time`; C6 `Migration`; C7 UI (`Gui`, `ExtraHotbars`); C8 `DB`. Remaining small Core classes (`GameMath`,

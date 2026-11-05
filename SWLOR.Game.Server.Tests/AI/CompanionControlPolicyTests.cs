@@ -113,6 +113,31 @@ public class CompanionControlPolicyTests
             .BeTrue();
     }
 
+    [TestCase(AssociateCommand.MasterUnderAttack)]
+    [TestCase(AssociateCommand.MasterAttackedOther)]
+    [TestCase(AssociateCommand.MasterGoingtobeAttacked)]
+    [TestCase(AssociateCommand.StandGround)]
+    [TestCase(AssociateCommand.ToggleSearch)]
+    public void AssociateCommandsAreReadFromTheirOwnEvent(AssociateCommand expected)
+    {
+        // The pattern alone decides the command; a later command recorded on the companion does not.
+        CompanionControlPolicy.TryGetAssociateCommand((int)expected, out var command)
+            .Should()
+            .BeTrue();
+        command.Should().Be(expected);
+    }
+
+    [TestCase(-1)]
+    [TestCase(0)]
+    [TestCase(5)]
+    [TestCase(-24)]
+    public void ConversationsAndOtherShoutsAreNotAssociateCommands(int listenPattern)
+    {
+        CompanionControlPolicy.TryGetAssociateCommand(listenPattern, out _)
+            .Should()
+            .BeFalse();
+    }
+
     [Test]
     public void ToggleAbilitiesKeepsTheNativeAssociateCommandValue()
     {

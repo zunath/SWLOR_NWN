@@ -198,6 +198,72 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Droid keeps its rifle when owner combat commands arrive in the same frame", Category = "DroidCombat", TimeoutSeconds = 120f)]
+        public static async Task SameFrameOwnerCommands(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var owner = player.Creature;
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            _rifleUnequips.Clear();
+            _droidConversations.Clear();
+            try
+            {
+                var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                    AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
+                await Transfer(ctx, owner, rifle, droid);
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                SetImmortal(droid, true);
+                SetLocalBool(droid, CombatProbe, true);
+                SetPlotFlag(owner, true);
+
+                var enemy = ctx.SpawnCreature("nw_bandit001", 5f);
+                await ctx.WaitFrameAsync();
+                await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
+                SetPlotFlag(enemy, true);
+                ObjectPlugin.SetPosition(droid, GetPosition(owner) + new System.Numerics.Vector3(0f, 1f, 0f));
+                ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                ctx.MakeHostile(enemy);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(enemy, droid);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(owner, enemy);
+                await ctx.ExecuteInCreatureContextAsync(droid, () => ClearAllActions(true));
+
+                // The engine records each command on the droid at once but queues its event, so when the owner is
+                // hit and targeted in the same frame the first event sees the second command as the droid's latest.
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.MasterUnderAttack);
+                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.MasterGoingtobeAttacked);
+                });
+
+                for (var tick = 0; tick < 80; tick++)
+                {
+                    await ctx.DelaySecondsAsync(0.1f);
+                    var held = GetItemInSlot(InventorySlot.RightHand, droid);
+                    if (held != rifle)
+                        ctx.Fail($"The droid's right hand changed to '{GetName(held)}' after {tick / 10f:0.0}s " +
+                                 $"(rifle possessor={GetName(GetItemPossessor(rifle))}). " +
+                                 $"Conversations: {string.Join(" | ", _droidConversations)}");
+                }
+                ctx.Log($"conversations: {string.Join(" | ", _droidConversations)}");
+                ctx.Assert(_droidConversations.Exists(entry => entry.StartsWith("pattern=-11 command=-16")),
+                    $"The first event saw the later command: {string.Join(" | ", _droidConversations)}");
+                AssignCommand(enemy, () => ClearAllActions());
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                {
+                    DeleteLocalBool(droid, CombatProbe);
+                    SetImmortal(droid, false);
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
+        }
+
         [EngineTest("Med Kit droid keeps its rifle while healing mid-fight", Category = "DroidCombat", TimeoutSeconds = 150f)]
         public static Task MedKitDroidKeepsRifle(EngineTestContext ctx) => MedKitFight(ctx, false);
 

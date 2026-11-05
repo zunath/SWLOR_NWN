@@ -231,6 +231,19 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
 
         self.assertEqual("12", properties["RangedAbilityLongRangeMinimumRangeMeters"])
 
+    def test_sniper_stance_emits_long_range_damage_with_its_own_threshold(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["PerkName"] == "Sniper Stance")
+        stats = dict(GENERATOR.stance_stat_entries(row))
+
+        # The Bible's +15% long-range damage was dropped before; only the delay penalty shipped.
+        self.assertEqual("15", stats["RangedAbilityLongRangeDamagePercentAdjustment"])
+        self.assertEqual("10", stats["RangedAbilityLongRangeMinimumRangeMeters"])
+        self.assertEqual("-15", stats["AttackDelayReductionPercent"])
+        generated = (ROOT / "SWLOR.Game.Server/Feature/StatusEffectDefinition/SniperStanceStatusEffect.cs").read_text()
+        for stat, value in stats.items():
+            self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
+
     def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
         row = {
             "Tab": "Rifle",

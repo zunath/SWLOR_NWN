@@ -356,6 +356,33 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void SniperStance_LongRangeDamageAppliesToRangedAbilityDamageOnly()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        Regex.IsMatch(
+            combatSource,
+            @"if \(isAbilityDamage\)\s*\{[^}]*damage = ApplyRangedAbilityLongRangeDamageModifier\(attacker, defender, skillType, damage\);",
+            RegexOptions.Singleline).Should().BeTrue(
+            "the long-range damage bonus belongs to hostile ranged abilities, not auto-attacks");
+        var modifier = combatSource.Substring(
+            combatSource.IndexOf("public static int ApplyRangedAbilityLongRangeDamageModifier(", StringComparison.Ordinal));
+        modifier = modifier.Substring(0, modifier.IndexOf("public static int ", 10, StringComparison.Ordinal));
+        modifier.Should().Contain("IsRangedAbilityLongRangeTarget(attacker, defender, skillType)");
+        modifier.Should().Contain("StatType.RangedAbilityLongRangeDamagePercentAdjustment");
+
+        // Sniper Stance and Scope Calibration both supply a 10m threshold; owning both must stay 10m.
+        Stat.GetStatTypeAggregation(StatType.RangedAbilityLongRangeMinimumRangeMeters)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.AggregateStatAdjustment(StatType.RangedAbilityLongRangeMinimumRangeMeters, 10, 10)
+            .Should().Be(10);
+        Stat.GetStatTypeCategory(StatType.RangedAbilityLongRangeDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+    }
+
+    [Test]
     public void ThrowingStances_WireTargetHasteAndSingleTargetDamageIntoSharedCombat()
     {
         var root = FindRepositoryRoot();
@@ -1066,6 +1093,11 @@ public class GeneratedWeaponPerkBehaviorTests
         var suppression = new SuppressionStanceStatusEffect();
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.WeaponCriticalDamagePercentAdjustment, -10);
+
+        var sniper = new SniperStanceStatusEffect();
+        AssertStatusStat(sniper, StatType.RangedAbilityLongRangeMinimumRangeMeters, 10);
+        AssertStatusStat(sniper, StatType.RangedAbilityLongRangeDamagePercentAdjustment, 15);
+        AssertStatusStat(sniper, StatType.AttackDelayReductionPercent, -15);
 
         var gambler = new GamblerStanceStatusEffect();
         AssertStatusStat(gambler, StatType.CriticalRatePercentAdjustment, 12);

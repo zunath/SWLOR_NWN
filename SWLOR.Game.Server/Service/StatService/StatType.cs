@@ -5955,6 +5955,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
 
+        /// <summary>Percent damage adjustment for ranged weapon abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeDamagePercentAdjustment = 1330,
+
         /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedAbilityTargetDefenseReductionPercent = 1029,

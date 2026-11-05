@@ -919,10 +919,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectIcon, "(int)EffectIconType.DuelistsDistanceStatusEffect");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, "(int)StatusEffectCleanseType.TreatmentKit1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, "(int)ResistanceType.Trauma");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionRangedOnly, "1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionRangedOnly, "1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflection, "12");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");

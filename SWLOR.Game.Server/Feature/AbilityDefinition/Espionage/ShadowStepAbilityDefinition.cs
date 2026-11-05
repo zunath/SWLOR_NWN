@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         private const float EvasionDurationSeconds = 30f;
         private const float ArrivalDistanceMeters = 1.5f;
         private const float StunDurationSeconds = 2f;
+        private const float ArrivalToleranceMeters = 2f;
+        private const float ArrivalCheckIntervalSeconds = 0.1f;
+        private const int ArrivalChecks = 10;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -79,34 +82,59 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             var destination = Location(GetArea(target), behind, targetFacing);
 
             var playArrivalVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+            var arrivalHandled = false;
+
+            void CompleteArrival()
+            {
+                if (arrivalHandled)
+                    return;
+                arrivalHandled = true;
+
+                if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                    GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
+                    return;
+
+                AssignCommand(activator, () => SetFacingPoint(GetPosition(target)));
+                if (HasArrived(activator, destination))
+                {
+                    playArrivalVisual(activator);
+                    if (GetIsReactionTypeHostile(target, activator))
+                    {
+                        // A target fighting the activator turns toward the new position before the
+                        // arrival runs. Turn it back so the stun holds it facing away.
+                        SetFacing(targetFacing, target);
+                        StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                            StunDurationSeconds, CombatDamageType.Physical);
+                    }
+                }
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
+            }
+
+            // A move order given right after the cast clears the queued arrival action, so the
+            // landing is also watched outside the action queue.
+            void WatchForArrival(int remainingChecks)
+            {
+                if (arrivalHandled || !GetIsObjectValid(activator))
+                    return;
+
+                if (HasArrived(activator, destination))
+                {
+                    CompleteArrival();
+                    return;
+                }
+
+                if (remainingChecks > 1)
+                    DelayCommand(ArrivalCheckIntervalSeconds, () => WatchForArrival(remainingChecks - 1));
+            }
+
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
             AssignCommand(activator, () =>
             {
                 // Stop the current attack so it cannot block the teleport and arrival actions.
                 ClearAllActions();
                 ActionJumpToLocation(destination);
-                ActionDoCommand(() =>
-                {
-                    if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
-                        GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
-                        return;
-
-                    AssignCommand(activator, () => SetFacingPoint(GetPosition(target)));
-                    if (GetArea(activator) == GetAreaFromLocation(destination) &&
-                        GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f)
-                    {
-                        playArrivalVisual(activator);
-                        if (GetIsReactionTypeHostile(target, activator))
-                        {
-                            // A target fighting the activator turns toward the new position before the
-                            // arrival action runs. Turn it back so the stun holds it facing away.
-                            SetFacing(targetFacing, target);
-                            StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
-                                StunDurationSeconds, CombatDamageType.Physical);
-                        }
-                    }
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
-                });
+                ActionDoCommand(CompleteArrival);
+                DelayCommand(ArrivalCheckIntervalSeconds, () => WatchForArrival(ArrivalChecks));
             });
 
             TemporaryStatModifier.Replace(
@@ -120,6 +148,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             {
                 StatusEffect.RemoveStatusEffectsWithNegativeStat(activator, StatType.MovementSpeedPercentAdjustment);
             }
+        }
+
+        private static bool HasArrived(uint activator, Location destination)
+        {
+            return GetArea(activator) == GetAreaFromLocation(destination) &&
+                   GetDistanceBetweenLocations(GetLocation(activator), destination) < ArrivalToleranceMeters;
         }
     }
 }

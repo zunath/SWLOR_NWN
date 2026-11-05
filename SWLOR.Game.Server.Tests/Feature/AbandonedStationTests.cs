@@ -319,6 +319,22 @@ public class AbandonedStationTests
     }
 
     [Test]
+    public void StationRooms_HaveNoExteriorScaleGasMiningProp()
+    {
+        // placeables.2da row 30060 ("[SWLOR] Mining, Gas, Large") is an exterior-scale structure. In a
+        // starship-interior room it pokes through the walls and ceiling and draws a translucent dome over the room.
+        const int largeGasMiningAppearance = 30060;
+
+        foreach (var area in StationAreas)
+        {
+            List(Load("git", area), "Placeable List")
+                .Where(p => (int)Number(p, "Appearance") == largeGasMiningAppearance)
+                .Select(p => $"{Text(p, "TemplateResRef")} at {Position(p)}")
+                .Should().BeEmpty(area);
+        }
+    }
+
+    [Test]
     public void ResourceNodes_UseTierThreeTerminalsAndCrates()
     {
         foreach (var area in new[] { Main, Restricted })

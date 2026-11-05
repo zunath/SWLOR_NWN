@@ -10,8 +10,6 @@ namespace SWLOR.Game.Server.Service.FishingService
     /// <summary>The game-engine side of a bite and its fight. The rules it carries out are in <see cref="FishingFightLifecycle"/>.</summary>
     public sealed class NwnFishingFightWorld : IFishingFightWorld
     {
-        public static readonly NwnFishingFightWorld Instance = new();
-
         public void SetRemainingBait(uint rod, int remaining)
         {
             SetLocalInt(rod, Fishing.RemainingBaitVariable, remaining);

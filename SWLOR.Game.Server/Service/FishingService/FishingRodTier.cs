@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         public const int RanksPerTier = 10;
         public const int HighestTier = 4;
 
-        private static readonly IReadOnlyDictionary<FishingRodType, int> RequiredRanks = new Dictionary<FishingRodType, int>
+        private static IReadOnlyDictionary<FishingRodType, int> RequiredRanks => new Dictionary<FishingRodType, int>
         {
             { FishingRodType.Bamboo, 0 },
             { FishingRodType.Carbon, 0 },

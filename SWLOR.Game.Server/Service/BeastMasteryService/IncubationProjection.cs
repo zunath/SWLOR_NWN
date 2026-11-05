@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         public const int NumberOfStages = 3;
 
 
-        public static readonly IReadOnlyList<IncubationStatType> MainPurityStats = new[]
+        public static IReadOnlyList<IncubationStatType> MainPurityStats => new[]
         {
             IncubationStatType.AttackPurity,
             IncubationStatType.AccuracyPurity,
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             IncubationStatType.XPPenalty,
         };
 
-        public static readonly IReadOnlyList<IncubationStatType> ResistancePurityStats = new[]
+        public static IReadOnlyList<IncubationStatType> ResistancePurityStats => new[]
         {
             IncubationStatType.FireResistancePurity,
             IncubationStatType.PoisonResistancePurity,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             IncubationStatType.DisruptionResistancePurity,
         };
 
-        private static readonly Dictionary<IncubationStatType, (string Name, string Short, string Tooltip)> _statText = new()
+        private static Dictionary<IncubationStatType, (string Name, string Short, string Tooltip)> StatText => new()
         {
             { IncubationStatType.MutationChance, ("Mutation", "Mut", "Chance the egg becomes a different beast than its DNA.") },
             { IncubationStatType.AttackPurity, ("Attack", "Atk", "Improves the beast's attack rating.") },
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             { IncubationStatType.XPPenalty, ("XP penalty", "XP pen", "Increases the XP the beast needs to level up.") },
         };
 
-        private static readonly Dictionary<IncubationStatType, ResistanceType> _resistanceByStat = new()
+        private static Dictionary<IncubationStatType, ResistanceType> ResistanceByStat => new()
         {
             { IncubationStatType.FireResistancePurity, ResistanceType.Fire },
             { IncubationStatType.PoisonResistancePurity, ResistanceType.Poison },
@@ -81,11 +81,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             _openStages = openStages;
         }
 
-        public static bool IsKnownStat(IncubationStatType stat) => _statText.ContainsKey(stat);
-        public static string GetStatName(IncubationStatType stat) => _statText.TryGetValue(stat, out var text) ? text.Name : stat.ToString();
-        public static string GetShortStatName(IncubationStatType stat) => _statText.TryGetValue(stat, out var text) ? text.Short : stat.ToString();
-        public static string GetStatTooltip(IncubationStatType stat) => _statText.TryGetValue(stat, out var text) ? text.Tooltip : string.Empty;
-        public static ResistanceType GetResistanceType(IncubationStatType stat) => _resistanceByStat[stat];
+        public static bool IsKnownStat(IncubationStatType stat) => StatText.ContainsKey(stat);
+        public static string GetStatName(IncubationStatType stat) => StatText.TryGetValue(stat, out var text) ? text.Name : stat.ToString();
+        public static string GetShortStatName(IncubationStatType stat) => StatText.TryGetValue(stat, out var text) ? text.Short : stat.ToString();
+        public static string GetStatTooltip(IncubationStatType stat) => StatText.TryGetValue(stat, out var text) ? text.Tooltip : string.Empty;
+        public static ResistanceType GetResistanceType(IncubationStatType stat) => ResistanceByStat[stat];
 
         /// <summary>
         /// Builds a projection of a job (null for a job not started yet) plus the enzymes waiting in the

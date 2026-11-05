@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string EnzymeTag = "INCUBATION_ENZYME";
 
         private readonly IDBService _db;
+        private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
         private readonly IIncubationFieldNoteService _incubationFieldNotes;
         private readonly IPropertyService _property;
 
@@ -999,6 +1001,28 @@ namespace SWLOR.Game.Server.Domain.Companions
             }
 
             return BeastType.Invalid;
+        }
+
+        public DayOfWeek GetIncubationServerDay(string playerId)
+        {
+            return !string.IsNullOrWhiteSpace(playerId) && _incubationDayOverrides.TryGetValue(playerId, out var day)
+                ? day
+                : DateTime.UtcNow.DayOfWeek;
+        }
+
+        public bool HasIncubationDayOverride(string playerId)
+        {
+            return !string.IsNullOrWhiteSpace(playerId) && _incubationDayOverrides.ContainsKey(playerId);
+        }
+
+        public void SetIncubationDayOverride(string playerId, DayOfWeek day)
+        {
+            _incubationDayOverrides[playerId] = day;
+        }
+
+        public void ClearIncubationDayOverride(string playerId)
+        {
+            _incubationDayOverrides.TryRemove(playerId, out _);
         }
 
         public void CreateBeastEgg(IncubationJob job, uint player)

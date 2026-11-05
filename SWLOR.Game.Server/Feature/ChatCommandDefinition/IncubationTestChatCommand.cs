@@ -96,13 +96,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var playerId = GetObjectUUID(user);
                     if (IsClear(args[0]))
                     {
-                        IncubationTestTools.ClearDayOverride(playerId);
+                        BeastMastery.ClearIncubationDayOverride(playerId);
                         SendMessageToPC(user, $"Incubation uses the server day again ({DateTime.UtcNow.DayOfWeek} UTC).");
                     }
                     else
                     {
                         TryParseDay(args[0], out var day);
-                        IncubationTestTools.SetDayOverride(playerId, day);
+                        BeastMastery.SetIncubationDayOverride(playerId, day);
                         SendMessageToPC(user, $"Your incubation mutations now check {day}. This resets when the server restarts.");
                     }
 

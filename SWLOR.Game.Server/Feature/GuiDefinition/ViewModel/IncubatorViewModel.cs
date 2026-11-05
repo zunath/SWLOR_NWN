@@ -288,8 +288,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>"Wednesday (UTC)", or "Sunday (test)" while a tester's /incubationday override is set.</summary>
         private static string DescribeServerDay(string playerId)
         {
-            var suffix = IncubationTestTools.HasDayOverride(playerId) ? "test" : "UTC";
-            return $"{IncubationTestTools.GetServerDay(playerId)} ({suffix})";
+            var suffix = BeastMastery.HasIncubationDayOverride(playerId) ? "test" : "UTC";
+            return $"{BeastMastery.GetIncubationServerDay(playerId)} ({suffix})";
         }
 
         private void RefreshStageTracker(IncubationJob job, DateTime now)
@@ -490,7 +490,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 hasPendingStage);
 
             var unknown = 0;
-            var today = IncubationTestTools.GetServerDay(GetObjectUUID(Player));
+            var today = BeastMastery.GetIncubationServerDay(GetObjectUUID(Player));
             foreach (var mutation in beast.PossibleMutations)
             {
                 if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||

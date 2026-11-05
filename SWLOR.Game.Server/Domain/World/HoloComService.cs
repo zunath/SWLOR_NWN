@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IPlayerListService _playerList;
         private int _nextCallToken;
 
+        // Whether a creature is in stealth or invisible. Reads the creature's effects through the native library, so a unit
+        // test subclass answers this instead.
+        protected virtual bool IsConcealed(uint creature) => Stealth.IsConcealed(creature);
+
         public HoloComService(IPlayerListService playerList)
         {
             _playerList = playerList;
@@ -277,7 +281,8 @@ namespace SWLOR.Game.Server.Domain.World
             SendMessageToPC(receiver, message);
             if (GetCallAttempt(sender) % 5 == 0)
             {
-                FloatingTextStringOnCreature(message, receiver);
+                // Over a hidden receiver the buzz would show everyone nearby where they are.
+                FloatingTextStringOnCreature(message, receiver, !IsConcealed(receiver));
             }
 
             if (GetCallAttempt(sender) <= 15)

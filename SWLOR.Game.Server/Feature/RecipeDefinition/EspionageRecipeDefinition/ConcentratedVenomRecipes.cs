@@ -13,15 +13,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
-            Add(RecipeType.WhisperthornConcentrate, "conc_poison_1", 1, 6, "kath_blood", "herb_v");
-            Add(RecipeType.GlassfangConcentrate, "conc_poison_2", 2, 16, "raivor_blood", "herb_m");
-            Add(RecipeType.TombsporeConcentrate, "conc_poison_3", 3, 26, "byysk_meat", "herb_c");
-            Add(RecipeType.RimevenomConcentrate, "conc_poison_4", 4, 36, "sanddemon_meat", "herb_t");
-            Add(RecipeType.NightrootConcentrate, "conc_poison_5", 5, 46, "wild_innards", "herb_x");
+            Add(RecipeType.WhisperthornConcentrate, "conc_poison_1", 1, 6, "kath_blood", "herb_v", parameters: new ReactionParameters(cyclePattern: ReactionCyclePattern.Surge, cycleLength: 7, peakIntensity: 1));
+            Add(RecipeType.GlassfangConcentrate, "conc_poison_2", 2, 16, "raivor_blood", "herb_m", parameters: new ReactionParameters(cyclePattern: ReactionCyclePattern.Surge, cycleLength: 7, peakIntensity: 2));
+            Add(RecipeType.TombsporeConcentrate, "conc_poison_3", 3, 26, "byysk_meat", "herb_c", parameters: new ReactionParameters(cyclePattern: ReactionCyclePattern.Surge, cycleLength: 7, peakIntensity: 3));
+            Add(RecipeType.RimevenomConcentrate, "conc_poison_4", 4, 36, "sanddemon_meat", "herb_t", parameters: new ReactionParameters(cyclePattern: ReactionCyclePattern.Surge, cycleLength: 6, peakIntensity: 4));
+            Add(RecipeType.NightrootConcentrate, "conc_poison_5", 5, 46, "wild_innards", "herb_x", parameters: new ReactionParameters(cyclePattern: ReactionCyclePattern.Surge, cycleLength: 5, peakIntensity: 5));
             return _builder.Build();
         }
 
-        private void Add(RecipeType type, string resref, int tier, int level, string creatureMaterial, string herb)
+        private void Add(RecipeType type, string resref, int tier, int level, string creatureMaterial, string herb, RecipeMinigameParameters parameters = null)
         {
             _builder.Create(type, SkillType.Espionage)
                 .RequirementUnlocked()
@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(1)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(tier, true))
                 .Component(creatureMaterial, 1)
-                .Component(herb, 2);
+                .Component(herb, 2)
+                .MinigameParameters(parameters);
         }
     }
 }

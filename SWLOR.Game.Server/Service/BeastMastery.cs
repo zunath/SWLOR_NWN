@@ -259,6 +259,17 @@ namespace SWLOR.Game.Server.Service
             Instance.UseIncubator();
         }
 
+        /// <summary>
+        /// The weekday incubation checks for this player: the tester chosen day when set, otherwise the server day (UTC).
+        /// </summary>
+        public static DayOfWeek GetIncubationServerDay(string playerId) => Instance.GetIncubationServerDay(playerId);
+
+        public static bool HasIncubationDayOverride(string playerId) => Instance.HasIncubationDayOverride(playerId);
+
+        public static void SetIncubationDayOverride(string playerId, DayOfWeek day) => Instance.SetIncubationDayOverride(playerId, day);
+
+        public static void ClearIncubationDayOverride(string playerId) => Instance.ClearIncubationDayOverride(playerId);
+
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
             Instance.CreateBeastEgg(job, player);

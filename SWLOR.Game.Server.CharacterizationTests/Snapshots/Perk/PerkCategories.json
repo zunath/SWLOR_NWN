@@ -3,7 +3,7 @@
   "description": "The display name and active flag every perk category declares through its PerkCategory attribute.",
   "seed": null,
   "inputs": "Every PerkCategoryType member, sorted by id.",
-  "rowCount": 62,
+  "rowCount": 64,
   "columns": ["category", "categoryName", "=> displayName", "=> isActive"],
   "rows": [
     [0, "Invalid", "Invalid", false],
@@ -67,6 +67,8 @@
     [61, "UnarmedMartialArtist", "Unarmed - Martial Artist", true],
     [62, "UnarmedBrawler", "Unarmed - Brawler", true],
     [63, "TwinPistolBarrage", "Twin Pistol - Barrage", true],
-    [64, "TwinPistolCrossfire", "Twin Pistol - Crossfire", true]
+    [64, "TwinPistolCrossfire", "Twin Pistol - Crossfire", true],
+    [75, "PerformanceDancing", "Performance - Dancing", true],
+    [76, "PerformanceInstruments", "Performance - Instruments", true]
   ]
 }

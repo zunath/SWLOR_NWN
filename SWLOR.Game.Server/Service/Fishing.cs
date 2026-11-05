@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service
         public const string LoadedBaitTypeVariable = Domain.World.FishingService.LoadedBaitTypeVariable;
         public const string FishingPointLocationVariable = Domain.World.FishingService.FishingPointLocationVariable;
         public const string FishingRodTag = Domain.World.FishingService.FishingRodTag;
+        public const string FishingPointRemainingAttemptsVariable = Domain.World.FishingService.FishingPointRemainingAttemptsVariable;
 
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.

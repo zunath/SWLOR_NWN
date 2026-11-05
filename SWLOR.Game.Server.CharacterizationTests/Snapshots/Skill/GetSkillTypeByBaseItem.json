@@ -2,8 +2,8 @@
   "function": "Skill.GetSkillTypeByBaseItem(BaseItem) after Skill.LoadMappings()",
   "description": "The skill a base item type trains and is trained by: weapons and ammunition map to their weapon skill, everything else to Invalid.",
   "seed": null,
-  "inputs": "Every BaseItem number (125) in numeric order, with all of its names (joined with | when a number has more than one).",
-  "rowCount": 125,
+  "inputs": "Every BaseItem number (126) in numeric order, with all of its names (joined with | when a number has more than one).",
+  "rowCount": 126,
   "columns": ["baseItem", "baseItemNames", "=> skill"],
   "rows": [
     [-1, "Invalid", "Invalid"],
@@ -130,6 +130,7 @@
     [538, "MiscellaneousThinStackable", "Invalid"],
     [541, "PowerGlove", "Unarmed"],
     [542, "CompanionPistol", "TwinPistol"],
-    [543, "CompanionPowerGlove", "Invalid"]
+    [543, "CompanionPowerGlove", "Invalid"],
+    [544, "Enzyme", "Invalid"]
   ]
 }

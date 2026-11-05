@@ -11,6 +11,15 @@ namespace SWLOR.Game.Server.Domain.Core
     /// </summary>
     public class MessagingService : IMessagingService
     {
+        // Whether a creature is in stealth or invisible. Reads the creature's effects through the native library, so a unit
+        // test subclass answers this instead.
+        protected virtual bool IsConcealed(uint creature) => Stealth.IsConcealed(creature);
+
+        public bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed)
+        {
+            return !senderConcealed && !actorConcealed;
+        }
+
         public void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)
         {
             SendMessageNearbyToPlayers(sender, _ => message, range);
@@ -18,8 +27,21 @@ namespace SWLOR.Game.Server.Domain.Core
 
         public void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f)
         {
+            SendMessageNearbyToPlayers(sender, buildMessage, range, OBJECT_INVALID);
+        }
+
+        public void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range, uint concealedActor)
+        {
             if (buildMessage == null)
                 throw new ArgumentNullException(nameof(buildMessage));
+
+            if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))
+            {
+                SendMessageToPC(sender, buildMessage(sender));
+                if (GetIsObjectValid(concealedActor) && concealedActor != sender && GetIsPC(concealedActor))
+                    SendMessageToPC(concealedActor, buildMessage(concealedActor));
+                return;
+            }
 
             var profile = FrameProfiler.Start();
             SendMessageToPC(sender, buildMessage(sender));

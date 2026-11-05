@@ -2,8 +2,8 @@
   "function": "SkillType metadata (SkillAttribute of every skill)",
   "description": "The data every skill declares: category, display name, maximum rank, active flag, whether it counts toward the skill cap, the craft and research menu flags, the combat point category and the character type restriction.",
   "seed": null,
-  "inputs": "49 SkillType members sorted by id. descriptionFingerprint is the first 12 hex digits of the SHA-256 of the UTF-8 description text.",
-  "rowCount": 49,
+  "inputs": "50 SkillType members sorted by id. descriptionFingerprint is the first 12 hex digits of the SHA-256 of the UTF-8 description text.",
+  "rowCount": 50,
   "columns": ["skill", "skillName", "=> category", "=> name", "=> maxRank", "=> isActive", "=> contributesToSkillCap", "=> isShownInCraftMenu", "=> isShownInResearchMenu", "=> combatPointCategory", "=> characterTypeRestriction", "=> descriptionLength", "=> descriptionFingerprint"],
   "rows": [
     [0, "Invalid", "Invalid", "Invalid", 0, false, false, false, false, "Exempt", "Invalid", 15, "2d33d4c08179"],
@@ -51,9 +51,10 @@
     [46, "Rifle", "Combat", "Rifle", 50, true, true, false, false, "Weapon", "Invalid", 32, "851edb3b3c7a"],
     [47, "Throwing", "Combat", "Throwing", 50, true, true, false, false, "Weapon", "Invalid", 42, "8c3c883d5e35"],
     [48, "Mimicry", "Combat", "Mimicry", 50, true, true, false, false, "Utility", "Invalid", 73, "08ef1ea8eb3b"],
-    [49, "Espionage", "Utility", "Espionage", 50, true, true, true, false, "Utility", "Standard", 76, "ddc5110e36be"],
+    [49, "Espionage", "Utility", "Espionage", 50, true, true, true, false, "Utility", "Invalid", 76, "ddc5110e36be"],
     [50, "Arkanian", "Languages", "Arkanian", 20, true, false, false, false, "Exempt", "Invalid", 39, "bf71ae0fb18a"],
     [51, "Unarmed", "Combat", "Unarmed", 50, true, true, false, false, "Weapon", "Invalid", 78, "23479d4e21b7"],
-    [52, "TwinPistol", "Combat", "Twin Pistol", 50, true, true, false, false, "Weapon", "Invalid", 54, "c3c7f5d90b6e"]
+    [52, "TwinPistol", "Combat", "Twin Pistol", 50, true, true, false, false, "Weapon", "Invalid", 54, "c3c7f5d90b6e"],
+    [60, "Performance", "Utility", "Performance", 50, true, true, false, false, "Exempt", "Invalid", 92, "2d5cc8770424"]
   ]
 }

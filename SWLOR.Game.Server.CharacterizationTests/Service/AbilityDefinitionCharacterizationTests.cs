@@ -35,6 +35,7 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.ImpactDelay), a => a.ImpactDelay),
         new(nameof(AbilityDetail.IsAreaAbility), a => a.IsAreaAbility),
         new(nameof(AbilityDetail.IsChanneled), a => a.IsChanneled),
+        new(nameof(AbilityDetail.IsForcePower), a => a.IsForcePower),
         new(nameof(AbilityDetail.IsHealingAbility), a => a.IsHealingAbility),
         new(nameof(AbilityDetail.IsHostileAbility), a => a.IsHostileAbility),
         new(nameof(AbilityDetail.IsInterruptedByDamage), a => a.IsInterruptedByDamage),

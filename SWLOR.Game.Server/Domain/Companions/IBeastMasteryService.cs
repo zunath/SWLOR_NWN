@@ -229,6 +229,21 @@ namespace SWLOR.Game.Server.Domain.Companions
         void CreateBeastEgg(IncubationJob job, uint player);
 
         /// <summary>
+        /// The weekday incubation checks for this player: the tester chosen day when set, otherwise the server day (UTC).
+        /// The overrides are test-server shortcuts, kept in memory only.
+        /// </summary>
+        DayOfWeek GetIncubationServerDay(string playerId);
+
+        /// <summary>Whether a tester chose a weekday for this player.</summary>
+        bool HasIncubationDayOverride(string playerId);
+
+        /// <summary>Makes incubation treat the given weekday as today for this player (test servers only).</summary>
+        void SetIncubationDayOverride(string playerId, DayOfWeek day);
+
+        /// <summary>Goes back to the server day for this player.</summary>
+        void ClearIncubationDayOverride(string playerId);
+
+        /// <summary>
         /// Creates a beast egg of a beast type on a player.
         /// </summary>
         /// <param name="beastType">The type of beast the egg holds</param>

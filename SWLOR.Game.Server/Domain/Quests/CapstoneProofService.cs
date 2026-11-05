@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         private const string EnemyProofPrefix = "CAPSTONE_PROOF_";
         private const string SupportProofPrefix = "CAPSTONE_SUPPORT_";
+        private const string OwnedBeastHitPrefix = "OWNED_BEAST_HIT_";
 
         private readonly IBeastMasteryService _beastMastery;
         private readonly Dictionary<string, CapstoneProofDefinition> _proofs = new();
@@ -136,9 +137,15 @@ namespace SWLOR.Game.Server.Domain.Quests
             if (!GetIsObjectValid(player) || !IsEnemy(player, target))
                 return;
 
+            SetLocalInt(target, OwnedBeastHitKey(player), 1);
             foreach (var proof in _proofs.Values.Where(proof => proof.CountsOwnedBeastDamage))
                 MarkEnemy(player, target, proof);
         }
+
+        public bool HasOwnedBeastHit(uint player, uint enemy) =>
+            GetLocalInt(enemy, OwnedBeastHitKey(player)) == 1;
+
+        private string OwnedBeastHitKey(uint player) => OwnedBeastHitPrefix + GetObjectUUID(player);
 
         public bool HasProof(uint player, uint enemy, string key)
         {

@@ -481,6 +481,11 @@ public class PlayerFeedbackServiceTests
 
         public void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f) =>
             Broadcasts.Add((sender, buildMessage, range));
+
+        public bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed) => !senderConcealed && !actorConcealed;
+
+        public void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range, uint concealedActor) =>
+            Broadcasts.Add((sender, buildMessage, range));
     }
 
     private sealed class TestPlayerFeedbackService : PlayerFeedbackService

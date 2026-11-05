@@ -26,5 +26,6 @@ Service/MeleeTechnique.cs
 Service/AIService/**
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs
-Feature/GuiDefinition/ViewModel/CraftViewModel.cs
+Service/CraftService/Minigame/CraftSessionLifecycle.cs
+Service/CraftService/Minigame/NwnCraftSessionWorld.cs
 Entity/EntityBase.cs

@@ -31,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.MustardlashSlime)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
 
                 ;
 

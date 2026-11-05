@@ -10,25 +10,26 @@
 # Abilities -> Administration (1 edge)
 Mimicry -> DMPresence | 1
 
-# Abilities -> Character (15 edges)
+# Abilities -> Character (16 edges)
 Ability -> Activity | 1
 Ability -> Feature/StatusEffectDefinition | 1
 Ability -> Perk | 14
-Ability -> Skill | 40
+Ability -> Skill | 41
 Ability -> Stat | 34
 Ability -> StatusEffect | 45
-Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 442
+Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 444
 Feature/AbilityDefinition -> Perk | 8
+Feature/AbilityDefinition -> PlayerName | 2
 Feature/AbilityDefinition -> Skill | 29
-Feature/AbilityDefinition -> Stat | 80
-Feature/AbilityDefinition -> StatusEffect | 209
+Feature/AbilityDefinition -> Stat | 81
+Feature/AbilityDefinition -> StatusEffect | 211
 Mimicry -> Perk | 6
 Mimicry -> Skill | 8
 Mimicry -> Stat | 8
 Mimicry -> StatusEffect | 1
 
-# Abilities -> Combat (22 edges)
-Ability -> Combat | 67
+# Abilities -> Combat (23 edges)
+Ability -> Combat | 68
 Ability -> CombatPoint | 2
 Ability -> CombatRecorder | 9
 Ability -> Enmity | 2
@@ -37,15 +38,16 @@ Ability -> PairedRangedTraits | 2
 Ability -> Recast | 1
 Ability -> RecastTimestamp | 2
 Ability -> Resistance | 4
+Ability -> Stealth | 1
 Ability -> Telegraph | 11
 Feature/AbilityDefinition -> Combat | 79
 Feature/AbilityDefinition -> CombatPoint | 32
 Feature/AbilityDefinition -> CombatRecorder | 17
-Feature/AbilityDefinition -> Enmity | 16
+Feature/AbilityDefinition -> Enmity | 19
 Feature/AbilityDefinition -> MeleeTechnique | 1
 Feature/AbilityDefinition -> PvpCombat | 4
 Feature/AbilityDefinition -> Resistance | 1
-Feature/AbilityDefinition -> Stealth | 1
+Feature/AbilityDefinition -> Stealth | 4
 Feature/AbilityDefinition -> Telegraph | 8
 Feature/AbilityDefinition -> TwinPistolAbility | 1
 Mimicry -> Combat | 5
@@ -74,9 +76,10 @@ Feature/AbilityDefinition -> Item | 2
 Ability -> CapstoneProof | 1
 Feature/AbilityDefinition -> CapstoneProof | 1
 
-# Abilities -> Social (2 edges)
+# Abilities -> Social (3 edges)
 Ability -> Party | 8
-Feature/AbilityDefinition -> Party | 8
+Feature/AbilityDefinition -> Party | 9
+Feature/AbilityDefinition -> Performance | 2
 
 # Abilities -> Space (1 edge)
 Ability -> Space | 1
@@ -135,24 +138,26 @@ StatusEffect -> Feature/AbilityDefinition | 1
 # Character -> Administration (1 edge)
 Disguise -> DMPresence | 1
 
-# Character -> Combat (29 edges)
+# Character -> Combat (32 edges)
 EspionageInfiltration -> Enmity | 3
+EspionageInfiltration -> Stealth | 3
 Feature/AppearanceDefinition -> PowerGloveEquipment | 2
 Feature/AppearanceDefinition -> TwinPistolEquipment | 1
 Feature/PerkDefinition -> Stealth | 1
-Feature/StatusEffectDefinition -> Combat | 128
+Feature/StatusEffectDefinition -> Combat | 131
 Feature/StatusEffectDefinition -> CombatPoint | 1
 Feature/StatusEffectDefinition -> CombatRecorder | 3
 Feature/StatusEffectDefinition -> Enmity | 3
 Feature/StatusEffectDefinition -> OrdinaryAttackTraits | 2
 Feature/StatusEffectDefinition -> PairedRangedTraits | 2
 Feature/StatusEffectDefinition -> Resistance | 12
+Feature/StatusEffectDefinition -> Stealth | 4
 Perk -> Combat | 2
 Perk -> PowerGloveEquipment | 1
 Perk -> TwinPistolEquipment | 1
 PlayerIntroduction -> Recast | 2
 Skill -> TwinPistolEquipment | 1
-Stat -> Combat | 1141
+Stat -> Combat | 1249
 Stat -> CombatRecorder | 8
 Stat -> Enmity | 1
 Stat -> PowerGloveEquipment | 3
@@ -160,11 +165,12 @@ Stat -> PvpCombat | 1
 Stat -> Recast | 1
 Stat -> Resistance | 4
 Stat -> TwinPistolEquipment | 1
-StatusEffect -> Combat | 39
+StatusEffect -> Combat | 40
 StatusEffect -> CombatRecorder | 9
 StatusEffect -> MeleeTechnique | 3
 StatusEffect -> PvpCombat | 2
 StatusEffect -> Resistance | 5
+StatusEffect -> Stealth | 2
 
 # Character -> Companions (8 edges)
 Feature/AppearanceDefinition -> Droid | 9
@@ -175,6 +181,10 @@ Perk -> Droid | 3
 Skill -> Droid | 1
 Stat -> BeastMastery | 3
 Stat -> Droid | 1
+
+# Character -> Crafting (2 edges)
+Feature/PerkDefinition -> Craft | 12
+Feature/StatusEffectDefinition -> Craft | 6
 
 # Character -> Creatures (1 edge)
 EspionageInfiltration -> AI | 2
@@ -190,8 +200,9 @@ Stat -> Item | 3
 Perk -> Quest | 2
 StatusEffect -> CapstoneProof | 1
 
-# Character -> Social (3 edges)
+# Character -> Social (4 edges)
 Feature/StatusEffectDefinition -> Party | 2
+Feature/StatusEffectDefinition -> Performance | 2
 PlayerName -> ChatPortraitTells | 1
 PlayerName -> PlayerList | 4
 
@@ -207,7 +218,7 @@ StatusEffect -> Feature/GuiDefinition | 3
 StatusEffect -> Gui | 3
 
 # Combat -> Abilities (13 edges)
-Combat -> Ability | 130
+Combat -> Ability | 131
 Combat -> Feature/AbilityDefinition | 21
 CombatRecorder -> Ability | 20
 CombatRecorder -> Feature/AbilityDefinition | 1
@@ -230,8 +241,8 @@ Combat -> Activity | 1
 Combat -> Feature/StatusEffectDefinition | 99
 Combat -> Perk | 26
 Combat -> PlayerName | 10
-Combat -> Skill | 207
-Combat -> Stat | 348
+Combat -> Skill | 206
+Combat -> Stat | 350
 Combat -> StatusEffect | 148
 CombatPoint -> Skill | 13
 CombatPoint -> Stat | 2
@@ -240,7 +251,7 @@ CombatRecorder -> Stat | 5
 CombatRecorder -> StatusEffect | 4
 Death -> Feature/StatusEffectDefinition | 1
 Death -> PlayerName | 2
-Death -> StatusEffect | 1
+Death -> StatusEffect | 2
 Enmity -> Activity | 2
 Enmity -> Skill | 1
 Enmity -> Stat | 3
@@ -264,8 +275,8 @@ Resistance -> Stat | 6
 Resistance -> StatusEffect | 2
 Stealth -> EspionageInfiltration | 4
 Stealth -> Feature/StatusEffectDefinition | 5
-Stealth -> Perk | 3
-Stealth -> Stat | 1
+Stealth -> Perk | 1
+Stealth -> Stat | 2
 Stealth -> StatusEffect | 5
 TwinPistolAbility -> StatusEffect | 1
 TwinPistolEquipment -> Feature/AppearanceDefinition | 1
@@ -285,11 +296,12 @@ Enmity -> AI | 7
 Enmity -> CompanionControl | 2
 Stealth -> AI | 1
 
-# Combat -> Gameplay (5 edges)
+# Combat -> Gameplay (6 edges)
 Combat -> Feature.UsePerkFeat | 1
 Death -> Feature.PlayerTemporaryEffects | 2
 Death -> Feature.UsePerkFeat | 1
 MeleeTechnique -> Feature.UsePerkFeat | 1
+Stealth -> Feature.LightsaberAudio | 2
 TwinPistolAbility -> Feature.UsePerkFeat | 4
 
 # Combat -> Items (5 edges)
@@ -326,12 +338,12 @@ BeastMastery -> Feature/AbilityDefinition | 1
 
 # Companions -> Character (12 edges)
 BeastMastery -> Feature/StatusEffectDefinition | 1
-BeastMastery -> Perk | 3
+BeastMastery -> Perk | 4
 BeastMastery -> Stat | 11
 BeastMastery -> StatusEffect | 1
 Droid -> Feature/AppearanceDefinition | 3
 Droid -> Feature/StatusEffectDefinition | 1
-Droid -> Perk | 17
+Droid -> Perk | 16
 Droid -> Race | 1
 Droid -> Skill | 6
 Droid -> Stat | 3
@@ -339,7 +351,7 @@ Droid -> StatusEffect | 1
 DroidEquipmentDiagnostics -> Activity | 1
 
 # Companions -> Combat (9 edges)
-BeastMastery -> Combat | 30
+BeastMastery -> Combat | 33
 BeastMastery -> CombatRecorder | 1
 BeastMastery -> Resistance | 9
 Droid -> Combat | 10
@@ -362,6 +374,9 @@ Droid -> Item | 2
 DroidEquipmentDiagnostics -> Item | 3
 IncubationFieldNote -> KeyItem | 9
 
+# Companions -> Quests (1 edge)
+BeastMastery -> Feature/QuestDefinition | 3
+
 # Companions -> UI (3 edges)
 BeastMastery -> Feature/GuiDefinition | 2
 BeastMastery -> Gui | 2
@@ -377,22 +392,22 @@ Feature/MigrationDefinition -> MimicryLoadouts | 1
 Feature/MigrationDefinition -> QuickCast | 4
 
 # Core -> Administration (2 edges)
-Communication -> DMPreference | 3
-Communication -> DMPresence | 2
+Communication -> DMPreference | 5
+Communication -> DMPresence | 4
 
 # Core -> Character (19 edges)
 Animation -> Perk | 2
-Animation -> Skill | 2
+Animation -> Skill | 3
 Communication -> Activity | 1
-Communication -> Language | 1
+Communication -> Language | 2
 Communication -> PlayerName | 2
-Communication -> Skill | 1
+Communication -> Skill | 2
 Conversation -> PlayerName | 1
 Feature/DialogDefinition -> Disguise | 6
 Feature/DialogDefinition -> Perk | 1
 Feature/DialogDefinition -> Skill | 10
 Feature/MigrationDefinition -> Feature/AppearanceDefinition | 17
-Feature/MigrationDefinition -> Perk | 13
+Feature/MigrationDefinition -> Perk | 22
 Feature/MigrationDefinition -> Skill | 5
 Feature/MigrationDefinition -> Stat | 5
 Feature/SnippetDefinition -> Skill | 2
@@ -401,12 +416,13 @@ Migration -> Skill | 2
 Migration -> Stat | 2
 PlayerFeedback -> PlayerName | 1
 
-# Core -> Combat (8 edges)
+# Core -> Combat (9 edges)
 Feature/DialogDefinition -> Enmity | 2
 Feature/MigrationDefinition -> Combat | 40
 Feature/MigrationDefinition -> Resistance | 8
 Feature/MigrationDefinition -> WeaponDelay | 3
 Feature/SnippetDefinition -> Enmity | 1
+Messaging -> Stealth | 1
 Migration -> Combat | 2
 Migration -> PowerGloveEquipment | 3
 Migration -> Resistance | 2
@@ -415,10 +431,9 @@ Migration -> Resistance | 2
 Feature/MigrationDefinition -> Droid | 45
 
 # Core -> Crafting (1 edge)
-Feature/MigrationDefinition -> Craft | 30
+Feature/MigrationDefinition -> Craft | 15
 
-# Core -> Creatures (2 edges)
-Feature/MigrationDefinition -> NPC | 8
+# Core -> Creatures (1 edge)
 Walkmesh -> Spawn | 2
 
 # Core -> Economy (4 edges)
@@ -435,7 +450,7 @@ Feature/SnippetDefinition -> Feature.PlaceableScripts | 1
 NamedAnimation -> Feature.PistolAnimationRemap | 1
 
 # Core -> Items (7 edges)
-Cache -> Item | 1
+Cache -> Item | 3
 Feature/DialogDefinition -> ItemTrash | 1
 Feature/DialogDefinition -> KeyItem | 7
 Feature/MigrationDefinition -> Item | 16
@@ -450,7 +465,7 @@ Feature/SnippetDefinition -> Faction | 6
 Feature/SnippetDefinition -> Quest | 4
 
 # Core -> Social (1 edge)
-Communication -> Party | 1
+Communication -> Party | 3
 
 # Core -> Space (3 edges)
 Communication -> Space | 1
@@ -465,10 +480,10 @@ Feature/DialogDefinition -> Gui | 3
 Feature/SnippetDefinition -> Feature/GuiDefinition | 2
 
 # Core -> World (10 edges)
-Communication -> Area | 1
-Communication -> HoloCom | 1
-Communication -> Planet | 2
-Communication -> Property | 4
+Communication -> Area | 3
+Communication -> HoloCom | 3
+Communication -> Planet | 4
+Communication -> Property | 6
 Feature/DialogDefinition -> Area | 4
 Feature/DialogDefinition -> Planet | 5
 Feature/DialogDefinition -> Property | 7
@@ -476,32 +491,50 @@ Feature/DialogDefinition -> Shuttle | 5
 Feature/DialogDefinition -> Taxi | 2
 Feature/MigrationDefinition -> Property | 11
 
-# Crafting -> Character (6 edges)
-Craft -> Perk | 6
-Craft -> Skill | 20
+# Crafting -> Character (12 edges)
+Craft -> Feature/StatusEffectDefinition | 3
+Craft -> Perk | 56
+Craft -> Skill | 92
+Craft -> Stat | 29
+Craft -> StatusEffect | 10
 Feature/RecipeDefinition -> Skill | 3
+Prospecting -> Activity | 3
+Prospecting -> Skill | 3
+Scavenge -> Skill | 1
 Slicing -> Perk | 2
 Slicing -> Skill | 1
 Slicing -> Stat | 1
 
 # Crafting -> Combat (2 edges)
-Craft -> Combat | 9
+Craft -> Combat | 11
 Craft -> Resistance | 1
 
 # Crafting -> Creatures (1 edge)
 Slicing -> Spawn | 2
 
-# Crafting -> Items (3 edges)
-Craft -> Item | 1
+# Crafting -> Gameplay (1 edge)
+Craft -> Feature.PlayerTemporaryEffects | 1
+
+# Crafting -> Items (7 edges)
+Craft -> Item | 3
+Craft -> Loot | 5
 Feature/RecipeDefinition -> Feature/ItemDefinition | 2
+Prospecting -> Feature/ItemDefinition | 1
+Prospecting -> Loot | 5
+Scavenge -> Loot | 14
 Slicing -> Item | 2
 
-# Crafting -> UI (3 edges)
+# Crafting -> UI (7 edges)
 Craft -> Feature/GuiDefinition | 2
-Craft -> Gui | 4
+Craft -> Gui | 23
+Prospecting -> Feature/GuiDefinition | 1
+Prospecting -> Gui | 3
+Scavenge -> Feature/GuiDefinition | 1
+Scavenge -> Gui | 3
 Slicing -> Gui | 1
 
-# Crafting -> World (1 edge)
+# Crafting -> World (2 edges)
+Craft -> Fishing | 5
 Craft -> Property | 1
 
 # Creatures -> Abilities (3 edges)
@@ -547,13 +580,15 @@ AI -> Party | 3
 # Creatures -> World (1 edge)
 Feature/SpawnDefinition -> Fishing | 2
 
-# Economy -> Character (1 edge)
+# Economy -> Character (2 edges)
 Guild -> Perk | 1
+GuildTaskXp -> Skill | 8
 
 # Economy -> Companions (1 edge)
 PlayerMarket -> BeastMastery | 1
 
-# Economy -> Crafting (1 edge)
+# Economy -> Crafting (2 edges)
+GuildTaskXp -> Craft | 2
 PlayerMarket -> Craft | 1
 
 # Economy -> Items (2 edges)
@@ -574,7 +609,8 @@ CasinoSlot -> Gui | 1
 Currency -> Feature/GuiDefinition | 2
 Currency -> Gui | 2
 
-# Economy -> World (3 edges)
+# Economy -> World (4 edges)
+GuildTaskXp -> Fishing | 2
 PlayerMarket -> Fishing | 1
 PlayerMarket -> Music | 1
 PlayerMarket -> Property | 1
@@ -598,7 +634,7 @@ Feature.Jukebox -> DMPresence | 1
 Feature.RoleplayXP -> DMPresence | 1
 Feature.ServerTasks -> DMPresence | 1
 
-# Gameplay -> Character (37 edges)
+# Gameplay -> Character (38 edges)
 Feature.AchievementProgression -> Achievement | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> PlayerName | 3
@@ -625,6 +661,7 @@ Feature.PlayerTemporaryEffects -> Stat | 1
 Feature.RoleplayXP -> RoleplayXP | 7
 Feature.ScavengePoint -> Perk | 1
 Feature.ScavengePoint -> Skill | 1
+Feature.ScavengePoint -> Stat | 1
 Feature.TlkOverrides -> Perk | 1
 Feature.TwinPistolEquipmentValidation -> Skill | 1
 Feature.UnarmedMastery -> Perk | 1
@@ -637,7 +674,7 @@ Feature.UsePerkFeat -> PlayerName | 3
 Feature.UsePerkFeat -> Skill | 2
 Feature.UsePerkFeat -> Stat | 1
 
-# Gameplay -> Combat (35 edges)
+# Gameplay -> Combat (36 edges)
 Feature.CivilianPatrol -> Enmity | 2
 Feature.EquipmentRestrictions -> PowerGloveEquipment | 2
 Feature.EquipmentRestrictions -> TwinPistolEquipment | 1
@@ -645,6 +682,7 @@ Feature.EquipmentStats -> Combat | 2
 Feature.EquipmentStats -> PowerGloveEquipment | 2
 Feature.EquipmentStats -> Resistance | 1
 Feature.KatarAnimationRemap -> QueuedAttackAnimation | 2
+Feature.LightsaberAudio -> Stealth | 2
 Feature.NaturalRegeneration -> Combat | 1
 Feature.NaturalRegeneration -> CombatRecorder | 2
 Feature.OrdinaryAttackCombatLifecycle -> OrdinaryAttackTraits | 7
@@ -670,7 +708,7 @@ Feature.UsePerkFeat -> MeleeTechnique | 3
 Feature.UsePerkFeat -> PairedRangedTraits | 3
 Feature.UsePerkFeat -> QueuedAttackAnimation | 3
 Feature.UsePerkFeat -> Recast | 2
-Feature.UsePerkFeat -> Stealth | 1
+Feature.UsePerkFeat -> Stealth | 3
 Feature.UsePerkFeat -> Telegraph | 5
 Feature.UsePerkFeat -> TwinPistolEquipment | 1
 
@@ -678,7 +716,14 @@ Feature.UsePerkFeat -> TwinPistolEquipment | 1
 Feature.EquipmentRestrictions -> Droid | 1
 Feature.TwinPistolEquipmentValidation -> Droid | 2
 
-# Gameplay -> Crafting (1 edge)
+# Gameplay -> Crafting (8 edges)
+Feature.CraftingInterruptions -> Craft | 4
+Feature.CraftingInterruptions -> Prospecting | 1
+Feature.CraftingInterruptions -> Scavenge | 1
+Feature.PlayerTemporaryEffects -> Craft | 1
+Feature.ResearchInterruptions -> Craft | 2
+Feature.ScavengePoint -> Craft | 1
+Feature.ScavengePoint -> Scavenge | 3
 Feature.SlicingTerminal -> Slicing | 1
 
 # Gameplay -> Creatures (3 edges)
@@ -707,12 +752,14 @@ Feature.TwinPistolCombatLifecycle -> Item | 1
 Feature.TwinPistolEquipmentValidation -> Item | 2
 Feature.TwinPistolPairLifecycle -> EquipmentUnequip | 1
 
-# Gameplay -> Quests (1 edge)
+# Gameplay -> Quests (2 edges)
+Feature.BeastStableTrials -> Quest | 1
 Feature.UnarmedMastery -> Quest | 1
 
-# Gameplay -> Social (2 edges)
+# Gameplay -> Social (3 edges)
 Feature.PlaceableScripts -> Party | 1
 Feature.PlayerRest -> Party | 1
+Feature.UsePerkFeat -> Performance | 1
 
 # Gameplay -> Space (1 edge)
 Feature.PlayerStatusWindow -> Space | 1
@@ -736,7 +783,7 @@ Feature.PlayerStatusWindow -> Gui | 16
 Feature.SlicingTerminal -> Feature/GuiDefinition | 1
 Feature.SlicingTerminal -> Gui | 1
 
-# Gameplay -> World (9 edges)
+# Gameplay -> World (8 edges)
 Feature.CZ220FlightsTerminal -> Area | 1
 Feature.CivilianPatrol -> Area | 1
 Feature.EventRegistration -> Area | 1
@@ -744,7 +791,6 @@ Feature.PersistentLocation -> Area | 2
 Feature.PersistentLocation -> Shuttle | 1
 Feature.PersistentMapPin -> Area | 1
 Feature.PersistentMapProgression -> Area | 1
-Feature.PlaceableScripts -> Planet | 1
 Feature.RoleplayXP -> Property | 1
 
 # Items -> Abilities (2 edges)
@@ -757,9 +803,9 @@ ItemTrash -> DMPresence | 3
 
 # Items -> Character (13 edges)
 Feature/ItemDefinition -> Feature/StatusEffectDefinition | 11
-Feature/ItemDefinition -> Perk | 6
+Feature/ItemDefinition -> Perk | 4
 Feature/ItemDefinition -> Skill | 6
-Feature/ItemDefinition -> Stat | 5
+Feature/ItemDefinition -> Stat | 6
 Feature/ItemDefinition -> StatusEffect | 11
 Item -> Activity | 1
 Item -> Perk | 3
@@ -768,7 +814,7 @@ ItemTrash -> Disguise | 1
 ItemTrash -> PlayerName | 1
 Loot -> Perk | 1
 Loot -> Stat | 2
-Wardrobe -> Feature/AppearanceDefinition | 2
+Wardrobe -> Feature/AppearanceDefinition | 3
 
 # Items -> Combat (7 edges)
 Feature/ItemDefinition -> Combat | 1
@@ -789,13 +835,18 @@ KeyItem -> BeastMastery | 1
 KeyItem -> IncubationFieldNote | 1
 Loot -> BeastMastery | 2
 
-# Items -> Crafting (2 edges)
-Feature/ItemDefinition -> Craft | 1
+# Items -> Crafting (4 edges)
+Feature/ItemDefinition -> Craft | 3
+Feature/ItemDefinition -> Prospecting | 1
 Feature/ItemDefinition -> Slicing | 1
+Item -> Craft | 1
 
 # Items -> Economy (2 edges)
 Feature/ItemDefinition -> Currency | 4
 LightsaberWorkbench -> Currency | 3
+
+# Items -> Gameplay (1 edge)
+Feature/ItemDefinition -> Feature.BeastStableTrials | 1
 
 # Items -> Space (1 edge)
 Feature/ItemDefinition -> Space | 1
@@ -803,7 +854,7 @@ Feature/ItemDefinition -> Space | 1
 # Items -> UI (6 edges)
 Feature/ItemDefinition -> Feature/GuiDefinition | 4
 Feature/ItemDefinition -> Gui | 4
-Item -> Gui | 4
+Item -> Gui | 3
 KeyItem -> Feature/GuiDefinition | 1
 KeyItem -> Gui | 1
 LightsaberWorkbench -> Gui | 1
@@ -822,10 +873,11 @@ Platform/Native -> QuickCast | 1
 # Platform -> Administration (1 edge)
 Platform/Entity -> DMTool | 8
 
-# Platform -> Character (11 edges)
+# Platform -> Character (12 edges)
 Platform/Entity -> Achievement | 4
-Platform/Entity -> Perk | 11
-Platform/Entity -> Skill | 17
+Platform/Entity -> Perk | 14
+Platform/Entity -> Skill | 26
+Platform/Enumeration -> Skill | 7
 Platform/Native -> Feature/AppearanceDefinition | 1
 Platform/Native -> Feature/StatusEffectDefinition | 1
 Platform/Native -> Perk | 3
@@ -855,7 +907,7 @@ Platform/Native -> WeaponAttackEligibility | 3
 Platform/Entity -> BeastMastery | 22
 
 # Platform -> Crafting (1 edge)
-Platform/Entity -> Craft | 10
+Platform/Entity -> Craft | 23
 
 # Platform -> Creatures (2 edges)
 Platform/Entity -> NPC | 4
@@ -895,7 +947,7 @@ Platform/Entity -> Shuttle | 3
 Platform/Entity -> Taxi | 4
 
 # Quests -> Abilities (3 edges)
-CapstoneProof -> Ability | 5
+CapstoneProof -> Ability | 13
 Feature/QuestDefinition -> Ability | 1
 Quest -> Ability | 3
 
@@ -903,28 +955,32 @@ Quest -> Ability | 3
 Quest -> DMPresence | 3
 
 # Quests -> Character (6 edges)
-Feature/QuestDefinition -> Achievement | 46
+Feature/QuestDefinition -> Achievement | 47
 Feature/QuestDefinition -> Feature/StatusEffectDefinition | 1
 Feature/QuestDefinition -> Skill | 1
 Quest -> Activity | 2
 Quest -> Perk | 1
-Quest -> Skill | 5
+Quest -> Skill | 6
 
 # Quests -> Combat (2 edges)
 Feature/QuestDefinition -> TwinPistolMastery | 2
 Quest -> Enmity | 3
 
 # Quests -> Companions (1 edge)
-CapstoneProof -> BeastMastery | 1
+CapstoneProof -> BeastMastery | 3
+
+# Quests -> Crafting (1 edge)
+Quest -> Craft | 1
 
 # Quests -> Creatures (4 edges)
 Feature/QuestDefinition -> NPC | 1
 Feature/QuestDefinition -> NPCGroup | 1
-Quest -> NPC | 26
+Quest -> NPC | 28
 Quest -> NPCGroup | 2
 
-# Quests -> Economy (1 edge)
+# Quests -> Economy (2 edges)
 Quest -> Guild | 2
+Quest -> GuildTaskXp | 2
 
 # Quests -> Items (6 edges)
 Feature/QuestDefinition -> KeyItem | 70
@@ -942,11 +998,12 @@ QuestContract -> Gui | 1
 QuestContractBoard -> Feature/GuiDefinition | 1
 QuestContractBoard -> Gui | 1
 
-# Social -> Abilities (4 edges)
+# Social -> Abilities (5 edges)
 Feature/ChatCommandDefinition -> Ability | 2
 Feature/ChatCommandDefinition -> AbilityCooldownVisual | 1
 Feature/ChatCommandDefinition -> Mimicry | 1
 Party -> Ability | 2
+Performance -> Feature/AbilityDefinition | 2
 
 # Social -> Administration (4 edges)
 Feature/ChatCommandDefinition -> DMPreference | 1
@@ -954,7 +1011,7 @@ Feature/ChatCommandDefinition -> DMPresence | 14
 PlayerList -> DMPresence | 10
 PlayerList -> DMTool | 1
 
-# Social -> Character (11 edges)
+# Social -> Character (18 edges)
 Feature/ChatCommandDefinition -> Disguise | 3
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 Feature/ChatCommandDefinition -> Language | 1
@@ -964,6 +1021,13 @@ Feature/ChatCommandDefinition -> PlayerIntroduction | 1
 Feature/ChatCommandDefinition -> PlayerName | 3
 Feature/ChatCommandDefinition -> Skill | 2
 Feature/ChatCommandDefinition -> Stat | 3
+Performance -> Activity | 4
+Performance -> Feature/StatusEffectDefinition | 6
+Performance -> Perk | 10
+Performance -> PlayerName | 2
+Performance -> Skill | 1
+Performance -> Stat | 3
+Performance -> StatusEffect | 20
 PlayerList -> Disguise | 3
 PlayerList -> PlayerName | 3
 
@@ -975,7 +1039,10 @@ Feature/ChatCommandDefinition -> Recast | 1
 Party -> Telegraph | 2
 
 # Social -> Companions (1 edge)
-Feature/ChatCommandDefinition -> BeastMastery | 4
+Feature/ChatCommandDefinition -> BeastMastery | 6
+
+# Social -> Crafting (1 edge)
+Feature/ChatCommandDefinition -> Craft | 1
 
 # Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> CompanionControl | 1
@@ -992,20 +1059,25 @@ Feature/ChatCommandDefinition -> OverflowStorage | 1
 Feature/ChatCommandDefinition -> Faction | 2
 Feature/ChatCommandDefinition -> Quest | 2
 
-# Social -> Space (2 edges)
+# Social -> Space (3 edges)
 Feature/ChatCommandDefinition -> Space | 3
+Performance -> Space | 1
 PlayerList -> Space | 1
 
-# Social -> UI (6 edges)
+# Social -> UI (8 edges)
 ChatCommand -> Gui | 13
 Feature/ChatCommandDefinition -> ExtraHotbars | 1
-Feature/ChatCommandDefinition -> Feature/GuiDefinition | 9
-Feature/ChatCommandDefinition -> Gui | 21
+Feature/ChatCommandDefinition -> Feature/GuiDefinition | 10
+Feature/ChatCommandDefinition -> Gui | 26
+Performance -> Feature/GuiDefinition | 1
+Performance -> Gui | 12
 PlayerList -> Feature/GuiDefinition | 1
 PlayerList -> Gui | 2
 
-# Social -> World (2 edges)
+# Social -> World (4 edges)
 Feature/ChatCommandDefinition -> HoloCom | 3
+Performance -> Music | 7
+Performance -> Property | 2
 PlayerList -> HoloCom | 1
 
 # Space -> Abilities (2 edges)
@@ -1075,13 +1147,13 @@ Feature/GuiDefinition -> Activity | 1
 Feature/GuiDefinition -> Disguise | 11
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 87
 Feature/GuiDefinition -> Language | 4
-Feature/GuiDefinition -> Perk | 68
+Feature/GuiDefinition -> Perk | 63
 Feature/GuiDefinition -> PlayerDescriptor | 1
 Feature/GuiDefinition -> PlayerIntroduction | 8
 Feature/GuiDefinition -> PlayerName | 19
 Feature/GuiDefinition -> Race | 2
-Feature/GuiDefinition -> Skill | 77
-Feature/GuiDefinition -> Stat | 25
+Feature/GuiDefinition -> Skill | 79
+Feature/GuiDefinition -> Stat | 34
 Feature/GuiDefinition -> StatusEffect | 4
 
 # UI -> Combat (12 edges)
@@ -1089,27 +1161,31 @@ ExtraHotbars -> Targeting | 2
 ExtraHotbars -> TwinPistolEquipment | 2
 Feature/GuiDefinition -> BattleGrid | 6
 Feature/GuiDefinition -> BattleGridSettings | 11
-Feature/GuiDefinition -> Combat | 19
+Feature/GuiDefinition -> Combat | 17
 Feature/GuiDefinition -> Enmity | 2
 Feature/GuiDefinition -> PairedRangedTraits | 1
 Feature/GuiDefinition -> PowerGloveEquipment | 1
 Feature/GuiDefinition -> Recast | 3
 Feature/GuiDefinition -> Resistance | 1
-Feature/GuiDefinition -> Targeting | 34
+Feature/GuiDefinition -> Targeting | 28
 Feature/GuiDefinition -> TwinPistolEquipment | 2
 
-# UI -> Companions (2 edges)
-Feature/GuiDefinition -> BeastMastery | 27
+# UI -> Companions (3 edges)
+Feature/GuiDefinition -> BeastMastery | 52
 Feature/GuiDefinition -> Droid | 20
+Feature/GuiDefinition -> IncubationFieldNote | 2
 
-# UI -> Crafting (2 edges)
-Feature/GuiDefinition -> Craft | 55
+# UI -> Crafting (5 edges)
+ExtraHotbars -> Craft | 1
+Feature/GuiDefinition -> Craft | 202
+Feature/GuiDefinition -> Prospecting | 18
+Feature/GuiDefinition -> Scavenge | 14
 Feature/GuiDefinition -> Slicing | 18
 
 # UI -> Creatures (1 edge)
 Feature/GuiDefinition -> CompanionControl | 1
 
-# UI -> Economy (8 edges)
+# UI -> Economy (9 edges)
 Feature/GuiDefinition -> Bank | 4
 Feature/GuiDefinition -> BankItemPage | 1
 Feature/GuiDefinition -> CasinoSlot | 2
@@ -1117,21 +1193,21 @@ Feature/GuiDefinition -> CasinoSlotPresentation | 2
 Feature/GuiDefinition -> CasinoSpinResult | 3
 Feature/GuiDefinition -> Currency | 13
 Feature/GuiDefinition -> Guild | 2
+Feature/GuiDefinition -> GuildTaskXp | 1
 Feature/GuiDefinition -> PlayerMarket | 16
 
-# UI -> Gameplay (7 edges)
+# UI -> Gameplay (6 edges)
 ExtraHotbars -> Feature.UsePerkFeat | 1
 Feature/GuiDefinition -> Feature.ArmorDisplay | 5
 Feature/GuiDefinition -> Feature.EquipmentRestrictions | 1
 Feature/GuiDefinition -> Feature.PlayerInitialization | 1
 Feature/GuiDefinition -> Feature.PlayerStatusWindow | 1
-Feature/GuiDefinition -> Feature.PlayerTemporaryEffects | 1
 Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
 # UI -> Items (5 edges)
 ExtraHotbars -> Item | 2
-Feature/GuiDefinition -> Item | 51
-Feature/GuiDefinition -> KeyItem | 10
+Feature/GuiDefinition -> Item | 40
+Feature/GuiDefinition -> KeyItem | 12
 Feature/GuiDefinition -> LightsaberWorkbench | 12
 Feature/GuiDefinition -> Wardrobe | 9
 
@@ -1140,17 +1216,19 @@ Feature/GuiDefinition -> Quest | 14
 Feature/GuiDefinition -> QuestContract | 16
 Feature/GuiDefinition -> QuestContractBoard | 20
 
-# UI -> Social (4 edges)
+# UI -> Social (5 edges)
 ExtraHotbars -> ChatCommand | 1
 Feature/GuiDefinition -> ChatCommand | 3
 Feature/GuiDefinition -> Party | 2
+Feature/GuiDefinition -> Performance | 67
 Feature/GuiDefinition -> PlayerList | 40
 
 # UI -> Space (1 edge)
 Feature/GuiDefinition -> Space | 29
 
-# UI -> World (5 edges)
+# UI -> World (6 edges)
 Feature/GuiDefinition -> Area | 6
+Feature/GuiDefinition -> Fishing | 10
 Feature/GuiDefinition -> HoloCom | 4
 Feature/GuiDefinition -> Music | 14
 Feature/GuiDefinition -> Notes | 6
@@ -1165,11 +1243,12 @@ HoloCom -> DMPresence | 3
 Traps -> DMPresence | 1
 Weather -> DMPresence | 3
 
-# World -> Character (12 edges)
+# World -> Character (13 edges)
 Feature/TrapDefinition -> Stat | 1
-Fishing -> Activity | 3
+Fishing -> Activity | 6
 Fishing -> PlayerName | 1
-Fishing -> Skill | 2
+Fishing -> Skill | 3
+Fishing -> Stat | 1
 HoloCom -> PlayerName | 1
 Property -> Perk | 2
 Traps -> Feature/StatusEffectDefinition | 2
@@ -1179,12 +1258,16 @@ Traps -> Stat | 6
 Traps -> StatusEffect | 1
 Weather -> Stat | 2
 
-# World -> Combat (5 edges)
+# World -> Combat (6 edges)
+HoloCom -> Stealth | 1
 Traps -> Combat | 5
 Traps -> CombatRecorder | 7
 Traps -> PvpCombat | 1
 Weather -> Combat | 3
 Weather -> Resistance | 2
+
+# World -> Crafting (1 edge)
+Fishing -> Craft | 26
 
 # World -> Economy (1 edge)
 Feature/PropertyLayoutDefinition -> Bank | 2
@@ -1192,14 +1275,17 @@ Feature/PropertyLayoutDefinition -> Bank | 2
 # World -> Items (1 edge)
 Music -> KeyItem | 14
 
-# World -> Social (1 edge)
+# World -> Social (2 edges)
 HoloCom -> PlayerList | 9
+Music -> Performance | 1
 
 # World -> Space (3 edges)
 Feature/PropertyLayoutDefinition -> Space | 1
 HoloCom -> Space | 3
 Property -> Space | 1
 
-# World -> UI (2 edges)
+# World -> UI (4 edges)
+Fishing -> Feature/GuiDefinition | 1
+Fishing -> Gui | 3
 Notes -> Gui | 9
 Property -> Gui | 2

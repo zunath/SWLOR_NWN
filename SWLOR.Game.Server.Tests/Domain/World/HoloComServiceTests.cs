@@ -50,7 +50,20 @@ public class HoloComServiceTests
     private FakePlayerPlugin _playerPlugin = null!;
     private FakeCreaturePlugin _creaturePlugin = null!;
     private RecordingProxy _playerListCalls = null!;
-    private HoloComService _service = null!;
+    private TestHoloCom _service = null!;
+
+    /// <summary>The HoloCom service with the creatures in stealth or invisible answered by the test.</summary>
+    private sealed class TestHoloCom : HoloComService
+    {
+        public TestHoloCom(IPlayerListService playerList)
+            : base(playerList)
+        {
+        }
+
+        public HashSet<uint> Concealed { get; } = new();
+
+        protected override bool IsConcealed(uint creature) => Concealed.Contains(creature);
+    }
     private IDisposable _engineScope = null!;
     private IDisposable _playerScope = null!;
     private IDisposable _creatureScope = null!;
@@ -80,7 +93,7 @@ public class HoloComServiceTests
         _playerPlugin = new FakePlayerPlugin();
         _creaturePlugin = new FakeCreaturePlugin();
         var playerList = (IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _playerListCalls);
-        _service = new HoloComService(playerList);
+        _service = new TestHoloCom(playerList);
 
         _engineScope = NWScriptRuntime.Override(_engine);
         _playerScope = PlayerPluginRuntime.Override(_playerPlugin);
@@ -322,6 +335,25 @@ public class HoloComServiceTests
         floating.Arguments[0].Should().Be(MessagesTo(Bob).Single());
         floating.Arguments[1].Should().Be(Bob);
         _engine.CallsTo("DelayCommand").Last().Arguments[0].Should().Be(5.0f);
+    }
+
+    [Test]
+    public void The_buzz_is_shown_to_everyone_nearby_over_a_receiver_in_plain_sight()
+    {
+        AliceIsRingingBob();
+
+        _engine.CallsTo("FloatingTextStringOnCreature").Should().ContainSingle().Which.Arguments[2].Should().Be(true);
+    }
+
+    [Test]
+    public void The_buzz_is_not_shown_to_everyone_nearby_over_a_receiver_in_stealth()
+    {
+        // Over a hidden receiver the buzz would show everyone nearby where they are.
+        _service.Concealed.Add(Bob);
+
+        AliceIsRingingBob();
+
+        _engine.CallsTo("FloatingTextStringOnCreature").Should().ContainSingle().Which.Arguments[2].Should().Be(false);
     }
 
     [Test]

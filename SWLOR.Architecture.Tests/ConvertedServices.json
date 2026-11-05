@@ -30,7 +30,7 @@
     { "name": "EquipmentUnequip", "domain": "Items" },
     { "name": "ExtraHotbars", "domain": "UI" },
     { "name": "Faction", "domain": "Quests" },
-    { "name": "Fishing", "domain": "World" },
+    { "name": "Fishing", "domain": "World", "extras": [ { "facade": "FishingService.FishingFights" } ] },
     { "name": "Gui", "domain": "UI" },
     { "name": "Guild", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },

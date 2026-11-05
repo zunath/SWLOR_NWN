@@ -79,7 +79,11 @@ blending enabled and disabled, in both native `NO_DISCARD` modes.
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
 Helmet 101 and both human neck 12 textures have obsolete PLT atlases that differ
-from their authored diffuse artwork.
+from their authored diffuse artwork. Every playable family's neck 12 (human, elf,
+half-orc and dwarf bodies) shares one skinned respirator mesh whose UVs fit that
+artwork, so its bitmap names `pmh0_neck012`/`pfh0_neck012` and it binds the authored
+material; the male export's `pmh0_neck012.001` bitmap once left it on the unrelated
+torso-skin atlas. `TestTintMaterialProfiles` guards each model's respirator mesh.
 `GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
 retaining the full-resolution diffuse and normal/specular textures. Cloth 1
 controls helmet 101; Skin controls the necks' authored surfaces. Female left shin

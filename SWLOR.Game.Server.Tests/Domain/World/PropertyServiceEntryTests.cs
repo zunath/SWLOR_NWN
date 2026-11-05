@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,6 +19,23 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
 {
     private const uint Door = 7500;
     private const uint CityArea = 8000;
+
+    // Placing a city hall opens a conversation menu through the ConversationMenu facade, so the fixture installs the
+    // server's registrations (no menu is cached: the menu service reports the unknown name, as the static class did).
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
 
     /// <summary>A permission record that names every permission of a property type, granting only some of them.</summary>
     private WorldPropertyPermission PermitOnly(string playerId, string propertyId, PropertyType type, params PropertyPermissionType[] granted)

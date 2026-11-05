@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -12,6 +13,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class GuildTaskBoardTests
 {
+    // Guild reaches the guild service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly DateTime TasksLoaded = new(2026, 10, 1, 12, 0, 0, DateTimeKind.Utc);
 
     private static readonly GuildType[] CraftingGuilds =

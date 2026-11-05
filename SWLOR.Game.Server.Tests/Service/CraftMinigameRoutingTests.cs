@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -81,6 +82,9 @@ public class CraftMinigameRoutingTests
     [Test]
     public void NoWindowDefinitionBuildsTheRetiredCraftWindow()
     {
+        // Some definitions read converted services (the key item categories), which resolve from a container.
+        using var facades = new FacadeContainer();
+        using var facadeScope = facades.Install();
         using var validationBuild = GuiLayoutValidator.BeginValidationOnlyBuild();
         var windowTypes = typeof(IGuiWindowDefinition).Assembly.GetTypes()
             .Where(type => typeof(IGuiWindowDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
@@ -145,7 +149,7 @@ public class CraftMinigameRoutingTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
 
-        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Domain", "Items", "ItemService.cs"));
 
         source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
         source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",

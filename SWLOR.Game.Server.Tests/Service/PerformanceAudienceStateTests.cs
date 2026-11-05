@@ -166,10 +166,11 @@ public class PerformanceAudienceStateTests
     [Test]
     public void ThePlayersOwnMusicPlayerMakesTheBandSongSendAgain()
     {
-        var source = File.ReadAllText(SourcePath("Service", "Music.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "World", "MusicService.cs"));
 
-        Section(source, "public static void PlayForPlayer(").Should().Contain("PerformanceAudience.ForgetBandSong(player);");
-        Section(source, "public static void StopForPlayer(").Should().Contain("PerformanceAudience.ForgetBandSong(player);");
+        Section(source, "public void PlayForPlayer(").Should().Contain("ForgetBandSong(player);");
+        Section(source, "public void StopForPlayer(").Should().Contain("ForgetBandSong(player);");
+        source.Should().Contain("protected virtual void ForgetBandSong(uint player) => PerformanceAudience.ForgetBandSong(player);");
     }
 
     [Test]

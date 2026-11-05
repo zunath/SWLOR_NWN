@@ -29,7 +29,7 @@
     { "name": "DroidEquipmentDiagnostics", "domain": "Companions" },
     { "name": "EquipmentUnequip", "domain": "Items" },
     { "name": "Faction", "domain": "Quests" },
-    { "name": "Fishing", "domain": "World" },
+    { "name": "Fishing", "domain": "World", "extras": [ { "facade": "FishingService.FishingFights" } ] },
     { "name": "Guild", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },
     { "name": "IncubationFieldNote", "domain": "Companions" },

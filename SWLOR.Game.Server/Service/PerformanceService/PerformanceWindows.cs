@@ -107,11 +107,25 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             Gui.TogglePlayerWindow(session.Performer, GuiWindowType.PerformanceOptions);
         }
 
-        /// <summary>Tells an open cue window that the performer changed routine, set, song or tempo.</summary>
+        /// <summary>Tells an open cue window that the performer changed routine, set, song, tempo or mode.</summary>
         public static void RefreshSetup(PerformanceSession session)
         {
-            if (session.View is { IsOpen: true } view)
-                view.ShowSetup(BuildSetup(session));
+            if (session.View is not { IsOpen: true } view)
+                return;
+
+            view.ShowSetup(BuildSetup(session));
+            view.ShowAudienceGets(BuildAudienceGets(session));
+        }
+
+        /// <summary>
+        /// The audience summary between ticks, after the performer changed something. It reads the performer alone, so a
+        /// partner's riders and Harmony come back with the next audience tick.
+        /// </summary>
+        public static string BuildAudienceGets(PerformanceSession session)
+        {
+            var snapshot = PerformerSnapshotBuilder.Build(
+                session, PerformanceVenue.GetRating(session.Performer), PerformanceSongs.AutomaticSong);
+            return PerformanceAudienceText.AudienceGets(snapshot);
         }
 
         /// <summary>What a performer chose for the show, as the cue windows word it.</summary>
@@ -175,7 +189,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             {
                 VenueText = PerformanceAudienceText.Venue(performer.Venue),
                 FollowingText = PerformanceAudienceText.Following(performer.Crowd, performer.WatcherCount),
-                InspiringText = PerformanceAudienceText.Inspiring(performer.Crowd, performer.WatcherCount)
+                InspiringText = PerformanceAudienceText.Inspiring(performer.Crowd, performer.WatcherCount),
+                AudienceGetsText = PerformanceAudienceText.AudienceGets(performer)
             };
 
             if (performer.Kind != PerformanceKind.Music)

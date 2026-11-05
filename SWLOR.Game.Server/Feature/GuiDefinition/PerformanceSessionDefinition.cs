@@ -29,12 +29,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceSession)
-                .SetInitialGeometry(20f, 60f, 600f, 620f)
+                .SetInitialGeometry(20f, 20f, 600f, PerformanceSessionViewModel.MainWindowHeight)
                 .SetTitle("Session")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
-                .DefinePartialView(PerformanceSessionViewModel.MainContentPartial, AddContent);
+                .DefinePartialView(PerformanceSessionViewModel.MainContentPartial, AddContent)
+                .DefinePartialView(PerformanceSessionViewModel.RoleplayContentPartial, AddRoleplayContent);
 
             // No tabs: the standard layout is still the root, and one partial holds the whole body.
             window.AddStandardLayout(layout => layout
@@ -45,17 +46,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddContent(GuiGroup<PerformanceSessionViewModel> host)
         {
+            AddPanel(host, content =>
+            {
+                AddHeader(content);
+                AddBandLine(content);
+                PerformanceCueWindowParts.AddAudienceGets(content);
+                AddLanesAndReadouts(content);
+                AddFooter(content);
+            });
+        }
+
+        // Roleplay mode has no notes: the setup, the band, what the audience gets and hears, and how to keep performing.
+        private static void AddRoleplayContent(GuiGroup<PerformanceSessionViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                AddHeader(content);
+                AddBandLine(content);
+                PerformanceCueWindowParts.AddAudienceGets(content);
+                content.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .BindText(model => model.InspiringText)
+                        .SetWidth(230f)
+                        .SetHeight(22f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    row.AddLabel()
+                        .BindText(model => model.AudienceHearsText)
+                        .SetHeight(22f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
+                PerformanceCueWindowParts.AddRoleplayNote(content);
+            });
+        }
+
+        private static void AddPanel(
+            GuiGroup<PerformanceSessionViewModel> host,
+            Action<GuiColumn<PerformanceSessionViewModel>> body)
+        {
             host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
                 panel.SetScrollbars(NuiScrollbars.None);
-                panel.AddColumn(content =>
-                {
-                    AddHeader(content);
-                    AddBandLine(content);
-                    AddLanesAndReadouts(content);
-                    AddFooter(content);
-                });
+                panel.AddColumn(body);
             }).SetWidth(ContentPanelWidth)));
         }
 

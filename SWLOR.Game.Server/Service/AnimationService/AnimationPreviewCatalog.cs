@@ -38,10 +38,17 @@ public static class AnimationPreviewCatalog
         return new ReadOnlyDictionary<string, AnimationClip>(clips);
     }
 
-    public static IReadOnlyList<Entry> Entries { get; private set; } = CreateEntries(Array.Empty<AbilityDetail>());
+    /// <summary>
+    /// The preview entries of every authored clip and the abilities registered now. Built on demand from the ability
+    /// and perk catalogs, which hold the data, so this class keeps no state of its own.
+    /// </summary>
+    public static IReadOnlyList<Entry> Entries => CreateEntries(Ability.GetAllAbilityDetails().Values, Perk.GetAllPerks());
 
+    /// <summary>
+    /// Builds the catalog once when the module caches, so a duplicate or invalid entry stops the boot as it always did.
+    /// </summary>
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
-    public static void CacheCategories() => Entries = CreateEntries(Ability.GetAllAbilityDetails().Values, Perk.GetAllPerks());
+    public static void CacheCategories() => _ = Entries;
 
     public static IReadOnlyList<Entry> CreateEntries(IEnumerable<AbilityDetail> abilities,
         IReadOnlyDictionary<PerkType, PerkDetail> perks = null,

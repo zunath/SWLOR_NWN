@@ -28,9 +28,20 @@ public class AIServiceSeamTests
     private AIBench _bench = null!;
     private DefaultSeamsAIService _service = null!;
 
+    // The default companion rules are the companion control facade, which resolves from the server's registrations.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _bench = new AIBench();
         _service = new DefaultSeamsAIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence);
     }
@@ -38,6 +49,7 @@ public class AIServiceSeamTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         RealEnmityTables.Clear();
         _bench.Dispose();
     }

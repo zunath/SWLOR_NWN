@@ -1,24 +1,106 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the NUI windows. The logic and state live in <see cref="IGuiService"/>; every member here
+    /// forwards to the container's instance, and the event handlers stay here so their names in the handler order
+    /// manifest do not change.
+    /// </summary>
     public static class Gui
     {
-        private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
-        private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
-        private static readonly Dictionary<string, Dictionary<string, GuiMethodDetail>> _elementEvents = new();
-        private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
-        private static readonly Dictionary<Type, List<GuiWindowType>> _windowTypesByRefreshEvent = new();
+        private static IGuiService Instance => FacadeAccessor.Resolve<IGuiService>();
+
+        /// <summary>
+        /// Name of the texture used for the GUI elements.
+        /// </summary>
+        public const string GuiFontName = Domain.UI.GuiService.GuiFontName;
+
+        /// <summary>
+        /// Name of the texture used for the GUI text.
+        /// </summary>
+        public const string TextName = Domain.UI.GuiService.TextName;
+
+        // The following letters represent the character locations of the elements on the GUI spritesheet.
+        public const string WindowTopLeft = Domain.UI.GuiService.WindowTopLeft;
+
+        public const string WindowTopMiddle = Domain.UI.GuiService.WindowTopMiddle;
+
+        public const string WindowTopRight = Domain.UI.GuiService.WindowTopRight;
+
+        public const string WindowMiddleLeft = Domain.UI.GuiService.WindowMiddleLeft;
+
+        public const string WindowMiddleRight = Domain.UI.GuiService.WindowMiddleRight;
+
+        public const string WindowMiddleBlank = Domain.UI.GuiService.WindowMiddleBlank;
+
+        public const string WindowBottomLeft = Domain.UI.GuiService.WindowBottomLeft;
+
+        public const string WindowBottomRight = Domain.UI.GuiService.WindowBottomRight;
+
+        public const string WindowBottomMiddle = Domain.UI.GuiService.WindowBottomMiddle;
+
+        public const string Arrow = Domain.UI.GuiService.Arrow;
+
+        public const string BlankWhite = Domain.UI.GuiService.BlankWhite;
+
+        // The following hex codes correspond to colors used on GUI elements.
+        // Color tokens won't work on Gui elements.
+        public const int ColorTransparent = Domain.UI.GuiService.ColorTransparent;
+
+        public const int ColorWhite = Domain.UI.GuiService.ColorWhite;
+
+        public const int ColorSilver = Domain.UI.GuiService.ColorSilver;
+
+        public const int ColorGray = Domain.UI.GuiService.ColorGray;
+
+        public const int ColorDarkGray = Domain.UI.GuiService.ColorDarkGray;
+
+        public const int ColorBlack = Domain.UI.GuiService.ColorBlack;
+
+        public const int ColorRed = Domain.UI.GuiService.ColorRed;
+
+        public const int ColorMaroon = Domain.UI.GuiService.ColorMaroon;
+
+        public const int ColorOrange = Domain.UI.GuiService.ColorOrange;
+
+        public const int ColorYellow = Domain.UI.GuiService.ColorYellow;
+
+        public const int ColorOlive = Domain.UI.GuiService.ColorOlive;
+
+        public const int ColorLime = Domain.UI.GuiService.ColorLime;
+
+        public const int ColorGreen = Domain.UI.GuiService.ColorGreen;
+
+        public const int ColorAqua = Domain.UI.GuiService.ColorAqua;
+
+        public const int ColorTeal = Domain.UI.GuiService.ColorTeal;
+
+        public const int ColorBlue = Domain.UI.GuiService.ColorBlue;
+
+        public const int ColorNavy = Domain.UI.GuiService.ColorNavy;
+
+        public const int ColorFuschia = Domain.UI.GuiService.ColorFuschia;
+
+        public const int ColorPurple = Domain.UI.GuiService.ColorPurple;
+
+        public const int ColorHealthBar = Domain.UI.GuiService.ColorHealthBar;
+
+        public const int ColorFPBar = Domain.UI.GuiService.ColorFPBar;
+
+        public const int ColorStaminaBar = Domain.UI.GuiService.ColorStaminaBar;
+
+        public const int ColorShieldsBar = Domain.UI.GuiService.ColorShieldsBar;
+
+        public const int ColorHullBar = Domain.UI.GuiService.ColorHullBar;
+
+        public const int ColorCapacitorBar = Domain.UI.GuiService.ColorCapacitorBar;
 
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -26,65 +108,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheData()
         {
-            LoadWindowTemplates();
-            LoadRefreshableViewModels();
-        }
-
-        /// <summary>
-        /// Loads all of the window definitions, constructs them, and caches the data into memory.
-        /// </summary>
-        private static void LoadWindowTemplates()
-        {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IGuiWindowDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-            foreach (var type in types)
-            {
-                var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
-                var constructedWindow = instance.BuildWindow();
-
-                // Safety check to ensure we don't try to build the same type of window more than once.
-                if (_windowTemplates.ContainsKey(constructedWindow.Type))
-                {
-                    throw new Exception($"GUI Window type '{constructedWindow.Type}' has been defined more than once.");
-                }
-
-                // Register the window template into the cache.
-                _windowTemplates[constructedWindow.Type] = constructedWindow;
-                _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
-            }
-
-            Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
-        }
-
-        /// <summary>
-        /// After the window definitions have been cached, we need to associate refresh events to each window type.
-        /// This will let us individually refresh specific player view models when needed by external events.
-        /// </summary>
-        private static void LoadRefreshableViewModels()
-        {
-            foreach (var (windowType, window) in _windowTemplates)
-            {
-                var tempWindow = window.CreatePlayerWindowAction();
-                var vm = tempWindow.ViewModel;
-                var vmType = vm.GetType();
-
-                var refreshables = vmType
-                    .GetInterfaces()
-                    .Where(x => x.IsGenericType &&
-                                x.GetGenericTypeDefinition() == typeof(IGuiRefreshable<>));
-
-                foreach (var refreshable in refreshables)
-                {
-                    var eventType = refreshable.GenericTypeArguments[0];
-
-                    if (!_windowTypesByRefreshEvent.ContainsKey(eventType))
-                        _windowTypesByRefreshEvent[eventType] = new List<GuiWindowType>();
-
-                    _windowTypesByRefreshEvent[eventType].Add(windowType);
-                }
-            }
+            Instance.CacheData();
         }
 
         /// <summary>
@@ -93,55 +117,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void CreatePlayerWindows()
         {
-            var player = GetEnteringObject();
-            var playerId = GetObjectUUID(player);
-
-            if (_playerWindows.ContainsKey(playerId))
-                return;
-
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-            _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
-
-            foreach (var (type, window) in _windowTemplates)
-            {
-                var defaultGeometry = window.InitialGeometry;
-                var playerGeometry = dbPlayer.WindowGeometries.ContainsKey(type)
-                    ? dbPlayer.WindowGeometries[type]
-                    : defaultGeometry;
-                var resizable = JsonObjectGet(window.Window, "resizable");
-
-                // If the window cannot be resized and there isn't a bind on it,
-                // the default width and height are used.
-                var forceResize = JsonGetInt(resizable) != 1 &&
-                                  string.IsNullOrWhiteSpace(JsonGetString(JsonObjectGet(resizable, "bind")));
-                if (forceResize)
-                {
-                    playerGeometry.Width = defaultGeometry.Width;
-                    playerGeometry.Height = defaultGeometry.Height;
-                }
-
-                // A window that failed a client-side layout solve can report a degenerate
-                // size, which then persists on close and poisons every future open of that
-                // window at the broken size. Discard implausibly small saved sizes.
-                // Some intentional HUD windows are as small as 72x52, so only
-                // reject the non-positive geometry produced by a failed solve.
-                // A broad pixel threshold would erase valid saved positions for
-                // PlayerStatusPortrait and the other compact status windows.
-                const float MinimumSaneDimension = 1f;
-                if (playerGeometry.Width < MinimumSaneDimension ||
-                    playerGeometry.Height < MinimumSaneDimension)
-                {
-                    playerGeometry.Width = defaultGeometry.Width;
-                    playerGeometry.Height = defaultGeometry.Height;
-                    playerGeometry.X = defaultGeometry.X;
-                    playerGeometry.Y = defaultGeometry.Y;
-                }
-
-                // Add the window
-                var playerWindow = window.CreatePlayerWindowAction();
-                playerWindow.ViewModel.Geometry = playerGeometry;
-                _playerWindows[playerId][type] = playerWindow;
-            }
+            Instance.CreatePlayerWindows();
         }
 
         /// <summary>
@@ -150,23 +126,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SavePlayerWindowGeometry()
         {
-            var player = GetExitingObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            foreach (var (type, _) in _windowTemplates)
-            {
-                if (IsWindowOpen(player, type))
-                {
-                    var window = GetPlayerWindow(player, type);
-                    dbPlayer.WindowGeometries[type] = window.ViewModel.Geometry;
-                }
-            }
-
-            DB.Set(dbPlayer);
+            Instance.SavePlayerWindowGeometry();
         }
 
         /// <summary>
@@ -177,44 +137,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="eventAction">The action to run when the event is raised.</param>
         public static void RegisterElementEvent(string elementId, string eventName, GuiMethodDetail eventAction)
         {
-            if (!_elementEvents.ContainsKey(elementId))
-                _elementEvents[elementId] = new Dictionary<string, GuiMethodDetail>();
-
-            _elementEvents[elementId][eventName] = eventAction;
-        }
-
-        private static void SaveWindowGeometry(string playerId, GuiWindowType windowType, GuiRectangle geometry)
-        {
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            dbPlayer.WindowGeometries[windowType] = geometry;
-
-            DB.Set(dbPlayer);
-        }
-
-        private const float GeometrySaveDebounceSeconds = 2f;
-        private static readonly HashSet<string> _pendingGeometrySaves = new();
-
-        /// <summary>
-        /// Persists window geometry shortly after the client reports a move/resize.
-        /// Dragging fires a stream of watch events and each save is a full player
-        /// document write, so writes are coalesced to at most one per window per
-        /// debounce interval. The delayed save reads the view model's geometry at
-        /// fire time, so it always persists the latest reported rect.
-        /// </summary>
-        private static void QueueWindowGeometrySave(string playerId, GuiWindowType windowType, GuiPlayerWindow playerWindow)
-        {
-            var key = $"{playerId}:{windowType}";
-            if (!_pendingGeometrySaves.Add(key))
-                return;
-
-            DelayCommand(GeometrySaveDebounceSeconds, () =>
-            {
-                _pendingGeometrySaves.Remove(key);
-                SaveWindowGeometry(playerId, windowType, playerWindow.ViewModel.Geometry);
-            });
+            Instance.RegisterElementEvent(elementId, eventName, eventAction);
         }
 
         /// <summary>
@@ -224,64 +147,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public static void HandleNuiEvents()
         {
-            var player = NuiGetEventPlayer();
-            var uiTarget = player;
-
-            if (GetIsDMPossessed(player))
-                player = GetMaster(player);
-
-            var playerId = GetObjectUUID(player);
-            var windowToken = NuiGetEventWindow();
-            var windowId = NuiGetWindowId(uiTarget, windowToken);
-            var eventType = NuiGetEventType();
-            var elementId = NuiGetEventElement();
-            var eventKey = BuildEventKey(windowId, elementId);
-            if (string.IsNullOrWhiteSpace(windowId))
-                return;
-
-            var windowType = _windowTypesByKey[windowId];
-            var playerWindow = _playerWindows[playerId][windowType];
-            var viewModel = playerWindow.ViewModel;
-
-            if (!_elementEvents.ContainsKey(eventKey))
-            {
-                if (eventType == "close")
-                {
-                    SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
-                }
-                return;
-            }
-
-            var eventGroup = _elementEvents[eventKey];
-
-            if (!eventGroup.ContainsKey(eventType))
-                return;
-
-            // Player moved more than 5 meters away from the tether.
-            // Automatically close the window.
-            if (GetIsObjectValid(viewModel.TetherObject))
-            {
-                if (GetDistanceBetween(uiTarget, viewModel.TetherObject) > 5f)
-                {
-                    TogglePlayerWindow(uiTarget, windowType);
-                    SendMessageToPC(uiTarget, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
-                    return;
-                }
-            }
-
-            // Note: This section has the possibility of being slow.
-            // If it is, look into building the methods and caching them at the time of window creation.
-            var methodInfo = eventGroup[eventType];
-            var method = viewModel.GetType().GetMethod(methodInfo.Method.Name);
-            var args = methodInfo.Arguments.Select(s => s.Value);
-            var action = method?.Invoke(playerWindow.ViewModel, args.ToArray());
-            ((Action)action)?.Invoke();
-
-            // If the window was closed, save its geometry
-            if (eventType == "close")
-            {
-                SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
-            }
+            Instance.HandleNuiEvents();
         }
 
         /// <summary>
@@ -290,37 +156,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public static void HandleNuiWatchEvent()
         {
-            var player = NuiGetEventPlayer();
-            var uiTarget = player;
-
-            if (GetIsDMPossessed(player))
-                player = GetMaster(player);
-
-            var playerId = GetObjectUUID(player);
-            var windowToken = NuiGetEventWindow();
-            var windowId = NuiGetWindowId(uiTarget, windowToken);
-            var eventType = NuiGetEventType();
-            var propertyName = NuiGetEventElement();
-
-            if (eventType != "watch")
-                return;
-
-            if (string.IsNullOrWhiteSpace(windowId))
-                return;
-
-            if (!_playerWindows.ContainsKey(playerId))
-                return;
-
-            var playerWindows = _playerWindows[playerId];
-            var windowType = _windowTypesByKey[windowId];
-            var playerWindow = playerWindows[windowType];
-
-            playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
-
-            // Geometry changes are persisted as they happen (debounced) so window
-            // positions survive crashes and close paths that skip the close-time save.
-            if (propertyName == nameof(IGuiViewModel.Geometry))
-                QueueWindowGeometrySave(playerId, windowType, playerWindow);
+            Instance.HandleNuiWatchEvent();
         }
 
         /// <summary>
@@ -330,7 +166,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A key using the window type.</returns>
         public static string BuildWindowId(GuiWindowType windowType)
         {
-            return $"GUI_WINDOW_{windowType}";
+            return Instance.BuildWindowId(windowType);
         }
 
         /// <summary>
@@ -342,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A key using the window Id and element Id.</returns>
         public static string BuildEventKey(string windowId, string elementId)
         {
-            return windowId + "_" + elementId;
+            return Instance.BuildEventKey(windowId, elementId);
         }
 
         /// <summary>
@@ -353,43 +189,13 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the window is open, false otherwise</returns>
         public static bool IsWindowOpen(uint player, GuiWindowType type)
         {
-            var windowId = BuildWindowId(type);
-            return NuiFindWindow(player, windowId) != 0;
+            return Instance.IsWindowOpen(player, type);
         }
 
         /// <summary>Checks cached window tethers before querying the physical UI target.</summary>
         public static bool HasOpenWindowTetheredTo(uint uiTarget, uint tetherObject)
         {
-            if (!GetIsObjectValid(uiTarget) || !GetIsObjectValid(tetherObject))
-                return false;
-
-            var controller = GetIsDMPossessed(uiTarget) ? GetMaster(uiTarget) : uiTarget;
-            if (!GetIsObjectValid(controller) || (!GetIsPC(controller) && !GetIsDM(controller)))
-                return false;
-
-            var playerId = GetObjectUUID(controller);
-            if (string.IsNullOrWhiteSpace(playerId) ||
-                !_playerWindows.TryGetValue(playerId, out var windows) || windows == null)
-                return false;
-
-            return HasOpenTetheredWindow(windows.Select(window =>
-                    (window.Key, window.Value?.ViewModel?.TetherObject ?? OBJECT_INVALID)),
-                tetherObject, type => IsWindowOpen(uiTarget, type));
-        }
-
-        private static bool HasOpenTetheredWindow(IEnumerable<(GuiWindowType Type, uint Tether)> windows,
-            uint tetherObject, Func<GuiWindowType, bool> isWindowOpen)
-        {
-            if (windows == null || tetherObject == OBJECT_INVALID)
-                return false;
-
-            foreach (var (type, tether) in windows)
-            {
-                if (tether == tetherObject && isWindowOpen(type))
-                    return true;
-            }
-
-            return false;
+            return Instance.HasOpenWindowTetheredTo(uiTarget, tetherObject);
         }
 
         /// <summary>
@@ -400,37 +206,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="payload">An optional payload to pass to the view model.</param>
         /// <param name="tetherObject">The object the window is tethered to. If specified, the window will automatically close if the player moves more than 5 meters away from it.</param>
         /// <param name="uiTarget">Useful for DM possessions. Can override the target of the UI to target the proper NPC a DM has possessed.</param>
-        public static void TogglePlayerWindow(
-            uint player,
-            GuiWindowType type,
-            GuiPayloadBase payload = null,
-            uint tetherObject = OBJECT_INVALID,
-            uint uiTarget = OBJECT_INVALID)
+        public static void TogglePlayerWindow(uint player, GuiWindowType type, GuiPayloadBase payload = null, uint tetherObject = OBJECT_INVALID, uint uiTarget = OBJECT_INVALID)
         {
-            if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
-                return;
-
-            if (uiTarget == OBJECT_INVALID)
-                uiTarget = player;
-
-            var playerId = GetObjectUUID(player);
-            var template = _windowTemplates[type];
-            var playerWindow = _playerWindows[playerId][type];
-            var windowId = BuildWindowId(type);
-
-            // If the window is closed, open it.
-            if (NuiFindWindow(uiTarget, windowId) == 0)
-            {
-                //Console.WriteLine(JsonDump(template.Window));
-
-                playerWindow.WindowToken = NuiCreate(uiTarget, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(uiTarget, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
-            }
-            // Otherwise the window must already be open. Close it.
-            else
-            {
-                ClosePlayerWindow(player, type, uiTarget);
-            }
+            Instance.TogglePlayerWindow(player, type, payload, tetherObject, uiTarget);
         }
 
         /// <summary>
@@ -439,30 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ClosePlayerWindow(uint player, GuiWindowType type, uint uiTarget = OBJECT_INVALID)
         {
-            if (uiTarget == OBJECT_INVALID)
-                uiTarget = player;
-
-            var windowToken = NuiFindWindow(uiTarget, BuildWindowId(type));
-            if (windowToken == 0)
-                return;
-
-            NuiDestroy(uiTarget, windowToken);
-
-            var playerId = GetObjectUUID(player);
-            if (!_playerWindows.TryGetValue(playerId, out var windows) ||
-                !windows.TryGetValue(type, out var playerWindow))
-                return;
-
-            var geometry = playerWindow.ViewModel.Geometry;
-            playerWindow.WindowToken = 0;
-            try
-            {
-                playerWindow.ViewModel.OnWindowClosed()?.Invoke();
-            }
-            finally
-            {
-                SaveWindowGeometry(playerId, type, geometry);
-            }
+            Instance.ClosePlayerWindow(player, type, uiTarget);
         }
 
         /// <summary>
@@ -474,62 +229,18 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to refresh.</param>
         /// <param name="payload">The refresh payload.</param>
         /// <param name="uiTarget">Where the windows are shown, when that is not the player, such as a creature a DM possesses.</param>
-        public static void PublishRefreshEvent<T>(uint player, T payload, uint uiTarget = OBJECT_INVALID)
-            where T : IGuiRefreshEvent
+        public static void PublishRefreshEvent<T>(uint player, T payload, uint uiTarget = OBJECT_INVALID) where T : IGuiRefreshEvent
         {
-            if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
-                return;
-
-            if (uiTarget == OBJECT_INVALID)
-                uiTarget = player;
-
-            if (!_windowTypesByRefreshEvent.TryGetValue(typeof(T), out var windowTypes))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            if (!_playerWindows.TryGetValue(playerId, out var playerWindows))
-                return;
-
-            foreach (var windowType in windowTypes)
-            {
-                if (!playerWindows.TryGetValue(windowType, out var playerWindow))
-                    continue;
-
-                var windowId = BuildWindowId(windowType);
-
-                if(NuiFindWindow(uiTarget, windowId) != 0)
-                    ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
-            }
+            Instance.PublishRefreshEvent<T>(player, payload, uiTarget);
         }
 
         /// <summary>
         /// Refreshes every open character sheet currently displaying the supplied target.
         /// This includes sheets opened by another player, such as DM-inspected creatures.
         /// </summary>
-        public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
-            where T : IGuiRefreshEvent
+        public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload) where T : IGuiRefreshEvent
         {
-            if (!_playerWindows.Values.Any(windows => windows.ContainsKey(GuiWindowType.CharacterSheet)))
-                return;
-
-            FrameProfiler.Count(FrameMetric.CharacterSheetRefresh);
-            var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
-
-            for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())
-            {
-                var observerId = GetObjectUUID(observer);
-                if (!_playerWindows.TryGetValue(observerId, out var windows) ||
-                    !windows.TryGetValue(GuiWindowType.CharacterSheet, out var playerWindow) ||
-                    NuiFindWindow(observer, windowId) == 0 ||
-                    playerWindow.ViewModel is not CharacterSheetViewModel viewModel ||
-                    !viewModel.IsViewingTarget(target) ||
-                    viewModel is not IGuiRefreshable<T> refreshable)
-                {
-                    continue;
-                }
-
-                refreshable.Refresh(payload);
-            }
+            Instance.PublishCharacterSheetRefreshEvent<T>(target, payload);
         }
 
         /// <summary>
@@ -539,46 +250,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public static void ReplaceNWNGuis()
         {
-            var player = GetLastGuiEventPlayer();
-            var type = GetLastGuiEventType();
-            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
-            var target = GetLastGuiEventObject();
-
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType == GuiPanel.CharacterSheet)
-            {
-                // Player character sheet
-                if (target == player)
-                {
-                    var payload = new CharacterSheetPayload(player, true);
-                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
-                }
-                // Associate character sheet (droid, pet, etc.)
-                else if(GetMaster(target) == player)
-                {
-                    var payload = new CharacterSheetPayload(target, false);
-                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
-                }
-            }
-            else if (panelType == GuiPanel.Journal)
-            {
-                TogglePlayerWindow(player, GuiWindowType.Quests);
-            }
-            else if (panelType == GuiPanel.SpellBook)
-            {
-                TogglePlayerWindow(player, GuiWindowType.PlayerGuide);
-            }
-            else if (panelType == GuiPanel.ExamineItem)
-            {
-                ExamineItemViewModel.ShowExamineWindow(player, target);
-            }
-            else if (panelType == GuiPanel.PlayerList)
-            {
-                if (DMPresence.IsControlledByDM(player))
-                    DMPresence.ToggleWindow(player, GuiWindowType.PlayerList);
-                else
-                    TogglePlayerWindow(player, GuiWindowType.PlayerList);
-            }
+            Instance.ReplaceNWNGuis();
         }
 
         /// <summary>
@@ -589,8 +261,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A player's window instance of the specified type.</returns>
         public static GuiPlayerWindow GetPlayerWindow(uint player, GuiWindowType type)
         {
-            var playerId = GetObjectUUID(player);
-            return _playerWindows[playerId][type];
+            return Instance.GetPlayerWindow(player, type);
         }
 
         /// <summary>
@@ -600,7 +271,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A window template.</returns>
         public static GuiConstructedWindow GetWindowTemplate(GuiWindowType type)
         {
-            return _windowTemplates[type];
+            return Instance.GetWindowTemplate(type);
         }
 
         /// <summary>
@@ -609,24 +280,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void CloseAllWindows()
         {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player))
-                return;
-
-            // Windows shown on a creature a DM possesses are cached under the DM. A DM's window can also still be on
-            // the avatar or on a creature they possessed earlier, so close those too.
-            var owner = GetIsDMPossessed(player) ? GetMaster(player) : player;
-            foreach (var (type, template) in _windowTemplates)
-            {
-                if (template.KeepsOpenOnAreaChange)
-                    continue;
-
-                foreach (var target in DMPresence.GetShownOn(player, type))
-                {
-                    if (IsWindowOpen(target, type))
-                        TogglePlayerWindow(owner, type, uiTarget: target);
-                }
-            }
+            Instance.CloseAllWindows();
         }
 
         /// <summary>
@@ -638,81 +292,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="uiTarget">The UI target</param>
         public static void CloseWindow(uint player, GuiWindowType type, uint uiTarget)
         {
-            if (uiTarget == OBJECT_INVALID)
-                uiTarget = player;
-
-            if (IsWindowOpen(player, type))
-            {
-                var playerId = GetObjectUUID(uiTarget);
-                var playerWindow = _playerWindows[playerId][type];
-
-                NuiDestroy(player, playerWindow.WindowToken);
-            }
+            Instance.CloseWindow(player, type, uiTarget);
         }
-
-        public class IdReservation
-        {
-            public int Count { get; set; }
-            public int StartId { get; set; }
-            public int EndId { get; set; }
-        }
-
-        /// <summary>
-        /// Name of the texture used for the GUI elements.
-        /// </summary>
-        public const string GuiFontName = "fnt_es_gui";
-
-        /// <summary>
-        /// Name of the texture used for the GUI text.
-        /// </summary>
-        public const string TextName = "fnt_es_text";
-
-        // The following letters represent the character locations of the elements on the GUI spritesheet.
-        public const string WindowTopLeft = "a";
-        public const string WindowTopMiddle = "b";
-        public const string WindowTopRight = "c";
-        public const string WindowMiddleLeft = "d";
-        public const string WindowMiddleRight = "f";
-        public const string WindowMiddleBlank = "i";
-        public const string WindowBottomLeft = "h";
-        public const string WindowBottomRight = "g";
-        public const string WindowBottomMiddle = "e";
-        public const string Arrow = "j";
-        public const string BlankWhite = "k";
-
-        // The following hex codes correspond to colors used on GUI elements.
-        // Color tokens won't work on Gui elements.
-        public static int ColorTransparent = Convert.ToInt32("0xFFFFFF00", 16);
-        public static int ColorWhite = Convert.ToInt32("0xFFFFFFFF", 16);
-        public static int ColorSilver = Convert.ToInt32("0xC0C0C0FF", 16);
-        public static int ColorGray = Convert.ToInt32("0x808080FF", 16);
-        public static int ColorDarkGray = Convert.ToInt32("0x303030FF", 16);
-        public static int ColorBlack = Convert.ToInt32("0x000000FF", 16);
-        public static int ColorRed = Convert.ToInt32("0xFF0000FF", 16);
-        public static int ColorMaroon = Convert.ToInt32("0x800000FF", 16);
-        public static int ColorOrange = Convert.ToInt32("0xFFA500FF", 16);
-        public static int ColorYellow = Convert.ToInt32("0xFFFF00FF", 16);
-        public static int ColorOlive = Convert.ToInt32("0x808000FF", 16);
-        public static int ColorLime = Convert.ToInt32("0x00FF00FF", 16);
-        public static int ColorGreen = Convert.ToInt32("0x008000FF", 16);
-        public static int ColorAqua = Convert.ToInt32("0x00FFFFFF", 16);
-        public static int ColorTeal = Convert.ToInt32("0x008080FF", 16);
-        public static int ColorBlue = Convert.ToInt32("0x0000FFFF", 16);
-        public static int ColorNavy = Convert.ToInt32("0x000080FF", 16);
-        public static int ColorFuschia = Convert.ToInt32("0xFF00FFFF", 16);
-        public static int ColorPurple = Convert.ToInt32("0x800080FF", 16);
-
-        public static int ColorHealthBar = Convert.ToInt32("0x8B0000FF", 16);
-        public static int ColorFPBar = Convert.ToInt32("0x00008BFF", 16);
-        public static int ColorStaminaBar = Convert.ToInt32("0x008B00FF", 16);
-
-        public static int ColorShieldsBar = Convert.ToInt32("0x00AAE4FF", 16);
-        public static int ColorHullBar = Convert.ToInt32("0x8B0000FF", 16);
-        public static int ColorCapacitorBar = Convert.ToInt32("0xFFA500FF", 16);
-
-        private static int ReservedIdCount;
-
-        private static readonly Dictionary<string, IdReservation> _systemReservedIdCount = new Dictionary<string, IdReservation>();
 
         /// <summary>
         /// Reserves the specified number of Ids for a given system.
@@ -722,18 +303,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing Id reservation details.</returns>
         public static IdReservation ReserveIds(string systemName, int amount)
         {
-            // Ids haven't been reserved yet. Do that now.
-            if (!_systemReservedIdCount.ContainsKey(systemName))
-            {
-                _systemReservedIdCount[systemName] = new IdReservation();
-                _systemReservedIdCount[systemName].Count = amount;
-                _systemReservedIdCount[systemName].StartId = ReservedIdCount;
-                _systemReservedIdCount[systemName].EndId = ReservedIdCount + amount - 1;
-
-                ReservedIdCount += amount;
-            }
-
-            return _systemReservedIdCount[systemName];
+            return Instance.ReserveIds(systemName, amount);
         }
 
         /// <summary>
@@ -744,55 +314,12 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing Id reservation details.</returns>
         public static IdReservation GetSystemReservation(string systemName)
         {
-            return _systemReservedIdCount[systemName];
+            return Instance.GetSystemReservation(systemName);
         }
 
         public static void DrawWindow(uint player, int startId, ScreenAnchor anchor, int x, int y, int width, int height, float lifeTime = 10.0f)
         {
-            var top = WindowTopLeft;
-            var middle = WindowMiddleLeft;
-            var bottom = WindowBottomLeft;
-
-            for (var i = 0; i < width; i++)
-            {
-                top += WindowTopMiddle;
-                middle += WindowMiddleBlank;
-                bottom += WindowBottomMiddle;
-            }
-
-            top += WindowTopRight;
-            middle += WindowMiddleRight;
-            bottom += WindowBottomRight;
-
-            if (anchor == ScreenAnchor.BottomRight)
-            {
-                Draw(player, bottom, x, y, anchor, startId++, lifeTime);
-            }
-            else
-            {
-                Draw(player, top, x, y, anchor, startId++, lifeTime);
-            }
-
-
-            for (var i = 0; i < height; i++)
-            {
-                Draw(player, middle, x, ++y, anchor, startId++, lifeTime);
-            }
-
-            if (anchor == ScreenAnchor.BottomRight)
-            {
-                Draw(player, top, x, ++y, anchor, startId, lifeTime);
-            }
-            else
-            {
-                Draw(player, bottom, x, ++y, anchor, startId, lifeTime);
-            }
-
-        }
-
-        private static void Draw(uint player, string message, int x, int y, ScreenAnchor anchor, int id, float lifeTime = 10.0f)
-        {
-            PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName);
+            Instance.DrawWindow(player, startId, anchor, x, y, width, height, lifeTime);
         }
 
         /// <summary>
@@ -804,28 +331,19 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The X coordinate to place a string so that it will be in the center of the window.</returns>
         public static int CenterStringInWindow(string text, int windowX, int windowWidth)
         {
-            return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
+            return Instance.CenterStringInWindow(text, windowX, windowWidth);
         }
 
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void RefreshOnEquip()
         {
-            var player = GetPCItemLastEquippedBy();
-            if (!GetIsPC(player))
-                return;
-
-            DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
+            Instance.RefreshOnEquip();
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void RefreshOnUnequip()
         {
-            var player = GetPCItemLastUnequippedBy();
-            if (!GetIsPC(player))
-                return;
-
-            DelayCommand(0.1f, () => PublishRefreshEvent(player, new UnequipItemRefreshEvent()));
+            Instance.RefreshOnUnequip();
         }
-
     }
 }

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Composition
@@ -90,6 +91,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
+
+            // UI
+            services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
+            services.AddSingleton<IGuiService, GuiService>();
 
             // World
             services.AddSingleton<IAreaService, AreaService>();

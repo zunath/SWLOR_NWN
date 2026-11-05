@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Threading;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -13,9 +13,7 @@ namespace SWLOR.Game.Server.Service.GuiService
     /// </summary>
     public static class GuiLayoutValidator
     {
-        private static readonly AsyncLocal<int> ValidationOnlyBuildDepth = new();
-
-        internal static bool IsValidationOnlyBuild => ValidationOnlyBuildDepth.Value > 0;
+        internal static bool IsValidationOnlyBuild => ValidationOnlyBuildContext.IsActive;
 
         /// <summary>
         /// Builds window widget trees without serializing them through the live NWN engine.
@@ -23,7 +21,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// </summary>
         public static IDisposable BeginValidationOnlyBuild()
         {
-            ValidationOnlyBuildDepth.Value++;
+            ValidationOnlyBuildContext.Enter();
             return new ValidationOnlyBuildScope();
         }
 
@@ -36,7 +34,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 if (_disposed)
                     return;
 
-                ValidationOnlyBuildDepth.Value--;
+                ValidationOnlyBuildContext.Exit();
                 _disposed = true;
             }
         }

@@ -29,8 +29,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _shownVenue;
         private string _shownFollowing;
         private string _shownInspiring;
+        private string _shownAudienceGets;
+        private bool _isRoleplay;
 
         public string TempoText { get => Get<string>(); set => Set(value); }
+        public string AudienceGetsText { get => Get<string>(); set => Set(value); }
         public string VenueText { get => Get<string>(); set => Set(value); }
         public string FollowingText { get => Get<string>(); set => Set(value); }
         public string InspiringText { get => Get<string>(); set => Set(value); }
@@ -60,6 +63,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected abstract string ContentElementId { get; }
         protected abstract string MainPartialName { get; }
 
+        /// <summary>The compact layout Roleplay mode shows: the setup, the audience summary and how to keep performing.</summary>
+        protected abstract string RoleplayPartialName { get; }
+
+        /// <summary>The window height of each layout. A switch resizes the window so neither layout opens cramped or half empty.</summary>
+        protected abstract float ActiveWindowHeight { get; }
+        protected abstract float RoleplayWindowHeight { get; }
+
         /// <summary>What the strip is made of in the last-result line: "cue" for steps, "note" for notes.</summary>
         protected abstract string CueNoun { get; }
 
@@ -87,7 +97,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // The first audience tick replaces this; until then a musician is on their own.
                 BandText = Kind == PerformanceKind.Music
                     ? PerformanceAudienceText.Band(true, false, string.Empty, Array.Empty<string>(), 0, 1)
-                    : string.Empty
+                    : string.Empty,
+                AudienceGetsText = isLive
+                    ? PerformanceWindows.BuildAudienceGets(session)
+                    : "Start performing to see what your audience gets."
             });
 
             _isOpen = true;
@@ -95,7 +108,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LastResultText = $"Follow the {CueNoun}s";
             LastResultColor = PerformanceWindowColors.Dim;
 
-            ChangePartialView(ContentElementId, MainPartialName);
+            _isRoleplay = isLive && session.IsRoleplay;
+            // A window last closed in the other mode keeps that mode's persisted size; fit it to the layout it opens with.
+            if (_isRoleplay)
+                SetWindowHeight(RoleplayWindowHeight);
+            else if (Geometry.Height > 0f && Geometry.Height <= RoleplayWindowHeight)
+                SetWindowHeight(ActiveWindowHeight);
+
+            ApplyLayout();
+        }
+
+        // A mode switch is the only change after Initialize that swaps the layout; beats and ticks only push binds.
+        public void ShowMode(bool roleplay)
+        {
+            if (_isRoleplay == roleplay)
+                return;
+
+            _isRoleplay = roleplay;
+            SetWindowHeight(roleplay ? RoleplayWindowHeight : ActiveWindowHeight);
+            ApplyLayout();
+        }
+
+        private void ApplyLayout()
+        {
+            ChangePartialView(ContentElementId, _isRoleplay ? RoleplayPartialName : MainPartialName);
+        }
+
+        public void ShowAudienceGets(string text)
+        {
+            if (PerformanceBindCache.Changed(ref _shownAudienceGets, text))
+                AudienceGetsText = text;
+        }
+
+        private void SetWindowHeight(float height)
+        {
+            var geometry = Geometry;
+            Geometry = new GuiRectangle(geometry.X, geometry.Y, geometry.Width, height);
         }
 
         public override Action OnWindowClosed() => () => _isOpen = false;
@@ -158,6 +206,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 FollowingText = info.FollowingText;
             if (PerformanceBindCache.Changed(ref _shownInspiring, info.InspiringText))
                 InspiringText = info.InspiringText;
+            if (!string.IsNullOrEmpty(info.AudienceGetsText))
+                ShowAudienceGets(info.AudienceGetsText);
 
             ShowAudienceCore(info);
         }
@@ -198,6 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _shownVenue = null;
             _shownFollowing = null;
             _shownInspiring = null;
+            _shownAudienceGets = null;
         }
 
         private void AssignShared()

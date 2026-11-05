@@ -80,6 +80,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         public const int DanceStepsPerBeat = 3;
 
+        /// <summary>
+        /// Roleplay mode: no cues to follow, scored at <see cref="PerformanceMath.RoleplayQuality"/>, and kept going by
+        /// talking or emoting (<see cref="NoteActivity"/>) instead of cue presses.
+        /// </summary>
+        public bool IsRoleplay { get; private set; }
+
         public PerformanceBeat Current { get; private set; }
         public IReadOnlyCollection<PerformanceBeat> Upcoming => _upcoming;
         public int BeatNumber { get; private set; }
@@ -89,7 +95,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public int RecordedCount => _recent.Count;
         public int RecentHits => _recentHits;
         public double Accuracy => _recent.Count == 0 ? 1.0 : (double)_recentHits / _recent.Count;
-        public PerformanceQuality Quality => PerformanceMath.QualityFromRecord(_recentHits, _recent.Count);
+        public PerformanceQuality Quality => IsRoleplay
+            ? PerformanceMath.RoleplayQuality
+            : PerformanceMath.QualityFromRecord(_recentHits, _recent.Count);
 
         /// <summary>Copies the upcoming beats, next first, into a caller-owned array so a window can read them without allocating.</summary>
         public void CopyUpcomingTo(PerformanceBeat[] destination)
@@ -99,12 +107,35 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         public bool IsIdle(DateTime nowUtc)
         {
-            return (nowUtc - LastInputUtc).TotalSeconds >= PerformanceMath.IdleTimeoutSeconds;
+            var timeout = IsRoleplay ? PerformanceMath.RoleplayIdleTimeoutSeconds : PerformanceMath.IdleTimeoutSeconds;
+            return (nowUtc - LastInputUtc).TotalSeconds >= timeout;
         }
 
-        /// <summary>The first press of a beat decides it; later presses on the same beat are ignored.</summary>
+        /// <summary>
+        /// Switches between active play and Roleplay mode. The idle timer restarts so the switch never ends the show, and
+        /// the beat in progress starts clean. The quality record of active play is kept for when the performer returns to it.
+        /// </summary>
+        public void SetRoleplay(bool roleplay, DateTime nowUtc)
+        {
+            IsRoleplay = roleplay;
+            LastInputUtc = nowUtc;
+            _pressedMask = 0;
+            _currentResult = null;
+        }
+
+        /// <summary>The performer talked or emoted. Only Roleplay mode counts it; active play is kept going by cue presses.</summary>
+        public void NoteActivity(DateTime nowUtc)
+        {
+            if (IsRoleplay)
+                LastInputUtc = nowUtc;
+        }
+
+        /// <summary>The first press of a beat decides it; later presses on the same beat are ignored. Roleplay mode has no cues.</summary>
         public PerformanceInputResult RegisterCue(PerformanceCue cue, DateTime nowUtc)
         {
+            if (IsRoleplay)
+                return PerformanceInputResult.Ignored;
+
             LastInputUtc = nowUtc;
 
             if (Current.IsRest || _currentResult.HasValue)
@@ -151,7 +182,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         public bool TryConsumeFlourish(DateTime nowUtc)
         {
-            if (FlourishMeter < PerformanceMath.FlourishMeterMax)
+            if (IsRoleplay || FlourishMeter < PerformanceMath.FlourishMeterMax)
                 return false;
 
             FlourishMeter = 0;

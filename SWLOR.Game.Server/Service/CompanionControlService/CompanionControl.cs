@@ -98,15 +98,15 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!IsControlledCompanion(companion))
                 return false;
 
-            var commandValue = GetLastAssociateCommand(companion);
-            if (GetListenPatternNumber() != commandValue)
+            // A command left to the stock henchman AI can swap a ranged weapon for bare hands near an enemy,
+            // so every command is read from its own event rather than the companion's latest command.
+            if (!CompanionControlPolicy.TryGetAssociateCommand(GetListenPatternNumber(), out var command))
                 return false;
 
             var master = GetMaster(companion);
             if (GetLastSpeaker() != master)
                 return false;
 
-            var command = (AssociateCommand)commandValue;
             switch (command)
             {
                 case AssociateCommand.FollowMaster:

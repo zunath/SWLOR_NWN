@@ -156,7 +156,10 @@ midtone the editor shows (`TintMapPaletteColors`). The result is the swatch
 row plus the color's difference from the midtone, scaled by the row's
 luminance relative to that midtone, with the row's environment coverage. A
 color equal to a swatch therefore renders exactly like that palette color,
-reflection included, on every layer. Do not go back to one reference row for
+reflection included, on every layer. An all-black swatch row (hair row 57,
+for example) has no shading to lend, so a near-black custom color uses the
+layer's first palette row for the offset's shading instead of collapsing to
+black. Do not go back to one reference row for
 all colors: palette rows fall to black at very different rates, and row zero
 (a light blond for hair) left dark RGB hair two to four times brighter and
 flatter than the same palette color on head 053's low-shade hair (bug

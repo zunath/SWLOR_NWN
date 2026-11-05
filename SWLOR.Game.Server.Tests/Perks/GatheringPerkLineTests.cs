@@ -592,7 +592,7 @@ public class GatheringPerkLineTests
         foreach (var loadout in GatheringLoadout.All)
         {
             GatheringLoadout.Find(loadout.Slug).Should().Be(loadout);
-            GatheringLoadout.Find(loadout.Slug.ToUpperInvariant()).Should().BeSameAs(loadout, "a command line may use any case");
+            GatheringLoadout.Find(loadout.Slug.ToUpperInvariant()).Should().Be(loadout, "a command line may use any case");
         }
 
         GatheringLoadout.Find("nothing").Should().BeNull();

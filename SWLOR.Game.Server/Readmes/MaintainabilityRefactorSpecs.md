@@ -383,7 +383,9 @@ them is not an option before facade removal (P2-Z).
   test fixtures, 112 CombatSim tests and crashed the test host. A tolerant facade with registration moved after the
   container would risk dropping log lines written in between. Its home is decided in Phase 4 (most likely the hot-reload
   host, next to the Redis connection, since loggers are process-lifetime). Converted services keep reaching it through
-  their `protected virtual` log wrappers.
+  their `protected virtual` log wrappers. **`FrameProfiler` stays static for the same reasons** (coordinator, 2026-11-05,
+  from P2-C4): `Log.Write` calls it before the container exists and from the combat recorder thread, and the engine hooks
+  call it on every script, closure and frame.
 - **Wave D, the hot core (last, short freeze each):** Character (`StatusEffect`, `Skill`, `Perk`, then `Stat`),
   Abilities (`Ability`), Combat (`Combat`, split by responsibility as it converts).
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in

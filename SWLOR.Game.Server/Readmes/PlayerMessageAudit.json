@@ -1,5 +1,47 @@
 [
   {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 460,
+    "Member": "TryRecordWitness",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 465,
+    "Member": "TryRecordWitness",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 554,
+    "Member": "TryLearnTechniques",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 572,
+    "Member": "TryLearnTechniques",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 797,
+    "Member": "EquipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 821,
+    "Member": "UnequipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs",
     "Line": 204,
     "Member": "SendMessage",
@@ -5500,48 +5542,6 @@
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 443,
-    "Member": "TryRecordWitness",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 448,
-    "Member": "TryRecordWitness",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 538,
-    "Member": "TryLearnTechniques",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 556,
-    "Member": "TryLearnTechniques",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 781,
-    "Member": "EquipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 805,
-    "Member": "UnequipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",

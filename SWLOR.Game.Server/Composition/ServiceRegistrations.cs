@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
@@ -38,6 +39,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ISnippetService, SnippetService>();
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
+
+            // Abilities
+            services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
+            services.AddSingleton<IMimicryService, MimicryService>();
+            services.AddSingleton<IQuickCastService, QuickCastService>();
 
             // Administration
             services.AddSingleton<IDMBlueprintCatalogService, DMBlueprintCatalogService>();

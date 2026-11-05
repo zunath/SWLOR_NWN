@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     /// A trait's ability definition declares only Create/Name/SkillType/Level/MimicryTrait(...)/
     /// MimicryTraitStat(...)/MimicryTraitResistance(...) - none of them call HasImpactAction,
     /// HasRecastDelay, RequirementStamina, or RequirementFP. This is by design, not an oversight:
-    /// per Service/Mimicry.cs's GrantTechniqueFeat, a trait is deliberately never granted as a
+    /// per Domain/Abilities/MimicryService.cs GrantTechniqueFeat, a trait is deliberately never granted as a
     /// usable/hotbar feat for players - its stat/resistance bonuses are read directly off the
     /// player's equipped-technique list (Mimicry.GetStatBonus/GetResistanceBonus) for as long as it
     /// stays equipped, with no activation, cooldown, or resource cost of its own.

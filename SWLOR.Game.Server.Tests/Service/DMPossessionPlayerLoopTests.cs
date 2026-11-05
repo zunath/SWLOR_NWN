@@ -85,8 +85,14 @@ public class DMPossessionPlayerLoopTests
                     Witnesses.Add(player);
                 private static void TryRecordAnalysis(uint npc, uint player) { }
                 public static void UseStrike(uint activator) => OnCreatureAbilityUsed(activator, FeatType.Strike);
-                {{Method("Service/Mimicry.cs", "OnCreatureAbilityUsed")}}
-                {{Method("Service/Mimicry.cs", "GetNearbyPlayers")}}
+                // The Mimicry instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
+                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "OnCreatureAbilityUsed")}}
+                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "GetNearbyPlayers")}}
             }
 
             {{Type("Service/RoleplayXPService/OOCMessageContext.cs", "OOCMessageContext")}}

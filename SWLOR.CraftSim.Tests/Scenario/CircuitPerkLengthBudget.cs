@@ -122,7 +122,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             {
                 var rank = Math.Min(recipe.Level, ScenarioCohort.MaximumRank);
                 var stats = statsAt(rank);
-                var level = Craft.GetRecipeLevelDetail(recipe.Level);
+                var level = ServerRecipeLevels.For(recipe.Level);
                 for (var run = 0; run < runs; run++)
                 {
                     var setup = new CircuitSetup(

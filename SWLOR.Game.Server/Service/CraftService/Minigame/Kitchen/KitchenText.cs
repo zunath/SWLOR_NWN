@@ -14,7 +14,8 @@ public static class KitchenText
 
     private static KitchenAxis[] Axes => new KitchenAxis[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
 
-    private static readonly (string Id, string Label)[] EffectMeters =
+    private static (string Id, string Label)[] EffectMeters =>
+    new (string Id, string Label)[]
     {
         (MinigameMeterIds.Progress, "Doneness"),
         (KitchenEngine.SavoryMeterId, "Savory"),

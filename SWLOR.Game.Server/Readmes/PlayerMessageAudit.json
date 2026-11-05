@@ -5075,29 +5075,29 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 990,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1064,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Perk 'Research I' is required to use research terminals.\")"
+    "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 998,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1072,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1021,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1095,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
+    "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1025,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1099,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"

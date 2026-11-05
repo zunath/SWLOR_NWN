@@ -1,14 +1,12 @@
-using System.Reflection;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 
 /// <summary>
-/// Registers one recipe in the recipe cache that <see cref="Craft.GetRecipe"/> reads and removes it again (restoring any
-/// recipe that was registered under the same type) when disposed. <c>Craft.CacheData</c> checks every crafted item with the
-/// engine and cannot run outside it, and the research cost calculations only need the recipe's level and cost modifier.
-/// The cache is process-wide, so a fixture that uses this scope must be <c>[NonParallelizable]</c>.
+/// Registers one recipe in the recipe cache of a crafting instance and removes it again (restoring any recipe that was
+/// registered under the same type) when disposed. <c>CacheData</c> checks every crafted item with the engine and cannot run
+/// outside it, and the research cost calculations only need the recipe's level and cost modifier.
 /// </summary>
 internal sealed class CraftRecipeCacheScope : IDisposable
 {
@@ -16,11 +14,9 @@ internal sealed class CraftRecipeCacheScope : IDisposable
     private readonly RecipeType _type;
     private readonly RecipeDetail? _original;
 
-    public CraftRecipeCacheScope(RecipeType type, RecipeDetail recipe)
+    public CraftRecipeCacheScope(CraftService craft, RecipeType type, RecipeDetail recipe)
     {
-        _cache = (Dictionary<RecipeType, RecipeDetail>)typeof(Craft)
-            .GetField("_recipes", BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        _cache = craft.GetAllRecipes();
         _type = type;
         _original = _cache.GetValueOrDefault(type);
         _cache[type] = recipe;

@@ -17,11 +17,11 @@ public class ResearchPerkRegressionTests
     [Test]
     public void Research_GatesTerminalAccessAndRecipeTiersByFabricationRank()
     {
-        var craft = ReadSource("Service", "Craft.cs");
+        var craft = ReadSource("Domain", "Crafting", "CraftService.cs");
         var canResearchRecipe = ExtractMethod(
             craft,
-            "public static bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)");
-        var useResearchTerminal = ExtractMethod(craft, "public static void UseResearchTerminal()");
+            "public bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)");
+        var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
         var researchViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
         var buildJob = ExtractMethod(
             researchViewModel,
@@ -55,8 +55,8 @@ public class ResearchPerkRegressionTests
     [Test]
     public void ResearchTerminalMessages_NameResearchJobsAndNoRetiredPerks()
     {
-        var craft = ReadSource("Service", "Craft.cs");
-        var useResearchTerminal = ExtractMethod(craft, "public static void UseResearchTerminal()");
+        var craft = ReadSource("Domain", "Crafting", "CraftService.cs");
+        var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
 
         useResearchTerminal.Should().Contain("Another player's research job is active. This job will complete in: {completionTime}.");
         useResearchTerminal.Should().Contain("Another player's research job is active. This job has completed.");

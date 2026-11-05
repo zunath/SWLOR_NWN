@@ -27,9 +27,9 @@ public static class CraftRankMilestones
     // Quick Search's expected rolls (which rise 0.065 a tier), so a count that steps cannot keep the board at the same share of Quick
     // Search at every rank. Gathering rank improves the board through the chance a Search finds on promising ground, which replaced
     // Perception, and which steps at the same ranks Hard Look did.
-    private static readonly (int Rank, int Value)[] SearchesSteps = { (0, 6) };
-    private static readonly (int Rank, int Value)[] PromisingSpotSteps = { (0, 2) };
-    private static readonly (int Rank, int Value)[] PromisingChanceSteps = { (0, 29), (10, 32), (20, 36), (30, 39), (40, 43) };
+    private static (int Rank, int Value)[] SearchesSteps => new (int Rank, int Value)[] { (0, 6) };
+    private static (int Rank, int Value)[] PromisingSpotSteps => new (int Rank, int Value)[] { (0, 2) };
+    private static (int Rank, int Value)[] PromisingChanceSteps => new (int Rank, int Value)[] { (0, 29), (10, 32), (20, 36), (30, 39), (40, 43) };
 
     // Gathering ranks at which a Strike and a Heavy Strike in a Prospecting session yield more (replacing Might), and at which one
     // Survey reveals one more seam (replacing Perception).

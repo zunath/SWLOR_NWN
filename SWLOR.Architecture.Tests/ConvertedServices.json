@@ -3,6 +3,7 @@
   "services": [
     { "name": "AI", "domain": "Creatures" },
     { "name": "Achievement", "domain": "Character" },
+    { "name": "AnimationPlayer", "domain": "Core" },
     { "name": "Area", "domain": "World" },
     { "name": "Authorization", "domain": "Core" },
     { "name": "BackgroundJob", "domain": "Core" },
@@ -56,6 +57,7 @@
     { "name": "Snippet", "domain": "Core" },
     { "name": "Spawn", "domain": "Creatures" },
     { "name": "Taxi", "domain": "World" },
+    { "name": "TileMagic", "domain": "Core" },
     { "name": "Traps", "domain": "World" },
     { "name": "Walkmesh", "domain": "Core" },
     { "name": "Wardrobe", "domain": "Items" },

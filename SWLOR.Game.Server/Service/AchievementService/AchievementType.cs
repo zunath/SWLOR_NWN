@@ -531,6 +531,8 @@ namespace SWLOR.Game.Server.Service.AchievementService
         ExploreEshanScraplandsCaves = 208,
         [Achievement("Master Wardrobe", "Expanded your wardrobe to its full fifty outfits with Vessa Thrane on Nar Shaddaa.", true)]
         MasterWardrobe = 187,
+        [Achievement("Stablemaster", "Earned both extra stable slots from Dorra Vesk at the Anchorhead stables on Tatooine.", true)]
+        Stablemaster = 260,
 	}
 
     public class AchievementAttribute: Attribute

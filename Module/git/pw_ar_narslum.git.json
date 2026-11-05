@@ -207447,7 +207447,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[To Slums]"
+            "0": "[To Hub]"
           }
         },
         "OnClick": {
@@ -305800,7 +305800,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[To Slums]"
+            "0": "[To Shipping District]"
           }
         },
         "OnClick": {

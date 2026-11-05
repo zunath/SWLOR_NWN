@@ -1,0 +1,1234 @@
+{
+  "Version": 1,
+  "Workbook": "",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "d9d3cd811ad014c6682127f83c7bffc34bd25dce78719171b7aa2264fac4f61b",
+  "RecipeSha256": "e3bea20ba545cfe5555667a3d77512753ad96ab8b4a687afd16ae4d9322da196",
+  "Notes": "Authored clips retain their recipe timing. Imported SWG loops retain source timing, with shared boundary stances or holds. Installation and client verification are separate steps.",
+  "Animations": [
+    {
+      "Id": "DanceStepLeft",
+      "Name": "Dance Step Left",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A clear step to the left from the dance stance, with a hand accent.",
+      "Interpretation": "The weight rolls left, the left foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepLeft.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.2745635e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7"
+    },
+    {
+      "Id": "DanceStepUp",
+      "Name": "Dance Step Up",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A forward hop-step with the hands lifting in front, from the dance stance.",
+      "Interpretation": "Both feet hop a hand-span forward, the hands lift in front of the chest and the shoulders lean in, then everything returns to the dance stance in six-tenths of a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepUp.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 1.8189185e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "d5c51fc0a69ff01e92ce064b3947ab6c97fec660669a24caffeea8e301ffb0df"
+    },
+    {
+      "Id": "DanceStepDown",
+      "Name": "Dance Step Down",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A dip back from the dance stance: the knees bend, the weight sits back and the hands sweep low.",
+      "Interpretation": "The hips sink and slide back, the chest leans away and both feet step back a short way while the hands sweep down and out, then the stance recovers in six-tenths of a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepDown.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 1.2287812e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "2c6b19ce8860ce8ab8c1c7a30d85ccb4ff9b1be9b93b8c82254f94fc5b644e47"
+    },
+    {
+      "Id": "DanceStepRight",
+      "Name": "Dance Step Right",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A clear step to the right from the dance stance, with a hand accent.",
+      "Interpretation": "The weight rolls right, the right foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepRight.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "b478a2206aef0bdec4405fbfef6229f3729144061cdb888e04fd48b7afbf4f8c"
+    },
+    {
+      "Id": "DanceDip",
+      "Name": "Dance Dip",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A low, dramatic dip and a sweeping rise.",
+      "Interpretation": "The hips sink about twenty centimetres with the chest folding forward and the arms spread low, the pose holds a moment, then the body rises through a long upward arm sweep with a slight lean back before settling in the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceDip.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.625609e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Rise"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Rise"
+        }
+      ],
+      "ProjectSha256": "1e8ea25a0b1eb6c5cf7aa2292dc9c9419884e8f3fc3fcecbb19124b86200e66f"
+    },
+    {
+      "Id": "DanceSpin",
+      "Name": "Dance Spin",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A full turn on one foot with both arms held out.",
+      "Interpretation": "The performer shifts onto the left foot, throws both arms out to the sides and turns a full revolution with the right knee drawn up, then lowers the arms and steps back into the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceSpin.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.0392525e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Settle"
+        }
+      ],
+      "ProjectSha256": "4055e5baee6796230f9bb0a8d5cd0a0661d372383de7d99960289357941b0ce7"
+    },
+    {
+      "Id": "StringsLow",
+      "Name": "Strings Low",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A low string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsLow.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.682209e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76"
+    },
+    {
+      "Id": "StringsMid",
+      "Name": "Strings Mid",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A mid string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsMid.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.5463115e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "73b8af8e28d6b33b3be23e90290f5b268a24e01493f4f89c7aa57eac65f745c7"
+    },
+    {
+      "Id": "StringsHigh",
+      "Name": "Strings High",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A high string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsHigh.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "b9468e8ebf3c67b4e3218eddacb431d6b1cae9d910e0e71a1bcb3d216aee0b15"
+    },
+    {
+      "Id": "StringsFlourish",
+      "Name": "Strings Flourish",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A flourish string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The body opens back and the free left hand sweeps across the strings, then settles into the shared playing hold. The right hand keeps the native carry grip.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsFlourish.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Strum"
+        },
+        {
+          "Time": 1,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Settle"
+        }
+      ],
+      "ProjectSha256": "c27ffa3ca09a52d7be5d3c72f886d40975cccfeae15edd00a056c80b47525a98"
+    },
+    {
+      "Id": "HornLow",
+      "Name": "Horn Low",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The chest sinks and the bell dips into a low note. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The chest sinks forward, the knees ease down, the bell dips and the left hand slides down the horn for a low note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornLow.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.40274e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.0625,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.1875,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.3125,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.4375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af"
+    },
+    {
+      "Id": "HornMid",
+      "Name": "Horn Mid",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A neutral accent: a small sway into a note held level. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "A neutral accent: a small sway of the shoulders as the bell swings slightly to the side and the left hand shifts a touch up the horn, then back to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornMid.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4038948e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.0625,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.1875,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.3125,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.4375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "57cb2e282dea2ca1624b737ab2ca27764540be18f192749c4f757df395324603"
+    },
+    {
+      "Id": "HornHigh",
+      "Name": "Horn High",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The bell lifts high into a bright note with the chest opening. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The chest opens back, the knees straighten, the bell lifts and the left hand slides up the horn for a bright note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornHigh.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.0625,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.1875,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.3125,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.4375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "23366f10212d77fc631771a42007f0808790193e95e26143cc5aadd063bb7f8a"
+    },
+    {
+      "Id": "HornFlourish",
+      "Name": "Horn Flourish",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The horn swings up toward the ceiling for a long, ringing note.",
+      "Interpretation": "The bell sweeps up and out while the chest opens back, the mouthpiece stays at the lips and the note holds at the top, then the horn lowers to the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornFlourish.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Hold"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Hold"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Hold"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Lower"
+        }
+      ],
+      "ProjectSha256": "5ec03763c1765ad87b39c96fd11c2f5b62e90e71e8c1bfafbba51a4d6f3d265a"
+    },
+    {
+      "Id": "PerformanceBow",
+      "Name": "Performance Bow",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A courteous finale bow with one hand across the chest.",
+      "Interpretation": "The performer gathers a hand to the chest, sweeps the other arm out and folds forward from the waist, holds the bow for a beat, then rises and releases to the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "PerformanceBow.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758e-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dance stance"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Gather"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Bow"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Hold the bow"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Dance stance"
+        }
+      ],
+      "ProjectSha256": "a64780eebf95f96e4991408a2bcd59a8bf120c65f97287f9d91b14d180b446a7"
+    },
+    {
+      "Id": "CantinaShuffle",
+      "Name": "Cantina Shuffle",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG basic2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "CantinaShuffle.swlanim",
+      "Duration": 6.0,
+      "Keyframes": 181,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 5.75,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.0,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "3ba9b474fc74b1d886d2a9e47f010f8c28483773ba5e8c0bfbaabd6c23ddff9b",
+      "Source": "appearance/animation/all_b_dnc_goofy_base_loop.ans",
+      "SourceSha256": "7c3ce293000796e1ede7779bc4feeadd7501b5f9192ba991f1e878349fd7304f",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 180,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "LightFeet",
+      "Name": "Light Feet",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG popular2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "LightFeet.swlanim",
+      "Duration": 6.8,
+      "Keyframes": 205,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 6.55,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.8,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "ab25c3d0b20d45bb93386090c0f45406fd8ea7d5433c70db852d1f8337ee74d8",
+      "Source": "appearance/animation/all_f_dnc_f_gogo_loop.ans",
+      "SourceSha256": "d0e755d21eb4460604bd3897c9056e6f0c5224347254a7cd7a08200edfa4142a",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 204,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "PowerStep",
+      "Name": "Power Step",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG poplock2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "PowerStep.swlanim",
+      "Duration": 8.2,
+      "Keyframes": 247,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 7.949999999999999,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 8.2,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "272fcbeb71bc2528e4bae0b3cf6f58b32d54133bc2e83328b8bf7928d44212be",
+      "Source": "appearance/animation/all_m_dnc_m_poplock_base_loop.ans",
+      "SourceSha256": "c3481a23cbc4989a7b1dccc7efe106a290721ac7107bccb5d736406720242d00",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 246,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "Quickstep",
+      "Name": "Quickstep",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG footloose2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "Quickstep.swlanim",
+      "Duration": 5.166666666666667,
+      "Keyframes": 156,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.916666666666667,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.166666666666667,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "8ce0cad918d527e96e4b4d38aa89d4891947388057ece30b74a121e770792751",
+      "Source": "appearance/animation/all_m_dnc_m_african_base_loop.ans",
+      "SourceSha256": "2574642aa47c89ba27bccd5d14779755397d1cef4093e756c32be4531305a027",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 155,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "VigorReel",
+      "Name": "Vigor Reel",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG jazzy2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "VigorReel.swlanim",
+      "Duration": 6.733333333333333,
+      "Keyframes": 203,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 6.483333333333333,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.733333333333333,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "c92e158b11a07464dbe1a816df5f829b658e44a9b704e2d0acb794c8387ae001",
+      "Source": "appearance/animation/all_b_dnc_tatooine_jazz_loop.ans",
+      "SourceSha256": "99644e96f8e7d487fbc1ca272f9acf17033c89824d8d2d5d0465db113952b9ed",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 202,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "StringsLoop",
+      "Name": "StringsLoop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG guitar playing loop.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsLoop.swlanim",
+      "Duration": 5.2,
+      "Keyframes": 157,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared playing hold"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.95,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.2,
+          "Label": "Shared playing hold"
+        }
+      ],
+      "ProjectSha256": "515a0c4bd3034d6299549413815d627659cea93d1d6fb0b163ec7317cac5a400",
+      "Source": "appearance/animation/all_b_dnc_musician_guitar_loop.ans",
+      "SourceSha256": "977eaab481199cfb8b50b865e611dc449fe56b895281c337e244225002226447",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 156,
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "NativeCarry": {
+        "rbicep_g": [
+          0.042193142254618,
+          -0.02110844394293926,
+          0.04351269477532014,
+          0.9979382835297879
+        ],
+        "rforearm_g": [
+          0.8964589748893939,
+          0.019920941216683606,
+          -0.021221492627160096,
+          0.44216977586892303
+        ],
+        "rhand_g": [
+          0.2369595205570208,
+          -0.1078502703975327,
+          0.044665270221847325,
+          0.9644809580435351
+        ],
+        "rhand": [
+          0.0,
+          -0.7132505475215891,
+          0.0,
+          0.7009091642004357
+        ]
+      },
+      "ReferenceProject": "design/animations/performance/StringsLow.swlanim",
+      "ReferenceProjectSha256": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76",
+      "ContactProjects": {
+        "design/animations/performance/StringsLow.swlanim": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76",
+        "design/animations/performance/StringsMid.swlanim": "73b8af8e28d6b33b3be23e90290f5b268a24e01493f4f89c7aa57eac65f745c7",
+        "design/animations/performance/StringsHigh.swlanim": "b9468e8ebf3c67b4e3218eddacb431d6b1cae9d910e0e71a1bcb3d216aee0b15"
+      }
+    },
+    {
+      "Id": "HornLoop",
+      "Name": "HornLoop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG saxophone playing loop.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornLoop.swlanim",
+      "Duration": 5.2,
+      "Keyframes": 157,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared playing hold"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.95,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.2,
+          "Label": "Shared playing hold"
+        }
+      ],
+      "ProjectSha256": "c9e65d473af805b5e944ca97ef9cef4896dfd765dfa3046660630897389dd5d7",
+      "Source": "appearance/animation/all_b_dnc_musician_sax_loop.ans",
+      "SourceSha256": "4250913c6ff68745b73ba1a276284f6c228dc5ff54f934e08c828aa9c550c4f5",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 156,
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "ReferenceProject": "design/animations/performance/HornLow.swlanim",
+      "ReferenceProjectSha256": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af",
+      "ContactProjects": {
+        "design/animations/performance/HornLow.swlanim": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af",
+        "design/animations/performance/HornMid.swlanim": "57cb2e282dea2ca1624b737ab2ca27764540be18f192749c4f757df395324603",
+        "design/animations/performance/HornHigh.swlanim": "23366f10212d77fc631771a42007f0808790193e95e26143cc5aadd063bb7f8a",
+        "design/animations/performance/HornFlourish.swlanim": "5ec03763c1765ad87b39c96fd11c2f5b62e90e71e8c1bfafbba51a4d6f3d265a"
+      }
+    }
+  ],
+  "SwgImport": {
+    "ConfigurationSha256": "fcc693148a55cb6aef30d8b20d29d1e902e09c4db7a8ccc23d8709cf0dc604c4",
+    "Skeleton": "appearance/skeleton/all_b.skt",
+    "SkeletonSha256": "7f3eb762eb97b27c2170014be66bfca0c232e35b2f8cdbefea912736fb681cc3",
+    "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+    "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+    "SourceArchiveSha256": "e99ee95c0e1e65b1585d663f1b01486b0c15a2808d38f48c046e5670ff49c1ed",
+    "BoundaryBlendSeconds": 0.25
+  }
+}

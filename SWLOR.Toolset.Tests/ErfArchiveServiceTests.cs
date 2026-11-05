@@ -179,6 +179,7 @@ namespace SWLOR.Toolset.Tests
                 _service,
                 ToolsetSettings.Load(Path.Combine(_root, "back-from-import-settings.json")));
             (await viewModel.LoadArchiveAsync(archivePath)).Should().BeTrue();
+            await viewModel.ResourceNameLoading;
             await viewModel.NextCommand.ExecuteAsync(null);
             var entry = viewModel.Assets.Single(row => row.FileName == "entry.nss");
             var include = viewModel.Assets.Single(row => row.FileName == "shared_inc.nss");
@@ -234,6 +235,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "header-selection-settings.json"));
             using var viewModel = new ErfArchiveViewModel(_service, settings);
             await viewModel.StartExportCommand.ExecuteAsync(null);
+            await viewModel.ResourceNameLoading;
             viewModel.SearchText = "shown_";
 
             viewModel.CanToggleVisibleAssets.Should().BeTrue();
@@ -300,6 +302,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "optional-references-settings.json"));
             using var viewModel = new ErfArchiveViewModel(_service, settings);
             await viewModel.StartExportCommand.ExecuteAsync(null);
+            await viewModel.ResourceNameLoading;
             viewModel.CurrentStep.Should().Be(1);
             viewModel.CanGoBack.Should().BeFalse();
 
@@ -363,6 +366,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "export-settings.json"));
             using var exportViewModel = new ErfArchiveViewModel(_service, exportSettings);
             await exportViewModel.StartExportCommand.ExecuteAsync(null);
+            await exportViewModel.ResourceNameLoading;
             exportViewModel.CurrentStep.Should().Be(1);
             exportViewModel.CanGoBack.Should().BeFalse();
 
@@ -407,21 +411,13 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "import-settings.json"));
             using var importViewModel = new ErfArchiveViewModel(_service, importSettings);
             (await importViewModel.LoadArchiveAsync(archivePath)).Should().BeTrue();
+            await importViewModel.ResourceNameLoading;
 
             var importArea = importViewModel.Assets.Should().ContainSingle().Subject;
             importArea.IsArea.Should().BeTrue();
             importArea.FileName.Should().Be(resRef);
             importArea.TypeName.Should().Be("Area");
             importArea.FileNames.Should().BeEquivalentTo(exportArea.FileNames);
-            for (var attempt = 0;
-                 attempt < 200 && !string.Equals(
-                     importArea.ResourceName,
-                     displayName,
-                     StringComparison.Ordinal);
-                 attempt++)
-            {
-                await Task.Delay(25);
-            }
             importArea.ResourceName.Should().Be(displayName);
             importViewModel.TypeFilters.Should().Equal("All types", "Area");
             importViewModel.StatusFilters.Should().Equal(
@@ -488,6 +484,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "failed-validation-settings.json"));
             using var viewModel = new ErfArchiveViewModel(_service, settings);
             await viewModel.StartExportCommand.ExecuteAsync(null);
+            await viewModel.ResourceNameLoading;
             viewModel.CurrentStep.Should().Be(1);
             viewModel.CanGoBack.Should().BeFalse();
 

@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
-                .Component("chiro_shard", 5);
+                .Component("chiro_shard", 5)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 46);
 
             // Armor Submission Token (Engineering)
             _builder.Create(RecipeType.ArmorSubmissionTokenEngineering, SkillType.Engineering)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
-                .Component("chiro_shard", 5);
+                .Component("chiro_shard", 5)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 51);
         }
     }
 }

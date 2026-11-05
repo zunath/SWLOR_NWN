@@ -91,6 +91,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
         /// <summary>
+        /// Treats a non-Force skill ability as a Force power for Force Disruption and FP-spend
+        /// triggers. Its skill, XP and combat points stay with <see cref="SkillType"/>.
+        /// </summary>
+        public bool IsForcePower { get; set; }
+        /// <summary>
         /// Status categories the ability's impact applies when the given activator uses it now. Null when the
         /// ability does not declare them; perks keyed to "your next control ability" read this.
         /// </summary>

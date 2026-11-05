@@ -134,6 +134,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
 
         PowerGlove = 541,
         CompanionPowerGlove = 543,
+        Enzyme = 544,
 
     }
 }

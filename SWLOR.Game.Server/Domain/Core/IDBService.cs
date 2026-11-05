@@ -39,11 +39,11 @@ namespace SWLOR.Game.Server.Domain.Core
         long SearchCount<T>(DBQuery<T> query)
             where T : EntityBase;
 
-        /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
         /// <summary>Counts the writes of an entity type, so derived data can be discarded when it changes.</summary>
         long GetWriteVersion<T>()
             where T : EntityBase;
 
+        /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
         Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
     }
 }

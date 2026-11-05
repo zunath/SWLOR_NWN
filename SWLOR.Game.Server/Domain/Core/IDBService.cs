@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 
@@ -36,5 +38,8 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>Counts the entities matching a query without reading them. Same as <c>DB.SearchCount&lt;T&gt;</c>.</summary>
         long SearchCount<T>(DBQuery<T> query)
             where T : EntityBase;
+
+        /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
+        Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
     }
 }

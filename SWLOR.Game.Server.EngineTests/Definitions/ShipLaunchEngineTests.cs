@@ -352,8 +352,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
             actor.Update(player => player.Perks[PerkType.Starships] = 1);
             var statusWindows = new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace };
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             windows[actor.Id] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var type in statusWindows)
             {

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -13,16 +15,10 @@ namespace SWLOR.Game.Server.Service.GuiService
     {
         // Composed layouts nest deeper than System.Text.Json's default of 64.
         private const int MaxLayoutDepth = 512;
-        private static readonly JsonDocumentOptions ParseOptions = new() { MaxDepth = MaxLayoutDepth };
-
-        // The default encoder writes ASCII only, which JsonParse reads unchanged.
-        private static readonly JsonSerializerOptions WriteOptions = new() { MaxDepth = MaxLayoutDepth };
 
         // Widgets whose "value" the player can change on the client.
-        private static readonly HashSet<string> InputWidgetTypes = new()
-        {
-            "button_select", "check", "color_picker", "combo", "options", "slider", "sliderf", "tabbar", "textedit"
-        };
+        private static bool IsInputWidgetType(string type) => type is
+            "button_select" or "check" or "color_picker" or "combo" or "options" or "slider" or "sliderf" or "tabbar" or "textedit";
 
         /// <summary>
         /// Returns <paramref name="layoutJson"/> with each group's assigned layout as its content.
@@ -46,10 +42,17 @@ namespace SWLOR.Game.Server.Service.GuiService
                     displayBindNames.Add(bindName);
             }
 
-            return layout.ToJsonString(WriteOptions);
+            // The default encoder writes ASCII only, which JsonParse reads unchanged.
+            using var stream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { MaxDepth = MaxLayoutDepth }))
+            {
+                layout.WriteTo(writer);
+            }
+
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private static JsonNode Parse(string json) => JsonNode.Parse(json, documentOptions: ParseOptions);
+        private static JsonNode Parse(string json) => JsonNode.Parse(json, documentOptions: new JsonDocumentOptions { MaxDepth = MaxLayoutDepth });
 
         private static void Visit(
             JsonNode node,
@@ -83,7 +86,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 if (value is JsonObject bind && bind.Count == 1 && GetString(bind, "bind") is { } bindName)
                 {
-                    var isInput = name == "value" && type != null && InputWidgetTypes.Contains(type);
+                    var isInput = name == "value" && type != null && IsInputWidgetType(type);
                     (isInput ? inputBinds : displayBinds).Add(bindName);
                     continue;
                 }

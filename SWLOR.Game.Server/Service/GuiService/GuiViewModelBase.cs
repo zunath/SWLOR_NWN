@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             public bool SkipNotify { get; set; }
         }
 
-        private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
+        private readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
 
         protected uint Player { get; private set; }
         protected int WindowToken { get; private set; }

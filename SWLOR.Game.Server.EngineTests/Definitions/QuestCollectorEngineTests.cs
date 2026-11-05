@@ -349,8 +349,7 @@ public static class QuestCollectorEngineTests
 
     private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallConversationWindow(PlayerAbilityFixture fixture)
     {
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         var template = Gui.GetWindowTemplate(GuiWindowType.Conversation);
         var window = template.CreatePlayerWindowAction();
         window.ViewModel.Geometry = template.InitialGeometry;

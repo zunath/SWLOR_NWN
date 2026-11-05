@@ -64,15 +64,15 @@ namespace SWLOR.CraftSim.Fishing
         public int QuickReel(int rank, int fishLevel) => FishingQuickReel.CatchChancePercent(rank, fishLevel, QuickReelWillpowerScore);
 
         /// <summary>
-        /// The seconds one turn of the fight takes the player, reading the previews included: <c>LineRules.TurnSeconds</c>, which the game also
-        /// enforces as the least time between two actions. An estimate until the client run measures it.
+        /// The seconds one turn of the fight takes the player, reading the previews included: <c>LineRules.TurnSeconds</c>, the pace the game's
+        /// fight XP assumes (a faster fight is paid in proportion to the time it took). An estimate until the client run measures it.
         /// </summary>
         public double SecondsPerTurn { get; init; } = LineRules.TurnSeconds;
 
         /// <summary>
-        /// Whether the XP cohort's player takes the first action of a fight at once, as the game allows (each later action waits the turn).
-        /// False models the typical player, who reads the first move for a turn like every other; true models the fastest allowed pace, a
-        /// fight of n actions lasting n - 1 turns.
+        /// Whether the XP cohort's player takes the first action of a fight at once and every later one at the turn. False models the
+        /// typical player, who reads the first move for a turn like every other; true models a player who answers the bite at once, a
+        /// fight of n actions lasting n - 1 turns, which the game pays in proportion to that shorter time.
         /// </summary>
         public bool FreeOpeningTurn { get; init; }
 

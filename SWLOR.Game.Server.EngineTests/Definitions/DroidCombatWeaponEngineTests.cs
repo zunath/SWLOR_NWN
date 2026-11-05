@@ -198,6 +198,81 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Two associate commands in one frame must not hand the earlier event to the stock henchman AI, whose
+        /// weapon selection leaves a rifle droid without a melee weapon fighting unarmed.
+        /// </summary>
+        [EngineTest("Droid keeps its rifle when owner combat commands arrive in the same frame", Category = "DroidCombat", TimeoutSeconds = 120f)]
+        public static async Task SameFrameOwnerCommands(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var owner = player.Creature;
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            _rifleUnequips.Clear();
+            _droidConversations.Clear();
+            try
+            {
+                var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                    AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
+                await Transfer(ctx, owner, rifle, droid);
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                SetImmortal(droid, true);
+                SetLocalBool(droid, CombatProbe, true);
+                SetPlotFlag(owner, true);
+
+                var enemy = ctx.SpawnCreature("nw_bandit001", 5f);
+                await ctx.WaitFrameAsync();
+                await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
+                SetPlotFlag(enemy, true);
+                ObjectPlugin.SetPosition(droid, GetPosition(owner) + new System.Numerics.Vector3(0f, 1f, 0f));
+                await ctx.ExecuteInCreatureContextAsync(droid, () => ClearAllActions(true));
+                await ctx.WaitUntilAsync(() => !GetIsInCombat(droid), 10f, "the droid to be out of combat");
+
+                // The engine records each command on the droid at once but queues its event, so when the owner orders
+                // an attack in the frame they are hit, the attack event sees the under-attack command as the latest.
+                // The enemy turns up beside the droid in the same frame, before anyone has started fighting.
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                    ctx.MakeHostile(enemy);
+                    CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                    CreaturePlugin.DoPerceptionUpdateOnCreature(owner, enemy);
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.AttackNearest);
+                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.MasterUnderAttack);
+                });
+
+                for (var tick = 0; tick < 80; tick++)
+                {
+                    await ctx.DelaySecondsAsync(0.1f);
+                    var held = GetItemInSlot(InventorySlot.RightHand, droid);
+                    if (held != rifle)
+                        ctx.Fail($"The droid's right hand changed to '{GetName(held)}' after {tick / 10f:0.0}s " +
+                                 $"(rifle possessor={GetName(GetItemPossessor(rifle))}). " +
+                                 $"Conversations: {string.Join(" | ", _droidConversations)}");
+                }
+                ctx.Log($"conversations: {string.Join(" | ", _droidConversations)}");
+                ctx.Assert(_droidConversations.Exists(entry => entry.StartsWith("pattern=-3 command=-11")),
+                    $"The first event saw the later command: {string.Join(" | ", _droidConversations)}");
+                // The stock henchman AI stores the ranged weapon it puts away just before swapping to melee. Whether its
+                // queued swap runs before the next combat action clears it is down to timing, so its start is the check.
+                ctx.Assert(!GetIsObjectValid(GetLocalObject(droid, "X0_L_RIGHTHAND")),
+                    $"The stock henchman AI started swapping out '{GetName(GetLocalObject(droid, "X0_L_RIGHTHAND"))}'");
+                AssignCommand(enemy, () => ClearAllActions());
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                {
+                    DeleteLocalBool(droid, CombatProbe);
+                    SetImmortal(droid, false);
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
+        }
+
         [EngineTest("Med Kit droid keeps its rifle while healing mid-fight", Category = "DroidCombat", TimeoutSeconds = 150f)]
         public static Task MedKitDroidKeepsRifle(EngineTestContext ctx) => MedKitFight(ctx, false);
 

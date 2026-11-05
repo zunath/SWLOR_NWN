@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Entity;
@@ -566,6 +567,9 @@ public class CasinoSlotServiceTests
         public IEnumerable<T> Search<T>(DBQuery<T> query) where T : EntityBase => _inner.Search(query);
 
         public long SearchCount<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchCount(query);
+
+        public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
+            _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
     }
 
     private sealed class ThrowingSaveDb : SaveOrderDb

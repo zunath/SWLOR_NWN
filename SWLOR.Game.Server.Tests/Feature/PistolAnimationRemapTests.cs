@@ -243,14 +243,8 @@ public class PistolAnimationRemapTests
         impactSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
             "fallback impact animations must bypass the persistent pistol remap for explicit throws");
-        var previewSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "NamedAnimation.cs"));
-        previewSource.Should().Contain(
-            "creature, animation, speed, 0f, immediate: true, releaseAuthoredPose: false",
-            "native throw previews must suspend the pistol remap without releasing their new playback token");
+        // Native throw previews suspend the pistol remap without releasing their new playback token: the behaviour is
+        // asserted on the named animation service (NamedAnimationServiceTests).
         System.Text.RegularExpressions.Regex.IsMatch(
             impactSource,
             @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)")

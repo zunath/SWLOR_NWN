@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -131,26 +132,11 @@ public class EquipmentAnimationPlaybackTests
             .Single(method => method.Identifier.Text == "PlayCombatImpactAnimation");
         AssertCreatureBinding(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "ImpactClip");
         AssertEquipmentPlayback(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "NamedAnimation.Play", "trackedAbility.AnimationEquipmentRequirement");
-        var playback = Read("SWLOR.Game.Server/Service/NamedAnimation.cs");
-        var handler = playback.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.Text == "OnEquipmentChanging");
-        handler.AttributeLists.ToString().Should().Contain("OnSWLORItemEquipValidBefore").And.Contain("OnItemUnequipBefore");
-        handler.Body!.ToString().Should().Contain("InvalidateEquipmentPlayback").And.Contain("PlayNativePreview");
-    }
-
-    [Test]
-    public void QueuedPlaybackChoosesTheHoldAndCarrierWhenItStarts()
-    {
-        var queue = Read("SWLOR.Game.Server/Service/NamedAnimation.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.Text == "Queue");
-        var started = queue.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(call => call.Expression.ToString() == "ActionDoCommand" && call.ToString().Contains("Playback.Begin"));
-        var startedCalls = started.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString()).ToArray();
-        startedCalls.Should().Contain("AbilityAnimationEquipment.ReadHold",
-            "equipment can change while the clip waits behind earlier actions");
-        startedCalls.Should().Contain("PlayAnimation", "the carrier must match the mappings installed at start");
-        queue.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString())
-            .Should().NotContain("ActionPlayAnimation", "a carrier queued at selection cannot follow a later weapon change")
-            .And.Contain("ActionWait");
+        // The facade keeps the handler: the equipment events reach the service through it. What the service does with
+        // an equipment change is covered by NamedAnimationServiceTests.
+        typeof(NamedAnimation).GetMethod(nameof(NamedAnimation.OnEquipmentChanging))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false).Cast<NWNEventHandler>().Select(handler => handler.Script)
+            .Should().BeEquivalentTo(ScriptName.OnSWLORItemEquipValidBefore, ScriptName.OnItemUnequipBefore);
     }
 
     private static void AssertCreatureBinding(IEnumerable<InvocationExpressionSyntax> calls, string method)

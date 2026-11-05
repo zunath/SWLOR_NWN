@@ -1,3 +1,4 @@
+using StackExchange.Redis;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
@@ -29,6 +30,12 @@ public sealed class InMemoryDBService : IDBService
 
     /// <summary>The queries passed to <see cref="Search{T}"/> and <see cref="SearchCount{T}"/>, in call order.</summary>
     public List<object> Queries { get; } = new();
+
+    /// <summary>The stream entries passed to <see cref="StreamAddAsync"/>, in call order.</summary>
+    public List<StreamAddCall> StreamAdds { get; } = new();
+
+    /// <summary>When set, <see cref="StreamAddAsync"/> returns a task that faults with this exception.</summary>
+    public Exception? StreamAddFailure { get; set; }
 
     /// <summary>Stores an entity without recording a save, to set the scene.</summary>
     public InMemoryDBService With(EntityBase entity)
@@ -77,4 +84,15 @@ public sealed class InMemoryDBService : IDBService
         Queries.Add(query);
         return _entities.Values.OfType<T>().Count();
     }
+
+    public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
+    {
+        StreamAdds.Add(new StreamAddCall(key.ToString(), streamPairs, maxLength, useApproximateMaxLength));
+        return StreamAddFailure == null
+            ? Task.FromResult((RedisValue)"1-0")
+            : Task.FromException<RedisValue>(StreamAddFailure);
+    }
 }
+
+/// <summary>One call of <see cref="IDBService.StreamAddAsync"/>.</summary>
+public sealed record StreamAddCall(string Key, NameValueEntry[] Entries, int? MaxLength, bool UseApproximateMaxLength);

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -46,6 +48,11 @@ namespace SWLOR.Game.Server.Composition
             where T : EntityBase
         {
             return DB.SearchCount(query);
+        }
+
+        public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
+        {
+            return DB.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
         }
     }
 }

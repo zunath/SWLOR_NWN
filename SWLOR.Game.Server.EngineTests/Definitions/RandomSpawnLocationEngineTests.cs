@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service;
@@ -248,8 +247,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static Dictionary<string, List<Vector3>> GetBakedPoints()
         {
-            var field = typeof(Walkmesh).GetField("_walkmeshesByArea", BindingFlags.NonPublic | BindingFlags.Static);
-            return (Dictionary<string, List<Vector3>>)field!.GetValue(null)!;
+            return WalkmeshBakes.ByArea();
         }
 
         private static uint FindArea(string resref)

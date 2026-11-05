@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                     });
                 });
 
-            var windowId = Gui.BuildWindowId(_type);
+            var windowId = GuiWindowKey.BuildWindowId(_type);
 
             // Surface layout shapes confirmed to fail NUI's client-side constraint
             // solver, with a widget path - the client error itself carries no context.

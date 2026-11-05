@@ -12,10 +12,28 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
+using SWLOR.Game.Server.Tests.Support;
+
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class StanceStatusEffectTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     private const uint Player = 0x01000001;
 
     [SetUp]

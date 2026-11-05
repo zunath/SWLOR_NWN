@@ -133,9 +133,7 @@ public class CivilianPatrolTests
     private static bool InvokeTetherCheck(IEnumerable<(GuiWindowType Type, uint Tether)> windows,
         uint tether, Func<GuiWindowType, bool> isOpen)
     {
-        var method = typeof(Gui).GetMethod("HasOpenTetheredWindow", BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new MissingMethodException(typeof(Gui).FullName, "HasOpenTetheredWindow");
-        return (bool)method.Invoke(null, new object[] { windows, tether, isOpen })!;
+        return GuiTether.HasOpenTetheredWindow(windows, tether, isOpen);
     }
 
     private static bool CanMove(bool available = true, bool routeAvailable = true, bool inCombat = false,

@@ -35,8 +35,7 @@ public static class SettingsTargetingEngineTests
 
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         var playerWindows = new Dictionary<GuiWindowType, GuiPlayerWindow>();
         foreach (var type in new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace })
         {

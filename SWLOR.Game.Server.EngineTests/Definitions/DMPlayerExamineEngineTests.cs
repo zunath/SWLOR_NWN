@@ -51,8 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             model.Geometry = new GuiRectangle(35f, 20f, 640f, 660f);
             // Headless fixtures do not pass through OnModuleEnter. Register this window so
             // native watch events use the same event routing as a connected player's UI.
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(observer.Id), "fixture GUI registration must be isolated");
             windows.Add(observer.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>
             {

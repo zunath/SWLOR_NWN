@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service.PerformanceService;
 using static SWLOR.Game.Server.Tests.Service.PerformanceTestSnapshots;
 
@@ -8,6 +9,21 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class PerformanceAudienceRulesTests
 {
     private static readonly DateTime Now = new(2026, 10, 29, 12, 0, 0, DateTimeKind.Utc);
+
+    private FacadeContainer _container = null!;
+    private IDisposable _scope = null!;
+
+    [OneTimeSetUp]
+    public void BuildTheContainer() => _container = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeTheContainer() => _container.Dispose();
+
+    [SetUp]
+    public void InstallTheContainer() => _scope = _container.Install();
+
+    [TearDown]
+    public void RemoveTheContainer() => _scope.Dispose();
 
     [TestCase(0, 0)]
     [TestCase(6, 8)]

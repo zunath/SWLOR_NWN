@@ -6,26 +6,27 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HutlarDroidFoundryAnimationTests
 {
-    // The craft rules reach the crafting service through its static facade, which resolves from a container.
-    private FacadeContainer _facades = null!;
-    private IDisposable _facadeScope = null!;
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
 
     [OneTimeTearDown]
-    public void DisposeFacades() => _facades.Dispose();
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
 
     [SetUp]
-    public void InstallFacades() => _facadeScope = _facades.Install();
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
 
     [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
 
     [TestCase("fdy_sentry")]
     [TestCase("fdy_welder")]

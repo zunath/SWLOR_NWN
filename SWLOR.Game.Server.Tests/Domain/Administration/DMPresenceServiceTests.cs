@@ -19,6 +19,22 @@ namespace SWLOR.Game.Server.Tests.Domain.Administration;
 [TestFixture]
 public class DMPresenceServiceTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     private const uint DM = 1;
     private const uint Creature = 2;
     private const uint Player = 3;

@@ -72,7 +72,7 @@ internal sealed class SavedCharacter
 
     // ---- Character -----------------------------------------------------------------------------------
 
-    private static readonly string[] AbilityFields = { "Str", "Dex", "Con", "Int", "Wis", "Cha" };
+    private static string[] AbilityFields => new[] { "Str", "Dex", "Con", "Int", "Wis", "Cha" };
 
     public int GetRawAbilityScore(AbilityType ability) => ReadInteger(AbilityFields[(int)ability]);
 

@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public const int QualityMinimumRecorded = 5;
         public const int FlourishMeterMax = 16;
         public const double IdleTimeoutSeconds = 60.0;
+
+        /// <summary>Roleplay mode has no cues, so only talking or emoting keeps it going, and a scene can be quiet for a while.</summary>
+        public const double RoleplayIdleTimeoutSeconds = 600.0;
+
+        /// <summary>The quality a performance in Roleplay mode is scored at: the Rough rate, half of Steady.</summary>
+        public const PerformanceQuality RoleplayQuality = PerformanceQuality.Rough;
         public const float MaxMoveDistanceMeters = 1.0f;
 
         private const double SteadyAccuracy = 0.50;

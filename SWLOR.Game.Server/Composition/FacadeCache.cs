@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Composition
     /// </summary>
     /// <remarks>
     /// The slot is valid only for the container it was resolved from, so it never needs clearing: when the container
-    /// is built, replaced, rebuilt (hot reload) or a test installs its own with <see cref="CompositionRoot.InstallForTests"/>,
+    /// is built, replaced, rebuilt (hot reload) or a test installs its own with the test-container override of <see cref="CompositionRoot"/>,
     /// <c>Current</c> names a different container, the comparison fails and the next call resolves again. Disposing a
     /// container does not clear a slot, but nothing can name a disposed container as current once its test scope ends.
     /// The slot holds one container at a time; flows that alternate between two containers (parallel tests) refill it

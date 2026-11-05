@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
             [1] = new(3, 3, 4, 0, (5, 7), 2, 0, 5, 3),
             [2] = new(4, 3, 3, 1, (6, 9), 3, 15, 7, 3),
             [3] = new(4, 4, 3, 2, (8, 11), 4, 20, 9, 4),
-            [4] = new(5, 4, 2, 3, (9, 13), 4, 25, 11, 4),
-            [5] = new(5, 5, 2, 4, (11, 15), 5, 25, 13, 5)
+            [4] = new(5, 4, 3, 3, (9, 13), 4, 25, 11, 8),
+            [5] = new(5, 5, 4, 4, (11, 15), 5, 25, 13, 12)
         };
 
         // Decoys are mostly pipe pieces so false branches look like the route.

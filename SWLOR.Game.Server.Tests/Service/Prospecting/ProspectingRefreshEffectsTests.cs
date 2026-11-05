@@ -225,7 +225,7 @@ public class ProspectingRefreshEffectsTests
 
         lifecycle.RefreshEffects(session, null).Should().BeTrue();
 
-        session.Engine.Setup.Effects.Should().BeSameAs(ProspectingEffects.None);
+        session.Engine.Setup.Effects.Should().Be(ProspectingEffects.None);
         session.Request.Effects.Should().BeNull();
     }
 
@@ -241,7 +241,7 @@ public class ProspectingRefreshEffectsTests
         lifecycle.Abandon(styled, ProspectingEnd.WindowClosed);
         var plain = lifecycle.Begin(Request()).Session;
 
-        plain.Engine.Setup.Effects.Should().BeSameAs(ProspectingEffects.None);
+        plain.Engine.Setup.Effects.Should().Be(ProspectingEffects.None);
     }
 
     // Once the session has acted, is working, or is over.

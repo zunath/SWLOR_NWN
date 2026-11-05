@@ -587,11 +587,11 @@ public class GatheringPerkLineTests
 
         GatheringLoadout.All.Select(loadout => loadout.Slug).Should().Equal(expected);
         GatheringLoadout.All.Select(loadout => loadout.Name).Should().OnlyHaveUniqueItems();
-        GatheringLoadout.All.First().Should().BeSameAs(GatheringLoadout.None);
+        GatheringLoadout.All.First().Should().Be(GatheringLoadout.None);
         GatheringLoadout.Perked.Should().HaveCount(7).And.NotContain(GatheringLoadout.None);
         foreach (var loadout in GatheringLoadout.All)
         {
-            GatheringLoadout.Find(loadout.Slug).Should().BeSameAs(loadout);
+            GatheringLoadout.Find(loadout.Slug).Should().Be(loadout);
             GatheringLoadout.Find(loadout.Slug.ToUpperInvariant()).Should().BeSameAs(loadout, "a command line may use any case");
         }
 

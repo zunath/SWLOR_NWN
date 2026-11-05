@@ -143,16 +143,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            // The turns keep the pace the XP multipliers assume, however fast the client sends clicks.
-            var wait = FishingFights.SecondsUntilNextTurn(_fight);
-            if (wait > 0)
-            {
-                SetStatus(
-                    $"The fish is still moving. Wait {(int)Math.Ceiling(wait)} more {((int)Math.Ceiling(wait) == 1 ? "second" : "seconds")} before your next move.",
-                    GuiColor.Red);
-                return;
-            }
-
             var engine = _fight.Engine;
             var actionId = ActionIds[index];
             var name = engine.Actions.First(action => action.Id == actionId).Name;
@@ -181,8 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetStatus(
                 (actionId == LineActionIds.SetHook
                     ? $"{name}: {effect}"
-                    : $"{name} against a {LineActionText.MoveName(move).ToLowerInvariant()}: {effect}") +
-                $" Your next move is ready in {LineRules.TurnSeconds:0} seconds.",
+                    : $"{name} against a {LineActionText.MoveName(move).ToLowerInvariant()}: {effect}"),
                 GuiColor.White);
             RefreshFight();
         }

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
@@ -21,8 +22,8 @@ public class StarportFlightsTerminalPlacementTests
     public void CachePlanets()
     {
         _facades = new FacadeContainer();
-        using (_facades.Install())
-            Planet.CacheData();
+        typeof(PlanetService).GetMethod("CachePlanets", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(_facades.Get<IPlanetService>(), null);
     }
 
     [OneTimeTearDown]

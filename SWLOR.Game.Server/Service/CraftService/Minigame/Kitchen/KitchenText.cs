@@ -12,7 +12,7 @@ public static class KitchenText
     public const string FinishesWarning = "Finishes the item!";
     public const string RuinsWarning = "Can ruin the dish!";
 
-    private static readonly KitchenAxis[] Axes = { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
+    private static KitchenAxis[] Axes => new KitchenAxis[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
 
     private static readonly (string Id, string Label)[] EffectMeters =
     {

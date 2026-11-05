@@ -17,10 +17,10 @@ public static class CraftRankMilestones
     public const int MaxRefineryManagementLevel = 6;
 
     // Gathering ranks that each add one item per power core, after the first at rank 0.
-    private static readonly int[] RefineryManagementRanks = { 10, 20, 30, 40, 45 };
+    private static int[] RefineryManagementRanks => new int[] { 10, 20, 30, 40, 45 };
 
     // Fabrication ranks that each add a concurrent research job and a licensed run on new blueprints.
-    private static readonly int[] ResearchMilestoneRanks = { 25, 50 };
+    private static int[] ResearchMilestoneRanks => new int[] { 25, 50 };
 
     // The Search board's schedule (tuned by CraftSim, see scavenging-search-parity.md): the Gathering rank that first gives each value.
     // The searches and the promising spots are the same at every rank, because a step in either is worth more than a rank's step in
@@ -33,8 +33,8 @@ public static class CraftRankMilestones
 
     // Gathering ranks at which a Strike and a Heavy Strike in a Prospecting session yield more (replacing Might), and at which one
     // Survey reveals one more seam (replacing Perception).
-    private static readonly int[] ProspectingYieldRanks = { 15, 30, 45 };
-    private static readonly int[] ProspectingSurveyRanks = { 25, 50 };
+    private static int[] ProspectingYieldRanks => new int[] { 15, 30, 45 };
+    private static int[] ProspectingSurveyRanks => new int[] { 25, 50 };
 
     /// <summary>The most tiers of Prospecting yield a Gathering rank can earn.</summary>
     public const int MaxProspectingYieldTier = 3;

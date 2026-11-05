@@ -21,7 +21,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
     /// <summary>The id of the meter that tracks the cycle position. Its marked range is the Peak.</summary>
     public const string CycleMeterId = "cycle";
 
-    private static readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
+    private readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
     {
         new MinigameActionInfo(Measure, "Measure", "A small, safe reading of the mixture: a little Potency in any phase."),
         new MinigameActionInfo(

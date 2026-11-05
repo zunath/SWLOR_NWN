@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
@@ -267,9 +268,9 @@ public class ForceSensitiveEspionageTests
     [TestCase(true, true, false)]
     public void NearbyMessages_GoOnlyToTheHiddenSenderOrActor(bool senderHidden, bool actorHidden, bool nearby)
     {
-        Messaging.ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
-        var messaging = ReadSource("Service", "Messaging.cs");
-        messaging.Should().Contain("if (!ShouldDeliverNearby(Stealth.IsConcealed(sender), Stealth.IsConcealed(concealedActor)))");
+        new MessagingService().ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
+        var messaging = ReadSource("Domain", "Core", "MessagingService.cs");
+        messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
         var ability = ReadSource("Service", "Ability.cs");
         ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");
     }
@@ -299,7 +300,7 @@ public class ForceSensitiveEspionageTests
         ReadSource("Feature", "AbilityDefinition", "Espionage", "CloudMindAbilityDefinition.cs")
             .Should().Contain("Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);");
         new CloudedMindStatusEffect().SendsWornOffMessage.Should().BeFalse("its expiry would hint at a hidden caster");
-        ReadSource("Service", "HoloCom.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !Stealth.IsConcealed(receiver));");
+        ReadSource("Domain", "World", "HoloComService.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !IsConcealed(receiver));");
         var saber = ReadSource("Feature", "LightsaberAudio.cs");
         saber.Should().Contain("if (Stealth.IsConcealed(player))\n            {\n                if (GetIsPC(player))\n                    PlayerPlugin.PlaySound(player, \"saberon\", player);");
         saber.Should().Contain("PlayerPlugin.PlaySound(player, \"saberoff\", player);", "unequipping while hidden is heard only by the hidden player");

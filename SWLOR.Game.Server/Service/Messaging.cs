@@ -12,6 +12,11 @@ namespace SWLOR.Game.Server.Service
     {
         private static IMessagingService Instance => FacadeAccessor.Resolve<IMessagingService>();
 
+        public static bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed)
+        {
+            return Instance.ShouldDeliverNearby(senderConcealed, actorConcealed);
+        }
+
         /// <summary>
         /// Sends a message to all nearby players within a certain distance.
         /// </summary>
@@ -32,6 +37,17 @@ namespace SWLOR.Game.Server.Service
         public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f)
         {
             Instance.SendMessageNearbyToPlayers(sender, buildMessage, range);
+        }
+
+        /// <summary>
+        /// Sends a message to the sender and every player within range. While the sender, or the
+        /// <paramref name="concealedActor"/> the message names, is in stealth or invisible, the message
+        /// goes only to the sender and that actor instead, so it never tells nearby players a hidden
+        /// creature is there.
+        /// </summary>
+        public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range, uint concealedActor)
+        {
+            Instance.SendMessageNearbyToPlayers(sender, buildMessage, range, concealedActor);
         }
     }
 }

@@ -21,9 +21,20 @@ public abstract class AIServiceTestBase
 
     protected TestAIService Service => Bench.Service;
 
+    // The AI asks the busy status of a creature (Activity facade), which resolves from a container.
+    private FacadeContainer _baseFacades = null!;
+    private IDisposable _baseFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildBaseFacades() => _baseFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeBaseFacades() => _baseFacades.Dispose();
+
     [SetUp]
     public void CreateTheWorld()
     {
+        _baseFacadeScope = _baseFacades.Install();
         Bench = new AIBench();
         Area = Bench.AddArea("fight");
         Npc = Bench.AddCreature("npc", Area);
@@ -37,6 +48,7 @@ public abstract class AIServiceTestBase
     [TearDown]
     public void DisposeTheWorld()
     {
+        _baseFacadeScope.Dispose();
         ScriptedProfiles.Build = null;
         RealEnmityTables.Clear();
         Bench.Dispose();

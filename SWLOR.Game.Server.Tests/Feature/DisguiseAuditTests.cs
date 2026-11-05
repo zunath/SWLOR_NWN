@@ -31,10 +31,9 @@ public class DisguiseAuditTests
             .Select(method => method.WithAttributeLists(default).ToFullString());
         var constants = disguiseSource.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Modifiers.Any(SyntaxKind.ConstKeyword));
-        var descriptorSource = ReadSource("Service/PlayerDescriptor.cs");
-        var descriptorMethods = descriptorSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "SetUnknownDisplayName" or "EnsureUnknownDisplayName")
-            .Select(method => method.WithAttributeLists(default).ToFullString());
+        var descriptorMethods = new[] { "SetUnknownDisplayName", "EnsureUnknownDisplayName" }
+            .Select(name => SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
+                "Domain/Character/PlayerDescriptorService.cs", name));
         var getDm = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
             "Domain/Administration/DMPresenceService.cs", "GetDM");
         var source = $$"""
@@ -130,6 +129,21 @@ public class DisguiseAuditTests
             }
             public static class PlayerDescriptor
             {
+                private static readonly DbShim _db = new();
+                private static readonly NameShim _playerName = new();
+                private sealed class DbShim
+                {
+                    public T Get<T>(string id) where T : EntityBase => DB.Get<T>(id);
+                    public void Set<T>(T value) where T : EntityBase => DB.Set(value);
+                }
+                private sealed class NameShim
+                {
+                    public string SanitizeKnownName(string name) => PlayerName.SanitizeKnownName(name);
+                    public string ValidateKnownNameInput(string name) => PlayerName.ValidateKnownNameInput(name);
+                    public void RefreshNameOverridesForPlayer(uint player) => PlayerName.RefreshNameOverridesForPlayer(player);
+                }
+                private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);
+                private static void WriteStructuredLog(LogGroup group, string template, params object[] values) => Log.WriteStructured(group, template, values);
                 public static string GetUnknownDisplayName(uint player) => DB.Get<Player>(GetObjectUUID(player)).UnknownDisplayName;
                 public static string GenerateUnknownDisplayName(Player player) => "A Generated Human";
                 {{string.Join("\n", descriptorMethods)}}

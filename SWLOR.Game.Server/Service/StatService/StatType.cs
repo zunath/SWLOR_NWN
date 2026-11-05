@@ -2161,6 +2161,18 @@ namespace SWLOR.Game.Server.Service.StatService
         ThrowingAreaAbilityDamagePercentAdjustment = 388,
 
         /// <summary>
+        /// Percent damage adjustment applied to Throwing auto-attacks and single-target hostile Throwing abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingSingleTargetDamagePercentAdjustment = 1331,
+
+        /// <summary>
+        /// Attack delay reduction percent for Throwing auto-attacks against targets affected by Bleed or Hemorrhage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingAttackDelayReductionToBleedingTargetPercent = 1332,
+
+        /// <summary>
         /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]

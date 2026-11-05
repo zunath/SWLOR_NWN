@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// Checks a known recipe against this projection, one line per requirement, plus a short summary
         /// of what is still missing.
         /// </summary>
-        public MutationRecipeReport Evaluate(MutationDetail mutation, DateTime now)
+        public MutationRecipeReport Evaluate(MutationDetail mutation, DayOfWeek today)
         {
             var lines = new List<MutationRequirementLine>();
             var missingEnzymes = 0;
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                         reachable &= AddEnzymeLines(lines, ref missingEnzymes, "hydrolase", enzyme.HydrolaseEnzymeColors, _baseJob.HydrolaseColors, _projectedJob.HydrolaseColors);
                         break;
                     case MutationRequirementDayOfWeek day:
-                        dayMet = day.IsMetOn(now.DayOfWeek);
+                        dayMet = day.IsMetOn(today);
                         lines.Add(new MutationRequirementLine($"Complete {day.DescribeDays(true)} (UTC)", dayMet, true));
                         break;
                     default:

@@ -12,6 +12,8 @@ namespace SWLOR.Toolset.Workspace
     /// </summary>
     public sealed class OutputLogService
     {
+        private readonly object _linesGate = new();
+
         public ObservableCollection<string> Lines { get; } = new();
 
         public void AppendLine(string message)
@@ -23,12 +25,21 @@ namespace SWLOR.Toolset.Workspace
 
             if (Dispatcher.UIThread.CheckAccess())
             {
-                Lines.Add(line);
+                AddLine(line);
             }
             else
             {
-                Dispatcher.UIThread.Post(() => Lines.Add(line));
+                Dispatcher.UIThread.Post(() => AddLine(line));
             }
+        }
+
+        // Without an Avalonia platform (headless tests, CLI verification runs) the UI dispatcher
+        // reports access from every thread, so background callers would mutate the collection
+        // concurrently. Serialize the writes; in the app they all run on the UI thread anyway.
+        private void AddLine(string line)
+        {
+            lock (_linesGate)
+                Lines.Add(line);
         }
     }
 }

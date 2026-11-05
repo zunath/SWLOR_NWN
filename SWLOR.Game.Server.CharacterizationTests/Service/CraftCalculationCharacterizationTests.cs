@@ -2,7 +2,6 @@ using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
-using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -19,9 +18,6 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 [NonParallelizable]
 public class CraftCalculationCharacterizationTests
 {
-    // The calculations under test read no neighbouring service, so the instance needs none.
-    private readonly CraftService _craft = new(null!, null!, null!, null!);
-
     [OneTimeSetUp]
     public void BuildChart()
     {
@@ -69,7 +65,7 @@ public class CraftCalculationCharacterizationTests
             string? failure = null;
             try
             {
-                detail = _craft.GetRecipeLevelDetail(level);
+                detail = CraftCalc.GetRecipeLevelDetail(level);
             }
             catch (Exception exception)
             {
@@ -96,7 +92,7 @@ public class CraftCalculationCharacterizationTests
             new[] { "requiredSkillRank" });
 
         foreach (var level in new[] { -5, 0, 1, 2, 3, 4, 5, 10, 25, 50, 53, 80, 1000 })
-            table.Add(level, _craft.GetRequiredSkillRankForRecipe(new RecipeDetail { Level = level }));
+            table.Add(level, CraftCalc.GetRequiredSkillRankForRecipe(new RecipeDetail { Level = level }));
 
         Snapshot.Verify("Craft", "GetRequiredSkillRankForRecipe", table);
     }
@@ -119,7 +115,7 @@ public class CraftCalculationCharacterizationTests
                 foreach (var limit in new int?[] { null, 10, 30, 50 })
                 {
                     var recipe = new RecipeDetail { Level = level, PracticeRankLimit = limit };
-                    table.Add(level, rank, limit, _craft.GetBaseRecipeXP(recipe, rank));
+                    table.Add(level, rank, limit, CraftCalc.GetBaseRecipeXP(recipe, rank));
                 }
             }
         }
@@ -141,7 +137,7 @@ public class CraftCalculationCharacterizationTests
             new[] { "creditCost", "researchSeconds" });
 
         var recipe = new RecipeDetail();
-        using var cache = new CraftRecipeCacheScope(_craft, RecipeType.Invalid, recipe);
+        using var cache = new CraftRecipeCacheScope(RecipeType.Invalid, recipe);
 
         foreach (var level in new[] { 0, 1, 9, 10, 20, 40, 50, 53, 100 })
         {
@@ -156,8 +152,8 @@ public class CraftCalculationCharacterizationTests
                         modifier,
                         blueprintLevel,
                         reduction,
-                        _craft.CalculateBlueprintResearchCreditCost(RecipeType.Invalid, blueprintLevel, reduction),
-                        _craft.CalculateBlueprintResearchSeconds(RecipeType.Invalid, blueprintLevel, reduction));
+                        CraftCalc.CalculateBlueprintResearchCreditCost(RecipeType.Invalid, blueprintLevel, reduction),
+                        CraftCalc.CalculateBlueprintResearchSeconds(RecipeType.Invalid, blueprintLevel, reduction));
                 }
             }
         }
@@ -183,8 +179,8 @@ public class CraftCalculationCharacterizationTests
         {
             foreach (var damageType in Enum.GetValues<CombatDamageType>().OrderBy(type => DefinitionCell.Id(type)))
             {
-                var result = _craft.TryGetWeaponDamageTypeForEnhancement(subType, damageType, out var resolved);
-                table.Add(subType, damageType, _craft.IsWeaponDamageEnhancement(subType), result, resolved);
+                var result = CraftCalc.TryGetWeaponDamageTypeForEnhancement(subType, damageType, out var resolved);
+                table.Add(subType, damageType, CraftCalc.IsWeaponDamageEnhancement(subType), result, resolved);
             }
         }
 

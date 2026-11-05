@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -513,6 +514,13 @@ namespace SWLOR.Game.Server.Domain.UI
             var offHandChanges = currentOffHand != newOffHand;
             var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
 
+            // A craft holds the player's gear, so nothing comes off either hand while any crafting window is open.
+            if (IsAnyCraftWindowOpen(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
+                return;
+            }
+
             // Nothing comes off until everything going on is known to be usable.
             foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })
             {
@@ -596,9 +604,6 @@ namespace SWLOR.Game.Server.Domain.UI
         /// </summary>
         private string GetEquipError(uint player, uint item)
         {
-            if (_gui.IsWindowOpen(player, GuiWindowType.Craft))
-                return "Items cannot be equipped while crafting.";
-
             if (_item.ForceSensitiveWeaponBaseItemTypes.Contains(GetBaseItemType(item)) &&
                 !_item.CanEquipForceSensitiveWeapon(player))
                 return "Only Force Sensitive characters may equip that item.";
@@ -924,6 +929,8 @@ namespace SWLOR.Game.Server.Domain.UI
         protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
 
         protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+
+        protected virtual bool IsAnyCraftWindowOpen(uint player) => CraftMinigameRouting.IsAnyCraftWindowOpen(player);
 
         protected virtual bool KnowsFeat(uint player, FeatType feat) => QuickCast.KnowsFeat(player, feat);
 

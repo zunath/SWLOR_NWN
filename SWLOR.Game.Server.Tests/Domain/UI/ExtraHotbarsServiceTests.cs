@@ -69,6 +69,7 @@ public class ExtraHotbarsServiceTests
         public HashSet<FeatType> Known { get; } = new();
         public Dictionary<FeatType, FeatType> Displayed { get; } = new();
         public int StealthLevel { get; set; }
+        public bool CraftOpen { get; set; }
         public List<(uint Activator, uint Target, FeatType Feat, Location Location)> Used { get; } = new();
         public List<(uint Item, InventorySlot Slot)> PutAway { get; } = new();
         public HashSet<InventorySlot> Stuck { get; } = new();
@@ -91,6 +92,7 @@ public class ExtraHotbarsServiceTests
             return CastResult;
         }
 
+        protected override bool IsAnyCraftWindowOpen(uint player) => CraftOpen;
         protected override int GetStealthPerkLevel(uint player) => StealthLevel;
 
         protected override bool TryUseAbility(uint activator, uint target, FeatType feat, Location targetLocation)
@@ -923,12 +925,12 @@ public class ExtraHotbarsServiceTests
     public void Crafting_and_force_sensitive_rules_block_equipping()
     {
         SetUpHands();
-        _openWindows.Add(GuiWindowType.Craft);
+        _service.CraftOpen = true;
 
         UseEquipmentSlot(Equip("u-sword", "sword", "Vibroblade"), null);
         _engine.Messages().Should().ContainSingle().Which.Should().Contain("Items cannot be equipped while crafting.");
 
-        _openWindows.Clear();
+        _service.CraftOpen = false;
         _engine.Engine.ClearCalls();
         Add(2030, "saber", "Lightsaber", "u-saber", BaseItem.Lightsaber);
         SetEquipableSlots(BaseItem.Lightsaber, "0x30");

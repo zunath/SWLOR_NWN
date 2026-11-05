@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
@@ -64,7 +65,7 @@ public class FishingServiceTests
     private Vector3 _position = new(1f, 2f, 3f);
     private int _willpower = 20;
 
-    /// <summary>The fishing service with the item name and the XP award answered by the test.</summary>
+    /// <summary>The fishing service with the item name and the angler's perk effects answered by the test, and the fights it opens recorded.</summary>
     private sealed class TestFishing : FishingService
     {
         public TestFishing(IDBService db)
@@ -72,11 +73,15 @@ public class FishingServiceTests
         {
         }
 
-        public List<(uint Player, int Xp)> XpAwards { get; } = new();
+        public List<FishingBite> Bites { get; } = new();
+
+        public LineAnglerEffects Effects { get; } = new(TensionCapBonus: 3, ForecastTurns: 2);
 
         protected override string GetBaitName(string resref) => "Name of " + resref;
 
-        protected override void GiveAgricultureXp(uint player, int xp) => XpAwards.Add((player, xp));
+        protected override void StartFight(FishingBite bite) => Bites.Add(bite);
+
+        protected override LineAnglerEffects GetAnglerEffects(uint player) => Effects;
     }
 
     // Fishing broadcasts through the Messaging facade, which resolves the service from a container.
@@ -751,11 +756,11 @@ public class FishingServiceTests
         messages.Should().Equal("Not even a nibble...");
         _locals.Int(Rod, "REMAINING_BAIT").Should().Be(40);
         _locals.Int(Point, "FISHING_POINT_REMAINING_ATTEMPTS").Should().Be(4);
-        _service.XpAwards.Should().BeEmpty();
+        _service.Bites.Should().BeEmpty();
     }
 
     [Test]
-    public void Finishing_a_cast_where_the_default_fish_bites_goes_on_to_the_catch_roll()
+    public void Finishing_a_cast_where_the_default_fish_bites_opens_the_fight()
     {
         ReadyToFish(FishingLocationType.ViscaraDeepwoods, rank: 0);
         var seed = SeedWhere(random => random.Next(3) >= 0 && random.Next(1, 101) > 80);
@@ -764,76 +769,44 @@ public class FishingServiceTests
 
         var messages = WaitForTheCast();
 
-        _locals.Int(Rod, "REMAINING_BAIT").Should().Be(39, "a bite uses one unit of bait");
+        _service.Bites.Should().ContainSingle();
         messages.Should().NotContain("Not even a nibble...");
     }
 
     [Test]
-    public void Finishing_lands_the_fish_when_the_roll_is_within_the_chance_and_gives_Agriculture_XP()
+    public void Finishing_a_bite_hands_the_fight_everything_it_needs_and_leaves_the_bait_and_the_point_to_it()
     {
-        // The cavern with a yew rod and trout ball offers only the Nebimonite (level 31). Rank 35 and Willpower 20 give
-        // 40 + 4 * 10 + 20 * 2, capped at 95.
+        // The cavern with a yew rod and trout ball offers only the Nebimonite (level 31).
         ReadyToFish(FishingLocationType.ViscaraCavern);
-        var seed = SeedWhere(random => random.Next(3) >= 0 && random.NextDouble() >= 0 && random.Next(1, 101) <= 95);
-        Random.SetSeed(seed);
-        Cast();
-
-        var messages = WaitForTheCast();
-
-        _engine.CallsTo("CreateItemOnObject").Should().ContainSingle().Which.Arguments[0].Should().Be("nebimonite");
-        messages.Should().Equal(
-            "You landed a Nebimonite!",
-            "Bait Remaining: 39x Name of " + TroutBall);
-        _locals.Int(Rod, "REMAINING_BAIT").Should().Be(39);
-        _service.XpAwards.Should().Equal((Player, Skill.GetDeltaXP(31 - CavernSkillRank)));
-    }
-
-    [Test]
-    public void Finishing_loses_the_fish_when_the_roll_is_over_the_chance_but_still_gives_XP_and_uses_the_bait()
-    {
-        ReadyToFish(FishingLocationType.ViscaraCavern);
-        var seed = SeedWhere(random => random.Next(3) >= 0 && random.NextDouble() >= 0 && random.Next(1, 101) > 95);
-        Random.SetSeed(seed);
-        Cast();
-
-        var messages = WaitForTheCast();
-
-        _engine.CallsTo("CreateItemOnObject").Should().BeEmpty();
-        messages.Should().Contain(message => message.Contains("You failed to reel the fish in..."));
-        messages.Should().Contain("Bait Remaining: 39x Name of " + TroutBall);
-        _service.XpAwards.Should().ContainSingle();
-    }
-
-    [Test]
-    public void Finishing_never_lands_a_fish_far_above_the_players_skill()
-    {
-        // Rank 0 against level 31: the chance falls below zero and is held at zero, so every roll fails.
-        ReadyToFish(FishingLocationType.ViscaraCavern, rank: 0);
-        _willpower = 0;
         Random.SetSeed(SeedWhere(random => random.Next(3) >= 0));
         Cast();
 
         var messages = WaitForTheCast();
 
-        _engine.CallsTo("CreateItemOnObject").Should().BeEmpty();
-        messages.Should().Contain(message => message.Contains("You failed to reel the fish in..."));
+        var bite = _service.Bites.Should().ContainSingle().Subject;
+        using (new FluentAssertions.Execution.AssertionScope())
+        {
+            bite.Player.Should().Be(Player);
+            bite.Rod.Should().Be(Rod);
+            bite.FishingPoint.Should().Be(Point);
+            bite.Fish.Resref.Should().Be("nebimonite");
+            bite.RodType.Should().Be(FishingRodType.Yew);
+            bite.Rank.Should().Be(CavernSkillRank);
+            bite.BaitRemaining.Should().Be(40, "the bite spends the bait, not the service");
+            bite.BaitName.Should().Be("Name of " + TroutBall);
+            bite.PointAttemptsRemaining.Should().Be(4, "the bite takes the point's attempt, not the service");
+            bite.Position.Should().Be(_position);
+            bite.Effects.Should().BeSameAs(_service.Effects);
+        }
+
+        _locals.Int(Rod, "REMAINING_BAIT").Should().Be(40);
+        _locals.Int(Point, "FISHING_POINT_REMAINING_ATTEMPTS").Should().Be(4);
+        _engine.CallsTo("CreateItemOnObject").Should().BeEmpty("the fight decides whether the fish is landed");
+        messages.Should().BeEmpty();
     }
 
     [Test]
-    public void Finishing_counts_down_the_attempts_of_the_point()
-    {
-        ReadyToFish(FishingLocationType.ViscaraCavern, attemptsLeft: 4);
-        Random.SetSeed(1);
-        Cast();
-
-        WaitForTheCast();
-
-        _locals.Int(Point, "FISHING_POINT_REMAINING_ATTEMPTS").Should().Be(3);
-        _engine.CallsTo("ApplyEffectToObject").Should().BeEmpty();
-    }
-
-    [Test]
-    public void Finishing_the_last_attempt_exhausts_the_point()
+    public void Finishing_the_last_attempt_still_hands_the_fight_the_point_with_one_attempt_left()
     {
         ReadyToFish(FishingLocationType.ViscaraCavern, attemptsLeft: 1);
         Random.SetSeed(1);
@@ -841,9 +814,8 @@ public class FishingServiceTests
 
         WaitForTheCast();
 
-        _engine.CallsTo("SetPlotFlag").Should().ContainSingle().Which.Arguments.Should().Equal(Point, false);
-        _engine.CallsTo("ApplyEffectToObject").Should().ContainSingle().Which.Arguments[2].Should().Be(Point);
-        _engine.CallsTo("SendMessageToPC").Should().Contain(call =>
-            (uint)call.Arguments[0]! == Point && (string)call.Arguments[1]! == "The fishing point has been exhausted.");
+        _service.Bites.Should().ContainSingle().Which.PointAttemptsRemaining.Should().Be(1);
+        _engine.CallsTo("SetPlotFlag").Should().BeEmpty("the fight exhausts the point");
+        _engine.CallsTo("ApplyEffectToObject").Should().BeEmpty();
     }
 }

@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("sr_token", 1);
+                .Component("sr_token", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 53);
 
             // Ghostkey Relay
             _builder.Create(RecipeType.GhostkeyRelay, SkillType.Engineering)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 50);
 
             // Wayfinder Sensor
             _builder.Create(RecipeType.WayfinderSensor, SkillType.Engineering)
@@ -48,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 45);
 
             // Stonewake Relay
             _builder.Create(RecipeType.StonewakeRelay, SkillType.Engineering)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 45);
 
             // Kinetic Harness
             _builder.Create(RecipeType.KineticHarness, SkillType.Engineering)
@@ -70,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("obsidian", 3)
                 .Component("elec_good", 3)
-                .Component("hv_plate", 1);
+                .Component("hv_plate", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 54);
 
             // Lucid Splice
             _builder.Create(RecipeType.LucidSplice, SkillType.Engineering)
@@ -81,7 +86,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("crystal", 4)
                 .Component("elec_imperfect", 3)
-                .Component("mg_totem", 1);
+                .Component("mg_totem", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 54);
 
             // Stormcore Matrix
             _builder.Create(RecipeType.StormcoreMatrix, SkillType.Engineering)
@@ -92,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("diamond", 5)
                 .Component("elec_high", 2)
-                .Component("vx_core", 1);
+                .Component("vx_core", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Tidecall Beacon
             _builder.Create(RecipeType.TidecallBeacon, SkillType.Engineering)
@@ -103,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("elec_imperfect", 3)
                 .Component("ref_arkoxit", 2)
-                .Component("command_key", 1);
+                .Component("command_key", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 48);
 
             // Flux Diverter
             _builder.Create(RecipeType.FluxDiverter, SkillType.Engineering)
@@ -114,7 +122,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("elec_good", 3)
                 .Component("ref_veldite", 2)
-                .Component("field_chip", 1);
+                .Component("field_chip", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 48);
         }
     }
 }

@@ -64,6 +64,15 @@ namespace SWLOR.Game.Server.Domain.Quests
         void RecordBeastDamage(uint beast, uint target);
 
         /// <summary>
+        /// Whether a beast owned by this player hit the enemy with a normal attack or damaging ability, for quests
+        /// outside the capstone lines that ask the player to fight alongside their beast.
+        /// </summary>
+        /// <param name="player">The player who owns the beast.</param>
+        /// <param name="enemy">The enemy.</param>
+        /// <returns>true when an owned beast hit the enemy.</returns>
+        bool HasOwnedBeastHit(uint player, uint enemy);
+
+        /// <summary>
         /// Whether the player proved the mechanic on this enemy, or supported their party recently enough for a
         /// support proof.
         /// </summary>

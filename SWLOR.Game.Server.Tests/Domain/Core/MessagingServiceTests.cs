@@ -23,14 +23,22 @@ public class MessagingServiceTests
 
     private FakeNWScript _engine = null!;
     private IDisposable _engineScope = null!;
-    private MessagingService _service = null!;
+    private TestMessaging _service = null!;
+
+    /// <summary>The messaging service with the creatures in stealth or invisible answered by the test.</summary>
+    private sealed class TestMessaging : MessagingService
+    {
+        public HashSet<uint> Concealed { get; } = new();
+
+        protected override bool IsConcealed(uint creature) => Concealed.Contains(creature);
+    }
 
     [SetUp]
     public void SetUp()
     {
         _engine = new FakeNWScript();
         _engineScope = NWScriptRuntime.Override(_engine);
-        _service = new MessagingService();
+        _service = new TestMessaging();
         PlayersAround(new[] { (Near, 3f), (Mid, 10f), (Far, 10.5f) });
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != Invalid);
     }
@@ -53,6 +61,68 @@ public class MessagingServiceTests
 
     private (uint Receiver, string Text)[] Delivered() =>
         _engine.CallsTo("SendMessageToPC").Select(call => ((uint)call.Arguments[0]!, (string)call.Arguments[1]!)).ToArray();
+
+    [TestCase(false, false, true)]
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, true, false)]
+    public void A_broadcast_reaches_the_players_nearby_only_while_neither_the_sender_nor_the_actor_is_concealed(
+        bool senderConcealed, bool actorConcealed, bool expected)
+    {
+        _service.ShouldDeliverNearby(senderConcealed, actorConcealed).Should().Be(expected);
+    }
+
+    [Test]
+    public void A_concealed_sender_tells_only_themselves()
+    {
+        _service.Concealed.Add(Sender);
+
+        _service.SendMessageNearbyToPlayers(Sender, receiver => "For " + receiver, 10f, Invalid);
+
+        Delivered().Should().Equal((Sender, "For " + Sender));
+    }
+
+    [Test]
+    public void A_concealed_actor_is_told_with_the_sender_and_nobody_nearby_is()
+    {
+        const uint Actor = 1010;
+        _service.Concealed.Add(Actor);
+        _engine.SetReturnHandler("GetIsPC", arguments => (uint)arguments[0]! == Actor);
+
+        _service.SendMessageNearbyToPlayers(Sender, receiver => "For " + receiver, 10f, Actor);
+
+        Delivered().Should().Equal((Sender, "For " + Sender), (Actor, "For " + Actor));
+    }
+
+    [Test]
+    public void A_concealed_actor_who_is_not_a_player_is_not_told()
+    {
+        const uint Actor = 1010;
+        _service.Concealed.Add(Actor);
+
+        _service.SendMessageNearbyToPlayers(Sender, receiver => "For " + receiver, 10f, Actor);
+
+        Delivered().Should().Equal((Sender, "For " + Sender));
+    }
+
+    [Test]
+    public void A_concealed_actor_who_is_the_sender_is_told_once()
+    {
+        _service.Concealed.Add(Sender);
+        _engine.SetReturnHandler("GetIsPC", _ => true);
+
+        _service.SendMessageNearbyToPlayers(Sender, receiver => "For " + receiver, 10f, Sender);
+
+        Delivered().Should().Equal((Sender, "For " + Sender));
+    }
+
+    [Test]
+    public void An_actor_in_plain_sight_leaves_the_broadcast_as_it_was()
+    {
+        _service.SendMessageNearbyToPlayers(Sender, receiver => "For " + receiver, 10f, Near);
+
+        Delivered().Should().Equal((Sender, "For " + Sender), (Near, "For " + Near), (Mid, "For " + Mid));
+    }
 
     [Test]
     public void The_sender_and_every_player_within_range_get_the_message()

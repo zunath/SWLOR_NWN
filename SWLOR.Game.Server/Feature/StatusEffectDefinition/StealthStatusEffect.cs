@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// <summary>
     /// Active while a player moves in stealth. Carries the Stealth perk rank's effectiveness bonus,
     /// drains stamina every tick (stealth breaks when stamina runs out), and samples movement for
-    /// active Espionage infiltration attempts.
+    /// active Espionage infiltration attempts. Stealth granted by another player (Shared Presence)
+    /// carries the granting caster's perk bonus instead and drains no stamina.
     /// </summary>
     public sealed class StealthStatusEffect : StatusEffectBase
     {
@@ -25,7 +26,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            var stealthBonus = Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus);
+            var stealthBonus = Stealth.HasGrantedStealth(creature)
+                ? Stealth.GetGrantedStealthBonus(creature)
+                : Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus);
             if (stealthBonus != 0)
             {
                 StatGroup.Stats[StatType.Stealth] = stealthBonus;
@@ -65,6 +68,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             }
 
             EspionageInfiltration.UpdateMovement(creature);
+
+            // Granted stealth has no upkeep.
+            if (Stealth.HasGrantedStealth(creature))
+                return;
 
             Stat.ReduceStamina(creature, StaminaDrainPerTick);
 

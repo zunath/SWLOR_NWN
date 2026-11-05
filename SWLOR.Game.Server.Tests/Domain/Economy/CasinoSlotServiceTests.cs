@@ -100,11 +100,11 @@ public class CasinoSlotServiceTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(payouts.Count(p => p == 0), Is.EqualTo(7000));
+            Assert.That(payouts.Count(p => p == 0), Is.EqualTo(6919));
             Assert.That(payouts.Count(p => p == 100), Is.EqualTo(2000));
             Assert.That(payouts.Count(p => p == 500), Is.EqualTo(800));
-            Assert.That(payouts.Count(p => p == 1000), Is.EqualTo(190));
-            Assert.That(payouts.Count(p => p == 10000), Is.EqualTo(10));
+            Assert.That(payouts.Count(p => p == 1000), Is.EqualTo(280));
+            Assert.That(payouts.Count(p => p == 10000), Is.EqualTo(1));
             Assert.That(payouts.Max(), Is.EqualTo(CasinoSlotService.MaximumPayout));
             Assert.That(payouts.Average(), Is.EqualTo(89));
             Assert.That(CasinoSlotService.SpinCost, Is.EqualTo(100));
@@ -112,14 +112,13 @@ public class CasinoSlotServiceTests
     }
 
     [TestCase(0, 0)]
-    [TestCase(6999, 0)]
-    [TestCase(7000, 100)]
-    [TestCase(8999, 100)]
-    [TestCase(9000, 500)]
-    [TestCase(9799, 500)]
-    [TestCase(9800, 1000)]
-    [TestCase(9989, 1000)]
-    [TestCase(9990, 10000)]
+    [TestCase(6918, 0)]
+    [TestCase(6919, 100)]
+    [TestCase(8918, 100)]
+    [TestCase(8919, 500)]
+    [TestCase(9718, 500)]
+    [TestCase(9719, 1000)]
+    [TestCase(9998, 1000)]
     [TestCase(9999, 10000)]
     public void GetPayout_changes_tier_at_each_threshold(int roll, int expected)
     {
@@ -144,12 +143,16 @@ public class CasinoSlotServiceTests
 
     // ---- which placeable is the machine
 
+    [TestCase("pw_ar_nscasino", "swd_smach01", "SWTOR_SLOT1", true)]
     [TestCase("pw_ar_nscasino", "swd_smach02", "SWTOR_SLOT2", true)]
+    [TestCase("pw_ar_nscasino", "swd_smach03", "SWTOR_SLOT3", true)]
+    [TestCase("pw_ar_nscasino", "swd_smach04", "SWTOR_SLOT4", true)]
+    [TestCase("pw_ar_nscasino", "swd_smach03", "SWTOR_SLOT2", false)]
     [TestCase("pw_ar_narshahub", "swd_smach02", "SWTOR_SLOT2", false)]
     [TestCase("tat_anc_junix", "swd_smach02", "SWTOR_SLOT2", false)]
     [TestCase("pw_ar_nscasino", "swd_smach06", "SWTOR_SLOT2", false)]
     [TestCase("pw_ar_nscasino", "swd_smach02", "OTHER", false)]
-    public void IsCasinoMachine_accepts_only_the_casino_machine(string area, string resref, string tag, bool expected)
+    public void IsCasinoMachine_accepts_only_the_casino_slot_machines(string area, string resref, string tag, bool expected)
     {
         _service.IsCasinoMachine(area, resref, tag).Should().Be(expected);
     }

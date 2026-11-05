@@ -4,43 +4,29 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Characterization.Support;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
-using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 
 namespace SWLOR.Game.Server.EngineTests.Characterization;
 
 /// <summary>
-/// Output locking for crafting: a headless player opens the crafting window for a real recipe with its components in
-/// the inventory, and works the synthesis and touch actions one click at a time with the shared Random reseeded before
-/// every click. Each row records the status line and the progress, quality, durability and crafting points the window
-/// shows after the click; the scenario also records the item crafted, what the player's inventory holds afterwards and
-/// the Smithery XP the attempt earned.
+/// Output locking for crafting: a headless player starts a craft session for a real recipe with its components in
+/// the inventory, finishes it with a full quality meter and a fixed number of actions, and the scenario records the
+/// session that started, the outcome the quality produced, the item crafted, what the player's inventory holds afterwards
+/// and the XP the attempt earned. The clock is frozen, so the pace the XP is held to is a function of the steps.
 /// </summary>
 public static class CraftingScenarios
 {
     private const int Seed = 20261101;
-    private const int MaximumClicks = 24;
+    private const int ActionsTaken = 10;
 
-    private sealed record Attempt(
-        string Label,
-        string SnapshotName,
-        RecipeType Recipe,
-        int SkillRank,
-        string[] Opening,
-        string Repeated);
+    private sealed record Attempt(string Label, string SnapshotName, RecipeType Recipe, int SkillRank);
 
-    private static readonly Attempt FirstTier = new(
-        "Twin Electroblade I", "TwinElectroblade1", RecipeType.TwinElectroblade1, 7,
-        new[] { "OnClickBasicTouch", "OnClickBasicTouch" }, "OnClickBasicSynthesis");
+    private static readonly Attempt FirstTier = new("Twin Electroblade I", "TwinElectroblade1", RecipeType.TwinElectroblade1, 7);
 
-    private static readonly Attempt ThirdTier = new(
-        "Twin Electroblade III", "TwinElectroblade3", RecipeType.TwinElectroblade3, 24,
-        new[] { "OnClickBasicTouch" }, "OnClickBasicSynthesis");
+    private static readonly Attempt ThirdTier = new("Twin Electroblade III", "TwinElectroblade3", RecipeType.TwinElectroblade3, 24);
 
     [EngineTest("Characterization: crafting - Twin Electroblade I", Category = "Characterization", TimeoutSeconds = 240f)]
     public static Task TwinElectrobladeI(EngineTestContext ctx) => Run(ctx, FirstTier);
@@ -81,56 +67,52 @@ public static class CraftingScenarios
         await scenario.WaitFrameAsync();
 
         var table = new SnapshotTable(
-            "CraftViewModel (manual craft actions)",
-            "Works the crafting window for a recipe one click at a time and records what the window shows after each click; the " +
-            "last rows record the crafted item, the inventory left behind and the XP earned.",
+            "CraftSessionService (start and succeed)",
+            "Starts a craft session for a recipe, finishes it with a full quality meter and records the session and the outcome the " +
+            "quality produced.",
             $"Recipe {attempt.Recipe} (level {recipe.Level}, {recipe.Skill}, makes {recipe.Quantity}x {recipe.Resref}, components " +
             $"{string.Join(", ", recipe.Components.OrderBy(pair => pair.Key, StringComparer.Ordinal).Select(pair => pair.Key + " x" + pair.Value))}) " +
-            $"crafted by a headless player with {recipe.Skill} rank {attempt.SkillRank}. Random is reseeded with {Seed} plus the click number " +
-            $"before every click. The clicks are {(attempt.Opening.Length == 0 ? string.Empty : string.Join(", ", attempt.Opening) + ", then ")}" +
-            $"{attempt.Repeated} until the craft ends or {MaximumClicks} clicks pass.",
-            new[] { "click", "action" },
-            new[] { "status", "progress", "quality", "durability", "crafting points", "crafting" },
+            $"crafted by a headless player with {recipe.Skill} rank {attempt.SkillRank}. Random is reseeded with {Seed} before the craft " +
+            $"succeeds with a full quality meter after {ActionsTaken} actions.",
+            new[] { "step" },
+            new[] { "value" },
             Seed) { AllowConstantOutputs = true };
 
         var xpBefore = DB.Get<Player>(fixture.Id).Skills[recipe.Skill].XP;
-        CraftViewModel window = null;
-        try
+        CraftSession session = null;
+        await scenario.ExecuteInCreatureContextAsync(player, () =>
         {
-            await scenario.ExecuteInCreatureContextAsync(player, () =>
-            {
-                window = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, new CraftPayload(attempt.Recipe, OBJECT_INVALID));
-                Click(window, "OnClickManualCraft");
-            });
-            await scenario.WaitFrameAsync();
-            table.Add(Row(0, "start crafting", window));
+            var start = CraftSessionService.Start(player, new CraftSessionStartRequest(attempt.Recipe, OBJECT_INVALID, new uint[0]));
+            table.Add("start succeeded", start.Succeeded);
+            table.Add("start message", start.Message ?? string.Empty);
+            session = start.Session;
+        });
 
-            var click = 0;
-            while (window.IsInCraftMode && click < MaximumClicks)
-            {
-                var action = click < attempt.Opening.Length ? attempt.Opening[click] : attempt.Repeated;
-                click++;
-                await scenario.ExecuteInCreatureContextAsync(player, () =>
-                {
-                    scenario.SeedRandom(Seed + click);
-                    Click(window, action);
-                });
-                await scenario.WaitFrameAsync();
-                await scenario.WaitFrameAsync();
-                table.Add(Row(click, action.Replace("OnClick", string.Empty), window));
-            }
+        // The components leave the inventory when the starting script ends.
+        await scenario.WaitFrameAsync();
+        await scenario.ExecuteInCreatureContextAsync(player, () =>
+            table.Add("inventory items once the components are committed", ItemDescription.DescribeInventory(player).Count()));
 
-            scenario.Assert(!window.IsInCraftMode, "The attempt ended before the click limit");
-        }
-        finally
+        scenario.Assert(session != null, "The craft session started");
+        await scenario.ExecuteInCreatureContextAsync(player, () =>
         {
-            CloseWindows(fixture);
-        }
+            scenario.SeedRandom(Seed);
+            var success = CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), ActionsTaken);
+            scenario.Assert(success != null, "The craft succeeds");
+            var outcome = success.Outcome;
+            table.Add("quality fraction", outcome.QualityFraction);
+            table.Add("quality percent", outcome.QualityPercent);
+            table.Add("outcome XP", outcome.Xp);
+            table.Add("vendor value bonus", outcome.VendorValueBonus);
+            table.Add("enhancements", outcome.Enhancements.Count);
+            table.Add("food duration bonus seconds", outcome.FoodDurationBonusSeconds);
+            table.Add("food bonus charges", outcome.FoodBonusCharges);
+        });
 
         await scenario.WaitFrameAsync();
         var record = DB.Get<Player>(fixture.Id);
         var result = new SnapshotTable(
-            "CraftViewModel (crafting result)",
+            "CraftSessionService (crafting result)",
             "What the player holds and has earned once the crafting attempt has ended.",
             $"The same attempt as the steps snapshot: recipe {attempt.Recipe}, {recipe.Skill} rank {attempt.SkillRank}, Random seeded as described there. " +
             "Items are written as 'blueprint xStackSize [Type/Subtype/Cost/Param, ...]'.",
@@ -140,19 +122,11 @@ public static class CraftingScenarios
         result.Add($"{recipe.Skill} XP earned", record.Skills[recipe.Skill].XP - xpBefore);
         result.Add($"{recipe.Skill} rank", record.Skills[recipe.Skill].Rank);
         result.Add("recipe recorded as crafted", record.CraftedRecipes.ContainsKey(attempt.Recipe));
+        result.Add("items held at the station", record.HeldCraftItems?.Count ?? 0);
         foreach (var item in ItemDescription.DescribeInventory(player))
             result.Add("inventory item", item);
 
         ScenarioSnapshot.Verify("Craft", attempt.SnapshotName + "Result", result);
         ScenarioSnapshot.Verify("Craft", attempt.SnapshotName + "Steps", table);
-    }
-
-    private static object[] Row(int click, string action, CraftViewModel window)
-    {
-        return new object[]
-        {
-            click, action, window.StatusText, window.ProgressText, window.QualityText, window.DurabilityText, window.CP,
-            window.IsInCraftMode
-        };
     }
 }

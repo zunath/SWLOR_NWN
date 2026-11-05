@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.World
         private const string FishingPositionVariableY = "FISHING_POSITION_Y";
         private const string FishingPositionVariableZ = "FISHING_POSITION_Z";
         private const string FishingPointVariable = "FISHING_POINT";
-        private const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
+        public const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
         private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
         private const string FishingAnimationVariable = "FISHING_ANIMATION_TOKEN";
@@ -450,58 +451,24 @@ namespace SWLOR.Game.Server.Domain.World
                 }
             }
 
-            // We're guaranteed to enter the fishing mini-game from here on.
-            // Go ahead and decrement the bait because one unit needs to be lost for fish attempt.
-            var remainingBait = GetLocalInt(rod, RemainingBaitVariable) - 1;
-            if (remainingBait < 0)
-                remainingBait = 0;
-            SetLocalInt(rod, RemainingBaitVariable, remainingBait);
-
+            // We're guaranteed to enter the fishing mini-game from here on. The bite spends one bait, takes one of the
+            // fishing point's bites and pays the XP; the fight it opens decides whether the fish is landed.
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var skill = dbPlayer.Skills[SkillType.Agriculture].Rank;
 
-            const int BaseChance = 40;
-            var delta = skill - fish.Level;
-            var stat = GetAbilityScore(player, AbilityType.Willpower);
-
-            var chance = BaseChance + delta * 10 + stat * 2;
-            if (chance > 95)
-                chance = 95;
-            else if (chance < 0)
-                chance = 0;
-
-            if (Random.D100(1) > chance)
-            {
-                SendMessageToPC(player, ColorToken.Red("You failed to reel the fish in..."));
-            }
-            else
-            {
-                CreateItemOnObject(fish.Resref, player);
-
-                SendMessageToPC(player, $"You landed a {fish.Name}!");
-            }
-
-            SendMessageToPC(player, $"Bait Remaining: {remainingBait}x {baitName}");
-
-            // Handle fishing point exhaustion
-            var remainingAttempts = GetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable) - 1;
-            if (remainingAttempts <= 0)
-            {
-                // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
-                // Use EffectDeath to ensure that we trigger death processing.
-                SetPlotFlag(fishingPoint, false);
-                ApplyEffectToObject(DurationType.Instant, EffectDeath(), fishingPoint);
-
-                Messaging.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
-            }
-            else
-            {
-                SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, remainingAttempts);
-            }
-
-            var xp = Skill.GetDeltaXP(fish.Level - skill);
-            GiveAgricultureXp(player, xp);
+            StartFight(new FishingBite(
+                player,
+                rod,
+                fishingPoint,
+                fish,
+                rodType,
+                skill,
+                GetLocalInt(rod, RemainingBaitVariable),
+                baitName,
+                GetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable),
+                position,
+                GetAnglerEffects(player)));
         }
 
         /// <summary>
@@ -514,12 +481,22 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// Awards the Agriculture XP of a landed or lost catch. <c>protected virtual</c> so a unit test can record it: the
-        /// skill service reads the stored player from the database. The body is the original call.
+        /// Opens the fight a bite starts: it spends the bait, takes one of the fishing point's bites and pays the XP.
+        /// <c>protected virtual</c> so a unit test can record the bite: the fight runs against the game engine. The body is the
+        /// original call.
         /// </summary>
-        protected virtual void GiveAgricultureXp(uint player, int xp)
+        protected virtual void StartFight(FishingBite bite)
         {
-            Skill.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
+            FishingFights.Bite(bite);
+        }
+
+        /// <summary>
+        /// What the angler's perks change in the fight. <c>protected virtual</c> so a unit test can answer it: the stat service
+        /// reads the player's stat totals. The body is the original expression.
+        /// </summary>
+        protected virtual LineAnglerEffects GetAnglerEffects(uint player)
+        {
+            return LineAnglerEffects.FromStatTotals(stat => Stat.GetStatAdjustment(player, stat));
         }
 
         /// <summary>Releases this attempt's animation and state without clearing a replacement activity.</summary>

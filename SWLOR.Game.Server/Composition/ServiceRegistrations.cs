@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Composition
             // World
             services.AddSingleton<IAreaService, AreaService>();
             services.AddSingleton<IFishingService, FishingService>();
+            services.AddSingleton<IFishingFightsService, FishingFightsService>();
             services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<INotesService, NotesService>();

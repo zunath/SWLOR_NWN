@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
         {
-            var assemblyLevel = Perk.GetPerkLevel(Player, PerkType.DroidAssembly);
+            var assemblyTier = CraftRankMilestones.GetDroidAssemblyTier(Player);
 
             var serialized = ObjectPlugin.Serialize(item);
             var icon = Item.GetIconResref(item);
@@ -524,9 +524,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 case DroidPartItemPropertySubType.CPU:
 
-                    if (assemblyLevel < part.Tier)
+                    if (assemblyTier < part.Tier)
                     {
-                        ShowError($"Droid Assembly too low. (Required: {part.Tier})");
+                        ShowError($"Engineering rank too low for a tier {part.Tier} CPU. (Required: {CraftRankMilestones.RequiredRankForTier(part.Tier)})");
                         return;
                     }
 

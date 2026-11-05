@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
@@ -27,6 +29,7 @@ public sealed class FacadeContainer : IDisposable
     {
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
+        services.Replace(ServiceDescriptor.Singleton<IMessagingService, UnconcealedMessagingService>());
         configure?.Invoke(services);
         _provider = ContainerHost.Create(services);
     }
@@ -42,4 +45,13 @@ public sealed class FacadeContainer : IDisposable
         where TService : notnull => _provider.GetRequiredService<TService>();
 
     public void Dispose() => _provider.Dispose();
+}
+
+/// <summary>
+/// The messaging service of the container for tests: no creature is concealed, because reading a creature's effects
+/// goes through the native library, which unit tests do not load.
+/// </summary>
+internal sealed class UnconcealedMessagingService : MessagingService
+{
+    protected override bool IsConcealed(uint creature) => false;
 }

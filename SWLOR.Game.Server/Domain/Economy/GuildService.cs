@@ -168,6 +168,14 @@ namespace SWLOR.Game.Server.Domain.Economy
             DateTasksLoaded = DateTime.UtcNow;
         }
 
+        public bool IsCompletedTaskHidden(GuildType guild, DateTime? dateLastCompleted, DateTime? dateTasksLoaded)
+        {
+            if (guild.GetAttribute<GuildType, GuildAttribute>().TasksRefreshAfterCompletion)
+                return false;
+
+            return dateLastCompleted >= dateTasksLoaded;
+        }
+
         public List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
         {
             if(!_activeGuildTasksByRank.ContainsKey(guild))

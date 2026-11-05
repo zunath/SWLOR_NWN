@@ -65,7 +65,7 @@
     },
     "Crafting": {
       "services": [
-        "Craft", "Slicing"
+        "Craft", "Slicing", "Prospecting", "Scavenge"
       ],
       "featureFolders": [
         "RecipeDefinition"
@@ -74,7 +74,7 @@
     "Economy": {
       "services": [
         "Bank", "BankItemPage", "Currency", "PlayerMarket", "Guild", "CasinoSlot", "CasinoSlotPresentation",
-        "CasinoSpinResult", "CasinoPlayTracker"
+        "CasinoSpinResult", "CasinoPlayTracker", "GuildTaskXp"
       ],
       "featureFolders": []
     },
@@ -121,7 +121,7 @@
     },
     "Social": {
       "services": [
-        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell"
+        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell", "Performance"
       ],
       "featureFolders": [
         "ChatCommandDefinition"

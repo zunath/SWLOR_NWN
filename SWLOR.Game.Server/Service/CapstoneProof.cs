@@ -54,6 +54,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a beast owned by this player hit the enemy with a normal attack or damaging ability, for quests
+        /// outside the capstone lines that ask the player to fight alongside their beast.
+        /// </summary>
+        public static bool HasOwnedBeastHit(uint player, uint enemy)
+        {
+            return Instance.HasOwnedBeastHit(player, enemy);
+        }
+
+        /// <summary>
         /// Whether the player proved the mechanic on this enemy, or supported their party recently enough for a
         /// support proof.
         /// </summary>

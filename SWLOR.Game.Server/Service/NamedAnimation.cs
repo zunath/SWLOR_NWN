@@ -25,13 +25,23 @@ public static class NamedAnimation
         Instance.Queue(creature, clip, durationSeconds, equipmentRequirement);
     }
 
-    /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
+    /// <summary>
+    /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
+    /// holdMode chooses how the main-hand item's native holding layer is treated (see <see cref="NamedAnimationHold"/>).
+    /// </summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
         AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
-        bool fitToDuration = false)
+        bool fitToDuration = false, NamedAnimationHold holdMode = NamedAnimationHold.Auto)
     {
-        return Instance.Play(creature, clip, durationSeconds, equipmentRequirement, fitToDuration);
+        return Instance.Play(creature, clip, durationSeconds, equipmentRequirement, fitToDuration, holdMode);
     }
+
+    /// <summary>
+    /// True when a clip can loop for longer than its own length on this creature. A held weapon (rifle, cannon, two-handed or polearm)
+    /// is played through a one-shot carrier that scales the clip to fit the duration, so an open-ended loop is not possible there and
+    /// callers keep the native pose.
+    /// </summary>
+    public static bool CanLoop(uint creature) => Instance.CanLoop(creature);
 
     /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
     public static bool StopIfCurrent(uint creature, string token) => Instance.StopIfCurrent(creature, token);

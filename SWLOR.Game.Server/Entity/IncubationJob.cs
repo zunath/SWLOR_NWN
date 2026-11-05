@@ -40,6 +40,15 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<EnzymeColorType, int> IsomeraseColors { get; set; }
         public Dictionary<EnzymeColorType, int> HydrolaseColors { get; set; }
 
+        /// <summary>
+        /// When true, completing the job never mutates the beast. Defaults to false so jobs saved
+        /// before this option existed keep their old behavior.
+        /// </summary>
+        public bool IsMutationSuppressed { get; set; }
+
+        /// <summary>Icon of the DNA sample the job started from, shown while the job runs.</summary>
+        public string DNAIconResref { get; set; }
+
         public IncubationJob()
         {
             DefensePurities = Combat.CreateDefaultDefenseValues();

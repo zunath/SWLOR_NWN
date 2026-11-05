@@ -15,6 +15,21 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AnimationPlanningTests
 {
+    /// <summary>Performance activity clips (design/animations/performance) that are installed and previewable but are not ability animations.</summary>
+    public static readonly IReadOnlyDictionary<string, string> PerformanceActivityClips = new Dictionary<string, string>
+    {
+        ["CantinaShuffle"] = "sw_dn_shufl", ["LightFeet"] = "sw_dn_light", ["PowerStep"] = "sw_dn_power",
+        ["Quickstep"] = "sw_dn_quick", ["VigorReel"] = "sw_dn_vigor",
+        ["DanceStepLeft"] = "sw_dn_stepl", ["DanceStepUp"] = "sw_dn_stepu",
+        ["DanceStepDown"] = "sw_dn_stepd", ["DanceStepRight"] = "sw_dn_stepr",
+        ["DanceSpin"] = "sw_dn_spin", ["DanceDip"] = "sw_dn_dip",
+        ["StringsLoop"] = "sw_str_loop", ["StringsLow"] = "sw_str_low", ["StringsMid"] = "sw_str_mid",
+        ["StringsHigh"] = "sw_str_high", ["StringsFlourish"] = "sw_str_flour",
+        ["HornLoop"] = "sw_hrn_loop", ["HornLow"] = "sw_hrn_low", ["HornMid"] = "sw_hrn_mid",
+        ["HornHigh"] = "sw_hrn_high", ["HornFlourish"] = "sw_hrn_flour",
+        ["PerformanceBow"] = "sw_pf_bow",
+    };
+
     private static string Root
     {
         get
@@ -184,6 +199,8 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
+        // Activity clips have no ability: fishing's cast and fight, the five station work loops, gathering's six actions,
+        // and the Twin Pistol cycle and travel runs.
         var motionNames = new Dictionary<string, string>
         {
             ["TwinPistolCycle"] = "sw_twinpisto",
@@ -191,8 +208,12 @@ public class AnimationPlanningTests
             ["PistolRushTravel"] = "sw_pistolrus",
             ["GrappleShotTravel"] = "sw_grapplesh",
         };
+        foreach (var clip in PerformanceActivityClips) motionNames.Add(clip.Key, clip.Value);
         installed.Keys.Except(names.Keys).Should().BeEquivalentTo(
-            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys));
+            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys)
+                .Concat(new[] { "Reel", "GiveLine", "HoldRod", "LandFish" })
+                .Concat(new[] { "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound" })
+                .Concat(new[] { "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig" }));
         foreach (var id in installed.Keys.Except(names.Keys))
         {
             var expectedName = motionNames.TryGetValue(id, out var motionName) ? motionName : "sw_" + id.ToLowerInvariant();

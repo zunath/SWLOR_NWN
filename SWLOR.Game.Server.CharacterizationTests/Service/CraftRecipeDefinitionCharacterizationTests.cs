@@ -26,6 +26,7 @@ public class CraftRecipeDefinitionCharacterizationTests
         nameof(RecipeDetail.IsActive),
         nameof(RecipeDetail.IsItemIntendedForCrafting),
         nameof(RecipeDetail.Level),
+        nameof(RecipeDetail.MinigameParameters),
         nameof(RecipeDetail.PracticeRankLimit),
         nameof(RecipeDetail.Quantity),
         nameof(RecipeDetail.Requirements),
@@ -86,7 +87,7 @@ public class CraftRecipeDefinitionCharacterizationTests
         var table = new SnapshotTable(
             $"Recipe definitions: {groupName} (every IRecipeListDefinition recipe in this group)",
             "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, " +
-            "research cost modifier, components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) " +
+            "research cost modifier, minigame parameters (builder method and each named value), components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) " +
             "and the effect lines (count and fingerprint).",
             $"{group.Length} of the {recipes.Count} recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and " +
             "Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
@@ -94,7 +95,7 @@ public class CraftRecipeDefinitionCharacterizationTests
             new[]
             {
                 "skill", "category", "level", "practiceRankLimit", "quantity", "resref", "isActive", "enhancementType", "enhancementSlots",
-                "researchCostModifier", "components", "requirements", "effectLineCount", "effectFingerprint"
+                "researchCostModifier", "minigameParameters", "components", "requirements", "effectLineCount", "effectFingerprint"
             })
         {
             AllowConstantOutputs = true
@@ -116,6 +117,10 @@ public class CraftRecipeDefinitionCharacterizationTests
                 recipe.EnhancementType,
                 recipe.EnhancementSlots,
                 recipe.ResearchCostModifier,
+                recipe.MinigameParameters == null
+                    ? null
+                    : recipe.MinigameParameters.BuilderMethod + "(" + string.Join(", ",
+                        recipe.MinigameParameters.Values.Select(value => FormattableString.Invariant($"{value.Name}={value.Value}"))) + ")",
                 recipe.Components.Select(component => $"{component.Key} x{component.Value}").ToArray(),
                 recipe.Requirements.Select(RequirementText).ToArray(),
                 recipe.EffectLines.Count,

@@ -1693,7 +1693,20 @@ public class BeastMasteryServiceTests
     }
 
     [Test]
-    public void A_mutation_roll_equal_to_the_chance_still_mutates()
+    public void A_mutation_roll_just_under_the_chance_mutates()
+    {
+        // Random.Next(1000) returns 0-999, so a chance of N succeeds for the N rolls below it (master #3157).
+        Random.SetSeed(7);
+        var roll = new System.Random(7).Next(1000);
+        var job = Job(mutationChance: roll + 1);
+
+        _service.CreateBeastEgg(job, Player);
+
+        _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
+    }
+
+    [Test]
+    public void A_mutation_roll_equal_to_the_chance_no_longer_mutates()
     {
         Random.SetSeed(7);
         var roll = new System.Random(7).Next(1000);
@@ -1701,7 +1714,19 @@ public class BeastMasteryServiceTests
 
         _service.CreateBeastEgg(job, Player);
 
-        _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
+        _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
+    }
+
+    [Test]
+    public void A_suppressed_job_never_mutates_whatever_the_roll()
+    {
+        Random.SetSeed(7);
+        var job = Job(mutationChance: 1000);
+        job.IsMutationSuppressed = true;
+
+        _service.CreateBeastEgg(job, Player);
+
+        _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
     }
 
     [Test]

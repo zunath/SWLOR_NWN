@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Vector3 = System.Numerics.Vector3;
+using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -184,6 +185,31 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Switches between active play and Roleplay mode. Roleplay mode drops the cues and Flourish from the hot bar, scores
+        /// the show at the Rough rate, and keeps it going while the performer talks or emotes.
+        /// </summary>
+        public static void SetRoleplay(uint player, bool roleplay)
+        {
+            GetPreference(player).Roleplay = roleplay;
+            if (!_sessions.TryGetValue(player, out var session) || session.IsRoleplay == roleplay)
+                return;
+
+            session.SetRoleplay(roleplay, DateTime.UtcNow);
+            ApplyModeQuickbar(player, session.Kind, session.ToggleFeat, roleplay);
+
+            if (session.View is { IsOpen: true } view)
+                view.ShowMode(roleplay);
+            else if (!roleplay && !PerformanceWindows.OpenCueWindow(session))
+                ShowFallbackBeat(session);
+
+            if (roleplay)
+                PerformanceWindows.ClearFallbackStrip(player);
+
+            PerformanceWindows.RefreshSetup(session);
+            SendMessageToPC(player, GetModeMessage(session.Kind, roleplay));
+        }
+
         public static void SetTempo(uint player, PerformanceTempo tempo)
         {
             GetPreference(player).Tempo = tempo;
@@ -257,7 +283,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Only cue presses and a Flourish that fires count as input for the idle timeout; Options does not.
+            // Only cue presses and a Flourish that fires count as input for the idle timeout; Options does not. In Roleplay
+            // mode the hot bar has no cues or Flourish, and talking or emoting keeps the show going instead.
             var now = DateTime.UtcNow;
             if (feat == FeatType.PerformanceFlourish)
             {
@@ -301,7 +328,7 @@ namespace SWLOR.Game.Server.Service
                     if (reason != PerformanceEndReason.Died)
                         ReleaseAnimation(session, reason);
 
-                    var message = GetEndMessage(reason);
+                    var message = GetEndMessage(reason, session.IsRoleplay);
                     if (!string.IsNullOrEmpty(message))
                         SendMessageToPC(player, message);
                 }
@@ -325,6 +352,29 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RecoverInterruptedPerformance(player);
+        }
+
+        /// <summary>Talking or emoting keeps a Roleplay mode performance going. Chat commands do not count.</summary>
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
+        public static void KeepRoleplayGoing()
+        {
+            if (_sessions.Count == 0)
+                return;
+
+            var channel = ChatPlugin.GetChannel();
+            if (channel != ChatChannel.PlayerTalk &&
+                channel != ChatChannel.PlayerWhisper &&
+                channel != ChatChannel.PlayerParty)
+                return;
+
+            if (!_sessions.TryGetValue(ChatPlugin.GetSender(), out var session) || !session.IsRoleplay)
+                return;
+
+            var message = ChatPlugin.GetMessage()?.Trim() ?? string.Empty;
+            if (message.Length == 0 || message.StartsWith('/'))
+                return;
+
+            session.NoteActivity(DateTime.UtcNow);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -431,10 +481,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var feat in GetModeFeats(kind))
                 CreaturePlugin.AddFeat(player, feat);
 
-            ApplyModeQuickbar(player, kind, toggleFeat);
+            var preference = GetPreference(player);
+            ApplyModeQuickbar(player, kind, toggleFeat, preference.Roleplay);
             Activity.SetBusy(player, ActivityStatusType.Performing);
 
-            var preference = GetPreference(player);
             var now = DateTime.UtcNow;
             var session = new PerformanceSession(
                 player, kind, family, preference.Tempo, now, new System.Random(HashCode.Combine(player, now.Ticks)))
@@ -454,18 +504,19 @@ namespace SWLOR.Game.Server.Service
                     : PerformanceSetType.CantinaStandards
             };
 
+            session.SetRoleplay(preference.Roleplay, now);
+
             _sessions[player] = session;
             PerformanceAudience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
             PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
             ScheduleBeats(session);
 
-            SendMessageToPC(player, kind == PerformanceKind.Dance
-                ? "You begin to dance. Use the step buttons on your hot bar to match the cues."
-                : "You begin to play. Use the note buttons on your hot bar to match the cues.");
+            SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay));
 
-            // The cue window shows the strip; floating text stands in only when it could not be opened.
-            if (!PerformanceWindows.OpenCueWindow(session))
+            // The cue window shows the strip; floating text stands in only when it could not be opened. Roleplay mode has no
+            // strip to stand in for.
+            if (!PerformanceWindows.OpenCueWindow(session) && !session.IsRoleplay)
                 ShowFallbackBeat(session);
         }
 
@@ -511,6 +562,10 @@ namespace SWLOR.Game.Server.Service
 
                 if (DateTime.UtcNow >= session.AnimationRenewUtc)
                     StartLoopingAnimation(session);
+
+                // Roleplay mode scores nothing and shows no strip; the loop only keeps the clip going and runs the end checks.
+                if (session.IsRoleplay)
+                    return;
 
                 var outcome = session.AdvanceBeat();
                 PresentBeat(session, outcome);
@@ -619,15 +674,20 @@ namespace SWLOR.Game.Server.Service
             return isCurrent ? $"[{text.ToUpperInvariant()}]" : text;
         }
 
-        private static void ApplyModeQuickbar(uint player, PerformanceKind kind, FeatType toggleFeat)
+        // Options and Stop keep their slots in both modes; Roleplay mode leaves the cue and Flourish slots empty.
+        private static void ApplyModeQuickbar(uint player, PerformanceKind kind, FeatType toggleFeat, bool roleplay)
         {
             ClearFirstBar(player);
 
-            var cueFeats = kind == PerformanceKind.Dance ? _danceCueFeats : _musicCueFeats;
-            for (var slot = 0; slot < cueFeats.Length; slot++)
-                PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(cueFeats[slot]));
+            if (!roleplay)
+            {
+                var cueFeats = kind == PerformanceKind.Dance ? _danceCueFeats : _musicCueFeats;
+                for (var slot = 0; slot < cueFeats.Length; slot++)
+                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(cueFeats[slot]));
 
-            PlayerPlugin.SetQuickBarSlot(player, FlourishSlot, PlayerQuickBarSlot.UseFeat(FeatType.PerformanceFlourish));
+                PlayerPlugin.SetQuickBarSlot(player, FlourishSlot, PlayerQuickBarSlot.UseFeat(FeatType.PerformanceFlourish));
+            }
+
             PlayerPlugin.SetQuickBarSlot(player, OptionsSlot, PlayerQuickBarSlot.UseFeat(FeatType.PerformanceOptions));
             PlayerPlugin.SetQuickBarSlot(player, StopSlot, PlayerQuickBarSlot.UseFeat(toggleFeat));
         }
@@ -720,8 +780,40 @@ namespace SWLOR.Game.Server.Service
                 PlayThenLoop(session, clip);
         }
 
-        private static string GetEndMessage(PerformanceEndReason reason)
+        private static string GetStartMessage(PerformanceKind kind, bool roleplay)
         {
+            if (roleplay)
+            {
+                return kind == PerformanceKind.Dance
+                    ? $"You begin to dance in Roleplay mode. {RoleplayKeepGoingText}"
+                    : $"You begin to play in Roleplay mode. {RoleplayKeepGoingText}";
+            }
+
+            return kind == PerformanceKind.Dance
+                ? "You begin to dance. Use the step buttons on your hot bar to match the cues, or switch to Roleplay mode under Options."
+                : "You begin to play. Use the note buttons on your hot bar to match the cues, or switch to Roleplay mode under Options.";
+        }
+
+        private static string GetModeMessage(PerformanceKind kind, bool roleplay)
+        {
+            if (roleplay)
+                return $"Roleplay mode: no cues, and your audience banks Inspired at the Rough rate. {RoleplayKeepGoingText}";
+
+            return kind == PerformanceKind.Dance
+                ? "Active play: use the step buttons on your hot bar to match the cues."
+                : "Active play: use the note buttons on your hot bar to match the cues.";
+        }
+
+        private static string RoleplayKeepGoingText =>
+            $"Talk or emote at least once every {RoleplayIdleMinutes} minutes to keep performing.";
+
+        private static int RoleplayIdleMinutes => (int)(PerformanceMath.RoleplayIdleTimeoutSeconds / 60);
+
+        private static string GetEndMessage(PerformanceEndReason reason, bool roleplay)
+        {
+            if (reason == PerformanceEndReason.Idle && roleplay)
+                return $"Your performance ends because you were quiet for {RoleplayIdleMinutes} minutes.";
+
             return reason switch
             {
                 PerformanceEndReason.Stopped => "You finish your performance.",

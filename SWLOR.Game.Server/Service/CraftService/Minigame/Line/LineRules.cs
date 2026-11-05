@@ -73,8 +73,8 @@ public static class LineRules
     public const int TireWeightMinimum = 2;
 
     // The pace of the fight. A turn takes the player this many seconds, reading the previews included; the CraftSim study and the XP
-    // multipliers below assume it. The fishing lifecycle enforces it as the least time between two actions (the first is free), so
-    // fast clicking cannot finish a fight in seconds and be paid the multiplier for it.
+    // multipliers below assume it. Moves are never held back; FightXpShare pays a fight played faster than this pace in proportion
+    // to the time it took, so fast clicking cannot finish a fight in seconds and be paid the multiplier for it.
     public const double TurnSeconds = 8.0;
 
     // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first turns of a fight (the perk sets how many,
@@ -89,7 +89,7 @@ public static class LineRules
     // turns of TurnSeconds to that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the
     // bite, caught or not. The
     // rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), in proportion to how long the
-    // fight lasted up to XpFullTurns turns (XpShare), so neither abandoning a fight to cast again nor losing it on purpose in one
+    // fight lasted up to XpFullTurns turns (FightXpShare), so neither abandoning a fight to cast again nor losing it on purpose in one
     // move earns more per hour than today. Starting values until client timing replaces the seconds per turn; 1.0 in every band
     // restores today's XP per bite.
     public const int XpFullTurns = 5;
@@ -107,12 +107,21 @@ public static class LineRules
         fightSeconds <= 0 ? 0 : Math.Min(1.0, fightSeconds / (XpFullTurns * TurnSeconds));
 
     /// <summary>
-    /// The seconds of a fight that count toward <see cref="XpShare"/>: the time it lasted, but never more than the turns the angler
-    /// actually took at <see cref="TurnSeconds"/> each. A window left open without acting adds wall-clock time but no turns, so idling
-    /// earns nothing extra; a fight played at the pace the XP multipliers assume is measured as it lasted.
+    /// The share, from 0 to 1, of a fight's multiplied XP that a fight of <paramref name="turnsTaken"/> actions lasting
+    /// <paramref name="wallSeconds"/> has earned. The turns set the share at the tuned pace (<see cref="XpShare"/> of the turns at
+    /// <see cref="TurnSeconds"/> each), and a fight played faster than that pace earns that share in proportion to the time it took.
+    /// Moves are never held back, so without this a long fight timed to last exactly <see cref="XpFullTurns"/> turns' time would earn
+    /// the full share early (about 1.2x the XP per hour of the tuned pace in CraftSim); with it no pace earns more per hour than the
+    /// tuned pace or Quick Reel. A window left open without acting adds time but no turns, so idling earns nothing extra.
     /// </summary>
-    public static double CountedFightSeconds(double wallSeconds, int turnsTaken) =>
-        Math.Max(0, Math.Min(wallSeconds, Math.Max(0, turnsTaken) * TurnSeconds));
+    public static double FightXpShare(double wallSeconds, int turnsTaken)
+    {
+        if (turnsTaken <= 0 || wallSeconds <= 0)
+            return 0;
+
+        var tunedSeconds = turnsTaken * TurnSeconds;
+        return XpShare(tunedSeconds) * Math.Min(1.0, wallSeconds / tunedSeconds);
+    }
 
     /// <summary>The multiplier on the XP of a bite from a fish of the level. A level of 0 or less takes the lowest band's.</summary>
     public static double XpMultiplierForLevel(int fishLevel) => fishLevel switch

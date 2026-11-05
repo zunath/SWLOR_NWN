@@ -21,7 +21,9 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - Never touch `C:\Projects\SWLOR_NWN` itself or any other worktree. Never stash, reset or check out in a
   shared checkout. Stop only processes you started, by PID. Scope every search to the repository.
 - If your file-editing tool refuses paths outside the session's worktree, switch into your own worktree with
-  the EnterWorktree tool (path=...) after creating it.
+  the EnterWorktree tool, always passing `path=` with the worktree you created (`...\worktrees\mr-<item id>`). The
+  session's default worktree belongs to the coordinator: never run `git switch`, `checkout`, `commit`, `rebase` or
+  `push` there. Before every commit and push, check that `git branch --show-current` prints your own branch.
 - Scratch files (coverage reports, logs, probes) go in your own folder `C:\Temp\mr-<item id>\`, never in a shared
   scratchpad; delete it at the end unless the report cites it.
 - Builds: `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`. If a build fails in seconds with

@@ -17,9 +17,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var sniper = ctx.SpawnCreature("nw_bandit001");
             var plain = ctx.SpawnCreature("nw_bandit001", 0f, 2f);
             var nearTarget = ctx.SpawnCreature("nw_rat001", 5f);
+            var boundaryTarget = ctx.SpawnCreature("nw_rat001", 10f);
             var farTarget = ctx.SpawnCreature("nw_rat001", 12f);
             await ctx.WaitFrameAsync();
-            foreach (var creature in new[] { sniper, plain, nearTarget, farTarget })
+            foreach (var creature in new[] { sniper, plain, nearTarget, boundaryTarget, farTarget })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
@@ -35,12 +36,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // The shared percent helper rounds up, so +15% of 100 is whatever it returns for 15.
             var boosted = Combat.ApplyPercentDamageAdjustment(100, 15);
             ctx.Assert(boosted > 100, "a +15% adjustment raises damage");
+            ctx.Assert(GetDistanceBetween(sniper, boundaryTarget) >= 10f,
+                $"the boundary target sits at 10m (measured {GetDistanceBetween(sniper, boundaryTarget):0.000}m)");
             foreach (var skill in new[] { SkillType.Rifle, SkillType.Pistol, SkillType.Throwing })
             {
                 ctx.AssertEqual(boosted, AbilityDamage(sniper, farTarget, skill),
                     $"{skill} ability at 12m gains Sniper Stance's +15%");
                 ctx.AssertEqual(100, AbilityDamage(sniper, nearTarget, skill),
                     $"{skill} ability at 5m is not long range");
+                ctx.AssertEqual(boosted, AbilityDamage(sniper, boundaryTarget, skill),
+                    $"{skill} ability at exactly 10m is long range (the threshold is inclusive)");
                 ctx.AssertEqual(100, AbilityDamage(plain, farTarget, skill),
                     $"{skill} ability without Sniper Stance is unchanged");
             }

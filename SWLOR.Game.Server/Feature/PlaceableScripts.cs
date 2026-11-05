@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -18,7 +17,6 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
-        /// DESTINATION_PLANET_ID blocks players from entering a planet that is closed (see Planet.TryGetClosedMessage).
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableTeleport)]
         public static void UseTeleportDevice()
@@ -44,16 +42,6 @@ namespace SWLOR.Game.Server.Feature
             var teleportPartyMembers = GetLocalBool(device, "TELEPORT_PARTY_MEMBERS");
             if (string.IsNullOrWhiteSpace(missingKeyItemMessage))
                 missingKeyItemMessage = "You don't have the necessary key item to access this object.";
-
-            var destinationPlanetId = GetLocalInt(device, "DESTINATION_PLANET_ID");
-            if (destinationPlanetId > 0 &&
-                !GetIsDM(user) &&
-                !GetIsDMPossessed(user) &&
-                Planet.TryGetClosedMessage((PlanetType)destinationPlanetId, out var closedMessage))
-            {
-                SendMessageToPC(user, ColorToken.Red(closedMessage));
-                return;
-            }
 
             if (requiredKeyItemId > 0)
             {

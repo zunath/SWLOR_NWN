@@ -255,18 +255,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var hasPendingStage = job == null || (now >= job.DateCompleted && job.CurrentStage < NumberOfStages);
 
             RefreshButtons(job);
-            RefreshHeader(job, now);
+            RefreshHeader(job);
             RefreshStageTracker(job, now);
             RefreshEnzymeTotals(job);
             RefreshPurities(hasPendingStage);
             RefreshMutation(job, hasPendingStage);
-            RefreshRecipes(job, now, hasPendingStage);
+            RefreshRecipes(job, hasPendingStage);
             RefreshOutcomes(job, now);
         }
 
-        private void RefreshHeader(IncubationJob job, DateTime now)
+        private void RefreshHeader(IncubationJob job)
         {
-            ServerDayText = $"Server day: {now.DayOfWeek} (UTC)";
+            ServerDayText = $"Server day: {DescribeServerDay(GetObjectUUID(Player))}";
             IsDNASlotEnabled = job == null;
             DNASlotTooltip = job == null
                 ? (string.IsNullOrWhiteSpace(_dnaItem) ? "Add DNA" : "Remove DNA")
@@ -284,6 +284,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beast = BeastMastery.GetBeastDetail(_dnaType);
             BeastName = $"{beast.Name} DNA";
             BeastSubtitle = $"{beast.Role} role";
+        }
+
+        /// <summary>"Wednesday (UTC)", or "Sunday (test)" while a tester's /incubationday override is set.</summary>
+        private static string DescribeServerDay(string playerId)
+        {
+            var suffix = IncubationTestTools.HasDayOverride(playerId) ? "test" : "UTC";
+            return $"{IncubationTestTools.GetServerDay(playerId)} ({suffix})";
         }
 
         private void RefreshStageTracker(IncubationJob job, DateTime now)
@@ -460,7 +467,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MutationChanceColor = GuiColor.White;
         }
 
-        private void RefreshRecipes(IncubationJob job, DateTime now, bool hasPendingStage)
+        private void RefreshRecipes(IncubationJob job, bool hasPendingStage)
         {
             var lines = new GuiBindingList<string>();
             var colors = new GuiBindingList<GuiColor>();
@@ -484,6 +491,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 hasPendingStage);
 
             var unknown = 0;
+            var today = IncubationTestTools.GetServerDay(GetObjectUUID(Player));
             foreach (var mutation in beast.PossibleMutations)
             {
                 if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||
@@ -493,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
                 }
 
-                var report = projection.Evaluate(mutation, now);
+                var report = projection.Evaluate(mutation, today);
                 lines.Add(BeastMastery.GetBeastDetail(mutation.Type).Name);
                 colors.Add(GuiColor.White);
 
@@ -549,7 +557,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     colors.Add(outcome.Type == job.BeastDNAType ? GuiColor.White : MetColor);
                 }
 
-                OutcomeHeader = $"Outcomes if completed now ({now.DayOfWeek} UTC)";
+                OutcomeHeader = $"Outcomes if completed now - {DescribeServerDay(job.PlayerId)}";
             }
             else
             {

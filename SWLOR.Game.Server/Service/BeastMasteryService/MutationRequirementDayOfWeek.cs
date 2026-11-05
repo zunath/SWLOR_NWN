@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
         public string CheckRequirements(IncubationJob job)
         {
-            var now = DateTime.UtcNow;
+            var today = IncubationTestTools.GetServerDay(job?.PlayerId);
 
-            if (!IsMetOn(now.DayOfWeek))
+            if (!IsMetOn(today))
             {
-                return $"Must be completed on {DescribeDays()} (server time, UTC). Today is {now.DayOfWeek}.";
+                return $"Must be completed on {DescribeDays()} (server time, UTC). Today is {today}.";
             }
 
             return string.Empty;

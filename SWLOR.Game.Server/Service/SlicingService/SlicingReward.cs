@@ -26,9 +26,24 @@ namespace SWLOR.Game.Server.Service.SlicingService
             new[] { "espn_neck_5", "espn_belt_5", "espn_ring_5" }
         };
 
-        public static SlicingRewardCategory GetCategoryForRoll(int roll)
+        /// <summary>
+        /// Lowest tier that uses the high-tier reward weights and supply quantities. Tier 4 and 5
+        /// boards are the hardest, so their bonus leans toward named items, schematics, and field
+        /// notes instead of more tools.
+        /// </summary>
+        public const int HighTierRewardMinimumTier = 4;
+
+        public static SlicingRewardCategory GetCategoryForRoll(int tier, int roll)
         {
             var normalized = Normalize(roll, 10000);
+            if (tier >= HighTierRewardMinimumTier)
+            {
+                if (normalized < 5000) return SlicingRewardCategory.Tool;
+                if (normalized < 8000) return SlicingRewardCategory.NamedItem;
+                if (normalized < 9200) return SlicingRewardCategory.Schematic;
+                return SlicingRewardCategory.FieldNote;
+            }
+
             if (normalized < 8000) return SlicingRewardCategory.Tool;
             if (normalized < 9200) return SlicingRewardCategory.NamedItem;
             if (normalized < 9800) return SlicingRewardCategory.Schematic;
@@ -51,6 +66,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 throw new ArgumentOutOfRangeException(nameof(tier));
 
             var pool = _commonItems[tier];
+            var (minimumQuantity, quantityCount) = tier >= HighTierRewardMinimumTier ? (5, 4) : (3, 3);
             return new SlicingRewardEntry
             {
                 Source = source,
@@ -59,7 +75,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Name = "Recovered supplies",
                 Category = SlicingRewardCategory.Common,
                 IsNewDirectReward = false,
-                Quantity = 3 + Normalize(suppliesRoll / pool.Length, 3)
+                Quantity = minimumQuantity + Normalize(suppliesRoll / pool.Length, quantityCount)
             };
         }
 
@@ -68,7 +84,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (tier < 1 || tier > 5)
                 throw new ArgumentOutOfRangeException(nameof(tier));
 
-            var category = GetCategoryForRoll(categoryRoll);
+            var category = GetCategoryForRoll(tier, categoryRoll);
             if (category == SlicingRewardCategory.NamedItem)
                 return RollNamed(source, tier, itemRoll);
 

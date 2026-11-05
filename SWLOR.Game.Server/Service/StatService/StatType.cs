@@ -4376,6 +4376,13 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedMovementSpeedDurationSeconds = 769,
 
         /// <summary>
+        /// Lets AbilityUsedMovementSpeedPercentAdjustment trigger from any hostile ranged weapon ability
+        /// instead of only the AbilityUsedMovementSpeedPercentAdjustmentSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityUsedMovementSpeedRangedOnly = 1327,
+
+        /// <summary>
         /// Damage dealt percent applied to close targets hit by a ranged ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -5463,6 +5470,13 @@ namespace SWLOR.Game.Server.Service.StatService
         SecondaryAbilityUsedEvasionDurationSeconds = 957,
 
         /// <summary>
+        /// Lets the second footwork Evasion channel trigger from any hostile ranged weapon ability
+        /// instead of only the SecondaryAbilityUsedEvasionPercentAdjustmentSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SecondaryAbilityUsedEvasionRangedOnly = 1328,
+
+        /// <summary>
         /// Flat Stamina cost adjustment applied to every hostile combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -5773,6 +5787,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
+
+        /// <summary>
+        /// Lets AbilityUsedRangedDeflection trigger from any hostile ranged weapon ability
+        /// instead of only the AbilityUsedRangedDeflectionSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityUsedRangedDeflectionRangedOnly = 1329,
 
         /// <summary>
         /// When enabled, weapon auto-attacks and hostile weapon abilities use no

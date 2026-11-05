@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 
@@ -14,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class ActivityEngineTests
 {
     private const uint Player = 1001;
+
+    // The facade resolves the busy-status instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
 
     /// <summary>Checks that marking a target busy writes the busy flag and the activity type as local variables.</summary>
     [Test]

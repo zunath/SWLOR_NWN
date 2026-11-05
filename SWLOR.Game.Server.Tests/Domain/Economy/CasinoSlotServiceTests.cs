@@ -568,6 +568,8 @@ public class CasinoSlotServiceTests
 
         public long SearchCount<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchCount(query);
 
+        public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
+
         public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
     }

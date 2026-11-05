@@ -22,9 +22,20 @@ public class ConversationServiceTests
     private ConversationBench _bench = null!;
     private TestableConversationService _service = null!;
 
+    // The converted busy-status and player-name facades resolve their instances from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _bench = new ConversationBench();
         _service = new TestableConversationService(_bench);
     }
@@ -32,6 +43,7 @@ public class ConversationServiceTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _bench.Dispose();
     }
 

@@ -34,9 +34,20 @@ public class CommunicationChatTests
 
     private CommunicationBench _bench = null!;
 
+    // The converted busy-status and player-name facades resolve their instances from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _bench = new CommunicationBench();
         _bench.AddPlayer(Alice, area: Cantina);
         _bench.AddPlayer(Bob, area: Cantina);
@@ -45,6 +56,7 @@ public class CommunicationChatTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _bench.Dispose();
     }
 

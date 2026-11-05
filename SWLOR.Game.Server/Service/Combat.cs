@@ -1100,6 +1100,7 @@ namespace SWLOR.Game.Server.Service
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplyPhysicalAbilityShapeDamageModifier(attacker, damageType, damage, isSingleTarget);
                 damage = ApplyAreaAbilityAfterDeflectionDamageModifier(attacker, skillType, damage, isArea);
+                damage = ApplyRangedAbilityLongRangeDamageModifier(attacker, defender, skillType, damage);
             }
 
             damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
@@ -4796,6 +4797,24 @@ namespace SWLOR.Game.Server.Service
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.SkillAreaAbilityDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        public static int ApplyRangedAbilityLongRangeDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !IsRangedAbilityLongRangeTarget(attacker, defender, skillType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.RangedAbilityLongRangeDamagePercentAdjustment);
             if (adjustment == 0)
                 return damage;
 

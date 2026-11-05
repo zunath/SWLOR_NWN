@@ -49,11 +49,11 @@ public class StarportFlightsTerminalPlacementTests
             foreach (var terminal in ReadTerminals(git.RootElement))
             {
                 // A generic name is vague but not wrong; a planet name must be the terminal's own origin.
-                if (terminal.Name == GenericTerminalName)
-                    continue;
-
+                // The station's lone terminal is named after the station itself.
                 var planetName = Planet.GetPlanetByType(terminal.Planet).Name;
-                if (!terminal.Name.StartsWith(planetName, StringComparison.Ordinal))
+                if (terminal.Name != GenericTerminalName &&
+                    terminal.Name != planetName &&
+                    terminal.Name != $"{planetName} {GenericTerminalName}")
                     failures.Add($"{resref}: '{terminal.Name}' sells flights from {planetName}");
             }
         }

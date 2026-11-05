@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         private const int FallbackStripRow = -8;
         private const float FallbackStripOverlapSeconds = 0.5f;
 
-        private static Gui.IdReservation _fallbackStrip;
+        private static IdReservation _fallbackStrip;
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ReserveGuiIds()

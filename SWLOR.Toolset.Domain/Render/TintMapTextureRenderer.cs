@@ -105,6 +105,35 @@ namespace SWLOR.Toolset.Domain.Render
                     standardDdsRowOrder: DdsStoredRowOrder.BottomUp)
                 : null;
 
+            // The color selection depends only on the layer, so resolve each layer once rather than
+            // repeating the nearest-swatch search for every pixel.
+            var layerTints = new (bool IsCustom, TintMapColor CustomColor, int PaletteIndex)[10];
+            for (var layerValue = 0; layerValue < layerTints.Length; layerValue++)
+            {
+                var tintLayer = (TintMapLayerType)layerValue;
+                var savedValue = TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    materialName,
+                    tintLayer,
+                    armorPart);
+
+                var isCustom = TintMapColor.TryFromStoredValue(savedValue, out var customColor);
+                var paletteIndex = isCustom
+                    // Custom RGB is shaded with its nearest palette swatch's row, like the tint shaders.
+                    ? TintMapPaletteColors.GetClosestColorId(tintLayer, customColor)
+                    : savedValue > 0 &&
+                      savedValue <= TintMapMaterialRegistry.PaletteColorCount
+                        ? savedValue - 1
+                        : layerColorIndices != null &&
+                          layerColorIndices.TryGetValue(layerValue, out var standardIndex)
+                            ? standardIndex
+                            : 0;
+                layerTints[layerValue] = (isCustom, customColor, Math.Clamp(
+                    paletteIndex,
+                    0,
+                    TintMapMaterialRegistry.PaletteColorCount - 1));
+            }
+
             var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];
             for (var pixel = 0; pixel < tintMap.Width * tintMap.Height; pixel++)
             {
@@ -114,27 +143,7 @@ namespace SWLOR.Toolset.Domain.Render
                     tintMap.Pixels[offset + 1] * 10 / byte.MaxValue,
                     0,
                     9);
-                var savedValue = TintMapOverrides.GetMaterialColor(
-                    overrides,
-                    materialName,
-                    layer,
-                    armorPart);
-
-                var isCustom = TintMapColor.TryFromStoredValue(savedValue, out var customColor);
-                var paletteIndex = isCustom
-                    // Custom RGB is shaded with its nearest palette swatch's row, like the tint shaders.
-                    ? TintMapPaletteColors.GetClosestColorId(layer, customColor)
-                    : savedValue > 0 &&
-                      savedValue <= TintMapMaterialRegistry.PaletteColorCount
-                        ? savedValue - 1
-                        : layerColorIndices != null &&
-                          layerColorIndices.TryGetValue((int)layer, out var standardIndex)
-                            ? standardIndex
-                            : 0;
-                paletteIndex = Math.Clamp(
-                    paletteIndex,
-                    0,
-                    TintMapMaterialRegistry.PaletteColorCount - 1);
+                var (isCustom, customColor, paletteIndex) = layerTints[(int)layer];
 
                 var definition = TintMapMaterialRegistry.GetLayer(layer);
                 var paletteX = shade * (palette.Width - 1) / 255;

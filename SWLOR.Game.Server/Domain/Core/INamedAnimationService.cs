@@ -16,10 +16,20 @@ namespace SWLOR.Game.Server.Domain.Core
         void Queue(uint creature, AnimationClip clip, float? durationSeconds = null,
             AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted);
 
-        /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
+        /// <summary>
+        /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
+        /// holdMode chooses how the main-hand item's native holding layer is treated (see <see cref="NamedAnimationHold"/>).
+        /// </summary>
         string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
             AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
-            bool fitToDuration = false);
+            bool fitToDuration = false, NamedAnimationHold holdMode = NamedAnimationHold.Auto);
+
+        /// <summary>
+        /// True when a clip can loop for longer than its own length on this creature. A held weapon (rifle, cannon, two-handed or polearm)
+        /// is played through a one-shot carrier that scales the clip to fit the duration, so an open-ended loop is not possible there and
+        /// callers keep the native pose.
+        /// </summary>
+        bool CanLoop(uint creature);
 
         /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
         bool StopIfCurrent(uint creature, string token);

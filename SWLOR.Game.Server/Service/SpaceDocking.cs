@@ -286,6 +286,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            if (RefuseLeavingControlsInPvp(player))
+                return false;
+
             if (!Property.TryGetLoadedInstance(host.PropertyId, out var hostInstance))
             {
                 SendMessageToPC(player, ColorToken.Red("That ship's interior is not ready. Please try again shortly."));

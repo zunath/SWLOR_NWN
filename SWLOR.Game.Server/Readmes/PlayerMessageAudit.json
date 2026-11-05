@@ -911,7 +911,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpaceChatCommand.cs",
-    "Line": 110,
+    "Line": 114,
     "Member": "IncursionCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, Space.DescribeIncursion(user))"
@@ -7869,203 +7869,203 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 255,
+    "Line": 258,
     "Member": "BoardDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(DerelictRules.DescribeRefusal(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 262,
+    "Line": 265,
     "Member": "BoardDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your ship's interior is not ready. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 269,
+    "Line": 272,
     "Member": "BoardDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The derelict's interior cannot be reached right now.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 306,
+    "Line": 309,
     "Member": "BoardDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You dock {shipName} at the {boarding.Name} and board it. Its airlock leads back to your ship; \" +\n                                    $\"undock from the ship's computer or with /undock.{warning}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 309,
+    "Line": 312,
     "Member": "BoardDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(passenger, $\"{shipName} docks at the {boarding.Name}, and you board it.{warning}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 540,
+    "Line": 543,
     "Member": "UseDerelictAirlock",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You cross back aboard {GetShipName(ship)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 591,
+    "Line": 594,
     "Member": "SendBoarderHome",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You make your way back aboard {GetShipName(ship)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 595,
+    "Line": 598,
     "Member": "SendBoarderHome",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your ship cannot take you aboard, so you catch a ride back to its dock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 599,
+    "Line": 602,
     "Member": "SendBoarderHome",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your ship cannot be reached, so you catch a ride back to safety.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 635,
+    "Line": 638,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Leave the controls or your station before undocking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 642,
+    "Line": 645,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship is not docked at a derelict.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 648,
+    "Line": 651,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 654,
+    "Line": 657,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 662,
+    "Line": 665,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The derelict's system cannot be reached right now. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 672,
+    "Line": 675,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 684,
+    "Line": 687,
     "Member": "UndockFromDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You undock {GetShipName(ship)} from the {boarding.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 717,
+    "Line": 720,
     "Member": "CompleteDerelictUndock",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, $\"{shipName} undocks from the {boarding.Name}, and you return aboard it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 751,
+    "Line": 754,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"The strongbox's maglock holds while hostiles remain aboard ({left} left).\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 781,
+    "Line": 784,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(boarder, ColorToken.Green($\"You crack the {boarding.Name}'s strongbox: {credits} credits and {lockboxes} sealed lockbox{(lockboxes == 1 ? string.Empty : \"es\")}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 783,
+    "Line": 786,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(boarder, ColorToken.Red($\"Your inventory is full. {dropped} lockbox{(dropped == 1 ? \" was\" : \"es were\")} left at your feet.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 793,
+    "Line": 796,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, ColorToken.Green($\"Your boarders crack the {boarding.Name}'s strongbox: your share for holding the line is {defenderCredits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 813,
+    "Line": 816,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You must be piloting a starship to send a salvage team.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 824,
+    "Line": 827,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(DerelictRules.DescribeRefusal(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 863,
+    "Line": 866,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your salvage team ({names}, Industry {industry}) crosses to the derelict. They need \" +\n                                    $\"{seconds / 60.0:0.#} minutes of work; stay within {DerelictTuning.SalvageTetherMeters:0} meters.{warning}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 885,
+    "Line": 888,
     "Member": "ProcessSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(\"Your ship pulled away from the derelict, so your salvage team comes back empty-handed.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 907,
+    "Line": 910,
     "Member": "ProcessSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Green($\"Your salvage team strips the derelict and comes back with {credits} credits, {scrap} Ship Scrap and a find.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 996,
+    "Line": 999,
     "Member": "ReinforceDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"With no ship defending the derelict, enemy boarders cut their way in at the airlock!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 1092,
+    "Line": 1095,
     "Member": "EndDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetShipName(ship)} was docked at a derelict that broke apart, and it was towed back to its last dock.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 1099,
+    "Line": 1102,
     "Member": "EndDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The {boarding.Name} is breaking apart!\"))"
@@ -8093,147 +8093,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 291,
+    "Line": 294,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That ship's interior is not ready. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 333,
+    "Line": 336,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You dock {visitorName} aboard {hostName}. To undock, use {hostName}'s computer or type /undock aboard it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 334,
+    "Line": 337,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, $\"{PlayerName.GetDisplayName(target, player)} docks {visitorName} aboard your ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 336,
+    "Line": 339,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(passenger, $\"{visitorName} docks aboard {hostName}, and you go aboard with it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 357,
+    "Line": 360,
     "Member": "UndockFromInterior",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"No ship you may pilot is docked aboard this ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 375,
+    "Line": 378,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Leave the controls or your station before undocking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 383,
+    "Line": 386,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That ship is not docked aboard this one.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 389,
+    "Line": 392,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 395,
+    "Line": 398,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 411,
+    "Line": 414,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{hostName} is not in space or at a dock, so {visitorName} cannot undock. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 414,
+    "Line": 417,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{ShipAccessRules.DescribeStarportRefusal(dockRefusal, ShipSize.Invalid)} {visitorName} stays aboard until {hostName} is in space or at a dock that takes it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 419,
+    "Line": 422,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{visitorName} undocks from {hostName} and is now docked at this starport.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 427,
+    "Line": 430,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{hostName} is between systems. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 435,
+    "Line": 438,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{visitorName} is not part of this Rift Run, so it cannot undock in the pocket. It stays aboard until {hostName} leaves.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 449,
+    "Line": 452,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 460,
+    "Line": 463,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You undock {visitorName} from {hostName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 484,
+    "Line": 487,
     "Member": "CompleteUndockLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(hostPilot, $\"{visitorName} undocks from your ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 500,
+    "Line": 503,
     "Member": "CompleteUndockLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, $\"{visitorName} undocks from {hostName}, and you return aboard it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 616,
+    "Line": 619,
     "Member": "UndockAllToStarport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{visitorName} was docked aboard {hostName}, which {reason}. It undocks and is now docked at a starport.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 721,
+    "Line": 724,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back to {visitorName} and take its controls.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 726,
+    "Line": 729,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back aboard {visitorName}.\"))"
@@ -8454,6 +8454,13 @@
     "Member": "SetPowerRouting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, $\"{PlayerName.GetDisplayName(ship, player)}: {message}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpacePvp.cs",
+    "Line": 104,
+    "Member": "RefuseLeavingControlsInPvp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"A hostile player's ship hit you moments ago. You cannot leave the controls for another {left} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
@@ -8702,7 +8709,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 320,
+    "Line": 324,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"

@@ -363,6 +363,9 @@ public class ScanningTests
         var sweep = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceSignatureJump.cs")).Replace("\r\n", "\n");
         sweep = sweep.Substring(sweep.IndexOf("public static bool RunSensorSweep(", StringComparison.Ordinal));
         sweep.Should().Contain("var launcher = GetBestWorkedProbeLauncher(player, status);");
+        sweep.IndexOf("if (IsAtCrewStation(ship))", StringComparison.Ordinal)
+            .Should().BeInRange(0, sweep.IndexOf("var shipStatus = GetShipStatus(ship);", StringComparison.Ordinal),
+                "station crew and viewport passengers beside their pilot are no contact of their own");
         sweep.IndexOf("var launcher = GetBestWorkedProbeLauncher(player, status);", StringComparison.Ordinal)
             .Should().BeLessThan(sweep.IndexOf("launcher.SweepRange", StringComparison.Ordinal), "the range and cloak reveal come from the worked launcher");
     }

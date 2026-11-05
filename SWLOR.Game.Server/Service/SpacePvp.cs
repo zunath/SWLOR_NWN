@@ -89,6 +89,22 @@ namespace SWLOR.Game.Server.Service
         /// <summary>When a hostile player's shot last hit the ship (Unix seconds), for the death and logout rules.</summary>
         private const string PvpShipHitVariable = "SPACE_PVP_SHIP_HIT_AT";
 
+        /// <summary>
+        /// Refuses leaving the controls (the /exit command, docking aboard a ship, boarding a derelict) while a hostile player's
+        /// shot hit the ship in Wild Space within <see cref="SpaceDeathRules.PvpStakesSeconds"/>: logging out then forfeits
+        /// the ship, and a pilot out of the controls would log out without that check.
+        /// </summary>
+        public static bool RefuseLeavingControlsInPvp(uint player)
+        {
+            var seconds = GetSecondsSincePvpShipHit(player);
+            if (!SpaceDeathRules.LogoutForfeitsShip(IsWildSpace(GetArea(player)), seconds))
+                return false;
+
+            var left = Math.Max(1, SpaceDeathRules.PvpStakesSeconds - (int)seconds);
+            SendMessageToPC(player, ColorToken.Red($"A hostile player's ship hit you moments ago. You cannot leave the controls for another {left} seconds."));
+            return true;
+        }
+
         /// <summary>Seconds since a hostile player's shot last hit the ship, or <see cref="double.MaxValue"/> when none has.</summary>
         private static double GetSecondsSincePvpShipHit(uint ship)
         {

@@ -38,6 +38,31 @@ public class SpaceDeathRulesTests
                 "the ship is forfeited before it would be left in space as a clone");
     }
 
+    [Test]
+    public void APilotHitByAHostilePlayer_CannotLeaveTheControlsToDodgeTheLogoutForfeiture()
+    {
+        string Read(params string[] parts) =>
+            System.IO.File.ReadAllText(System.IO.Path.Combine(new[] { FindRoot(), "SWLOR.Game.Server" }.Concat(parts).ToArray())).Replace("\r\n", "\n");
+
+        var pvp = Read("Service", "SpacePvp.cs");
+        var refuse = pvp[pvp.IndexOf("public static bool RefuseLeavingControlsInPvp(", StringComparison.Ordinal)..];
+        refuse.Should().Contain("SpaceDeathRules.LogoutForfeitsShip(IsWildSpace(GetArea(player)), seconds)",
+            "the same window that forfeits a logged-out ship keeps the pilot at the controls");
+
+        // Enmity leaves out player-versus-player fights, so every way out of the controls asks the PvP window too.
+        var exit = Read("Feature", "ChatCommandDefinition", "SpaceChatCommand.cs");
+        exit.IndexOf("if (Space.RefuseLeavingControlsInPvp(user))", StringComparison.Ordinal)
+            .Should().BeInRange(0, exit.IndexOf("Space.WarpPlayerInsideShip(user);", StringComparison.Ordinal));
+        var derelicts = Read("Service", "SpaceDerelicts.cs");
+        var board = derelicts[derelicts.IndexOf("public static bool BoardDerelict(", StringComparison.Ordinal)..];
+        board.IndexOf("if (RefuseLeavingControlsInPvp(player))", StringComparison.Ordinal)
+            .Should().BeInRange(0, board.IndexOf("ExitSpaceMode(player);", StringComparison.Ordinal));
+        var docking = Read("Service", "SpaceDocking.cs");
+        var dock = docking[docking.IndexOf("public static bool DockWithTarget(", StringComparison.Ordinal)..];
+        dock.IndexOf("if (RefuseLeavingControlsInPvp(player))", StringComparison.Ordinal)
+            .Should().BeInRange(0, dock.IndexOf("ExitSpaceMode(player);", StringComparison.Ordinal));
+    }
+
     private static string FindRoot()
     {
         for (var directory = new System.IO.DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)

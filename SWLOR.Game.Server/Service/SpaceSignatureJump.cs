@@ -291,6 +291,10 @@ namespace SWLOR.Game.Server.Service
                 if (ship == player || !GetIsObjectValid(ship) || GetIsDead(ship))
                     continue;
 
+                // Station crew and viewport passengers stand beside their pilot: their own registered ships are docked.
+                if (IsAtCrewStation(ship))
+                    continue;
+
                 var shipStatus = GetShipStatus(ship);
                 if (shipStatus == null)
                     continue;

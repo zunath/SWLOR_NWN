@@ -248,6 +248,9 @@ namespace SWLOR.Game.Server.Service
             if (RefuseWhileInterdicted(player))
                 return false;
 
+            if (RefuseLeavingControlsInPvp(player))
+                return false;
+
             TryGetTargetDerelict(player, out var wreck, out var signature);
             var refusal = DerelictRules.GetBoardRefusal(BuildDerelictRequest(player, ship, wreck, signature));
             if (refusal != DerelictRefusal.None)

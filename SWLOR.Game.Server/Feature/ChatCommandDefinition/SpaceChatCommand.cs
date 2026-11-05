@@ -50,6 +50,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    // Enmity leaves out player-versus-player fights, so a pilot a hostile player just hit stays at the controls.
+                    if (Space.RefuseLeavingControlsInPvp(user))
+                        return;
+
                     Space.WarpPlayerInsideShip(user);
                 });
         }

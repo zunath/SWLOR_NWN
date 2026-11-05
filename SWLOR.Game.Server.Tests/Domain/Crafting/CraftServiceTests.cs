@@ -199,6 +199,19 @@ public class CraftServiceTests
         _service.IsItemComponent(OBJECT_INVALID_FOR_TESTS).Should().BeFalse();
     }
 
+    [Test]
+    public void IsResearchableRecipe_is_the_private_rule_the_simulator_reads_by_name()
+    {
+        var method = typeof(CraftService).GetMethod("IsResearchableRecipe", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        method.Should().NotBeNull("SWLOR.CraftSim's ServerResearchRules finds the rule by this name");
+
+        foreach (var type in Enum.GetValues<RecipeEnhancementType>())
+        {
+            var expected = type is RecipeEnhancementType.Weapon or RecipeEnhancementType.Armor or RecipeEnhancementType.Food;
+            method!.Invoke(_service, new object[] { new RecipeDetail { EnhancementType = type } }).Should().Be(expected, type.ToString());
+        }
+    }
+
     // ---- lookups
 
     [Test]

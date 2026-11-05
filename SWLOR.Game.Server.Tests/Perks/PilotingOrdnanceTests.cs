@@ -180,12 +180,12 @@ public class PilotingOrdnanceTests
         effects[creature] = stance;
         try
         {
-            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, true, false).Should().Be(90,
-                "single-target thrown damage is reduced by 10%");
-            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, false, true).Should().Be(110,
+            Combat.ApplyThrowingSingleTargetDamageModifier(creature, SkillType.Throwing, 100, false, null).Should().Be(90,
+                "a thrown auto-attack is single-target damage, reduced by 10%");
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, true).Should().Be(110,
                 "thrown area abilities deal +10% damage");
-            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, false, false).Should().Be(100);
-            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Rifle, 100, true, false).Should().Be(100,
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, false).Should().Be(100);
+            Combat.ApplyThrowingSingleTargetDamageModifier(creature, SkillType.Rifle, 100, false, null).Should().Be(100,
                 "only Throwing damage takes the stance");
         }
         finally
@@ -195,9 +195,9 @@ public class PilotingOrdnanceTests
 
         var source = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..",
             "SWLOR.Game.Server", "Service", "Combat.cs"));
-        source.Should().Contain("ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea)");
-        source.Should().Contain("ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, true, false)",
-            "a thrown auto-attack is single-target damage");
+        source.Should().Contain("ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isArea)");
+        source.Should().Contain("damage = ApplyThrowingSingleTargetDamageModifier(attacker, skillType, damage, isAbilityDamage, ability);",
+            "thrown auto-attacks and single-target Throwing abilities take the single-target penalty");
     }
 
     [Test]

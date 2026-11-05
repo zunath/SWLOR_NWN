@@ -82,7 +82,8 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             "Spotter's Rhythm": "SameTargetPressureBuildSkillType",
         }
         with GENERATOR.MANIFEST.open(encoding="utf-8-sig", newline="") as source:
-            rows = {row["PerkName"]: row for row in csv.DictReader(source)}
+            # Only weapon skill tabs: a Piloting perk can share a ground perk's name.
+            rows = {row["PerkName"]: row for row in csv.DictReader(source) if row["Tab"] in GENERATOR.SKILL_BY_TAB}
         for name, stat in expected.items():
             with self.subTest(perk=name):
                 stats = dict(GENERATOR.description_stat_entries(rows[name], name))
@@ -201,6 +202,25 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             with self.subTest(skill=skill):
                 self.assertEqual(["                    .UsesImmediateAuthoredAnimation()"],
                     GENERATOR.authored_animation_builder_lines(skill, {"Type": "Stance"}, False))
+
+    def test_ordnance_and_flurry_stances_emit_every_description_clause(self):
+        rows = {row["PerkName"]: row for row in GENERATOR.read_manifest()
+                if row["PerkName"] in ("Ordnance Stance", "Flurry Stance")}
+        ordnance = dict(GENERATOR.stance_stat_entries(rows["Ordnance Stance"]))
+        flurry = dict(GENERATOR.stance_stat_entries(rows["Flurry Stance"]))
+
+        self.assertEqual({"ThrowingAreaAbilityDamagePercentAdjustment": "10",
+                          "ThrowingSingleTargetDamagePercentAdjustment": "-10"}, ordnance)
+        # Flurry's Haste is conditional on a bleeding target, never creature-wide Haste.
+        self.assertEqual({"ThrowingAttackDelayReductionToBleedingTargetPercent": "10",
+                          "DefensePercentAdjustment": "-10"}, flurry)
+        for name, stats in (("Ordnance", ordnance), ("Flurry", flurry)):
+            generated = (ROOT / f"SWLOR.Game.Server/Feature/StatusEffectDefinition/{name}StanceStatusEffect.cs").read_text()
+            # The space launcher stats a pilot's ship reads are hand-kept beside the generated ground stats.
+            ground_lines = generated.count("StatGroup.Stats[") - generated.count("StatGroup.Stats[StatType.SpaceLauncher")
+            self.assertEqual(len(stats), ground_lines)
+            for stat, value in stats.items():
+                self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
 
     def test_scope_calibration_reads_minimum_range_from_description(self):
         properties = dict(GENERATOR.description_stat_entries(

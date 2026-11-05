@@ -2161,6 +2161,18 @@ namespace SWLOR.Game.Server.Service.StatService
         ThrowingAreaAbilityDamagePercentAdjustment = 388,
 
         /// <summary>
+        /// Percent damage adjustment applied to Throwing auto-attacks and single-target hostile Throwing abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingSingleTargetDamagePercentAdjustment = 1331,
+
+        /// <summary>
+        /// Attack delay reduction percent for Throwing auto-attacks against targets affected by Bleed or Hemorrhage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingAttackDelayReductionToBleedingTargetPercent = 1332,
+
+        /// <summary>
         /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -6728,10 +6740,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Percent adjustment to the capacitor a ship's modules use (Wild Space environments). Negative values are cheaper.</summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         SpaceCapacitorCostPercentAdjustment = 1284,
-
-        /// <summary>Percent damage adjustment for Throwing auto-attacks and single-target Throwing abilities (the Ordnance Stance).</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ThrowingSingleTargetDamagePercentAdjustment = 1285,
 
         /// <summary>Percentage points of output each Load point adds to Circuit Wire, Tune and Discharge, on top of the recipe's own. A style may lower it.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

@@ -1976,7 +1976,8 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Flurry Stance":
-        add_stat(stats, "AttackDelayReductionPercent", parse_percent(r"\+(\d+)% Haste", description))
+        # The Haste applies only to thrown swings at bleeding targets, so it is a per-swing stat.
+        add_stat(stats, "ThrowingAttackDelayReductionToBleedingTargetPercent", parse_percent(r"against bleeding targets gain \+(\d+)% Haste", description))
         add_stat(stats, "DefensePercentAdjustment", f"-{parse_percent(r'Defense is reduced by (\d+)%', description)}")
         return list(stats.items())
 

@@ -40,6 +40,10 @@ public sealed class QueryableDBService : IDBService
     public bool Exists<T>(string id)
         where T : EntityBase => Store.Exists<T>(id);
 
+    public long GetWriteVersion<T>()
+        where T : EntityBase =>
+        Store.GetWriteVersion<T>();
+
     public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
         Store.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
 

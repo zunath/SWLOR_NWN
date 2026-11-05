@@ -50,6 +50,12 @@ namespace SWLOR.Game.Server.Composition
             return DB.SearchCount(query);
         }
 
+        public long GetWriteVersion<T>()
+            where T : EntityBase
+        {
+            return DB.GetWriteVersion<T>();
+        }
+
         public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
         {
             return DB.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);

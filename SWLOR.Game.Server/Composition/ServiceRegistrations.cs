@@ -52,6 +52,11 @@ namespace SWLOR.Game.Server.Composition
 
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
+            services.AddSingleton<IActivityService, ActivityService>();
+            services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
+            services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
+            services.AddSingleton<IPlayerNameService, PlayerNameService>();
+            services.AddSingleton<IRaceService, RaceService>();
 
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();

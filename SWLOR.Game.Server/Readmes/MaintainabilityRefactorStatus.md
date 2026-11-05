@@ -4,7 +4,7 @@ The single source of truth for the refactor's progress and handoff. The plan and
 in [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md). Update this file in the same pull
 request as the work it describes, and whenever a work item starts, finishes or gets blocked.
 
-Last updated: 2026-11-03 (resumed until 90% weekly usage; see "In flight").
+Last updated: 2026-11-03 (paused at 89% weekly usage; see "In flight").
 
 ## Resuming (any agent, any account)
 
@@ -85,9 +85,9 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-B6 | Wave B, Creatures II: `AI` (about 2,700 lines incl. folder, 18 handlers) | P2-0 | Sonnet | done | [#3155](https://github.com/zunath/SWLOR_NWN/pull/3155) | Coverage: AI + NPCAI 5.4% -> 96.3% (whole AI folder 28.8% -> 90.3%). `NPCAI` folded into `AIService` (listing it under `extras` would classify as unit `NPC` and break the cross-domain baseline); `NPCAI.cs` keeps only the two profile-variable constants the toolset reads; its effect check became `HasEffectType` (keeps the `AppliedEffects.MayHaveScriptType` pre-check; no overload change). The facade gained `ClearAIState` and `TryUseBestTargetedSupportAbility` for `CompanionControl`'s two call sites. `AITarget`'s static override dictionary moved to the instance; `AIPhaseId.Invalid` is a getter. `Enmity`, `Stat`, `Ability`, `Perk`, `UsePerkFeat`, stealth, espionage and companion calls behind `protected virtual` wrappers. `ClockSeamFiles.txt` updated (`Apply-ClockSeam.ps1 -Check` clean). 191 instance tests (`AIBench`, `TestAIService`). |
 | P2-B7 | Wave B, Items III: `Item` (about 1,870 lines incl. folder, 4 handlers) | P2-0 | Sonnet | done | [#3154](https://github.com/zunath/SWLOR_NWN/pull/3154) | Merged 2026-11-03 at head `c2289fd0f` (base merged after P2-B6; one doc conflict kept both sides; suite rerun green, Codex clean). Coordinator review approved (moved code matches; wrappers only). Coverage 51.5% -> 98.5%. `ItemService` injects `IBeastMasteryService`, `IDBService`; `FitsInInventory`, `Perk`/`Skill` reads and the item-list assembly scan behind `protected virtual` wrappers. The data-only economy-restriction rules moved to a stateless static `Service/ItemService/EconomyRestriction`, which the Toolset editor (`SWLOR.Toolset/Editors/EditorService.cs`, no container) now calls directly (one call + alias; through the facade it would have thrown and emptied the merchant item search). 24 fixtures gained a `FacadeContainer`; `RecordingProxy` handles array returns. The CodeRabbit thread on master's existing `ReduceItemStack` bug was answered and resolved with the owner's approval (fix goes to master; see Reported defects). `feature/space-revamp` changes `Item.cs` (about 77 lines): port when it reaches master. |
 | P2-B8 | Wave B: master's newcomers `Wardrobe`, `BankItemPage`, `CasinoSlot`, `CasinoSlotPresentation`, `CasinoSpinResult`, `CasinoPlayTracker`, `CapstoneProof` | P2-0 | Sonnet | done | [#3160](https://github.com/zunath/SWLOR_NWN/pull/3160) | Classified: services converted `Wardrobe` (Items), `CasinoSlot` (Economy), `CapstoneProof` (Quests), each 100% covered (from 5.6%, 18%, 27%); data types unchanged `BankItemPage`, `CasinoSpinResult`; pure utilities stay static `CasinoSlotPresentation`, `CasinoPlayTracker`. `DomainMap.json` unchanged (every top-level `Service` type must be listed). `CapstoneProofService` injects `IBeastMasteryService` and registers `CapstoneProofDefinitions.All` in its constructor (pure data, as the old static constructor did; coordinator accepted: a bad definition now fails at boot, not at first use). `CasinoSlot.Spin` keeps its single `Random.Next(10000)` draw. `RecordingProxy` answers a fixed `DateTime`. |
-| P2-C4 | Wave C IV: `ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `NamedAnimationPlayback`, `FrameProfiler`, `BackgroundJob` (about 1,400 lines incl. folders) | P2-C | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-c4`; each class classified (service / utility / bootstrap-background exception like `Log`) |
-| P2-C3 | Wave C III: `Conversation`, `ConversationMenu`, `Snippet` (about 2,080 lines incl. folders, 14 handlers) | P2-C | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-c3` |
-| P2-C2 | Wave C II: `Communication` (about 1,015 lines, 7 handlers) | P2-C | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-c2` |
+| P2-C4 | Wave C IV: `ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `NamedAnimationPlayback`, `FrameProfiler`, `BackgroundJob` (about 1,400 lines incl. folders) | P2-C | Sonnet build, Opus review | review (draft, paused) | [#3170](https://github.com/zunath/SWLOR_NWN/pull/3170) | Branch `claude/mr-p2-c4`, head `daf56c24b`; see "In flight"; each class classified (service / utility / bootstrap-background exception like `Log`) |
+| P2-C3 | Wave C III: `Conversation`, `ConversationMenu`, `Snippet` (about 2,080 lines incl. folders, 14 handlers) | P2-C | Sonnet build, Opus review | review (draft, paused) | [#3172](https://github.com/zunath/SWLOR_NWN/pull/3172) | Branch `claude/mr-p2-c3`, head `d1eeab31c`; see "In flight" for what is left. |
+| P2-C2 | Wave C II: `Communication` (about 1,015 lines, 7 handlers) | P2-C | Sonnet build, Opus review | done | [#3164](https://github.com/zunath/SWLOR_NWN/pull/3164) | Coverage 14.3% -> 99.4%. `CommunicationService` injects `IDBService`, `IDMPresenceService`, `IDMPreferenceService`, `IPartyService`, `IHoloComService`, `IPlanetService`, `IAreaService`, `IPropertyService` (no cycles); `Language`, `PlayerName` (two calls) and `Space` behind `protected virtual` wrappers; rolls unchanged. `tools/ExportPlayerMessageAudit.ps1` points at the instance file. Emote, shout-label and HoloCom emote tests and the source-text asserts replaced by 134 instance cases (`CommunicationBench`, `TestCommunicationService`, `SentMessage`; 19 hand mutations caught). No RP XP detail in the PR. |
 | P2-C1 | Wave C I: `Cache`, `Authorization`, `Messaging`, `PlayerFeedback` (`Log` stays static, see the specs' decision) | P2-B | Sonnet build, Opus review | done | [#3163](https://github.com/zunath/SWLOR_NWN/pull/3163) | Coverage: Authorization 45% -> 100%, Cache 60% -> 100%, Messaging 100% -> 100%, PlayerFeedback 10% -> 100%. No containerless or pre-container callers of the four (checked Toolset, CLI, CombatSim, tools). `CacheService` injects `IItemService`; `PlayerFeedbackService` wraps settings, the clock ticks and display names; `Messaging.BuildMessageDelegate` moved to `Service/MessagingService/BuildMessageDelegate.cs` (one line in `Space.cs` changed: expect a trivial conflict when `feature/space-revamp` is ported). New test helper `Support/CacheItemNames`. After merging P2-B8 into it only the guarding tests were rerun (architecture, characterization, a 625-test filtered run); the full suite ran on the previous head. A strict `Log` conversion broke 46+ fixtures, 112 CombatSim tests and crashed the test host, hence the decision. |
 | P2-B? | Wave B, rest: Companions (`Droid`: 245 lines of `feature/space-revamp` overlap; wait for that branch), Creatures' `CompanionControlService` and `NPCService` folders (static helpers, no facade file) | P2-0 | Sonnet | open | | Split into items of about 1,000-2,500 lines. **`Craft` deferred** until `feature/crafting-revamp` (about 18,000 lines in `Service/CraftService/`) merges to master. |
 | P0-6 | Scripted live smoke run framework (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | done | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) | `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`, `-PublicCdKey`), 69 tool tests, InEngineVisualVerification.md "Smoke run" section. Server boot checks pass (two identical server-only runs). Results of runs so far: `C:\Temp\mr-p0-6` (local). |
@@ -100,48 +100,39 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-**Resumed again 2026-11-03** (owner: keep going until the account's weekly usage reaches 90%; 75% at this resume).
-Running (Sonnet subagents of the coordinator session "SWLOR maintainability refactor coordination", worktree
-`.claude/worktrees/funny-ellis-7b398f`):
-- Master sync `37281caad` merged (#3162, `96cc7be12`); see Sync log.
-- P2-B8 merged (#3160, 2026-11-03).
-- P2-C1 merged (#3163, 2026-11-03): `Cache`, `Authorization`, `Messaging`, `PlayerFeedback`; `Log` stays static (specs).
-- P2-C2: Wave C II (`Communication`); branch `claude/mr-p2-c2`. Started at 79% weekly usage.
-- P2-C3: Wave C III (`Conversation`, `ConversationMenu`, `Snippet`); branch `claude/mr-p2-c3`. Started at 80%.
-- P2-C4: Wave C IV (`ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `NamedAnimationPlayback`, `FrameProfiler`, `BackgroundJob`, classified first); branch `claude/mr-p2-c4`. Started at 81%.
-Wave C order and the "pure utilities stay static" decision: specs, Phase 2 section.
+**Paused 2026-11-03 at 89% of the account's weekly usage (owner: stop at 90%).** Nothing is running: no subagents, test
+processes or containers of the refactor. Last master sync: 2026-11-03, `37281caad`.
 
-Paused earlier the same day at 75% (kept for reference):
+Merged in the 2026-11-02/03 runs (coordinator session "SWLOR maintainability refactor coordination", worktree
+`.claude/worktrees/funny-ellis-7b398f`): syncs #3143 and #3162; P2-A7b (#2969), P2-A8 (#2972), P0-6b (#2955; **Phase 0
+complete** except GitHub CI, billing-locked), P2-B1 (#3145), P2-B2 (#3147), P2-B3 (#3148), P2-B4 (#3150), P2-B5 (#3152),
+P2-B6 (#3155), P2-B7 (#3154), P2-B8 (#3160), P2-C1 (#3163), P2-C2 (#3164).
 
-Done in the 2026-11-02/03 run (coordinator session "SWLOR maintainability refactor coordination", worktree
-`.claude/worktrees/funny-ellis-7b398f`): the master sync (#3143) and P2-A7b (#2969), P2-A8 (#2972), P2-B1 (#3145),
-P0-6b (#2955; **Phase 0 complete** except GitHub CI, billing-locked), P2-B2 (#3147), P2-B3 (#3148), P2-B4 (#3150),
-P2-B5 (#3152), P2-B6 (#3155), P2-B7 (#3154).
+Parked (both complete except as noted; worktrees kept under `C:\Projects\SWLOR_NWN\.claude\worktrees\`):
 
-Open: nothing. P2-B7 (`Item`, #3154) merged after the pause with the owner's approval (CodeRabbit thread answered and
-resolved; base merged; suite and Codex clean on `c2289fd0f`).
+| Item | Branch head | Pull request | Left |
+|---|---|---|---|
+| P2-C3 `Conversation`, `ConversationMenu`, `Snippet` | `d1eeab31c` | [#3172](https://github.com/zunath/SWLOR_NWN/pull/3172) draft | Merge the base (conflicts in `ServiceRegistrations.cs`, `ConvertedServices.json`: keep both, sorted); full `scripts/ci/run-unit-tests.sh` with coverage (about 65 min); fill the PR's results table and after-coverage (before: Conversation 37.8%, ConversationMenu 10.2%, Snippet 35.2%); Codex on the merged head; coordinator review; mark ready; merge. Builds; Codex clean on `d1eeab31c`; 112 instance tests; `ConversationGraphValidator` and `ConversationMarkup` classified as utilities. |
+| P2-C4 `ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `BackgroundJob` | `daf56c24b` | [#3170](https://github.com/zunath/SWLOR_NWN/pull/3170) draft | Merge the base (P2-C2 and later landed since its base `4c15253ea`; list conflicts likely), rerun, Codex on the new head, coordinator review, mark ready, merge. Complete, Codex clean on `daf56c24b`, full suite with coverage on that head. **Proposes `FrameProfiler` stay static like `Log`** (called by `Log.Write` before the container exists, from the combat recorder thread, and by the engine hooks on every script, closure and frame): confirm at review and record it in the specs. `NamedAnimationPlayback` stays an instance helper owned by `NamedAnimationService`. `IDBService.StreamAddAsync` added. |
 
-A master fix for `ReduceItemStack` was proposed to the owner as a separate session (2026-11-03); once on master, the next
-sync ports it into `Domain/Items/ItemService.cs`.
-
-Kept local-only (original machine): `C:\Temp\mr-p0-6b\results\p06b-g-20261103T083756Z` (smoke baseline evidence),
-`C:\Temp\mr-p0-4d2` (old engine-test home). Nothing else is needed from this machine; a resume elsewhere follows
-`Readmes/AgentEnvironment.md` (sparse haks; Docker, a full hak set and the NWN client only for engine refreshes and smoke
-runs; `gh` with push access; `-c http.sslBackend=schannel` only if git over HTTPS fails).
+Local-only (original machine): `C:\Temp\mr-p2-c3\pr-body.md` and `C:\Temp\mr-p2-c4\` (`pr-body.md`, `coverage.py`) hold the
+draft PR texts and a coverage helper; `C:\Temp\mr-p0-6b\results\p06b-g-20261103T083756Z` (smoke baseline evidence). A resume
+on another machine needs none of them (both PR descriptions are on GitHub; coverage comes from the script's report).
 
 ## Next actions
 
-1. **Daily sync** (last 2026-11-03, `37281caad`): `tools/Refactor/Sync-MaintainabilityBranch.ps1 -RunParity` on a work branch
-   if ports are needed (branch rule), `Update-EngineCharacterization.ps1`, record. Check whether `feature/space-revamp` or
-   `feature/crafting-revamp` reached master (unblocks P2-A9 `Space`, `Craft`, `Droid`, and the `Item` space-revamp port).
-2. **Rest of Wave B:** `Droid` (waits for the space revamp), the `CompanionControlService` and `NPCService` helper folders.
-   Small follow-ups now possible: `Loot` and `IncubationFieldNote` read `BeastMastery` through `protected virtual` wrappers
-   over the facade and could inject `IBeastMasteryService` (check for cycles first).
-3. **Wave C** (Core services other than `DB`: `Log`, `Cache`, `Messaging`, ...; then `DB` alone with extra review), then
-   **Wave D** (`StatusEffect`, `Skill`, `Perk`, `Stat`, `Ability`, `Combat`; the `FacadeAccessor` cache must land first),
-   per the specs' Phase 2 section.
-4. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
-5. Pace by the account's weekly usage (the owner pauses the work near 80%); each Wave B conversion cost about 2-3 points.
+1. **Finish P2-C3 (#3172) and P2-C4 (#3170)** as in the table (one after the other to keep the list conflicts simple).
+2. **Daily sync** (last 2026-11-03, `37281caad`). Check whether `feature/space-revamp` or `feature/crafting-revamp` reached
+   master (unblocks P2-A9 `Space`, `Craft`, `Droid`, and the ~77-line `Item` port).
+3. **Rest of Wave C** per the specs: C5 `Random`, `Time` (Opus review; `Random` holds the seeded generator), C6 `Migration`
+   (persistence, extra review), C7 UI (`Gui`, `ExtraHotbars`), the closing classification of the small Core classes
+   (`GameMath`, `ColorToken`, `TileMagic`, `AnimationPlayer`, `Menu`, the `Animation` and `Attribute` folders), then C8 `DB`
+   alone (extra review). `Log` stays static (decision); `FrameProfiler` likely too (P2-C4).
+4. **Rest of Wave B:** `Droid` (waits for the space revamp), the `CompanionControlService` and `NPCService` helper folders.
+   Follow-ups: `Loot` and `IncubationFieldNote` could inject `IBeastMasteryService` (check cycles).
+5. Then **Wave D** (`StatusEffect`, `Skill`, `Perk`, `Stat`, `Ability`, `Combat`; `FacadeAccessor` cache first).
+6. GitHub Actions is billing-locked; the gate is a local `scripts/ci/run-unit-tests.sh` run. Pace by the account's weekly
+   usage (the owner sets the stop level; each conversion cost about 1-3 points, syncs about 2-4).
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
 
@@ -175,6 +166,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P2-B4 | `Spawn.QueueRespawn` throws on a malformed or unknown `SPAWN_ID`, while `DespawnAndQueueRespawn` handles it; the hand-placed random-location branch in `SpawnObject` is dead; the `FailureCount` reset after a successful spawn has no effect. |
 | P2-B6 | `AI.RemoveFromAlliesCache` returns early unless the creature has its own ally set; one `return` in `CompleteLeashEvadeReturn` is unreachable; `RefreshActionCache` keys cached actions on feats only, so a profile reload would leave stale actions. |
 | P2-B8 | `CapstoneProof.Register` with a duplicate key replaces the proof in the registry but leaves the old one in the status-effect and ability indexes (not reachable today). |
+| P2-C2 | `Communication`: a dead player cannot use the `((` OOC prefix (only `//` gets through); a starship whose `CurrentPosition` resolves to `Invalid` never tries `DockPosition`. |
 | P2-B7 | `Item.ReduceItemStack(item, reduceBy)` computes `amount = Math.Abs(reduceBy)` but the guard and the subtraction use `reduceBy`, so a negative argument grows the stack (flagged by CodeRabbit on #3154). A master fix session was proposed to the owner on 2026-11-03; the fix reaches the branch through a sync. P2-B7 also noted an unread `_2daCache` field. |
 | P2-B4 | `SWLOR.Toolset.Tests` `GameCodeIndexTests.WaypointDestinationsComeFromTheServerDeclarations` expects 10 planet landing waypoints and finds 11 (not part of the CI script; not checked on master; likely a master content addition). |
 | P2-A6 | `SpecialFishingLocationDefinition` picks locations with the shared `Random`; `_fishResrefsByLocation` is built from whichever definition reaches a location first, so a picked Tatooine or Viscara location can show a description without its regular fish. |
@@ -215,5 +207,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
   with `dotnet SWLOR.CLI/bin/Release/net10.0/SWLOR.CLI.dll --hak` from a folder holding a one-entry `hakbuilder.json`
   (`CompileModels: false`; not while the refresh script is building the CLI), move it into `<dir>\hak`, then rerun with
   `-ReuseHome <dir>`. Delete `<dir>` afterwards (its haks are hard links).
+- An empty, locked folder `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-c1` is left from P2-C1 (worktree already unregistered);
+  delete it when nothing holds it.
 - Build the characterization test project directly after a sync: a solution build alone missed its compile errors
   (2026-11-02 sync).

@@ -85,7 +85,7 @@ public class IncubationProjectionTests
         var job = Job(1, 0, j => j.LyaseColors[EnzymeColorType.Orange] = 1);
 
         var projection = IncubationProjection.Create(job, EnzymeColorType.Orange, EnzymeColorType.Invalid, EnzymeColorType.Invalid, 0, true);
-        var report = projection.Evaluate(mutation, new DateTime(2026, 11, 2));
+        var report = projection.Evaluate(mutation, DayOfWeek.Monday);
 
         report.IsReady.Should().BeTrue();
         report.Lines.Should().ContainSingle().Which.Should().Be(new MutationRequirementLine("orange lyase 2/2", true, false));
@@ -99,7 +99,7 @@ public class IncubationProjectionTests
         var job = Job(1, 0, j => j.IsomeraseColors[EnzymeColorType.Yellow] = 1);
 
         var projection = IncubationProjection.Create(job, EnzymeColorType.Invalid, EnzymeColorType.Invalid, EnzymeColorType.Invalid, 0, true);
-        var report = projection.Evaluate(mutation, new DateTime(2026, 11, 2));
+        var report = projection.Evaluate(mutation, DayOfWeek.Monday);
 
         report.IsReady.Should().BeFalse();
         report.Summary.Should().Be("1 more enzyme needed");
@@ -112,7 +112,7 @@ public class IncubationProjectionTests
         var job = Job(2, 0);
 
         var projection = IncubationProjection.Create(job, EnzymeColorType.Invalid, EnzymeColorType.Invalid, EnzymeColorType.Invalid, 0, true);
-        var report = projection.Evaluate(mutation, new DateTime(2026, 11, 2));
+        var report = projection.Evaluate(mutation, DayOfWeek.Monday);
 
         report.Summary.Should().Be("Out of reach for this job");
     }
@@ -125,13 +125,10 @@ public class IncubationProjectionTests
             Weight = 90,
             Requirements = new List<IMutationRequirement> { new MutationRequirementDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday) }
         };
-        var monday = new DateTime(2026, 11, 2);
-
         var report = IncubationProjection
             .Create(Job(3, 100), EnzymeColorType.Invalid, EnzymeColorType.Invalid, EnzymeColorType.Invalid, 100, false)
-            .Evaluate(mutation, monday);
+            .Evaluate(mutation, DayOfWeek.Monday);
 
-        monday.DayOfWeek.Should().Be(DayOfWeek.Monday);
         report.IsReady.Should().BeFalse();
         report.Lines.Should().ContainSingle()
             .Which.Should().Be(new MutationRequirementLine("Complete Wed or Thu (UTC)", false, true));

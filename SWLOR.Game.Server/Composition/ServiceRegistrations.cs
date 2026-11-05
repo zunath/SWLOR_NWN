@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Composition
         {
             // Core
             services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+            services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
             services.AddSingleton<ICacheService, CacheService>();
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<INamedAnimationService, NamedAnimationService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
             services.AddSingleton<IPlayerFeedbackService, PlayerFeedbackService>();
+            services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
 
             // Administration

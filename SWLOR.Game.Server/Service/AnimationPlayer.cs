@@ -1,23 +1,17 @@
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// Plays the visual effect an object carries for an animation event. The logic lives in
+    /// <see cref="IAnimationPlayerService"/>; the member here forwards to the container's instance.
+    /// </summary>
     public static class AnimationPlayer
     {
-        public static void Play(uint oObject, AnimationEvent animationEvent)
-        {
-            var vfx = (VisualEffect)GetLocalInt(oObject, animationEvent.IdKey);
+        private static IAnimationPlayerService Instance => FacadeAccessor.Resolve<IAnimationPlayerService>();
 
-            // technically 0 could be valid, but we can't differentiate between err and blur here; no blurring on death allowed
-            if (vfx != 0)
-            {
-                var duration = (DurationType)GetLocalInt(oObject, animationEvent.DurationKey);
-                var scale = GetLocalFloat(oObject, animationEvent.ScaleKey);
-                var effect = EffectVisualEffect(vfx, false, scale);
-                ApplyEffectToObject(duration, effect, oObject);
-            }
-        }
+        public static void Play(uint oObject, AnimationEvent animationEvent) => Instance.Play(oObject, animationEvent);
     }
 }

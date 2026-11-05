@@ -1913,6 +1913,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    // A buyer could otherwise buy the ship between a restart and the owner's next login, which finishes
+                    // the unregistration: the owner would keep the deed and the buyer the ship.
+                    if (ShipTransfer.IsListedForSale(shipId))
+                    {
+                        FloatingTextStringOnCreature("Please cancel the sale of this ship before unregistering it.", Player, false);
+                        return;
+                    }
+
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.MidPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0 ||

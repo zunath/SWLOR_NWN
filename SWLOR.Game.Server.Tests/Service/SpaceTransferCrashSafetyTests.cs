@@ -390,6 +390,7 @@ public class SpaceTransferCrashSafetyTests
             "Space.RemoveUnregisteredShip(shipId);", "Space.ClearDeedUnregistered(deed);");
         unregister.Should().Contain("dbShip.Status.ConfigurationModules.Count > 0", "fitted configuration modules would be deleted with the ship");
         unregister.Should().NotContain("DB.Delete<PlayerShip>(", "the ship goes only through RemoveUnregisteredShip");
+        InOrder(unregister, "if (ShipTransfer.IsListedForSale(shipId))", "if (!Space.MarkDeedUnregistered(Player, deed, shipId))");
 
         var moves = Source("Service", "SpaceShipItemMoves.cs");
         InOrder(Member(moves, "public static bool MarkModuleFitting("), "SetLocalString(item, ModuleFittingVariable,", "() => CharacterCheckpoint.Save(player),",

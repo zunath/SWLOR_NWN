@@ -122,7 +122,8 @@ namespace SWLOR.Toolset.Domain.Render
 
                 var isCustom = TintMapColor.TryFromStoredValue(savedValue, out var customColor);
                 var paletteIndex = isCustom
-                    ? 0 // Custom RGB uses the shader's neutral reference row, preserving only shading.
+                    // Custom RGB is shaded with its nearest palette swatch's row, like the tint shaders.
+                    ? TintMapPaletteColors.GetClosestColorId(layer, customColor)
                     : savedValue > 0 &&
                       savedValue <= TintMapMaterialRegistry.PaletteColorCount
                         ? savedValue - 1
@@ -151,13 +152,25 @@ namespace SWLOR.Toolset.Domain.Render
                 output[offset + 2] = palette.Pixels[paletteOffset + 2];
                 if (isCustom)
                 {
+                    // Offset the swatch row by the color's difference from the swatch midtone,
+                    // scaled by the row's shading. An all-black swatch row borrows the layer's
+                    // first row for the shading so a near-black color keeps its hue.
                     var midpointX = 128 * (palette.Width - 1) / 255;
                     var midpointOffset = (paletteY * palette.Width + midpointX) * 4;
-                    var scale = Luminance(palette.Pixels, paletteOffset) /
-                                Math.Max(Luminance(palette.Pixels, midpointOffset), 1f);
-                    output[offset] = Shade(customColor.Red, scale);
-                    output[offset + 1] = Shade(customColor.Green, scale);
-                    output[offset + 2] = Shade(customColor.Blue, scale);
+                    var rampOffset = paletteOffset;
+                    var rampMidpointOffset = midpointOffset;
+                    if (Luminance(palette.Pixels, midpointOffset) < 0.5f)
+                    {
+                        var firstRowY = palette.Height - 1 - Math.Clamp(definition.PaletteBaseRow, 0, palette.Height - 1);
+                        rampOffset = (firstRowY * palette.Width + paletteX) * 4;
+                        rampMidpointOffset = (firstRowY * palette.Width + midpointX) * 4;
+                    }
+
+                    var scale = Luminance(palette.Pixels, rampOffset) /
+                                Math.Max(Luminance(palette.Pixels, rampMidpointOffset), 1f);
+                    output[offset] = Shade(palette.Pixels[paletteOffset], customColor.Red, palette.Pixels[midpointOffset], scale);
+                    output[offset + 1] = Shade(palette.Pixels[paletteOffset + 1], customColor.Green, palette.Pixels[midpointOffset + 1], scale);
+                    output[offset + 2] = Shade(palette.Pixels[paletteOffset + 2], customColor.Blue, palette.Pixels[midpointOffset + 2], scale);
                 }
                 output[offset + 3] = SampleAlpha(
                     alphaTexture,
@@ -181,8 +194,8 @@ namespace SWLOR.Toolset.Domain.Render
         private static float Luminance(byte[] pixels, int offset) =>
             pixels[offset] * 0.2126f + pixels[offset + 1] * 0.7152f + pixels[offset + 2] * 0.0722f;
 
-        private static byte Shade(byte component, float scale) =>
-            (byte)Math.Clamp(MathF.Round(component * scale), 0, 255);
+        private static byte Shade(byte swatchShade, byte component, byte swatchMidpoint, float scale) =>
+            (byte)Math.Clamp(MathF.Round(swatchShade + (component - swatchMidpoint) * scale), 0, 255);
 
         private static byte SampleAlpha(
             TextureImage? texture,

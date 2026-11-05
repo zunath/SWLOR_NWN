@@ -36,12 +36,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceFootwork)
-                .SetInitialGeometry(20f, 40f, 580f, 630f)
+                .SetInitialGeometry(20f, 20f, 580f, PerformanceFootworkViewModel.MainWindowHeight)
                 .SetTitle("Footwork")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
-                .DefinePartialView(PerformanceFootworkViewModel.MainContentPartial, AddContent);
+                .DefinePartialView(PerformanceFootworkViewModel.MainContentPartial, AddContent)
+                .DefinePartialView(PerformanceFootworkViewModel.RoleplayContentPartial, AddRoleplayContent);
 
             // No tabs: the standard layout is still the root, and one partial holds the whole body.
             window.AddStandardLayout(layout => layout
@@ -52,18 +53,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddContent(GuiGroup<PerformanceFootworkViewModel> host)
         {
+            AddPanel(host, content =>
+            {
+                AddHeader(content);
+                PerformanceCueWindowParts.AddAudienceGets(content);
+                AddCueTrack(content);
+                AddBeatBar(content);
+                AddReadouts(content);
+                AddFooter(content);
+            });
+        }
+
+        // Roleplay mode has no cues: the setup, what the audience gets, who follows, and how to keep performing.
+        private static void AddRoleplayContent(GuiGroup<PerformanceFootworkViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                AddHeader(content);
+                PerformanceCueWindowParts.AddAudienceGets(content);
+                PerformanceCueWindowParts.AddInspiring(content);
+                PerformanceCueWindowParts.AddRoleplayNote(content);
+            });
+        }
+
+        private static void AddPanel(
+            GuiGroup<PerformanceFootworkViewModel> host,
+            Action<GuiColumn<PerformanceFootworkViewModel>> body)
+        {
             host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
                 panel.SetScrollbars(NuiScrollbars.None);
-                panel.AddColumn(content =>
-                {
-                    AddHeader(content);
-                    AddCueTrack(content);
-                    AddBeatBar(content);
-                    AddReadouts(content);
-                    AddFooter(content);
-                });
+                panel.AddColumn(body);
             }).SetWidth(ContentPanelWidth)));
         }
 
@@ -170,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetColor(PerformanceWindowColors.Gold)
                 .SetHeight(16f));
             content.AddRow(row => row.AddLabel()
-                .SetText("Time left on this beat")
+                .SetText("Time left on this beat. Press the hot bar slot shown on the NOW cue.")
                 .SetColor(PerformanceWindowColors.Dim)
                 .SetHeight(20f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
@@ -260,11 +281,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
 
-            content.AddRow(row => row.AddLabel()
-                .SetText("Press the hotbar slot shown on the NOW cue")
-                .SetColor(PerformanceWindowColors.Dim)
-                .SetHeight(20f)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left));
         }
     }
 }

@@ -68,9 +68,10 @@ Mantle's invisible Cloth 2 preset 61. The shared material uses the opaque pass:
 `fs_cloaktint` discards palette alpha below 0.5 and keeps the remaining pixels
 opaque, independently of the wearer's material fade. This matches the repository's
 punch-through cutoff; fractional palette alpha does not request blended rendering.
-These cloaks must not acquire metal reflection from alpha. Exact RGB tints retain
-neutral-reference palette coverage for every layer on cutout cloaks; reflective
-cloaks keep nonmetal RGB opaque and use reference alpha only for metal reflection.
+These cloaks must not acquire metal reflection from alpha. Exact RGB tints take
+their nearest swatch's shading (see "Preserve exact custom RGB") but keep each
+layer's first palette row as coverage for every layer on cutout cloaks; reflective
+cloaks keep nonmetal RGB opaque and use that row's alpha only for metal reflection.
 The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
 white placeholder otherwise lets NWN suppress the cutout even when palette alpha
 is zero. The GPU regression checks composited pixels around the cutoff with
@@ -146,22 +147,62 @@ selection, which could overwrite a newer edit or miss a replacement head/robe.
 
 `TintMapShaderColor.Encode` carries all 24 RGB bits through the existing scalar
 row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
-using the two float exponent ranges' 2^24 distinct values. All three shaders
-decode this value before lighting. They multiply RGB by a neutral reference
-row's luminance curve, normalized at shade128, preserving shading without
-importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
-shade-dependent environment coverage: PLT-only armor relies on this alpha for
-its reflection and specularity. Other RGB layers stay opaque. Authored normal,
-specular and roughness maps still pass through standard material lighting.
-The Toolset viewport uses the same RGB shading and metal coverage. Preset
-lookup and authored colors are unchanged.
+using the two float exponent ranges' 2^24 distinct values. Every tint shader
+(`fs_plt_tinter`, `_nm`, `fs_plt_hair_nm`, `fs_cloaktint`, `fs_hav_*`) decodes
+this value before lighting.
+
+Exact RGB is shaded with the row of its nearest palette swatch: the shade-128
+midtone the editor shows (`TintMapPaletteColors`). The result is the swatch
+row plus the color's difference from the midtone, scaled by the row's
+luminance relative to that midtone, with the row's environment coverage. A
+color equal to a swatch therefore renders exactly like that palette color,
+reflection included, on every layer. An all-black swatch row (hair row 57,
+for example) has no shading to lend, so a near-black custom color uses the
+layer's first palette row for the offset's shading instead of collapsing to
+black. Do not go back to one reference row for
+all colors: palette rows fall to black at very different rates, and row zero
+(a light blond for hair) left dark RGB hair two to four times brighter and
+flatter than the same palette color on head 053's low-shade hair (bug
+"Hair Color Palette", 2026-11).
+
+Atlas rows 1536-2047 hold the swatch lookup the shaders read: four groups
+(skin; hair; metal, shared by Metal1/Metal2; cloth, shared by leather and
+tattoo) of 128 rows, one texel per 32-level RGB cell, listing up to three
+candidate color IDs in red, green and blue. A candidate is every swatch whose
+midtone falls in the cell plus the swatches nearest the cell centre; the
+shader keeps the nearest candidate, the earlier on a tie. Equal midtones keep
+the lowest color ID, like `GetClosestColorId`, so the fully reflective black
+row 61 is never chosen. About 0.2% of other colors get a swatch a few levels
+farther than the true nearest. `GenerateTintMapAssets.py
+--refresh-palette-lookup` rewrites these rows; the asset audit rejects stale
+rows, nonempty rows 1232-1535, and shared palette blocks that diverge. Rows
+0-1231 stay the native palettes.
+
+Cloaks keep their coverage rule: cutout cloaks use each layer's first palette
+row as coverage, and reflective cloaks use it only for metal, so a custom
+color can neither cut a cloak away nor make its cloth reflective. Helmet 101's
+authored-diffuse mode keeps its luminance-only RGB and first-row metal
+coverage. Authored normal, specular and roughness maps still pass through
+standard material lighting. Preset lookup and authored colors are unchanged.
+
+The Toolset shades RGB the same way. Its area viewport (NWN.Toolset
+`AreaViewportControl`, package 0.1.0-preview.6 or later) takes the swatch row
+the host passes as `PaletteRow`; `SwlorAreaViewportMaterialProvider` passes
+`GetClosestColorId`'s exact nearest swatch, so the 0.2% of colors the atlas
+lookup resolves to a farther swatch can differ slightly from the game. The
+cloak material sets `CustomColorsUseLayerCoverage`, which keeps the reflective
+cloak coverage rule; the viewport does not model cutout cloaks.
+`TintMapTextureRenderer` (CPU previews) applies the same swatch shading.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
-and preset parity, including the RGB metal coverage curve at every shade.
+and preset parity, including every swatch sent as exact RGB against its
+installed palette row at every shade and layer. `TestPaletteSwatchLookup.py`
+checks the lookup rows without a GPU.
 `python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
 draws the Toolset's production desktop and ES shader pairs on Windows, checking
-RGB/preset coverage and lit metal reflection without normal or specular maps.
+swatch-row RGB shading and coverage, every fifth swatch sent as RGB against its
+palette row, and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak

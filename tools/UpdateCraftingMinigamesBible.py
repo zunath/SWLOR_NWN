@@ -308,9 +308,10 @@ def fishing_entry(src: dict[str, Source]) -> str:
         f" {number(reel.const('MaximumChance'))}%. It pays no XP beyond the bite's. The Line fight lands the fish only if the angler"
         " reels it in (Distance to 0) before the line snaps (Tension at its maximum) or the fish escapes (Distance at its maximum):"
         " each turn the fish announces a move and the angler answers with Set Hook (first turn only), Reel, Give Line or Hold."
-        f" The first move is free and each later one waits {number(turn_seconds)} seconds. When the fight ends on its own"
-        " (landed, line snapped or fish escaped) it pays the rest of the XP, in proportion to how long it lasted up to"
-        f" {number(turn_seconds * full_turns)} seconds ({number(full_turns)} turns), so a full fight pays the bite's XP times"
+        " There is no wait between moves. When the fight ends on its own (landed, line snapped or fish escaped) it pays the rest"
+        f" of the XP, in proportion to how long it lasted up to {number(turn_seconds * full_turns)} seconds ({number(full_turns)}"
+        f" turns of {number(turn_seconds)} seconds), and a fight played faster than {number(turn_seconds)} seconds a move is paid"
+        " for the time it took, so a full fight pays the bite's XP times"
         f" {multiplier_text(bands, 'fish levels')}. A fight the angler leaves (closing the window, moving, putting the rod away,"
         " entering combat or dying) loses the fish and the rest of that XP.")
 

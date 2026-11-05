@@ -154,11 +154,10 @@ namespace SWLOR.Game.Server.Service.FishingService
             }
 
             // The rest of the multiplied XP accrues with the time the fight took, so a fight lost on purpose after one move earns
-            // almost none of it. The time counts only up to the turns the angler took at the tuned pace, so a window left open
-            // without acting earns nothing extra.
+            // almost none of it, and a fight played faster than the tuned pace earns its share in proportion to the time it took. The
+            // time counts only up to the turns the angler took at the tuned pace, so a window left open without acting earns nothing extra.
             var rest = (int)Math.Round(
-                fight.XpOnFinish * LineRules.XpShare(
-                    LineRules.CountedFightSeconds((_world.UtcNow - fight.StartedAt).TotalSeconds, fight.Engine.Turn)),
+                fight.XpOnFinish * LineRules.FightXpShare((_world.UtcNow - fight.StartedAt).TotalSeconds, fight.Engine.Turn),
                 MidpointRounding.AwayFromZero);
             if (rest > 0)
                 _world.GiveAgricultureXp(fight.Player, rest);
@@ -292,25 +291,15 @@ namespace SWLOR.Game.Server.Service.FishingService
         }
 
         /// <summary>
-        /// The seconds the angler must still wait before their next action may resolve, 0 when it may now. The first action of a fight
-        /// is free; each one after it needs <see cref="LineRules.TurnSeconds"/> since the one before, so the pace the XP multipliers
-        /// assume holds however fast the angler clicks.
+        /// Records that the angler acted, which restarts the idle limit. The window calls it once an action has resolved. Actions are
+        /// never held back: the next one may resolve at once, and <see cref="LineRules.FightXpShare"/> keeps a fight played
+        /// faster than <see cref="LineRules.TurnSeconds"/> a turn from earning more XP per hour than the pace the multipliers assume.
         /// </summary>
-        public double SecondsUntilNextTurn(FishingFight fight)
-        {
-            if (fight?.NextTurnAt == null || fight.Settled)
-                return 0;
-
-            return Math.Max(0, (fight.NextTurnAt.Value - _world.UtcNow).TotalSeconds);
-        }
-
-        /// <summary>Starts the wait for the next action. The window calls it once an action has resolved.</summary>
         public void TurnTaken(FishingFight fight)
         {
             if (fight == null)
                 throw new ArgumentNullException(nameof(fight));
 
-            fight.NextTurnAt = _world.UtcNow.AddSeconds(LineRules.TurnSeconds);
             fight.LastActivityAt = _world.UtcNow;
         }
 

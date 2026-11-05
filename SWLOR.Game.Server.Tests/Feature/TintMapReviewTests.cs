@@ -2292,7 +2292,10 @@ public class TintMapReviewTests
             shader.Should().Contain("fEnvMapLevel = 1.0 - paletteColor.a");
             shader.Should().NotContain("uniform vec4 tintSkin");
             shader.Should().NotContain("useCustomTint");
-            shader.Should().Contain("clamp(decodedRgb * shadeScale, 0.0, 1.0)");
+            shader.Should().Contain("paletteColor = vec4(clamp(shadedRgb, 0.0, 1.0), environmentAlpha);");
+            shader.Should().Contain("float lookupBase = 1536.0;",
+                "exact RGB is shaded with its nearest palette swatch's row, not a single reference row");
+            shader.Should().NotContain("referenceRow");
         }
 
         ReadSource("SWLOR_Haks", "sw_tint_mtr", "pfh0_head121.mtr")
@@ -2750,7 +2753,10 @@ public class TintMapReviewTests
             shader.Should().Contain("vec3 vTint = paletteColor.rgb",
                 "presets retain their original PLT lookup while custom colors replace its hue");
             shader.Should().NotContain("customTint");
-            shader.Should().Contain("clamp(decodedRgb * shadeScale, 0.0, 1.0)");
+            shader.Should().Contain("paletteColor = vec4(clamp(shadedRgb, 0.0, 1.0), environmentAlpha);");
+            shader.Should().Contain("float lookupBase = 1536.0;",
+                "exact RGB is shaded with its nearest palette swatch's row, not a single reference row");
+            shader.Should().NotContain("referenceRow");
         }
     }
 

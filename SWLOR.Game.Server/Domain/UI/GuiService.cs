@@ -391,24 +391,9 @@ namespace SWLOR.Game.Server.Domain.UI
                 !_playerWindows.TryGetValue(playerId, out var windows) || windows == null)
                 return false;
 
-            return HasOpenTetheredWindow(windows.Select(window =>
+            return GuiTether.HasOpenTetheredWindow(windows.Select(window =>
                     (window.Key, window.Value?.ViewModel?.TetherObject ?? OBJECT_INVALID)),
                 tetherObject, type => IsWindowOpen(uiTarget, type));
-        }
-
-        private bool HasOpenTetheredWindow(IEnumerable<(GuiWindowType Type, uint Tether)> windows,
-            uint tetherObject, Func<GuiWindowType, bool> isWindowOpen)
-        {
-            if (windows == null || tetherObject == OBJECT_INVALID)
-                return false;
-
-            foreach (var (type, tether) in windows)
-            {
-                if (tether == tetherObject && isWindowOpen(type))
-                    return true;
-            }
-
-            return false;
         }
 
         /// <summary>

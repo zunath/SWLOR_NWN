@@ -442,8 +442,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var layout = Space.GetShipDetailByItemTag(ShipItemTag).Layout;
             var entrances = PropertyCaches.EntrancesByLayout;
             var instances = PropertyCaches.Instances;
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             var originalEntrance = entrances[layout];
             var originalPropertyId = Property.GetPropertyId(ctx.Arena);
             var registeredInstances = new List<string>();

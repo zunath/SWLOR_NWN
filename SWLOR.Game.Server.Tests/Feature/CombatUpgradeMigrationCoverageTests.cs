@@ -114,8 +114,9 @@ public class CombatUpgradeMigrationCoverageTests
         var migrationService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Migration.cs"));
+            "Domain",
+            "Core",
+            "MigrationService.cs"));
 
         migrationService.Should().Contain("ConsoleProgressMigrationVersion = 22");
         migrationService.Should().Contain("Starting server migration");

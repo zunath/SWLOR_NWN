@@ -414,14 +414,6 @@ public class EquipmentRecordReconciliationTests
         var scripts = typeof(EquipmentStats).GetMethod(nameof(EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).ToArray();
         scripts.Should().BeEquivalentTo([ScriptName.OnItemEquipValidateAfter, ScriptName.OnItemUnequipAfter]);
-
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.Body!.Statements.Select(statement => statement.ToString())
-            .Should().Contain("Stat.RefreshPlayerEquipmentStats(player);");
+        // MigrationServiceTests pins that the login runs the equipment stats refresh (after max HP).
     }
 }

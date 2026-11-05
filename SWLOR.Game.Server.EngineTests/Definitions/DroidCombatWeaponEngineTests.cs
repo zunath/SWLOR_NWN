@@ -223,20 +223,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
                 SetPlotFlag(enemy, true);
                 ObjectPlugin.SetPosition(droid, GetPosition(owner) + new System.Numerics.Vector3(0f, 1f, 0f));
-                ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
-                ctx.MakeHostile(enemy);
-                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
-                CreaturePlugin.DoPerceptionUpdateOnCreature(enemy, droid);
-                CreaturePlugin.DoPerceptionUpdateOnCreature(owner, enemy);
                 await ctx.ExecuteInCreatureContextAsync(droid, () => ClearAllActions(true));
+                await ctx.WaitUntilAsync(() => !GetIsInCombat(droid), 10f, "the droid to be out of combat");
 
-                // The engine records each command on the droid at once but queues its event, so when the owner is
-                // hit and targeted in the same frame the first event sees the second command as the droid's latest.
+                // The engine records each command on the droid at once but queues its event, so when the owner orders
+                // an attack in the frame they are hit, the attack event sees the under-attack command as the latest.
+                // The enemy turns up beside the droid in the same frame, before anyone has started fighting.
                 await ctx.ExecuteInCreatureContextAsync(droid, () =>
                 {
+                    ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                    ctx.MakeHostile(enemy);
+                    CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                    CreaturePlugin.DoPerceptionUpdateOnCreature(owner, enemy);
                     var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.AttackNearest);
                     native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.MasterUnderAttack);
-                    native.ReceiveAssociateCommand((int)SWLOR.NWN.API.NWScript.Enum.Associate.Command.MasterGoingtobeAttacked);
                 });
 
                 for (var tick = 0; tick < 80; tick++)
@@ -249,8 +250,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                  $"Conversations: {string.Join(" | ", _droidConversations)}");
                 }
                 ctx.Log($"conversations: {string.Join(" | ", _droidConversations)}");
-                ctx.Assert(_droidConversations.Exists(entry => entry.StartsWith("pattern=-11 command=-16")),
+                ctx.Assert(_droidConversations.Exists(entry => entry.StartsWith("pattern=-3 command=-11")),
                     $"The first event saw the later command: {string.Join(" | ", _droidConversations)}");
+                // The stock henchman AI stores the ranged weapon it puts away just before swapping to melee. Whether its
+                // queued swap runs before the next combat action clears it is down to timing, so its start is the check.
+                ctx.Assert(!GetIsObjectValid(GetLocalObject(droid, "X0_L_RIGHTHAND")),
+                    $"The stock henchman AI started swapping out '{GetName(GetLocalObject(droid, "X0_L_RIGHTHAND"))}'");
                 AssignCommand(enemy, () => ClearAllActions());
             }
             finally

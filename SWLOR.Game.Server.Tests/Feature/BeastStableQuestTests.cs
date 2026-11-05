@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -19,17 +20,15 @@ public class BeastStableQuestTests
 {
     private const string TrialOne = "stablemaster_trial_1";
     private const string TrialTwo = "stablemaster_trial_2";
-    private object _originalItemNames = null!;
-
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
     public void LoadRewardItemNames()
     {
         // Item rewards read their display names from the engine cache; seed it for the two field note rewards.
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, new Dictionary<string, string>
+        _facades = new FacadeContainer();
+        CacheItemNames.Seed(_facades, new Dictionary<string, string>
         {
             ["fnote_2039"] = "Field Note: Dewback",
             ["fnote_2091"] = "Field Note: Ronto",
@@ -37,7 +36,13 @@ public class BeastStableQuestTests
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [TestCase(0, 0, 1)]
     [TestCase(1, 0, 2)]

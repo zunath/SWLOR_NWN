@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public PerformanceKind Kind { get; init; }
         public DateTime StartedUtc { get; init; }
         public PerformanceQuality Quality { get; init; } = PerformanceQuality.Steady;
+
+        /// <summary>The performer plays in Roleplay mode, so watchers see "Roleplay" instead of a quality.</summary>
+        public bool IsRoleplay { get; init; }
         public PerformanceTempo Tempo { get; init; } = PerformanceTempo.Relaxed;
         public Vector3 Position { get; init; }
         public float RangeMeters { get; init; } = PerformanceAudienceRules.BaseRangeMeters;

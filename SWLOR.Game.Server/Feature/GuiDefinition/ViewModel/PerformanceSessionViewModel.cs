@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string ContentElement = "performance_session_content";
         public const string MainContentPartial = "PERFORMANCE_SESSION_MAIN";
+        public const string RoleplayContentPartial = "PERFORMANCE_SESSION_ROLEPLAY";
+        public const float MainWindowHeight = 700f;
+        public const float RoleplayModeWindowHeight = 440f;
 
         private const int LaneCount = 3;
         public const int UpcomingRows = PerformanceSession.VisibleBeatCount - 1;
@@ -47,6 +50,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override PerformanceKind Kind => PerformanceKind.Music;
         protected override string ContentElementId => ContentElement;
         protected override string MainPartialName => MainContentPartial;
+        protected override string RoleplayPartialName => RoleplayContentPartial;
+        protected override float ActiveWindowHeight => MainWindowHeight;
+        protected override float RoleplayWindowHeight => RoleplayModeWindowHeight;
         protected override string CueNoun => "note";
 
         protected override void ResetCueCache()

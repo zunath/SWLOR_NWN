@@ -108,6 +108,8 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
   **beast revamp #3157**; hand-ports into 14 converted services, about 300 lines): branch `claude/mr-sync-20261105`,
   worktree `.claude/worktrees/mr-sync-20261105`; PR, then the coordinator merges `--no-ff`.
 - P2-C4 merged (#3170, 2026-11-05). P2-C3 merged (#3172, 2026-11-05).
+- P2-C9 (closing classification of the small Core classes; `TileMagic`, `AnimationPlayer` convert, #3211): final full run and coverage.
+- P2-D0 (`FacadeAccessor` cache, Wave D prerequisite): branch `claude/mr-p2-d0`.
 - P2-C5 done without code change: `Random` stays static, `Time` is a utility (specs).
 `feature/crafting-revamp` is merged into master (#2873) and gone from GitHub: **`Craft` is unblocked** (convert after the
 sync). `feature/space-revamp` is still not on master.

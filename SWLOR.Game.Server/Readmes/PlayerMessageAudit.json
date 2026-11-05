@@ -8366,14 +8366,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceHullDesigns.cs",
-    "Line": 30,
+    "Line": 33,
     "Member": "LearnHullDesign",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You already know the {design.ShipName} - {design.Name} Hull Design.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceHullDesigns.cs",
-    "Line": 58,
+    "Line": 40,
+    "Member": "LearnHullDesign",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"You are already learning the {design.ShipName} - {design.Name} Hull Design.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceHullDesigns.cs",
+    "Line": 88,
     "Member": "SaveLearnedDesign",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                    $\"You learn the {design.ShipName} - {design.Name} Hull Design. Refit a {design.ShipName} to it in Ship Management at a starport.\"))"

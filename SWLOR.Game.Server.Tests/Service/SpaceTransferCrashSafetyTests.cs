@@ -321,18 +321,25 @@ public class SpaceTransferCrashSafetyTests
         var designs = Source("Service", "SpaceHullDesigns.cs");
         InOrder(Method(designs, "public static void LearnHullDesign("),
             "dbPlayer.UnlockedHullDesigns.ContainsKey(HullDesignRules.Key(design))",
+            "if (pending.Contains(resref))",
             "Item.ReduceItemStack(schematic, 1);",
-            "ObjectPlugin.SetString(user, LearnedDesignVariable, resref, true);",
+            "pending.Add(resref);",
+            "SetPendingDesigns(user, pending);",
             "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
             "if (!GetIsObjectValid(user))",
             "if (!CharacterCheckpoint.Save(user))",
             "return;",
-            "SaveLearnedDesign(user, resref);");
-        Method(designs, "public static void LearnHullDesign(").Should().NotContain("DB.Set(");
+            "foreach (var spent in GetPendingDesigns(user))",
+            "SaveLearnedDesign(user, spent);");
+        Method(designs, "public static void LearnHullDesign(").Should().NotContain("DB.Set(")
+            .And.NotContain("ObjectPlugin.SetString(user, LearnedDesignVariable, resref",
+                "a second schematic keeps the mark of a design whose own save failed instead of overwriting it");
         InOrder(Method(designs, "private static void SaveLearnedDesign("),
             "HullDesignRules.Unlock(dbPlayer.UnlockedHullDesigns, design, DateTime.UtcNow)", "DB.Set(dbPlayer);",
-            "if (ObjectPlugin.GetString(player, LearnedDesignVariable) == resref)");
+            "if (pending.Remove(resref))", "SetPendingDesigns(player, pending);");
         designs.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleLearnedHullDesign()");
+        InOrder(Method(designs, "public static void SettleLearnedHullDesign("),
+            "foreach (var resref in GetPendingDesigns(player))", "SaveLearnedDesign(player, resref);");
     }
 
     // Ship modules and deeds

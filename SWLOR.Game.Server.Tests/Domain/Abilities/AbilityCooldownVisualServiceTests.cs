@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Tests.Support;
@@ -32,6 +33,7 @@ public class AbilityCooldownVisualServiceTests
     private FakeNWScript _engine = null!;
     private InMemoryDBService _db = null!;
     private TestVisual _visual = null!;
+    private readonly List<uint> _refreshes = new();
     private DateTime _now;
     private bool _isDm;
     private bool _valid;
@@ -42,6 +44,7 @@ public class AbilityCooldownVisualServiceTests
     public void SetUp()
     {
         _now = T0;
+        _refreshes.Clear();
         _isDm = false;
         _valid = true;
         _uuid = PlayerId;
@@ -61,7 +64,7 @@ public class AbilityCooldownVisualServiceTests
         _scopes.Add(Clock.OverrideForTests(() => _now));
 
         _db = new InMemoryDBService().With(new Player { Id = PlayerId });
-        _visual = new TestVisual(_db);
+        _visual = new TestVisual(_db, ScriptedGui(_refreshes));
     }
 
     [TearDown]
@@ -182,7 +185,7 @@ public class AbilityCooldownVisualServiceTests
         _visual.ApplyRecastDelay(Player, RecastGroup.Earthshatter, T0, T0.AddSeconds(60));
 
         Overrides().Should().Equal("ife_alpha>pr0_alpha");
-        _visual.Refreshes.Should().Equal(Player);
+        _refreshes.Should().Equal(Player);
         _visual.GetCooldownStage(Player, RecastGroup.Earthshatter).Should().Be(0);
         _engine.CountOf("AssignCommand").Should().Be(1, "the next frame is scheduled");
     }
@@ -270,12 +273,12 @@ public class AbilityCooldownVisualServiceTests
         _visual.GetCooldownStage(Player, RecastGroup.Earthshatter).Should().Be(5);
 
         _now = T0.AddSeconds(60);
-        _visual.Refreshes.Clear();
+        _refreshes.Clear();
         RunScheduledUpdate();
         _visual.GetCooldownStage(Player, RecastGroup.Earthshatter).Should().Be(-1);
         // The anchor supplies its own artwork again.
         Overrides().Should().Equal("ife_anchor>");
-        _visual.Refreshes.Should().Equal(Player);
+        _refreshes.Should().Equal(Player);
     }
 
     [Test]
@@ -313,13 +316,13 @@ public class AbilityCooldownVisualServiceTests
     {
         _visual.ApplyRecastDelay(Player, RecastGroup.Earthshatter, T0, T0.AddSeconds(60), "ife_anchor", "ife_art");
         _engine.ClearCalls();
-        _visual.Refreshes.Clear();
+        _refreshes.Clear();
 
         _visual.ClearRecastDelay(Player, RecastGroup.Earthshatter);
 
         Overrides().Should().Equal("ife_anchor>ife_art");
         _visual.GetCooldownStage(Player, RecastGroup.Earthshatter).Should().Be(-1);
-        _visual.Refreshes.Should().Equal(Player);
+        _refreshes.Should().Equal(Player);
     }
 
     [Test]
@@ -341,7 +344,7 @@ public class AbilityCooldownVisualServiceTests
         _visual.ClearRecastDelay(ObjectInvalid, RecastGroup.Earthshatter);
         _visual.ClearRecastDelay(Player, RecastGroup.Earthshatter);
 
-        _visual.Refreshes.Should().BeEmpty();
+        _refreshes.Should().BeEmpty();
         _engine.CountOf("SetTextureOverride").Should().Be(0);
     }
 
@@ -357,13 +360,13 @@ public class AbilityCooldownVisualServiceTests
         _visual.ApplyRecastDelay(Player, RecastGroup.Earthshatter, T0, T0.AddSeconds(60), "ife_anchor");
         _visual.ApplyRecastDelay(Player, RecastGroup.Flash, T0, T0.AddSeconds(60), "ife_other");
         _engine.ClearCalls();
-        _visual.Refreshes.Clear();
+        _refreshes.Clear();
 
         _visual.ClearAllRecastDelays(Player);
 
         Overrides().Should().BeEquivalentTo(new[] { "ife_anchor>", "ife_other>" });
         _visual.GetCooldownStage(Player, RecastGroup.Earthshatter).Should().Be(-1);
-        _visual.Refreshes.Should().Equal(Player);
+        _refreshes.Should().Equal(Player);
     }
 
     [Test]
@@ -372,7 +375,7 @@ public class AbilityCooldownVisualServiceTests
         _visual.ClearAllRecastDelays(ObjectInvalid);
         _visual.ClearAllRecastDelays(Player);
 
-        _visual.Refreshes.Should().BeEmpty();
+        _refreshes.Should().BeEmpty();
     }
 
     [Test]
@@ -483,15 +486,26 @@ public class AbilityCooldownVisualServiceTests
         _db.Saved.Should().BeEmpty();
     }
 
+    private static IGuiService ScriptedGui(List<uint> refreshes)
+    {
+        var gui = ScriptedProxy.Create<IGuiService>(out var script);
+        script.On("PublishRefreshEvent", args =>
+        {
+            refreshes.Add((uint)args[0]!);
+            return null;
+        });
+        return gui;
+    }
+
     private sealed class TestVisual : AbilityCooldownVisualService
     {
-        public TestVisual(IDBService db)
-            : base(db)
+        public TestVisual(IDBService db, IGuiService gui)
+            : base(db, gui)
         {
         }
 
         public Dictionary<FeatType, AbilityDetail> Abilities { get; } = new();
-        public List<uint> Refreshes { get; } = new();
+        
         public int AbilityReads { get; private set; }
 
         protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
@@ -500,6 +514,5 @@ public class AbilityCooldownVisualServiceTests
             return Abilities;
         }
 
-        protected override void PublishCooldownRefresh(uint player) => Refreshes.Add(player);
     }
 }

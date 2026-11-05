@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -63,6 +64,7 @@ public class MimicryServiceTests
     private readonly Dictionary<int, QuickBarSlot> _bar = new();
     private readonly Dictionary<(string, int), string> _twoDa = new();
     private int _cursor;
+    private int _techniqueChanges;
     private bool _inCombat;
     private bool _playerDead;
     private int _playerHitPoints = 100;
@@ -85,6 +87,7 @@ public class MimicryServiceTests
         _bar.Clear();
         _twoDa.Clear();
         _cursor = 0;
+        _techniqueChanges = 0;
         _inCombat = false;
         _playerDead = false;
         _playerHitPoints = 100;
@@ -168,7 +171,13 @@ public class MimicryServiceTests
             return null;
         });
 
-        _mimicry = new TestMimicry(_db, quickCast, presence, feedback);
+        var gui = ScriptedProxy.Create<IGuiService>(out var guiScript);
+        guiScript.On("PublishRefreshEvent", _ =>
+        {
+            _techniqueChanges++;
+            return null;
+        });
+        _mimicry = new TestMimicry(_db, quickCast, presence, feedback, gui);
     }
 
     [TearDown]
@@ -918,7 +927,7 @@ public class MimicryServiceTests
         var placed = _playerPlugin.CallsTo("SetQuickBarSlot");
         placed.Should().ContainSingle().Which.Arguments[1].Should().Be(1);
         _quickCastCalls.Should().Contain("ApplyPreferences");
-        _mimicry.TechniqueChanges.Should().Be(1);
+        _techniqueChanges.Should().Be(1);
     }
 
     [Test]
@@ -999,7 +1008,7 @@ public class MimicryServiceTests
         _mimicry.RemovedSourceEffects.Should().Equal((Player, typeof(int), false, detail));
         _quickCastCalls.Should().Contain($"RemoveFeat:{Fire1}").And.Contain("ApplyPreferences");
         _playerPlugin.CallsTo("SetQuickBarSlot").Should().ContainSingle().Which.Arguments[1].Should().Be(4);
-        _mimicry.TechniqueChanges.Should().Be(1);
+        _techniqueChanges.Should().Be(1);
     }
 
     [Test]
@@ -1027,7 +1036,7 @@ public class MimicryServiceTests
 
         Record.EquippedTechniques.Should().BeEmpty();
         _quickCastCalls.Where(c => c.StartsWith("RemoveFeat")).Should().HaveCount(2);
-        _mimicry.TechniqueChanges.Should().Be(1);
+        _techniqueChanges.Should().Be(1);
     }
 
     [Test]
@@ -1039,7 +1048,7 @@ public class MimicryServiceTests
         _mimicry.UnequipAllTechniques(Player);
 
         _db.Saved.Should().BeEmpty();
-        _mimicry.TechniqueChanges.Should().Be(0);
+        _techniqueChanges.Should().Be(0);
     }
 
     // ---- The slot budget and login --------------------------------------------------------------------------------
@@ -1060,7 +1069,7 @@ public class MimicryServiceTests
         Record.EquippedTechniques.Should().Equal(Fire1, Ice1).And.HaveCount(2, "Fire2 is above the rank and the newest is over budget");
         _db.Saved.Should().ContainSingle();
         _quickCastCalls.Should().Contain("ApplyPreferences");
-        _mimicry.TechniqueChanges.Should().Be(1);
+        _techniqueChanges.Should().Be(1);
     }
 
     [Test]
@@ -1073,7 +1082,7 @@ public class MimicryServiceTests
         _mimicry.EnforceSlotBudget(Player);
 
         _db.Saved.Should().BeEmpty();
-        _mimicry.TechniqueChanges.Should().Be(0);
+        _techniqueChanges.Should().Be(0);
     }
 
     [Test]
@@ -1245,7 +1254,7 @@ public class MimicryServiceTests
         _quickCastCalls.Should().Contain($"RemoveFeat:{Fire1}");
         _creature.CallsTo("AddFeat").Select(c => c.Arguments[1]).Should().Equal(Ice1);
         _db.Saved.Should().Contain(Record);
-        _mimicry.TechniqueChanges.Should().Be(1);
+        _techniqueChanges.Should().Be(1);
     }
 
     [Test]
@@ -1328,8 +1337,8 @@ public class MimicryServiceTests
 
     private sealed class TestMimicry : MimicryService
     {
-        public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback)
-            : base(db, quickCast, presence, feedback)
+        public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback, IGuiService gui)
+            : base(db, quickCast, presence, feedback, gui)
         {
         }
 
@@ -1343,7 +1352,6 @@ public class MimicryServiceTests
         public List<(uint Creature, Type Type, bool Message)> RemovedEffects { get; } = new();
         public List<(uint Source, Type Type, bool Message, AbilityDetail Ability)> RemovedSourceEffects { get; } = new();
         public List<(Action Task, TimeSpan Interval)> Scheduled { get; } = new();
-        public int TechniqueChanges { get; private set; }
 
         protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Abilities;
 
@@ -1375,7 +1383,6 @@ public class MimicryServiceTests
 
         protected override bool HasCombatPoints(uint player, uint creature) => CombatPoints;
 
-        protected override void PublishTechniqueChanged(uint player) => TechniqueChanges++;
 
         protected override void ScheduleRepeating(Action task, TimeSpan interval) => Scheduled.Add((task, interval));
     }

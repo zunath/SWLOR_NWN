@@ -281,8 +281,7 @@ public static class StarshipDockReturnEngineTests
 
     private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallWindows(PlayerAbilityFixture actor)
     {
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>());
         foreach (var type in new[] { GuiWindowType.Conversation, GuiWindowType.ShipManagement })
         {

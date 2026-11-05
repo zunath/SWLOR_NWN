@@ -394,7 +394,7 @@ public class PerformanceWindowsServiceTests
 
         public int PerkLevelFor(PerformanceSetType set) => Perks.GetValueOrDefault(PerformanceRiderCatalog.GetUnlockPerk(set));
 
-        protected override Gui.IdReservation ReserveIds(string systemName, int amount) =>
+        protected override IdReservation ReserveIds(string systemName, int amount) =>
             new() { Count = amount, StartId = 70, EndId = 70 + amount - 1 };
 
         protected override bool IsWindowOpen(uint player, GuiWindowType type) => Open.Contains((player, type));

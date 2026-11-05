@@ -38,8 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var originalAssociate = nativeNpc.m_nAssociateType;
             var originalMaster = nativeNpc.m_oidMaster;
             var snapshots = new JArray();
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(dm.Id), "DM fixture has no existing GUI registration");
             var template = Gui.GetWindowTemplate(GuiWindowType.AppearanceEditor);
             ctx.AssertEqual(0, template.LayoutFindings.Count, "Appearance editor has no boot layout warnings");

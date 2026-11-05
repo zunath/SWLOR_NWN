@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         private readonly IPerformanceVenueService _venue;
         private readonly IMusicService _music;
-        private Gui.IdReservation _fallbackStrip;
+        private IdReservation _fallbackStrip;
 
         public PerformanceWindowsService(IPerformanceVenueService venue, IMusicService music)
         {
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // The calls into the unconverted Gui, Perk, Stat, PlayerName and Performance statics, one line each so a test can answer them.
 
         /// <summary>Reserves GUI ids for a system through the unconverted <c>Gui</c> service.</summary>
-        protected virtual Gui.IdReservation ReserveIds(string systemName, int amount) => Gui.ReserveIds(systemName, amount);
+        protected virtual IdReservation ReserveIds(string systemName, int amount) => Gui.ReserveIds(systemName, amount);
 
         protected virtual bool IsWindowOpen(uint player, GuiWindowType type) => Gui.IsWindowOpen(player, type);
 

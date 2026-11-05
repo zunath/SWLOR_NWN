@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -31,10 +32,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private bool _isCached;
 
         private readonly IDBService _db;
+        private readonly IGuiService _gui;
 
-        public AbilityCooldownVisualService(IDBService db)
+        public AbilityCooldownVisualService(IDBService db, IGuiService gui)
         {
             _db = db;
+            _gui = gui;
         }
 
         public void CacheData()
@@ -238,7 +241,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
 
             _activeVisuals.Remove(playerId);
-            PublishCooldownRefresh(player);
+            _gui.PublishRefreshEvent(player, new ExtraHotbarCooldownRefreshEvent());
         }
 
         private void CacheAbilityCooldownTextures()
@@ -368,7 +371,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             {
                 ApplyStage(state, stage);
                 state.Stage = stage;
-                PublishCooldownRefresh(state.Player);
+                _gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
             }
 
             ScheduleNextUpdate(state, now, stage);
@@ -463,7 +466,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
 
             if (GetIsObjectValid(state.Player) && GetObjectUUID(state.Player) == playerId)
-                PublishCooldownRefresh(state.Player);
+                _gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
         }
 
         /// <summary>Restores fitted artwork, or removes the override when the anchor supplies its own artwork.</summary>
@@ -480,10 +483,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
         protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
-
-        /// <summary>The unconverted <c>Gui</c> refresh bus.</summary>
-        protected virtual void PublishCooldownRefresh(uint player) =>
-            Gui.PublishRefreshEvent(player, new ExtraHotbarCooldownRefreshEvent());
 
         private sealed class ActiveRecastVisual
         {

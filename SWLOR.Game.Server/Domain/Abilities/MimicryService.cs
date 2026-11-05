@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -61,17 +62,20 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IQuickCastService _quickCast;
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerFeedbackService _playerFeedback;
+        private readonly IGuiService _gui;
 
         public MimicryService(
             IDBService db,
             IQuickCastService quickCast,
             IDMPresenceService dmPresence,
-            IPlayerFeedbackService playerFeedback)
+            IPlayerFeedbackService playerFeedback,
+            IGuiService gui)
         {
             _db = db;
             _quickCast = quickCast;
             _dmPresence = dmPresence;
             _playerFeedback = playerFeedback;
+            _gui = gui;
         }
 
         private const float WitnessRadius = 15.0f;
@@ -803,7 +807,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
             GrantTechniqueFeat(player, feat);
             _quickCast.ApplyPreferences(player);
-            PublishTechniqueChanged(player);
+            _gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
@@ -831,7 +835,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _db.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
             _quickCast.ApplyPreferences(player);
-            PublishTechniqueChanged(player);
+            _gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
@@ -905,7 +909,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             {
                 _db.Set(dbPlayer);
                 _quickCast.ApplyPreferences(player);
-                PublishTechniqueChanged(player);
+                _gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             }
         }
 
@@ -946,7 +950,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             dbPlayer.EquippedTechniques.Clear();
             _db.Set(dbPlayer);
             _quickCast.ApplyPreferences(player);
-            PublishTechniqueChanged(player);
+            _gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             Log.WriteStructured(
                 LogGroup.Mimicry,
@@ -1135,7 +1139,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             foreach (var feat in techniques.Where(feat => !_techniques[feat].IsMimicryTrait))
                 AddFeatToHotBar(player, feat);
             _quickCast.ApplyPreferences(player);
-            PublishTechniqueChanged(player);
+            _gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             return true;
         }
 
@@ -1355,10 +1359,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>The unconverted <c>CombatPoint</c> service.</summary>
         protected virtual bool HasCombatPoints(uint player, uint creature) => CombatPoint.HasCombatPoints(player, creature);
-
-        /// <summary>The unconverted <c>Gui</c> refresh bus.</summary>
-        protected virtual void PublishTechniqueChanged(uint player) =>
-            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
         /// <summary>The unconverted <c>Scheduler</c>.</summary>
         protected virtual void ScheduleRepeating(Action task, TimeSpan interval) => Scheduler.ScheduleRepeating(task, interval);

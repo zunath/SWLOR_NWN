@@ -508,8 +508,11 @@ public class CrossSkillPerkInteractionSafetyTests
         var restorationStrike = MaxLevel(perks[PerkType.RestorationStrike]);
         StatValue(lateralFootwork, StatType.AbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be((int)SkillType.Spear);
-        StatValue(mobileFootwork, StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType)
-            .Should().Be((int)SkillType.Pistol);
+        StatValue(mobileFootwork, StatType.SecondaryAbilityUsedEvasionRangedOnly)
+            .Should().Be(1);
+        mobileFootwork.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
+            "Mobile Footwork triggers from every hostile ranged weapon ability, not only Pistol abilities");
         mobileFootwork.StatBonuses.Should().NotContain(
             bonus => bonus.Stat == StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
             "Pistol and Spear footwork selectors must not sum into an invalid skill ID");

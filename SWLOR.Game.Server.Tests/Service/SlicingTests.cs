@@ -12,8 +12,8 @@ public class SlicingTests
     [TestCase(1, 3, 3, 4, 5, 3)]
     [TestCase(2, 4, 3, 3, 7, 3)]
     [TestCase(3, 4, 4, 3, 9, 4)]
-    [TestCase(4, 5, 4, 2, 11, 4)]
-    [TestCase(5, 5, 5, 2, 13, 5)]
+    [TestCase(4, 5, 4, 3, 11, 8)]
+    [TestCase(5, 5, 5, 4, 13, 12)]
     public void CatalogBoards_MatchTheBibleTierRules(
         int tier,
         int width,

@@ -639,15 +639,15 @@ public class PlayerNameRecognitionTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Disguise.cs"));
+            "Domain", "Character",
+            "DisguiseService.cs"));
 
-        var createMethod = ExtractMethod(source, "public static PlayerDisguise CreateDisguise(uint player)");
+        var createMethod = ExtractMethod(source, "public PlayerDisguise CreateDisguise(uint player)");
         createMethod.Should().Contain("Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
         createMethod.Should().Contain("LogGroup.PlayerName");
         createMethod.Should().Contain("GetName(player)");
 
-        var saveMethod = ExtractMethod(source, "public static SaveDisguiseResult SaveDisguise(");
+        var saveMethod = ExtractMethod(source, "public SaveDisguiseResult SaveDisguise(");
         saveMethod.Should().Contain("var previousPrivateName = disguise.PrivateName;");
         saveMethod.Should().Contain("var previousDescriptor = disguise.Descriptor;");
         saveMethod.Should().Contain("var previousBiography = disguise.Biography ?? string.Empty;");
@@ -662,7 +662,7 @@ public class PlayerNameRecognitionTests
         saveMethod.Should().Contain("LogGroup.PlayerName");
         saveMethod.Should().Contain("GetName(player)");
 
-        var activateMethod = ExtractMethod(source, "public static ActivateDisguiseResult Activate(uint player, string disguiseId)");
+        var activateMethod = ExtractMethod(source, "public ActivateDisguiseResult Activate(uint player, string disguiseId)");
         activateMethod.Should().Contain("var previousDisguiseId = dbPlayer.ActiveDisguiseId;");
         activateMethod.Should().Contain("Disguise activated: PlayerId={PlayerId} PlayerName={PlayerName} PreviousDisguiseId={PreviousDisguiseId} DisguiseId={DisguiseId}");
         activateMethod.Should().Contain("LogGroup.PlayerName");
@@ -670,7 +670,7 @@ public class PlayerNameRecognitionTests
         activateMethod.IndexOf("return ActivateDisguiseResult.Success();", StringComparison.Ordinal)
             .Should().BeLessThan(activateMethod.IndexOf("Disguise activated:", StringComparison.Ordinal));
 
-        var deactivateMethod = ExtractMethod(source, "public static bool Deactivate(uint player)");
+        var deactivateMethod = ExtractMethod(source, "public bool Deactivate(uint player)");
         deactivateMethod.Should().Contain("var activeDisguiseId = dbPlayer.ActiveDisguiseId;");
         deactivateMethod.Should().Contain("var activeDisguise = GetActiveDisguise(dbPlayer);");
         deactivateMethod.Should().Contain("Disguise deactivated: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
@@ -690,8 +690,8 @@ public class PlayerNameRecognitionTests
         var disguiseSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Disguise.cs"));
+            "Domain", "Character",
+            "DisguiseService.cs"));
         var activateResultSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -749,20 +749,20 @@ public class PlayerNameRecognitionTests
 
         disguiseSource.Should().Contain("public const string IdentityKeyPrefix = \"disguise:\";");
         disguiseSource.Should().Contain("BuildIdentityKey(activeDisguise.Id)");
-        disguiseSource.Should().Contain("PlayerName.DeleteKnownNameReferences(identityKey)");
-        disguiseSource.Should().Contain("DB.Delete<PlayerDisguise>(disguise.Id)");
+        disguiseSource.Should().Contain("_playerName.DeleteKnownNameReferences(identityKey)");
+        disguiseSource.Should().Contain("_db.Delete<PlayerDisguise>(disguise.Id)");
         disguiseSource.Should().Contain("public const int ActivationDelayMinutes = 30;");
         disguiseSource.Should().Contain("public const int MinimumActivationDelayMinutes = 5;");
-        disguiseSource.Should().Contain("public static TimeSpan GetActivationDelay(uint player)");
-        disguiseSource.Should().Contain("public static ActivateDisguiseResult Activate");
+        disguiseSource.Should().Contain("public TimeSpan GetActivationDelay(uint player)");
+        disguiseSource.Should().Contain("public ActivateDisguiseResult Activate");
         disguiseSource.Should().Contain("ValidateActivationDelay(player, playerId)");
         disguiseSource.Should().Contain("GetLatestActivationDate(playerId)");
         disguiseSource.Should().Contain("There is a {delayMinutes}-minute delay between disguise activations.");
         disguiseSource.Should().Contain("Deactivation is available immediately.");
-        disguiseSource.Should().Contain("DateLastActivated = DateTime.UtcNow");
-        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player, uint actor = OBJECT_INVALID)");
+        disguiseSource.Should().Contain("DateLastActivated = UtcNow()");
+        disguiseSource.Should().Contain("public int ResetActivationCooldowns(uint player, uint actor = OBJECT_INVALID)");
         disguiseSource.Should().Contain("disguise.DateLastActivated = null;");
-        disguiseSource.Should().Contain("public static bool Unretire");
+        disguiseSource.Should().Contain("public bool Unretire");
         disguiseSource.Should().Contain("disguise.DateRetired = null;");
         disguiseSource.Should().Contain("TakeGoldFromCreature(amount, player, true)");
         disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
@@ -829,11 +829,11 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().NotContain("SetDescription(player, disguise.Biography ?? string.Empty);");
         disguiseSource.Should().Contain("SetDescription(player, dbPlayer.UndisguisedDescription ?? string.Empty);");
         disguiseSource.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = false;");
-        var ensureDescriptionSnapshotMethod = ExtractMethod(disguiseSource, "private static void EnsureUndisguisedDescriptionSnapshot(uint player)");
+        var ensureDescriptionSnapshotMethod = ExtractMethod(disguiseSource, "private void EnsureUndisguisedDescriptionSnapshot(uint player)");
         ensureDescriptionSnapshotMethod.Should().Contain("dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;");
         ensureDescriptionSnapshotMethod.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = true;");
-        ensureDescriptionSnapshotMethod.Should().Contain("DB.Set(dbPlayer);");
-        ExtractMethod(disguiseSource, "private static void ApplyAppearance(uint player, PlayerDisguise disguise)")
+        ensureDescriptionSnapshotMethod.Should().Contain("_db.Set(dbPlayer);");
+        ExtractMethod(disguiseSource, "private void ApplyAppearance(uint player, PlayerDisguise disguise)")
             .Should().Contain("EnsureUndisguisedDescriptionSnapshot(player);");
         viewModelSource.Should().Contain("Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?");
         viewModelSource.Should().Contain("ActivateButtonText = IsSelectedDisguiseActive() ? \"Deactivate\" : \"Activate\";");

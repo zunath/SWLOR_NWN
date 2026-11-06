@@ -60,7 +60,7 @@
     { "name": "ObjectVisibility", "domain": "Core" },
     { "name": "OverflowStorage", "domain": "Items" },
     { "name": "Party", "domain": "Social" },
-    { "name": "Performance", "domain": "Social", "extras": [ { "facade": "PerformanceService.PerformanceAudience" }, { "facade": "PerformanceService.PerformanceVenue" }, { "facade": "PerformanceService.PerformanceWindows" } ] },
+    { "name": "Performance", "domain": "Social", "extras": [ { "part": "PerformanceInspired" }, { "part": "PerformanceRider" }, { "facade": "PerformanceService.PerformanceAudience" }, { "facade": "PerformanceService.PerformanceVenue" }, { "facade": "PerformanceService.PerformanceWindows" }, { "part": "PerformanceSnapshot" }, { "part": "PerformanceSong" } ] },
     { "name": "Planet", "domain": "World" },
     { "name": "PlayerDescriptor", "domain": "Character" },
     { "name": "PlayerFeedback", "domain": "Core" },

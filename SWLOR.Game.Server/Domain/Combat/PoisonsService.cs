@@ -2,6 +2,7 @@ using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PoisonsService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
@@ -24,8 +25,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         private const string NextApplyVariable = "POISON_COATING_NEXT_APPLY";
         public const int InternalCooldownSeconds = 6;
 
-        // Venom damage per tick a coating deals by tier, before the applier's Poison Bonus.
-        private readonly int[] CoatingVenomDamageByTier = { 8, 12, 16, 21, 26 };
         private readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public void ConsumePoisonCoating()
@@ -80,12 +79,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public int GetCoatingVenomDamagePerTick(int tier)
         {
-            return CoatingVenomDamageByTier[Math.Clamp(tier, 1, CoatingVenomDamageByTier.Length) - 1];
+            return PoisonCoatingTiers.GetVenomDamagePerTick(tier);
         }
 
         public float GetVenomDurationSeconds(int tier)
         {
-            return 6 + Math.Clamp(tier, 1, 5) * 6;
+            return PoisonCoatingTiers.GetVenomDurationSeconds(tier);
         }
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;

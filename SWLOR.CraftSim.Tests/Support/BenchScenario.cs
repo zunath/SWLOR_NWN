@@ -31,7 +31,7 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public string Title => "Test Bench";
 
-        public SkillType Skill => SkillType.Smithery;
+        public SkillType Skill { get; init; } = SkillType.Smithery;
 
         public CraftMinigameType Minigame => CraftMinigameType.Forge;
 

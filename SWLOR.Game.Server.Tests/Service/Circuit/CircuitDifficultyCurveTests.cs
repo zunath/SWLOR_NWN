@@ -42,6 +42,7 @@ public class CircuitDifficultyCurveTests
         top.MicroTuneCp.Should().Be(CircuitRules.MicroTuneCpAt(52));
         top.PatchCp.Should().Be(CircuitRules.PatchCpAt(52));
         top.WireIntegrity.Should().BeGreaterThan(Setup(level: Start).WireIntegrity);
+        top.GroundIntegrity.Should().BeGreaterThan(Setup(level: Start).GroundIntegrity);
     }
 
     [Test]

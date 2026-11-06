@@ -33,7 +33,7 @@ public static class CircuitRules
     public const double CalibrationDifficultyPerLevel = 0.06;
 
     /// <summary>How much more Integrity each action costs per level above <see cref="DifficultyStartLevel"/>.</summary>
-    public const double IntegrityDifficultyPerLevel = 0.036;
+    public const double IntegrityDifficultyPerLevel = 0.033;
 
     /// <summary>How much more CP a Patch costs per level above <see cref="DifficultyStartLevel"/>.</summary>
     public const double PatchCpPerLevel = 1.1;

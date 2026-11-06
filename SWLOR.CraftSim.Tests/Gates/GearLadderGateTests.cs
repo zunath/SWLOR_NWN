@@ -74,6 +74,17 @@ namespace SWLOR.CraftSim.Tests.Gates
             result.Tables[0].Rows.Select(row => row[0]).Distinct().Should().Equal("51-53");
         }
 
+        [Test]
+        public void ASkillWithNoBestGearDoesNotRunTheLadder()
+        {
+            var scenario = new BenchScenario { TunedAgainstFullMods = true, Skill = SWLOR.Game.Server.Service.SkillService.SkillType.Espionage };
+
+            var result = Evaluate(GearLadderGate.Key, scenario, Context(TopLevels));
+
+            result.Verdict.Should().Be(GateVerdict.NotRun);
+            result.Summary.Should().Contain("no best gear tier");
+        }
+
         [TestCase("46")]
         [TestCase("50-46")]
         [TestCase("a-b")]

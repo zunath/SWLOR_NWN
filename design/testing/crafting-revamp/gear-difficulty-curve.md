@@ -19,7 +19,7 @@ Levels at or below the start level play as they did. All values are constants in
 | Minigame | Starts above | Per level above the start |
 | --- | --- | --- |
 | Forge | 25 | Finish +1.75%, Shape +0.25%. A recipe's Finish before that factor rises to at least 1300 by level 50, so Shape-heavy armor needs gear too. |
-| Circuit | 30 | Calibration +6%, Integrity costs +3.6%, Patch +1.1 CP, Tune and Micro-Tune +0.12 CP |
+| Circuit | 30 | Calibration +6%, Integrity costs +3.3% (every action, Ground included), Patch +1.1 CP, Tune and Micro-Tune +0.12 CP |
 | Fabricator | 30 | Required quality +3%, wear +6%, Service +0.2 CP |
 
 The Fabricator's XP multiplier for levels 41 and up went from 1.00 to 1.06, because the longer crafts put best gear just under today's XP per hour.
@@ -34,8 +34,8 @@ Rank 50, 2 enhancements, no perks. "Reach" is the share of crafts at or above th
 | Forge 46-50, Shape-heavy | 16.8 | 38.8 | 71.6 | 99.9 | 100% | 96% |
 | Forge 51-53, Finish-heavy | 32.6 | 45.0 | 53.6 | 93.2 | 78% | 42% |
 | Forge 51-53, Shape-heavy | 5.4 | 33.0 | 52.8 | 94.0 | 82% | 49% |
-| Circuit 46-50 | 42.9 | 56.5 | 79.5 | 99.4 | 99% | 97% |
-| Circuit 51-53 | 17.8 | 38.5 | 45.3 | 94.5 | 85% | 78% |
+| Circuit 46-50 | 40.7 | 58.1 | 78.8 | 99.1 | 99% | 97% |
+| Circuit 51-53 | 15.6 | 36.1 | 49.4 | 93.9 | 85% | 78% |
 | Fabricator 46-50 | 28.3 | 72.7 | 88.3 | 99.3 | 99% | 80% |
 | Fabricator 51-53 | 3.8 | 14.6 | 48.2 | 95.8 | 91% | 72% |
 
@@ -43,8 +43,10 @@ Fully perked with no gear against no perks in unmodded best gear (plain crafts, 
 
 | Band | Forge | Circuit | Fabricator | Unmodded best gear (Forge / Circuit / Fabricator) |
 | --- | --- | --- | --- | --- |
-| 46-50 | Hot 68.7, Cold 58.1 | Overclock 84.5, Safe Mode 82.4 | Run 70.0, Fine 62.2 | 82.0 / 81.1 / 75.0 |
-| 51-53 | Hot 64.0, Cold 63.3 | Overclock 65.7, Safe Mode 61.4 | Run 41.7, Fine 35.5 | 59.8 / 60.7 / 37.1 |
+| 46-50 | Hot 68.7, Cold 58.1 | Overclock 83.0, Safe Mode 82.8 | Run 70.0, Fine 62.2 | 82.0 / 78.5 / 75.0 |
+| 51-53 | Hot 64.0, Cold 63.3 | Overclock 63.5, Safe Mode 59.9 | Run 41.7, Fine 35.5 | 59.8 / 64.3 / 37.1 |
+
+The Circuit's 46-50 row depends on the seed: seed 1 passes, and on seed 2 Overclock is 87.5 and Safe Mode 83.7 against 78.6, over the limit by 3.9 and 0.1. Averaged over the two seeds, Overclock is over by 1.7 and Safe Mode is inside the limit.
 
 ## Does the ladder hold for a player better than the bot?
 
@@ -54,8 +56,8 @@ The adaptive player is a floor on skilled play, and in the Circuit and the Fabri
 | --- | --- | --- | --- | --- |
 | Forge 46-50 | 48.8 | 57.7 | 70.8 | 83.6 |
 | Forge 51-53 | 25.2 | 36.2 | 41.3 | 55.6 |
-| Circuit 46-50 | 61.1 | 70.4 | 94.7 | 100.0 |
-| Circuit 51-53 | 47.7 | 69.4 | 81.4 | 100.0 |
+| Circuit 46-50 | 59.2 | 68.7 | 93.9 | 100.0 |
+| Circuit 51-53 | 47.0 | 69.4 | 81.4 | 100.0 |
 | Fabricator 46-50 | 29.8 | 63.9 | 82.3 | 100.0 |
 | Fabricator 51-53 | 27.5 | 50.3 | 60.9 | 100.0 |
 
@@ -87,12 +89,12 @@ Perks were the other half of "equipment irrelevant". Every value here was tuned 
 | Circuit perk | Before | After |
 | --- | --- | --- |
 | Conductive Wiring | Load +1 / +2 | Load +1 / Load +1 and Discharge +2% |
-| Capacitor Bank Discharge | 5% | 2% |
-| Shock Absorbers | 33% | 20% |
+| Capacitor Bank Discharge | 5% | 1% |
+| Shock Absorbers | 33% | 15% |
 | Insulated Traces | Integrity -1 / -2 on Wire, Tune, Boost and Discharge | Integrity -1 on Wire and Boost / also Patch +3 |
-| Fine Calibration | 10% / 25% | 3% / 5% |
-| Signal Lock chance | 10% | 5% |
-| Precision Patch | Restore +10, CP -2 | Restore +3, CP -1 |
+| Fine Calibration | 10% / 25% | 2% / 4% |
+| Signal Lock chance | 10% | 4% |
+| Precision Patch | Restore +10, CP -2 | Restore +2, CP -1 |
 | Overclock Load boost | +1% | removed; Wire and Tune still add 1 extra Load |
 | Safe Mode | Grace 2, Load -3% | Grace 3, Load -1% |
 | Micro-Tune share | 70% | 60% |
@@ -119,12 +121,11 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 
 | Gate | Case | Result | Note |
 | --- | --- | --- | --- |
-| Circuit rotation | 10 cases (6 to 7 in each perked build) | smallest margin -19.5 | Open by owner decision before this pass; master already failed 15 |
+| Circuit rotation | 10 cases (6 to 7 in each perked build) | smallest margin -19.7 | Open by owner decision before this pass; master already failed 15 |
 | Fabricator rotation | 5 cases (2 in each perked build) | smallest margin -34.0 | Open by owner decision before this pass |
-| Circuit style | Overclock vs Safe Mode, no lines, mid gear | Overclock wins 22/78 | Win share under 30%; the average gap is inside the limit |
-| Circuit length | 41-53, best gear | 20.2 actions, limit 20 | Over by 0.2 |
+| Circuit style | Overclock vs Safe Mode, no lines, mid gear | Overclock wins 25/75, -5.3 | Win share under 30% and the average gap just over the limit of 5 |
 | Forge ladder | 51-53, Finish-heavy, fully modded | just under 10 actions (rounds to 10.0), target 10-20 | The fully modded crafter finishes at the floor, not below it in any meaningful way |
-| Circuit ladder | 51-53, Overclock both lines, no gear | 65.7 vs 60.7, limit +5 | Over by under 0.05; the rounded figures sit exactly on the limit |
+| Circuit ladder | 46-50, both lines, no gear, seed 2 only | Overclock 87.5 and Safe Mode 83.7 vs 78.6, limit +5 | Seed 1, the reported run, passes |
 | Fabricator style | Production Run vs Fine Tolerance, no gear | +5.1, limit 5 | Over by 0.1 |
 | Forge economy | 21-30, no gear (also Hot Forging) | ratio 1.01 | Level 24 recipe; rules below level 25 are unchanged, and master's sample differed |
 | Forge XP | 11-20, no gear (also both-line builds) | 0.98x | Rules there are unchanged, and master's sample differed |

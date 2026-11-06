@@ -117,6 +117,8 @@ public sealed class CircuitSetup
 
     public int MicroTuneIntegrity => ScaleIntegrity(CircuitRules.MicroTuneIntegrity);
 
+    public int GroundIntegrity => ScaleIntegrity(CircuitRules.GroundIntegrity);
+
     public int TuneCp => CircuitRules.TuneCpAt(RecipeLevel);
 
     public int MicroTuneCp => CircuitRules.MicroTuneCpAt(RecipeLevel);

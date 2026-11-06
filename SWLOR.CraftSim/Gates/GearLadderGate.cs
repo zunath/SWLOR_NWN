@@ -27,6 +27,9 @@ namespace SWLOR.CraftSim.Gates
         {
             var run = _suite.RunFor(context);
             var thresholds = run.Thresholds;
+            if (run.Gear.All(gear => gear.Name != CraftingGearCatalog.BestGearName))
+                return GateResult.NotRun(Name, "The skill has no best gear tier to build the ladder from.");
+
             var rank = thresholds.PerksOptionalRank;
             var bands = run.EnhancedBands(thresholds.GearLadderBands).Where(band => band.Recipes.Count > 0).ToList();
             if (bands.Count == 0)

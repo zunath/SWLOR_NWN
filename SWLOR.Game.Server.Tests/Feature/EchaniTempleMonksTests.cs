@@ -74,7 +74,7 @@ public class EchaniTempleMonksTests
     }
 
     [Test]
-    public void Outfits_UseEchaniColorsAndCatalogMartialClothing()
+    public void Outfits_UseGreyTonesAndCatalogMartialClothing()
     {
         var catalog = ArmorAppearanceCatalog.Definitions[AppearanceType.Echani];
         var parts = new Dictionary<string, AppearanceArmor>
@@ -99,10 +99,12 @@ public class EchaniTempleMonksTests
             {
                 var primary = Value(item, "Cloth1Color").GetInt32();
                 TintMapPaletteColors.GetColor(TintMapLayerType.Cloth1, primary)
-                    .Should().Be(new TintMapColor(255, 255, 255));
-                Value(item, "Cloth2Color").GetInt32().Should().Be(name == "master" ? 25 : 27);
-                Value(item, "Leather1Color").GetInt32().Should().Be(name == "master" ? 27 : 62);
-                Value(item, "Leather2Color").GetInt32().Should().Be(name == "master" ? 62 : 25);
+                    .Should().Be(name == "master" ? new TintMapColor(79, 85, 88) : new TintMapColor(128, 128, 128));
+                Value(item, "Cloth2Color").GetInt32().Should().Be(name == "master" ? 60 : 22);
+                Value(item, "Leather1Color").GetInt32().Should().Be(23);
+                Value(item, "Leather2Color").GetInt32().Should().Be(60);
+                Value(item, "Metal1Color").GetInt32().Should().Be(name == "master" ? 7 : 6);
+                Value(item, "Metal2Color").GetInt32().Should().Be(name == "master" ? 6 : 7);
             }
             foreach (var (field, slot) in parts)
                 ArmorAppearanceCatalog.GetStyles(catalog, slot).Should()
@@ -118,8 +120,8 @@ public class EchaniTempleMonksTests
             silhouettes.Add(string.Join(",", parts.Keys.Select(part => Value(armor, "ArmorPart_" + part).GetInt32())))
                 .Should().BeTrue("each monk has a distinct outfit combination");
         }
-        TintMapPaletteColors.GetColor(TintMapLayerType.Cloth2, 27).Should().Be(new TintMapColor(35, 109, 161));
-        TintMapPaletteColors.GetColor(TintMapLayerType.Cloth2, 25).Should().Be(new TintMapColor(42, 56, 98));
+        TintMapPaletteColors.GetColor(TintMapLayerType.Cloth2, 60).Should().Be(new TintMapColor(128, 128, 128));
+        TintMapPaletteColors.GetColor(TintMapLayerType.Cloth2, 22).Should().Be(new TintMapColor(79, 85, 88));
     }
 
     [Test]

@@ -71,8 +71,11 @@ namespace SWLOR.Game.Server.Composition
 
             // Combat
             services.AddSingleton<ICombatPointService, CombatPointService>();
+            services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
+            services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IRecastService, RecastService>();
+            services.AddSingleton<IResistanceService, ResistanceService>();
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
 

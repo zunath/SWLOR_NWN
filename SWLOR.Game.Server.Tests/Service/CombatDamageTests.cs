@@ -1219,7 +1219,7 @@ public class CombatDamageTests
     public void ResistanceFamilies_UseResistanceScoreForTemporaryImmunity()
     {
         var root = FindRepositoryRoot();
-        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatService", "StatType.cs"));
         var holdTheLineSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "HoldTheLine1StatusEffect.cs"));

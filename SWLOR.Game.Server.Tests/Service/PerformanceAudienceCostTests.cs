@@ -127,7 +127,7 @@ public class PerformanceAudienceCostTests
     {
         var shared = new[]
         {
-            SourcePath("Service", "Death.cs"),
+            SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Service", "Fishing.cs"),
             SourcePath("Service", "Stat.cs"),
             SourcePath("Service", "StatusEffect.cs"),
@@ -148,7 +148,7 @@ public class PerformanceAudienceCostTests
             .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
         File.ReadAllText(SourcePath("Service", "CraftService", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");
-        File.ReadAllText(SourcePath("Service", "Death.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
+        File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
     }
 
     [Test]

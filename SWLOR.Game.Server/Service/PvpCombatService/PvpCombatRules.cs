@@ -25,7 +25,13 @@ namespace SWLOR.Game.Server.Service.PvpCombatService
         /// Healing a player receives is cut by this percent once they have been in PvP combat this
         /// long. It stops at the last step, so healers always keep part of their healing.
         /// </summary>
-        public static IReadOnlyList<PvpCombatRampStep> HealingReductionSteps { get; } = new[]
+        public static IReadOnlyList<PvpCombatRampStep> HealingReductionSteps => CreateHealingReductionSteps();
+
+        /// <summary>
+        /// A new table of <see cref="HealingReductionSteps"/>. The PvP combat service builds one into a field and reads
+        /// that, so nothing allocates while damage is being calculated.
+        /// </summary>
+        public static PvpCombatRampStep[] CreateHealingReductionSteps() => new[]
         {
             new PvpCombatRampStep(120f, 10),
             new PvpCombatRampStep(150f, 20),
@@ -38,7 +44,13 @@ namespace SWLOR.Game.Server.Service.PvpCombatService
         /// Damage players and their pets deal to a player rises by this percent once that player
         /// has been in PvP combat this long.
         /// </summary>
-        public static IReadOnlyList<PvpCombatRampStep> DamageIncreaseSteps { get; } = new[]
+        public static IReadOnlyList<PvpCombatRampStep> DamageIncreaseSteps => CreateDamageIncreaseSteps();
+
+        /// <summary>
+        /// A new table of <see cref="DamageIncreaseSteps"/>. The PvP combat service builds one into a field and reads
+        /// that, so nothing allocates while damage is being calculated.
+        /// </summary>
+        public static PvpCombatRampStep[] CreateDamageIncreaseSteps() => new[]
         {
             new PvpCombatRampStep(180f, 20),
             new PvpCombatRampStep(210f, 40),

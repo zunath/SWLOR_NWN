@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -780,7 +781,7 @@ public class CapstoneQuestDefinitionTests
                     var rawCost = GetItemPropertyCost(skinJson.RootElement, 133, subtype);
                     rawCost.Should().NotBeNull($"{skinResref} must define every resistance family");
 
-                    var decoded = Resistance.DecodeItemPropertyCostTableValue(rawCost!.Value);
+                    var decoded = ResistanceRules.DecodeItemPropertyCostTableValue(rawCost!.Value);
                     decoded.Should().BeInRange(-100, 100, $"{skinResref} resistance values must be valid SWLOR ratings");
                     values.Add(decoded);
 

@@ -130,8 +130,8 @@ public class StatusEffectDeliveryTests
         calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>
             arg.NameColon != null && arg.NameColon.Name.Identifier.ValueText == "isSelfApplied" &&
             arg.Expression.ToString() == "source == creature"));
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Death.cs"))
-            .Should().Contain("StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "DeathService.cs"))
+            .Should().Contain("ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
     }
 
     [Test]

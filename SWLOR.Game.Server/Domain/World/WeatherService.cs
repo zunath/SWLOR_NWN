@@ -323,10 +323,10 @@ namespace SWLOR.Game.Server.Domain.World
             if (damage <= 0 || GetObjectType(target) != ObjectType.Creature) return Math.Max(0, damage);
             var typedAdjustment = damageType.IsPhysicalDamageType()
                 ? Stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment) : 0;
-            var adjusted = Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
+            var adjusted = Service.Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
             damage = Resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage);
             if (damage <= 0) return 0;
-            return Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
+            return Service.Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
                 targetStatusDamagePercentAdjustment: adjusted.Adjustment);
         }
 

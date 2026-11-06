@@ -1,4 +1,5 @@
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
@@ -6,18 +7,14 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// The entry point crafting windows use to start, finish and settle a craft. It loads the player's record and runs
 /// <see cref="CraftSessionLifecycle"/> against the game engine.
 /// </summary>
-public static class CraftSessionService
+public static class CraftSessions
 {
-    private static CraftSessionLifecycle Lifecycle =>
-        new(NwnCraftSessionWorld.Instance, ServiceMinigameRandom.Instance);
+    private static ICraftSessionsService Instance => FacadeAccessor.Resolve<ICraftSessionsService>();
 
     /// <summary>Commits the materials for a craft. Anything still saved from an earlier craft is settled as a failure first.</summary>
     public static CraftSessionStartResult Start(uint player, CraftSessionStartRequest request)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null
-            ? CraftSessionStartResult.Refused("Your character could not be loaded.")
-            : Lifecycle.Start(player, dbPlayer, request);
+        return Instance.Start(player, request);
     }
 
     /// <summary>
@@ -26,8 +23,7 @@ public static class CraftSessionService
     /// </summary>
     public static CraftSessionSuccess Succeed(uint player, CraftSession session, MinigameMeter quality, int actionsTaken)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? null : Lifecycle.Succeed(player, dbPlayer, session, quality, actionsTaken);
+        return Instance.Succeed(player, session, quality, actionsTaken);
     }
 
     /// <summary>
@@ -37,23 +33,19 @@ public static class CraftSessionService
     /// </summary>
     public static CraftSettlement Fail(uint player, CraftSessionEndReason reason, int? actionsTaken = null)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? CraftSettlement.None : Lifecycle.Fail(player, dbPlayer, reason, actionsTaken);
+        return Instance.Fail(player, reason, actionsTaken);
     }
 
     /// <summary>Saves the actions the player's craft has resolved, so a settlement with no window holds its XP to the same pace.</summary>
     public static void RecordActions(uint player, CraftSession session, int actionsTaken)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        if (dbPlayer != null)
-            Lifecycle.RecordActions(dbPlayer, session, actionsTaken);
+        Instance.RecordActions(player, session, actionsTaken);
     }
 
     /// <summary>Settles a craft nothing is playing and returns held items that now fit. Call at login and when a crafting window opens.</summary>
     public static CraftSettlement SettleLeftover(uint player, CraftSessionEndReason reason = CraftSessionEndReason.Interrupted)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? CraftSettlement.None : Lifecycle.SettleLeftover(player, dbPlayer, reason);
+        return Instance.SettleLeftover(player, reason);
     }
 
     /// <summary>
@@ -62,28 +54,24 @@ public static class CraftSessionService
     /// </summary>
     public static CraftSettlement RecoverAtLogin(uint player, CraftSessionEndReason reason = CraftSessionEndReason.Interrupted)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? CraftSettlement.None : Lifecycle.RecoverAtLogin(player, dbPlayer, reason);
+        return Instance.RecoverAtLogin(player, reason);
     }
 
     /// <summary>Gives the XP a craft earned while the player was dead, once they are alive. Call at a respawn.</summary>
     public static bool GrantPendingXp(uint player)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer != null && Lifecycle.GrantPendingXp(player, dbPlayer);
+        return Instance.GrantPendingXp(player);
     }
 
     /// <summary>True while the player has a craft saved, whichever window is playing it.</summary>
     public static bool IsCrafting(uint player)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer?.ActiveCraftSession != null;
+        return Instance.IsCrafting(player);
     }
 
     /// <summary>True while the session is still the player's saved craft: it has not been settled by a death, logout or window close.</summary>
     public static bool IsActive(uint player, CraftSession session)
     {
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer != null && CraftSessionLifecycle.IsActive(dbPlayer, session);
+        return Instance.IsActive(player, session);
     }
 }

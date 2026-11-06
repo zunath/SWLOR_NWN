@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         protected void StartMinigameSession()
         {
-            CraftSessionService.SettleLeftover(Player);
+            CraftSessions.SettleLeftover(Player);
             OpenHelpOnFirstUse();
         }
 
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// A craft still in progress when the window closes, including when the player walks away from the station, fails under
         /// the loss rule. A window that overrides this calls the base method.
         /// </summary>
-        public override Action OnWindowClosed() => () => CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, CraftActionsTaken);
+        public override Action OnWindowClosed() => () => CraftSessions.Fail(Player, CraftSessionEndReason.WindowClosed, CraftActionsTaken);
 
         /// <summary>
         /// The actions the window's engine has resolved so far, which hold the XP of a craft that ends with the window to the modeled pace

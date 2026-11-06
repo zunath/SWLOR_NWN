@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Composition
         internal static void Register(IServiceCollection services)
         {
             // Core
-            services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+            services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();

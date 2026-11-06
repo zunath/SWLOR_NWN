@@ -335,7 +335,7 @@ scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse
   work** (no engine, database or other service calls): they run at boot before the module exists; anything that ran in
   a boot handler stays in that handler.
 - Database access in converted services goes through the injected `IDBService` (grow it with the members a service
-  needs). Until `DB` converts in Wave C it is backed by `Composition/StaticDBAdapter`, which forwards to static `DB`.
+  needs). `IDBService` is implemented by `DBService` (P2-C8); the static `DB` is its facade.
 - `Composition/` is a wiring area: its references to every service do not count as dependencies in the guard.
 - **Before Wave D**, `FacadeAccessor` must cache each resolved instance (a per-type static cache inside `Composition/`,
   cleared when the container is rebuilt), with a measurement showing the facade call costs no more than a few

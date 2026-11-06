@@ -23,6 +23,7 @@
     { "name": "ConversationMenu", "domain": "Core" },
     { "name": "Craft", "domain": "Crafting", "extras": [ { "facade": "CraftService.CraftStyleEffects" }, { "facade": "CraftService.Minigame.CraftMinigameRouting" }, { "facade": "CraftService.Minigame.CraftQuickCraft" }, { "facade": "CraftService.Minigame.CraftSessions" }, { "facade": "CraftService.Research.CraftResearchExperiment" } ] },
     { "name": "Currency", "domain": "Economy" },
+    { "name": "DB", "domain": "Core" },
     { "name": "DMBlueprintCatalog", "domain": "Administration" },
     { "name": "DMCreatorFavorite", "domain": "Administration" },
     { "name": "DMCreatureManagerFavorite", "domain": "Administration" },

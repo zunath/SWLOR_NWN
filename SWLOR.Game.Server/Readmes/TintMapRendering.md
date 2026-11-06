@@ -535,6 +535,9 @@ For a wearer root, the parent is its bank's skeleton and part IDs without the cl
 since the compiler copies no clips into the root. An animation release that keeps
 the bank skeleton therefore reuses every root and rebuilds only the banks; the
 whole-chain pose checks below still evaluate every root against the new clips.
+The exception is a bank that gets a new name because something else still inherits
+from it (see below): each active root then names the new bank, so it recompiles, and
+those changed roots must ship with the banks.
 Whole-chain body-pose checks still run during generation even when models are reused.
 Staging `compilations.json` records compilation-only checkpoints for interrupted
 builds. They require matching source, compiler, parent, original binding data,
@@ -557,6 +560,9 @@ the generator deletes tails the head no longer chains to. If anything else still
 inherits from the bank (a retired phenotype's root, or the unselected wearers of a
 `--model` build), the family gets a new name and the old bank stays unchanged for those
 models until `PruneRobeAnimationBridges.py` removes it. Retired names are never reassigned.
+`--update-animation` is the exception: it revises a named clip in the installed bank
+without that check, so every model inheriting from the bank gets the revision, retired
+wearers included.
 The report's `banks_revised_in_place` and `stale_banks` list what happened.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
 with approximately 121 minutes for the preceding full rebuild. This is a no-op

@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
@@ -320,6 +321,7 @@ namespace SWLOR.Game.Server.Service
                     PerformanceWindows.ClearFallbackStrip(player);
 
                 RestorePlayer(player);
+                HornFit.Apply(player);
                 if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
                     Activity.ClearBusy(player);
 
@@ -507,9 +509,13 @@ namespace SWLOR.Game.Server.Service
             session.SetRoleplay(preference.Roleplay, now);
 
             _sessions[player] = session;
+            HornFit.Apply(player);
             PerformanceAudience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
-            PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
+            PlayThenLoop(
+                session,
+                PerformanceAnimations.GetOpeningClip(kind),
+                PerformanceAnimations.GetOpeningHoldMode(kind, family, GetResRef(instrument)));
             ScheduleBeats(session);
 
             SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay));
@@ -750,10 +756,13 @@ namespace SWLOR.Game.Server.Service
             PerformanceAnimations.GetHoldMode(session.Kind, session.InstrumentFamily);
 
         // A one-shot clip hands back to the routine when it ends, unless a newer clip has replaced it.
-        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip)
+        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip) =>
+            PlayThenLoop(session, clip, HoldMode(session));
+
+        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
-            var token = NamedAnimation.Play(player, clip, holdMode: HoldMode(session));
+            var token = NamedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);
             AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>

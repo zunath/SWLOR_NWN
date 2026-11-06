@@ -44,7 +44,7 @@ public class PlayerIdentityAuditTests
         var forgetNameAction = ExtractAction("ForgetKnownName");
         var acceptIntroduction = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerIntroductionService.cs", "Accept");
         var setDescriptor = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerDescriptorService.cs", "SetUnknownDisplayName");
-        var getIdentityKey = ExtractMethod("Service", "Disguise.cs", "GetIdentityKey");
+        var getIdentityKey = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/DisguiseService.cs", "GetIdentityKey");
         var source = $$"""
             using System;
             using System.Collections.Generic;

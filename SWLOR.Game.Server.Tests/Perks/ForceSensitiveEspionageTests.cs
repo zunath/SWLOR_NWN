@@ -25,12 +25,12 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class ForceSensitiveEspionageTests
 {
-    // The Stealth facade resolves the stealth service from a container.
-    private FacadeContainer _facades = null!;
+    // The converted stealth, disguise and infiltration facades resolve their instances from a container.
+    private SWLOR.Game.Server.Tests.Support.FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildFacades() => _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
 
     [OneTimeTearDown]
     public void DisposeFacades() => _facades.Dispose();
@@ -39,7 +39,7 @@ public class ForceSensitiveEspionageTests
     public void InstallFacades() => _facadeScope = _facades.Install();
 
     [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
+    public void UninstallFacades() => _facadeScope.Dispose();
 
     private static readonly PerkType[] SharedPerks =
     {
@@ -342,19 +342,19 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void BypassXp_ChecksEligibilityWhenAttemptsStartAndWhenXpIsGranted()
     {
-        var source = ReadSource("Service", "EspionageInfiltration.cs");
-        var start = source[source.IndexOf("private static bool CanStartAttempt", StringComparison.Ordinal)..];
+        var source = ReadSource("Domain", "Character", "EspionageInfiltrationService.cs");
+        var start = source[source.IndexOf("private bool CanStartAttempt", StringComparison.Ordinal)..];
         start[..start.IndexOf("var master = GetMaster(npc);", StringComparison.Ordinal)]
-            .Should().Contain("!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
-        var record = source[source.IndexOf("public static void RecordDetection", StringComparison.Ordinal)..];
-        record = record[..record.IndexOf("if (!AI.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
-        record.Should().Contain("if (Stealth.IsStealthDetectionBlocked(observer))",
+            .Should().Contain("!IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc))");
+        var record = source[source.IndexOf("public void RecordDetection", StringComparison.Ordinal)..];
+        record = record[..record.IndexOf("if (!_ai.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
+        record.Should().Contain("if (IsStealthDetectionBlocked(observer))",
             "an attempt a clouded observer let through never pays, even after the cloud lifts");
         record.Should().Contain("TryMarkResolved(target, observer);");
         source.Should().NotContain("CloudedMindStatusEffect");
-        var grant = source[source.IndexOf("private static void GrantXp", StringComparison.Ordinal)..];
-        grant[..grant.IndexOf("Skill.GiveSkillXP", StringComparison.Ordinal)]
-            .Should().Contain("IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
+        var grant = source[source.IndexOf("private void GrantXp", StringComparison.Ordinal)..];
+        grant[..grant.IndexOf("GiveSkillXP(player", StringComparison.Ordinal)]
+            .Should().Contain("IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc))");
     }
 
     [TestCase(true, false, false, false, true)]

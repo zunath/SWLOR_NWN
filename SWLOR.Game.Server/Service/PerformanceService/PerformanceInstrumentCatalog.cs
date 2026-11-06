@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
@@ -8,6 +10,19 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceInstrumentCatalog
     {
+        private static readonly ImmutableArray<string> _resrefs =
+            ImmutableArray.Create("guitar", "lute", "harp", "kloo_horn", "slitherhorn");
+
+        /// <summary>Every playable instrument's resref, for checks that the Player Guide's list stays complete.</summary>
+        public static IReadOnlyCollection<string> Resrefs => _resrefs;
+
+        /// <summary>
+        /// The kloo horn only reaches the lips once the polearm carry layer is gone. The slitherhorn's mouthpiece is
+        /// modelled to reach them from that layer, so it keeps the layer.
+        /// </summary>
+        public static bool PlaysWithoutCarryLayer(string resref) =>
+            string.Equals(resref, "kloo_horn", StringComparison.OrdinalIgnoreCase);
+
         public static bool TryGetFamily(string resref, out PerformanceInstrumentFamily family)
         {
             if (!string.IsNullOrEmpty(resref))

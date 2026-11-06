@@ -139,6 +139,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
         void TryAcquireAggroAfterDetection(uint observer, uint target);
 
         /// <summary>
+        /// Runs the normal proximity-aggro path for every enemy within aggro range of a creature
+        /// that just became visible. Their aggro auras only check on entry, so enemies the creature
+        /// reached while hidden would otherwise ignore it until it left the aura and came back.
+        /// </summary>
+        void AcquireAggroFromNearbyEnemies(uint target);
+
+        /// <summary>
         /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
         /// </summary>
         void StopCombatAfterProximityLoss(uint enemy);

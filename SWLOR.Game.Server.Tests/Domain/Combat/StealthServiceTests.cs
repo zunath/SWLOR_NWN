@@ -511,7 +511,7 @@ public class StealthServiceTests
 
         _locals.Has(Player, "STEALTH_TIMED_EXIT_ACTIVE").Should().BeFalse();
         _stealth.StealthStatus.Should().BeEmpty();
-        _stealth.Calls.Should().ContainInOrder("CancelInfiltration", "RestoreLightsaberAfterHidden", "ReevaluateEnemyAttackTargets");
+        _stealth.Calls.Should().ContainInOrder("CancelInfiltration", "RestoreLightsaberAfterHidden", "ReevaluateEnemyAttackTargets", "AcquireAggroFromNearbyEnemies");
     }
 
     [Test]
@@ -521,6 +521,7 @@ public class StealthServiceTests
         _stealthed.Add(Player);
         RunDeferred("DelayCommand");
         _stealth.Calls.Should().NotContain("ReevaluateEnemyAttackTargets");
+        _stealth.Calls.Should().NotContain("AcquireAggroFromNearbyEnemies");
 
         _stealth.Calls.Clear();
         _players.Clear();
@@ -930,6 +931,8 @@ public class StealthServiceTests
         protected override void RestoreLightsaberAfterHidden(uint creature) => Calls.Add("RestoreLightsaberAfterHidden");
 
         protected override void ReevaluateEnemyAttackTargets(uint creature) => Calls.Add("ReevaluateEnemyAttackTargets");
+
+        protected override void AcquireAggroFromNearbyEnemies(uint target) => Calls.Add("AcquireAggroFromNearbyEnemies");
 
         protected override int GetEnmityTableCount(uint enemy) => EnmityCount;
 

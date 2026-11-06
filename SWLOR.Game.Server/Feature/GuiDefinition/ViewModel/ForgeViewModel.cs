@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     /// <summary>
     /// The Plasma Forge window. It binds <see cref="ForgeEngine"/> and forwards clicks to it; every rule, cost and result the
     /// window shows comes from the engine's own previews. Starting, finishing and settling a craft go through
-    /// <see cref="CraftSessionService"/>.
+    /// <see cref="CraftSessions"/>.
     /// </summary>
     public class ForgeViewModel : CraftMinigameViewModel<ForgeViewModel, CraftPayload>
     {
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = null;
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the crafter its effect.
-            CraftingStyleSelection.Restore(Player);
+            CraftStyleEffects.Restore(Player);
             ForgeStyles.RemoveUnowned(Player);
 
             var itemName = Cache.GetItemNameByResref(_recipeDetail.Resref);
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _recipe,
                 _hasBlueprint ? _blueprintItem : OBJECT_INVALID,
                 _enhancementItems.ToList());
-            var started = CraftSessionService.Start(Player, request);
+            var started = CraftSessions.Start(Player, request);
             if (!started.Succeeded)
             {
                 StatusText = started.Message;
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_engine == null || _engine.Status != MinigameStatus.InProgress)
                 return;
 
-            if (!CraftSessionService.IsActive(Player, _session))
+            if (!CraftSessions.IsActive(Player, _session))
             {
                 EndCraft("The craft ended.", GuiColor.Red);
                 return;
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The saved craft counts its actions, so a craft settled with no window (a logout, a death, a restart) is held to the same pace.
             if (result.Status == MinigameStatus.InProgress)
-                CraftSessionService.RecordActions(Player, _session, _engine.Turn);
+                CraftSessions.RecordActions(Player, _session, _engine.Turn);
 
             var summary = ForgePreviewText.Summarize(result.Outcome, _engine.Setup);
             LastResultText = $"{result.Outcome.Label}: {summary}";
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (_engine == null)
                         return;
 
-                    CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, _engine.Turn);
+                    CraftSessions.Fail(Player, CraftSessionEndReason.WindowClosed, _engine.Turn);
                     EndCraft("You stopped before the piece was finished.", GuiColor.Red);
                 },
                 confirmText: "Stop",
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void FinishCraft()
         {
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
+            var success = CraftSessions.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 EndCraft("The craft ended.", GuiColor.Red);
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void BreakCraft()
         {
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
+            var settlement = CraftSessions.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             var lost = settlement.Settled ? $" {settlement.ItemsLost} of {settlement.ItemsLost + settlement.ItemsKept} items were lost." : string.Empty;
             EndCraft($"The piece broke.{lost}", GuiColor.Red);
         }

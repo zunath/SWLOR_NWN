@@ -132,7 +132,7 @@ public class ExperimentWindowTests
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchExperimentViewModel.cs");
 
         source.Should().Contain("public override Action OnWindowClosed()");
-        source.Should().NotContain("CraftSessionService");
+        source.Should().NotContain("CraftSessions");
     }
 
     [Test]

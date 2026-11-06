@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
+            CraftResearchExperiment.SettleOpenExperiments(GetObjectUUID(player));
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ResearchExperimentService.RecoverAtLogin(player);
-            ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
+            CraftResearchExperiment.RecoverAtLogin(player);
+            CraftResearchExperiment.SettleOpenExperiments(GetObjectUUID(player));
         }
     }
 }

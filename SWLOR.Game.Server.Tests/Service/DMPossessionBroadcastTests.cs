@@ -89,8 +89,22 @@ public class DMPossessionBroadcastTests
                 public static string GetEventData(string name) => Target.ToString("x");
             }
 
+            public sealed class DMPresenceShim
+            {
+                public uint GetDM(uint actor) => DMPresence.GetDM(actor);
+                public uint GetControlledCreature(uint actor) => DMPresence.GetControlledCreature(actor);
+            }
+
+            public sealed class PartyShim
+            {
+                public bool IsInParty(uint first, uint second) => Party.IsInParty(first, second);
+            }
+
             public static class Telegraph
             {
+                // What the telegraph instance injects: its DM presence and party services.
+                private static readonly DMPresenceShim _dmPresence = new();
+                private static readonly PartyShim _party = new();
                 public static uint Self;
                 public static readonly List<uint> Updated = new();
                 private static readonly Dictionary<uint, object> _sentShaderStates = new();
@@ -111,12 +125,12 @@ public class DMPossessionBroadcastTests
                 // UpdateShaderSlotsForPlayer resolves the party member once per viewer and passes it for every slot.
                 public static TelegraphColorType ColorFor(uint viewer, uint telegrapher, bool isHostile) =>
                     DetermineTelegraphColorType(viewer, DMPresence.GetDM(viewer), telegrapher, isHostile);
-                {{Method("Service/Telegraph.cs", "DetermineTelegraphColorType")}}
-                {{Method("Service/Telegraph.cs", "SelectTelegraphColorType")}}
-                {{Method("Service/Telegraph.cs", "UpdateShadersForPlayers")}}
-                {{Method("Service/Telegraph.cs", "UpdateShadersForAllPlayers")}}
-                {{Method("Service/Telegraph.cs", "UpdateShadersForArea")}}
-                {{Method("Service/Telegraph.cs", "ResendShaderStateOnDMPossess")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "DetermineTelegraphColorType")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "SelectTelegraphColorType")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "UpdateShadersForPlayers")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "UpdateShadersForAllPlayers")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "UpdateShadersForArea")}}
+                {{InstanceMethod("Domain/Combat/TelegraphService.cs", "ResendShaderStateOnDMPossess")}}
             }
             """);
     }
@@ -234,9 +248,9 @@ public class DMPossessionBroadcastTests
     [Test]
     public void TelegraphSlots_PassTheAvatarBehindAPossessedCreatureForPartyColors()
     {
-        var slots = Method("Service/Telegraph.cs", "UpdateShaderSlotsForPlayer");
+        var slots = InstanceMethod("Domain/Combat/TelegraphService.cs", "UpdateShaderSlotsForPlayer");
 
-        slots.Should().Contain("var partyMember = DMPresence.GetDM(player);")
+        slots.Should().Contain("var partyMember = _dmPresence.GetDM(player);")
             .And.Contain("DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile)");
     }
 

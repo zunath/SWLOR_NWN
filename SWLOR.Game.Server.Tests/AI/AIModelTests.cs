@@ -26,8 +26,8 @@ public class AIModelTests
         Opening
     }
 
-    // The AI scoring asks the companion control facade whether a creature is a registered companion, which resolves
-    // from the server's registrations.
+    // The AI scoring asks the companion control facade whether a creature is a registered companion, and applying a
+    // status effect checks the combat recorder; both resolve from the server's registrations.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 

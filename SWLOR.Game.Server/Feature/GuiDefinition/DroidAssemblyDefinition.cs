@@ -340,17 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .BindText(model => model.Lightsaber);
-                            });
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddLabel()
                                     .BindText(model => model.TwinBlade);
-                            });
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddLabel()
-                                    .BindText(model => model.Saberstaff);
                             });
                             col2.AddRow(row2 =>
                             {

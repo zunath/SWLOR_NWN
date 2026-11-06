@@ -567,7 +567,9 @@ models until `PruneRobeAnimationBridges.py` removes it. Retired names are never 
 `--update-animation` is the exception: it revises a named clip in the installed bank
 without that check, so every model inheriting from the bank gets the revision, retired
 wearers included.
-The report's `banks_revised_in_place` and `stale_banks` list what happened.
+The report's `banks_revised_in_place` and `stale_banks` list what happened to changed
+families. `banks_revised_in_place` omits banks revised by `--update-animation`; the
+build log's `Verified in-place motion revision` lines name those.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
 with approximately 121 minutes for the preceding full rebuild. This is a no-op
 measurement, not a changed-build benchmark. All 3,256 compiled outputs remained

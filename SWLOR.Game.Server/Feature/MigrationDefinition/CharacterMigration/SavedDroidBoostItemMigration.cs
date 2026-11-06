@@ -29,8 +29,6 @@ internal static class SavedDroidBoostItemMigration
     private const string RecipesVariable = "RECIPES";
     private const string BlueprintRecipeIdVariable = StoredItemDataMigration.DroidBoostStoredItemMigration.BlueprintRecipeIdVariable;
 
-    private static IReadOnlyDictionary<int, string> _blueprintNames;
-
     /// <summary>
     /// Main thread only: reads the blueprint name of every replacement droid boost recipe, which the engine
     /// builds from the recipe's item name.
@@ -48,7 +46,8 @@ internal static class SavedDroidBoostItemMigration
     }
 
     /// <summary>Supplies the blueprint names (by recipe ID) directly, for tests and for callers that read them elsewhere.</summary>
-    public static void Load(IReadOnlyDictionary<int, string> blueprintNames) => _blueprintNames = blueprintNames;
+    public static void Load(IReadOnlyDictionary<int, string> blueprintNames) =>
+        Migration.CharacterData.DroidBoostBlueprintNames = blueprintNames;
 
     /// <summary>Migrates every equipped and carried item, including container contents, once.</summary>
     internal static bool MigrateCharacter(SavedCharacter character)
@@ -414,9 +413,10 @@ internal static class SavedDroidBoostItemMigration
     /// </summary>
     private static string GetBlueprintName(int recipeId)
     {
-        if (_blueprintNames == null)
+        var blueprintNames = Migration.CharacterData.DroidBoostBlueprintNames;
+        if (blueprintNames == null)
             throw new InvalidOperationException("Saved droid blueprint names are not loaded.");
-        return _blueprintNames.TryGetValue(recipeId, out var name)
+        return blueprintNames.TryGetValue(recipeId, out var name)
             ? name
             : throw new InvalidOperationException($"No blueprint name is loaded for recipe {recipeId}.");
     }

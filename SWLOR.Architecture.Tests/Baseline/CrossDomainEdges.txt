@@ -634,7 +634,7 @@ Feature.Jukebox -> DMPresence | 1
 Feature.RoleplayXP -> DMPresence | 1
 Feature.ServerTasks -> DMPresence | 1
 
-# Gameplay -> Character (38 edges)
+# Gameplay -> Character (39 edges)
 Feature.AchievementProgression -> Achievement | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> PlayerName | 3
@@ -659,6 +659,7 @@ Feature.PlayerRest -> StatusEffect | 1
 Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
 Feature.PlayerTemporaryEffects -> Stat | 1
 Feature.RoleplayXP -> RoleplayXP | 7
+Feature.RoleplayXP -> RoleplayXPDetection | 2
 Feature.ScavengePoint -> Perk | 1
 Feature.ScavengePoint -> Skill | 1
 Feature.ScavengePoint -> Stat | 1

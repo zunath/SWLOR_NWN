@@ -24,12 +24,23 @@ public sealed class SavedCharacterDataStore
     private IReadOnlyDictionary<int, int> _classPackages;
     private IReadOnlyDictionary<int, int> _classHitDice;
     private IReadOnlyDictionary<int, (int Dice, int Die)> _damageCosts;
+    private IReadOnlyDictionary<int, string> _droidBoostBlueprintNames;
 
     /// <summary>Inventory grid of a container item, in item cells.</summary>
     public int ContainerWidth { get; private set; } = 7;
     public int ContainerHeight { get; private set; } = 5;
 
     public bool IsLoaded => _inventorySizes != null && _propertyDefinitions != null && _blueprints != null;
+
+    /// <summary>
+    /// The blueprint name of every replacement droid boost recipe (by recipe ID), read once on the main thread by
+    /// <c>SavedDroidBoostItemMigration.Load</c>; null until then.
+    /// </summary>
+    public IReadOnlyDictionary<int, string> DroidBoostBlueprintNames
+    {
+        get => _droidBoostBlueprintNames;
+        set => _droidBoostBlueprintNames = value;
+    }
 
     /// <summary>Main thread only: reads baseitems.2da inventory sizes and itempropdef.2da tables.</summary>
     public void Load()

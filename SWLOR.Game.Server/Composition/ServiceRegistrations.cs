@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Composition
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
             services.AddSingleton<IActivityService, ActivityService>();
+            services.AddSingleton<IAppearanceRenderStateService, AppearanceRenderStateService>();
             services.AddSingleton<IDisguiseService, DisguiseService>();
             services.AddSingleton<IEspionageInfiltrationService, EspionageInfiltrationService>();
             services.AddSingleton<ILanguageService, LanguageService>();
@@ -68,6 +70,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IRaceService, RaceService>();
+            services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
+            services.AddSingleton<ITintMapStateService, TintMapStateService>();
 
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
@@ -125,6 +129,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IGuildService, GuildService>();
             services.AddSingleton<IGuildTaskXpService, GuildTaskXpService>();
             services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
+
+            // Gameplay
+            services.AddSingleton<IServerTaskService, ServerTaskService>();
 
             // Items
             services.AddSingleton<IEquipmentUnequipService, EquipmentUnequipService>();

@@ -40,7 +40,7 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: 2026-11-06, `de681bce2` (see Sync log).
+- Last sync with `master`: 2026-11-06, `2d18989fd` (see Sync log).
 - **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
@@ -139,6 +139,7 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
 - P2-C7 merged (#3214, `ddeec998b`, 2026-11-05): `Gui`, `ExtraHotbars` converted (see Work queue).
 - P2-C10 merged (#3221, `e04726d51`, 2026-11-06): `CompanionControl` converted; 6 handler renames in the map (see Work queue).
 - Master sync merged (#3234, 2026-11-06): master `de681bce2`, no conflicts, no ports (see Sync log).
+- Master sync merged (#3252, `623353b20`, 2026-11-06): master `2d18989fd`, `AI`, `Stealth` and `Performance` ported (see Sync log and Port log).
 - P2-C6 merged (#3218, `b827b6ab6`, 2026-11-05): `Migration` behind `IMigrationService` (see Work queue).
 - P2-B9 merged (#3219, `c72645fef`, 2026-11-05): `Craft` converted, handler rename map added (see Work queue).
 - P2-A10 merged (#3220, `d7ef0028b`, 2026-11-05): `Performance` and `GuildTaskXp` converted (see Work queue).
@@ -184,10 +185,11 @@ on another machine needs none of them (both PR descriptions are on GitHub; cover
 
 ## Next actions
 
-1. **Review and merge** P2-D11, P2-D13, P2-D14 and the master sync (`2d18989fd`, branch `claude/mr-sync-1106`) as they report.
-2. **Daily sync** when master moves (last 2026-11-06, `04b37fdbe`). Check whether `feature/space-revamp` reached master
+1. **Review and merge** P2-D11, P2-D13 and P2-D14 as they report.
+2. **Daily sync** when master moves (last 2026-11-06, `2d18989fd`). Check whether `feature/space-revamp` reached master
    (unblocks P2-A9 `Space`, `Droid`, and the ~77-line `Item` port).
 3. **Follow-up from P2-C8:** make the `IDBService` default members abstract when no open item adds a fake.
+   **Follow-ups from the 2026-11-06 sync:** `PerformanceInstrumentCatalog` keeps `Resrefs` as a list beside the literals in `TryGetFamily`, so they can drift: return to one `FrozenDictionary` as on master. `AIService.AcquireAggroFromNearbyEnemies` is covered only through the `StealthService` seam: add a direct test. Engine snapshots were not refreshed at this sync.
 4. **Rest of Wave B:** `Droid` (waits for the space revamp). Follow-ups: `Loot` and
    `IncubationFieldNote` could inject `IBeastMasteryService` (check cycles).
 5. **Wave D peripheral** (P2-D13 and P2-D14 finish it; P2-D12's scan is in row P2-D?):
@@ -249,6 +251,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | 2026-11-05 | e0c75c252 (38 commits, incl. crafting revamp #2873 and beast revamp #3157) | 19: facades kept and ported (`BeastMastery`, `CapstoneProof`, `CasinoSlot`, `Fishing`, `HoloCom`, `IncubationFieldNote`, `Item`, `Messaging`, `Music`, `Planet`, `Property`, `Shuttle`; `Guild` merged into the facade, forwarding restored and ported; `NamedAnimation` ported after P2-C4); master's new static state in converted folders ported (`IncubationTestTools` overrides into `BeastMasteryService`; `FishingFights` became an `extras` facade over `Domain/World/FishingFightsService`; `IncubationProjection`, `FishingRodTier` tables computed; `NwnFishingFightWorld.Instance` removed); manifest: 47 handlers placed, 2 FurnitureRename handlers dropped (master removed them); `ClockSeamFiles`: `CraftViewModel` replaced by `CraftSessionLifecycle`, `NwnCraftSessionWorld`; new services mapped: `Performance` (Social), `Prospecting`, `Scavenge` (Crafting), `GuildTaskXp` (Economy) | identical to master e0c75c252 (132 snapshot files, 708 handlers, 40 engine-test handlers); characterization rows attributed in `ae0c66a59` (#2873, #3157, #3174, #3193, #3208; recipe files only gain a `minigameParameters` column); guard tests lock `IsForcePower`, `MinigameParameters`. Engine refresh: 41 passed; the 4 Craft scenario files changed because master removed the manual-craft window: the scenario now drives `CraftSessionService` for the same two recipes (items identical; **XP earned is 0 under the frozen clock, a weak row**). Five master hak-content tests excluded (need `sw_weapon`, `sw_item`, tilesets, `sw_plc*`). Tests on the final head: Game.Server.Tests 13298, Characterization 148, Architecture 164 (+1 skipped), NWN.API 341, CombatSim 892+2, CLI 35, Formats 95 (first full run covering P2-D0: clean). Codex clean on `dad8a2bca`. PR #3215, merge `807d53f22`. | Claude Sonnet 5.5 (sync-20261105), merged by the coordinator |
 | 2026-11-06 | de681bce2 (12 commits) | none; manifest: `StaleDriveAfterJump.RegisterHooks` placed (#3212) | identical to master de681bce2 (132 snapshot files, 709 handlers, 40 engine-test handlers) after regenerating `Stat/StatTypeMetadata.json` (+3 rows, #3208, #3210; clears the earlier drift). Tests on the sync head: Game.Server 14074 passed, 1 failed, Characterization 148, Architecture 164, NWN.API 341, CombatSim 894, CLI 35, Formats 95. The failure was `TintMapReviewTests.EveryPackedTintMaskDeclaresItsFullAti2MipChain`: master #3223 renamed that test, so the exclusion in `scripts/ci/run-unit-tests.sh` went stale (it needs the `sw_tint*` hak folders); the coordinator corrected the name on landing. On a trial merge with the base (P2-D4): Release build, Architecture 164, Characterization 148. Engine snapshots not refreshed. Codex clean on `1d520b063`. #3234, no ports. | Claude Sonnet 5.5 (sync-1105b) |
 | 2026-11-06 | 04b37fdbe (1 commit: #3228) | none; no C# (hak pin and `TintMapRendering.md`), so merged by hand: the script's steps had nothing to do | not re-run: no server code changed | Claude Opus 5.5 (coordinator) |
+| 2026-11-06 | 2d18989fd (2 commits: #3245, #3236) | 6: `Service/AI.cs`, `Stealth.cs`, `Performance.cs`, `PerformanceInstrumentCatalog.cs`, `PerformanceSongs.cs`, `PerformanceOptionsViewModel.cs` kept the branch's and were ported (Port log); manifest: 12 `SlitherhornFit` lines renamed `HornFit` and moved to master's place | identical to master 2d18989fd (132 snapshot files, 709 handlers, 40 engine-test handlers); no snapshot changed; 2 cross-domain edges added by hand (`Feature/AppearanceDefinition` <-> `Performance`, #3236); `tools/Refactor/MasterCopy.ps1` stubs `FacadeServices.cs` so parity builds its master reference again (broken since P2-D7). Tests: Game.Server 15339, Characterization 148, Architecture 180, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076, 0 failed. Engine snapshots not refreshed. Codex clean on `802e8935b`. PR #3252, merge `623353b20`. | Claude Sonnet 5.5 (sync-1106), merged by the coordinator |
 
 ## Port log
 
@@ -269,6 +272,8 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | #2873 (crafting revamp) | `Guild`, `HoloCom`, `Item`, `Messaging`, `Music`, `NamedAnimation` | `GuildService` (`a8ed6a562`), `HoloComService` (`2c16a954d`), `ItemService` (`eadcddc76`), `MessagingService` (`140edbb5a`, `1f32809d3`), `MusicService` (`0d5a9cbe9`), `NamedAnimationService` (`f55bef4f9`) | #3215 |
 | #3194 (Eshan reopened) | `Service/Planet.cs`, `Service/Shuttle.cs` | `PlanetService`, `ShuttleService` (`c966db9e9`) | #3215 |
 | #3159 (retire migration 30) | `Service/Property.cs` | `PropertyService` (`d4d9658d8`) | #3215 |
+| #3245 (enemies notice a player leaving stealth) | `Service/AI.cs`, `Service/Stealth.cs` | `AIService.AcquireAggroFromNearbyEnemies` (with interface and facade); `StealthService.OnStealthExited` through a `protected virtual` wrapper | #3252 |
+| #3236 (kloo horn hold, Performance instruments and songs) | `Service/Performance.cs`, `PerformanceInstrumentCatalog.cs`, `PerformanceSongs.cs`, `PerformanceOptionsViewModel.cs` | `PerformanceService` (`ApplyHornFit` wrapper, `PlayThenLoop` overload); `Resrefs`, `PlaysWithoutCarryLayer`, `CanChooseSong` in the converted files | #3252 |
 
 ## Environment notes
 

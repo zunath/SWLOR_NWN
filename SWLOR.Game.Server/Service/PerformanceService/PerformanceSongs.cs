@@ -29,6 +29,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             return songs;
         }
 
+        /// <summary>
+        /// A single song leaves nothing to choose, and the engine's one-row combo popup draws its scroll buttons stacked,
+        /// so the picker only opens with two or more songs.
+        /// </summary>
+        public static bool CanChooseSong(int availableSongs) => availableSongs > 1;
+
         public static int ChooseSong(string playerId, int preferredTrackId = AutomaticSong)
         {
             var collected = Music.GetCollectedTrackIds(playerId);

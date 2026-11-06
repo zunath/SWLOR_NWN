@@ -82,6 +82,18 @@ public class PerformanceAnimationsTests
         PerformanceAnimations.GetHoldMode(kind, family).Should().Be(expected);
     }
 
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "kloo_horn", NamedAnimationHold.Auto)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "KLOO_HORN", NamedAnimationHold.Auto)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "slitherhorn", NamedAnimationHold.LiftInPlace)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, "guitar", NamedAnimationHold.Keep)]
+    [TestCase(PerformanceKind.Dance, PerformanceInstrumentFamily.None, "kloo_horn", NamedAnimationHold.Keep)]
+    [TestCase(PerformanceKind.Dance, PerformanceInstrumentFamily.None, "", NamedAnimationHold.Keep)]
+    public void OnlyTheKlooHornOpeningClearsTheCarryHold(
+        PerformanceKind kind, PerformanceInstrumentFamily family, string instrument, NamedAnimationHold expected)
+    {
+        PerformanceAnimations.GetOpeningHoldMode(kind, family, instrument).Should().Be(expected);
+    }
+
     [Test]
     public void OpeningClipsAreTheToggleAbilityClips()
     {

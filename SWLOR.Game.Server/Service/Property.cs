@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
+        private const string LastDescribedPropertyVariable = "PROPERTY_LAST_DESCRIBED";
+
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -2962,6 +2964,44 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Shows a property's description to a player arriving from outside it. Coming back to the property's area, such as after a
+        /// reload, does not repeat it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void ShowPropertyDescription()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var propertyId = GetPropertyId(OBJECT_SELF);
+            if (!_propertyInstances.ContainsKey(propertyId))
+            {
+                DeleteLocalString(player, LastDescribedPropertyVariable);
+                return;
+            }
+
+            if (GetLocalString(player, LastDescribedPropertyVariable) == propertyId)
+                return;
+
+            SetLocalString(player, LastDescribedPropertyVariable, propertyId);
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            var message = PropertyDescriptionText.Format(property?.CustomName, property?.CustomDescription);
+            if (!string.IsNullOrEmpty(message))
+                SendMessageToPC(player, ColorToken.Cyan(message));
+        }
+
+        /// <summary>
+        /// Shows a structure's player-given name on its placeable. A structure that still has its catalog name keeps its template's.
+        /// </summary>
+        public static void ApplyStructureWorldName(uint placeable, WorldProperty structure)
+        {
+            var catalogName = GetStructureByType(structure.StructureType).Name;
+            SetName(placeable, StructureWorldName.Resolve(structure.CustomName, catalogName));
+        }
+
+        /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaExit)]
@@ -3323,6 +3363,7 @@ namespace SWLOR.Game.Server.Service
                 var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
                 SetPlotFlag(placeable, true);
                 AssignPropertyId(placeable, property.Id);
+                ApplyStructureWorldName(placeable, property);
 
                 _structurePropertyIdToPlaceable[property.Id] = placeable;
 

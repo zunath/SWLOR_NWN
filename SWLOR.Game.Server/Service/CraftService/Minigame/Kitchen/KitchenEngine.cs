@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
@@ -23,9 +24,9 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
     private const string StockMeterPrefix = "stock.";
 
-    private static KitchenAxis[] Axes => new KitchenAxis[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
-    private static string[] AxisNames => new string[] { "Savory", "Sweet", "Spice" };
-    private static string[] AxisIds => new string[] { SavoryMeterId, SweetMeterId, SpiceMeterId };
+    private static readonly ImmutableArray<KitchenAxis> Axes = ImmutableArray.Create<KitchenAxis>(KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice);
+    private static readonly ImmutableArray<string> AxisNames = ImmutableArray.Create<string>("Savory", "Sweet", "Spice");
+    private static readonly ImmutableArray<string> AxisIds = ImmutableArray.Create<string>(SavoryMeterId, SweetMeterId, SpiceMeterId);
 
     private readonly KitchenRecipe _recipe;
     private readonly KitchenStats _stats;

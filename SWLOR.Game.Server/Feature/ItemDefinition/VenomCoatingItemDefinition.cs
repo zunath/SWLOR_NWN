@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
@@ -105,13 +106,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var lines = new List<string>
             {
-                $"{Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
+                $"{PoisonsCoatingTiers.GetVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
             };
 
             if (concentrated)
                 lines.Add($"+{ConcentratedDamageBonusPercent}% Venom damage");
 
-            lines.Add($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0}s");
+            lines.Add($"Venom lasts {PoisonsCoatingTiers.GetVenomDurationSeconds(tier):0}s");
             lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {Poisons.InternalCooldownSeconds}s");
 
             return lines;

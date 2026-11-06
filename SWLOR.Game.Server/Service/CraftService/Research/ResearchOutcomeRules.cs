@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -16,11 +17,11 @@ public static class ResearchOutcomeRules
     public const int EvidenceForMaximum = 6;
 
     // How often today's roll picks credit reduction and time reduction once licensed runs are ruled out: 400 each. Ties use the same odds.
-    private static IReadOnlyDictionary<ResearchCandidate, int> TieBreakWeights => new Dictionary<ResearchCandidate, int>
+    private static readonly FrozenDictionary<ResearchCandidate, int> TieBreakWeights = new Dictionary<ResearchCandidate, int>
     {
         [ResearchCandidate.CreditReduction] = 400,
         [ResearchCandidate.TimeReduction] = 400
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// The size of a reduction for the evidence on it: 0 with no evidence, the dice minimum with 1, rising evenly to the dice maximum

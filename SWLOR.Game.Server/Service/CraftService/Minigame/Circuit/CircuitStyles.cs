@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.PerkService;
@@ -15,8 +17,10 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 /// </summary>
 public static class CircuitStyles
 {
+    private static readonly ImmutableList<CircuitStyle> AllItems = ImmutableList.Create<CircuitStyle>(CircuitStyle.Overclock, CircuitStyle.SafeMode);
+
     /// <summary>Every style, in the order the window lists them.</summary>
-    public static IReadOnlyList<CircuitStyle> All => new[] { CircuitStyle.Overclock, CircuitStyle.SafeMode };
+    public static IReadOnlyList<CircuitStyle> All => AllItems;
 
     /// <summary>The skill whose craft window offers these styles.</summary>
     public const SkillType Skill = SkillType.Engineering;
@@ -25,20 +29,20 @@ public static class CircuitStyles
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static IReadOnlyDictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
-        new Dictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>>
+    private static readonly FrozenDictionary<CircuitStyle, FrozenDictionary<StatType, int>> StyleStats =
+        new Dictionary<CircuitStyle, FrozenDictionary<StatType, int>>
         {
             [CircuitStyle.Overclock] = new Dictionary<StatType, int>
             {
                 [StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad,
                 [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.OverclockLoadBoostPercent
-            },
+            }.ToFrozenDictionary(),
             [CircuitStyle.SafeMode] = new Dictionary<StatType, int>
             {
                 [StatType.CircuitOverloadGrace] = CircuitPerkRules.SafeModeOverloadGrace,
                 [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.SafeModeLoadBoostPercent
-            }
-        };
+            }.ToFrozenDictionary()
+        }.ToFrozenDictionary();
 
     /// <summary>The stat adjustments a style's status effect carries.</summary>
     public static IReadOnlyDictionary<StatType, int> StatsOf(CircuitStyle style) =>

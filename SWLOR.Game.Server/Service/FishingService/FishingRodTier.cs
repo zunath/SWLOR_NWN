@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.FishingService
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         public const int RanksPerTier = 10;
         public const int HighestTier = 4;
 
-        private static IReadOnlyDictionary<FishingRodType, int> RequiredRanks => new Dictionary<FishingRodType, int>
+        private static readonly FrozenDictionary<FishingRodType, int> RequiredRanks = new Dictionary<FishingRodType, int>
         {
             { FishingRodType.Bamboo, 0 },
             { FishingRodType.Carbon, 0 },
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Service.FishingService
             { FishingRodType.Butterfly, 40 },
             { FishingRodType.Tranquility, 40 },
             { FishingRodType.LuShang, 40 }
-        };
+        }.ToFrozenDictionary();
 
         /// <summary>Every rod and the Agriculture rank it requires.</summary>
         public static IReadOnlyDictionary<FishingRodType, int> All => RequiredRanks;

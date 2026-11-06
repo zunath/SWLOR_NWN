@@ -370,8 +370,13 @@ The horn recipe uses the existing `shield` facing control to set left-forearm ro
 without a shield equipped. `[-120, 165, 30]` keeps the left hand upright in the note and
 flourish holds; the imported saxophone loop inherits that hold. Rotate the forearm along
 its elbow-to-wrist axis so the hand follows it without moving the wrist or instrument.
+The kloo horn only lines up once the instrument's polearm carry layer is gone. Mapping `plpause1`
+to `sw_nohold` stops the layer refreshing but cannot remove one already on the character, which
+leaves the horn on the shoulder, so its opening `PlayInstrument` clip plays once on the Dodge Side
+carrier to remove it. Later clips stay on the looping carrier.
 
-The slitherhorn mouthpiece is fitted in item-local coordinates from close male and female
+The slitherhorn keeps the carry layer: its mouthpiece reaches the lips from that pose, and sits at
+the chest without it. It is fitted in item-local coordinates from close male and female
 client views. The lower stem, grips and bell keep their original coordinates (vertices at or
 below original Y=0.04). The editable model is
 `SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to

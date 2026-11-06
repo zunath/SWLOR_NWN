@@ -509,7 +509,10 @@ namespace SWLOR.Game.Server.Service
             _sessions[player] = session;
             PerformanceAudience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
-            PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
+            PlayThenLoop(
+                session,
+                PerformanceAnimations.GetOpeningClip(kind),
+                PerformanceAnimations.GetOpeningHoldMode(kind, family, GetResRef(instrument)));
             ScheduleBeats(session);
 
             SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay));
@@ -750,10 +753,13 @@ namespace SWLOR.Game.Server.Service
             PerformanceAnimations.GetHoldMode(session.Kind, session.InstrumentFamily);
 
         // A one-shot clip hands back to the routine when it ends, unless a newer clip has replaced it.
-        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip)
+        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip) =>
+            PlayThenLoop(session, clip, HoldMode(session));
+
+        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
-            var token = NamedAnimation.Play(player, clip, holdMode: HoldMode(session));
+            var token = NamedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);
             AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>

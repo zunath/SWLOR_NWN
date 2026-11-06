@@ -154842,7 +154842,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -155001,166 +155001,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Lightsaber Boost I"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dlsab1"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4801"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 22,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -155319,7 +155160,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -155478,7 +155319,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -155637,166 +155478,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Saberstaff Boost I"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dsabst1"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4805"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 23,
+                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -155955,7 +155637,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -156114,7 +155796,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -156273,7 +155955,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -156432,7 +156114,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -171890,7 +171572,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -172049,166 +171731,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Lightsaber Boost II"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dlsab2"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4813"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 22,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -172367,7 +171890,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -172526,7 +172049,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -172685,166 +172208,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Saberstaff Boost II"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dsabst2"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4817"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 23,
+                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -173003,7 +172367,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -173162,7 +172526,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -173321,7 +172685,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -173480,7 +172844,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -196518,7 +195882,7 @@
                     }
                   },
                   {
-                    "__struct_id": 2,
+                    "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
                       "value": 1953
@@ -196983,7 +196347,7 @@
                     }
                   },
                   {
-                    "__struct_id": 4,
+                    "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
                       "value": 1953
@@ -197448,7 +196812,7 @@
                     }
                   },
                   {
-                    "__struct_id": 6,
+                    "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
                       "value": 1562
@@ -197705,7 +197069,7 @@
                     }
                   },
                   {
-                    "__struct_id": 8,
+                    "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
                       "value": 1562
@@ -198024,7 +197388,7 @@
                     }
                   },
                   {
-                    "__struct_id": 10,
+                    "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
                       "value": 1562
@@ -198343,7 +197707,7 @@
                     }
                   },
                   {
-                    "__struct_id": 12,
+                    "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
                       "value": 585
@@ -198578,7 +197942,7 @@
                     }
                   },
                   {
-                    "__struct_id": 14,
+                    "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
                       "value": 390
@@ -198813,7 +198177,7 @@
                     }
                   },
                   {
-                    "__struct_id": 16,
+                    "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
                       "value": 390
@@ -199079,7 +198443,7 @@
                     }
                   },
                   {
-                    "__struct_id": 18,
+                    "__struct_id": 9,
                     "AddCost": {
                       "type": "dword",
                       "value": 390
@@ -199345,7 +198709,7 @@
                     }
                   },
                   {
-                    "__struct_id": 20,
+                    "__struct_id": 10,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -199594,7 +198958,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 11,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -199903,7 +199267,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 12,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -200212,7 +199576,7 @@
                     }
                   },
                   {
-                    "__struct_id": 26,
+                    "__struct_id": 13,
                     "AddCost": {
                       "type": "dword",
                       "value": 1171
@@ -200446,7 +199810,7 @@
                     }
                   },
                   {
-                    "__struct_id": 28,
+                    "__struct_id": 14,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -200703,7 +200067,7 @@
                     }
                   },
                   {
-                    "__struct_id": 30,
+                    "__struct_id": 15,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -200991,7 +200355,7 @@
                     }
                   },
                   {
-                    "__struct_id": 32,
+                    "__struct_id": 16,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -201281,7 +200645,7 @@
                     }
                   },
                   {
-                    "__struct_id": 34,
+                    "__struct_id": 17,
                     "AddCost": {
                       "type": "dword",
                       "value": 1171
@@ -201578,7 +200942,7 @@
                     }
                   },
                   {
-                    "__struct_id": 36,
+                    "__struct_id": 18,
                     "AddCost": {
                       "type": "dword",
                       "value": 1171
@@ -201875,7 +201239,7 @@
                     }
                   },
                   {
-                    "__struct_id": 38,
+                    "__struct_id": 19,
                     "AddCost": {
                       "type": "dword",
                       "value": 49
@@ -202309,7 +201673,7 @@
                     }
                   },
                   {
-                    "__struct_id": 39,
+                    "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
                       "value": 124
@@ -202743,7 +202107,7 @@
                     }
                   },
                   {
-                    "__struct_id": 40,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 312
@@ -203177,7 +202541,7 @@
                     }
                   },
                   {
-                    "__struct_id": 41,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -203611,7 +202975,7 @@
                     }
                   },
                   {
-                    "__struct_id": 42,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 1953
@@ -204045,7 +203409,7 @@
                     }
                   },
                   {
-                    "__struct_id": 43,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 49
@@ -204510,7 +203874,7 @@
                     }
                   },
                   {
-                    "__struct_id": 44,
+                    "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
                       "value": 124
@@ -205006,7 +204370,7 @@
                     }
                   },
                   {
-                    "__struct_id": 45,
+                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 312
@@ -205502,7 +204866,7 @@
                     }
                   },
                   {
-                    "__struct_id": 46,
+                    "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -205998,7 +205362,7 @@
                     }
                   },
                   {
-                    "__struct_id": 47,
+                    "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
                       "value": 1953
@@ -206494,7 +205858,7 @@
                     }
                   },
                   {
-                    "__struct_id": 48,
+                    "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
                       "value": 39
@@ -206784,7 +206148,7 @@
                     }
                   },
                   {
-                    "__struct_id": 49,
+                    "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
                       "value": 99
@@ -207072,7 +206436,7 @@
                     }
                   },
                   {
-                    "__struct_id": 50,
+                    "__struct_id": 31,
                     "AddCost": {
                       "type": "dword",
                       "value": 249
@@ -207360,7 +206724,7 @@
                     }
                   },
                   {
-                    "__struct_id": 51,
+                    "__struct_id": 32,
                     "AddCost": {
                       "type": "dword",
                       "value": 624
@@ -207648,7 +207012,7 @@
                     }
                   },
                   {
-                    "__struct_id": 52,
+                    "__struct_id": 33,
                     "AddCost": {
                       "type": "dword",
                       "value": 1562
@@ -207936,7 +207300,7 @@
                     }
                   },
                   {
-                    "__struct_id": 53,
+                    "__struct_id": 34,
                     "AddCost": {
                       "type": "dword",
                       "value": 39
@@ -208224,7 +207588,7 @@
                     }
                   },
                   {
-                    "__struct_id": 54,
+                    "__struct_id": 35,
                     "AddCost": {
                       "type": "dword",
                       "value": 99
@@ -208574,7 +207938,7 @@
                     }
                   },
                   {
-                    "__struct_id": 55,
+                    "__struct_id": 36,
                     "AddCost": {
                       "type": "dword",
                       "value": 249
@@ -208924,7 +208288,7 @@
                     }
                   },
                   {
-                    "__struct_id": 56,
+                    "__struct_id": 37,
                     "AddCost": {
                       "type": "dword",
                       "value": 624
@@ -209274,7 +208638,7 @@
                     }
                   },
                   {
-                    "__struct_id": 57,
+                    "__struct_id": 38,
                     "AddCost": {
                       "type": "dword",
                       "value": 1562
@@ -209624,7 +208988,7 @@
                     }
                   },
                   {
-                    "__struct_id": 58,
+                    "__struct_id": 39,
                     "AddCost": {
                       "type": "dword",
                       "value": 9
@@ -209828,7 +209192,7 @@
                     }
                   },
                   {
-                    "__struct_id": 59,
+                    "__struct_id": 40,
                     "AddCost": {
                       "type": "dword",
                       "value": 24
@@ -210063,7 +209427,7 @@
                     }
                   },
                   {
-                    "__struct_id": 60,
+                    "__struct_id": 41,
                     "AddCost": {
                       "type": "dword",
                       "value": 62
@@ -210329,7 +209693,7 @@
                     }
                   },
                   {
-                    "__struct_id": 61,
+                    "__struct_id": 42,
                     "AddCost": {
                       "type": "dword",
                       "value": 156
@@ -210595,7 +209959,7 @@
                     }
                   },
                   {
-                    "__struct_id": 62,
+                    "__struct_id": 43,
                     "AddCost": {
                       "type": "dword",
                       "value": 390
@@ -210861,7 +210225,7 @@
                     }
                   },
                   {
-                    "__struct_id": 63,
+                    "__struct_id": 44,
                     "AddCost": {
                       "type": "dword",
                       "value": 9
@@ -211065,7 +210429,7 @@
                     }
                   },
                   {
-                    "__struct_id": 64,
+                    "__struct_id": 45,
                     "AddCost": {
                       "type": "dword",
                       "value": 24
@@ -211362,7 +210726,7 @@
                     }
                   },
                   {
-                    "__struct_id": 65,
+                    "__struct_id": 46,
                     "AddCost": {
                       "type": "dword",
                       "value": 62
@@ -211659,7 +211023,7 @@
                     }
                   },
                   {
-                    "__struct_id": 66,
+                    "__struct_id": 47,
                     "AddCost": {
                       "type": "dword",
                       "value": 156
@@ -211956,7 +211320,7 @@
                     }
                   },
                   {
-                    "__struct_id": 67,
+                    "__struct_id": 48,
                     "AddCost": {
                       "type": "dword",
                       "value": 390
@@ -212253,7 +211617,7 @@
                     }
                   },
                   {
-                    "__struct_id": 68,
+                    "__struct_id": 49,
                     "AddCost": {
                       "type": "dword",
                       "value": 24
@@ -212502,7 +211866,7 @@
                     }
                   },
                   {
-                    "__struct_id": 69,
+                    "__struct_id": 50,
                     "AddCost": {
                       "type": "dword",
                       "value": 62
@@ -212782,7 +212146,7 @@
                     }
                   },
                   {
-                    "__struct_id": 70,
+                    "__struct_id": 51,
                     "AddCost": {
                       "type": "dword",
                       "value": 156
@@ -213062,7 +212426,7 @@
                     }
                   },
                   {
-                    "__struct_id": 71,
+                    "__struct_id": 52,
                     "AddCost": {
                       "type": "dword",
                       "value": 389
@@ -213342,7 +212706,7 @@
                     }
                   },
                   {
-                    "__struct_id": 72,
+                    "__struct_id": 53,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -213622,7 +212986,7 @@
                     }
                   },
                   {
-                    "__struct_id": 73,
+                    "__struct_id": 54,
                     "AddCost": {
                       "type": "dword",
                       "value": 24
@@ -213900,7 +213264,7 @@
                     }
                   },
                   {
-                    "__struct_id": 74,
+                    "__struct_id": 55,
                     "AddCost": {
                       "type": "dword",
                       "value": 62
@@ -214240,7 +213604,7 @@
                     }
                   },
                   {
-                    "__struct_id": 75,
+                    "__struct_id": 56,
                     "AddCost": {
                       "type": "dword",
                       "value": 156
@@ -214580,7 +213944,7 @@
                     }
                   },
                   {
-                    "__struct_id": 76,
+                    "__struct_id": 57,
                     "AddCost": {
                       "type": "dword",
                       "value": 389
@@ -214920,7 +214284,7 @@
                     }
                   },
                   {
-                    "__struct_id": 77,
+                    "__struct_id": 58,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -215260,7 +214624,7 @@
                     }
                   },
                   {
-                    "__struct_id": 78,
+                    "__struct_id": 59,
                     "AddCost": {
                       "type": "dword",
                       "value": 29
@@ -215494,7 +214858,7 @@
                     }
                   },
                   {
-                    "__struct_id": 79,
+                    "__struct_id": 60,
                     "AddCost": {
                       "type": "dword",
                       "value": 74
@@ -215759,7 +215123,7 @@
                     }
                   },
                   {
-                    "__struct_id": 80,
+                    "__struct_id": 61,
                     "AddCost": {
                       "type": "dword",
                       "value": 187
@@ -216024,7 +215388,7 @@
                     }
                   },
                   {
-                    "__struct_id": 81,
+                    "__struct_id": 62,
                     "AddCost": {
                       "type": "dword",
                       "value": 468
@@ -216289,7 +215653,7 @@
                     }
                   },
                   {
-                    "__struct_id": 82,
+                    "__struct_id": 63,
                     "AddCost": {
                       "type": "dword",
                       "value": 1171
@@ -216554,7 +215918,7 @@
                     }
                   },
                   {
-                    "__struct_id": 83,
+                    "__struct_id": 64,
                     "AddCost": {
                       "type": "dword",
                       "value": 19
@@ -216780,7 +216144,7 @@
                     }
                   },
                   {
-                    "__struct_id": 84,
+                    "__struct_id": 65,
                     "AddCost": {
                       "type": "dword",
                       "value": 49
@@ -217068,7 +216432,7 @@
                     }
                   },
                   {
-                    "__struct_id": 85,
+                    "__struct_id": 66,
                     "AddCost": {
                       "type": "dword",
                       "value": 124
@@ -217356,7 +216720,7 @@
                     }
                   },
                   {
-                    "__struct_id": 86,
+                    "__struct_id": 67,
                     "AddCost": {
                       "type": "dword",
                       "value": 312
@@ -217644,7 +217008,7 @@
                     }
                   },
                   {
-                    "__struct_id": 87,
+                    "__struct_id": 68,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -217932,7 +217296,7 @@
                     }
                   },
                   {
-                    "__struct_id": 88,
+                    "__struct_id": 69,
                     "AddCost": {
                       "type": "dword",
                       "value": 29
@@ -218136,7 +217500,7 @@
                     }
                   },
                   {
-                    "__struct_id": 89,
+                    "__struct_id": 70,
                     "AddCost": {
                       "type": "dword",
                       "value": 74
@@ -218433,7 +217797,7 @@
                     }
                   },
                   {
-                    "__struct_id": 90,
+                    "__struct_id": 71,
                     "AddCost": {
                       "type": "dword",
                       "value": 187
@@ -218761,7 +218125,7 @@
                     }
                   },
                   {
-                    "__struct_id": 91,
+                    "__struct_id": 72,
                     "AddCost": {
                       "type": "dword",
                       "value": 468
@@ -219089,7 +218453,7 @@
                     }
                   },
                   {
-                    "__struct_id": 92,
+                    "__struct_id": 73,
                     "AddCost": {
                       "type": "dword",
                       "value": 1171
@@ -219417,7 +218781,7 @@
                     }
                   },
                   {
-                    "__struct_id": 93,
+                    "__struct_id": 74,
                     "AddCost": {
                       "type": "dword",
                       "value": 19
@@ -219674,7 +219038,7 @@
                     }
                   },
                   {
-                    "__struct_id": 94,
+                    "__struct_id": 75,
                     "AddCost": {
                       "type": "dword",
                       "value": 49
@@ -219993,7 +219357,7 @@
                     }
                   },
                   {
-                    "__struct_id": 95,
+                    "__struct_id": 76,
                     "AddCost": {
                       "type": "dword",
                       "value": 124
@@ -220312,7 +219676,7 @@
                     }
                   },
                   {
-                    "__struct_id": 96,
+                    "__struct_id": 77,
                     "AddCost": {
                       "type": "dword",
                       "value": 312
@@ -220631,7 +219995,7 @@
                     }
                   },
                   {
-                    "__struct_id": 97,
+                    "__struct_id": 78,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -249968,7 +249332,7 @@
                     }
                   },
                   {
-                    "__struct_id": 2,
+                    "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -250234,7 +249598,7 @@
                     }
                   },
                   {
-                    "__struct_id": 4,
+                    "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
                       "value": 781
@@ -250500,7 +249864,7 @@
                     }
                   },
                   {
-                    "__struct_id": 6,
+                    "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -250735,7 +250099,7 @@
                     }
                   },
                   {
-                    "__struct_id": 8,
+                    "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
                       "value": 976
@@ -251001,7 +250365,7 @@
                     }
                   },
                   {
-                    "__struct_id": 10,
+                    "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
                       "value": 976

@@ -14,6 +14,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMarket
     {
+        /// <summary>
+        /// A blueprint local int that keeps an item off the market.
+        /// </summary>
+        public const string NoMarketListingVariable = "NO_MARKET_LISTING";
+
         public const int MaxListingsPerMarket = 25;
         private static Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
         private static readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new();

@@ -71,10 +71,15 @@ namespace SWLOR.Game.Server.Composition
 
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
+            services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IOrdinaryAttackTraitsService, OrdinaryAttackTraitsService>();
             services.AddSingleton<IPairedRangedTraitsService, PairedRangedTraitsService>();
             services.AddSingleton<IPowerGloveEquipmentService, PowerGloveEquipmentService>();
+            services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
+            services.AddSingleton<IResistanceService, ResistanceService>();
+            services.AddSingleton<ITelegraphService, TelegraphService>();
             services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();

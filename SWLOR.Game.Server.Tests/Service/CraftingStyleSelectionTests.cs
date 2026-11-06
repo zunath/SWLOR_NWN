@@ -231,7 +231,9 @@ public class CraftingStyleSelectionTests
         foreach (var file in revives)
         {
             Regex.Matches(file.Text, Regex.Escape("EffectResurrection()")).Count.Should().Be(
-                Regex.Matches(file.Text, Regex.Escape("RestoreGhostAfterRevive(")).Count,
+                // A converted service wraps the call in a one-line protected virtual method; that line is not a revive.
+                Regex.Matches(string.Join('\n', file.Text.Split('\n').Where(line => !line.Contains("protected virtual"))),
+                    Regex.Escape("RestoreGhostAfterRevive(")).Count,
                 $"every revive in {Path.GetFileName(file.Path)} must call RestoreGhostAfterRevive, which restores the crafting styles");
         }
     }

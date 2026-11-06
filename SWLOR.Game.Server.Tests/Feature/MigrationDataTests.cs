@@ -5,11 +5,27 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope?.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     // Production has run player migration 25 and server migration 30. The next release adds player migration
     // NextPlayerVersion (crafting perk conversion and enzyme resize) and server
     // migration NextServerVersion (enzyme resize); update these at each post-release cleanup.

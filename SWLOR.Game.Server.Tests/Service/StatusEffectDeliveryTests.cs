@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -11,6 +12,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class StatusEffectDeliveryTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FiniteStatusEffects_CanBeExtendedWithoutBeingRemoved()
     {
@@ -130,8 +147,8 @@ public class StatusEffectDeliveryTests
         calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>
             arg.NameColon != null && arg.NameColon.Name.Identifier.ValueText == "isSelfApplied" &&
             arg.Expression.ToString() == "source == creature"));
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Death.cs"))
-            .Should().Contain("StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "DeathService.cs"))
+            .Should().Contain("ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
     }
 
     [Test]

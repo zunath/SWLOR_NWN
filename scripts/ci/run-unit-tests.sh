@@ -40,7 +40,8 @@ if [ -z "$OUT" ]; then
 fi
 if [ ${#PROJECTS[@]} -eq 0 ]; then
     PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
-              SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests)
+              SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests
+              SWLOR.CraftSim.Tests)
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
@@ -143,9 +144,10 @@ exclusions_for() {
 
 # Projects that never run with coverage: SWLOR.Architecture.Tests reads the IL of SWLOR.Game.Server.dll from disk, and
 # the collector rewrites that file in place (its own tracker calls would show up as dependencies). The project runs no
-# game code, so there is no coverage to collect from it anyway.
+# game code, so there is no coverage to collect from it anyway. SWLOR.CraftSim.Tests is left out because it takes about 17 minutes
+# uninstrumented (a simulator plays thousands of crafts) and the coverage job already nears its time limit; it has no coverage collector.
 without_coverage() {
-    [ "$1" = SWLOR.Architecture.Tests ]
+    [ "$1" = SWLOR.Architecture.Tests ] || [ "$1" = SWLOR.CraftSim.Tests ]
 }
 
 # Tests that cannot run with coverage instrumentation on, one term per line in the same form as above. With coverage

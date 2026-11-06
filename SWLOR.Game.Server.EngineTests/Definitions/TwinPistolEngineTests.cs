@@ -484,8 +484,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, Hits.Count, "The main miss and replaced companion grant no ordinary damage");
                 ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                     "The landed queued replacement consumes no additional ordinary-shot charge");
-                var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-                    .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                var tracker = CombatInternals.CombatPointTracker();
                 var points = tracker[target][actor];
                 ctx.AssertEqual(3, points.GetValueOrDefault(SkillType.Rifle), "One queued ability awards its original skill contribution once");
                 ctx.AssertEqual(0, points.GetValueOrDefault(SkillType.TwinPistol), "A replaced roll awards no extra Twin Pistol contribution");

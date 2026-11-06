@@ -17,10 +17,10 @@ public class DeadPlayerXPTests
     [Test]
     public void CombatPointDistribution_SkipsDeadPlayersBeforeSkillAndBeastXPHooks()
     {
-        var source = ReadServerSource("Service", "CombatPoint.cs");
-        var method = ExtractMethod(source, "static void DistributeSkillXP()");
+        var source = ReadServerSource("Domain", "Combat", "CombatPointService.cs");
+        var method = ExtractMethod(source, "void DistributeSkillXP()");
 
-        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "Skill.GiveSkillXP");
+        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "GiveSkillXP(");
         AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "SWLOR_COMBAT_POINT_DISTRIBUTED");
     }
 

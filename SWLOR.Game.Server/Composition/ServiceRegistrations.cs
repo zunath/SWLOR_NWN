@@ -71,14 +71,28 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
 
             // Combat
+            services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();
+            services.AddSingleton<IEnmityService, EnmityService>();
             services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
+            services.AddSingleton<IOrdinaryAttackTraitsService, OrdinaryAttackTraitsService>();
+            services.AddSingleton<IPairedRangedTraitsService, PairedRangedTraitsService>();
             services.AddSingleton<IPoisonsService, PoisonsService>();
+            services.AddSingleton<IPowerGloveEquipmentService, PowerGloveEquipmentService>();
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
+            services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
+            services.AddSingleton<IRecastService, RecastService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
             services.AddSingleton<IStealthService, StealthService>();
+            services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
+            services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
+            services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
+            services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
+            services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();
+            services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
 
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();

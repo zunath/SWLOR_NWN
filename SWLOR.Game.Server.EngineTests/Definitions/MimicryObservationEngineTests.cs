@@ -196,8 +196,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Sweep();
             ctx.Assert(!Observers.ContainsKey(npc), "despawn clears observation credit");
             ctx.AssertEqual(0, Experience(fixture, SkillType.Mimicry), "despawn pays no observation XP");
-            typeof(CombatPoint).GetMethod("ClearPlayerCombatPoints", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { fixture.Creature });
+            CombatInternals.ClearPlayerCombatPoints(fixture.Creature);
         }
 
         private static Dictionary<uint, HashSet<string>> Observers =>

@@ -29,8 +29,8 @@ public class DestroyedOwnerCleanupTests
     public void DestroyedOwnerCleanupOnlyRemovesState()
     {
         var root = FindRepositoryRoot().FullName;
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "OrdinaryAttackTraits.cs"))
-            .Should().Contain("public static void ForgetDestroyed(uint actor) => States.Remove(actor);");
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "OrdinaryAttackTraitsService.cs"))
+            .Should().Contain("public void ForgetDestroyed(uint actor) => _states.Remove(actor);");
         File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "PairedRangedAttackCycle.cs"))
             .Should().Contain("if (PendingHands.Remove(actor)) StatusEffect.ForgetDestroyedNativeAttackSwing(actor);");
         var statusEffect = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))

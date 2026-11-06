@@ -1,14 +1,14 @@
 #nullable enable
 using System.Reflection;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The static enmity tables of <see cref="Enmity"/>, which the AI context reads for its current target. The AI instance
-/// tests keep their own model of the tables (<see cref="TestAIService.Tables"/>) and copy it here before a context is
-/// built, so the context sees the same threat the instance does. Enmity is not converted yet, so its tables are reached
-/// the way the other AI tests reach them.
+/// The enmity tables of the installed container's <see cref="EnmityService"/>, which the AI context reads for its
+/// current target through the <c>Enmity</c> facade. The AI instance tests keep their own model of the tables
+/// (<see cref="TestAIService.Tables"/>) and copy it here before a context is built, so the context sees the same threat
+/// the instance does. The tables are private to the instance, so they are reached by reflection.
 /// </summary>
 public static class RealEnmityTables
 {
@@ -37,5 +37,6 @@ public static class RealEnmityTables
     }
 
     private static T Field<T>(string name) =>
-        (T)typeof(Enmity).GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        (T)typeof(EnmityService).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(FacadeContainer.Current.Get<IEnmityService>())!;
 }

@@ -1001,9 +1001,10 @@ These textures stay single-level with `mipmap 0`:
 - The cloak atlas (`mipmaps=False` in `CloakTintAssets.py`). `fs_cloaktint`
   reads it with a `-10` bias and has no far-shade blend. `CloakTintAssets.py`
   derives that shader from `fs_plt_tinter`, restoring the base-level reads first
-  (`BASE_LEVEL_READS`). A new mask read in `fs_plt_tinter` fails
-  `CloakTintAssets.py --check`, which stops `BuildHaks.cmd`, until the cloak
-  shader handles it.
+  (`BASE_LEVEL_READS`). A new `texture2D(texUnit7, ...)` read in `fs_plt_tinter`
+  fails `CloakTintAssets.py --check`, which stops `BuildHaks.cmd`, until the cloak
+  shader handles it. The check does not catch a new `texelFetch` read, which would
+  sample the whole atlas, so review any such read for cloaks by hand.
 - The palette atlas `plt_palette`. Its rows are categories.
 
 Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`

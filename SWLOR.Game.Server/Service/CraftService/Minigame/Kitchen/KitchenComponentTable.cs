@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 
@@ -13,11 +15,11 @@ public static class KitchenComponentTable
     public const string Water = "distilled_water";
 
     /// <summary>What an ingredient missing from the table does, so a new recipe still cooks until it gets a row.</summary>
-    public static KitchenComponentFlavor Unlisted => Flavor(6, 0, 2);
+    public static readonly KitchenComponentFlavor Unlisted = Flavor(6, 0, 2);
 
-    private static KitchenComponentFlavor Dilution => new(KitchenIngredientKind.Dilute, FlavorVector.Zero);
+    private static readonly KitchenComponentFlavor Dilution = new(KitchenIngredientKind.Dilute, FlavorVector.Zero);
 
-    private static Dictionary<string, KitchenComponentFlavor> Flavors =>
+    private static Dictionary<string, KitchenComponentFlavor> BuildFlavors() =>
         new(StringComparer.OrdinalIgnoreCase)
         {
             [Water] = Dilution,
@@ -200,8 +202,14 @@ public static class KitchenComponentTable
             ["zitah"] = Flavor(11, 1, 2),
         };
 
+    // The lookup is a frozen dictionary, which does not keep insertion order; the resrefs are kept in the order of the table above.
+    private static readonly FrozenDictionary<string, KitchenComponentFlavor> Flavors =
+        BuildFlavors().ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+
+    private static readonly ImmutableList<string> ResrefItems = BuildFlavors().Keys.ToImmutableList();
+
     /// <summary>Every resref that has a row.</summary>
-    public static IReadOnlyCollection<string> Resrefs => Flavors.Keys;
+    public static IReadOnlyCollection<string> Resrefs => ResrefItems;
 
     public static bool Contains(string resref) => Flavors.ContainsKey(resref);
 

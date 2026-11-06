@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
@@ -18,11 +19,9 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 public sealed record GatheringLoadout(string Name, bool Prospector, bool TreasureSeeker, GatheringStyle Style)
 {
     /// <summary>No perks and no style: the unperked gatherer every gate already judges.</summary>
-    public static GatheringLoadout None => new("No perks", false, false, GatheringStyle.None);
+    public static readonly GatheringLoadout None = new("No perks", false, false, GatheringStyle.None);
 
-    /// <summary>The loadouts the gates run besides no perks.</summary>
-    public static IReadOnlyList<GatheringLoadout> Perked => new[]
-    {
+    private static readonly ImmutableList<GatheringLoadout> PerkedItems = ImmutableList.Create<GatheringLoadout>(
         new GatheringLoadout("Prospector, no style", true, false, GatheringStyle.None),
         new GatheringLoadout("Prospector, Strip Mining", true, false, GatheringStyle.StripMining),
         new GatheringLoadout("Treasure Seeker, no style", false, true, GatheringStyle.None),
@@ -30,13 +29,18 @@ public sealed record GatheringLoadout(string Name, bool Prospector, bool Treasur
         new GatheringLoadout("Both lines, no style", true, true, GatheringStyle.None),
         new GatheringLoadout("Both lines, Strip Mining", true, true, GatheringStyle.StripMining),
         new GatheringLoadout("Both lines, Careful Hands", true, true, GatheringStyle.CarefulHands)
-    };
+    );
+
+    /// <summary>The loadouts the gates run besides no perks.</summary>
+    public static IReadOnlyList<GatheringLoadout> Perked => PerkedItems;
 
     /// <summary>The loadout's name as a command line writes it: lower case with dashes, such as <c>both-lines-strip-mining</c>.</summary>
     public string Slug => Name.ToLowerInvariant().Replace(", ", "-").Replace(' ', '-');
 
+    private static readonly ImmutableList<GatheringLoadout> AllItems = PerkedItems.Insert(0, None);
+
     /// <summary>Every loadout the gates run, the unperked gatherer first.</summary>
-    public static IReadOnlyList<GatheringLoadout> All => new[] { None }.Concat(Perked).ToList();
+    public static IReadOnlyList<GatheringLoadout> All => AllItems;
 
     /// <summary>The loadout a command line names, or null.</summary>
     public static GatheringLoadout Find(string slug) =>

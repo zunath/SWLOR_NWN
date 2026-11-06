@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +18,10 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 /// </summary>
 public static class ForgeStyles
 {
+    private static readonly ImmutableList<ForgeStyle> AllItems = ImmutableList.Create<ForgeStyle>(ForgeStyle.HotForging, ForgeStyle.ColdWorking);
+
     /// <summary>Every style, in the order the window lists them.</summary>
-    public static IReadOnlyList<ForgeStyle> All => new[] { ForgeStyle.HotForging, ForgeStyle.ColdWorking };
+    public static IReadOnlyList<ForgeStyle> All => AllItems;
 
     /// <summary>The skill whose craft window offers these styles.</summary>
     public const SkillType Skill = SkillType.Smithery;
@@ -26,17 +30,17 @@ public static class ForgeStyles
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static IReadOnlyDictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
-        new Dictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>>
+    private static readonly FrozenDictionary<ForgeStyle, FrozenDictionary<StatType, int>> StyleStats =
+        new Dictionary<ForgeStyle, FrozenDictionary<StatType, int>>
         {
             [ForgeStyle.HotForging] = Stats(
                 ForgePerkRules.HotForgingRangeShift, ForgePerkRules.HotForgingPressPercent, ForgePerkRules.HotForgingHonePercent),
             [ForgeStyle.ColdWorking] = Stats(
                 ForgePerkRules.ColdWorkingRangeShift, ForgePerkRules.ColdWorkingPressPercent, ForgePerkRules.ColdWorkingHonePercent)
-        };
+        }.ToFrozenDictionary();
 
     /// <summary>The stat adjustments of a style with the given range shift and Hydro-Press and Vibro-Hone percents; a zero grants nothing.</summary>
-    private static IReadOnlyDictionary<StatType, int> Stats(int rangeShift, int pressPercent, int honePercent)
+    private static FrozenDictionary<StatType, int> Stats(int rangeShift, int pressPercent, int honePercent)
     {
         var stats = new Dictionary<StatType, int>();
         if (rangeShift != 0)
@@ -46,7 +50,7 @@ public static class ForgeStyles
         if (honePercent != 0)
             stats[StatType.ForgeHoneOutputPercent] = honePercent;
 
-        return stats;
+        return stats.ToFrozenDictionary();
     }
 
     /// <summary>The stat adjustments a style's status effect carries.</summary>

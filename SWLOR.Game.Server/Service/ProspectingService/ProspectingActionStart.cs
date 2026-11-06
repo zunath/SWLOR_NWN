@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <param name="Reason">Why it was refused, when it was.</param>
     public readonly record struct ProspectingActionStart(bool Started, string Reason)
     {
-        public static ProspectingActionStart Ok => new(true, string.Empty);
+        public static readonly ProspectingActionStart Ok = new(true, string.Empty);
 
         public static ProspectingActionStart Refused(string reason) => new(false, reason);
     }

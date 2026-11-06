@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
@@ -11,17 +12,19 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 /// </summary>
 public static class CircuitPerkLines
 {
-    public static IReadOnlyList<PerkType> Overclocker => new[]
-    {
+    private static readonly ImmutableList<PerkType> OverclockerItems = ImmutableList.Create<PerkType>(
         PerkType.ConductiveWiring, PerkType.CapacitorBank, PerkType.HeatSinks, PerkType.OverclockStyle,
         PerkType.CascadeDischarge, PerkType.OverdriveBoost, PerkType.ShockAbsorbers, PerkType.CircuitSurge
-    };
+    );
 
-    public static IReadOnlyList<PerkType> Technician => new[]
-    {
+    public static IReadOnlyList<PerkType> Overclocker => OverclockerItems;
+
+    private static readonly ImmutableList<PerkType> TechnicianItems = ImmutableList.Create<PerkType>(
         PerkType.InsulatedTraces, PerkType.FineCalibration, PerkType.CircuitDiagnostics, PerkType.SafeModeStyle,
         PerkType.MicroTune, PerkType.SignalLock, PerkType.PrecisionPatch, PerkType.CircuitFailsafe
-    };
+    );
+
+    public static IReadOnlyList<PerkType> Technician => TechnicianItems;
 
     /// <summary>
     /// The stats of a crafter at <paramref name="rank"/> who owns, of <paramref name="owned"/>, the highest level that rank allows

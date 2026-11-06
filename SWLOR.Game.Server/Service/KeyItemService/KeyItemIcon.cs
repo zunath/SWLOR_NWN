@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,34 +32,37 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         public const string LocationMusic = "iki_mus_place";
         public const string AmbientMusic = "iki_mus_ambi";
 
-        public static IReadOnlyCollection<string> FieldNoteIconResrefs => new[]
-        {
+        private static readonly ImmutableList<string> FieldNoteIconResrefsItems = ImmutableList.Create<string>(
             PublishedFieldGuide,
             LicensedResearchDatapad,
             HandwrittenDiscoveryJournal,
             HolographicObservationLog,
             SealedBossDossier,
-            EncryptedRestrictedReport,
-        };
+            EncryptedRestrictedReport
+        );
 
-        public static IReadOnlyCollection<string> MapIconResrefs => new[]
-        {
+        public static IReadOnlyCollection<string> FieldNoteIconResrefs => FieldNoteIconResrefsItems;
+
+        private static readonly ImmutableList<string> MapIconResrefsItems = ImmutableList.Create<string>(
             OrbitMap,
             WildernessMap,
             SettlementMap,
             FacilityMap,
             CavernMap,
-            RuinsMap,
-        };
+            RuinsMap
+        );
 
-        public static IReadOnlyCollection<string> MusicIconResrefs => new[]
-        {
+        public static IReadOnlyCollection<string> MapIconResrefs => MapIconResrefsItems;
+
+        private static readonly ImmutableList<string> MusicIconResrefsItems = ImmutableList.Create<string>(
             CantinaMusic,
             BattleMusic,
             ThemeMusic,
             LocationMusic,
-            AmbientMusic,
-        };
+            AmbientMusic
+        );
+
+        public static IReadOnlyCollection<string> MusicIconResrefs => MusicIconResrefsItems;
 
         public static string GetIconResref(KeyItemType keyItem)
         {

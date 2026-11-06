@@ -115,18 +115,17 @@ namespace SWLOR.Game.Server.Service
             {
                 for (var count = 0; count < quantity; count++)
                 {
-                    if (!GetIsObjectValid(CreateItemOnObject(resref, pilot)))
+                    if (FarmItems.GiveToInventory(pilot, resref, 1) < 1)
                         unplaced.Add((resref, null));
                 }
             }
 
             foreach (var (resref, trait) in overflowComponents)
             {
-                var item = CreateItemOnObject(resref, pilot);
-                if (GetIsObjectValid(item))
-                    ShipComponents.SetTraits(item, new[] { trait });
-                else
+                if (FarmItems.CreateInInventory(pilot, resref, 1, out var item) < 1)
                     unplaced.Add((resref, trait));
+                else if (GetIsObjectValid(item))
+                    ShipComponents.SetTraits(item, new[] { trait });
             }
 
             if (unplaced.Count > 0)

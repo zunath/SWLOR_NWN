@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             var refusal = RiftRunRules.GetEntryRefusal(
                 IsPlayerInSpaceMode(pilot),
                 GetCloakPhase(pilot) != ShipCloakPhase.Off,
-                Enmity.HasEnmity(pilot),
+                IsShipInCombat(pilot),
                 FindRiftRun(pilot) != null || IsRiftPocket(GetArea(pilot)));
             return RiftRunRules.Message(refusal);
         }

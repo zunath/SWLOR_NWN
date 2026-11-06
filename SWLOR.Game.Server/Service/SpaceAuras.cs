@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
@@ -218,18 +219,19 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(ship, aura.StatusEffect, source))
                 return true;
 
-            var sourceStrength = GetAuraStrength(source, aura.StatusEffect);
+            var statusEffect = StatusEffect.CreateStatusEffect(aura.StatusEffect);
+            var scale = (statusEffect as AuraStatusEffectBase)?.StrengthScale ?? AuraStatusEffectBase.StandardStrengthScale;
+            var sourceStrength = GetAuraStrength(source, aura.StatusEffect, scale);
             var others = StatusEffect.GetCreatureStatusEffects(ship)
                 .GetAllEffects()
                 .Where(effect => effect.GetType() == aura.StatusEffect && effect.Source != source)
                 .Select(effect => GetIsObjectValid(effect.Source)
-                    ? GetAuraStrength(effect.Source, aura.StatusEffect)
+                    ? GetAuraStrength(effect.Source, aura.StatusEffect, scale)
                     : 0)
                 .ToList();
             if (SpaceAuraRules.HasEqualOrStrongerCopy(sourceStrength, others))
                 return false;
 
-            var statusEffect = StatusEffect.CreateStatusEffect(aura.StatusEffect);
             if (statusEffect is AuraStatusEffectBase auraEffect)
                 auraEffect.AnnouncesApplication = !aura.AnnouncedTo.Contains(ship);
 
@@ -240,11 +242,12 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        /// <summary>How strong a ship's copy of an aura is: its commander's Social and Leadership (<see cref="SpaceAuraRules.Strength"/>).</summary>
-        private static int GetAuraStrength(uint ship, Type statusEffect)
+        /// <summary>What a ship's copy of an aura gives: scaled by its commander's Social and Leadership (<see cref="SpaceAuraRules.Strength"/>).</summary>
+        private static int GetAuraStrength(uint ship, Type statusEffect, (int Base, int Maximum) scale)
         {
             var commander = GetCommander(ship, statusEffect);
             return SpaceAuraRules.Strength(
+                scale,
                 AbilityEffectScaling.GetScalingProgress(GetAbilityScore(commander, AbilityType.Social)),
                 SpaceCommand.GetCommanderLeadershipBonusPercent(commander));
         }

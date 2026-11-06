@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -61,12 +62,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// How strong a commander's copy of an aura is, for comparing it with another commander's: SOC raises an aura by up
-        /// to <see cref="SpaceCommand.LeadershipMaximumBonusPercent"/> percent over SOC 10, and the Leadership rank raises
-        /// that result by its own percent.
+        /// What a commander's copy of an aura gives, for comparing it with another commander's: rounded like the status
+        /// effect's own value, first for SOC and then for the Leadership rank.
         /// </summary>
-        public static int Strength(float socialProgress, int leadershipPercent) =>
-            (int)Math.Round((100 + SpaceCommand.LeadershipMaximumBonusPercent * socialProgress) * (100 + leadershipPercent), MidpointRounding.AwayFromZero);
+        public static int Strength((int Base, int Maximum) scale, float socialProgress, int leadershipPercent) =>
+            SpaceCombatMath.ScaleByPercent(
+                AbilityEffectScaling.ScaleValueByProgress(scale.Base, scale.Maximum, socialProgress),
+                leadershipPercent);
 
         /// <summary>
         /// Whether a recipient already carries a copy of the aura from a commander at least as strong (<see cref="Strength"/>),

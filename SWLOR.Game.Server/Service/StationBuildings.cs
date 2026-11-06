@@ -391,14 +391,7 @@ namespace SWLOR.Game.Server.Service
             var collection = new DrillCollection { Id = Guid.NewGuid().ToString(), BuildingId = buildingId };
             foreach (var (resref, units) in state.DrillStorage.ToList())
             {
-                var given = 0;
-                for (; given < units; given++)
-                {
-                    var item = CreateItemOnObject(resref, player);
-                    if (!GetIsObjectValid(item))
-                        break;
-                }
-
+                var given = FarmItems.GiveToInventory(player, resref, units);
                 if (given > 0)
                     collection.Units[resref] = given;
 

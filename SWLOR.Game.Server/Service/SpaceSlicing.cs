@@ -502,10 +502,10 @@ namespace SWLOR.Game.Server.Service
                         intel++;
                         break;
                     default:
-                        var item = CreateItemOnObject(reward.Resref, player, reward.Quantity);
-                        if (!GetIsObjectValid(item))
-                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward));
-                        else if (reward.Trait != ShipComponentTraitType.None)
+                        var arrived = FarmItems.CreateInInventory(player, reward.Resref, reward.Quantity, out var item);
+                        if (arrived < reward.Quantity)
+                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward).Skip(arrived));
+                        else if (reward.Trait != ShipComponentTraitType.None && GetIsObjectValid(item))
                             ShipComponents.SetTraits(item, new[] { reward.Trait });
                         break;
                 }
@@ -513,7 +513,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var resref in extraItems ?? Array.Empty<string>())
             {
-                if (!GetIsObjectValid(CreateItemOnObject(resref, player)))
+                if (FarmItems.GiveToInventory(player, resref, 1) < 1)
                     unplaced.Add((resref, null));
             }
 

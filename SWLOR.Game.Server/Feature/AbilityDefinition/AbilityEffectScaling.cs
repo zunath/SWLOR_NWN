@@ -81,8 +81,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (baseValue >= maximumValue)
                 return baseValue;
 
-            var progress = GetSourceSocialProgress(source);
-            if (progress <= 0f)
+            return ScaleValueByProgress(baseValue, maximumValue, GetSourceSocialProgress(source));
+        }
+
+        /// <summary>A value between its base and its maximum, at a Social progress from <see cref="GetScalingProgress"/>.</summary>
+        public static int ScaleValueByProgress(int baseValue, int maximumValue, float progress)
+        {
+            if (baseValue >= maximumValue || progress <= 0f)
                 return baseValue;
 
             var bonusRange = maximumValue - baseValue;

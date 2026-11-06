@@ -2,6 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -266,20 +267,20 @@ public class SpaceAbilityEngineTests
     }
 
     [Test]
-    public void AuraStrength_CountsLeadershipAsWellAsSocial()
+    public void AuraStrength_IsTheRoundedValueTheCommandersCopyGives()
     {
-        var soc14 = AbilityEffectScaling.GetScalingProgress(14);
-        var soc15 = AbilityEffectScaling.GetScalingProgress(15);
+        var scale = new WatchfulPresence2StatusEffect().StrengthScale;
+        var soc10 = AbilityEffectScaling.GetScalingProgress(10);
+        var soc26 = AbilityEffectScaling.GetScalingProgress(26);
 
-        SpaceAuraRules.Strength(soc14, 25).Should().BeGreaterThan(SpaceAuraRules.Strength(soc14, 0),
-            "at equal Social the higher Leadership gives the stronger aura");
-        SpaceAuraRules.Strength(soc14, 25).Should().BeGreaterThan(SpaceAuraRules.Strength(soc15, 0),
-            "Leadership 50 adds more than one point of Social");
-        SpaceAuraRules.Strength(soc15, 0).Should().BeGreaterThan(SpaceAuraRules.Strength(soc14, 0));
+        SpaceAuraRules.Strength(scale, soc26, 0).Should().Be(7, "SOC 26 reaches Formation's 7%");
+        SpaceAuraRules.Strength(scale, soc10, 25).Should().Be(8, "Leadership 50 raises the base 6% to 8%");
+        SpaceAuraRules.Strength(scale, soc26, 25).Should().Be(9);
+        SpaceAuraRules.Strength(scale, soc10, 0).Should().Be(6);
 
-        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(soc14, 25), new[] { SpaceAuraRules.Strength(soc14, 0) })
+        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(scale, soc10, 25), new[] { SpaceAuraRules.Strength(scale, soc26, 0) })
             .Should().BeFalse("an earlier weaker copy does not keep out the stronger commander");
-        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(soc14, 0), new[] { SpaceAuraRules.Strength(soc14, 25) })
+        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(scale, soc26, 0), new[] { SpaceAuraRules.Strength(scale, soc10, 25) })
             .Should().BeTrue();
     }
 
@@ -408,8 +409,8 @@ public class SpaceAbilityEngineTests
             .And.BeLessThan(reconcile.IndexOf("GetCommandRange(source)", StringComparison.Ordinal));
         auras.Should().Contain("StatusEffect.ApplyStatusEffect(source, ship, statusEffect, 0f)")
             .And.Contain("StatusEffect.RemoveStatusEffect(ship, aura.StatusEffect, source, false);")
-            .And.Contain("var sourceStrength = GetAuraStrength(source, aura.StatusEffect);")
-            .And.Contain("? GetAuraStrength(effect.Source, aura.StatusEffect)")
+            .And.Contain("var sourceStrength = GetAuraStrength(source, aura.StatusEffect, scale);")
+            .And.Contain("? GetAuraStrength(effect.Source, aura.StatusEffect, scale)")
             .And.Contain("var commander = GetCommander(ship, statusEffect);")
             .And.Contain("AbilityEffectScaling.GetScalingProgress(GetAbilityScore(commander, AbilityType.Social))")
             .And.Contain("SpaceCommand.GetCommanderLeadershipBonusPercent(commander)");

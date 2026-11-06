@@ -157,7 +157,7 @@ public class CreditPaymentTests
 
         var agents = Source("Service", "FactionAgents.cs");
         InOrder(Method(agents, "public static void Buy(uint player, uint agentNpc, int itemIndex)"),
-            "var created = CreateItemOnObject(item.Resref, player, item.Quantity);",
+            "var arrived = FarmItems.CreateInInventory(player, item.Resref, item.Quantity, out var created);",
             "ObjectPlugin.SetString(player, AgentPurchaseVariable, purchase.Serialize(), true);",
             "() => CharacterCheckpoint.Save(player),",
             "DestroyObject(created);",

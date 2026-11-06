@@ -278,7 +278,8 @@ public class RiftRunTests
             .Should().Contain("GetRiftEntryRefusal(user)", "the key user and the party ships share one set of entry checks");
         var entry = runs.Substring(runs.IndexOf("private static string GetRiftEntryRefusal(", StringComparison.Ordinal));
         entry.Substring(0, entry.IndexOf("\n        }", StringComparison.Ordinal))
-            .Should().Contain("GetInterdictionRefusal(pilot)").And.Contain("Enmity.HasEnmity(pilot)");
+            .Should().Contain("GetInterdictionRefusal(pilot)").And.Contain("IsShipInCombat(pilot)",
+                "the ship combat window covers player fights, which Enmity leaves out");
     }
 
     // Chambers

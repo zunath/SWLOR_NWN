@@ -439,14 +439,15 @@ namespace SWLOR.Game.Server.Service
             }
 
             // The item is created before the tokens are taken: a full inventory refuses the purchase without spending them.
-            var created = CreateItemOnObject(item.Resref, player, item.Quantity);
-            if (!GetIsObjectValid(created))
+            var arrived = FarmItems.CreateInInventory(player, item.Resref, item.Quantity, out var created);
+            if (arrived < item.Quantity)
             {
+                FarmItems.Take(player, item.Resref, arrived);
                 SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage));
                 return;
             }
 
-            if (item.Trait != SpaceService.ShipComponentTraitType.None)
+            if (item.Trait != SpaceService.ShipComponentTraitType.None && GetIsObjectValid(created))
                 ShipComponents.SetTraits(created, new[] { item.Trait });
 
             // The tokens live in the database and the item in the character file: the item is saved with a mark naming the
@@ -462,7 +463,11 @@ namespace SWLOR.Game.Server.Service
                 () => CharacterCheckpoint.Save(player),
                 () =>
                 {
-                    DestroyObject(created);
+                    // An item that merged into a stack has no handle of its own: its units come off the stacks.
+                    if (GetIsObjectValid(created))
+                        DestroyObject(created);
+                    else
+                        FarmItems.Take(player, item.Resref, item.Quantity);
                     ObjectPlugin.DeleteString(player, AgentPurchaseVariable);
                 });
             if (!saved)

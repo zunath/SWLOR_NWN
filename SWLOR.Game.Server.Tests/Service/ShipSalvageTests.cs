@@ -331,6 +331,9 @@ public class ShipSalvageTests
         store.Should().Contain("Quantity = 1");
         ExtractMethod(hold, "public static void DeliverYield(").Should().Contain("ShipComponents.SetTraits(item, new[] { trait });",
             "a component that does not fit the hold reaches the pilot with its trait");
+        var deliver = ExtractMethod(hold, "public static void DeliverYield(");
+        deliver.Should().NotContain("CreateItemOnObject(", "an overflow unit that merged into a stack is not kept a second time");
+        deliver.Should().Contain("FarmItems.GiveToInventory(pilot, resref, 1) < 1").And.Contain("FarmItems.CreateInInventory(pilot, resref, 1, out var item) < 1");
     }
 
     [Test]

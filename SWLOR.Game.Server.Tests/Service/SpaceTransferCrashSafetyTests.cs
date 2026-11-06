@@ -193,7 +193,7 @@ public class SpaceTransferCrashSafetyTests
         collect.Should().NotContain("state.DrillStorage.Remove(").And.NotContain("state.DrillStorage[resref] =",
             "the stock changes only through the collection");
         InOrder(collect,
-            "var item = CreateItemOnObject(resref, player);",
+            "var given = FarmItems.GiveToInventory(player, resref, units);",
             "DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });",
             "collection.TakeFrom(state.DrillStorage);",
             "state.PendingDrillCollections[collection.Id] = collection.Serialize();",

@@ -574,7 +574,7 @@ public class SpaceW11nReviewFixTests
     {
         var source = ReadSource("Service", "ShipHold.cs").Replace("\r\n", "\n");
         var deliver = Between(source, "public static void DeliverYield(", "private static bool TryGetHold(");
-        deliver.Should().Contain("if (!GetIsObjectValid(CreateItemOnObject(resref, pilot)))");
+        deliver.Should().Contain("if (FarmItems.GiveToInventory(pilot, resref, 1) < 1)");
         Index(deliver, "unplaced.Add((resref, trait));").Should().BeLessThan(Index(deliver, "KeepUnplacedYield(pilot, unplaced);"));
 
         var keep = Between(source, "public static void KeepUnplacedYield(", "private static void SaveNewHold(");
@@ -649,7 +649,7 @@ public class SpaceW11nReviewFixTests
     public void StrongboxLockboxes_AFullInventoryCannotTake_AreLeftAtTheBoardersFeet()
     {
         var derelicts = ReadSource("Service", "SpaceDerelicts.cs").Replace("\r\n", "\n");
-        Index(derelicts, "if (GetIsObjectValid(CreateItemOnObject(lockbox, boarder)))")
+        Index(derelicts, "if (FarmItems.GiveToInventory(boarder, lockbox, 1) > 0)")
             .Should().BeLessThan(Index(derelicts, "CreateObject(ObjectType.Item, lockbox, GetLocation(boarder));"));
     }
 

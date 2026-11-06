@@ -490,7 +490,7 @@ public class SpaceSlicingTests
         // Only an item the inventory refused is kept, after the loop, so none is lost and none is given twice.
         var source = ServerSource("Service", "SpaceSlicing.cs").Replace("\r\n", "\n");
         var give = Between(source, "private static void GiveRewardsToPlayer(", "private static string DescribeRewards(");
-        give.Should().Contain("if (!GetIsObjectValid(item))\n                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward));\n                        else if");
+        give.Should().Contain("if (arrived < reward.Quantity)\n                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward).Skip(arrived));\n                        else if");
         give.IndexOf("ShipHold.KeepUnplacedYield(player, unplaced);", StringComparison.Ordinal)
             .Should().BeGreaterThan(give.IndexOf("foreach (var reward in rewards)", StringComparison.Ordinal));
 
@@ -499,7 +499,8 @@ public class SpaceSlicingTests
         noShip.Should().Contain("GiveRewardsToPlayer(slicer, rewards, extraItems);").And.NotContain("CreateItemOnObject(");
         var extra = give.IndexOf("foreach (var resref in extraItems ?? Array.Empty<string>())", StringComparison.Ordinal);
         extra.Should().BeGreaterThan(0);
-        give.Should().Contain("if (!GetIsObjectValid(CreateItemOnObject(resref, player)))\n                    unplaced.Add((resref, null));");
+        give.Should().Contain("if (FarmItems.GiveToInventory(player, resref, 1) < 1)\n                    unplaced.Add((resref, null));");
+        give.Should().NotContain("CreateItemOnObject(", "the inventory count decides whether an item arrived");
         give.IndexOf("ShipHold.KeepUnplacedYield(player, unplaced);", StringComparison.Ordinal).Should().BeGreaterThan(extra);
 
         // The lockbox goes only after its rewards are in hand (DestroyObject runs at the end of the script anyway, so

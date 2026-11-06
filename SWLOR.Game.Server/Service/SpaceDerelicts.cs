@@ -774,7 +774,7 @@ namespace SWLOR.Game.Server.Service
                 for (var count = 0; count < lockboxes; count++)
                 {
                     // A lockbox a full inventory cannot take is left at the boarder's feet rather than lost.
-                    if (GetIsObjectValid(CreateItemOnObject(lockbox, boarder)))
+                    if (FarmItems.GiveToInventory(boarder, lockbox, 1) > 0)
                         continue;
 
                     CreateObject(ObjectType.Item, lockbox, GetLocation(boarder));

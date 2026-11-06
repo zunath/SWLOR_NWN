@@ -97,16 +97,23 @@ namespace SWLOR.Game.Server.Service
         /// Creates one item in the player's inventory. Returns false, leaving nothing behind, when it did not arrive there: the
         /// inventory count decides, since an item that merged into a stack can come back as an invalid handle.
         /// </summary>
-        private static bool TryPutInInventory(uint player, string resref)
+        private static bool TryPutInInventory(uint player, string resref) =>
+            CreateInInventory(player, resref, 1, out _) > 0;
+
+        /// <summary>
+        /// Creates a stack of an item in the player's inventory and returns how many of it arrived there. The inventory count
+        /// decides, since an item that merged into a stack can come back as an invalid handle (<paramref name="item"/>). An
+        /// item that did not arrive at all is destroyed.
+        /// </summary>
+        public static int CreateInInventory(uint player, string resref, int quantity, out uint item)
         {
             var before = Count(player, resref);
-            var item = CreateItemOnObject(resref, player);
-            if (Count(player, resref) > before)
-                return true;
-
-            if (GetIsObjectValid(item))
+            item = CreateItemOnObject(resref, player, quantity);
+            var arrived = Count(player, resref) - before;
+            if (arrived <= 0 && GetIsObjectValid(item))
                 DestroyObject(item);
-            return false;
+
+            return System.Math.Max(0, arrived);
         }
 
         /// <summary>Saves a new item of the blueprint to the player's overflow storage. False when the blueprint does not exist.</summary>

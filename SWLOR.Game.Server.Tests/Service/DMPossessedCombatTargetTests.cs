@@ -37,8 +37,13 @@ public class DMPossessedCombatTargetTests
         var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText is
                 "DefenseSkillMultiplier" or "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable"));
-        var resistance = ParseService(root, "Resistance.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GetStoredResistance" or "CalculateTotalResistance");
+        // The resistance logic is the instance class of the converted service; its injected database and mimicry
+        // service and the shared clamp are replaced by this harness's stand-ins.
+        var resistance = new[] { "GetStoredResistance", "CalculateTotalResistance" }
+            .Select(name => DMPossessionHarness.InstanceMethod("Domain/Combat/ResistanceService.cs", name)
+                .Replace("_db.Get<Player>", "DB.Get<Player>")
+                .Replace("_mimicry.GetResistanceBonus", "Mimicry.GetResistanceBonus")
+                .Replace("ResistanceRules.ClampResistance", "ClampResistance"));
 
         // Execute the production target-stat methods; replace only native actor queries,
         // persistence, status-effect modifiers, and observable side effects.

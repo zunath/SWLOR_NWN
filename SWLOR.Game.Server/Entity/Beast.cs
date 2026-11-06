@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Entity
 
             DefensePurities = Combat.CreateDefaultDefenseValues();
 
-            ResistancePurities = Resistance.CreateDefaultResistanceValues();
+            ResistancePurities = ResistanceRules.CreateDefaultResistanceValues();
         }
 
     }

@@ -270,13 +270,13 @@ public class ForceLightGuardianTests
     {
         var root = FindRepositoryRoot();
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Death.cs").FullName);
+        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "DeathService.cs").FullName);
 
         combat.Should().Contain("public static bool TryPreventFatalDamageAndGrantTemporaryHP(");
         combat.Should().Contain("var isDyingFallback = restoreToOneHP && currentHP <= 0;");
         combat.Should().Contain("SetCurrentHitPoints(defender, 1);");
 
-        death.Should().Contain("if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))");
+        death.Should().Contain("if (TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))");
         death.Should().Contain("return;");
         death.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);");
     }

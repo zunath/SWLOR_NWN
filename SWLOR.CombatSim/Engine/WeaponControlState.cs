@@ -1,5 +1,6 @@
 using System.Reflection;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.CombatSim.Engine;
@@ -65,7 +66,7 @@ public sealed class WeaponControlState
 
     public static double Duration(IStatusEffect status, int baseSeconds, int outgoingPercent, int resistance, bool pvp)
     {
-        var multiplier = Resistance.CalculateResistanceDamageMultiplier(resistance);
+        var multiplier = ResistanceRules.CalculateResistanceDamageMultiplier(resistance);
         if (multiplier <= 0) return 0;
         var seconds = StatusEffect.CalculateAdjustedStatusDurationSeconds(baseSeconds, outgoingPercent);
         var frequency = Math.Max(1f, status.Frequency);

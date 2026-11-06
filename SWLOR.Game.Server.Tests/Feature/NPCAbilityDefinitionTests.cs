@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.IO.Compression;
 using System.Globalization;
 using System.Xml.Linq;
@@ -194,7 +195,7 @@ public class NPCAbilityDefinitionTests
     [Test]
     public void NPCAbilities_AreAvailableToDefaultNpcAI()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var genericAbilityFeats = profiles[AIProfileType.Generic].Actions
             .Where(action => action.Type == AIActionType.Ability)

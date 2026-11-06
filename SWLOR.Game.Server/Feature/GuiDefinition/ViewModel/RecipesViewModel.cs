@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A craft left over from a logout, death or restart settles before a new one can start.
             if (_mode == RecipesUIMode.Crafting && !CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
-                CraftSessionService.SettleLeftover(Player);
+                CraftSessions.SettleLeftover(Player);
 
             _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
                     return;
 
-                if (QuickCraftService.IsRunning(Player))
+                if (CraftQuickCraft.IsRunning(Player))
                 {
                     SendMessageToPC(Player, "Finish or cancel your quick craft first.");
                     return;
@@ -588,16 +588,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_mode != RecipesUIMode.Crafting)
                 return;
 
-            if (QuickCraftService.IsRunning(Player))
+            if (CraftQuickCraft.IsRunning(Player))
             {
-                QuickCraftService.Cancel(Player);
+                CraftQuickCraft.Cancel(Player);
                 return;
             }
 
             if (_selectedBlueprintItem != OBJECT_INVALID || _currentRecipeIndex < 0)
                 return;
 
-            var message = QuickCraftService.Start(Player, _recipeTypes[_currentRecipeIndex], QuickCraftCount, RefreshQuickCraft);
+            var message = CraftQuickCraft.Start(Player, _recipeTypes[_currentRecipeIndex], QuickCraftCount, RefreshQuickCraft);
             RefreshQuickCraft();
             if (!string.IsNullOrEmpty(message))
                 QuickCraftStatus = message;
@@ -607,7 +607,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             _isClosed = true;
-            QuickCraftService.Cancel(Player);
+            CraftQuickCraft.Cancel(Player);
         };
 
         private void RefreshQuickCraft()
@@ -615,7 +615,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isClosed || !IsQuickCraftVisible)
                 return;
 
-            if (QuickCraftService.IsRunning(Player))
+            if (CraftQuickCraft.IsRunning(Player))
             {
                 QuickCraftButtonText = QuickCraftCancelLabel;
                 IsQuickCraftEnabled = true;
@@ -637,8 +637,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var recipe = _recipeTypes[_currentRecipeIndex];
-                var eligibility = QuickCraftService.Evaluate(Player, recipe);
-                var hasMaterials = !eligibility.IsEligible || QuickCraftService.ResolveBatchSize(Player, recipe, 1) > 0;
+                var eligibility = CraftQuickCraft.Evaluate(Player, recipe);
+                var hasMaterials = !eligibility.IsEligible || CraftQuickCraft.ResolveBatchSize(Player, recipe, 1) > 0;
 
                 IsQuickCraftEnabled = eligibility.IsEligible && hasMaterials;
                 QuickCraftStatus = !eligibility.IsEligible

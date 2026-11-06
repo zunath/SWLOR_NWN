@@ -136,9 +136,6 @@ public class CraftServiceTests
 
         _service.SessionWorld.Should().NotBeNull().And.BeSameAs(_service.SessionWorld).And.NotBeSameAs(other.SessionWorld);
         _service.QuickCraftWorld.Should().NotBeNull().And.BeSameAs(_service.QuickCraftWorld).And.NotBeSameAs(other.QuickCraftWorld);
-        _service.QuickCraftBatches.Should().BeEmpty().And.BeSameAs(_service.QuickCraftBatches).And.NotBeSameAs(other.QuickCraftBatches);
-        _service.MinigameRoutes.Routes.Should().BeNull();
-        _service.MinigameRoutes.Should().BeSameAs(_service.MinigameRoutes).And.NotBeSameAs(other.MinigameRoutes);
     }
 
     [Test]

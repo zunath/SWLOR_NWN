@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     GiveComponents(player);
                     craft = OpenWindow<ForgeViewModel>(fixture, GuiWindowType.Forge, payload);
                     craft.OnClickCraft()();
-                    ctx.Assert(CraftSessionService.IsCrafting(player), "The craft starts");
+                    ctx.Assert(CraftSessions.IsCrafting(player), "The craft starts");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneImmobilize, PlayerActivityEffectTag.CraftingImmobilize),
                         "Crafting holds the crafter in place");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneGhost, string.Empty),
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     craft.OnWindowClosed()();
-                    ctx.Assert(!CraftSessionService.IsCrafting(player), "Closing the window ends the craft");
+                    ctx.Assert(!CraftSessions.IsCrafting(player), "Closing the window ends the craft");
                     ctx.Assert(!HasEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize), "Ending the craft releases the crafter");
                 });
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     GiveComponents(player);
                     var craft = OpenWindow<ForgeViewModel>(fixture, GuiWindowType.Forge, payload);
                     craft.OnClickCraft()();
-                    ctx.Assert(CraftSessionService.IsCrafting(player), "The craft starts");
+                    ctx.Assert(CraftSessions.IsCrafting(player), "The craft starts");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneImmobilize, PlayerActivityEffectTag.CraftingImmobilize),
                         "An already ghosted crafter is still held in place");
 

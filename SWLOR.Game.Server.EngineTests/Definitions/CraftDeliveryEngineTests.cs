@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    ctx.Assert(CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
+                    ctx.Assert(CraftSessions.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
                     var record = DB.Get<Player>(fixture.Id);
                     ctx.AssertEqual(0, record.HeldCraftItems?.Count ?? 0, $"{recipe}: nothing is held at the station");
                     ctx.AssertEqual(System.Math.Max(1, detail.Quantity), CarriedStackTotal(player, detail.Resref),
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var fillers = Fill(ctx, player);
                 var carried = Snapshot(player);
 
-                ctx.Assert(CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, "The craft succeeds");
+                ctx.Assert(CraftSessions.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, "The craft succeeds");
                 AssertCarriedIntact(ctx, player, carried);
                 ctx.AssertEqual(0, CountCarried(player, detail.Resref), "The output is not in the full inventory");
                 ctx.AssertEqual(1, DB.Get<Player>(fixture.Id).HeldCraftItems.Count, "The output is held at the station");
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                CraftSessionService.SettleLeftover(player);
+                CraftSessions.SettleLeftover(player);
                 ctx.AssertEqual(0, DB.Get<Player>(fixture.Id).HeldCraftItems.Count, "Opening a station with room returns the held output");
                 ctx.AssertEqual(1, CountCarried(player, detail.Resref), "The held output reaches the inventory");
             });
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                var start = CraftSessionService.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, new uint[0]));
+                var start = CraftSessions.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, new uint[0]));
                 ctx.Assert(start.Succeeded, $"{recipe} starts: {start.Message}");
                 session = start.Session;
             });

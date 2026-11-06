@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(DB.Get<ResearchJob>(legacy.Id).Experiment == null, "A job without an experiment loads without one");
 
                 // A logout settles the open experiment, once, and leaves the legacy job alone.
-                ctx.AssertEqual(1, ResearchExperimentService.SettleOpenExperiments(PlayerId), "One open experiment settles");
-                ctx.AssertEqual(0, ResearchExperimentService.SettleOpenExperiments(PlayerId), "Settling again changes nothing");
+                ctx.AssertEqual(1, CraftResearchExperiment.SettleOpenExperiments(PlayerId), "One open experiment settles");
+                ctx.AssertEqual(0, CraftResearchExperiment.SettleOpenExperiments(PlayerId), "Settling again changes nothing");
 
                 for (var reload = 0; reload < 2; reload++)
                 {

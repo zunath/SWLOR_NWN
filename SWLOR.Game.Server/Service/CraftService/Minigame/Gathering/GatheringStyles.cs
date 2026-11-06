@@ -124,7 +124,7 @@ public static class GatheringStyles
         if (style != GatheringStyle.None && !StatusEffect.HasEffect(StatusEffectOf(style), player))
             StatusEffect.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
 
-        CraftingStyleSelection.Record(player, Skill, PerkOf(style));
+        CraftStyleEffects.Record(player, Skill, PerkOf(style));
     }
 
     /// <summary>Removes an active style the player no longer owns, such as after refunding its perk, and forgets it as their selection.</summary>
@@ -134,7 +134,7 @@ public static class GatheringStyles
         Remove(player, unowned);
 
         foreach (var style in unowned)
-            CraftingStyleSelection.ClearIfSelected(player, Skill, PerkOf(style));
+            CraftStyleEffects.ClearIfSelected(player, Skill, PerkOf(style));
     }
 
     private static void Remove(uint player, IEnumerable<GatheringStyle> styles)

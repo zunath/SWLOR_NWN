@@ -111,7 +111,7 @@ public class ScavengePointSourceTests
         var respawn = Method(source, "public static void ReturnPendingSearchFindsOnRespawn()");
 
         login.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true)");
-        login.IndexOf("CraftSessionService.RecoverAtLogin(player)", StringComparison.Ordinal)
+        login.IndexOf("CraftSessions.RecoverAtLogin(player)", StringComparison.Ordinal)
             .Should().BeLessThan(login.IndexOf("ReturnPendingFinds(player, atLogin: true)", StringComparison.Ordinal),
                 "the Search return exports the character, so the craft recovery must have put its items back first");
         source.Should().NotContain("[NWNEventHandler(ScriptName.OnModuleEnter)]", "one login handler orders both recoveries");

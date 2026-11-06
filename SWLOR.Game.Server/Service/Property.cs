@@ -2947,7 +2947,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterPropertyInstance()
         {
-            var player = GetExitingObject();
+            var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 

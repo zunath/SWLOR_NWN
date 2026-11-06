@@ -12,6 +12,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class EspionageDisguisePerkTests
 {
+    // The converted disguise and infiltration facades resolve their instances from a container.
+    private SWLOR.Game.Server.Tests.Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FalseIdentities_GrantsOneSlotPerRank()
     {
@@ -148,11 +164,11 @@ public class EspionageDisguisePerkTests
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "Disguise.cs"));
+            "Domain", "Character",
+            "DisguiseService.cs"));
 
-        source.Should().Contain("Stat.GetStatAdjustment(player, StatType.AdditionalDisguiseSlots)");
-        source.Should().Contain("Stat.GetStatAdjustment(player, StatType.DisguiseSwapCooldownReductionPercent)");
+        source.Should().Contain("GetStatAdjustment(player, StatType.AdditionalDisguiseSlots)");
+        source.Should().Contain("GetStatAdjustment(player, StatType.DisguiseSwapCooldownReductionPercent)");
         source.Should().NotContain("PerkType.FalseIdentities");
         source.Should().NotContain("PerkType.CoverStory");
     }

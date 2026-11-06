@@ -26,7 +26,8 @@ public class AIModelTests
         Opening
     }
 
-    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    // The AI scoring asks the companion control facade whether a creature is a registered companion, and applying a
+    // status effect checks the combat recorder; both resolve from the server's registrations.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
@@ -47,9 +48,9 @@ public class AIModelTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
-        _facadeScope.Dispose();
     }
 
     [Test]
@@ -1094,12 +1095,12 @@ public class AIModelTests
     {
         var companionControl = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
         var usePerkFeat = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
-        var registerThreat = ExtractMethodBody(companionControl, "public static void RegisterDefensiveThreat");
-        var processCombatRound = ExtractMethodBody(companionControl, "public static void ProcessCombatRound");
+        var registerThreat = ExtractMethodBody(companionControl, "public void RegisterDefensiveThreat");
+        var processCombatRound = ExtractMethodBody(companionControl, "public void ProcessCombatRound");
         var resumeAttack = ExtractMethodBody(usePerkFeat, "private static void ResumeAttack");
         var pendingReaction = registerThreat.IndexOf("state.DefensiveReactionPending = true;", StringComparison.Ordinal);
         var processRound = registerThreat.IndexOf("ProcessCombatRound(companion, true);", StringComparison.Ordinal);
@@ -1118,12 +1119,12 @@ public class AIModelTests
     {
         var companionControl = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
-        var peekTarget = ExtractMethodBody(companionControl, "public static uint PeekAuthorizedTarget");
-        var getTarget = ExtractMethodBody(companionControl, "private static uint GetDefensiveTarget");
-        var selectTarget = ExtractMethodBody(companionControl, "private static uint SelectDefensiveTarget");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
+        var peekTarget = ExtractMethodBody(companionControl, "public uint PeekAuthorizedTarget");
+        var getTarget = ExtractMethodBody(companionControl, "private uint GetDefensiveTarget");
+        var selectTarget = ExtractMethodBody(companionControl, "private uint SelectDefensiveTarget");
 
         peekTarget.Should().Contain("SelectDefensiveTarget(companion, state, false)");
         getTarget.Should().Contain("SelectDefensiveTarget(companion, state, true)");
@@ -1138,10 +1139,10 @@ public class AIModelTests
     {
         var companionControl = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
-        var removeThreat = ExtractMethodBody(companionControl, "private static void RemoveDefensiveThreat");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
+        var removeThreat = ExtractMethodBody(companionControl, "private void RemoveDefensiveThreat");
 
         removeThreat.Should().Contain("state.DefensiveThreats.Remove(threat);");
         removeThreat.Should().Contain("if (state.TrackedTarget == threat)");
@@ -1188,22 +1189,22 @@ public class AIModelTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
-        var processCombatRound = ExtractMethodBody(source, "public static void ProcessCombatRound");
-        var releaseRest = ExtractMethodBody(source, "private static void ResumeFromRestIfMasterIsActive");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
+        var processCombatRound = ExtractMethodBody(source, "public void ProcessCombatRound");
+        var releaseRest = ExtractMethodBody(source, "private void ResumeFromRestIfMasterIsActive");
         var resumeRest = processCombatRound.IndexOf(
             "ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));",
             StringComparison.Ordinal);
-        var busyGuard = processCombatRound.IndexOf("if (Activity.IsBusy(companion))", StringComparison.Ordinal);
+        var busyGuard = processCombatRound.IndexOf("if (IsBusy(companion))", StringComparison.Ordinal);
 
         resumeRest.Should().BeGreaterThanOrEqualTo(0);
         busyGuard.Should().BeGreaterThan(resumeRest);
-        releaseRest.Should().Contain("Activity.GetBusyType(companion) != ActivityStatusType.Resting");
-        releaseRest.Should().Contain("Activity.GetBusyType(master) == ActivityStatusType.Resting");
-        releaseRest.Should().Contain("StatusEffect.RemoveStatusEffect(companion, typeof(RestStatusEffect), false)");
-        releaseRest.Should().Contain("Activity.ClearBusy(companion)");
+        releaseRest.Should().Contain("GetBusyType(companion) != ActivityStatusType.Resting");
+        releaseRest.Should().Contain("GetBusyType(master) == ActivityStatusType.Resting");
+        releaseRest.Should().Contain("RemoveRestStatusEffect(companion)");
+        releaseRest.Should().Contain("ClearBusy(companion)");
     }
 
     [Test]
@@ -1211,10 +1212,10 @@ public class AIModelTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
-        var checkAbilities = ExtractMethodBody(source, "private static bool CanUseHostileAbilityWithoutMoving");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
+        var checkAbilities = ExtractMethodBody(source, "private bool CanUseHostileAbilityWithoutMoving");
 
         checkAbilities.Should().Contain("!isSelfOriginArea");
         checkAbilities.Should().Contain("CompanionControlPolicy.IsWithinDeclaredPlacementRange(");
@@ -1227,10 +1228,10 @@ public class AIModelTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs");
-        var resolveTarget = ExtractMethodBody(source, "public static uint ResolveHostileAbilityTarget");
+            "Domain",
+            "Creatures",
+            "CompanionControlService.cs");
+        var resolveTarget = ExtractMethodBody(source, "public uint ResolveHostileAbilityTarget");
         var shapeReach = resolveTarget.IndexOf(
             "CompanionControlPolicy.IsWithinSelfOriginAreaReach(",
             StringComparison.Ordinal);

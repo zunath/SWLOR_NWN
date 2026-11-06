@@ -60,9 +60,19 @@ public class PlayerNameServiceTests
     private readonly Dictionary<string, PlayerKnownName> _records = new();
     private bool _portraitTellRefused;
 
+    // The converted disguise facade (identity keys) resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _scopes.Add(_facades.Install());
         _world = new Dictionary<uint, Obj>
         {
             [Alice] = new() { IsPc = true, Name = "Alice", Uuid = "alice-id" },

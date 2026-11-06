@@ -61,6 +61,9 @@ namespace SWLOR.Game.Server.Composition
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
             services.AddSingleton<IActivityService, ActivityService>();
+            services.AddSingleton<IDisguiseService, DisguiseService>();
+            services.AddSingleton<IEspionageInfiltrationService, EspionageInfiltrationService>();
+            services.AddSingleton<ILanguageService, LanguageService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
@@ -80,6 +83,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
+            services.AddSingleton<ICompanionControlService, CompanionControlService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnService, SpawnService>();
 

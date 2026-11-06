@@ -2884,7 +2884,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void EveryPackedTintMaskDeclaresItsSingleAti2MipLevel()
+    public void EveryPackedTintMaskDeclaresItsFullAti2MipChain()
     {
         var hakRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
         var failures = new List<string>();
@@ -2924,13 +2924,22 @@ public class TintMapReviewTests
                 }
                 else
                 {
-                    var expectedLength = 128m + decimal.Ceiling(width / 4m) * decimal.Ceiling(height / 4m) * 16m;
-                    if (texture.Length != expectedLength)
-                        failures.Add($"{label}: {texture.Length} bytes, expected {expectedLength} for one ATI2 mip level");
-                }
+                    var expectedLevels = 0u;
+                    var expectedLength = 128m;
+                    for (var (levelWidth, levelHeight) = (width, height); ; levelWidth = Math.Max(levelWidth / 2, 1), levelHeight = Math.Max(levelHeight / 2, 1))
+                    {
+                        expectedLevels++;
+                        expectedLength += decimal.Ceiling(levelWidth / 4m) * decimal.Ceiling(levelHeight / 4m) * 16m;
+                        if (levelWidth == 1 && levelHeight == 1)
+                            break;
+                    }
 
-                if (ReadHeader(28) != 1 || (flags & 0x20000) == 0)
-                    failures.Add($"{label}: DDSD_MIPMAPCOUNT and an explicit mip count of one are required");
+                    if (texture.Length != expectedLength)
+                        failures.Add($"{label}: {texture.Length} bytes, expected {expectedLength} for {expectedLevels} ATI2 mip levels");
+
+                    if (ReadHeader(28) != expectedLevels || (flags & 0x20000) == 0)
+                        failures.Add($"{label}: DDSD_MIPMAPCOUNT and an explicit mip count of {expectedLevels} are required");
+                }
 
                 var txiPath = Path.ChangeExtension(path, ".txi");
                 if (!File.Exists(txiPath))
@@ -2940,13 +2949,13 @@ public class TintMapReviewTests
                 }
 
                 var mipmapDirectives = Regex.Matches(File.ReadAllText(txiPath), @"(?mi)^\s*mipmap\s+(\d+)\s*$");
-                if (mipmapDirectives.Count != 1 || mipmapDirectives[0].Groups[1].Value != "0")
-                    failures.Add($"{label}: texture metadata must declare mipmap 0 exactly once");
+                if (mipmapDirectives.Count != 1 || mipmapDirectives[0].Groups[1].Value != "1")
+                    failures.Add($"{label}: texture metadata must declare mipmap 1 exactly once");
             }
         }
 
         failures.Should().BeEmpty(
-            "categorical tint masks contain one compressed level and must not make the client upload a nonexistent mip chain");
+            "packed tint masks store their full mip chain, and the client must never upload a mip level the file does not hold");
     }
 
     [Test]

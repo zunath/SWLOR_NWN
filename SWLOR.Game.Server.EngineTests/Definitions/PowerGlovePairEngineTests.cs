@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Native;
@@ -579,8 +580,7 @@ public static class PowerGlovePairEngineTests
     [EngineTest("Destroyed NPC Power Glove owners release cached pairs and orphan companions", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
     public static async Task DestroyedNpcOwnerReleasesPairState(EngineTestContext ctx)
     {
-        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
-            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var pairs = CombatHelperInternals.Field<IPowerGloveEquipmentService, Dictionary<uint, (uint Main, uint Companion)>>("_pairs");
         var keeper = ctx.SpawnCreature("civilian", 4f);
         var keeperMain = await EquipMain(ctx, keeper);
         ctx.Track(keeperMain);

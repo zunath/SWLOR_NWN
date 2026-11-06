@@ -1,50 +1,43 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>Changes the engine's swing while a weapon ability is readied; never queues an extra attack.</summary>
+/// <summary>
+/// Changes the engine's swing while a weapon ability is readied; never queues an extra attack. The logic lives in
+/// <see cref="IQueuedAttackAnimationService"/>; every member forwards to the container's instance.
+/// </summary>
 public static class QueuedAttackAnimation
 {
-    private const string TokenVariable = "_QUEUED_ATTACK_ANIMATION";
-    /// <summary>Equipment owners reapply their current mappings after temporary swings release.</summary>
-    public static event Action<uint> RestoreEquipmentAnimations;
-    private static readonly QueuedAttackAnimationPlayback Playback = new(new NativeRuntime(),
-        creature => RestoreEquipmentAnimations?.Invoke(creature));
+    private static IQueuedAttackAnimationService Instance => FacadeAccessor.Resolve<IQueuedAttackAnimationService>();
 
-    public static void Begin(uint creature, AnimationClip clip)
+    /// <summary>Equipment owners reapply their current mappings after temporary swings release.</summary>
+    public static event Action<uint> RestoreEquipmentAnimations
     {
-        Playback.Stop(creature);
-        if (clip != null) Playback.Begin(creature, clip);
+        add => Instance.AddRestoreEquipmentAnimationsHandler(value);
+        remove => Instance.RemoveRestoreEquipmentAnimationsHandler(value);
     }
 
-    public static void Stop(uint creature) => Playback.Stop(creature);
+    /// <summary>Subscribes to <see cref="RestoreEquipmentAnimations"/>.</summary>
+    public static void AddRestoreEquipmentAnimationsHandler(Action<uint> handler) =>
+        Instance.AddRestoreEquipmentAnimationsHandler(handler);
+
+    /// <summary>Unsubscribes from <see cref="RestoreEquipmentAnimations"/>.</summary>
+    public static void RemoveRestoreEquipmentAnimationsHandler(Action<uint> handler) =>
+        Instance.RemoveRestoreEquipmentAnimationsHandler(handler);
+
+    public static void Begin(uint creature, AnimationClip clip) => Instance.Begin(creature, clip);
+
+    public static void Stop(uint creature) => Instance.Stop(creature);
 
     /// <summary>
     /// The swing keys a waiting queued ability owns. Its playback token is session state, so a clip
     /// a character file brought back after a restart owns nothing.
     /// </summary>
-    public static IReadOnlyCollection<string> GetActiveSwingKeys(uint creature) =>
-        string.IsNullOrEmpty(GetLocalString(creature, TokenVariable))
-            ? Array.Empty<string>()
-            : QueuedAttackAnimationPlayback.SwingKeys;
-
-    private sealed class NativeRuntime : INamedAnimationRuntime
-    {
-        public bool IsValid(uint creature) => GetIsObjectValid(creature) && GetObjectType(creature) == ObjectType.Creature;
-        public string GetToken(uint creature) => GetLocalString(creature, TokenVariable);
-        public void SetToken(uint creature, string token)
-        {
-            if (string.IsNullOrEmpty(token)) DeleteLocalString(creature, TokenVariable);
-            else SetLocalString(creature, TokenVariable, token);
-        }
-        public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
-        public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);
-        public void ClearActions(uint creature) => ClearAllActions(oObject: creature);
-        public void Schedule(float seconds, Action callback) => AssignCommand(GetModule(), () => DelayCommand(seconds, callback));
-    }
+    public static IReadOnlyCollection<string> GetActiveSwingKeys(uint creature) => Instance.GetActiveSwingKeys(creature);
 }
 
 /// <summary>Owns only melee swing keys, leaving ready, parry, throw, and custom emote mappings alone.</summary>
@@ -58,7 +51,8 @@ public sealed class QueuedAttackAnimationPlayback
         this.restoreEquipmentAnimations = restoreEquipmentAnimations;
     }
 
-    public static IReadOnlyList<string> SwingKeys { get; } = Array.AsReadOnly(
+    /// <summary>The swing keys this playback owns; built once per playback, so reads allocate nothing.</summary>
+    public IReadOnlyList<string> SwingKeys { get; } = Array.AsReadOnly(
         new[] { "1h", "2h", "2w", "pl" }.SelectMany(prefix =>
             new[] { "slashl", "slashr", "slasho", "stab", "closeh", "closel", "reach" }.Select(suffix => prefix + suffix)).ToArray());
 

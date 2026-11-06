@@ -1,90 +1,28 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>Stat-driven rewards for ordinary hostile weapon hits across all weapon skills.</summary>
+/// <summary>
+/// Stat-driven rewards for ordinary hostile weapon hits across all weapon skills. The logic lives in
+/// <see cref="IOrdinaryAttackTraitsService"/>; every member forwards to the container's instance.
+/// </summary>
 public static class OrdinaryAttackTraits
 {
-    private static readonly Dictionary<uint, OrdinaryAttackHasteState> States = new();
+    private static IOrdinaryAttackTraitsService Instance => FacadeAccessor.Resolve<IOrdinaryAttackTraitsService>();
 
-    public static void RecordTargetChange(uint actor, uint target)
-    {
-        if (!States.TryGetValue(actor, out var state)) return;
-        state.RecordTargetChange(target);
-        Sync(actor, state);
-    }
+    public static void RecordTargetChange(uint actor, uint target) => Instance.RecordTargetChange(actor, target);
 
-    public static void RecordHit(uint actor, uint target, long rollId)
-    {
-        if (!GetIsObjectValid(actor) || GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0 ||
-            !GetIsObjectValid(target) || target == actor || !GetIsReactionTypeHostile(target, actor)) return;
-        var configuration = GetConfiguration(actor);
-        if (configuration.MaximumStacks <= 0) return;
-        if (!States.TryGetValue(actor, out var state)) States[actor] = state = new OrdinaryAttackHasteState();
-        var refresh = state.RecordHit(Clock.UtcNow, configuration, target, rollId);
-        Sync(actor, state, refresh);
-    }
+    public static void RecordHit(uint actor, uint target, long rollId) => Instance.RecordHit(actor, target, rollId);
 
-    public static void Reconcile(uint actor)
-    {
-        if (!States.TryGetValue(actor, out var state)) return;
-        if (!GetIsObjectValid(actor)) { Clear(actor); return; }
-        if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0) { ClearOnDeath(actor); return; }
-        state.Reconcile(Clock.UtcNow, GetConfiguration(actor));
-        Sync(actor, state);
-    }
+    public static void Reconcile(uint actor) => Instance.Reconcile(actor);
 
-    public static void Clear(uint actor)
-    {
-        if (States.TryGetValue(actor, out var state)) state.Clear();
-        StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
-    }
+    public static void Clear(uint actor) => Instance.Clear(actor);
 
-    public static void ClearOnDeath(uint actor)
-    {
-        if (States.TryGetValue(actor, out var state)) state.Reset();
-        StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
-    }
+    public static void ClearOnDeath(uint actor) => Instance.ClearOnDeath(actor);
 
-    public static void ClearActor(uint actor)
-    {
-        Clear(actor);
-        States.Remove(actor);
-    }
+    public static void ClearActor(uint actor) => Instance.ClearActor(actor);
 
     /// <summary>A destroyed actor's object ID may be reused; drop its state without touching the object.</summary>
-    public static void ForgetDestroyed(uint actor) => States.Remove(actor);
-
-    private static OrdinaryAttackHasteConfiguration GetConfiguration(uint actor) => new(
-        Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampPerStack),
-        Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampMaximumStacks),
-        Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampGrantCooldownSeconds),
-        Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampDurationSeconds));
-
-    private static void Sync(uint actor, OrdinaryAttackHasteState state, bool refreshTimer = false)
-    {
-        if (!GetIsObjectValid(actor)) return;
-        var remaining = (float)Math.Max(0d, (state.Expires - Clock.UtcNow).TotalSeconds);
-        var existing = StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
-        if (state.Stacks <= 0 || remaining <= 0)
-        {
-            if (existing != null) StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
-            return;
-        }
-        var perStack = GetConfiguration(actor).HastePerStack;
-        if (existing != null && existing.Stacks == state.Stacks && existing.HastePerStack == perStack)
-        {
-            if (refreshTimer)
-                StatusEffect.RefreshStatusEffectDuration(actor, typeof(OrdinaryAttackHasteStatusEffect), actor, remaining);
-        }
-        else
-        {
-            if (existing != null) StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
-            StatusEffect.ApplyStatusEffect(actor, actor, new OrdinaryAttackHasteStatusEffect(state.Stacks, perStack), remaining);
-        }
-    }
+    public static void ForgetDestroyed(uint actor) => Instance.ForgetDestroyed(actor);
 }

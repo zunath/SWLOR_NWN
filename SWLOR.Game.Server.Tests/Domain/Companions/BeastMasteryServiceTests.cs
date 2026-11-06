@@ -1133,7 +1133,7 @@ public class BeastMasteryServiceTests
 
         var skin = Added(Skin);
         skin.Where(property => property.Type == ItemPropertyType.Defense).Select(property => property.SubType)
-            .Should().Equal(Combat.GetDefenseDamageTypes().Select(type => (int)type));
+            .Should().Equal(SWLOR.Game.Server.Service.Combat.GetDefenseDamageTypes().Select(type => (int)type));
         skin.Where(property => property.Type == ItemPropertyType.Resistance).Select(property => property.SubType)
             .Should().Equal(Resistance.GetAllResistanceTypes().Select(type => (int)type));
     }
@@ -1574,7 +1574,7 @@ public class BeastMasteryServiceTests
     public void The_purities_of_the_job_become_incubation_properties_of_the_egg()
     {
         var job = Job(mutationChance: 100);
-        job.DefensePurities[Combat.GetDefenseDamageTypes()[0]] = 77;
+        job.DefensePurities[SWLOR.Game.Server.Service.Combat.GetDefenseDamageTypes()[0]] = 77;
         job.ResistancePurities[Resistance.GetAllResistanceTypes()[0]] = 88;
         Random.SetSeed(SeedForNoMutation(100));
 
@@ -1587,7 +1587,7 @@ public class BeastMasteryServiceTests
         incubation.Should().Contain((ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, 200));
         incubation.Should().Contain((ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, 100));
         incubation.Should().Contain((ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, 100));
-        BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(Combat.GetDefenseDamageTypes()[0], out var defenseStat)
+        BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(SWLOR.Game.Server.Service.Combat.GetDefenseDamageTypes()[0], out var defenseStat)
             .Should().BeTrue();
         incubation.Should().Contain((ItemPropertyType.Incubation, (int)defenseStat, 77));
         BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(Resistance.GetAllResistanceTypes()[0], out var resistanceStat)
@@ -1615,7 +1615,7 @@ public class BeastMasteryServiceTests
         var job = Job(mutationChance: 100);
         Random.SetSeed(SeedForNoMutation(100));
         var purities = new List<int> { job.AttackPurity, job.AccuracyPurity, job.EvasionPurity, job.LearningPurity };
-        purities.AddRange(Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
+        purities.AddRange(SWLOR.Game.Server.Service.Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
         purities.AddRange(Resistance.GetAllResistanceTypes().Select(_ => 0));
         var quality = purities.Average() / 1000f;
         var expected = Math.Max(180, (int)Math.Round(180 + (1170 * quality * (1f - (job.XPPenalty / 1000f)))));

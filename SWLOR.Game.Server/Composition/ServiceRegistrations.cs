@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
@@ -67,6 +68,17 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IRaceService, RaceService>();
+
+            // Combat
+            services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<IOrdinaryAttackTraitsService, OrdinaryAttackTraitsService>();
+            services.AddSingleton<IPairedRangedTraitsService, PairedRangedTraitsService>();
+            services.AddSingleton<IPowerGloveEquipmentService, PowerGloveEquipmentService>();
+            services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
+            services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
+            services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
+            services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
+            services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();
 
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();

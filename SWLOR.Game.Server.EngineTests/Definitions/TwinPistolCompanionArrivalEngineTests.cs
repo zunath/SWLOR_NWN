@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -424,9 +425,8 @@ public static class TwinPistolCompanionArrivalEngineTests
 
     private static PairedRangedTraitState GetTraitState(EngineTestContext ctx, uint actor)
     {
-        var field = typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static);
-        ctx.Assert(field != null, "The production paired trait state registry is available");
-        var states = field.GetValue(null) as Dictionary<uint, PairedRangedTraitState>;
+        var states = CombatHelperInternals.Field<IPairedRangedTraitsService, Dictionary<uint, PairedRangedTraitState>>("_states");
+        ctx.Assert(states != null, "The production paired trait state registry is available");
         var state = states?.GetValueOrDefault(actor);
         ctx.Assert(state != null, "The actor has actual paired trait state after its charge grant");
         return state;

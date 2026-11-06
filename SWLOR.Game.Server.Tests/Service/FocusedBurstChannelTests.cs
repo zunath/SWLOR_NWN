@@ -87,13 +87,13 @@ public class FocusedBurstChannelTests
         // A droid dismissed mid-channel never reaches FinishChannel, so ForgetDestroyed must release
         // the deferred stamina-cost context that BeginChannel took.
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "TwinPistolAbility.cs")).Replace("\r\n", "\n");
-        var start = source.IndexOf("public static void ForgetDestroyed(", StringComparison.Ordinal);
-        var body = source.Substring(start, source.IndexOf("public static void InterruptChannel(", start, StringComparison.Ordinal) - start);
+            "SWLOR.Game.Server", "Domain", "Combat", "TwinPistolAbilityService.cs")).Replace("\r\n", "\n");
+        var start = source.IndexOf("public void ForgetDestroyed(", StringComparison.Ordinal);
+        var body = source.Substring(start, source.IndexOf("public void InterruptChannel(", start, StringComparison.Ordinal) - start);
 
-        body.Should().Contain("if (Channels.Remove(actor, out var channel))");
-        body.Should().Contain("Combat.CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability);");
-        body.Should().Contain("Activations.Remove(actor);");
+        body.Should().Contain("if (_channels.Remove(actor, out var channel))");
+        body.Should().Contain("CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability);");
+        body.Should().Contain("_activations.Remove(actor);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

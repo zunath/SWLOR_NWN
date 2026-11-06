@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SWLOR.Game.Server.Composition;
@@ -13,6 +14,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed class FacadeContainer : IDisposable
 {
+    private static readonly AsyncLocal<FacadeContainer?> Installed = new();
+
     private readonly ServiceProvider _provider;
 
     public FacadeContainer()
@@ -38,7 +41,34 @@ public sealed class FacadeContainer : IDisposable
     /// Makes this container the one the facades resolve from, for the current async flow, until the returned scope is
     /// disposed. Install it in the same method that runs the code under test, or in a <c>[SetUp]</c>.
     /// </summary>
-    public IDisposable Install() => CompositionRoot.InstallForTests(_provider);
+    public IDisposable Install()
+    {
+        var previous = Installed.Value;
+        Installed.Value = this;
+        return new InstalledScope(CompositionRoot.InstallForTests(_provider), previous);
+    }
+
+    /// <summary>The container installed for the current flow, for test helpers that reach an instance's private state.</summary>
+    public static FacadeContainer Current =>
+        Installed.Value ?? throw new InvalidOperationException("No FacadeContainer is installed for this test.");
+
+    private sealed class InstalledScope : IDisposable
+    {
+        private readonly IDisposable _scope;
+        private readonly FacadeContainer? _previous;
+
+        public InstalledScope(IDisposable scope, FacadeContainer? previous)
+        {
+            _scope = scope;
+            _previous = previous;
+        }
+
+        public void Dispose()
+        {
+            _scope.Dispose();
+            Installed.Value = _previous;
+        }
+    }
 
     /// <summary>The container's instance of a service, to set it up or to assert on it.</summary>
     public TService Get<TService>()

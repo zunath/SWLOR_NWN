@@ -70,14 +70,19 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IRaceService, RaceService>();
 
             // Combat
+            services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();
+            services.AddSingleton<IEnmityService, EnmityService>();
             services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
             services.AddSingleton<IPoisonsService, PoisonsService>();
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
+            services.AddSingleton<IRecastService, RecastService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
             services.AddSingleton<IStealthService, StealthService>();
+            services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
+            services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
 
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();

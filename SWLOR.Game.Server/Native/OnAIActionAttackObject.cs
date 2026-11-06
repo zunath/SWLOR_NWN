@@ -521,9 +521,14 @@ namespace SWLOR.Game.Server.Native
 
                 // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
                 // instead of contributing a creature-wide AttackDelayReductionPercent stat.
-                var calculatedDelayWithoutLimitedReduction = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                // Target-conditional Haste (Flurry Stance against bleeding targets) is part of this
+                // swing's base delay, so it applies with and without limited Haste.
+                var targetAttackDelayReduction = Combat.GetTargetAttackDelayReduction(
+                    pCreature.m_idSelf, oidAttackTarget, attackSkillType);
+                var calculatedDelayWithoutLimitedReduction =
+                    Combat.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction);
                 var calculatedDelay = hasLimitedAttackDelayReduction
-                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)
+                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)
                     : calculatedDelayWithoutLimitedReduction;
                 var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
                 var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(

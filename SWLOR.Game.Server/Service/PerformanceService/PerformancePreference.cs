@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public PerformanceSetType SecondSet { get; set; } = PerformanceSetType.CantinaStandards;
         public PerformanceTempo Tempo { get; set; } = PerformanceTempo.Relaxed;
 
+        /// <summary>Perform in Roleplay mode: no cues, scored at the Rough rate, kept going by talking or emoting.</summary>
+        public bool Roleplay { get; set; }
+
         /// <summary>The Cantina song a musician plays, as an ambientmusic.2da track; -1 lets the first collected song play.</summary>
         public int SongTrackId { get; set; } = PerformanceSongs.AutomaticSong;
 

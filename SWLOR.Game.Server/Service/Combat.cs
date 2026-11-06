@@ -1100,6 +1100,7 @@ namespace SWLOR.Game.Server.Service
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplyPhysicalAbilityShapeDamageModifier(attacker, damageType, damage, isSingleTarget);
                 damage = ApplyAreaAbilityAfterDeflectionDamageModifier(attacker, skillType, damage, isArea);
+                damage = ApplyRangedAbilityLongRangeDamageModifier(attacker, defender, skillType, damage);
             }
 
             damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
@@ -1108,6 +1109,7 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyAbilityShapeDamageModifier(attacker, damage, isAbilityDamage, ability);
+            damage = ApplyThrowingSingleTargetDamageModifier(attacker, skillType, damage, isAbilityDamage, ability);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
 
             damage = ApplyTargetStatusDamageModifiers(
@@ -1185,6 +1187,34 @@ namespace SWLOR.Game.Server.Service
                     ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        /// <summary>
+        /// Applies ThrowingSingleTargetDamagePercentAdjustment to Throwing auto-attacks and
+        /// single-target hostile Throwing abilities, the Throwing-only form of the single-target
+        /// scope used by SingleTargetDamagePercentAdjustment.
+        /// </summary>
+        public static int ApplyThrowingSingleTargetDamageModifier(
+            uint attacker,
+            SkillType skillType,
+            int damage,
+            bool isAbilityDamage,
+            AbilityDetail ability)
+        {
+            if (damage <= 0 || skillType != SkillType.Throwing)
+                return damage;
+
+            var isSingleTarget = !isAbilityDamage ||
+                                 ability?.IsHostileAbility == true && Ability.IsSingleTargetImpact(attacker, ability);
+            if (!isSingleTarget)
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingSingleTargetDamagePercentAdjustment);
+            return adjustment == 0
+                ? damage
+                : ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         /// <summary>
@@ -4802,6 +4832,24 @@ namespace SWLOR.Game.Server.Service
             return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
+        public static int ApplyRangedAbilityLongRangeDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !IsRangedAbilityLongRangeTarget(attacker, defender, skillType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.RangedAbilityLongRangeDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
         public static int ApplyAreaAbilityAfterDeflectionDamageModifier(
             uint attacker,
             SkillType skillType,
@@ -5677,11 +5725,15 @@ namespace SWLOR.Game.Server.Service
             if (ability == null || !ability.IsHostileAbility)
                 return;
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    skillType,
+                    StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType,
+                    StatType.AbilityUsedMovementSpeedRangedOnly))
+            {
                 return;
+            }
 
             var movementSpeed = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedPercentAdjustment);
             var duration = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedDurationSeconds);
@@ -10882,7 +10934,8 @@ namespace SWLOR.Game.Server.Service
                 ability,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustment,
-                StatType.SecondaryAbilityUsedEvasionDurationSeconds);
+                StatType.SecondaryAbilityUsedEvasionDurationSeconds,
+                StatType.SecondaryAbilityUsedEvasionRangedOnly);
         }
 
         private static void ApplyAbilityUsedSkillEvasionChannel(
@@ -10890,14 +10943,18 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             StatType skillTypeStat,
             StatType evasionStat,
-            StatType durationStat)
+            StatType durationStat,
+            StatType? rangedOnlyStat = null)
         {
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                skillTypeStat));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    skillTypeStat,
+                    rangedOnlyStat))
+            {
                 return;
+            }
 
             var evasionPercent = Stat.GetStatAdjustment(
                 activator,
@@ -10920,12 +10977,15 @@ namespace SWLOR.Game.Server.Service
             if (ability?.IsHostileAbility != true)
                 return;
 
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflectionSkillType));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    StatType.AbilityUsedRangedDeflectionSkillType,
+                    StatType.AbilityUsedRangedDeflectionRangedOnly))
+            {
                 return;
+            }
 
             var deflection = Stat.GetStatAdjustment(
                 activator,
@@ -11825,6 +11885,43 @@ namespace SWLOR.Game.Server.Service
         private static bool SkillTypeMatchesOrGlobal(SkillType actualSkillType, SkillType requiredSkillType)
         {
             return requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType);
+        }
+
+        private static bool AbilityUsedTriggerSkillMatches(
+            uint activator,
+            AbilityDetail ability,
+            SkillType abilitySkillType,
+            StatType skillTypeStat,
+            StatType? rangedOnlyStat)
+        {
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(activator, skillTypeStat));
+            var rangedOnly = rangedOnlyStat.HasValue &&
+                             Stat.GetStatAdjustment(activator, rangedOnlyStat.Value) > 0;
+
+            return AbilityUsedTriggerSkillMatches(
+                abilitySkillType,
+                requiredSkillType,
+                rangedOnly,
+                ability?.IsHostileAbility == true);
+        }
+
+        /// <summary>
+        /// Decides whether an activated ability fires an "after using an ability" trigger. A ranged-only
+        /// trigger fires from any hostile ranged weapon ability (Pistol, Twin Pistol, Rifle or Throwing),
+        /// optionally narrowed by a skill selector; otherwise the ability's skill must match the selector.
+        /// </summary>
+        public static bool AbilityUsedTriggerSkillMatches(
+            SkillType abilitySkillType,
+            SkillType requiredSkillType,
+            bool rangedOnly,
+            bool isHostileAbility)
+        {
+            if (!rangedOnly)
+                return SkillTypeMatches(abilitySkillType, requiredSkillType);
+
+            return isHostileAbility &&
+                   IsRangedWeaponSkill(abilitySkillType) &&
+                   SkillTypeMatchesOrGlobal(abilitySkillType, requiredSkillType);
         }
 
         private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)
@@ -13006,6 +13103,28 @@ namespace SWLOR.Game.Server.Service
                 totalReduction,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
+        }
+
+        /// <summary>
+        /// Attack delay reduction that depends on the swing's target, such as Flurry Stance's Haste
+        /// for Throwing auto-attacks against bleeding targets. Positive values respect Haste suppression.
+        /// </summary>
+        public static int GetTargetAttackDelayReduction(uint attacker, uint target, SkillType skillType)
+        {
+            if (skillType != SkillType.Throwing ||
+                !GetIsObjectValid(target) ||
+                GetObjectType(target) != SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature ||
+                !StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding))
+            {
+                return 0;
+            }
+
+            var reduction = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingAttackDelayReductionToBleedingTargetPercent);
+            return reduction > 0 && IsAttackDelayReductionSuppressed(attacker)
+                ? 0
+                : reduction;
         }
 
         private static int GetDualWieldAttackDelayReduction(uint attacker) =>

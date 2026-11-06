@@ -52,6 +52,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
 - Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
+- Tint maps, the palette atlas, tint shaders, and dyed parts that glitter, fizz, or turn magenta: `Readmes/TintMapRendering.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`

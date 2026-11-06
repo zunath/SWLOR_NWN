@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 /// </summary>
 public sealed record ForgePerkStats
 {
-    public static ForgePerkStats None { get; } = new();
+    public static ForgePerkStats None => new();
 
     /// <summary>Thermal points the working range moves: positive up, negative down.</summary>
     public int RangeShift { get; init; }

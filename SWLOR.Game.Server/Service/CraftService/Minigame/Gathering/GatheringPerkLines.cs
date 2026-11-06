@@ -13,12 +13,12 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 /// </summary>
 public static class GatheringPerkLines
 {
-    public static IReadOnlyList<PerkType> Prospector { get; } = new[]
+    public static IReadOnlyList<PerkType> Prospector => new[]
     {
         PerkType.EfficientStrikes, PerkType.BulkRefining, PerkType.RichVeins, PerkType.StripMiningStyle, PerkType.CoreSample, PerkType.MotherLode
     };
 
-    public static IReadOnlyList<PerkType> TreasureSeeker { get; } = new[]
+    public static IReadOnlyList<PerkType> TreasureSeeker => new[]
     {
         PerkType.FineTrowel, PerkType.SharpChisel, PerkType.SteadyDig, PerkType.CarefulHandsStyle,
         PerkType.KeenEye, PerkType.DeepScan, PerkType.RichPickings, PerkType.Jackpot

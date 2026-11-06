@@ -17,7 +17,7 @@ namespace SWLOR.CraftSim.Legacy
             CraftViewModelCommit + "`; the others are checked against the source by `LegacySourceTests`:";
 
         public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
-        public const string Craft = Server + "Service/Craft.cs";
+        public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
         public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
         public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
@@ -79,7 +79,7 @@ namespace SWLOR.CraftSim.Legacy
             "Enhancement transfer chance", CraftViewModel, 1420, 1468, CraftViewModelCommit);
 
         public static readonly SourceReference RecipeUnlockOffset = new(
-            "Recipe rank requirement", Craft, 327, 331,
+            "Recipe rank requirement", Craft, 362, 365,
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(

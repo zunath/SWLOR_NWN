@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     public abstract class RecipeParameterProfile<TParameters> : IRecipeParameterProfile
         where TParameters : RecipeMinigameParameters
     {
-        private static readonly IReadOnlyDictionary<RecipeType, RecipeType> _noDerivedRecipes =
+        private static IReadOnlyDictionary<RecipeType, RecipeType> _noDerivedRecipes =>
             new Dictionary<RecipeType, RecipeType>();
 
         public abstract string Key { get; }

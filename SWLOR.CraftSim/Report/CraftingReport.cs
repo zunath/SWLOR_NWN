@@ -48,7 +48,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine(LegacySource.RulesPortedNote);
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
-            foreach (var source in LegacySource.All.Where(s => s.File.EndsWith("CraftViewModel.cs") || s.File.EndsWith("RecipeLevelChart.cs") || s.File.EndsWith("Craft.cs") || s.File.EndsWith("EquipmentStats.cs")))
+            foreach (var source in LegacySource.All.Where(s => s.File.EndsWith("CraftViewModel.cs") || s.File.EndsWith("RecipeLevelChart.cs") || s.File.EndsWith("CraftService.cs") || s.File.EndsWith("EquipmentStats.cs")))
                 rules.Add(source.Name, $"`{source.Citation}`");
             text.AppendLine(rules.ToString());
         }

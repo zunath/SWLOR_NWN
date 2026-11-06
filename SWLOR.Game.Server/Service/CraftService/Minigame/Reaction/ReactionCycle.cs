@@ -12,7 +12,7 @@ public sealed class ReactionCycle
     public const int MinimumLength = 4;
     public const int MaximumLength = 8;
 
-    private static readonly IReadOnlyList<ReactionPhase> PhaseOrder = new[]
+    private static IReadOnlyList<ReactionPhase> PhaseOrder => new[]
     {
         ReactionPhase.Calm, ReactionPhase.Rising, ReactionPhase.Peak, ReactionPhase.Settling
     };

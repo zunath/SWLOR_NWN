@@ -23,6 +23,7 @@ public class ClockSeamSourceGuardTests
         "Service/Perk.cs",
         "Service/AbilityService/**",
         "Service/Craft.cs",
+        "Domain/Crafting/CraftService.cs",
         "Native/PairedRangedPresentation.cs",
         "Native/OnAIActionAttackObject.cs",
     };

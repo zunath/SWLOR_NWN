@@ -32,7 +32,7 @@ Rules ported. `CraftViewModel.cs` was deleted from the game server after its rul
 | The 11 craft actions | `CraftViewModel.cs:1727-1864` |
 | Flags and meters reset between crafts | `CraftViewModel.cs:1225-1232` |
 | Components and enhancements lost on failure | `CraftViewModel.cs:1601-1641` |
-| Recipe rank requirement | `Craft.cs:327-331` |
+| Recipe rank requirement | `CraftService.cs:362-365` |
 | Crafting gear stats | `EquipmentStats.cs:929-1075` |
 
 ## Gear levels

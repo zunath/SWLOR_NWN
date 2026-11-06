@@ -243,6 +243,49 @@ function Read-ManifestLines {
     return $lines.ToArray()
 }
 
+
+# tools/Refactor/HandlerRenames.txt: one `<master full handler name> <branch full handler name>` per line, `#` starts a
+# comment. A handler the branch had to rename (for example when it moved onto a facade) is listed here, in the same pull
+# request, so the parity run and the sync compare master's order with the branch's manifest under the branch's name.
+# Returns a case-sensitive hashtable master name -> branch name. A malformed line, a duplicate master name and a branch
+# name the manifest does not list are errors.
+function Read-HandlerRenames {
+    param([string]$ManifestText, [string]$Path = (Join-Path $PSScriptRoot 'HandlerRenames.txt'))
+    $renames = New-Object 'System.Collections.Hashtable'
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $renames }
+
+    $manifestNames = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
+    foreach ($raw in ($ManifestText -split "`r?`n")) {
+        $parts = $raw.Trim() -split '\s+', 2
+        if ($parts.Count -eq 2 -and ($parts[0] -ceq 'action' -or $parts[0] -ceq 'conditional')) {
+            $comment = $parts[1].IndexOf('  #')
+            if ($comment -ge 0) { $parts[1] = $parts[1].Substring(0, $comment) }
+            [void]$manifestNames.Add($parts[1].Trim())
+        }
+    }
+
+    $number = 0
+    foreach ($raw in [System.IO.File]::ReadAllLines($Path)) {
+        $number++
+        $line = $raw.Trim()
+        if ($line.Length -eq 0 -or $line.StartsWith('#')) { continue }
+        $comment = $line.IndexOf(' #')
+        if ($comment -ge 0) { $line = $line.Substring(0, $comment).TrimEnd() }
+        $names = @($line -split '\s+')
+        if ($names.Count -ne 2) {
+            throw (New-Failure "HandlerRenames.txt line ${number} is malformed: expected '<master handler name> <branch handler name>', found '$line'." 4)
+        }
+        if ($renames.ContainsKey($names[0])) {
+            throw (New-Failure "HandlerRenames.txt line ${number}: master handler '$($names[0])' is listed twice." 4)
+        }
+        if (-not $manifestNames.Contains($names[1])) {
+            throw (New-Failure "HandlerRenames.txt line ${number}: branch handler '$($names[1])' is not a line of the handler manifest (ScriptHandlerOrder.txt); rename it there first." 4)
+        }
+        $renames[$names[0]] = $names[1]
+    }
+    return $renames
+}
+
 function Get-RepositoryRootOfScript {
     # tools/Refactor/<script> -> repository root.
     return [System.IO.Path]::GetFullPath((Join-Path (Join-Path $PSScriptRoot '..') '..'))

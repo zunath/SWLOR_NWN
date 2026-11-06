@@ -24,7 +24,7 @@ public sealed record SearchEffects(
     int JackpotWeightBonus = 0)
 {
     /// <summary>A scavenger with no perks.</summary>
-    public static readonly SearchEffects None = new();
+    public static SearchEffects None => new();
 
     /// <summary>The effects of a scavenger whose stat totals <paramref name="read"/> returns.</summary>
     public static SearchEffects FromStats(Func<StatType, int> read)

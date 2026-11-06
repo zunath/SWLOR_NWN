@@ -104,6 +104,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
   action      SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
   action      SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
+  action      SWLOR.Game.Server.Native.StaleDriveAfterJump.RegisterHooks
   action      SWLOR.Game.Server.Native.VitalityHitPoints.RegisterHooks
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.RegisterHooks
   action      SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration
@@ -750,7 +751,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter
   action      SWLOR.Game.Server.Service.Stealth.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter
-  action      SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter
+  action      SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection

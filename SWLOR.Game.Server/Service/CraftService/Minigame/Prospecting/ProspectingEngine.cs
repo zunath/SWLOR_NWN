@@ -29,7 +29,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     /// <summary>The id of the meter that counts what the session has gathered so far.</summary>
     public const string GatheredMeterId = "gathered";
 
-    private static readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
+    private readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
     {
         new MinigameActionInfo(
             ProspectingActionIds.Survey,

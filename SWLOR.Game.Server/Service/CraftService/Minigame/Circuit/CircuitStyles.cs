@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 public static class CircuitStyles
 {
     /// <summary>Every style, in the order the window lists them.</summary>
-    public static IReadOnlyList<CircuitStyle> All { get; } = new[] { CircuitStyle.Overclock, CircuitStyle.SafeMode };
+    public static IReadOnlyList<CircuitStyle> All => new[] { CircuitStyle.Overclock, CircuitStyle.SafeMode };
 
     /// <summary>The skill whose craft window offers these styles.</summary>
     public const SkillType Skill = SkillType.Engineering;
@@ -25,7 +25,7 @@ public static class CircuitStyles
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static readonly IReadOnlyDictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
+    private static IReadOnlyDictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
         new Dictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>>
         {
             [CircuitStyle.Overclock] = new Dictionary<StatType, int>

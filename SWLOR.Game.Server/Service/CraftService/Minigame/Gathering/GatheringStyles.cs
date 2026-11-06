@@ -24,13 +24,13 @@ public static class GatheringStyles
     public const SkillType Skill = SkillType.Gathering;
 
     /// <summary>Every style, in the order the windows list them.</summary>
-    public static IReadOnlyList<GatheringStyle> All { get; } = new[] { GatheringStyle.StripMining, GatheringStyle.CarefulHands };
+    public static IReadOnlyList<GatheringStyle> All => new[] { GatheringStyle.StripMining, GatheringStyle.CarefulHands };
 
     /// <summary>The styles as <see cref="CraftingStyleSelection"/> knows them.</summary>
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static readonly IReadOnlyDictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
+    private static IReadOnlyDictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
         new Dictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>>
         {
             [GatheringStyle.StripMining] = new Dictionary<StatType, int>

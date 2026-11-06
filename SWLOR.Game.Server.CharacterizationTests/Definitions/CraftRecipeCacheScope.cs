@@ -1,4 +1,3 @@
-using System.Reflection;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 
@@ -18,9 +17,7 @@ internal sealed class CraftRecipeCacheScope : IDisposable
 
     public CraftRecipeCacheScope(RecipeType type, RecipeDetail recipe)
     {
-        _cache = (Dictionary<RecipeType, RecipeDetail>)typeof(Craft)
-            .GetField("_recipes", BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        _cache = CraftCalc.GetAllRecipes();
         _type = type;
         _original = _cache.GetValueOrDefault(type);
         _cache[type] = recipe;

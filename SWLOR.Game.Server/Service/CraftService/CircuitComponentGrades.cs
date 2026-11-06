@@ -12,13 +12,12 @@ public static class CircuitComponentGrades
 {
     public const int MaxGrade = 6;
 
-    private static readonly Regex NumberedUnit = new(
-        "^(c_unit|l_unit|ca_unit|discharge_unit|dmotive_sys|d_sensor|manip_arm|d_brain|dp_supply|d_chassis|diag_circuit)([1-5])$",
-        RegexOptions.Compiled);
+    private const string NumberedUnitPattern =
+        "^(c_unit|l_unit|ca_unit|discharge_unit|dmotive_sys|d_sensor|manip_arm|d_brain|dp_supply|d_chassis|diag_circuit)([1-5])$";
 
-    private static readonly Regex NamedGrade = new("^(elec|lth|fiberp)_([a-z]+)$", RegexOptions.Compiled);
+    private const string NamedGradePattern = "^(elec|lth|fiberp)_([a-z]+)$";
 
-    private static readonly IReadOnlyDictionary<string, int> NamedGrades = new Dictionary<string, int>
+    private static IReadOnlyDictionary<string, int> NamedGrades => new Dictionary<string, int>
     {
         ["ruined"] = 1,
         ["flawed"] = 2,
@@ -29,7 +28,7 @@ public static class CircuitComponentGrades
     };
 
     // Gems, metals, refined ores and fusion materials, by the tier of the recipes that use them.
-    private static readonly IReadOnlyDictionary<string, int> FixedGrades = new Dictionary<string, int>
+    private static IReadOnlyDictionary<string, int> FixedGrades => new Dictionary<string, int>
     {
         ["jade"] = 1, ["agate"] = 2, ["citrine"] = 3, ["ruby"] = 4, ["emerald"] = 5, ["diamond"] = 5,
         ["aluminum"] = 1, ["steel"] = 2, ["obsidian"] = 3, ["crystal"] = 4,
@@ -51,11 +50,11 @@ public static class CircuitComponentGrades
         if (FixedGrades.TryGetValue(resref, out var fixedGrade))
             return fixedGrade;
 
-        var named = NamedGrade.Match(resref);
+        var named = Regex.Match(resref, NamedGradePattern, RegexOptions.Compiled);
         if (named.Success && NamedGrades.TryGetValue(named.Groups[2].Value, out var namedGrade))
             return namedGrade;
 
-        var numbered = NumberedUnit.Match(resref);
+        var numbered = Regex.Match(resref, NumberedUnitPattern, RegexOptions.Compiled);
         if (numbered.Success)
             return int.Parse(numbered.Groups[2].Value);
 

@@ -191,7 +191,8 @@ public sealed class SwlorAreaViewportMaterialProvider :
         var maskName = MaterialResolver.GetTexture(material, 7);
         var paletteName = MaterialResolver.GetTexture(material, 10);
         // The shared cloak material samples one atlas tile selected by the composed cloak bitmap.
-        var mask = string.Equals(materialName, CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase)
+        var isCloak = string.Equals(materialName, CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase);
+        var mask = isCloak
             ? LoadCloakTile(material, textureName)
             : LoadSurface(maskName);
         var palette = LoadSurface(paletteName);
@@ -237,7 +238,11 @@ public sealed class SwlorAreaViewportMaterialProvider :
             alpha?.Pixels,
             alphaSource?.UsesRedChannel == true,
             alphaSource?.Cutoff ?? 0f,
-            layers);
+            layers)
+        {
+            // fs_cloaktint keeps custom cloak colors from taking their swatch's reflection.
+            CustomColorsUseLayerCoverage = isCloak,
+        };
     }
 
     private (IReadOnlyDictionary<string, int>? Overrides, IReadOnlyDictionary<string, int>? CreatureOverrides)

@@ -27,6 +27,69 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await VerifyArrival(ctx, feat, true);
         }
 
+        [EngineTest("Both Shadow Step ranks stun the target when the caster moves right after landing", Category = "ShadowStep", TimeoutSeconds = 60f)]
+        public static async Task StunsTargetWhenCasterMovesRightAfterLanding(EngineTestContext ctx)
+        {
+            foreach (var feat in new[] { FeatType.ShadowStep1, FeatType.ShadowStep2 })
+                await VerifyStunSurvivesMoveOrder(ctx, feat);
+        }
+
+        private static async Task VerifyStunSurvivesMoveOrder(EngineTestContext ctx, FeatType feat)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var caster = arena.Spawn(ActorResref, 6f, 90f);
+            var target = arena.Spawn(ActorResref, 9f, 270f);
+            ctx.MakeHostile(target);
+            foreach (var creature in new[] { caster, target })
+            {
+                SetAILevel(creature, AILevel.High);
+                ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(TemporaryHP), creature, 3600f);
+            }
+
+            await ctx.WaitFrameAsync();
+            var ability = new ShadowStepAbilityDefinition().BuildAbilities()[feat];
+            var landingPoint = BehindPosition(target, GetFacing(target));
+            var moveDestination = GetLocation(caster);
+
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                ClearAllActions(true);
+                Ability.BeginAbilityImpact(caster, ability);
+                try
+                {
+                    ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(target));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+            });
+
+            // Check every frame so the move order lands in the first frame after the jump,
+            // the way a player's click right after the cast does.
+            var landingDeadline = DateTime.UtcNow.AddSeconds(5);
+            while (System.Numerics.Vector3.Distance(GetPosition(caster), landingPoint) >= 0.5f)
+            {
+                if (DateTime.UtcNow >= landingDeadline)
+                    ctx.Fail($"{feat} never landed behind the target: {Describe(caster, target)}");
+                await ctx.WaitFrameAsync();
+            }
+
+            var stunnedOnLanding = StatusEffect.HasStatusEffect<StunnedStatusEffect>(target);
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                ClearAllActions();
+                ActionMoveToLocation(moveDestination, true);
+            });
+            ctx.Log($"{feat}: stunned in the landing frame = {stunnedOnLanding}");
+
+            await ctx.DelaySecondsAsync(1.5f);
+            ctx.Assert(System.Numerics.Vector3.Distance(GetPosition(caster), landingPoint) > 1f,
+                $"The move order after {feat} must carry the caster away from the landing point");
+            ctx.Assert(StatusEffect.HasStatusEffect<StunnedStatusEffect>(target),
+                $"{feat}'s arrival stun must land even though the caster moved right after landing: {Describe(caster, target)}");
+        }
+
         private static async Task VerifyArrival(EngineTestContext ctx, FeatType feat, bool attacking)
         {
             var arena = await QuietArena.CreateAsync(ctx);

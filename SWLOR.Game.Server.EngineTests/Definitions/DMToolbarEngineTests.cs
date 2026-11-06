@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -285,6 +286,75 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.Assert(unreachable.Count == 0, $"every area has somewhere to land (not: {string.Join(", ", unreachable)})");
+        }
+
+        [EngineTest("DM area jump lands in a room cleared down to its closed door", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task DMAreaJumpLandsInAClearedRoom(EngineTestContext ctx)
+        {
+            var office = OBJECT_INVALID;
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                if (GetResRef(area) == "vrotrhighoffice")
+                    office = area;
+            }
+
+            ctx.Assert(GetIsObjectValid(office), "the Senator's Office exists");
+
+            // A DM redecorating the room deletes its furniture, which leaves the closed door as its first object.
+            var furniture = new List<(string Resref, string Tag, Location Location)>();
+            for (var placeable = GetFirstObjectInArea(office, ObjectType.Placeable);
+                 GetIsObjectValid(placeable);
+                 placeable = GetNextObjectInArea(office, ObjectType.Placeable))
+            {
+                furniture.Add((GetResRef(placeable), GetTag(placeable), GetLocation(placeable)));
+                DestroyObject(placeable);
+            }
+
+            await ctx.WaitFrameAsync();
+            await ctx.WaitFrameAsync();
+
+            try
+            {
+                var first = GetFirstObjectInArea(office, ObjectType.Door | ObjectType.Placeable | ObjectType.Creature);
+                ctx.AssertEqual(ObjectType.Door, GetObjectType(first), "the door is the room's first object");
+
+                using (var dm = await PlayerAbilityFixture.CreateAsync(ctx))
+                {
+                    var door = GetLocation(first);
+                    ctx.Assert(!DMPresence.CanLandAt(dm.Creature, door), "the engine refuses the closed door's own spot");
+
+                    // Aiming at the first object, as area jumps used to, leaves the DM where they were.
+                    var start = GetPosition(dm.Creature);
+                    await InContext(ctx, dm.Creature, () => JumpToLocation(door));
+                    await WaitFrames(ctx, 10);
+                    ctx.AssertEqual(ctx.Arena, GetArea(dm.Creature), "a jump aimed at the closed door stays in the arena");
+                    ctx.AssertEqual(start, GetPosition(dm.Creature), "a jump aimed at the closed door does not move the DM");
+
+                    // A headless player has no area until a client would finish loading, so check where it was sent.
+                    await InContext(ctx, dm.Creature, () => DMPresence.JumpToArea(dm.Creature, office, "test office"));
+                    await WaitFrames(ctx, 10);
+                    ctx.Assert(GetArea(dm.Creature) != ctx.Arena, "an area jump leaves the arena");
+                    var landing = GetPosition(dm.Creature);
+                    var center = new System.Numerics.Vector2(20f, 20f);
+                    ctx.Assert(System.Numerics.Vector2.Distance(new System.Numerics.Vector2(landing.X, landing.Y), center) < 2f,
+                        $"an area jump lands at the room's center (landed at {landing})");
+                }
+            }
+            finally
+            {
+                foreach (var (resref, tag, location) in furniture)
+                {
+                    CreateObject(ObjectType.Placeable, resref, location, false, tag);
+                }
+            }
+        }
+
+        private static async Task WaitFrames(EngineTestContext ctx, int frames)
+        {
+            for (var frame = 0; frame < frames; frame++)
+            {
+                await ctx.WaitFrameAsync();
+            }
         }
 
         [EngineTest("DM chooser searches, jumps to, summons and destroys objects", Category = "DMToolbar", TimeoutSeconds = 90f)]

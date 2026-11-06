@@ -36,19 +36,26 @@ public class CraftServiceTests
     private ScriptedProxy _itemScript = null!;
     private ScriptedProxy _propertyScript = null!;
     private CraftService _service = null!;
+    private FacadeContainer _facades = null!;
 
     [OneTimeSetUp]
     public void LoadTheSkills()
     {
+        // The resistance encoding is reached through the Resistance facade, which needs a container.
+        _facades = new FacadeContainer();
         using var engine = new PlayerEngine();
         using var events = EventsPluginRuntime.Override(new FakeEventsPlugin());
         Skill.CacheData();
         Skill.CacheXPChartData();
     }
 
+    [OneTimeTearDown]
+    public void DisposeTheFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _scopes.Add(_facades.Install());
         _engine = new PlayerEngine();
         _events = new FakeEventsPlugin();
         _itemProperties = new FakeItemPropertyPlugin();

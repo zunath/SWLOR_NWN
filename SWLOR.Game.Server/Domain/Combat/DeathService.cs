@@ -348,8 +348,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual IDisposable BeginRespawnAttribution() => CombatRecorder.BeginRespawnAttribution();
 
-        protected virtual void RestoreGhostAfterRevive(uint creature) =>
-            Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(creature);
+        protected virtual void RestoreGhostAfterRevive(uint creature) => Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(creature);
 
         protected virtual void ReapplyAuraEffectsForCreature(uint creature) => Ability.ReapplyAuraEffectsForCreature(creature);
 

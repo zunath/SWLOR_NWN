@@ -868,6 +868,20 @@ namespace SWLOR.Game.Server.Service
                 target);
         }
 
+        /// <summary>
+        /// Runs the normal proximity-aggro path for every enemy within aggro range of a creature
+        /// that just became visible. Their aggro auras only check on entry, so enemies the creature
+        /// reached while hidden would otherwise ignore it until it left the aura and came back.
+        /// </summary>
+        public static void AcquireAggroFromNearbyEnemies(uint target)
+        {
+            foreach (var enemy in ObjectSnapshot.InShape(Shape.Sphere, AggroRadius, GetLocation(target), false, ObjectType.Creature))
+            {
+                if (!GetIsPC(enemy) && IsAIEnabled(enemy))
+                    TryAcquireAggro(enemy, target);
+            }
+        }
+
         private static bool TryAcquireAggro(uint self, uint target)
         {
             if (self == target ||

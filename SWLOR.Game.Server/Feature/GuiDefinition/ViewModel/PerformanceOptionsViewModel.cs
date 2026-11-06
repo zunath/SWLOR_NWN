@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 options.Add(new GuiComboEntry("No Cantina songs collected", 0));
 
             var current = PerformanceSongs.ChooseSong(playerId, preference.SongTrackId);
-            SongEnabled = _songs.Length > 0;
+            SongEnabled = PerformanceSongs.CanChooseSong(_songs.Length);
             SongOptions = options;
             SongIndex = Math.Max(0, Array.FindIndex(_songs, song => song.TrackId == current));
         }

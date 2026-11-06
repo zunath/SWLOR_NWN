@@ -244,6 +244,18 @@ namespace SWLOR.Game.Server.Feature
             return true;
         }
 
+        /// <summary>
+        /// Interrupts a cast or channel because an interrupting attack hit its creature, and shows nearby players it worked.
+        /// </summary>
+        public static bool InterruptAbilityActivationFromHit(uint target)
+        {
+            if (!InterruptAbilityActivation(target))
+                return false;
+
+            Messaging.FloatTextNearbyToPlayers(target, ColorToken.Combat("Interrupted!"));
+            return true;
+        }
+
         private static void ClearAbilityActivationIdleSnapshots(uint activator)
         {
             Combat.ClearAbilityActivationIdleBonuses(activator);

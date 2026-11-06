@@ -89,14 +89,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 content.AddRow(row =>
                 {
                     AddPairCaption(row, "SECOND SET");
-                    AddPairCaption(row, "SONG");
+                    AddPairCaption(row, "CANTINA SONG");
                 });
                 content.AddRow(row =>
                 {
                     AddPick(row, model => model.SecondSetOptions, model => model.SecondSetIndex,
                         model => model.SecondSetEnabled, "A second set needs the Virtuoso perk.").SetWidth(PairWidth);
                     AddPick(row, model => model.SongOptions, model => model.SongIndex,
-                        model => model.SongEnabled, "Collect a Cantina song to choose one.").SetWidth(PairWidth);
+                        model => model.SongEnabled, "Collect another Cantina song to choose one. Other music cannot be performed.").SetWidth(PairWidth);
                 });
 
                 AddSharedSections(content);

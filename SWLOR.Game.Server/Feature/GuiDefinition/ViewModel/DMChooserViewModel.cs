@@ -429,10 +429,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (result == null)
                 return;
 
-            var location = result.Category == DMObjectCategory.Areas
-                ? DMObjectSearch.GetAreaJumpLocation(result.Object)
-                : GetLocation(result.Object);
-            DMPresence.JumpTo(Player, location, $"{result.Category} '{result.Name}' ({result.Resref}, tag '{result.Tag}')");
+            var destination = $"{result.Category} '{result.Name}' ({result.Resref}, tag '{result.Tag}')";
+            if (result.Category == DMObjectCategory.Areas)
+                DMPresence.JumpToArea(Player, result.Object, destination);
+            else
+                DMPresence.JumpTo(Player, GetLocation(result.Object), destination);
         };
 
         public Action OnClickBringHere() => () =>

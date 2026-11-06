@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         PerformanceSession = 101,
         PerformanceOptions = 102,
         PerformanceWatching = 103,
+        PropertyAreaDescription = 104,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

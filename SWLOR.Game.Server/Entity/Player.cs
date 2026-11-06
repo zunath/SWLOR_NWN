@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.PazaakService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -216,6 +217,16 @@ namespace SWLOR.Game.Server.Entity
         public bool HasUndisguisedDescriptionSnapshot { get; set; }
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
+
+        /// <summary>
+        /// The character's saved Pazaak side deck. Empty until the player saves one, in which case the default deck is used.
+        /// </summary>
+        public List<PazaakCardType> PazaakSideDeck { get; set; } = new();
+
+        /// <summary>
+        /// Pazaak side cards collected from card items, by number of copies. Free default deck copies are not counted here.
+        /// </summary>
+        public Dictionary<PazaakCardType, int> PazaakCardCollection { get; set; } = new();
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

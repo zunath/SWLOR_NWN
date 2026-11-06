@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Line = 92,
         Prospecting = 93,
         Search = 94,
+        Pazaak = 95,
 
         PerformanceFootwork = 100,
         PerformanceSession = 101,

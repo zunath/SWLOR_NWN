@@ -20,7 +20,8 @@ public class EshanGorakVeshTests
     {
         using var creature = ReadJson("Module", "utc", "esh_gorakvesh.utc.json");
         var tables = new EshanLootTableDefinition().BuildLootTables()
-            .Concat(new MusicLootTableDefinition().BuildLootTables()).ToDictionary(pair => pair.Key, pair => pair.Value);
+            .Concat(new MusicLootTableDefinition().BuildLootTables())
+            .Concat(new PazaakLootTableDefinition().BuildLootTables()).ToDictionary(pair => pair.Key, pair => pair.Value);
         var rolls = creature.RootElement.GetProperty("VarTable").GetProperty("value")
             .EnumerateArray()
             .Where(variable => variable.GetProperty("Name").GetProperty("value").GetString()!

@@ -69,11 +69,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.KitchenSeasonedPalate, 1)
 
                 .AddPerkLevel()
-                .Description("While Seasoned Palate is on, every push is also 25% less random, after Control narrows it. Everything Seasoned Palate I does still applies.")
+                .Description("While Seasoned Palate is on, every push is also 15% less random, after Control narrows it. Everything Seasoned Palate I does still applies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 30)
                 .IncreasesStat(StatType.KitchenSeasonedPalate, 1)
-                .IncreasesStat(StatType.KitchenSeasonedPalateSpreadPercent, 25);
+                .IncreasesStat(StatType.KitchenSeasonedPalateSpreadPercent, 15);
         }
 
         private void SlowCooking()
@@ -112,17 +112,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_Alchemist")
 
                 .AddPerkLevel()
-                .Description("Adds the Reduce action to the Kitchen. It takes a turn and 12 CP, and pulls the flavor 20% of the way toward the target's center on every flavor.")
+                .Description("Adds the Reduce action to the Kitchen. It takes a turn and 12 CP, and pulls the flavor 15% of the way toward the target's center on every flavor.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 25)
-                .IncreasesStat(StatType.KitchenReducePercent, 20)
+                .IncreasesStat(StatType.KitchenReducePercent, 15)
 
                 .AddPerkLevel()
-                .Description("Reduce pulls the flavor 35% of the way toward the target's center and costs 9 CP.")
+                .Description("Reduce pulls the flavor 20% of the way toward the target's center and costs 11 CP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 40)
-                .IncreasesStat(StatType.KitchenReducePercent, 35)
-                .IncreasesStat(StatType.KitchenReduceCpReduction, 3);
+                .IncreasesStat(StatType.KitchenReducePercent, 20)
+                .IncreasesStat(StatType.KitchenReduceCpReduction, 1);
         }
 
         private void AromaticKitchen()
@@ -145,10 +145,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_steady_hand")
 
                 .AddPerkLevel()
-                .Description("In the Kitchen, Stir costs 4 less CP (8 instead of 12) and, at Medium heat, also gives half of a Simmer's Doneness.")
+                .Description("In the Kitchen, Stir costs 2 less CP (10 instead of 12) and, at Medium heat, also gives half of a Simmer's Doneness.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 45)
-                .IncreasesStat(StatType.KitchenStirCpReduction, 4)
+                .IncreasesStat(StatType.KitchenStirCpReduction, 2)
                 .IncreasesStat(StatType.KitchenStirDonenessPercent, 50);
         }
 

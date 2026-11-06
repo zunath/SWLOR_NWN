@@ -58,6 +58,15 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
             new CraftStylePair(KitchenBuild.SlowCookingLineSeasoned.AsStyle(), KitchenBuild.FlashCookingLineSeasoned.AsStyle())
         };
 
+        /// <summary>Seasoned Palate is a switch the cook sets per dish, so a full Chef must stay within the gear ladder with it off and on.</summary>
+        public virtual IReadOnlyList<CraftStyle> GearLadderPerkStyles => new[]
+        {
+            KitchenBuild.SlowCookingLine.AsStyle(),
+            KitchenBuild.FlashCookingLine.AsStyle(),
+            KitchenBuild.SlowCookingLineSeasoned.AsStyle(),
+            KitchenBuild.FlashCookingLineSeasoned.AsStyle()
+        };
+
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var detail = request.Recipe.Detail

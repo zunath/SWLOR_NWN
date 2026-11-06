@@ -33,7 +33,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25));
             KitchenBuild.FlashCookingLine.StatsAt(50).Should().Be(new KitchenPerkStats(
                 PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateSpreadPercent: 0, HighDriftReductionPercent: 15,
-                ReducePercent: 35, ReduceCpReduction: 3, PeakAromaChancePoints: 10, StirCpReduction: 4,
+                ReducePercent: 20, ReduceCpReduction: 1, PeakAromaChancePoints: 10, StirCpReduction: 2,
                 StirDonenessPercent: 50, SignatureDish: true));
         }
 
@@ -47,7 +47,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             off.SeasonedPalateOn.Should().BeFalse();
             off.SeasonedPalateSpreadPercent.Should().Be(0);
             on.SeasonedPalateOn.Should().BeTrue();
-            on.SeasonedPalateSpreadPercent.Should().Be(25);
+            on.SeasonedPalateSpreadPercent.Should().Be(15);
             KitchenBuild.SlowCookingLineSeasoned.StatsAt(14).SeasonedPalateOn.Should().BeFalse("it opens at Agriculture 15");
         }
 
@@ -68,9 +68,9 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             var reduce = KitchenBuild.Alone(PerkType.KitchenReduce);
 
-            reduce.StatsAt(39).ReducePercent.Should().Be(20);
-            reduce.StatsAt(40).ReducePercent.Should().Be(35);
-            reduce.StatsAt(40).ReduceCpReduction.Should().Be(3);
+            reduce.StatsAt(39).ReducePercent.Should().Be(15);
+            reduce.StatsAt(40).ReducePercent.Should().Be(20);
+            reduce.StatsAt(40).ReduceCpReduction.Should().Be(1);
         }
 
         [Test]

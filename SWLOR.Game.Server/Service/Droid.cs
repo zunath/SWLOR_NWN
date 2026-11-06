@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnPlayerExit()
         {
             var player = GetExitingObject();
-            DespawnDroid(player);
+            DespawnDroid(player, applyRecastDelay: !ServerRestart.IsRestarting);
         }
 
         private static string CanGiveItemToDroid(uint item)
@@ -920,7 +920,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalObject(droid, DroidControlItemVariable);
         }
 
-        private static void DespawnDroid(uint player)
+        private static void DespawnDroid(uint player, bool applyRecastDelay = true)
         {
             var droid = GetDroid(player);
             if (!GetIsObjectValid(droid))
@@ -941,7 +941,8 @@ namespace SWLOR.Game.Server.Service
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
+            if (applyRecastDelay)
+                Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 

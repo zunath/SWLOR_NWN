@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -201,6 +202,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (Item.IsLegacyItem(item))
             {
                 FloatingTextStringOnCreature($"Legacy items cannot be sold on the market.", Player, false);
+                return;
+            }
+
+            if (SlicingSession.GetFailures(item) > 0)
+            {
+                FloatingTextStringOnCreature("A lockbox with a failed slicing attempt cannot be sold on the market.", Player, false);
                 return;
             }
 

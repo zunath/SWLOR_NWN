@@ -64,6 +64,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Open Storage")
                             .SetHeight(35f);
                     });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .BindOnClicked(model => model.OnOpenAreaDescription())
+                            .BindIsEnabled(model => model.IsAreaDescriptionEnabled)
+                            .SetText("Area Description")
+                            .SetHeight(35f);
+                    });
                 })
 
                 .AddColumn(col =>

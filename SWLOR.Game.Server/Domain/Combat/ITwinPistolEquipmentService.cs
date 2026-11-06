@@ -9,6 +9,21 @@ public interface ITwinPistolEquipmentService
 {
     bool IsChanging(uint creature);
 
+    /// <summary>True while the creature's equipment is being revalidated; revalidation does not nest.</summary>
+    bool IsRevalidating(uint creature);
+
+    /// <summary>Marks the creature as being revalidated; false when it already is.</summary>
+    bool TryBeginRevalidation(uint creature);
+
+    void EndRevalidation(uint creature);
+
+    /// <summary>The item that could not be returned to storage, and the slot it still occupies.</summary>
+    bool TryGetFailedReturn(uint creature, out uint item, out InventorySlot slot);
+
+    void SetFailedReturn(uint creature, uint item, InventorySlot slot);
+
+    void ClearFailedReturn(uint creature);
+
     bool IsPairItem(uint item);
 
     bool IsPairItem(BaseItem type, bool marked);

@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         private const string BaseItems2DA = "baseitems";
         private const string ItemClassColumn = "ItemClass";
         private const string SwordItemClassPrefix = "WSw";
-        private static readonly HashSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
+        private static readonly FrozenSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterEquipmentAnimationRestoration()
@@ -143,7 +144,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         // Precompute all sword-family (WSw*) base items once to avoid runtime 2da scans.
-        private static HashSet<BaseItem> BuildSwordFamilyBaseItems()
+        private static FrozenSet<BaseItem> BuildSwordFamilyBaseItems()
         {
             var set = new HashSet<BaseItem>();
             var rowCount = Get2DARowCount(BaseItems2DA);
@@ -157,7 +158,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            return set;
+            return set.ToFrozenSet();
         }
     }
 }

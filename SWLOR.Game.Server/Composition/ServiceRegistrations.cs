@@ -123,6 +123,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
             services.AddSingleton<IPerformanceVenueService, PerformanceVenueService>();
             services.AddSingleton<IPerformanceWindowsService, PerformanceWindowsService>();
+            services.AddSingleton<IPerformanceSongService, PerformanceSongService>();
+            services.AddSingleton<IPerformanceSnapshotService, PerformanceSnapshotService>();
+            services.AddSingleton<IPerformanceInspiredService, PerformanceInspiredService>();
+            services.AddSingleton<IPerformanceRiderService, PerformanceRiderService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI

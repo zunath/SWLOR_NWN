@@ -1,4 +1,3 @@
-using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
@@ -28,15 +27,6 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 PerformanceSetType.SilverTongue => PerkType.SilverTongue,
                 _ => PerkType.PlayInstrument
             };
-        }
-
-        /// <summary>The Performance skill rank that unlocks a perk's first level, or 0 when it has no rank requirement.</summary>
-        public static int GetRequiredRank(PerkType perk)
-        {
-            if (!Perk.TryGetPerkDetails(perk, out var detail) || !detail.PerkLevels.TryGetValue(1, out var level))
-                return 0;
-
-            return level.Requirements.OfType<PerkRequirementSkill>().Select(requirement => requirement.RequiredRank).FirstOrDefault();
         }
     }
 }

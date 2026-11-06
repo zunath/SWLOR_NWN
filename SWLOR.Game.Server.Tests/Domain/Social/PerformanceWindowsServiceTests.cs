@@ -45,7 +45,7 @@ public class PerformanceWindowsServiceTests
         _music.On("GetTrackName", arguments => $"Track {(int)arguments[0]!}");
         var venue = ScriptedProxy.Create<IPerformanceVenueService>(out _venue);
         _venue.On("GetRating", _ => 2);
-        _windows = new TestWindows(venue, music);
+        _windows = new TestWindows(venue, music, new PerformanceSongService(music), new PerformanceSnapshotService());
         _windows.ReserveGuiIds();
     }
 
@@ -372,8 +372,12 @@ public class PerformanceWindowsServiceTests
 
     private sealed class TestWindows : PerformanceWindowsService
     {
-        public TestWindows(IPerformanceVenueService venue, IMusicService music)
-            : base(venue, music)
+        public TestWindows(
+            IPerformanceVenueService venue,
+            IMusicService music,
+            IPerformanceSongService songs,
+            IPerformanceSnapshotService snapshots)
+            : base(venue, music, songs, snapshots)
         {
         }
 

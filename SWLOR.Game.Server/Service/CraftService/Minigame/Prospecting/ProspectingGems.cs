@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 public static class ProspectingGems
 {
     /// <summary>The resrefs of the gem items harvesting tables hold, one for each tier.</summary>
-    public static readonly IReadOnlyList<string> Resrefs = new[] { "jade", "agate", "citrine", "ruby", "emerald" };
+    public static IReadOnlyList<string> Resrefs => new[] { "jade", "agate", "citrine", "ruby", "emerald" };
 
     public static bool IsGem(string resref) => Resrefs.Contains(resref);
 

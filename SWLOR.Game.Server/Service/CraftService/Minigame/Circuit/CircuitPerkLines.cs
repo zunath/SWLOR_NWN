@@ -11,13 +11,13 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 /// </summary>
 public static class CircuitPerkLines
 {
-    public static IReadOnlyList<PerkType> Overclocker { get; } = new[]
+    public static IReadOnlyList<PerkType> Overclocker => new[]
     {
         PerkType.ConductiveWiring, PerkType.CapacitorBank, PerkType.HeatSinks, PerkType.OverclockStyle,
         PerkType.CascadeDischarge, PerkType.OverdriveBoost, PerkType.ShockAbsorbers, PerkType.CircuitSurge
     };
 
-    public static IReadOnlyList<PerkType> Technician { get; } = new[]
+    public static IReadOnlyList<PerkType> Technician => new[]
     {
         PerkType.InsulatedTraces, PerkType.FineCalibration, PerkType.CircuitDiagnostics, PerkType.SafeModeStyle,
         PerkType.MicroTune, PerkType.SignalLock, PerkType.PrecisionPatch, PerkType.CircuitFailsafe

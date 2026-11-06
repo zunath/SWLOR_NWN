@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     /// </summary>
     public sealed class ReactionParameterProfile : RecipeParameterProfile<ReactionParameters>
     {
-        private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
+        private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
         {
             RecipeParameterDefinition.Enumeration<ReactionCyclePattern>("cyclePattern", "Reaction Cycle Pattern"),
             RecipeParameterDefinition.Integer("cycleLength", "Reaction Cycle Length", ReactionCycle.MinimumLength, ReactionCycle.MaximumLength, 1),
             RecipeParameterDefinition.Integer("peakIntensity", "Reaction Peak Intensity", 1, 5)
         };
 
-        private static readonly HashSet<RecipeType> ConcentratedVenoms = new()
+        private static HashSet<RecipeType> ConcentratedVenoms => new()
         {
             RecipeType.WhisperthornConcentrate,
             RecipeType.GlassfangConcentrate,
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
         };
 
         /// <summary>The highest recipe level of tiers 1 to 4: levels up to 9 are tier 1, up to 22 tier 2, up to 33 tier 3, up to 45 tier 4, and above that tier 5.</summary>
-        private static readonly int[] TierLevelLimits = { 9, 22, 33, 45 };
+        private static int[] TierLevelLimits => new int[] { 9, 22, 33, 45 };
 
         /// <summary>Difficulty is 10 per point of Peak intensity, plus 3 for each Peak turn beyond the first, plus 1 for each turn the cycle is shorter than 8.</summary>
         private const double IntensityDifficulty = 10;

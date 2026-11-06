@@ -13,7 +13,8 @@ public static class FabricatorActionText
     public const string BreaksPiece = "Breaks the piece.";
 
     // The meters an outcome lists, in this order.
-    private static readonly string[] ListedMeters =
+    private static string[] ListedMeters =>
+    new string[]
     {
         FabricatorEngine.FrameProgressId, FabricatorEngine.ShellProgressId, FabricatorEngine.FittingsProgressId,
         FabricatorEngine.FrameQualityId, FabricatorEngine.ShellQualityId, FabricatorEngine.FittingsQualityId,

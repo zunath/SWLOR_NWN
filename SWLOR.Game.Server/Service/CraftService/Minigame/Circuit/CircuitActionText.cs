@@ -14,7 +14,8 @@ public static class CircuitActionText
     public const string NoRisk = "No overload risk.";
 
     // The meters an outcome lists, in this order.
-    private static readonly string[] ListedMeters =
+    private static string[] ListedMeters =>
+    new string[]
     {
         MinigameMeterIds.Progress, MinigameMeterIds.Quality, CircuitEngine.LoadId, MinigameMeterIds.Integrity, MinigameMeterIds.Cp
     };

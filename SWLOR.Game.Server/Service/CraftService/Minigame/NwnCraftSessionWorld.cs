@@ -20,9 +20,10 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <summary>The game-engine side of a craft session. The rules it carries out are in <see cref="CraftSessionLifecycle"/>.</summary>
 public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 {
-    public static readonly NwnCraftSessionWorld Instance = new();
+    /// <summary>The one world of the process. <see cref="Craft"/> owns it, because it keeps the properties of the item being crafted.</summary>
+    public static NwnCraftSessionWorld Instance => Craft.SessionWorld;
 
-    private static readonly BlueprintBonuses BlueprintBonusPicker = new();
+    private readonly BlueprintBonuses BlueprintBonusPicker = new();
 
     /// <summary>
     /// The properties a finished item will carry, settled in memory while the craft applies its enhancements and blueprint bonuses and

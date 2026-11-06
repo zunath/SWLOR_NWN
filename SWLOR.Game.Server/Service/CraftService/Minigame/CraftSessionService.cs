@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public static class CraftSessionService
 {
-    private static readonly CraftSessionLifecycle Lifecycle =
+    private static CraftSessionLifecycle Lifecycle =>
         new(NwnCraftSessionWorld.Instance, ServiceMinigameRandom.Instance);
 
     /// <summary>Commits the materials for a craft. Anything still saved from an earlier craft is settled as a failure first.</summary>

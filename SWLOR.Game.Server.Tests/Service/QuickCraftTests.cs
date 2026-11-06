@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -148,7 +149,7 @@ public class QuickCraftTests
             {
                 if (rank >= QuickCraftRules.GetRequiredRank(recipe))
                 {
-                    Craft.GetBaseRecipeXP(recipe, rank).Should().Be(0, $"level {level}, limit {limit}, rank {rank}");
+                    CraftServices.Create().GetBaseRecipeXP(recipe, rank).Should().Be(0, $"level {level}, limit {limit}, rank {rank}");
                 }
             }
         }

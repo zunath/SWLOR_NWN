@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 /// </summary>
 public sealed class LineEngine : MinigameEngineBase<LineState>
 {
-    private static readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
+    private readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
     {
         new MinigameActionInfo(
             LineActionIds.SetHook,

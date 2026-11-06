@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 /// </summary>
 public readonly record struct FlavorVector(int Savory, int Sweet, int Spice)
 {
-    public static readonly FlavorVector Zero = new(0, 0, 0);
+    public static FlavorVector Zero => new(0, 0, 0);
 
     public bool IsZero => Savory == 0 && Sweet == 0 && Spice == 0;
 

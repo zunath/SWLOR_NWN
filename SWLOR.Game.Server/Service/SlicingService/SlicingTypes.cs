@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
         }
     }
 
-    public sealed class SlicingRewardEntry
+    public sealed record SlicingRewardEntry
     {
         public string Resref { get; init; }
         public string Name { get; init; }

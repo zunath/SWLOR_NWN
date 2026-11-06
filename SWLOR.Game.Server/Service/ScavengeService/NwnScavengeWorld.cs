@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -13,7 +14,15 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     /// <summary>The game-engine side of a visit to a scavenge site. The rules it carries out are in <see cref="ScavengeLifecycle"/>.</summary>
     public sealed class NwnScavengeWorld : IScavengeWorld
     {
-        public static readonly NwnScavengeWorld Instance = new();
+        /// <summary>The one world of the process. <see cref="Scavenge"/> owns it.</summary>
+        public static NwnScavengeWorld Instance => Scavenge.World;
+
+        private readonly IDBService _db;
+
+        public NwnScavengeWorld(IDBService db)
+        {
+            _db = db;
+        }
 
         /// <summary>
         /// The scavenger a site's inventory is being opened for, set until they open it. Opening it says nothing for them, and nobody else
@@ -64,14 +73,14 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         public void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
                 return;
 
             dbPlayer.PendingScavengeFinds = finds
                 .GroupBy(find => find.Resref)
                 .ToDictionary(group => group.Key, group => group.Sum(find => find.Quantity));
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -99,7 +108,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// </remarks>
         public void ReturnPendingFinds(uint player, bool atLogin = false)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
                 return;
 
@@ -124,7 +133,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             else if (returned > 0)
             {
                 dbPlayer.PendingScavengeReturnSequence = 0;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
 
             var wanted = ScavengeReturn.Merge(dbPlayer.PendingScavengeFinds, dbPlayer.ScavengeFindsAwaitingRoom);
@@ -144,7 +153,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
                 dbPlayer.PendingScavengeFinds = split.Delivered.ToDictionary(find => find.Key, find => find.Value);
                 dbPlayer.PendingScavengeReturnSequence = sequence;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 ExportSingleCharacter(player);
                 SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
             }
@@ -153,11 +162,11 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             SendMessageToPC(player, ReturnMessage(split, names));
         }
 
-        private static void ClearDeliveredFinds(Player dbPlayer)
+        private void ClearDeliveredFinds(Player dbPlayer)
         {
             dbPlayer.PendingScavengeFinds = new Dictionary<string, int>();
             dbPlayer.PendingScavengeReturnSequence = 0;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

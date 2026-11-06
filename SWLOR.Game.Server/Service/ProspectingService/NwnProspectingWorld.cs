@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.ItemDefinition;
@@ -20,7 +21,15 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <summary>The game-engine side of a Prospecting session. The rules it carries out are in <see cref="ProspectingLifecycle"/>.</summary>
     public sealed class NwnProspectingWorld : IProspectingWorld
     {
-        public static readonly NwnProspectingWorld Instance = new();
+        /// <summary>The one world of the process. <see cref="Prospecting"/> owns it.</summary>
+        public static NwnProspectingWorld Instance => Prospecting.World;
+
+        private readonly IDBService _db;
+
+        public NwnProspectingWorld(IDBService db)
+        {
+            _db = db;
+        }
 
         /// <summary>The local variable a node keeps its content in between sessions.</summary>
         public const string NodeVariable = "PROSPECTING_NODE";
@@ -89,7 +98,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             for (var gem = 0; gem < delivery.Gems && gems.Count > 0; gem++)
                 units.Add(Pick(gems).Resref);
 
-            var dbPlayer = Journaled(player) ? DB.Get<Player>(GetObjectUUID(player)) : null;
+            var dbPlayer = Journaled(player) ? _db.Get<Player>(GetObjectUUID(player)) : null;
             if (dbPlayer == null)
                 return new HarvestPayout(delivery, units, 0, xp);
 
@@ -103,7 +112,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 dbPlayer.PendingCraftXp[SkillType.Gathering] = dbPlayer.PendingCraftXp.GetValueOrDefault(SkillType.Gathering) + xp;
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             return new HarvestPayout(delivery, units, sequence, xp);
         }
 
@@ -114,7 +123,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             // A unit with no room waits on the player record (HarvestAwaitingRoom), never on the ground, so a stop cannot lose it. It
             // leaves the journal in the same save, since no file holds it. A creature with no record (a DM) still gets it at its feet.
-            var dbPlayer = payout.Sequence > 0 ? DB.Get<Player>(GetObjectUUID(player)) : null;
+            var dbPlayer = payout.Sequence > 0 ? _db.Get<Player>(GetObjectUUID(player)) : null;
             var held = false;
             var dropped = false;
             foreach (var resref in payout.Units)
@@ -135,7 +144,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             }
 
             if (held)
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
             // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
             for (var roll = 0; roll < payout.Delivery.Rolls; roll++)
@@ -196,12 +205,12 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         }
 
         /// <summary>Gives the units waiting for room that fit now, in one save.</summary>
-        private static void DeliverAwaiting(uint player)
+        private void DeliverAwaiting(uint player)
         {
             if (!Journaled(player))
                 return;
 
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
                 return;
 
@@ -210,7 +219,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return;
 
             var placed = DeliverToRecord(player, dbPlayer, units);
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             if (placed > 0)
                 SendMessageToPC(player, HarvestCollectedMessage);
         }
@@ -232,7 +241,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// </summary>
         public void ReturnPendingHarvest(uint player)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
                 return;
 
@@ -243,7 +252,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return;
 
             var placed = DeliverToRecord(player, dbPlayer, returned.Concat(waiting).ToList());
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             if (returned.Count > 0)
                 SendMessageToPC(player, HarvestReturnedMessage);
@@ -261,7 +270,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return;
 
             // ReservePayout saved the XP as waiting; the award takes it off the record in the same save, so it is given once.
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             var waiting = dbPlayer?.PendingCraftXp?.GetValueOrDefault(SkillType.Gathering) ?? 0;
             if (waiting > 0)
                 NwnCraftSessionWorld.Instance.AwardPendingXp(player, dbPlayer, SkillType.Gathering, waiting);

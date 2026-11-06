@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SlicingService;
+using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -646,15 +647,15 @@ public class EspionageSystemTests
             .Where(file => !file.EndsWith("EspionagePerkDefinition.cs", StringComparison.Ordinal))
             .Where(file => !file.EndsWith("PerkType.cs", StringComparison.Ordinal))
             .Where(file => System.Text.RegularExpressions.Regex.IsMatch(File.ReadAllText(file),
-                @"Perk\.GetPerkLevel\([^,]+,\s*PerkType\.Slicing\)"))
+                @"\bGetPerkLevel\([^,]+,\s*PerkType\.Slicing\)"))
             .Select(file => Path.GetRelativePath(root, file))
             .ToArray();
 
         references.Should().Equal(Path.Combine(
             "SWLOR.Game.Server",
-            "Service",
-            "SlicingService",
-            "SlicingSession.cs"));
+            "Domain",
+            "Crafting",
+            "SlicingSessionService.cs"));
     }
 
     [Test]

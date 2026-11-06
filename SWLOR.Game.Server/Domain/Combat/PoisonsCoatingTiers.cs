@@ -1,11 +1,11 @@
-namespace SWLOR.Game.Server.Service.PoisonsService
+namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The venom a weapon coating deals by tier. Pure functions over constants with no engine, database or service
     /// call, so item and recipe definitions (which build before and outside the service container, in the module
-    /// editor tools and in offline tests) call them directly; <see cref="Poisons"/> forwards to them too.
+    /// editor tools and in offline tests) call them directly; <c>Poisons</c> forwards to them too.
     /// </summary>
-    public static class PoisonCoatingTiers
+    public static class PoisonsCoatingTiers
     {
         public const int LowestTier = 1;
         public const int HighestTier = 5;

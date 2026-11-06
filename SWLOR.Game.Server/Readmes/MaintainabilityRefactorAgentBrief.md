@@ -36,6 +36,7 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - Follow the coding standards (one type per file, namespace = folder, plain ASCII punctuation in text).
 - Do NOT edit `MaintainabilityRefactorStatus.md`; the coordinator keeps it current.
 - Stage explicit paths; keep the tree to your task's changes.
+- Do not add a new `Service.<Name>Service` namespace; put new types in `Domain.<Domain>` (see "No new support namespaces" in `DependencyInjection.md`).
 
 - **CD keys (owner, 2026-10-27):** the 8-character public CD key is public and safe to read and use (for example
   from a server log "Joined as Player" line, or `SWLOR_LIVE_PUBLIC_CDKEY` if set). The private key in `cdkey.ini` must

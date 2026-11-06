@@ -2,7 +2,6 @@ using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PoisonsService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
@@ -79,12 +78,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public int GetCoatingVenomDamagePerTick(int tier)
         {
-            return PoisonCoatingTiers.GetVenomDamagePerTick(tier);
+            return PoisonsCoatingTiers.GetVenomDamagePerTick(tier);
         }
 
         public float GetVenomDurationSeconds(int tier)
         {
-            return PoisonCoatingTiers.GetVenomDurationSeconds(tier);
+            return PoisonsCoatingTiers.GetVenomDurationSeconds(tier);
         }
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;

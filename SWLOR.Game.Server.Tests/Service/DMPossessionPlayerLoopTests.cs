@@ -49,13 +49,19 @@ public class DMPossessionPlayerLoopTests
             public static class CombatRecorder
             {
                 private static uint _area;
+                // The recorder instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
                 public static readonly List<uint> Registered = new();
                 private static int GetParticipantId(uint creature)
                 {
                     Registered.Add(creature);
                     return Registered.Count;
                 }
-                {{Method("Service/CombatRecorder.cs", "RegisterPlayersInArea")}}
+                {{InstanceMethod("Domain/Combat/CombatRecorderService.cs", "RegisterPlayersInArea")}}
             }
 
             public static class AI

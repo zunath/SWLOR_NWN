@@ -1,22 +1,23 @@
-using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>Weapon classes can require valid equipment without coupling shared attacks to their implementation.</summary>
+/// <summary>
+/// Weapon classes can require valid equipment without coupling shared attacks to their implementation. The logic lives
+/// in <see cref="IWeaponAttackEligibilityService"/>; every member forwards to the container's instance.
+/// </summary>
 public static class WeaponAttackEligibility
 {
-    private static readonly Dictionary<BaseItem, Func<uint, uint, WeaponAttackPhase, bool>> Rules = new();
+    private static IWeaponAttackEligibilityService Instance => FacadeAccessor.Resolve<IWeaponAttackEligibilityService>();
 
-    public static void RegisterRule(BaseItem type, Func<uint, uint, WeaponAttackPhase, bool> rule)
-    {
-        ArgumentNullException.ThrowIfNull(rule);
-        Rules[type] = rule;
-    }
+    public static void RegisterRule(BaseItem type, Func<uint, uint, WeaponAttackPhase, bool> rule) =>
+        Instance.RegisterRule(type, rule);
 
     public static bool IsAllowed(uint creature, uint weapon, WeaponAttackPhase phase) =>
-        !GetIsObjectValid(weapon) || IsAllowed(GetBaseItemType(weapon), creature, weapon, phase);
+        Instance.IsAllowed(creature, weapon, phase);
 
     public static bool IsAllowed(BaseItem type, uint creature, uint weapon, WeaponAttackPhase phase) =>
-        !Rules.TryGetValue(type, out var rule) || rule(creature, weapon, phase);
+        Instance.IsAllowed(type, creature, weapon, phase);
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -12,6 +13,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class BattleGridTests
 {
+    // The facade resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void SectionsMeetEdgeToEdgeAroundTheCenter()
     {

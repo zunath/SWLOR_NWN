@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -195,13 +196,13 @@ public class PowerGloveEquipmentTests
     [Test, NonParallelizable]
     public void DestroyedOwnerStateCannotSurviveIntoAReusedObjectId()
     {
-        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
-            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var changing = (HashSet<uint>)typeof(PowerGloveEquipment)
-            .GetField("Changing", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var refreshing = (HashSet<uint>)typeof(PowerGloveEquipment)
-            .GetField("RefreshingAppearance", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var remove = typeof(PowerGloveEquipment).GetMethod("RemoveOwnerState", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var service = (PowerGloveEquipmentService)_facades.Get<IPowerGloveEquipmentService>();
+        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipmentService)
+            .GetField("_pairs", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
+        var changing = (HashSet<uint>)typeof(PowerGloveEquipmentService)
+            .GetField("_changing", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
+        var refreshing = (HashSet<uint>)typeof(PowerGloveEquipmentService)
+            .GetField("_refreshingAppearance", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
         var originalPairs = pairs.ToArray();
         var originalChanging = changing.ToArray();
         var originalRefreshing = refreshing.ToArray();
@@ -219,15 +220,15 @@ public class PowerGloveEquipmentTests
                 refreshing.Add(actor);
             }
 
-            var removed = ((uint Main, uint Companion)?)remove.Invoke(null, new object[] { owner });
+            var removed = service.RemoveOwnerState(owner);
             removed.Should().Be((101u, 102u));
             pairs.Should().NotContainKey(owner);
             changing.Should().NotContain(owner);
             refreshing.Should().NotContain(owner);
-            remove.Invoke(null, new object[] { owner }).Should().BeNull();
+            service.RemoveOwnerState(owner).Should().BeNull();
 
             // An owner destroyed before a pair is cached must also release its reentrancy guards.
-            remove.Invoke(null, new object[] { uncachedOwner }).Should().BeNull();
+            service.RemoveOwnerState(uncachedOwner).Should().BeNull();
             changing.Should().NotContain(uncachedOwner);
             refreshing.Should().NotContain(uncachedOwner);
             pairs[other].Should().Be((201u, 202u));
@@ -235,7 +236,7 @@ public class PowerGloveEquipmentTests
             refreshing.Should().Contain(other);
 
             pairs[owner] = (301, 302);
-            ((ValueTuple<uint, uint>?)remove.Invoke(null, new object[] { owner })).Should().Be((301u, 302u));
+            service.RemoveOwnerState(owner).Should().Be((301u, 302u));
             pairs[other].Should().Be((201u, 202u));
         }
         finally

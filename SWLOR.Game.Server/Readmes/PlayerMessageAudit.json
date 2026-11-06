@@ -5677,22 +5677,22 @@
     "Call": "SendMessageToPC(attacker, $\"The venom coating on {GetName(weapon)} has worn off.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 178,
+    "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
+    "Line": 211,
     "Member": "EnsurePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"The Power Glove could not equip both hands. Free inventory or bag space and try again.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 212,
+    "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
+    "Line": 245,
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before removing the Power Glove.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 235,
+    "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
+    "Line": 268,
     "Member": "RestorePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
@@ -6216,15 +6216,15 @@
     "Call": "SendMessageToPC(player, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",
-    "Line": 111,
+    "File": "SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs",
+    "Line": 128,
     "Member": "EnsurePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(ex.Message))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",
-    "Line": 187,
+    "File": "SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs",
+    "Line": 204,
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"

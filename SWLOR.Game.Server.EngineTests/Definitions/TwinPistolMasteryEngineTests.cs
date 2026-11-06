@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
@@ -94,8 +95,7 @@ public static class TwinPistolMasteryEngineTests
             }
             catch (Exception exception)
             {
-                var attempts = (Dictionary<uint, TwinPistolTrialProgress>)typeof(TwinPistolMastery)
-                    .GetField("Attempts", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                var attempts = CombatHelperInternals.Field<ITwinPistolMasteryService, Dictionary<uint, TwinPistolTrialProgress>>("_attempts");
                 var counts = attempts.TryGetValue(actor, out var progress)
                     ? $"main={typeof(TwinPistolTrialProgress).GetField("_mainHits", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(progress)}, " +
                       $"companion={typeof(TwinPistolTrialProgress).GetField("_companionHits", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(progress)}"

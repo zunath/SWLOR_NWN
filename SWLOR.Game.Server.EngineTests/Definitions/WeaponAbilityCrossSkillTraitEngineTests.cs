@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -235,8 +236,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
     }
 
     private static PairedRangedTraitState State(uint actor) =>
-        ((Dictionary<uint, PairedRangedTraitState>)typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static)
-            .GetValue(null)).GetValueOrDefault(actor);
+        CombatHelperInternals.Field<IPairedRangedTraitsService, Dictionary<uint, PairedRangedTraitState>>("_states").GetValueOrDefault(actor);
 
     private static async Task InFrame(EngineTestContext ctx, uint actor, Action action)
     {

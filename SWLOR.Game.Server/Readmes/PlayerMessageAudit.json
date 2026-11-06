@@ -7669,53 +7669,60 @@
     "Line": 673,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"A cargo sale on this ship was interrupted. It cannot fly until its owner logs in.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
     "Line": 680,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 687,
+    "Member": "TakeShipControls",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 705,
+    "Line": 712,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 713,
+    "Line": 720,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 818,
+    "Line": 825,
     "Member": "CheckShipLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2365,
+    "Line": 2372,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2933,
+    "Line": 2940,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2939,
+    "Line": 2946,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -9283,42 +9290,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 228,
+    "Line": 238,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 261,
+    "Line": 271,
     "Member": "SaveTradeGold",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the trade did not go through.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 348,
+    "Line": 372,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 354,
+    "Line": 378,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 361,
+    "Line": 385,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 367,
+    "Line": 391,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"

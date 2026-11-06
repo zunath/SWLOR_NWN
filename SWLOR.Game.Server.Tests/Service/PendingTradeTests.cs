@@ -69,10 +69,33 @@ public class PendingTradeTests
         {
             var body = trade[trade.IndexOf(method, StringComparison.Ordinal)..];
             body.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal)
-                .Should().BeLessThan(body.IndexOf("DB.Set(ship);", StringComparison.Ordinal), method);
-            System.Text.RegularExpressions.Regex.IsMatch(body, @"if \(!SaveTradeGold\(player, trade,[\s\S]*?\)\)\)\n\s+return;\n\n\s+RecordTrade\(")
+                .Should().BeLessThan(body.IndexOf("RecordTrade(ship, player, trade);", StringComparison.Ordinal), method);
+            System.Text.RegularExpressions.Regex.IsMatch(body, @"if \(!SaveTradeGold\(player, trade,[\s\S]*?\)\)\)\n\s+(\{[\s\S]*?)?return;\n(\s+\}\n)?\n\s+RecordTrade\(")
                 .Should().BeTrue($"{method} stops before the cargo changes when the character could not be saved");
         }
+    }
+
+    [Test]
+    public void ASaleIsReservedOnTheShip_SoNoOtherPilotSpillsUnitsAlreadyPaidFor()
+    {
+        var trade = ReadServerSource("Service", "Trade.cs");
+        var sell = trade[trade.IndexOf("public static void Sell(", StringComparison.Ordinal)..];
+        var reserve = sell.IndexOf("ship.PendingSaleTradeId = trade.Id;\n            DB.Set(ship);", StringComparison.Ordinal);
+        var save = sell.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal);
+        var record = sell.IndexOf("RecordTrade(ship, player, trade);", StringComparison.Ordinal);
+        reserve.Should().BeInRange(0, save, "the reservation is saved before the proceeds");
+        sell[save..record].Should().Contain("ship.PendingSaleTradeId = string.Empty;", "a failed save gives the ship back");
+        var saved = sell[record..];
+        saved.IndexOf("ship.PendingSaleTradeId = string.Empty;", StringComparison.Ordinal)
+            .Should().BeInRange(0, saved.IndexOf("DB.Set(ship);", StringComparison.Ordinal), "the reservation goes with the bay change");
+
+        var login = trade[trade.IndexOf("public static void ApplyPendingTrade()", StringComparison.Ordinal)..];
+        login.IndexOf("ApplyTradeMark(player, playerId, trade);", StringComparison.Ordinal)
+            .Should().BeInRange(0, login.IndexOf("reserved.PendingSaleTradeId = string.Empty;", StringComparison.Ordinal),
+                "the owner's login applies the mark, then lifts the reservation, with or without a mark");
+
+        ReadServerSource("Service", "Space.cs").Should().Contain("if (!string.IsNullOrWhiteSpace(dbShip.PendingSaleTradeId))",
+            "no pilot launches a ship whose sale a restart interrupted");
     }
 
     private static string ReadServerSource(params string[] path)

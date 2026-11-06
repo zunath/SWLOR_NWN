@@ -667,6 +667,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A restart interrupted a sale from the cargo bay: the owner's login settles it before anyone flies these units.
+            if (!string.IsNullOrWhiteSpace(dbShip.PendingSaleTradeId))
+            {
+                SendMessageToPC(player, ColorToken.Red("A cargo sale on this ship was interrupted. It cannot fly until its owner logs in."));
+                return;
+            }
+
             if ((_shipClones.ContainsKey(dbShip.Id) && !GetIsObjectValid(_shipClones[dbShip.Id])) ||
                 _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id))
             {

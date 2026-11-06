@@ -212,12 +212,22 @@ namespace SWLOR.Game.Server.Service
             // from a copy of the lot, so the bay changes only through the mark.
             var cost = CargoHoldRules.RemoveUnits(CopyLot(ship.Cargo, commodity), commodity, order.Units);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
+
+            // The sale is reserved on the ship first, so a restart before the bay is saved cannot let another pilot fly the
+            // ship and spill units already paid for: the ship waits for its owner's login (ApplyPendingTrade).
+            ship.PendingSaleTradeId = trade.Id;
+            DB.Set(ship);
             if (!SaveTradeGold(player, trade,
                     () => GiveGoldToCreature(player, order.Credits),
                     () => AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true))))
+            {
+                ship.PendingSaleTradeId = string.Empty;
+                DB.Set(ship);
                 return;
+            }
 
             RecordTrade(ship, player, trade);
+            ship.PendingSaleTradeId = string.Empty;
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
             DB.Set(state);
@@ -280,7 +290,11 @@ namespace SWLOR.Game.Server.Service
             return copy;
         }
 
-        /// <summary>Applies the cargo change of a trade whose gold the character file holds but whose bay a restart did not save.</summary>
+        /// <summary>
+        /// Applies the cargo change of a trade whose gold the character file holds but whose bay a restart did not save, then
+        /// lifts the sale reservations a restart left on the player's ships: a sale whose proceeds never reached the character
+        /// file has no mark, so its units simply stay in the bay.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyPendingTrade()
         {
@@ -288,11 +302,21 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (!PendingTrade.TryParse(ObjectPlugin.GetString(player, PendingTradeVariable), out var trade))
-                return;
-
-            // A ship that has since changed owners is never changed by its former owner's mark.
             var playerId = GetObjectUUID(player);
+            if (PendingTrade.TryParse(ObjectPlugin.GetString(player, PendingTradeVariable), out var trade))
+                ApplyTradeMark(player, playerId, trade);
+
+            foreach (var reserved in PlayerShipAccess.GetOwnedShips(playerId).Where(owned => !string.IsNullOrWhiteSpace(owned.PendingSaleTradeId)))
+            {
+                reserved.PendingSaleTradeId = string.Empty;
+                DB.Set(reserved);
+            }
+        }
+
+        /// <summary>Applies the character file's trade mark to its ship once.</summary>
+        private static void ApplyTradeMark(uint player, string playerId, PendingTrade trade)
+        {
+            // A ship that has since changed owners is never changed by its former owner's mark.
             var ship = DB.Get<PlayerShip>(trade.ShipId);
             if (ship == null || ship.OwnerPlayerId != playerId)
                 return;

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Entity
             FittingAcknowledgements = new Dictionary<string, string>();
             LastHoldingCollectionId = string.Empty;
             LastTradeIds = new Dictionary<string, string>();
+            PendingSaleTradeId = string.Empty;
             PendingHoldingDeliveryId = string.Empty;
             PendingHoldingDeliveryHoldingId = string.Empty;
         }
@@ -137,6 +138,13 @@ namespace SWLOR.Game.Server.Entity
         /// Older records load empty.
         /// </summary>
         public Dictionary<string, string> LastTradeIds { get; set; }
+
+        /// <summary>
+        /// The exchange sale whose proceeds are being saved in the owner's character file while its units are still in the
+        /// bay, or empty. A restart leaves it set: nobody else can fly the ship and spill units that may already be paid for
+        /// until the owner's next login settles the sale (Trade.ApplyPendingTrade). Older records load empty.
+        /// </summary>
+        public string PendingSaleTradeId { get; set; }
 
         /// <summary>
         /// A Planetary Holding delivery taken out of the cargo bay whose holding may not have saved it yet, or empty.

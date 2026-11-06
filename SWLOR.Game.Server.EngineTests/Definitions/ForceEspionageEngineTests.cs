@@ -117,6 +117,57 @@ public static class ForceEspionageEngineTests
         await SetStealthAsync(ctx, player.Creature, false);
     }
 
+    [EngineTest("Enemies inside aggro range attack a player who leaves stealth, clouded or not",
+        Category = "ForceEspionage", TimeoutSeconds = 60f)]
+    public static async Task LeavingStealth_InsideAggroRange_AcquiresAggro(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record =>
+        {
+            record.CharacterType = CharacterType.ForceSensitive;
+            record.Perks[PerkType.Stealth] = 4;
+            record.Stealth = 1000;
+        });
+        SetPlotFlag(player.Creature, true);
+        await SetStealthAsync(ctx, player.Creature, true);
+
+        var clouded = ctx.SpawnCreature(OrganicResref, 3f);
+        var unclouded = ctx.SpawnCreature(OrganicResref, 4f);
+        var distant = ctx.SpawnCreature(OrganicResref, 25f);
+        foreach (var creature in new[] { clouded, unclouded, distant })
+        {
+            SetIsTemporaryEnemy(player.Creature, creature);
+        }
+
+        await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+            StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, clouded, 30f));
+        await ctx.DelaySecondsAsync(2f);
+        ctx.Assert(!Enmity.GetEnmityTable(clouded).ContainsKey(player.Creature), "the clouded enemy ignores the hidden player");
+        ctx.Assert(!Enmity.GetEnmityTable(unclouded).ContainsKey(player.Creature), "the other enemy has not found the hidden player");
+
+        await SetStealthAsync(ctx, player.Creature, false);
+        await ctx.WaitUntilAsync(() => Enmity.GetEnmityTable(clouded).ContainsKey(player.Creature), 5f,
+            "the clouded enemy to notice the visible player");
+        await ctx.WaitUntilAsync(() => Enmity.GetEnmityTable(unclouded).ContainsKey(player.Creature), 5f,
+            "the other enemy to notice the visible player");
+        ctx.Assert(!Enmity.GetEnmityTable(distant).ContainsKey(player.Creature), "an enemy beyond aggro range stays idle");
+    }
+
+    [EngineTest("Force Decoy takes its percentage off the attacker's Accuracy rating, only against the caster",
+        Category = "ForceEspionage", TimeoutSeconds = 60f)]
+    public static async Task ForceDecoy_ReducesAccuracyRatingByPercent(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        using var other = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+        var bug = ctx.SpawnCreature("vdathswampland", 3f);
+
+        await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+            StatusEffect.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
+
+        ctx.AssertEqual(184, Combat.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
+        ctx.AssertEqual(200, Combat.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
+    }
+
     [EngineTest("Shared Presence hides a party member without the Stealth perk, without upkeep, for its window",
         Category = "ForceEspionage", TimeoutSeconds = 120f)]
     public static async Task SharedPresence_GrantsTimedStealthToMembers(EngineTestContext ctx)

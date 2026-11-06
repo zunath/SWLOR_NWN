@@ -88,6 +88,12 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICraftResearchExperimentService, CraftResearchExperimentService>();
             services.AddSingleton<ICraftSessionsService, CraftSessionsService>();
             services.AddSingleton<ICraftStyleEffectsService, CraftStyleEffectsService>();
+            services.AddSingleton<IProspectingService, ProspectingService>();
+            services.AddSingleton<IProspectingSessionsService, ProspectingSessionsService>();
+            services.AddSingleton<IScavengeService, ScavengeService>();
+            services.AddSingleton<IScavengeSessionsService, ScavengeSessionsService>();
+            services.AddSingleton<ISlicingService, SlicingService>();
+            services.AddSingleton<ISlicingSessionService, SlicingSessionService>();
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();

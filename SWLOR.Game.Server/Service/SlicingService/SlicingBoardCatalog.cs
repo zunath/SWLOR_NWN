@@ -6,14 +6,14 @@ namespace SWLOR.Game.Server.Service.SlicingService
     {
         public static int GetBoardCount(int tier)
         {
-            if (!_encodedBoards.TryGetValue(tier, out var boards))
+            if (!EncodedBoards.TryGetValue(tier, out var boards))
                 throw new ArgumentOutOfRangeException(nameof(tier), "Slicing tier must be between 1 and 5.");
             return boards.Length;
         }
 
         public static SlicingBoard GetBoard(int tier, int boardNumber)
         {
-            if (!_encodedBoards.TryGetValue(tier, out var boards))
+            if (!EncodedBoards.TryGetValue(tier, out var boards))
                 throw new ArgumentOutOfRangeException(nameof(tier), "Slicing tier must be between 1 and 5.");
             if (boardNumber < 1 || boardNumber > boards.Length)
                 throw new ArgumentOutOfRangeException(nameof(boardNumber),

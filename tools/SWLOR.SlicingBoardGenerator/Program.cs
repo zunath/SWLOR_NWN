@@ -25,7 +25,7 @@ source.AppendLine("namespace SWLOR.Game.Server.Service.SlicingService");
 source.AppendLine("{");
 source.AppendLine("    public static partial class SlicingBoardCatalog");
 source.AppendLine("    {");
-source.AppendLine("        private static readonly IReadOnlyDictionary<int, string[]> _encodedBoards =");
+source.AppendLine("        private static IReadOnlyDictionary<int, string[]> EncodedBoards =>");
 source.AppendLine("            new Dictionary<int, string[]>");
 source.AppendLine("            {");
 

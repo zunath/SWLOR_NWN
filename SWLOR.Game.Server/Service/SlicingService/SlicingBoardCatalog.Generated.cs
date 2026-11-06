@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
 {
     public static partial class SlicingBoardCatalog
     {
-        private static readonly IReadOnlyDictionary<int, string[]> _encodedBoards =
+        private static IReadOnlyDictionary<int, string[]> EncodedBoards =>
             new Dictionary<int, string[]>
             {
                 [1] = new[]

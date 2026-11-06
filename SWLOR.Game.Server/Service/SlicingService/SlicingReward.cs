@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
 {
     public static class SlicingReward
     {
-        private static readonly Dictionary<int, string[]> _commonItems = new()
+        private static Dictionary<int, string[]> CommonItems => new()
         {
             [1] = new[] { "herb_v", "kath_blood", "fiberp_ruined", "lth_ruined", "elec_ruined" },
             [2] = new[] { "herb_m", "raivor_blood", "fiberp_flawed", "lth_flawed", "elec_flawed" },
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             [5] = new[] { "herb_x", "wild_innards", "fiberp_perfect", "lth_perfect", "elec_perfect" }
         };
 
-        private static readonly string[][] _legacyLockboxItems =
+        private static string[][] LegacyLockboxItems => new[]
         {
             new[] { "espn_neck_1", "espn_belt_1", "espn_ring_1" },
             new[] { "espn_neck_2", "espn_belt_2", "espn_ring_2" },
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (tier < 1 || tier > 5)
                 throw new ArgumentOutOfRangeException(nameof(tier));
 
-            var pool = _commonItems[tier];
+            var pool = CommonItems[tier];
             var (minimumQuantity, quantityCount) = tier >= HighTierRewardMinimumTier ? (5, 4) : (3, 3);
             return new SlicingRewardEntry
             {
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
             if (source == SlicingSourceType.Lockbox && namedRoll < 250)
             {
-                var legacy = _legacyLockboxItems[tier - 1];
+                var legacy = LegacyLockboxItems[tier - 1];
                 return new SlicingRewardEntry
                 {
                     Source = source,

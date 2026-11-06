@@ -5957,15 +5957,15 @@
     "Call": "SendMessageToPC(player, $\"You earned {GetSkillDetails(skill).Name} skill experience. ({xp})\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 594,
+    "File": "SWLOR.Game.Server/Domain/Crafting/SlicingSessionService.cs",
+    "Line": 584,
     "Member": "Complete",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(session.Player, $\"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.\")"
+    "Call": "SendMessageToPC(session.Player, $\"You recover {reward.Quantity}x {_cache.GetItemNameByResref(reward.Resref)}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 615,
+    "File": "SWLOR.Game.Server/Domain/Crafting/SlicingSessionService.cs",
+    "Line": 604,
     "Member": "Fail",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(session.Player, destroyed\n                    ? \"The intrusion overloads the target. Its contents are destroyed.\"\n                    : $\"The attempt fails. The next failed attempt has a {nextChance}% destruction risk.\")"

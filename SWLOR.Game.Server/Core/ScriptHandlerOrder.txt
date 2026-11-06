@@ -104,6 +104,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
   action      SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
   action      SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
+  action      SWLOR.Game.Server.Native.StaleDriveAfterJump.RegisterHooks
   action      SWLOR.Game.Server.Native.VitalityHitPoints.RegisterHooks
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.RegisterHooks
   action      SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration

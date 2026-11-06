@@ -489,8 +489,8 @@ public class EspionageSystemTests
         var infiltrationSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "EspionageInfiltration.cs"));
+            "Domain", "Character",
+            "EspionageInfiltrationService.cs"));
 
         stealthStatusSource.Should().NotContain("GrantTimeInStealthXP");
         stealthStatusSource.Should().NotContain("HostileScanRadiusMeters");
@@ -502,10 +502,10 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(target, observer)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityOutsidePair(target, observer)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
+        infiltrationSource.Should().Contain("HasNonProximityEnmity(npc)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmity(target, observer)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmityOutsidePair(target, observer)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }
 

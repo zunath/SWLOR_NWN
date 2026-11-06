@@ -321,17 +321,19 @@ namespace SWLOR.Toolset.Tests
                 "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
             shader.Should().Contain(
-                "paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);");
+                "paletteColor.rgb + (custom.rgb - swatchMidpoint) * shadeScale,",
+                "custom RGB is shaded with its nearest palette swatch's row, like the client tint shaders");
             shader.Should().Contain("float shadeScale = max(",
                 "GLSL max accepts the intended lower bound while retaining bright tint-map highlights");
             shader.Should().NotContain("float shadeScale = clamp(",
                 "GLSL clamp requires both a lower and upper bound");
             shader.Should().Contain("float referenceRow = 0.000244;");
-            shader.Should().Contain("vec4 referenceShade = textureLod(");
-            shader.Should().Contain("vec2(128.5 / 256.0, referenceRow)",
-                "custom colors use the same representative midtone as the preset swatches");
-            shader.Should().NotContain("vec2(255.5 / 256.0, referenceRow)",
+            shader.Should().Contain("vec2(128.5 / 256.0, paletteRow)",
+                "custom colors are matched against the same midtone the preset swatches show");
+            shader.Should().NotContain("vec2(255.5 / 256.0, paletteRow)",
                 "normalizing at the palette peak makes the selected RGB much too dark");
+            shader.Should().NotContain("custom.rgb * shadeScale",
+                "a single reference row flattens dark custom colors");
             shader.Should().Contain("return paletteColor;",
                 "custom RGB must retain the tint map's native nonlinear shade detail");
             shader.Should().NotContain(
@@ -437,10 +439,66 @@ namespace SWLOR.Toolset.Tests
             image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
         }
 
+        [TestCase(0)]
+        [TestCase(128)]
+        [TestCase(255)]
+        public void SoftwareTintRendererShadesRgbWithItsNearestSwatchRow(byte shade)
+        {
+            var layer = TintMapLayerType.Cloth1;
+            var swatchId = TintMapPaletteColors.GetClosestColorId(layer, TintMapPaletteColors.GetColor(layer, 40));
+            var swatch = TintMapPaletteColors.GetColor(layer, swatchId);
+            var baseRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow;
+            var swatchRow = new[]
+            {
+                ((byte)(swatch.Red / 3), (byte)(swatch.Green / 3), (byte)(swatch.Blue / 3)),
+                (swatch.Red, swatch.Green, swatch.Blue),
+                ((byte)255, (byte)250, (byte)245),
+            };
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(shade, 115, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), PaletteRowsTga(
+                (baseRow, new[] { ((byte)90, (byte)90, (byte)90), ((byte)128, (byte)128, (byte)128), ((byte)160, (byte)160, (byte)160) }),
+                (baseRow + swatchId, swatchRow)));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\ntexture10 palette\ncustomshaderPSH fs_plt_tinter\n");
+            var column = shade * 2 / 255;
+            var shadeRgb = swatchRow[column];
+
+            var exact = Render(swatch);
+            Pixel(exact, 0, 0).Should().Be((shadeRgb.Item1, shadeRgb.Item2, shadeRgb.Item3, (byte)255),
+                "an RGB equal to a palette swatch renders exactly like that palette color");
+
+            var offsetColor = new TintMapColor(
+                (byte)Math.Clamp(swatch.Red + 4, 0, 255),
+                (byte)Math.Clamp(swatch.Green - 4, 0, 255),
+                (byte)Math.Clamp(swatch.Blue + 4, 0, 255));
+            TintMapPaletteColors.GetClosestColorId(layer, offsetColor).Should().Be(swatchId);
+            var scale = Luminance(shadeRgb) / Math.Max(Luminance((swatch.Red, swatch.Green, swatch.Blue)), 1f);
+            Pixel(Render(offsetColor), 0, 0).Should().Be((
+                Shade(shadeRgb.Item1, offsetColor.Red, swatch.Red, scale),
+                Shade(shadeRgb.Item2, offsetColor.Green, swatch.Green, scale),
+                Shade(shadeRgb.Item3, offsetColor.Blue, swatch.Blue, scale),
+                (byte)255),
+                "other colors offset the swatch row by their difference, scaled by the row's shading");
+
+            TextureImage Render(TintMapColor color) => TintMapTextureRenderer.Render(Index(), "sample_material", material,
+                new Dictionary<int, int>(), new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", layer)] = color.ToStoredValue()
+                })!;
+
+            static float Luminance((byte R, byte G, byte B) color) =>
+                color.R * 0.2126f + color.G * 0.7152f + color.B * 0.0722f;
+
+            static byte Shade(byte swatchShade, byte component, byte midpoint, float shadeScale) =>
+                (byte)Math.Clamp(MathF.Round(swatchShade + (component - midpoint) * shadeScale), 0, 255);
+        }
+
+        // The synthetic palette fills only the layer's first row, so the color's nearest swatch row
+        // is black and borrows the first row's shading.
         [TestCase(0, 30, 20, 10)]
         [TestCase(128, 120, 80, 40)]
         [TestCase(255, 239, 159, 80)]
-        public void SoftwareTintRendererPreservesRgbWithNeutralRowShading(byte shade, int red, int green, int blue)
+        public void SoftwareTintRendererShadesRgbOnABlackSwatchWithTheFirstRow(byte shade, int red, int green, int blue)
         {
             var layer = TintMapLayerType.Cloth1;
             var customColor = new TintMapColor(120, 80, 40);
@@ -458,7 +516,7 @@ namespace SWLOR.Toolset.Tests
                 });
             image.Should().NotBeNull();
             Pixel(image!, 0, 0).Should().Be(((byte)red, (byte)green, (byte)blue, (byte)255),
-                "CPU previews must use the shader's neutral-row luminance ratio, preserving the requested hue");
+                "a near-black color keeps its hue with the first row's luminance ratio");
         }
 
         [TestCase("fs_plt_tinter")]
@@ -1171,6 +1229,24 @@ namespace SWLOR.Toolset.Tests
                 bytes[offset] = values[index];
                 bytes[offset + 1] = values[index];
                 bytes[offset + 2] = values[index];
+            }
+
+            return bytes;
+        }
+
+        private static byte[] PaletteRowsTga(params (int ShaderRow, (byte R, byte G, byte B)[] Colors)[] rows)
+        {
+            var width = rows[0].Colors.Length;
+            var bytes = PaletteRowTga(rows[0].ShaderRow, rows[0].Colors);
+            foreach (var (shaderRow, colors) in rows.Skip(1))
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var offset = 18 + (shaderRow * width + x) * 3;
+                    bytes[offset] = colors[x].B;
+                    bytes[offset + 1] = colors[x].G;
+                    bytes[offset + 2] = colors[x].R;
+                }
             }
 
             return bytes;

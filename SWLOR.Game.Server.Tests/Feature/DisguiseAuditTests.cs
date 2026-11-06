@@ -1,282 +1,72 @@
-using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Display;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DisguiseService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
+/// <summary>
+/// The audit trail of the disguises: every mutation writes a structured line with the canonical owner, the stable
+/// disguise id and the values before and after. The real disguise and descriptor instances run over a small world
+/// (<see cref="DisguiseWorld"/>); only their calls into unconverted services are replaced.
+/// </summary>
 public class DisguiseAuditTests
 {
-    private Type _harness = null!;
+    private const string OldBiography = "Old\n\"bio\" {text}";
+    private const string NewBiography = "New\n\"bio\" {text}";
+    private const uint Owner = DisguiseWorld.Owner;
 
-    [OneTimeSetUp]
-    public void CompileProductionMutations()
+    private DisguiseWorld _world = null!;
+
+    [SetUp]
+    public void SetUp()
     {
-        var disguiseSource = ReadSource("Service/Disguise.cs");
-        var methods = new[]
-        {
-            "ApplyActiveDisguiseOnEnter", "BuildIdentityKey", "GetIdentityKey", "GetDisplayDescriptor",
-            "GetActiveDisguise", "CreateDisguise", "SaveDisguise", "Activate", "Deactivate", "Retire",
-            "Unretire", "DeleteRetiredDisguise", "ResetActivationCooldowns", "ValidatePrivateName", "IsActiveDisguise"
-        };
-        var disguiseMethods = disguiseSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => methods.Contains(method.Identifier.ValueText))
-            .Select(method => method.WithAttributeLists(default).ToFullString());
-        var constants = disguiseSource.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Modifiers.Any(SyntaxKind.ConstKeyword));
-        var descriptorMethods = new[] { "SetUnknownDisplayName", "EnsureUnknownDisplayName" }
-            .Select(name => SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
-                "Domain/Character/PlayerDescriptorService.cs", name));
-        var getDm = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
-            "Domain/Administration/DMPresenceService.cs", "GetDM");
-        var source = $$"""
-            using System;
-            using System.Collections.Generic;
-            using System.Linq;
-            using Newtonsoft.Json;
-            using static World;
-
-            public sealed class IndexedAttribute : Attribute { }
-            public class EntityBase { public string Id { get; set; } = Guid.NewGuid().ToString(); }
-            {{ReadSource("Entity/PlayerDisguise.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/PlayerListService/PlayerListFlagType.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/PlayerListService/PlayerListFlagAttribute.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/DisguiseService/SaveDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/DisguiseService/ActivateDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/DisguiseService/DeleteRetiredDisguiseResult.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
-            {{ReadSource("Service/DisguiseService/DisguisePaymentMethod.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
-
-            public sealed class Player : EntityBase
-            {
-                public string ActiveDisguiseId = "", UnknownDisplayName = "Base descriptor";
-                public int UndisguisedPortraitId = -1, UndisguisedSoundSetId = -1, UnallocatedXP = 100000;
-                public string UndisguisedPortraitResref = "", UndisguisedDescription = "";
-                public bool HasUndisguisedDescriptionSnapshot;
-            }
-            public static class World
-            {
-                public const uint OBJECT_INVALID = 0x7f000000;
-                public static uint EnteringObject = 1;
-                public static string Name = "Canonical Player";
-                public static bool GetIsObjectValid(uint player) => player is 1 or 2 or 3;
-                public static bool GetIsPC(uint player) => player == 1;
-                public static bool GetIsDM(uint player) => false;
-                public static bool GetIsDMPossessed(uint player) => player == 3;
-                public static uint GetMaster(uint player) => player == 3 ? 2u : OBJECT_INVALID;
-                public static string GetObjectUUID(uint player) => player == 3 ? "possessed-id" : player == 2 ? "staff-id" : "owner-id";
-                public static string GetName(uint player) => player == 3 ? "Possessed NPC" : player == 2 ? "Staff Actor" : Name;
-                public static uint GetEnteringObject() => EnteringObject;
-                public static string GetPCPublicCDKey(uint player) => "public-cd-key";
-                public static int GetGold(uint player) => 100000;
-                public static void TakeGoldFromCreature(int amount, uint player, bool destroy) { }
-                public static int GetPortraitId(uint player) => 10;
-                public static string GetPortraitResRef(uint player) => "baseportrait";
-                public static int GetSoundset(uint player) => 10;
-                public static string GetDescription(uint player, bool original = false) => "Original biography";
-                public static void SetPortraitId(uint player, int portrait) { }
-                public static void SetPortraitResRef(uint player, string portrait) { }
-                public static void SetSoundset(uint player, int sound) { }
-                public static void SetDescription(uint player, string description) { }
-            }
-            public sealed class DBQuery<T>
-            {
-                public string OwnerId;
-                public int Offset, Count = 50;
-                public DBQuery<T> AddFieldSearch(string field, object value, bool fuzzy)
-                { if (field == "PlayerId") OwnerId = (string)value; return this; }
-                public DBQuery<T> AddPaging(int count, int offset) { Count = count; Offset = offset; return this; }
-            }
-            public static class DB
-            {
-                public static readonly Dictionary<(Type, string), EntityBase> Records = new();
-                public static T Get<T>(string id) where T : EntityBase => Records.GetValueOrDefault((typeof(T), id)) as T;
-                public static void Set<T>(T value) where T : EntityBase => Records[(typeof(T), value.Id)] = value;
-                public static void Delete<T>(string id) => Records.Remove((typeof(T), id));
-                public static IEnumerable<T> Search<T>(DBQuery<T> query) where T : EntityBase
-                    => Records.Values.OfType<T>()
-                        .Where(value => value is not PlayerDisguise disguise || disguise.PlayerId == query.OwnerId)
-                        .Skip(query.Offset).Take(query.Count).ToArray();
-            }
-            public enum LogGroup { PlayerName, PublicDescriptors }
-            public static class Log
-            {
-                public static readonly List<object[]> Records = new();
-                public static readonly Dictionary<object[], string> Groups = new();
-                public static void WriteStructured(LogGroup group, string template, params object[] values)
-                {
-                    var record = new object[] { template }.Concat(values).ToArray();
-                    Records.Add(record);
-                    Groups[record] = group.ToString();
-                }
-            }
-            public static class UtilPlugin { public static string StripColors(string value) => value; }
-            public static class Gui { public static void PublishRefreshEvent(uint player, object refresh) { } }
-            public sealed class RPXPRefreshEvent { }
-            public static class DMPresence { {{getDm}} }
-            public static class PlayerName
-            {
-                public static string SanitizeKnownName(string name) => name.Trim();
-                public static string ValidateKnownNameInput(string name) => string.IsNullOrWhiteSpace(name) ? "Required" : "";
-                public static void RefreshNameOverridesForPlayer(uint player) { }
-                public static int DeleteKnownNameReferences(string identityKey) => 3;
-            }
-            public static class PlayerDescriptor
-            {
-                private static readonly DbShim _db = new();
-                private static readonly NameShim _playerName = new();
-                private sealed class DbShim
-                {
-                    public T Get<T>(string id) where T : EntityBase => DB.Get<T>(id);
-                    public void Set<T>(T value) where T : EntityBase => DB.Set(value);
-                }
-                private sealed class NameShim
-                {
-                    public string SanitizeKnownName(string name) => PlayerName.SanitizeKnownName(name);
-                    public string ValidateKnownNameInput(string name) => PlayerName.ValidateKnownNameInput(name);
-                    public void RefreshNameOverridesForPlayer(uint player) => PlayerName.RefreshNameOverridesForPlayer(player);
-                }
-                private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);
-                private static void WriteStructuredLog(LogGroup group, string template, params object[] values) => Log.WriteStructured(group, template, values);
-                public static string GetUnknownDisplayName(uint player) => DB.Get<Player>(GetObjectUUID(player)).UnknownDisplayName;
-                public static string GenerateUnknownDisplayName(Player player) => "A Generated Human";
-                {{string.Join("\n", descriptorMethods)}}
-            }
-            public static class Disguise
-            {
-                {{string.Join("\n", constants)}}
-                {{string.Join("\n", disguiseMethods)}}
-                private static int CountUsedSlots(string playerId) => DB.Records.Values.OfType<PlayerDisguise>().Count(row => row.PlayerId == playerId);
-                private static int GetDisguiseSlotLimit(uint player, Player dbPlayer) => 3;
-                private static int ResolvePortraitInternalId(uint player) => 10;
-                private static int GetMaxPortraitCount() => 100;
-                private static int ResolveSoundSetId(int id) => id;
-                private static string ValidateActivationDelay(uint player, string playerId) => "";
-                private static void ApplyAppearance(uint player, PlayerDisguise disguise) { }
-                private static void RefreshDisguiseDisplay(uint player) { }
-            }
-            public static class Harness
-            {
-                public const string OldBiography = "Old\n\"bio\" {text}";
-                public const string NewBiography = "New\n\"bio\" {text}";
-                private static void Reset()
-                {
-                    DB.Records.Clear();
-                    Log.Records.Clear();
-                    Log.Groups.Clear();
-                    DB.Set(new Player { Id = "owner-id" });
-                }
-                public static object[][] Lifecycle()
-                {
-                    Reset();
-                    var disguise = Disguise.CreateDisguise(1);
-                    if (!Disguise.SaveDisguise(1, disguise.Id, "Old mask", "Old descriptor", OldBiography, 20, 21, true).IsSuccessful)
-                        throw new Exception("Initial save failed");
-                    if (!Disguise.Activate(1, disguise.Id).IsSuccessful) throw new Exception("Activation failed");
-                    if (!Disguise.SaveDisguise(1, disguise.Id, "New mask", "New descriptor", NewBiography, 30, 31, false).IsSuccessful)
-                        throw new Exception("Active save failed");
-                    Disguise.ApplyActiveDisguiseOnEnter();
-                    Disguise.ResetActivationCooldowns(1, 2);
-                    Disguise.Deactivate(1);
-                    Disguise.Retire(1, disguise.Id);
-                    Disguise.Unretire(1, disguise.Id);
-                    Disguise.Retire(1, disguise.Id);
-                    if (Disguise.DeleteRetiredDisguise(1, disguise.Id, DisguisePaymentMethod.Credits) != DeleteRetiredDisguiseResult.Success)
-                        throw new Exception("Delete failed");
-                    if (DB.Get<PlayerDisguise>(disguise.Id) != null) throw new Exception("Disguise was not deleted");
-                    return Log.Records.ToArray();
-                }
-                public static object[][] DescriptorChanges()
-                {
-                    Reset();
-                    var player = DB.Get<Player>("owner-id");
-                    player.UnknownDisplayName = "";
-                    if (!PlayerDescriptor.EnsureUnknownDisplayName(1)) throw new Exception("Generation failed");
-                    if (PlayerDescriptor.EnsureUnknownDisplayName(1)) throw new Exception("Descriptor regenerated");
-                    var disguise = Disguise.CreateDisguise(1);
-                    Disguise.Activate(1, disguise.Id);
-                    Log.Records.Clear();
-                    PlayerDescriptor.SetUnknownDisplayName(1, "New base descriptor");
-                    if (Disguise.GetDisplayDescriptor(1) != "A Generated Human") throw new Exception("Active descriptor changed");
-                    return Log.Records.ToArray();
-                }
-                public static object[][] Generation()
-                {
-                    Reset();
-                    DB.Get<Player>("owner-id").UnknownDisplayName = "";
-                    PlayerDescriptor.EnsureUnknownDisplayName(1);
-                    PlayerDescriptor.EnsureUnknownDisplayName(1);
-                    return Log.Records.ToArray();
-                }
-                public static object[][] UnchangedDisguiseDescriptor()
-                {
-                    Reset();
-                    var disguise = Disguise.CreateDisguise(1);
-                    Log.Records.Clear();
-                    Disguise.SaveDisguise(1, disguise.Id, "Changed private name", disguise.Descriptor, "Changed biography", 20, 21, true);
-                    return Log.Records.ToArray();
-                }
-                public static string GroupOf(object[] record) => Log.Groups[record];
-                public static object[][] RejectedSave()
-                {
-                    Reset();
-                    var disguise = Disguise.CreateDisguise(1);
-                    Log.Records.Clear();
-                    if (Disguise.SaveDisguise(1, disguise.Id, "", "Descriptor", "Biography", 20, 21, true).IsSuccessful)
-                        throw new Exception("Invalid save accepted");
-                    return Log.Records.ToArray();
-                }
-                public static object[][] MultilineRejectedSave()
-                {
-                    Reset();
-                    var disguise = Disguise.CreateDisguise(1);
-                    Log.Records.Clear();
-                    Disguise.SaveDisguise(1, disguise.Id, "Invalid\n" + new string('x', 40),
-                        "Descriptor\r\n2026-01-01 forged event", "Biography\r\nForged event", 20, 21, true);
-                    return Log.Records.ToArray();
-                }
-                public static object[][] PossessedReset()
-                {
-                    Reset();
-                    var disguise = Disguise.CreateDisguise(1);
-                    Disguise.Activate(1, disguise.Id);
-                    Log.Records.Clear();
-                    Disguise.ResetActivationCooldowns(1, 3);
-                    return Log.Records.ToArray();
-                }
-                public static object[][] RejectedLifecycle()
-                {
-                    Reset();
-                    Disguise.Activate(1, "missing-id");
-                    Disguise.Deactivate(1);
-                    Disguise.Retire(1, "missing-id");
-                    Disguise.Unretire(1, "missing-id");
-                    Disguise.DeleteRetiredDisguise(1, "missing-id", DisguisePaymentMethod.Credits);
-                    return Log.Records.ToArray();
-                }
-            }
-            """;
-        var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(JsonConvert).Assembly.Location).Distinct()
-            .Select(path => MetadataReference.CreateFromFile(path));
-        var compilation = CSharpCompilation.Create("DisguiseAuditHarness", [CSharpSyntaxTree.ParseText(source)],
-            references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        using var stream = new MemoryStream();
-        var result = compilation.Emit(stream);
-        result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
-        _harness = Assembly.Load(stream.ToArray()).GetType("Harness")!;
+        _world = new DisguiseWorld();
+        _world.DbPlayer.UnknownDisplayName = "Base descriptor";
+        _world.Disguises.StatAdjustments[SWLOR.Game.Server.Service.StatService.StatType.AdditionalDisguiseSlots] = 2;
     }
+
+    [TearDown]
+    public void TearDown() => _world.Dispose();
+
+    private object[][] Lifecycle()
+    {
+        var disguises = _world.Disguises;
+        var disguise = disguises.CreateDisguise(Owner)!;
+        disguises.SaveDisguise(Owner, disguise.Id, "Old mask", "Old descriptor", OldBiography, 20, 21, true)
+            .IsSuccessful.Should().BeTrue();
+        disguises.Activate(Owner, disguise.Id).IsSuccessful.Should().BeTrue();
+        disguises.SaveDisguise(Owner, disguise.Id, "New mask", "New descriptor", NewBiography, 30, 31, false)
+            .IsSuccessful.Should().BeTrue();
+        _world.Entering = Owner;
+        disguises.ApplyActiveDisguiseOnEnter();
+        disguises.ResetActivationCooldowns(Owner, DisguiseWorld.Staff);
+        disguises.Deactivate(Owner);
+        disguises.Retire(Owner, disguise.Id);
+        disguises.Unretire(Owner, disguise.Id);
+        disguises.Retire(Owner, disguise.Id);
+        disguises.DeleteRetiredDisguise(Owner, disguise.Id, DisguisePaymentMethod.Credits)
+            .Should().Be(DeleteRetiredDisguiseResult.Success);
+        _world.Db.Get<PlayerDisguise>(disguise.Id).Should().BeNull();
+        return Records();
+    }
+
+    private object[][] Records() => _world.Logs.Select(log => new object[] { log.Template }.Concat(log.Values).ToArray()).ToArray();
+
+    private string GroupOf(object[] record) => _world.Logs.First(log => ReferenceEquals(log.Template, record[0]) &&
+        log.Values.SequenceEqual(record.Skip(1))).Group.ToString();
 
     [Test]
     public void Lifecycle_RecordsEveryMutationWithCanonicalOwnerAndStableDisguiseId()
     {
-        var records = Run("Lifecycle");
+        var records = Lifecycle();
         records.Select(record => ((string)record[0]).Split(':')[0]).Should().Equal(
             "Disguise created", "Disguise saved", "Disguise public descriptor changed", "Disguise activated", "Disguise saved",
             "Disguise public descriptor changed",
@@ -302,7 +92,7 @@ public class DisguiseAuditTests
     [Test]
     public void Customization_RetainsEveryPreviousAndNewValueIncludingSameLengthBiographyEdits()
     {
-        var save = Run("Lifecycle").Last(record => ((string)record[0]).StartsWith("Disguise saved:"));
+        var save = Lifecycle().Last(record => ((string)record[0]).StartsWith("Disguise saved:"));
         Field(save, "PreviousPrivateName").Should().Be("Old mask");
         Field(save, "PrivateName").Should().Be("New mask");
         Field(save, "PreviousDescriptor").Should().Be("Old descriptor");
@@ -321,7 +111,7 @@ public class DisguiseAuditTests
     [Test]
     public void Deletion_RetainsCustomizationAndPaymentAfterTheDisguiseRecordIsGone()
     {
-        var deleted = Run("Lifecycle").Last();
+        var deleted = Lifecycle().Last();
         JsonConvert.DeserializeObject<string>((string)Field(deleted, "Biography")).Should().Be("New\n\"bio\" {text}");
         Field(deleted, "Descriptor").Should().Be("New descriptor");
         Field(deleted, "PrivateName").Should().Be("New mask");
@@ -336,21 +126,38 @@ public class DisguiseAuditTests
     [Test]
     public void BaseDescriptorChange_RecordsOldAndNewValuesWhileKeepingActiveDisguiseTraceable()
     {
-        var records = Run("DescriptorChanges");
+        _world.DbPlayer.UnknownDisplayName = string.Empty;
+        _world.Descriptors.EnsureUnknownDisplayName(Owner).Should().BeTrue();
+        _world.Descriptors.EnsureUnknownDisplayName(Owner).Should().BeFalse("a descriptor is never regenerated");
+        var generated = _world.DbPlayer.UnknownDisplayName;
+        generated.Should().NotBeNullOrWhiteSpace();
+        var disguise = _world.Disguises.CreateDisguise(Owner)!;
+        _world.Disguises.Activate(Owner, disguise.Id);
+        _world.ClearLogs();
+
+        _world.Descriptors.SetUnknownDisplayName(Owner, "New base descriptor");
+
+        _world.Disguises.GetDisplayDescriptor(Owner).Should().Be(generated, "the active disguise keeps its own descriptor");
+        var records = Records();
         records.Should().ContainSingle();
         GroupOf(records[0]).Should().Be("PublicDescriptors");
         Field(records[0], "PlayerId").Should().Be("owner-id");
         Field(records[0], "PlayerName").Should().Be("Canonical Player");
         Field(records[0], "IdentityKey").Should().Be("owner-id");
         Field(records[0], "ActiveIdentityKey").Should().BeOfType<string>().Which.Should().StartWith("disguise:");
-        Field(records[0], "PreviousDescriptor").Should().Be("A Generated Human");
+        Field(records[0], "PreviousDescriptor").Should().Be(generated);
         Field(records[0], "Descriptor").Should().Be("New base descriptor");
     }
 
     [Test]
     public void DescriptorGeneration_IsLoggedOnlyWhenANewDescriptorIsPersisted()
     {
-        var records = Run("Generation");
+        _world.DbPlayer.UnknownDisplayName = string.Empty;
+
+        _world.Descriptors.EnsureUnknownDisplayName(Owner);
+        _world.Descriptors.EnsureUnknownDisplayName(Owner);
+
+        var records = Records();
         records.Should().ContainSingle();
         GroupOf(records[0]).Should().Be("PublicDescriptors");
         ((string)records[0][0]).Should().StartWith("Base descriptor generated:");
@@ -358,13 +165,19 @@ public class DisguiseAuditTests
         Field(records[0], "IdentityKey").Should().Be("owner-id");
         Field(records[0], "ActiveIdentityKey").Should().Be("owner-id");
         Field(records[0], "PreviousDescriptor").Should().Be("");
-        Field(records[0], "Descriptor").Should().Be("A Generated Human");
+        Field(records[0], "Descriptor").Should().Be(_world.DbPlayer.UnknownDisplayName).And.NotBe("");
     }
 
     [Test]
     public void RejectedCustomization_RecordsAttemptedValuesAndReason()
     {
-        var records = Run("RejectedSave");
+        var disguise = _world.Disguises.CreateDisguise(Owner)!;
+        _world.ClearLogs();
+
+        _world.Disguises.SaveDisguise(Owner, disguise.Id, "", "Descriptor", "Biography", 20, 21, true)
+            .IsSuccessful.Should().BeFalse();
+
+        var records = Records();
         records.Should().ContainSingle();
         ((string)records[0][0]).Should().StartWith("Disguise customization rejected:");
         Field(records[0], "PlayerId").Should().Be("owner-id");
@@ -376,7 +189,13 @@ public class DisguiseAuditTests
     [Test]
     public void RejectedLifecycle_RecordsAttemptsWithoutSuccessfulStateChanges()
     {
-        var records = Run("RejectedLifecycle");
+        _world.Disguises.Activate(Owner, "missing-id");
+        _world.Disguises.Deactivate(Owner);
+        _world.Disguises.Retire(Owner, "missing-id");
+        _world.Disguises.Unretire(Owner, "missing-id");
+        _world.Disguises.DeleteRetiredDisguise(Owner, "missing-id", DisguisePaymentMethod.Credits);
+
+        var records = Records();
         records.Select(record => ((string)record[0]).Split(':')[0]).Should().Equal(
             "Disguise activation rejected", "Disguise deactivation rejected", "Disguise retirement rejected",
             "Disguise restoration rejected", "Disguise deletion rejected");
@@ -390,9 +209,18 @@ public class DisguiseAuditTests
     [Test]
     public void MultilineCustomization_FormatsAsOnePhysicalAuditLineWithoutLosingText()
     {
+        var lifecycle = Lifecycle();
+        _world.ClearLogs();
+        _world.Db.Store.Saved.Clear();
+        var disguise = _world.Disguises.CreateDisguise(Owner)!;
+        _world.ClearLogs();
+        _world.Disguises.SaveDisguise(Owner, disguise.Id, "Invalid\n" + new string('x', 40),
+            "Descriptor\r\n2026-01-01 forged event", "Biography\r\nForged event", 20, 21, true);
+        var multiline = Records();
+
         using var logger = new LoggerConfiguration().CreateLogger();
         var formatter = new MessageTemplateTextFormatter("{Timestamp:O} [{Level:u3}] {Message:lj}{NewLine}{Exception}", null);
-        foreach (var record in Run("Lifecycle").Concat(Run("MultilineRejectedSave")))
+        foreach (var record in lifecycle.Concat(multiline))
         {
             logger.BindMessageTemplate((string)record[0], record.Skip(1).ToArray(), out var template, out var properties)
                 .Should().BeTrue();
@@ -401,7 +229,7 @@ public class DisguiseAuditTests
             formatter.Format(logEvent, writer);
             writer.ToString().TrimEnd('\r', '\n').Should().NotContain("\r").And.NotContain("\n");
         }
-        var rejected = Run("MultilineRejectedSave").Single();
+        var rejected = multiline.Single();
         JsonConvert.DeserializeObject<string>((string)Field(rejected, "Biography")).Should().Be("Biography\r\nForged event");
         JsonConvert.DeserializeObject<string>((string)Field(rejected, "Descriptor")).Should().Be("Descriptor\r\n2026-01-01 forged event");
     }
@@ -409,7 +237,13 @@ public class DisguiseAuditTests
     [Test]
     public void CooldownReset_AttributesPossessedActorsToTheStaffCharacter()
     {
-        var records = Run("PossessedReset");
+        var disguise = _world.Disguises.CreateDisguise(Owner)!;
+        _world.Disguises.Activate(Owner, disguise.Id);
+        _world.ClearLogs();
+
+        _world.Disguises.ResetActivationCooldowns(Owner, DisguiseWorld.Possessed);
+
+        var records = Records();
         records.Should().ContainSingle();
         Field(records[0], "ActorPlayerId").Should().Be("staff-id");
         Field(records[0], "ActorName").Should().Be("Staff Actor");
@@ -418,7 +252,7 @@ public class DisguiseAuditTests
     [Test]
     public void DisguiseDescriptorEdits_WritePublicHistoryWithTheIdentityAndActiveState()
     {
-        var records = Run("Lifecycle").Where(record => GroupOf(record) == "PublicDescriptors").ToArray();
+        var records = Lifecycle().Where(record => GroupOf(record) == "PublicDescriptors").ToArray();
         records.Should().HaveCount(2);
         Field(records[0], "PreviousDescriptor").Should().Be("Base descriptor");
         Field(records[0], "Descriptor").Should().Be("Old descriptor");
@@ -433,14 +267,15 @@ public class DisguiseAuditTests
     [Test]
     public void OtherDisguiseCustomization_DoesNotWriteAPublicDescriptorChange()
     {
-        var records = Run("UnchangedDisguiseDescriptor");
+        var disguise = _world.Disguises.CreateDisguise(Owner)!;
+        _world.ClearLogs();
+
+        _world.Disguises.SaveDisguise(Owner, disguise.Id, "Changed private name", disguise.Descriptor, "Changed biography", 20, 21, true);
+
+        var records = Records();
         records.Should().ContainSingle();
         GroupOf(records[0]).Should().Be("PlayerName");
     }
-
-    private object[][] Run(string method) => (object[][])_harness.GetMethod(method)!.Invoke(null, null)!;
-
-    private string GroupOf(object[] record) => (string)_harness.GetMethod("GroupOf")!.Invoke(null, [record])!;
 
     private static object Field(object[] record, string name)
     {
@@ -450,14 +285,5 @@ public class DisguiseAuditTests
         var index = Array.IndexOf(names, name);
         index.Should().BeGreaterThanOrEqualTo(0, $"the audit must retain {name}");
         return record[index + 1];
-    }
-
-    private static SyntaxNode ReadSource(string path)
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-        return CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", path))).GetRoot();
     }
 }

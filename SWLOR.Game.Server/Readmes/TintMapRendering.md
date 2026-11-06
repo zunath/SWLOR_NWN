@@ -1015,7 +1015,10 @@ its numerical lighting checks separate from the production compilation checks.
 Each generated ATI2/BC5 DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2` stores
 every mip level down to 1 x 1. Set `DDSD_MIPMAPCOUNT`, set `dwMipMapCount` to
 the number of levels stored, and ship a same-resref TXI containing `mipmap 1`.
-`write_packed_dds` does this. Masks, TXIs, and generated MTRs and models come
+`write_packed_dds` does this: shades are box-filtered, and an odd dimension is
+filtered by area so its last row or column still counts. A lower level whose
+layer ids BC4 cannot encode gets one placeholder id per block, because those ids
+are never read. Masks, TXIs, and generated MTRs and models come
 from the tools in `SWLOR_Haks/tools/`: change the tool and regenerate, never
 hand-edit the output.
 
@@ -1032,7 +1035,12 @@ controls the condition that skips this upload loop.
 These textures stay single-level with `mipmap 0`:
 
 - The cloak atlas (`mipmaps=False` in `CloakTintAssets.py`). `fs_cloaktint`
-  reads it with a `-10` bias and has no far-shade blend.
+  reads it with a `-10` bias and has no far-shade blend. `CloakTintAssets.py`
+  derives that shader from `fs_plt_tinter`, restoring the base-level reads first
+  (`BASE_LEVEL_READS`). A new `texture2D(texUnit7, ...)` read in `fs_plt_tinter`
+  fails `CloakTintAssets.py --check`, which stops `BuildHaks.cmd`, until the cloak
+  shader handles it. The check does not catch a new `texelFetch` read, which would
+  sample the whole atlas, so review any such read for cloaks by hand.
 - The palette atlas `plt_palette`. Its rows are categories.
 
 Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`

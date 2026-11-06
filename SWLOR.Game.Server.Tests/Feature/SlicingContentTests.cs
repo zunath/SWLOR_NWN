@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SlicingService;
+using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -371,7 +372,7 @@ public class SlicingContentTests
     public void SlicingSwapMode_CanOnlyBeArmedForMovableTiles()
     {
         var board = Slicing.GetBoard(1, 53);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Board = board,
             SelectedIndex = -1
@@ -394,7 +395,7 @@ public class SlicingContentTests
     public void SlicingSelection_RemainsVisibleWhenIntegrityUsesDamagedArt()
     {
         var board = Slicing.GetBoard(1, 53);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Source = SlicingSourceType.Lockbox,
             Board = board,
@@ -415,7 +416,7 @@ public class SlicingContentTests
         var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
         var route = board.Tiles.FindIndex(tile =>
             tile.Type is not SlicingTileType.Entry and not SlicingTileType.Core);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Source = SlicingSourceType.Lockbox,
             Board = board

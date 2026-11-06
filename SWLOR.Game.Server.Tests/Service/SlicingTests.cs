@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SlicingService;
+using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -283,7 +284,7 @@ public class SlicingTests
     public void TraceBonus_CountsEquipmentLockpicking()
     {
         var session = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "SlicingService", "SlicingSession.cs"));
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Crafting", "SlicingSessionService.cs"));
         var stat = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stat.cs"));
         var getLockpicking = Between(stat, "public static int GetLockpicking", "public static int GetStealth");
 
@@ -408,7 +409,7 @@ public class SlicingTests
     public void RevealOrientation_RejectsDecoysAndMarksRouteTiles()
     {
         var board = Slicing.GetBoard(2, 53);
-        var session = new SlicingSession.ActiveSlicingSession { Board = board };
+        var session = new ActiveSlicingSession { Board = board };
         var decoyIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex < 0);
         var routeIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex >= 0);
 
@@ -421,7 +422,7 @@ public class SlicingTests
     [Test]
     public void SessionToolGuard_RemainsClosedAfterThePrimedEffectClears()
     {
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             HasUsedTool = true,
             PrimedTool = SlicingToolType.Invalid
@@ -436,10 +437,10 @@ public class SlicingTests
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "SlicingService",
-            "SlicingSession.cs"));
-        var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
+            "Domain",
+            "Crafting",
+            "SlicingSessionService.cs"));
+        var validateAction = Between(source, "private string ValidateAction", "private bool TryClaim");
 
         validateAction.Should().Contain("session.PrimedToolItem != OBJECT_INVALID");
         validateAction.Should().Contain("GetIsObjectValid(session.PrimedToolItem)");
@@ -454,7 +455,7 @@ public class SlicingTests
     [Test]
     public void ActionCost_DoesNotMutateFreeActionsUntilTheActionSucceeds()
     {
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             PrimedTool = SlicingToolType.NullSignatureLattice
         };
@@ -482,12 +483,12 @@ public class SlicingTests
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "SlicingService",
-            "SlicingSession.cs"));
-        var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
-        var swap = Between(source, "public static bool SwapSelectedWith", "public static bool ActivateTool");
-        var rotate = Between(source, "public static bool RotateSelected", "public static bool SwapSelectedWith");
+            "Domain",
+            "Crafting",
+            "SlicingSessionService.cs"));
+        var validateAction = Between(source, "private string ValidateAction", "private bool TryClaim");
+        var swap = Between(source, "public bool SwapSelectedWith", "public bool ActivateTool");
+        var rotate = Between(source, "public bool RotateSelected", "public bool SwapSelectedWith");
 
         validateAction.IndexOf("GetIsInCombat(player)", StringComparison.Ordinal)
             .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal));
@@ -537,12 +538,12 @@ public class SlicingTests
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "SlicingService",
-            "SlicingSession.cs"));
-        var tryClaim = Between(source, "private static bool TryClaim", "private static bool PrepareAction");
+            "Domain",
+            "Crafting",
+            "SlicingSessionService.cs"));
+        var tryClaim = Between(source, "private bool TryClaim", "private bool PrepareAction");
 
-        var ownerMismatchBlockEnd = tryClaim.IndexOf("_sessions.Remove(owner);", StringComparison.Ordinal);
+        var ownerMismatchBlockEnd = tryClaim.IndexOf("_slicing.RemoveSession(owner);", StringComparison.Ordinal);
         var committedCheckConditionStart = tryClaim.IndexOf(
             "if (!string.IsNullOrWhiteSpace(owner) &&",
             ownerMismatchBlockEnd,
@@ -569,10 +570,12 @@ public class SlicingTests
 
     private static T InvokeSessionMethod<T>(string name, params object[] arguments)
     {
-        var method = typeof(SlicingSession).GetMethod(
+        // The private rules read no collaborator, so the instance needs none.
+        var service = new SWLOR.Game.Server.Domain.Crafting.SlicingSessionService(null!, null!, null!, null!, null!, null!);
+        var method = typeof(SWLOR.Game.Server.Domain.Crafting.SlicingSessionService).GetMethod(
             name,
-            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
-        return (T)method.Invoke(null, arguments)!;
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        return (T)method.Invoke(service, arguments)!;
     }
 
     private static string Between(string source, string start, string end)

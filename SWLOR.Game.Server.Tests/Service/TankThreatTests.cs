@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature;
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class TankThreatTests
 {
-    // The enmity and recast facades resolve their instances from a container.
+    // The enmity and recast facades, and the combat recorder a status effect checks, resolve from a container.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 

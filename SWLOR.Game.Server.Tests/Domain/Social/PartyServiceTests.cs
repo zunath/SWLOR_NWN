@@ -3,7 +3,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
@@ -57,7 +59,12 @@ public class PartyServiceTests
 
         _service = new PartyService();
         // Aura code that runs when the party changes asks the Party facade, which resolves this instance.
-        _provider = ContainerHost.Create(new ServiceCollection().AddSingleton<IPartyService>(_service));
+        // A party change refreshes the telegraph colors; what these tests prove is the party cache, so that is a stand-in.
+        var telegraph = ScriptedProxy.Create<ITelegraphService>(out var telegraphScript);
+        telegraphScript.On("UpdateShadersForPlayers", _ => null);
+        _provider = ContainerHost.Create(new ServiceCollection()
+            .AddSingleton<IPartyService>(_service)
+            .AddSingleton(telegraph));
         _containerScope = CompositionRoot.InstallForTests(_provider);
         _engineScope = NWScriptRuntime.Override(_engine);
         _pluginScope = EventsPluginRuntime.Override(_events);

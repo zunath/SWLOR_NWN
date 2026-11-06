@@ -8,6 +8,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.TelegraphService;
+using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -61,11 +62,11 @@ public class TelegraphTests
         bool isHostile,
         TelegraphColorType expected)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("SelectTelegraphColorType", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(TelegraphInstance)
+            .GetMethod("SelectTelegraphColorType", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         var actual = (TelegraphColorType)method.Invoke(
-            null,
+            NewInstance(),
             new object[] { isOwnTelegraph, isPartyMemberTelegraph, isHostile })!;
 
         actual.Should().Be(expected);
@@ -202,10 +203,10 @@ public class TelegraphTests
         var candidates = new[] { persistentIndicator }
             .Concat(activationWarnings)
             .ToArray();
-        var selector = typeof(Telegraph)
-            .GetMethod("SelectTelegraphsForRendering", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var selector = typeof(TelegraphInstance)
+            .GetMethod("SelectTelegraphsForRendering", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
-        var selected = (ActiveTelegraph[])selector.Invoke(null, new object[] { candidates })!;
+        var selected = (ActiveTelegraph[])selector.Invoke(NewInstance(), new object[] { candidates })!;
 
         selected.Should().HaveCount(Telegraph.MaxRenderCount);
         selected.Should().OnlyContain(telegraph => !telegraph.Data.IsPersistentAreaIndicator);
@@ -277,11 +278,11 @@ public class TelegraphTests
         TelegraphColorType colorType,
         float rotation)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("PackTelegraphData", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(TelegraphInstance)
+            .GetMethod("PackTelegraphData", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         return (int)method.Invoke(
-            null,
+            NewInstance(),
             new object[]
             {
                 type,
@@ -290,6 +291,9 @@ public class TelegraphTests
                 rotation
             })!;
     }
+
+    // The pure helpers under test use neither the DM presence nor the party service.
+    private static TelegraphInstance NewInstance() => new(null!, null!);
 
     private static int ExtractPackedColor(int packed)
     {

@@ -5,11 +5,28 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Tests.Support;
+using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class AreaImpactTelegraphTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(false)]
     [TestCase(true)]
     public void RadiantLanceProjectile_EndsAtCapturedDamageLineAfterMovement(bool casterMoves)
@@ -129,8 +146,9 @@ public class AreaImpactTelegraphTests
     [Test]
     public void CapturedGeometrySurvivesMarkerRemovalWithoutFollowingMutableData()
     {
-        var telegraphs = (Dictionary<string, ActiveTelegraph>)typeof(Telegraph)
-            .GetField("_allTelegraphs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var telegraphs = (Dictionary<string, ActiveTelegraph>)typeof(TelegraphInstance)
+            .GetField("_allTelegraphs", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_facades.Get<SWLOR.Game.Server.Domain.Combat.ITelegraphService>())!;
         var id = Guid.NewGuid().ToString();
         var original = DirectionalGeometry(TelegraphType.Cone, Vector3.Zero, Vector3.UnitX);
         var data = new TelegraphData

@@ -27,8 +27,8 @@ public class AIModelTests
         Opening
     }
 
-    // The AI scoring asks the companion control facade whether a creature is a registered companion, and the enmity
-    // facade reads the instance's tables; both resolve from the server's registrations.
+    // The AI scoring asks the companion control facade whether a creature is a registered companion, applying a status
+    // effect checks the combat recorder, and the enmity facade reads the instance's tables; both resolve from the server's registrations.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
     private EnmityService _enmity = null!;

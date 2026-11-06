@@ -254,8 +254,8 @@ public class AreaShapeElevationTests
 
     private static bool InvokeTelegraphShape(Vector3 position, TelegraphType shape, Vector2 size)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("IsPositionInTelegraph", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(SWLOR.Game.Server.Domain.Combat.TelegraphService)
+            .GetMethod("IsPositionInTelegraph", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var data = new TelegraphData
         {
             Shape = shape,
@@ -264,6 +264,7 @@ public class AreaShapeElevationTests
             Size = size
         };
 
-        return (bool)method.Invoke(null, new object[] { position, data })!;
+        // The shape tests use neither the DM presence nor the party service.
+        return (bool)method.Invoke(new SWLOR.Game.Server.Domain.Combat.TelegraphService(null!, null!), new object[] { position, data })!;
     }
 }

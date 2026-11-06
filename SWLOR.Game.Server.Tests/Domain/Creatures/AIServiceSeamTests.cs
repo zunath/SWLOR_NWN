@@ -28,7 +28,8 @@ public class AIServiceSeamTests
     private AIBench _bench = null!;
     private DefaultSeamsAIService _service = null!;
 
-    // The default enmity calls go through the Enmity facade, which resolves from a container.
+    // The default enmity calls and the default companion rules go through facades, which resolve from the server's
+    // registrations.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 

@@ -5089,8 +5089,8 @@
     "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CompanionControlService/CompanionControl.cs",
-    "Line": 996,
+    "File": "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs",
+    "Line": 1004,
     "Member": "SendResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"

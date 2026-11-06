@@ -18,6 +18,7 @@
     { "name": "ChatPortraitTells", "domain": "Social" },
     { "name": "CombatPoint", "domain": "Combat" },
     { "name": "Communication", "domain": "Core" },
+    { "name": "CompanionControl", "domain": "Creatures" },
     { "name": "Conversation", "domain": "Core" },
     { "name": "ConversationMenu", "domain": "Core" },
     { "name": "Craft", "domain": "Crafting" },

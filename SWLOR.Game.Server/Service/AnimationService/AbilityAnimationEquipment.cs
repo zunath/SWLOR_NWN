@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -8,7 +7,6 @@ namespace SWLOR.Game.Server.Service.AnimationService;
 public static class AbilityAnimationEquipment
 {
     private sealed record WeaponData(int? Wield, int? Size, int? Type);
-    private static readonly Dictionary<BaseItem, WeaponData> WeaponRows = new();
 
     public static bool IsCompatible(AnimationEquipmentRequirement requirement, uint creature)
     {
@@ -36,12 +34,9 @@ public static class AbilityAnimationEquipment
     {
         if (!GetIsObjectValid(item)) return AnimationWeaponGrip.Empty;
         var type = GetBaseItemType(item);
-        if (!WeaponRows.TryGetValue(type, out var row))
-        {
-            int? Read(string column) => int.TryParse(Get2DAString("baseitems", column, (int)type), out var value) ? value : null;
-            row = new WeaponData(Read("WeaponWield"), Read("WeaponSize"), Read("WeaponType"));
-            WeaponRows[type] = row;
-        }
+        // baseitems.2da does not change while the server runs, so the row is read on each call instead of cached.
+        int? Read(string column) => int.TryParse(Get2DAString("baseitems", column, (int)type), out var value) ? value : null;
+        var row = new WeaponData(Read("WeaponWield"), Read("WeaponSize"), Read("WeaponType"));
         return ResolveGrip(type, row.Wield, row.Size, row.Type, creatureSize);
     }
 

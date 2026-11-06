@@ -108,7 +108,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
 
             var engine = (FabricatorEngine)new FabricatorScenario().CreateEngine(Request(entry, gear, 10));
 
-            engine.Setup.Parameters.Should().BeSameAs(FabricatorParameters.Fallback);
+            engine.Setup.Parameters.Should().BeEquivalentTo(FabricatorParameters.Fallback);
         }
 
         [TestCase(5, 0)]

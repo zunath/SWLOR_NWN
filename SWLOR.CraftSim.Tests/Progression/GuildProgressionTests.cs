@@ -142,9 +142,8 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void TheGuildRankThresholdsAreTheServers()
         {
-            Guild.LoadData();
-            Guild.MaxRank.Should().Be(5);
-            Guild.GetGPRequiredForRank(4).Should().Be(45_000);
+            ServerGuildRules.MaxRank.Should().Be(5);
+            ServerGuildRules.GetGPRequiredForRank(4).Should().Be(45_000);
         }
     }
 }

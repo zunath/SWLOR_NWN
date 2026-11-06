@@ -49,6 +49,10 @@ if (args.Length == 0 || args[0] is "-h" or "--help" or "help")
     return 0;
 }
 
+// The static facades (Guild, Craft, DB...) forward to the service container, which the game server builds at boot. This tool builds it itself.
+if (!SWLOR.Game.Server.Composition.CompositionRoot.IsBuilt)
+    SWLOR.Game.Server.Composition.CompositionRoot.Build(SWLOR.Game.Server.Composition.CompositionRoot.ServerHost);
+
 try
 {
     return args[0] switch

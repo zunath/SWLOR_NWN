@@ -88,8 +88,9 @@ public class DMChatCommandTests
         var targetingSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Targeting.cs"));
+            "Domain",
+            "Combat",
+            "TargetingService.cs"));
         var dmChatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

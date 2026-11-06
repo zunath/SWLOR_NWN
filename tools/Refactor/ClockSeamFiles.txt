@@ -5,8 +5,8 @@
 Service/Combat.cs
 Service/CombatService/**
 Service/CombatPoint.cs
-Service/OrdinaryAttackTraits.cs
-Service/PairedRangedTraits.cs
+Domain/Combat/OrdinaryAttackTraitsService.cs
+Domain/Combat/PairedRangedTraitsService.cs
 Service/StatusEffect.cs
 Service/StatusEffectService/**
 Service/Stat.cs
@@ -23,7 +23,10 @@ Service/Recast.cs
 Service/RecastTimestamp.cs
 Service/AbilityCooldownVisual.cs
 Service/Enmity.cs
+Domain/Combat/CombatPointService.cs
+Domain/Combat/EnmityService.cs
 Domain/Combat/MeleeTechniqueService.cs
+Domain/Combat/RecastService.cs
 Service/AIService/**
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs

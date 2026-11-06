@@ -28,7 +28,8 @@ public class AIServiceSeamTests
     private AIBench _bench = null!;
     private DefaultSeamsAIService _service = null!;
 
-    // The default companion rules are the companion control facade, which resolves from the server's registrations.
+    // The default enmity calls and the default companion rules go through facades, which resolve from the server's
+    // registrations.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
@@ -49,9 +50,9 @@ public class AIServiceSeamTests
     [TearDown]
     public void TearDown()
     {
-        _facadeScope.Dispose();
         RealEnmityTables.Clear();
         _bench.Dispose();
+        _facadeScope.Dispose();
     }
 
     [Test]

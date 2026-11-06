@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public FlurryStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 10;
+            StatGroup.Stats[StatType.ThrowingAttackDelayReductionToBleedingTargetPercent] = 10;
             StatGroup.Stats[StatType.DefensePercentAdjustment] = -10;
         }
     }

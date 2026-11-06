@@ -79623,7 +79623,7 @@
                     "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -79673,7 +79673,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -79702,6 +79702,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_datachip"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -79732,7 +79752,7 @@
                     "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -79782,7 +79802,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -79811,6 +79831,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_keycard_a"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -79841,7 +79881,7 @@
                     "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -79891,7 +79931,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -79920,6 +79960,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_keycard_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -79950,7 +80010,7 @@
                     "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80000,7 +80060,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80029,6 +80089,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_keycard_c"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -80059,7 +80139,7 @@
                     "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80109,7 +80189,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80138,6 +80218,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_codecard"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -80168,7 +80268,7 @@
                     "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80218,7 +80318,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80247,6 +80347,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_circuit"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -80277,7 +80397,7 @@
                     "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80327,7 +80447,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80356,6 +80476,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_powercell"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -80386,7 +80526,7 @@
                     "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80436,7 +80576,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80465,6 +80605,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_idtags"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -80495,7 +80655,7 @@
                     "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
@@ -80545,7 +80705,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -80574,6 +80734,26 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "prop_datadisc"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "NO_MARKET_LISTING"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",

@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (ClearTargetActionsOnHit)
                 {
                     ActionInterruption.ClearActions(target);
-                    UsePerkFeat.InterruptAbilityActivation(target);
+                    UsePerkFeat.InterruptAbilityActivationFromHit(target);
                 }
 
                 if (RestoreStaminaOnHit > 0)

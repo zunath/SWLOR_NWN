@@ -113,6 +113,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsAreaDescriptionEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ManageButtonText
         {
             get => Get<string>();
@@ -233,6 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var property = DB.Get<WorldProperty>(propertyId);
+            IsAreaDescriptionEnabled = property.PropertyType != PropertyType.City &&
+                                       Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.ChangeDescription);
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
@@ -379,6 +387,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
+        public Action OnOpenAreaDescription() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyAreaDescription);
+        };
+
         public Action OnOpenStorage() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyItemStorage);
@@ -511,6 +524,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             structure.CustomName = StructureName;
 
             DB.Set(structure);
+            Property.ApplyStructureWorldName(placeable, structure);
 
             StructureNames[SelectedStructureIndex] = StructureName;
 

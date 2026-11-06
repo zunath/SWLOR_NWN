@@ -21,11 +21,9 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int Industry { get; set; }
         public int Vibroblade { get; set; }
         public int Vibroknife { get; set; }
-        public int Lightsaber { get; set; }
         public int HeavyVibroblade { get; set; }
         public int Spear { get; set; }
         public int TwinBlade { get; set; }
-        public int Saberstaff { get; set; }
         public int Katar { get; set; }
         public int Staff { get; set; }
         public int Pistol { get; set; }

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ManageStructures)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 700f, 340f)
                 .SetTitle("Manage Structures")
                 .BindOnClosed(model => model.OnCloseWindow())
 
@@ -73,6 +73,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(35f);
 
                         row.BindIsVisible(model => model.IsHouseSpecializationVisible);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .BindOnClicked(model => model.OnOpenAreaDescription())
+                            .BindIsEnabled(model => model.IsAreaDescriptionEnabled)
+                            .SetText("Area Description")
+                            .SetHeight(35f);
                     });
                 })
 

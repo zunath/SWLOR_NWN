@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using FluentAssertions;
 using NUnit.Framework;
@@ -28,7 +29,7 @@ public class AIProfilePerformanceTests
     [Test]
     public void DefaultProfileBuild_IsCheapEnoughForStartupValidation()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var stopwatch = Stopwatch.StartNew();
 
         for (var count = 0; count < 50; count++)

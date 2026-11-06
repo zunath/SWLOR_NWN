@@ -38,7 +38,8 @@
     },
     "Abilities": {
       "services": [
-        "Ability", "AbilityCooldownVisual", "QuickCast", "Mimicry", "MimicryLoadouts"
+        "Ability", "AbilityCooldownVisual", "AbilityTargetingCache", "FieldEngineerPulseEmitters", "ForceControlCooldowns",
+        "QuickCast", "ReviveHistory", "Mimicry", "MimicryLoadouts"
       ],
       "featureFolders": [
         "AbilityDefinition"

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
@@ -30,7 +31,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfileAbilityActions_AllReferenceRegisteredAbilities()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
 
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
@@ -46,7 +47,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_ExposeEveryRegisteredAbilityFeat()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
@@ -65,7 +66,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_CanEvaluateEveryRegisteredAbilityAction()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredAbilities = Ability.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
@@ -99,7 +100,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_UseAbilitySpecificAIMetadata()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var beastActions = profiles[AIProfileType.BeastCompanion].Actions
@@ -126,7 +127,7 @@ public class AIProfileValidationTests
     [Test]
     public void DroidProfile_SteelShoulderUsesTheAbilityTargetSelector()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.TwinGuardStance1);
         var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
         var action = profile.Actions.Single(action => action.Feat == FeatType.TwinGuardStance1);
@@ -142,7 +143,7 @@ public class AIProfileValidationTests
     [TestCase(FeatType.SoulStorm1)]
     public void DroidProfile_HitPointSpendingAbilitiesApplyHealthReservesToCustomScores(FeatType feat)
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(feat);
         ability.AIHitPointCostPercent.Should().NotBeNull();
         // Isolate profile composition from the NWN engine's live Might and hostile-cluster reads.
@@ -165,14 +166,14 @@ public class AIProfileValidationTests
         }
         finally
         {
-            Ability.CacheData();
+            AbilityCache.Load();
         }
     }
 
     [Test]
     public void NPCHostileSingleTargetAbilities_RequireEnemyTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.Provoke1,
@@ -194,7 +195,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCTargetedHostileAreaAbilities_RequireEnemyTargetsForAISelection()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.ScorchingBreath,
@@ -215,7 +216,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCSelfCenteredHostileAreaAbilities_DoNotRequireActivationTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.RupturingQuake,
@@ -236,7 +237,7 @@ public class AIProfileValidationTests
     [Test]
     public void PlayerLocationSelectableHostileAreaAbilities_RequireLocationsNotObjects()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
 
         ability.IsHostileAbility.Should().BeTrue();
@@ -248,7 +249,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCSelfBuffAbilities_DoNotRequireTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.IronCarapace);
 
         ability.IsHostileAbility.Should().BeFalse();

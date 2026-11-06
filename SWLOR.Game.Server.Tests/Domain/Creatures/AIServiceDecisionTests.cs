@@ -35,7 +35,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
     [OneTimeSetUp]
     public void LoadTheAbilities()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
     }
 
     [SetUp]

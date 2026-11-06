@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
@@ -224,7 +225,7 @@ public class AIProfileBuilderTests
     [Test]
     public void DefaultProfiles_RegisterCoreProfiles()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
         profiles.Keys.Should().Contain(new[]

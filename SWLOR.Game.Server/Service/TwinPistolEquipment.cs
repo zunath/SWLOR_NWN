@@ -23,6 +23,24 @@ public static class TwinPistolEquipment
     public static bool IsChanging(uint creature) =>
         Instance.IsChanging(creature);
 
+    public static bool IsRevalidating(uint creature) =>
+        Instance.IsRevalidating(creature);
+
+    public static bool TryBeginRevalidation(uint creature) =>
+        Instance.TryBeginRevalidation(creature);
+
+    public static void EndRevalidation(uint creature) =>
+        Instance.EndRevalidation(creature);
+
+    public static bool TryGetFailedReturn(uint creature, out uint item, out InventorySlot slot) =>
+        Instance.TryGetFailedReturn(creature, out item, out slot);
+
+    public static void SetFailedReturn(uint creature, uint item, InventorySlot slot) =>
+        Instance.SetFailedReturn(creature, item, slot);
+
+    public static void ClearFailedReturn(uint creature) =>
+        Instance.ClearFailedReturn(creature);
+
     public static bool IsPairItem(uint item) =>
         Instance.IsPairItem(item);
 

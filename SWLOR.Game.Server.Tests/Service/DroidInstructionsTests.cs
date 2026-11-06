@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -91,7 +92,7 @@ public class DroidInstructionsTests
     [Test]
     public void EveryInstructionRankGrantsARegisteredCompanionAbility()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         var actions = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion]
             .Actions.Where(action => action.Type == AIActionType.Ability).Select(action => action.Feat).ToHashSet();
@@ -134,7 +135,7 @@ public class DroidInstructionsTests
     [Test]
     public void CapstonesCannotBeUploadedOrSelectedFromSavedDroidInstructions()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var capstones = Ability.GetAllAbilityDetails().Values
             .Where(ability => ability.RecastGroup == RecastGroup.Capstone)
             .Select(ability => ability.EffectiveLevelPerkType)
@@ -161,7 +162,7 @@ public class DroidInstructionsTests
     [Test]
     public void LeadershipForceAndPassiveWeaponTraitsRemainUnavailable()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         foreach (var (perk, detail) in Perk.GetAllPerks())
         foreach (var (rank, level) in detail.PerkLevels)

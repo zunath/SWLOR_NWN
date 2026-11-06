@@ -13,16 +13,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     public static class AbilityTargeting
     {
         private const float DefaultFriendlyTargetRadius = 5f;
-        private static readonly Dictionary<FeatType, AbilityTargetingDetail> _targetingByFeat = new();
 
         public static IReadOnlyDictionary<FeatType, AbilityTargetingDetail> GetAllTargetingDetails()
         {
-            return _targetingByFeat;
+            return AbilityTargetingCache.GetAll();
         }
 
         public static void CacheData(IReadOnlyDictionary<FeatType, AbilityDetail> abilities)
         {
-            _targetingByFeat.Clear();
+            AbilityTargetingCache.Clear();
 
             foreach (var (feat, ability) in abilities)
             {
@@ -33,10 +32,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (!ability.Targeting.UpdatesClientTargeting)
                     continue;
 
-                _targetingByFeat[feat] = ability.Targeting;
+                AbilityTargetingCache.Set(feat, ability.Targeting);
             }
 
-            Console.WriteLine($"Loaded {_targetingByFeat.Count} ability targeting overrides.");
+            Console.WriteLine($"Loaded {AbilityTargetingCache.GetAll().Count} ability targeting overrides.");
         }
 
         public static void RefreshClientTargeting(uint creature)
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!IsClientControlled(creature))
                 return;
 
-            foreach (var (feat, targeting) in _targetingByFeat)
+            foreach (var (feat, targeting) in AbilityTargetingCache.GetAll())
             {
                 var hasFeat = QuickCast.KnowsFeat(creature, feat);
                 var sizeX = targeting.ResolveSizeX(creature, hasFeat);

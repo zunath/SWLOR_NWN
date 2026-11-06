@@ -28,6 +28,8 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     private readonly Dictionary<uint, (uint Main, uint Spare)> _pairs = new();
     private readonly HashSet<uint> _changing = new();
     private readonly HashSet<uint> _refreshingAppearance = new();
+    private readonly HashSet<uint> _revalidating = new();
+    private readonly Dictionary<uint, (uint Item, InventorySlot Slot)> _failedReturns = new();
 
     private readonly IItemService _item;
 
@@ -37,6 +39,30 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     }
 
     public bool IsChanging(uint creature) => _changing.Contains(creature);
+
+    public bool IsRevalidating(uint creature) => _revalidating.Contains(creature);
+
+    public bool TryBeginRevalidation(uint creature) => _revalidating.Add(creature);
+
+    public void EndRevalidation(uint creature) => _revalidating.Remove(creature);
+
+    public bool TryGetFailedReturn(uint creature, out uint item, out InventorySlot slot)
+    {
+        if (_failedReturns.TryGetValue(creature, out var failure))
+        {
+            item = failure.Item;
+            slot = failure.Slot;
+            return true;
+        }
+
+        item = OBJECT_INVALID;
+        slot = default;
+        return false;
+    }
+
+    public void SetFailedReturn(uint creature, uint item, InventorySlot slot) => _failedReturns[creature] = (item, slot);
+
+    public void ClearFailedReturn(uint creature) => _failedReturns.Remove(creature);
 
     // A droid has no client; its controlling player gets the explanation.
     private uint MessageRecipient(uint creature) => IsDroid(creature) ? GetMaster(creature) : creature;

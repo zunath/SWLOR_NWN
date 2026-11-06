@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -25,9 +26,20 @@ public class AIModelTests
         Opening
     }
 
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
     }
@@ -37,6 +49,7 @@ public class AIModelTests
     {
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
+        _facadeScope.Dispose();
     }
 
     [Test]

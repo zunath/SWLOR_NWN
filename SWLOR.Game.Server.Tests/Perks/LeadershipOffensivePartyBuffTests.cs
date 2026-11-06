@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -15,6 +16,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class LeadershipOffensivePartyBuffTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly Func<AbilityDetail, int, bool, bool> IsSuccessfulImpact = typeof(Combat)
         .GetMethod("IsSuccessfulHostileAbilityImpact", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<AbilityDetail, int, bool, bool>>();

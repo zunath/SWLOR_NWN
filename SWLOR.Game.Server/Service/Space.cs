@@ -1929,6 +1929,7 @@ namespace SWLOR.Game.Server.Service
             if (_shipNPCs.ContainsKey(creature))
             {
                 _shipNPCs.Remove(creature);
+                ClearNpcRole(creature);
             }
         }
 

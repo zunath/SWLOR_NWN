@@ -61,12 +61,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Whether a recipient already carries a copy of the aura from a commander at least as strong (as much SOC),
+        /// How strong a commander's copy of an aura is, for comparing it with another commander's: SOC raises an aura by up
+        /// to <see cref="SpaceCommand.LeadershipMaximumBonusPercent"/> percent over SOC 10, and the Leadership rank raises
+        /// that result by its own percent.
+        /// </summary>
+        public static int Strength(float socialProgress, int leadershipPercent) =>
+            (int)Math.Round((100 + SpaceCommand.LeadershipMaximumBonusPercent * socialProgress) * (100 + leadershipPercent), MidpointRounding.AwayFromZero);
+
+        /// <summary>
+        /// Whether a recipient already carries a copy of the aura from a commander at least as strong (<see cref="Strength"/>),
         /// which keeps two commanders' copies from replacing each other every refresh.
         /// </summary>
-        public static bool HasEqualOrStrongerCopy(int sourceSocial, IEnumerable<int> otherSourceSocials)
+        public static bool HasEqualOrStrongerCopy(int sourceStrength, IEnumerable<int> otherStrengths)
         {
-            return otherSourceSocials.Any(other => other >= sourceSocial);
+            return otherStrengths.Any(other => other >= sourceStrength);
         }
     }
 }

@@ -579,7 +579,8 @@ namespace SWLOR.Game.Server.Service
             var given = new List<string>();
             foreach (var resref in payout.Items.Skip(itemsGiven))
             {
-                if (!string.IsNullOrWhiteSpace(resref) && !GetIsObjectValid(CreateItemOnObject(resref, player)))
+                // The inventory count decides: an item that merged into a stack can come back as an invalid handle.
+                if (!string.IsNullOrWhiteSpace(resref) && FarmItems.GiveToInventory(player, resref, 1) < 1)
                     break;
 
                 given.Add(resref);

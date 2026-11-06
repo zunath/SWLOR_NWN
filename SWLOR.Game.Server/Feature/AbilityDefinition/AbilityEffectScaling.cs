@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds);
         }
 
-        private static float GetScalingProgress(int stat)
+        public static float GetScalingProgress(int stat)
         {
             var scaledStat = Math.Clamp(stat, ScalingBaselineStat, ScalingCapStat);
             return (scaledStat - ScalingBaselineStat) / (float)(ScalingCapStat - ScalingBaselineStat);

@@ -66,6 +66,10 @@ namespace SWLOR.Game.Server.Service
         public static int GetLeadershipBonusPercent(uint ship) =>
             LeadershipBonusPercent(GetCaptainLeadershipRank(SpaceCrew.GetAbilityUser(ship)));
 
+        /// <summary>The percent by which this commander's own Leadership rank strengthens the Command style.</summary>
+        public static int GetCommanderLeadershipBonusPercent(uint commander) =>
+            LeadershipBonusPercent(GetCaptainLeadershipRank(commander));
+
         /// <summary>The percent the captain's Leadership rank adds to the effectiveness of the crew aboard.</summary>
         public static int GetLeadershipCrewBonusPercent(uint ship) => LeadershipCrewBonusPercent(GetCaptainLeadershipRank(ship));
 

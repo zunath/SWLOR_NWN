@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -265,6 +266,33 @@ public class SpaceAbilityEngineTests
     }
 
     [Test]
+    public void AuraStrength_CountsLeadershipAsWellAsSocial()
+    {
+        var soc14 = AbilityEffectScaling.GetScalingProgress(14);
+        var soc15 = AbilityEffectScaling.GetScalingProgress(15);
+
+        SpaceAuraRules.Strength(soc14, 25).Should().BeGreaterThan(SpaceAuraRules.Strength(soc14, 0),
+            "at equal Social the higher Leadership gives the stronger aura");
+        SpaceAuraRules.Strength(soc14, 25).Should().BeGreaterThan(SpaceAuraRules.Strength(soc15, 0),
+            "Leadership 50 adds more than one point of Social");
+        SpaceAuraRules.Strength(soc15, 0).Should().BeGreaterThan(SpaceAuraRules.Strength(soc14, 0));
+
+        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(soc14, 25), new[] { SpaceAuraRules.Strength(soc14, 0) })
+            .Should().BeFalse("an earlier weaker copy does not keep out the stronger commander");
+        SpaceAuraRules.HasEqualOrStrongerCopy(SpaceAuraRules.Strength(soc14, 0), new[] { SpaceAuraRules.Strength(soc14, 25) })
+            .Should().BeTrue();
+    }
+
+    [Test]
+    public void ACarrierThatDiesNormally_RecallsItsFightersAndForgetsItsRole()
+    {
+        var space = File.ReadAllText(Path.Combine(RepositoryRoot(), "SWLOR.Game.Server", "Service", "Space.cs")).Replace("\r\n", "\n");
+        var death = space[space.IndexOf("public static void CreatureDeath()", StringComparison.Ordinal)..];
+        death[..death.IndexOf("public static ShipStatus GetShipStatus(", StringComparison.Ordinal)]
+            .Should().Contain("ClearNpcRole(creature);", "the death handler takes the ship out of the list the AI tick's cleanup walks");
+    }
+
+    [Test]
     public void LostCopies_TwoCommandersOnOneShip_TheWeakerAuraTakesOverWhenTheStrongerEnds()
     {
         // Formation's status does not stack, so a ship holds one copy at a time: here, which commander's copy it holds.
@@ -380,8 +408,11 @@ public class SpaceAbilityEngineTests
             .And.BeLessThan(reconcile.IndexOf("GetCommandRange(source)", StringComparison.Ordinal));
         auras.Should().Contain("StatusEffect.ApplyStatusEffect(source, ship, statusEffect, 0f)")
             .And.Contain("StatusEffect.RemoveStatusEffect(ship, aura.StatusEffect, source, false);")
-            .And.Contain("GetAbilityScore(GetCommander(source, aura.StatusEffect), AbilityType.Social)")
-            .And.Contain("GetAbilityScore(GetCommander(effect.Source, aura.StatusEffect), AbilityType.Social)");
+            .And.Contain("var sourceStrength = GetAuraStrength(source, aura.StatusEffect);")
+            .And.Contain("? GetAuraStrength(effect.Source, aura.StatusEffect)")
+            .And.Contain("var commander = GetCommander(ship, statusEffect);")
+            .And.Contain("AbilityEffectScaling.GetScalingProgress(GetAbilityScore(commander, AbilityType.Social))")
+            .And.Contain("SpaceCommand.GetCommanderLeadershipBonusPercent(commander)");
 
         // The aura ends with the user's seat: on the refresh, and at once when they leave or disconnect.
         var refresh = auras[auras.IndexOf("public static void Refresh()", StringComparison.Ordinal)..];

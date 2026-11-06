@@ -251,8 +251,10 @@ public class SpaceW11nReviewFixTests
         ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));");
 
         var deliver = Between(incursions, "private static int DeliverPayout(", "/// <summary>A player who was offline");
-        deliver.IndexOf("CreateItemOnObject(resref, player)", StringComparison.Ordinal)
-            .Should().BeLessThan(deliver.IndexOf("CharacterCheckpoint.Save(player)", StringComparison.Ordinal));
+        deliver.IndexOf("FarmItems.GiveToInventory(player, resref, 1) < 1", StringComparison.Ordinal)
+            .Should().BeInRange(0, deliver.IndexOf("CharacterCheckpoint.Save(player)", StringComparison.Ordinal),
+                "a reward that merged into a stack counts as given, so the next login does not give it again");
+        deliver.Should().NotContain("CreateItemOnObject(");
         deliver.Should().NotContain("ExportSingleCharacter(");
         deliver.Should().Contain("return saved ? itemsGiven : -1;", "a payout whose save failed is not claimed: the mark keeps what was given from being given twice");
     }

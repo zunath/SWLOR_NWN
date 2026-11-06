@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
@@ -217,15 +218,15 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(ship, aura.StatusEffect, source))
                 return true;
 
-            var sourceSocial = GetAbilityScore(GetCommander(source, aura.StatusEffect), AbilityType.Social);
+            var sourceStrength = GetAuraStrength(source, aura.StatusEffect);
             var others = StatusEffect.GetCreatureStatusEffects(ship)
                 .GetAllEffects()
                 .Where(effect => effect.GetType() == aura.StatusEffect && effect.Source != source)
                 .Select(effect => GetIsObjectValid(effect.Source)
-                    ? GetAbilityScore(GetCommander(effect.Source, aura.StatusEffect), AbilityType.Social)
+                    ? GetAuraStrength(effect.Source, aura.StatusEffect)
                     : 0)
                 .ToList();
-            if (SpaceAuraRules.HasEqualOrStrongerCopy(sourceSocial, others))
+            if (SpaceAuraRules.HasEqualOrStrongerCopy(sourceStrength, others))
                 return false;
 
             var statusEffect = StatusEffect.CreateStatusEffect(aura.StatusEffect);
@@ -237,6 +238,15 @@ namespace SWLOR.Game.Server.Service
 
             aura.AnnouncedTo.Add(ship);
             return true;
+        }
+
+        /// <summary>How strong a ship's copy of an aura is: its commander's Social and Leadership (<see cref="SpaceAuraRules.Strength"/>).</summary>
+        private static int GetAuraStrength(uint ship, Type statusEffect)
+        {
+            var commander = GetCommander(ship, statusEffect);
+            return SpaceAuraRules.Strength(
+                AbilityEffectScaling.GetScalingProgress(GetAbilityScore(commander, AbilityType.Social)),
+                SpaceCommand.GetCommanderLeadershipBonusPercent(commander));
         }
 
         /// <summary>Whose stats a ship's copy of an aura carries: the aura's recorded user, otherwise the ship.</summary>

@@ -2,6 +2,7 @@
 using System.Linq;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         private void PopulateResists()
         {
-            foreach (var type in Resistance.GetAllResistanceTypes())
+            foreach (var type in ResistanceRules.EnumerateResistanceTypes())
             {
                 Resists[type] = 0;
             }

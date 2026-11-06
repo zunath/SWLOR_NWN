@@ -3,11 +3,27 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PercentageDamageOverTimeTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope?.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [TestCase(100, 8, 1, 4)]
     [TestCase(501, 8, 1, 21)]
     [TestCase(14649, 8, 1, 36)]

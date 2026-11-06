@@ -402,3 +402,27 @@ them is not an option before facade removal (P2-Z).
   parity check and the sync match master's name to the new one. P2-Z facade removal uses the same file.
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in
   content code with injection where the caller is itself converted, delete facades area by area.
+- **P2-Z2 namespace consolidation (owner decision, 2026-11-06), right after P2-Z, one scripted pull request in a quiet
+  window (no open item branches, master just synced).** Today `Service.<Name>Service` is a namespace and `<Name>Service`
+  a class (42 namespace-versus-type clashes on 2026-11-06), Combat alone has `Domain.Combat`, `Service.CombatService`,
+  `Service.CombatRecorderService`, `Service.PvpCombatService` and `Service.ResistanceService`, and `Domain.Combat` hides
+  the `Service.Combat` facade from other `Domain.*` code (hence the interim `Service.Combat.X`, which P2-Z removes).
+  - **Move:** every `Service.<Name>Service[.<Topic>]` to `Domain.<Domain>[.<Topic>]`, with the domain from `DomainMap.json`
+    and the files following the namespace. A topic child keeps a topic name, never a `Service` suffix
+    (`Domain.Crafting.Minigame`). Dry run on 2026-11-06: no type-name clashes across all support folders.
+  - **Script:** a rerunnable `tools/Refactor/Move-SupportNamespaces.ps1` rewrites `namespace` and `using` lines (about 7,900
+    `using` lines in 3,300 files) and fully qualified names, never by hand. The sync script reruns it after each later
+    master merge, so new master files land in place until cutover.
+  - **Other clashes:** rename `Domain.Core` to `Domain.Foundation` (it hides the root `Core` namespace from `Domain.*` code),
+    and `Feature.PerkDefinition.Beast` (hides `Entity.Beast`), `Feature.AppearanceDefinition.AppearancePreview` and
+    `Feature.AppearanceDefinition.RacialAppearance` (namespace and type share a name). `Feature.AbilityDefinition.Mimicry`
+    and `.Performance` stop clashing when their facades go; the guard confirms it. Give anything still in `Service` a home.
+  - **Reflection:** handler names change, so list them in `tools/Refactor/HandlerRenames.txt`.
+    `RecipeDefinitionLoader` sorts by `Type.FullName`: recipe order must not change. `CreatureStatusEffect` builds a source
+    key from `Type.FullName`: check nothing stores or compares it across a move. No entity stores a type name
+    (no `TypeNameHandling` or `AssemblyQualifiedName` on 2026-11-06); check again. Type emission order changes: the manifest
+    and characterization snapshots guard it.
+  - **Guard:** `UnitClassifier` and the cross-domain baseline classify by domain, since `Service.<Name>Service` is gone. A new
+    architecture test fails on a namespace segment equal to a type name in the server assembly, a leaf segment under two
+    parents, or any `Service.*Service` namespace, with no exceptions.
+  - **Verify:** the full end-of-phase set (unit and engine suites, parity, live smoke run).

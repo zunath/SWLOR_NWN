@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PvpCombatService;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -828,7 +829,7 @@ namespace SWLOR.Game.Server.Service
             if (stats.HasFlag(EquipmentRecordStats.Resistance))
             {
                 entity.Resistances ??= new Dictionary<ResistanceType, int>();
-                foreach (var type in Resistance.GetAllResistanceTypes())
+                foreach (var type in ResistanceRules.EnumerateResistanceTypes())
                 {
                     var amount = totals.GetResistance(type);
                     if ((entity.Resistances.TryGetValue(type, out var current) ? current : 0) == amount)

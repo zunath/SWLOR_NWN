@@ -888,7 +888,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (allies ? Space.IsShipHostile(activator, nearby) : !Space.IsShipEnemy(activator, nearby))
                     continue;
 
-                if (Space.GetShipStatus(nearby) == null)
+                // A crew member's hidden character can resolve to their own parked ship, but it is no ship out here.
+                if (!Space.IsShipInSpace(nearby) || Space.GetShipStatus(nearby) == null)
                     continue;
 
                 ships.Add(nearby);

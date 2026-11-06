@@ -385,7 +385,7 @@ crea_spawn_aft
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.MessageOnDeath
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
 
 crea_spawn_bef
   action      SWLOR.Game.Server.Service.Loot.SpawnStealLoot
@@ -501,7 +501,7 @@ droid_spawn
   action      SWLOR.Game.Server.Service.Droid.DroidOnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
 
 droid_spellcast
   action      SWLOR.Game.Server.Service.Droid.DroidOnSpellCastAt
@@ -603,7 +603,7 @@ item_eqp_bef
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerEquipItem
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipBefore
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnEquipBefore
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipBefore
 
 item_eqpval_aft
   action      SWLOR.Game.Server.Service.Droid.OnEquipmentChanged
@@ -617,7 +617,7 @@ item_eqpval_aft
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnEquipmentChanged
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
 
 item_eqpval_bef
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ValidateItemEquip
@@ -642,7 +642,7 @@ item_uneqp_aft
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceItemUnequipped
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnEquipmentChanged
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
 
 item_uneqp_bef
   action      SWLOR.Game.Server.Service.Droid.OnUnequipItem
@@ -652,7 +652,7 @@ item_uneqp_bef
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerUnequipItem
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnequipBefore
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnUnequipBefore
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnUnequipBefore
 
 item_use_bef
   action      SWLOR.Game.Server.Service.Item.UseItem
@@ -684,7 +684,7 @@ mod_acquire
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnAcquire
   action      SWLOR.Game.Server.Feature.MigrationDefinition.LootStatRevisionMigration.OnAcquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnAcquire
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnAcquire
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnAcquire
 
 mod_chat
   action      SWLOR.Game.Server.Service.Communication.ProcessNativeChatMessage
@@ -775,7 +775,7 @@ mod_enter
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnModuleEnter
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
 
 mod_equip
@@ -790,7 +790,7 @@ mod_equip
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnModuleEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEquip
 
 mod_exit
   action      SWLOR.Game.Server.Service.Ability.ClearAurasOnExit
@@ -882,7 +882,7 @@ mod_unacquire
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnUnacquire
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnUnacquire
 
 mod_unequip
   action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip
@@ -894,7 +894,7 @@ mod_unequip
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleUnequip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnModuleUnequip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleUnequip
 
 object_destroyed
   action      SWLOR.Game.Server.Service.AI.RemoveFromAlliesCache
@@ -976,7 +976,7 @@ pc_spawn
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
 
 pc_spellcastat
   action      SWLOR.Game.Server.Service.CompanionControl.OnHostileSpellCastAtOwner

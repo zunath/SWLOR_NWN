@@ -65,7 +65,7 @@ public class CraftCalculationCharacterizationTests
             string? failure = null;
             try
             {
-                detail = Craft.GetRecipeLevelDetail(level);
+                detail = CraftCalc.GetRecipeLevelDetail(level);
             }
             catch (Exception exception)
             {
@@ -92,7 +92,7 @@ public class CraftCalculationCharacterizationTests
             new[] { "requiredSkillRank" });
 
         foreach (var level in new[] { -5, 0, 1, 2, 3, 4, 5, 10, 25, 50, 53, 80, 1000 })
-            table.Add(level, Craft.GetRequiredSkillRankForRecipe(new RecipeDetail { Level = level }));
+            table.Add(level, CraftCalc.GetRequiredSkillRankForRecipe(new RecipeDetail { Level = level }));
 
         Snapshot.Verify("Craft", "GetRequiredSkillRankForRecipe", table);
     }
@@ -115,7 +115,7 @@ public class CraftCalculationCharacterizationTests
                 foreach (var limit in new int?[] { null, 10, 30, 50 })
                 {
                     var recipe = new RecipeDetail { Level = level, PracticeRankLimit = limit };
-                    table.Add(level, rank, limit, Craft.GetBaseRecipeXP(recipe, rank));
+                    table.Add(level, rank, limit, CraftCalc.GetBaseRecipeXP(recipe, rank));
                 }
             }
         }
@@ -152,8 +152,8 @@ public class CraftCalculationCharacterizationTests
                         modifier,
                         blueprintLevel,
                         reduction,
-                        Craft.CalculateBlueprintResearchCreditCost(RecipeType.Invalid, blueprintLevel, reduction),
-                        Craft.CalculateBlueprintResearchSeconds(RecipeType.Invalid, blueprintLevel, reduction));
+                        CraftCalc.CalculateBlueprintResearchCreditCost(RecipeType.Invalid, blueprintLevel, reduction),
+                        CraftCalc.CalculateBlueprintResearchSeconds(RecipeType.Invalid, blueprintLevel, reduction));
                 }
             }
         }
@@ -179,8 +179,8 @@ public class CraftCalculationCharacterizationTests
         {
             foreach (var damageType in Enum.GetValues<CombatDamageType>().OrderBy(type => DefinitionCell.Id(type)))
             {
-                var result = Craft.TryGetWeaponDamageTypeForEnhancement(subType, damageType, out var resolved);
-                table.Add(subType, damageType, Craft.IsWeaponDamageEnhancement(subType), result, resolved);
+                var result = CraftCalc.TryGetWeaponDamageTypeForEnhancement(subType, damageType, out var resolved);
+                table.Add(subType, damageType, CraftCalc.IsWeaponDamageEnhancement(subType), result, resolved);
             }
         }
 

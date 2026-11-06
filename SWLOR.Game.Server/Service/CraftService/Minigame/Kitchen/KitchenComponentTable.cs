@@ -13,11 +13,11 @@ public static class KitchenComponentTable
     public const string Water = "distilled_water";
 
     /// <summary>What an ingredient missing from the table does, so a new recipe still cooks until it gets a row.</summary>
-    public static readonly KitchenComponentFlavor Unlisted = Flavor(6, 0, 2);
+    public static KitchenComponentFlavor Unlisted => Flavor(6, 0, 2);
 
-    private static readonly KitchenComponentFlavor Dilution = new(KitchenIngredientKind.Dilute, FlavorVector.Zero);
+    private static KitchenComponentFlavor Dilution => new(KitchenIngredientKind.Dilute, FlavorVector.Zero);
 
-    private static readonly Dictionary<string, KitchenComponentFlavor> Flavors =
+    private static Dictionary<string, KitchenComponentFlavor> Flavors =>
         new(StringComparer.OrdinalIgnoreCase)
         {
             [Water] = Dilution,

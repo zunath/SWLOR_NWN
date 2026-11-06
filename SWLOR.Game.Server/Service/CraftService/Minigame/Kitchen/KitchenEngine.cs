@@ -23,9 +23,9 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
     private const string StockMeterPrefix = "stock.";
 
-    private static readonly KitchenAxis[] Axes = { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
-    private static readonly string[] AxisNames = { "Savory", "Sweet", "Spice" };
-    private static readonly string[] AxisIds = { SavoryMeterId, SweetMeterId, SpiceMeterId };
+    private static KitchenAxis[] Axes => new KitchenAxis[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
+    private static string[] AxisNames => new string[] { "Savory", "Sweet", "Spice" };
+    private static string[] AxisIds => new string[] { SavoryMeterId, SweetMeterId, SpiceMeterId };
 
     private readonly KitchenRecipe _recipe;
     private readonly KitchenStats _stats;

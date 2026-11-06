@@ -7,12 +7,29 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;
 
 /// <summary>Covers the XP multipliers CraftSim's XP-rate gate set for the Circuit, per recipe-level band, and the way every craft's XP applies them.</summary>
 public class CircuitXpMultiplierTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly int[] BandFirstLevels = { 1, 11, 21, 31, 41 };
     private static readonly int[] BandLastLevels = { 10, 20, 30, 40, 53 };
 

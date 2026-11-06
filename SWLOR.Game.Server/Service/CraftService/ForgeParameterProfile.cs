@@ -20,11 +20,11 @@ namespace SWLOR.Game.Server.Service.CraftService
     public sealed class ForgeParameterProfile : RecipeParameterProfile<ForgeParameters>
     {
         private const string MetalPrefix = "ref_";
-        private static readonly string[] HeatSealedPrefixes = { "lth_", "fiberp_" };
+        private static string[] HeatSealedPrefixes => new string[] { "lth_", "fiberp_" };
 
         // The generator's own per-parameter variation is off. The profile spreads recipes itself (see Jitter), by amounts that depend on
         // the level band, which the generator cannot express.
-        private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
+        private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
         {
             RecipeParameterDefinition.Integer("rangeCenter", "Forge Range Center", 20, 80),
             RecipeParameterDefinition.Integer("rangeWidth", "Forge Range Width", 8, 60),
@@ -38,23 +38,23 @@ namespace SWLOR.Game.Server.Service.CraftService
         // At the edge between two bands the last and first levels take a quarter of the neighbor band's value, so the step is not a cliff.
 
         /// <summary>The working range's width for metal goods.</summary>
-        private static readonly double[] MetalWidthCurve = { 36, 42, 22, 24, 24, 24 };
+        private readonly double[] MetalWidthCurve = { 36, 42, 22, 24, 24, 24 };
 
         /// <summary>The cooling rate of a mid-weight good.</summary>
-        private static readonly double[] CoolingCurve = { 0.5, 3, 3.5, 4.5, 4.26, 5.5 };
+        private readonly double[] CoolingCurve = { 0.5, 3, 3.5, 4.5, 4.26, 5.5 };
 
         /// <summary>How much faster the lightest goods cool than the heaviest, in Thermal points per action.</summary>
-        private static readonly double[] CoolingMassSpreadCurve = { 5, 3, 4, 9, 8, 6 };
+        private readonly double[] CoolingMassSpreadCurve = { 5, 3, 4, 9, 8, 6 };
 
         /// <summary>Added to the Thermal a piece starts at.</summary>
-        private static readonly double[] StartBiasCurve = { -8, 0, -8, 0, 0, 8 };
+        private readonly double[] StartBiasCurve = { -8, 0, -8, 0, 0, 8 };
 
         /// <summary>How far, either way, a recipe's name moves its range width, cooling rate, range center and starting Thermal.</summary>
-        private static readonly double[] WidthJitterCurve = { 4, 12, 4, 4, 0, 0 };
-        private static readonly double[] CoolingJitterCurve = { 0, 4, 4, 0, 0, 1 };
-        private static readonly double[] CenterJitterCurve = { 2, 6, 0, 4, 4, 4 };
-        private static readonly double[] ShareJitterCurve = { 0, 2, 0, 0, 0, 0 };
-        private static readonly double[] StartJitterCurve = { 0, 0, 16, 0, 8, 0 };
+        private readonly double[] WidthJitterCurve = { 4, 12, 4, 4, 0, 0 };
+        private readonly double[] CoolingJitterCurve = { 0, 4, 4, 0, 0, 1 };
+        private readonly double[] CenterJitterCurve = { 2, 6, 0, 4, 4, 4 };
+        private readonly double[] ShareJitterCurve = { 0, 2, 0, 0, 0, 0 };
+        private readonly double[] StartJitterCurve = { 0, 0, 16, 0, 8, 0 };
 
         /// <summary>The Shape share is spread this many times wider than the category table puts it.</summary>
         private const double ShareSpread = 2.0;
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         private const double HeatSealedExtraWidth = 16;
         private const double HeatSealedCoolingReduction = 1;
 
-        private static readonly IReadOnlyDictionary<RecipeType, RecipeType> _derived = new Dictionary<RecipeType, RecipeType>
+        private readonly IReadOnlyDictionary<RecipeType, RecipeType> _derived = new Dictionary<RecipeType, RecipeType>
         {
             [RecipeType.BasicTwinPistol] = RecipeType.BasicPistol,
             [RecipeType.FieldTwinPistol] = RecipeType.FieldPistol,
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>The difficulty each recipe-level band allows, as (lowest, highest): the band's own recipes with a margin of 6 either way.</summary>
-        private static readonly (double Lowest, double Highest)[] BandBudgets =
+        private readonly (double Lowest, double Highest)[] BandBudgets =
         {
             (46, 95), (42, 121), (60, 143), (70, 134), (63, 130)
         };

@@ -38,7 +38,7 @@ public sealed record KitchenPerkStats(
     bool SignatureDish = false)
 {
     /// <summary>No perks: the Kitchen as tuned.</summary>
-    public static readonly KitchenPerkStats None = new();
+    public static KitchenPerkStats None => new();
 
     /// <summary>True when any number differs from the Kitchen as tuned.</summary>
     public bool HasAny => this != None;

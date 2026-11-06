@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     public static class RecipeParameterAudit
     {
         private const double Tolerance = 1e-9;
-        private static readonly Regex KeyPattern = new Regex("^[A-Za-z][A-Za-z0-9]*$", RegexOptions.Compiled);
+        private const string KeyPattern = "^[A-Za-z][A-Za-z0-9]*$";
 
         /// <summary>Checks that a profile is well formed before it generates anything.</summary>
         public static IReadOnlyList<string> ValidateProfile(IRecipeParameterProfile profile)
         {
             var problems = new List<string>();
 
-            if (string.IsNullOrEmpty(profile.Key) || !KeyPattern.IsMatch(profile.Key))
+            if (string.IsNullOrEmpty(profile.Key) || !Regex.IsMatch(profile.Key, KeyPattern, RegexOptions.Compiled))
                 problems.Add($"key '{profile.Key}' must be letters and digits starting with a letter");
 
             var definitions = profile.Definitions;

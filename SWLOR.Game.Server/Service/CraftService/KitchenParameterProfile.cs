@@ -44,20 +44,20 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>Turns spent adjusting heat and correcting flavor on top of the adds and the simmering.</summary>
         private const int HandlingTurns = 4;
 
-        private static readonly string[] SweetWords =
-            { "Cookies", "Juice", "AuLait", "Cake", "FlapJack", "Fizz", "Gardula", "Noga", "Treat" };
+        private static string[] SweetWords =>
+            new string[] { "Cookies", "Juice", "AuLait", "Cake", "FlapJack", "Fizz", "Gardula", "Noga", "Treat" };
 
-        private static readonly string[] SoupWords =
-            { "Soup", "Broth", "Stew", "Chowder", "Curry", "Noodles", "Ramen", "Gumbo", "Consomme", "Tea", "Bowl" };
+        private static string[] SoupWords =>
+            new string[] { "Soup", "Broth", "Stew", "Chowder", "Curry", "Noodles", "Ramen", "Gumbo", "Consomme", "Tea", "Bowl" };
 
         /// <summary>Dishes whose name points at the wrong dish: a travel cake is a savory ration, not a dessert.</summary>
-        private static readonly IReadOnlyDictionary<RecipeType, KitchenDish> DishExceptions =
+        private static IReadOnlyDictionary<RecipeType, KitchenDish> DishExceptions =>
             new Dictionary<RecipeType, KitchenDish>
             {
                 [RecipeType.DustveilTravelCakes] = KitchenDish.Roast
             };
 
-        private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
+        private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
         {
             RecipeParameterDefinition.Enumeration<KitchenDish>("dish", "Kitchen Dish"),
             RecipeParameterDefinition.Integer("targetSavory", "Kitchen Target Savory", 0, KitchenTuning.AxisMax, 6),

@@ -61,5 +61,5 @@ public sealed class FabricatorParameters : RecipeMinigameParameters
     public override IReadOnlyList<RecipeParameterValue> Values => _values;
 
     /// <summary>The values a recipe without parameters plays with: an even split and a middling wear.</summary>
-    public static FabricatorParameters Fallback { get; } = new(34, 33, 34, 33, 4);
+    public static FabricatorParameters Fallback => new(34, 33, 34, 33, 4);
 }

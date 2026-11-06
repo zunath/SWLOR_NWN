@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <summary>Starts, tracks and cancels each player's quick craft batch.</summary>
 public static class QuickCraftService
 {
-    private static readonly Dictionary<uint, QuickCraftBatch> Batches = new();
+    // The batches live on the Craft service instance.
+    private static Dictionary<uint, QuickCraftBatch> Batches => Craft.QuickCraftBatches;
 
     public static bool IsRunning(uint player) => Batches.TryGetValue(player, out var batch) && batch.IsRunning;
 

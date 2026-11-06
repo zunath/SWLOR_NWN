@@ -18,7 +18,8 @@ public readonly record struct SearchBoard(int Promising, int Known, int Searched
     public const int Spots = Size * Size;
     public const int MaxDigsPerSpot = 3;
 
-    private static readonly string[] SpotNames =
+    private static string[] SpotNames =>
+    new string[]
     {
         "top left", "top", "top right", "left", "center", "right", "bottom left", "bottom", "bottom right"
     };

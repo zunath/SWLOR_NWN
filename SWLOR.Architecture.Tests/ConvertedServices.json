@@ -81,6 +81,7 @@
     { "name": "Shuttle", "domain": "World" },
     { "name": "Snippet", "domain": "Core" },
     { "name": "Spawn", "domain": "Creatures" },
+    { "name": "StatusEffect", "domain": "Character" },
     { "name": "Stealth", "domain": "Combat" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Telegraph", "domain": "Combat" },

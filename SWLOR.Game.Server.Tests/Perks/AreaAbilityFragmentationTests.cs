@@ -42,8 +42,7 @@ public class AreaAbilityFragmentationTests
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void ClearStatContributors()

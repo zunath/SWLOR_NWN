@@ -458,6 +458,7 @@ public class ConvertedServiceRulesTests
     [TestCase("TupleOfList")]
     [TestCase("Watch")]
     [TestCase("NotReadonly")]
+    [TestCase("FrozenOfEngineClass")]
     public void Static_readonly_fields_that_are_or_may_be_mutable_are_still_reported(string field)
     {
         var problems = ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(MutableTableHolder)));
@@ -468,7 +469,7 @@ public class ConvertedServiceRulesTests
     [Test]
     public void Every_field_of_the_mutable_table_fixture_is_reported()
     {
-        ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(MutableTableHolder))).Should().HaveCount(14);
+        ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(MutableTableHolder))).Should().HaveCount(15);
     }
 
     [Test]

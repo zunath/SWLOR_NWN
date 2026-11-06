@@ -18,6 +18,7 @@ public class ClockSeamSourceGuardTests
         "Service/OrdinaryAttackTraits.cs",
         "Service/PairedRangedTraits.cs",
         "Service/StatusEffect.cs",
+        "Domain/Character/StatusEffectService.cs",
         "Service/StatusEffectService/**",
         "Service/Stat.cs",
         "Service/Perk.cs",

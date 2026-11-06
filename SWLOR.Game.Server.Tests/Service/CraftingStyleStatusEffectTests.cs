@@ -198,7 +198,7 @@ public class CraftingStyleStatusEffectTests
     {
         var root = FindRepositoryRoot();
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
         return syntax.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
     }
 

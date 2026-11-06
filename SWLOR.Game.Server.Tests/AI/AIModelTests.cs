@@ -302,8 +302,7 @@ public class AIModelTests
         var ability = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];
         ability.AIScore.Should().NotBeNull();
         var score = AIScore.Ability(ability);
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         creatureEffects.TryGetValue(self, out var previousEffects);
         var tracker = new CreatureStatusEffect();
         creatureEffects[self] = tracker;
@@ -348,8 +347,7 @@ public class AIModelTests
         var score = ability.AIScore ?? AIScore.Ability(ability);
         var buff = Ability.GetAbilityDetail(FeatType.Invincible1);
         var buffScore = buff.AIScore ?? AIScore.Ability(buff);
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         var tracker = new CreatureStatusEffect();
         var effectType = Ability.GetAbilityDetail(activeStance)
             .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
@@ -394,8 +392,7 @@ public class AIModelTests
         var activeEffectType = Ability.GetAbilityDetail(activeFeat)
             .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
         var selfEffectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         creatureEffects.TryGetValue(self, out var previousEffects);
         var tracker = new CreatureStatusEffect();
         creatureEffects[self] = tracker;
@@ -428,9 +425,7 @@ public class AIModelTests
     {
         const uint self = 100;
         const uint target = 200;
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         var tracker = new CreatureStatusEffect();
         IAbilityListDefinition definition = buff switch
         {

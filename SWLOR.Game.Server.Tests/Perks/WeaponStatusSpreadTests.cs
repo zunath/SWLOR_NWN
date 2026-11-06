@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -13,8 +14,7 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
     private const uint Creature = 61241;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void ClearEffects() => CreatureEffects.Remove(Creature);

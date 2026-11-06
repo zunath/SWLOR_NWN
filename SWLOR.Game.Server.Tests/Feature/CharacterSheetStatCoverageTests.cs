@@ -100,16 +100,17 @@ public class CharacterSheetStatCoverageTests
     public void CharacterSheet_RefreshesWhenStatusEffectStatsChange()
     {
         var viewModel = ReadViewModel();
-        var statusEffects = ReadService("StatusEffect.cs");
+        var statusEffects = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectReceivedRefreshEvent>");
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectRemovedRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatusEffectReceivedRefreshEvent payload)");
         viewModel.Should().Contain("public void Refresh(StatusEffectRemovedRefreshEvent payload)");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
         statusEffects.Should().Contain("if (!isReplacement)");
         statusEffects.Should().Contain("isReplacement: true");
         statusEffects.Should().Contain("bool isReplacement = false");

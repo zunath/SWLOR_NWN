@@ -18,6 +18,22 @@ public class AbilityDefinitionCharacterizationTests
 {
     private const string EngineValue = "engine";
 
+    // The recast delegates read a creature's status effects through the static facade.
+    private FacadeServices _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeServices();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private sealed record Setting(string Property, Func<AbilityDetail, object?> Get);
 
     // Plain gameplay fields that are only listed in a row when the ability sets them to something other than the

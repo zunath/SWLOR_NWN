@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IRaceService, RaceService>();
+            services.AddSingleton<IStatusEffectService, StatusEffectService>();
 
             // Combat
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();

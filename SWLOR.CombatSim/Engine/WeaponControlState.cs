@@ -68,12 +68,12 @@ public sealed class WeaponControlState
     {
         var multiplier = ResistanceRules.CalculateResistanceDamageMultiplier(resistance);
         if (multiplier <= 0) return 0;
-        var seconds = StatusEffect.CalculateAdjustedStatusDurationSeconds(baseSeconds, outgoingPercent);
+        var seconds = StatusEffectRules.CalculateAdjustedStatusDurationSeconds(baseSeconds, outgoingPercent);
         var frequency = Math.Max(1f, status.Frequency);
         var ticks = Math.Max(1, (int)Math.Ceiling(seconds / frequency));
-        var withoutResistance = StatusEffect.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
+        var withoutResistance = StatusEffectRules.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
         ticks = Math.Max(1, (int)Math.Round(ticks * multiplier));
-        ticks = StatusEffect.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
+        ticks = StatusEffectRules.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
         return Math.Max(0.1f, Math.Min(seconds + Math.Max(0, ticks-withoutResistance)*frequency, ticks*frequency));
     }
 }

@@ -33,8 +33,7 @@ public class StatAdjustmentSourceTests
     private const uint Creature = 61249;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void Cleanup()

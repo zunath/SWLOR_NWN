@@ -31,8 +31,7 @@ public class SaberstaffAreaEffectsTests
 
     private const uint Creature = 61241;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void Cleanup() => Effects.Remove(Creature);

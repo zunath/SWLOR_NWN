@@ -44,10 +44,10 @@ public class StanceStatusEffectTests
     [SetUp]
     public void SetUp()
     {
-        StatusEffect.CacheData();
-        ResetStatusEffects();
         _facades = new FacadeContainer();
         _facadeScope = _facades.Install();
+        StatusEffect.CacheData();
+        ResetStatusEffects();
     }
 
     [TearDown]
@@ -412,9 +412,7 @@ public class StanceStatusEffectTests
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects()
     {
-        return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        return StatusEffectInternals.CreatureEffects;
     }
 
     private sealed record PathInfo(string FullName)

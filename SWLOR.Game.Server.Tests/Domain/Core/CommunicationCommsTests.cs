@@ -46,9 +46,20 @@ public class CommunicationCommsTests
 
     private CommunicationBench _bench = null!;
 
+    // The converted language facade resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _bench = new CommunicationBench();
         _bench.AddPlayer(Alice, area: Cantina, name: "Alice");
     }
@@ -56,6 +67,7 @@ public class CommunicationCommsTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _bench.Dispose();
     }
 

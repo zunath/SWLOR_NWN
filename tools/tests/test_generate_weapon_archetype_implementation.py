@@ -202,6 +202,23 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                 self.assertEqual(["                    .UsesImmediateAuthoredAnimation()"],
                     GENERATOR.authored_animation_builder_lines(skill, {"Type": "Stance"}, False))
 
+    def test_ordnance_and_flurry_stances_emit_every_description_clause(self):
+        rows = {row["PerkName"]: row for row in GENERATOR.read_manifest()
+                if row["PerkName"] in ("Ordnance Stance", "Flurry Stance")}
+        ordnance = dict(GENERATOR.stance_stat_entries(rows["Ordnance Stance"]))
+        flurry = dict(GENERATOR.stance_stat_entries(rows["Flurry Stance"]))
+
+        self.assertEqual({"ThrowingAreaAbilityDamagePercentAdjustment": "10",
+                          "ThrowingSingleTargetDamagePercentAdjustment": "-10"}, ordnance)
+        # Flurry's Haste is conditional on a bleeding target, never creature-wide Haste.
+        self.assertEqual({"ThrowingAttackDelayReductionToBleedingTargetPercent": "10",
+                          "DefensePercentAdjustment": "-10"}, flurry)
+        for name, stats in (("Ordnance", ordnance), ("Flurry", flurry)):
+            generated = (ROOT / f"SWLOR.Game.Server/Feature/StatusEffectDefinition/{name}StanceStatusEffect.cs").read_text()
+            self.assertEqual(len(stats), generated.count("StatGroup.Stats["))
+            for stat, value in stats.items():
+                self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
+
     def test_scope_calibration_reads_minimum_range_from_description(self):
         properties = dict(GENERATOR.description_stat_entries(
             {
@@ -213,6 +230,19 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             "Scope Calibration"))
 
         self.assertEqual("12", properties["RangedAbilityLongRangeMinimumRangeMeters"])
+
+    def test_sniper_stance_emits_long_range_damage_with_its_own_threshold(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["PerkName"] == "Sniper Stance")
+        stats = dict(GENERATOR.stance_stat_entries(row))
+
+        # The Bible's +15% long-range damage was dropped before; only the delay penalty shipped.
+        self.assertEqual("15", stats["RangedAbilityLongRangeDamagePercentAdjustment"])
+        self.assertEqual("10", stats["RangedAbilityLongRangeMinimumRangeMeters"])
+        self.assertEqual("-15", stats["AttackDelayReductionPercent"])
+        generated = (ROOT / "SWLOR.Game.Server/Feature/StatusEffectDefinition/SniperStanceStatusEffect.cs").read_text()
+        for stat, value in stats.items():
+            self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
 
     def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
         row = {

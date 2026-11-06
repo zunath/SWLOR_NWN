@@ -2,8 +2,8 @@
   "function": "Stat.GetStatTypeCategory / GetStatTypeAggregation / GetStatTypeDeflectionSource over every StatType",
   "description": "How each stat is classified: whether an untyped effect granting it counts as beneficial, how several adjustments of it combine, and which deflection kind (if any) it belongs to.",
   "seed": null,
-  "inputs": "All 1207 StatType members, sorted by id.",
-  "rowCount": 1207,
+  "inputs": "All 1210 StatType members, sorted by id.",
+  "rowCount": 1210,
   "columns": ["stat", "statName", "=> category", "=> aggregation", "=> deflectionSource"],
   "rows": [
     [0, "Invalid", "NonBeneficial", "Additive", "None"],
@@ -1212,6 +1212,9 @@
     [1326, "StealthDetectionBlocked", "BeneficialWhenNegative", "Maximum", "None"],
     [1327, "AbilityUsedMovementSpeedRangedOnly", "NonBeneficial", "Maximum", "None"],
     [1328, "SecondaryAbilityUsedEvasionRangedOnly", "NonBeneficial", "Maximum", "None"],
-    [1329, "AbilityUsedRangedDeflectionRangedOnly", "NonBeneficial", "Maximum", "None"]
+    [1329, "AbilityUsedRangedDeflectionRangedOnly", "NonBeneficial", "Maximum", "None"],
+    [1330, "RangedAbilityLongRangeDamagePercentAdjustment", "BeneficialWhenPositive", "Additive", "None"],
+    [1331, "ThrowingSingleTargetDamagePercentAdjustment", "BeneficialWhenPositive", "Additive", "None"],
+    [1332, "ThrowingAttackDelayReductionToBleedingTargetPercent", "BeneficialWhenPositive", "Additive", "None"]
   ]
 }

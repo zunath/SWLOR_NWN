@@ -12,6 +12,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class EspionageXpRegressionTests
 {
+    // The converted disguise and infiltration facades resolve their instances from a container.
+    private SWLOR.Game.Server.Tests.Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
+
     // Espionage ranks the slicing grid is read at.
     private static readonly int[] Ranks = { 0, 10, 15, 20, 22, 28, 30, 40, 42, 45, 48, 50 };
 

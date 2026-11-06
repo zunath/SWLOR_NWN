@@ -79,19 +79,27 @@ class ToolsetTintShaderTests(unittest.TestCase):
         offset = ((base + color) * 256 + shade) * 4
         return tuple(self.palette_bytes[offset + channel] / 255 for channel in (2, 1, 0, 3))
 
-    def expected(self, rgb, preset, lit=False):
+    def expected(self, rgb, preset, lit=False, layer_coverage=False):
+        # Custom RGB is shaded with the host-selected swatch row (preset): the swatch
+        # shade plus the color's offset from the swatch midtone, scaled by the row's
+        # luminance. An all-black swatch row borrows the layer's first row for the scale.
         values = []
         weights = (.2126, .7152, .0722)
+        luminance = lambda color: sum(value * weight for value, weight in zip(color, weights))
         for layer in range(10):
-            midpoint = sum(value * weight for value, weight in zip(self.palette(layer, 0, 128), weights))
+            midpoint = self.palette(layer, preset, 128)
+            ramp_row = 0 if luminance(midpoint[:3]) < .5 / 255 else preset
+            ramp_midpoint = luminance(self.palette(layer, ramp_row, 128)[:3])
             for shade in range(256):
+                swatch = self.palette(layer, preset, shade)
                 if rgb is None:
-                    color = self.palette(layer, preset, shade)
+                    color = swatch
                 else:
+                    scale = max(luminance(self.palette(layer, ramp_row, shade)[:3]) / max(ramp_midpoint, 1 / 255), 0)
                     reference = self.palette(layer, 0, shade)
-                    scale = sum(value * weight for value, weight in zip(reference, weights)) / max(midpoint, 1 / 255)
-                    color = tuple(min(value / 255 * scale, 1) for value in rgb) + (
-                        reference[3] if layer in (2, 3) else 1,)
+                    alpha = (reference[3] if layer in (2, 3) else 1) if layer_coverage else swatch[3]
+                    color = tuple(min(max(value + (channel / 255 - mid) * scale, 0), 1)
+                                  for value, channel, mid in zip(swatch[:3], rgb, midpoint[:3])) + (alpha,)
                 if lit:
                     values.extend(env * (1 - color[3]) + value * .8 * color[3]
                                   for env, value in zip((.15, .7, .2), color))
@@ -100,7 +108,7 @@ class ToolsetTintShaderTests(unittest.TestCase):
                     values.extend(color)
         return values
 
-    def render(self, program, rgb, preset):
+    def render(self, program, rgb, preset, layer_coverage=False):
         self.test.use(program)
         location = lambda name: self.test.location(program, name.encode())
         for name in ("model", "view", "projection"):
@@ -114,6 +122,7 @@ class ToolsetTintShaderTests(unittest.TestCase):
                             "ambientColor": (.3, .3, .3), "cameraPos": (0, 0, 10)}.items():
             self.uniform3(location(name), *value)
         self.test.scalar(location("flatAlpha"), 1)
+        self.test.integer(location("tintCustomUsesLayerCoverage"), int(layer_coverage))
         for name, unit in {"diffuseTexture": 0, "environmentTexture": 1,
                            "tintMapTexture": 2, "tintPaletteTexture": 3}.items():
             self.test.integer(location(name), unit)
@@ -154,10 +163,32 @@ class ToolsetTintShaderTests(unittest.TestCase):
         for prefix in self.prefixes:
             program = self.test.program(prefix + diagnostic, prefix + self.vertex)
             try:
-                for rgb in (None, (205, 228, 197), (0, 0, 0), (255, 255, 255)):
-                    for preset in (0, 175):
-                        with self.subTest(version=prefix.splitlines()[0], rgb=rgb, preset=preset):
-                            self.assert_pixels(self.render(program, rgb, preset), self.expected(rgb, preset), prefix)
+                for rgb in (None, (205, 228, 197), (0, 0, 0), (255, 255, 255), (12, 3, 9)):
+                    for preset in (0, 57, 175):
+                        for layer_coverage in (False, True):
+                            with self.subTest(version=prefix.splitlines()[0], rgb=rgb, preset=preset,
+                                              layer_coverage=layer_coverage):
+                                self.assert_pixels(self.render(program, rgb, preset, layer_coverage),
+                                                   self.expected(rgb, preset, layer_coverage=layer_coverage), prefix)
+            finally:
+                self.test.delete_program(program)
+
+    def test_rgb_equal_to_a_swatch_renders_like_the_palette(self):
+        diagnostic = self.fragment.replace("void main()", "void RenderMain()") + (
+            "\nvoid main() { FragColor = ResolveTintMapColor(); }\n")
+        for prefix in self.prefixes:
+            program = self.test.program(prefix + diagnostic, prefix + self.vertex)
+            try:
+                for preset in range(0, 176, 5):
+                    # Hair, skin and metal share their own rows; the organic rows serve cloth,
+                    # leather and tattoo. Draw each layer group's swatch separately.
+                    for group in ((0,), (1,), (2, 3), (4, 5, 6, 7, 8, 9)):
+                        rgb = tuple(round(value * 255) for value in self.palette(group[0], preset, 128)[:3])
+                        actual = self.render(program, rgb, preset)
+                        palette = self.expected(None, preset)
+                        with self.subTest(version=prefix.splitlines()[0], preset=preset, layers=group):
+                            rows = [index for layer in group for index in range(layer * 1024, layer * 1024 + 1024)]
+                            self.assert_pixels([actual[i] for i in rows], [palette[i] for i in rows], prefix)
             finally:
                 self.test.delete_program(program)
 
@@ -166,17 +197,19 @@ class ToolsetTintShaderTests(unittest.TestCase):
         for prefix in self.prefixes:
             program = self.test.program(prefix + self.fragment, prefix + self.vertex)
             try:
-                self.assert_pixels(self.render(program, rgb, 175), self.expected(rgb, 175, lit=True), prefix)
+                self.assert_pixels(self.render(program, rgb, 0), self.expected(rgb, 0, lit=True), prefix)
             finally:
                 self.test.delete_program(program)
-            # Only remove the custom coverage repair; the actual lighting and
-            # requested RGB remain intact, reproducing the former matte metal.
-            legacy, count = re.subn(r"paletteColor\.a = [^;]+;", "paletteColor.a = 1.0;", self.fragment)
+            # Only make custom colors opaque; the actual lighting and requested
+            # RGB remain intact, reproducing the former matte metal.
+            legacy, count = re.subn(r"\n    return paletteColor;",
+                                    "\n    if (custom.a > 0.5) paletteColor.a = 1.0;\n    return paletteColor;",
+                                    self.fragment)
             self.assertEqual(count, 1)
             program = self.test.program(prefix + legacy, prefix + self.vertex)
             try:
-                actual = self.render(program, rgb, 175)
-                expected = self.expected(rgb, 175, lit=True)
+                actual = self.render(program, rgb, 0)
+                expected = self.expected(rgb, 0, lit=True)
                 for layer in (2, 3):
                     offset = (layer * 256 + 128) * 4
                     self.assertGreater(max(abs(a - b) for a, b in zip(

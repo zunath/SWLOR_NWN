@@ -157,8 +157,8 @@ namespace SWLOR.CraftSim.Gates
         private static bool IsEnhanceable(RecipeEntry recipe) => recipe.EnhancementSlots > 0 && recipe.EnhancementType != RecipeEnhancementType.None;
 
         /// <summary>
-        /// The cohort's recipes that can hold an enhancement, an even sample of each band (the cohort's own bands unless
-        /// <paramref name="bands"/> are given), each with the representative enhancement of its kind at the best level it accepts. Empty when the
+        /// The cohort's recipes that can hold an enhancement, an even sample of each band (<paramref name="bands"/> if given, else
+        /// the same bands as <see cref="Bands"/>), each with the representative enhancement of its kind at the best level it accepts. Empty when the
         /// context has no enhancement items.
         /// </summary>
         public IReadOnlyList<EnhancedBand> EnhancedBands(IReadOnlyList<RecipeBand> bands = null)
@@ -169,7 +169,7 @@ namespace SWLOR.CraftSim.Gates
 
             var enhanceable = RecipeCatalog.From(Context.Recipes.Recipes.Where(IsEnhanceable));
             var result = new List<EnhancedBand>();
-            foreach (var band in Cohort.Select(enhanceable, Thresholds.RecipesPerBand, bands))
+            foreach (var band in Cohort.Select(enhanceable, Thresholds.RecipesPerBand, bands ?? Thresholds.OnlyBands))
             {
                 var recipes = new List<EnhancedRecipe>();
                 var dropped = new List<string>();

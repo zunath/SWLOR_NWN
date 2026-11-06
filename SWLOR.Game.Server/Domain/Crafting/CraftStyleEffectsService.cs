@@ -7,12 +7,12 @@ using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 
-/// <inheritdoc cref="ICraftStyleService" />
-public class CraftStyleService : ICraftStyleService
+/// <inheritdoc cref="ICraftStyleEffectsService" />
+public class CraftStyleEffectsService : ICraftStyleEffectsService
 {
     private readonly IDBService _db;
 
-    public CraftStyleService(IDBService db)
+    public CraftStyleEffectsService(IDBService db)
     {
         _db = db;
     }

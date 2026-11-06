@@ -1289,7 +1289,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         protected virtual void DeleteResearchJob(ResearchJob job) => CraftResearchExperiment.DeleteJob(job);
 
         /// <summary>Applies the creature's selected crafting styles. The style service is reached through its facade.</summary>
-        protected virtual void RestoreCraftingStyles(uint creature) => CraftStyle.Restore(creature);
+        protected virtual void RestoreCraftingStyles(uint creature) => CraftStyleEffects.Restore(creature);
     }
 }
 

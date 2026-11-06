@@ -6,9 +6,9 @@ namespace SWLOR.Game.Server.Domain.Crafting;
 /// <summary>
 /// The crafting style each crafter selected, as far as it needs the database and the engine: recording a selection, forgetting
 /// one and applying the style effects again. The record rules are in <see cref="Service.CraftService.CraftingStyleSelection"/>. The
-/// static facade <c>Service.CraftService.CraftStyle</c> forwards to it.
+/// static facade <c>Service.CraftService.CraftStyleEffects</c> forwards to it.
 /// </summary>
-public interface ICraftStyleService
+public interface ICraftStyleEffectsService
 {
     /// <summary>
     /// Saves the style the crafter selected for <paramref name="skill"/>; <see cref="PerkType.Invalid"/> records no style.

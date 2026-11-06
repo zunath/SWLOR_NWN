@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
                 if (ShouldHaveGhost(creature) && !GetIsDead(creature))
                 {
                     ApplyCutsceneGhostToPlayer(creature);
-                    CraftStyle.Restore(creature);
+                    CraftStyleEffects.Restore(creature);
                 }
             });
         }

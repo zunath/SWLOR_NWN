@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResetSlots(recipe.EnhancementSlots + blueprint.EnhancementSlots);
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the crafter its effect.
-            CraftStyle.Restore(Player);
+            CraftStyleEffects.Restore(Player);
             CircuitStyles.RemoveUnowned(Player);
             ClearCraftView();
             StatusText = string.Empty;

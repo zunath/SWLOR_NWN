@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 /// record rules are covered by <c>CraftingStyleSelectionTests</c>.
 /// </summary>
 [TestFixture]
-public class CraftStyleServiceTests
+public class CraftStyleEffectsServiceTests
 {
     private const uint Handle = 1001;
 
-    private sealed class TestStyles : CraftStyleService
+    private sealed class TestStyles : CraftStyleEffectsService
     {
         public TestStyles(IDBService db)
             : base(db)

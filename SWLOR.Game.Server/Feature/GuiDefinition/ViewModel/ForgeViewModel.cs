@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = null;
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the crafter its effect.
-            CraftStyle.Restore(Player);
+            CraftStyleEffects.Restore(Player);
             ForgeStyles.RemoveUnowned(Player);
 
             var itemName = Cache.GetItemNameByResref(_recipeDetail.Resref);

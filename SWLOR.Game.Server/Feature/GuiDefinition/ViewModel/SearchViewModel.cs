@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the scavenger its effect.
             // The session read its effects before this window opened, so they are read again while the board is untouched.
-            CraftStyle.Restore(Player);
+            CraftStyleEffects.Restore(Player);
             GatheringStyles.RemoveUnowned(Player);
             if (_session != null && ScavengeSessions.IsActive(_session))
                 RefreshSessionEffects();

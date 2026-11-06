@@ -1,10 +1,18 @@
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service.ActivityService;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the "busy" status. The logic lives in <see cref="IActivityService"/>; the event handlers
+    /// stay here and every member forwards to the container's instance.
+    /// </summary>
     public static class Activity
     {
+        private static IActivityService Instance => FacadeAccessor.Resolve<IActivityService>();
+
         /// <summary>
         /// Marks a target as being busy with a particular type of action.
         /// </summary>
@@ -12,8 +20,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of activity to assign.</param>
         public static void SetBusy(uint target, ActivityStatusType type)
         {
-            SetLocalBool(target, "IS_BUSY", true);
-            SetLocalInt(target, "BUSY_TYPE", (int)type);
+            Instance.SetBusy(target, type);
         }
 
         /// <summary>
@@ -23,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if busy, false otherwise</returns>
         public static bool IsBusy(uint target)
         {
-            return GetLocalBool(target, "IS_BUSY");
+            return Instance.IsBusy(target);
         }
 
         /// <summary>
@@ -34,10 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The type of activity status.</returns>
         public static ActivityStatusType GetBusyType(uint target)
         {
-            if (!IsBusy(target))
-                return ActivityStatusType.Invalid;
-
-            return (ActivityStatusType) GetLocalInt(target, "BUSY_TYPE");
+            return Instance.GetBusyType(target);
         }
 
         /// <summary>
@@ -46,8 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target whose status will be cleared.</param>
         public static void ClearBusy(uint target)
         {
-            DeleteLocalBool(target, "IS_BUSY");
-            DeleteLocalInt(target, "BUSY_TYPE");
+            Instance.ClearBusy(target);
         }
 
         /// <summary>
@@ -56,8 +59,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void WipeStatusOnEntry()
         {
-            var player = GetEnteringObject();
-            ClearBusy(player);
+            Instance.WipeStatusOnEntry();
         }
 
         /// <summary>
@@ -66,8 +68,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void WipeStatusOnDeath()
         {
-            var player = GetLastPlayerDied();
-            ClearBusy(player);
+            Instance.WipeStatusOnDeath();
         }
     }
 }

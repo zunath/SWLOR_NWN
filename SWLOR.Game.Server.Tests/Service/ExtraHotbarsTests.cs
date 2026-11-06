@@ -10,10 +10,28 @@ using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
+using SWLOR.Game.Server.Tests.Support;
+
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class ExtraHotbarsTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     [Test]
     public void GetBars_PlayerSavedBeforeHotbars_GetsEveryBarWithEverySlot()
     {

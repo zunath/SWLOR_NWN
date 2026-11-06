@@ -90,20 +90,23 @@ public class PerformanceAudienceStateTests
     [Test]
     public void DeathAndAreaEntryResetTheCachedWatchingState()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
-        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void StopWatchingOnAreaEnter\(\)");
-        Section(source, "public static void StopWatchingOnAreaEnter(").Should().Contain("StopWatching(state);");
+        var facade = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        facade.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
+        facade.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void StopWatchingOnAreaEnter\(\)");
+        Section(source, "public void StopWatchingOnAreaEnter(").Should().Contain("StopWatching(state);");
     }
 
     [Test]
     public void LeavingRangeBetweenTicksInterruptsWatching()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnPlayerHeartbeat\)\]\s+public static void StopWatchingWhenOutOfRange\(\)");
-        var check = Section(source, "public static void StopWatchingWhenOutOfRange(");
+        File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"))
+            .Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnPlayerHeartbeat\)\]\s+public static void StopWatchingWhenOutOfRange\(\)");
+        var check = Section(source, "public void StopWatchingWhenOutOfRange(");
         check.Should().Contain("!state.WatchingSinceUtc.HasValue", "players who are not watching return after one lookup");
         check.Should().Contain("InterruptWatching(state);");
     }
@@ -111,10 +114,10 @@ public class PerformanceAudienceStateTests
     [Test]
     public void AFlourishPaysOnlyWatchersWhoCanWatchRightNow()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        Section(source, "public static void OnFlourish(").Should().Contain("!state.IsWarmedUp || !CanWatchNow(state.Creature)");
-        var rule = Section(source, "private static bool CanWatchNow(");
+        Section(source, "public void OnFlourish(").Should().Contain("!state.IsWarmedUp || !CanWatchNow(state.Creature)");
+        var rule = Section(source, "private bool CanWatchNow(");
         rule.Should().Contain("!GetIsInCombat(player)");
         rule.Should().Contain("!GetIsDead(player)");
     }
@@ -122,8 +125,8 @@ public class PerformanceAudienceStateTests
     [Test]
     public void AFollowClickUpdatesTheCapBeforeTheWindowCheck()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
-        var refresh = Section(source, "public static void RefreshWatching(");
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
+        var refresh = Section(source, "public void RefreshWatching(");
 
         refresh.IndexOf("state.CapMinutes = plan.CapMinutes;", StringComparison.Ordinal)
             .Should().BeLessThan(refresh.IndexOf("IsWatchingOpen(watcher)", StringComparison.Ordinal))
@@ -133,8 +136,8 @@ public class PerformanceAudienceStateTests
     [Test]
     public void AnEndedPerformerLeavesTheCachedWatchingView()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
-        var ended = Section(source, "public static void OnSessionEnded(");
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
+        var ended = Section(source, "public void OnSessionEnded(");
 
         ended.Should().Contain("entry.Candidates.RemoveAll(candidate => candidate.Performer == performer);");
         ended.Should().Contain("entry.Musician = null;");
@@ -143,12 +146,12 @@ public class PerformanceAudienceStateTests
     [Test]
     public void StoppingWatchingRestoresTheFrozenInspiredFirst()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         System.Text.RegularExpressions.Regex.Matches(source, @"state\.StopWatching\(\);").Count
             .Should().Be(1, "every stop goes through the helper that restores the frozen remainder");
-        var helper = Section(source, "private static void StopWatching(PerformanceAudienceState state)");
-        helper.Should().Contain("PerformanceInspiredApplier.SetRemaining(state.Creature, state.FrozenRemainingSeconds);");
+        var helper = Section(source, "private void StopWatching(PerformanceAudienceState state)");
+        helper.Should().Contain("SetInspiredRemaining(state.Creature, state.FrozenRemainingSeconds);");
         helper.IndexOf("SetRemaining", StringComparison.Ordinal)
             .Should().BeLessThan(helper.IndexOf("state.StopWatching();", StringComparison.Ordinal));
     }
@@ -156,11 +159,11 @@ public class PerformanceAudienceStateTests
     [Test]
     public void StartingAPerformanceInterruptsWatchingAtOnce()
     {
-        var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));
-        var audience = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var performance = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceService.cs"));
+        var audience = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        Section(performance, "private static void StartPerformance(").Should().Contain("PerformanceAudience.OnPerformanceStarted(player);");
-        Section(audience, "public static void OnPerformanceStarted(").Should().Contain("InterruptWatching(state);");
+        Section(performance, "private void StartPerformance(").Should().Contain("_audience.OnPerformanceStarted(player);");
+        Section(audience, "public void OnPerformanceStarted(").Should().Contain("InterruptWatching(state);");
     }
 
     [Test]
@@ -176,7 +179,7 @@ public class PerformanceAudienceStateTests
     [Test]
     public void TheWatchingWindowOpensItselfOnlyAfterACountedMinute()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         source.Should().Contain("if (!isOpen && !state.WatchingDismissed && state.ContinuousMinutes > 0)");
     }
@@ -191,8 +194,8 @@ public class PerformanceAudienceStateTests
     [Test]
     public void APerformerWhoWasWatchingStopsWatching()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
-        var serve = source.Substring(source.IndexOf("private static void ServePerformer(", StringComparison.Ordinal));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
+        var serve = source.Substring(source.IndexOf("private void ServePerformer(", StringComparison.Ordinal));
         serve = serve.Substring(0, serve.IndexOf("PayPerformerXp(", StringComparison.Ordinal));
 
         serve.Should().Contain("InterruptWatching(state);");

@@ -750,7 +750,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter
   action      SWLOR.Game.Server.Service.Stealth.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter
-  action      SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter
+  action      SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Service.CompanionControl.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection

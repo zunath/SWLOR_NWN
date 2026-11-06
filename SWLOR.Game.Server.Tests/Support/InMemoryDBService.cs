@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class InMemoryDBService : IDBService
 {
     private readonly Dictionary<string, EntityBase> _entities = new(StringComparer.Ordinal);
+    private readonly Dictionary<Type, long> _writeVersions = new();
 
     /// <summary>The entities passed to <see cref="Set{T}"/>, in call order.</summary>
     public List<EntityBase> Saved { get; } = new();
@@ -56,6 +57,7 @@ public sealed class InMemoryDBService : IDBService
     {
         _entities[entity.Id] = entity;
         Saved.Add(entity);
+        _writeVersions[typeof(T)] = GetWriteVersion<T>() + 1;
     }
 
     public void Delete<T>(string id)
@@ -63,6 +65,7 @@ public sealed class InMemoryDBService : IDBService
     {
         _entities.Remove(id);
         Deleted.Add(id);
+        _writeVersions[typeof(T)] = GetWriteVersion<T>() + 1;
     }
 
     public bool Exists<T>(string id)
@@ -84,6 +87,10 @@ public sealed class InMemoryDBService : IDBService
         Queries.Add(query);
         return _entities.Values.OfType<T>().Count();
     }
+
+    public long GetWriteVersion<T>()
+        where T : EntityBase =>
+        _writeVersions.TryGetValue(typeof(T), out var version) ? version : 0;
 
     public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
     {

@@ -27,7 +27,7 @@ public sealed record LineAnglerEffects(
     int ForecastTurns = LineRules.FishSenseTurns)
 {
     /// <summary>An angler with no perks.</summary>
-    public static readonly LineAnglerEffects None = new();
+    public static LineAnglerEffects None => new();
 
     /// <summary>True when any number differs from an angler with no perks.</summary>
     public bool HasAny => this != None;

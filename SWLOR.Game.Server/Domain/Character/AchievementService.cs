@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
-        private Gui.IdReservation _idReservation;
+        private IdReservation _idReservation;
 
         public AchievementService(IDBService db)
         {

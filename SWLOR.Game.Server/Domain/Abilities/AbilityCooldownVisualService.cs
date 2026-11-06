@@ -1,0 +1,519 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Domain.Abilities
+{
+    /// <summary>
+    /// Shows elapsed recharge on ability icons through native texture overrides. The logic that used to be static in
+    /// <c>Service.AbilityCooldownVisual</c> is moved here unchanged; the texture caches and the live recharges are this
+    /// instance's own. The facade keeps the event handlers and forwards every call to the container's instance.
+    /// </summary>
+    public class AbilityCooldownVisualService : IAbilityCooldownVisualService
+    {
+        public const int MaximumCooldownStage = 5;
+
+        private const int CooldownStageCount = MaximumCooldownStage + 1;
+        private const int MaxResourceNameLength = 16;
+        private const string FeatIconPrefix = "ife_";
+        private const string Feat2DA = "feat";
+        private const string FeatIconColumn = "ICON";
+
+        private readonly Dictionary<RecastGroup, List<string>> _texturesByRecastGroup = new();
+        private readonly Dictionary<RecastGroup, List<AbilityDetail>> _abilitiesByRecastGroup = new();
+        private readonly Dictionary<string, Dictionary<RecastGroup, ActiveRecastVisual>> _activeVisuals = new();
+        private bool _isCached;
+
+        private readonly IDBService _db;
+        private readonly IGuiService _gui;
+
+        public AbilityCooldownVisualService(IDBService db, IGuiService gui)
+        {
+            _db = db;
+            _gui = gui;
+        }
+
+        public void CacheData()
+        {
+            CacheAbilityCooldownTextures();
+        }
+
+        public void RestoreCooldownVisuals()
+        {
+            var player = GetEnteringObject();
+            if (!CanShowCooldownVisuals(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = _db.Get<Player>(playerId);
+            if (dbPlayer?.RecastTimes == null)
+            {
+                if (dbPlayer != null)
+                {
+                    dbPlayer.RecastTimes = new Dictionary<RecastGroup, DateTime>();
+                    _db.Set(dbPlayer);
+                }
+
+                return;
+            }
+
+            var now = Clock.UtcNow;
+
+            foreach (var (group, endsAt) in dbPlayer.RecastTimes.ToList())
+            {
+                if (endsAt > now)
+                {
+                    RestoreRecastDelay(player, group, endsAt, now);
+                }
+            }
+        }
+
+        public void ClearCooldownVisualsOnExit()
+        {
+            ClearAllRecastDelays(GetExitingObject());
+        }
+
+        /// <summary>Builds a native recharge frame name from feat or fitted module artwork.</summary>
+        public string GetCooldownTextureName(string sourceTexture, int stage)
+        {
+            if (stage < 0 || stage > MaximumCooldownStage)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(sourceTexture) ||
+                !(sourceTexture.StartsWith(FeatIconPrefix, StringComparison.OrdinalIgnoreCase) ||
+                  sourceTexture.StartsWith("iit_", StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            var textureName = $"pr{stage}_{sourceTexture.Substring(FeatIconPrefix.Length)}";
+            return textureName.Length <= MaxResourceNameLength
+                ? textureName
+                : null;
+        }
+
+        public int CalculateCooldownStage(DateTime now, DateTime startedAt, DateTime endsAt)
+        {
+            if (now >= endsAt)
+                return -1;
+
+            var totalSeconds = (endsAt - startedAt).TotalSeconds;
+            if (totalSeconds <= 0)
+                return -1;
+
+            var elapsedSeconds = Math.Max(0, (now - startedAt).TotalSeconds);
+            var stage = (int)Math.Floor(elapsedSeconds / totalSeconds * CooldownStageCount);
+
+            return Math.Clamp(stage, 0, MaximumCooldownStage);
+        }
+
+        /// <summary>Displays elapsed recharge on cached ability icons or a supplied texture anchor, using optional separate artwork.</summary>
+        public void ApplyRecastDelay(uint player, RecastGroup group, DateTime startedAt, DateTime endsAt,
+            string sourceTexture = null, string iconTexture = null)
+        {
+            if (!CanShowCooldownVisuals(player) ||
+                group == RecastGroup.Invalid ||
+                endsAt <= Clock.UtcNow)
+            {
+                return;
+            }
+
+            EnsureCached();
+
+            List<string> textures;
+            if (sourceTexture != null)
+            {
+                if (string.IsNullOrWhiteSpace(sourceTexture) || sourceTexture.Length > MaxResourceNameLength ||
+                    GetCooldownTextureName(iconTexture ?? sourceTexture, 0) == null) return;
+                textures = new List<string> { sourceTexture };
+            }
+            else if (!_texturesByRecastGroup.TryGetValue(group, out textures))
+            {
+                // Abilities sharing an icon across recast groups get no native override, but extra hotbars still
+                // know which ability each slot holds, so the recharge is tracked anyway.
+                textures = new List<string>();
+            }
+
+            var playerId = GetObjectUUID(player);
+            if (!_activeVisuals.TryGetValue(playerId, out var playerVisuals))
+            {
+                playerVisuals = new Dictionary<RecastGroup, ActiveRecastVisual>();
+                _activeVisuals[playerId] = playerVisuals;
+            }
+
+            if (playerVisuals.TryGetValue(group, out var existing))
+            {
+                ClearTextureOverrides(existing);
+            }
+
+            var state = new ActiveRecastVisual(
+                player,
+                playerId,
+                group,
+                startedAt,
+                endsAt,
+                textures,
+                iconTexture);
+
+            playerVisuals[group] = state;
+            UpdateAndSchedule(state);
+        }
+
+        /// <summary>Updates a deadline while retaining elapsed progress and any active single-texture anchor and artwork.</summary>
+        public void RefreshRecastDelay(uint player, RecastGroup group, DateTime endsAt)
+        {
+            if (!CanShowCooldownVisuals(player) ||
+                group == RecastGroup.Invalid)
+            {
+                return;
+            }
+
+            if (endsAt <= Clock.UtcNow)
+            {
+                ClearRecastDelay(player, group);
+                return;
+            }
+
+            var startedAt = Clock.UtcNow;
+            string sourceTexture = null;
+            string iconTexture = null;
+            var playerId = GetObjectUUID(player);
+            if (_activeVisuals.TryGetValue(playerId, out var playerVisuals) &&
+                playerVisuals.TryGetValue(group, out var existing) &&
+                existing.StartedAt < endsAt)
+            {
+                startedAt = existing.StartedAt;
+                iconTexture = existing.IconTexture;
+                if (existing.SourceTextures.Count == 1) sourceTexture = existing.SourceTextures[0];
+            }
+            else
+            {
+                var remainingSeconds = Math.Max(0.1, (endsAt - Clock.UtcNow).TotalSeconds);
+                var totalSeconds = GetEstimatedTotalDelaySeconds(player, group, remainingSeconds);
+                startedAt = endsAt.AddSeconds(-totalSeconds);
+            }
+
+            ApplyRecastDelay(player, group, startedAt, endsAt, sourceTexture, iconTexture);
+        }
+
+        public void ClearRecastDelay(uint player, RecastGroup group)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            ClearRecastDelay(GetObjectUUID(player), group);
+        }
+
+        /// <summary>
+        /// The recharge frame showing for a recast group, or -1 when it is not recharging.
+        /// </summary>
+        public int GetCooldownStage(uint player, RecastGroup group)
+        {
+            if (!GetIsObjectValid(player) ||
+                !_activeVisuals.TryGetValue(GetObjectUUID(player), out var playerVisuals) ||
+                !playerVisuals.TryGetValue(group, out var state))
+            {
+                return -1;
+            }
+
+            return state.Stage;
+        }
+
+        public void ClearAllRecastDelays(uint player)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (!_activeVisuals.TryGetValue(playerId, out var playerVisuals))
+                return;
+
+            foreach (var state in playerVisuals.Values.ToList())
+            {
+                ClearTextureOverrides(state);
+            }
+
+            _activeVisuals.Remove(playerId);
+            _gui.PublishRefreshEvent(player, new ExtraHotbarCooldownRefreshEvent());
+        }
+
+        private void CacheAbilityCooldownTextures()
+        {
+            _texturesByRecastGroup.Clear();
+            _abilitiesByRecastGroup.Clear();
+
+            var groupsByTexture = new Dictionary<string, HashSet<RecastGroup>>();
+
+            foreach (var (feat, ability) in GetAllAbilityDetails())
+            {
+                if (ability.RecastGroup == RecastGroup.Invalid ||
+                    ability.RecastDelay == null)
+                {
+                    continue;
+                }
+
+                if (!_abilitiesByRecastGroup.TryGetValue(ability.RecastGroup, out var abilities))
+                {
+                    abilities = new List<AbilityDetail>();
+                    _abilitiesByRecastGroup[ability.RecastGroup] = abilities;
+                }
+
+                abilities.Add(ability);
+
+                var texture = Get2DAString(Feat2DA, FeatIconColumn, (int)feat);
+                if (string.IsNullOrWhiteSpace(texture) ||
+                    texture == "****" ||
+                    GetCooldownTextureName(texture, 0) == null)
+                {
+                    continue;
+                }
+
+                if (!_texturesByRecastGroup.TryGetValue(ability.RecastGroup, out var textures))
+                {
+                    textures = new List<string>();
+                    _texturesByRecastGroup[ability.RecastGroup] = textures;
+                }
+
+                if (!textures.Contains(texture))
+                    textures.Add(texture);
+
+                if (!groupsByTexture.TryGetValue(texture, out var recastGroups))
+                {
+                    recastGroups = new HashSet<RecastGroup>();
+                    groupsByTexture[texture] = recastGroups;
+                }
+
+                recastGroups.Add(ability.RecastGroup);
+            }
+
+            foreach (var (texture, recastGroups) in groupsByTexture.Where(x => x.Value.Count > 1))
+            {
+                foreach (var group in recastGroups)
+                {
+                    if (_texturesByRecastGroup.TryGetValue(group, out var textures))
+                    {
+                        textures.Remove(texture);
+                    }
+                }
+            }
+
+            foreach (var group in _texturesByRecastGroup
+                         .Where(x => x.Value.Count <= 0)
+                         .Select(x => x.Key)
+                         .ToList())
+            {
+                _texturesByRecastGroup.Remove(group);
+            }
+
+            _isCached = true;
+            Console.WriteLine($"Loaded {_texturesByRecastGroup.Values.Sum(x => x.Count)} ability cooldown texture mappings.");
+        }
+
+        private void EnsureCached()
+        {
+            if (!_isCached)
+                CacheAbilityCooldownTextures();
+        }
+
+        private bool CanShowCooldownVisuals(uint player)
+        {
+            return GetIsObjectValid(player) &&
+                   GetIsPC(player) &&
+                   !GetIsDM(player) &&
+                   !GetIsDMPossessed(player);
+        }
+
+        private void RestoreRecastDelay(uint player, RecastGroup group, DateTime endsAt, DateTime now)
+        {
+            var remainingSeconds = Math.Max(0.1, (endsAt - now).TotalSeconds);
+            var totalSeconds = GetEstimatedTotalDelaySeconds(player, group, remainingSeconds);
+            var startedAt = endsAt.AddSeconds(-totalSeconds);
+
+            ApplyRecastDelay(player, group, startedAt, endsAt);
+        }
+
+        private double GetEstimatedTotalDelaySeconds(uint player, RecastGroup group, double remainingSeconds)
+        {
+            EnsureCached();
+
+            if (!_abilitiesByRecastGroup.TryGetValue(group, out var abilities))
+                return remainingSeconds;
+
+            var delaySeconds = abilities
+                .Select(ability => ability.RecastDelay?.Invoke(player) ?? 0f)
+                .DefaultIfEmpty(0f)
+                .Max();
+
+            return Math.Max(remainingSeconds, delaySeconds);
+        }
+
+        private void UpdateAndSchedule(ActiveRecastVisual state)
+        {
+            if (!IsActiveState(state))
+                return;
+
+            var now = Clock.UtcNow;
+            var stage = CalculateCooldownStage(now, state.StartedAt, state.EndsAt);
+            if (stage < 0)
+            {
+                ClearRecastDelay(state.PlayerId, state.Group, state.Token);
+                return;
+            }
+
+            if (stage != state.Stage)
+            {
+                ApplyStage(state, stage);
+                state.Stage = stage;
+                _gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
+            }
+
+            ScheduleNextUpdate(state, now, stage);
+        }
+
+        private void ScheduleNextUpdate(ActiveRecastVisual state, DateTime now, int stage)
+        {
+            var nextUpdateAt = stage >= MaximumCooldownStage
+                ? state.EndsAt
+                : GetStageStartTime(state.StartedAt, state.EndsAt, stage + 1);
+
+            var delaySeconds = Math.Max(0.1, (nextUpdateAt - now).TotalSeconds);
+            var playerId = state.PlayerId;
+            var group = state.Group;
+            var token = state.Token;
+
+            AssignCommand(GetModule(), () =>
+            {
+                DelayCommand((float)delaySeconds, () =>
+                {
+                    ProcessScheduledUpdate(playerId, group, token);
+                });
+            });
+        }
+
+        private DateTime GetStageStartTime(DateTime startedAt, DateTime endsAt, int stage)
+        {
+            var totalTicks = endsAt.Ticks - startedAt.Ticks;
+            var stageTicks = totalTicks * stage / CooldownStageCount;
+            return startedAt.AddTicks(stageTicks);
+        }
+
+        private void ProcessScheduledUpdate(string playerId, RecastGroup group, Guid token)
+        {
+            if (!_activeVisuals.TryGetValue(playerId, out var playerVisuals) ||
+                !playerVisuals.TryGetValue(group, out var state) ||
+                state.Token != token)
+            {
+                return;
+            }
+
+            if (!CanShowCooldownVisuals(state.Player) ||
+                GetObjectUUID(state.Player) != playerId)
+            {
+                ClearRecastDelay(playerId, group, token, false);
+                return;
+            }
+
+            UpdateAndSchedule(state);
+        }
+
+        private bool IsActiveState(ActiveRecastVisual state)
+        {
+            return _activeVisuals.TryGetValue(state.PlayerId, out var playerVisuals) &&
+                   playerVisuals.TryGetValue(state.Group, out var current) &&
+                   current.Token == state.Token;
+        }
+
+        /// <summary>Overrides each anchor with the recharge frame derived from its artwork or the anchor itself.</summary>
+        private void ApplyStage(ActiveRecastVisual state, int stage)
+        {
+            foreach (var sourceTexture in state.SourceTextures)
+            {
+                var cooldownTexture = GetCooldownTextureName(state.IconTexture ?? sourceTexture, stage);
+                if (!string.IsNullOrWhiteSpace(cooldownTexture))
+                {
+                    SetTextureOverride(sourceTexture, cooldownTexture, state.Player);
+                }
+            }
+        }
+
+        private void ClearRecastDelay(
+            string playerId,
+            RecastGroup group,
+            Guid? token = null,
+            bool clearTextureOverrides = true)
+        {
+            if (!_activeVisuals.TryGetValue(playerId, out var playerVisuals) ||
+                !playerVisuals.TryGetValue(group, out var state) ||
+                (token.HasValue && state.Token != token.Value))
+            {
+                return;
+            }
+
+            if (clearTextureOverrides)
+                ClearTextureOverrides(state);
+
+            playerVisuals.Remove(group);
+            if (playerVisuals.Count <= 0)
+            {
+                _activeVisuals.Remove(playerId);
+            }
+
+            if (GetIsObjectValid(state.Player) && GetObjectUUID(state.Player) == playerId)
+                _gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
+        }
+
+        /// <summary>Restores fitted artwork, or removes the override when the anchor supplies its own artwork.</summary>
+        private void ClearTextureOverrides(ActiveRecastVisual state)
+        {
+            if (!GetIsObjectValid(state.Player))
+                return;
+
+            foreach (var sourceTexture in state.SourceTextures)
+            {
+                SetTextureOverride(sourceTexture, state.IconTexture ?? string.Empty, state.Player);
+            }
+        }
+
+        /// <summary>The unconverted <c>Ability</c> registry.</summary>
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
+
+        private sealed class ActiveRecastVisual
+        {
+            public uint Player { get; }
+            public string PlayerId { get; }
+            public RecastGroup Group { get; }
+            public DateTime StartedAt { get; }
+            public DateTime EndsAt { get; }
+            public IReadOnlyList<string> SourceTextures { get; }
+            public string IconTexture { get; }
+            public Guid Token { get; } = Guid.NewGuid();
+            public int Stage { get; set; } = -1;
+
+            /// <summary>Captures one scheduled recharge and the textures to restore when it finishes.</summary>
+            public ActiveRecastVisual(
+                uint player,
+                string playerId,
+                RecastGroup group,
+                DateTime startedAt,
+                DateTime endsAt,
+                IEnumerable<string> sourceTextures,
+                string iconTexture)
+            {
+                Player = player;
+                PlayerId = playerId;
+                Group = group;
+                StartedAt = startedAt;
+                EndsAt = endsAt;
+                SourceTextures = sourceTextures.ToArray();
+                IconTexture = iconTexture;
+            }
+        }
+    }
+}

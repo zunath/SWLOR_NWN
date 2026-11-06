@@ -1,0 +1,59 @@
+using System.Reflection;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
+
+namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
+
+/// <summary>
+/// The crafting calculations under test, called the way the server holds them. The parity run compiles these tests against
+/// master, where <c>Craft</c> is one static class, and against the refactor branch, where the static <c>Craft</c> forwards to
+/// a <c>CraftService</c> instance that needs the server's service container. Looking the instance class up by name lets one
+/// source file do both: the branch calls the instance (built without neighbours, which these calculations do not use) and
+/// master calls the static class.
+/// </summary>
+internal static class CraftCalc
+{
+    private static readonly Type InstanceType =
+        typeof(Craft).Assembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftService");
+
+    private static readonly object Instance = InstanceType == null
+        ? null
+        : Activator.CreateInstance(InstanceType, new object[] { null, null, null, null });
+
+    private static object Call(string name, params object[] arguments)
+    {
+        var method = (Instance == null ? typeof(Craft) : InstanceType).GetMethod(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+        return method!.Invoke(Instance, arguments);
+    }
+
+    public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes() =>
+        (Dictionary<RecipeType, RecipeDetail>)Call("GetAllRecipes");
+
+    public static RecipeLevelDetail GetRecipeLevelDetail(int level) =>
+        (RecipeLevelDetail)Call("GetRecipeLevelDetail", level);
+
+    public static int GetRequiredSkillRankForRecipe(RecipeDetail recipe) =>
+        (int)Call("GetRequiredSkillRankForRecipe", recipe);
+
+    public static int GetBaseRecipeXP(RecipeDetail recipe, int skillRank) =>
+        (int)Call("GetBaseRecipeXP", recipe, skillRank);
+
+    public static int CalculateBlueprintResearchCreditCost(RecipeType recipe, int blueprintLevel, int reductionBonus) =>
+        (int)Call("CalculateBlueprintResearchCreditCost", recipe, blueprintLevel, reductionBonus);
+
+    public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus) =>
+        (int)Call("CalculateBlueprintResearchSeconds", recipe, blueprintLevel, reductionBonus);
+
+    public static bool IsWeaponDamageEnhancement(EnhancementSubType subType) =>
+        (bool)Call("IsWeaponDamageEnhancement", subType);
+
+    public static bool TryGetWeaponDamageTypeForEnhancement(
+        EnhancementSubType subType, CombatDamageType explicitDamageType, out CombatDamageType damageType)
+    {
+        var arguments = new object[] { subType, explicitDamageType, CombatDamageType.Invalid };
+        var result = (bool)Call("TryGetWeaponDamageTypeForEnhancement", arguments);
+        damageType = (CombatDamageType)arguments[2];
+        return result;
+    }
+}

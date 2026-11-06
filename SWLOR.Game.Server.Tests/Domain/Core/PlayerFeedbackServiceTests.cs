@@ -37,9 +37,20 @@ public class PlayerFeedbackServiceTests
     private RecordingMessaging _messaging = null!;
     private TestPlayerFeedbackService _service = null!;
 
+    // The converted busy-status and player-name facades resolve their instances from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _engine = new FakeNWScript();
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != Invalid);
         _engine.SetReturnHandler("GetObjectUUID", _ => PlayerId);
@@ -66,6 +77,7 @@ public class PlayerFeedbackServiceTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _pluginScope.Dispose();
         _engineScope.Dispose();
     }

@@ -19,24 +19,22 @@ public abstract class AIServiceTestBase
     protected uint Area;
     protected AISim Npc = null!;
 
-    // The instance reaches the converted services it does not take by constructor (the companion control, the
-    // conversation and menu registries) through their facades, which resolve from the server's registrations
-    // (nothing is cached: no graph or menu is known).
-    private FacadeContainer _facades = null!;
-    private IDisposable _facadeScope = null!;
+    protected TestAIService Service => Bench.Service;
+
+    // The AI asks the busy status of a creature (Activity facade), which resolves from a container.
+    private FacadeContainer _baseFacades = null!;
+    private IDisposable _baseFacadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildBaseFacades() => _baseFacades = new FacadeContainer();
 
     [OneTimeTearDown]
-    public void DisposeFacades() => _facades.Dispose();
-
-    protected TestAIService Service => Bench.Service;
+    public void DisposeBaseFacades() => _baseFacades.Dispose();
 
     [SetUp]
     public void CreateTheWorld()
     {
-        _facadeScope = _facades.Install();
+        _baseFacadeScope = _baseFacades.Install();
         Bench = new AIBench();
         Area = Bench.AddArea("fight");
         Npc = Bench.AddCreature("npc", Area);
@@ -50,7 +48,7 @@ public abstract class AIServiceTestBase
     [TearDown]
     public void DisposeTheWorld()
     {
-        _facadeScope.Dispose();
+        _baseFacadeScope.Dispose();
         ScriptedProfiles.Build = null;
         RealEnmityTables.Clear();
         Bench.Dispose();

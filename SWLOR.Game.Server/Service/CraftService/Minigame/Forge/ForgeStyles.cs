@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 public static class ForgeStyles
 {
     /// <summary>Every style, in the order the window lists them.</summary>
-    public static IReadOnlyList<ForgeStyle> All { get; } = new[] { ForgeStyle.HotForging, ForgeStyle.ColdWorking };
+    public static IReadOnlyList<ForgeStyle> All => new[] { ForgeStyle.HotForging, ForgeStyle.ColdWorking };
 
     /// <summary>The skill whose craft window offers these styles.</summary>
     public const SkillType Skill = SkillType.Smithery;
@@ -26,7 +26,7 @@ public static class ForgeStyles
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static readonly IReadOnlyDictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
+    private static IReadOnlyDictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
         new Dictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>>
         {
             [ForgeStyle.HotForging] = Stats(

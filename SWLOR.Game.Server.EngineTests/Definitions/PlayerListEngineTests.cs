@@ -302,8 +302,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var other = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
             using var bystander = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
 
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(bystander.Id), "the bystander has no existing GUI registration");
             var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             windows.Add(bystander.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });
@@ -451,8 +450,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
             using var otherDM = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
 
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(dm.Id) && !windows.ContainsKey(player.Id), "the fixtures have no existing GUI registration");
             var dmWindow = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             var examineWindow = Gui.GetWindowTemplate(GuiWindowType.DMPlayerExamine).CreatePlayerWindowAction();
@@ -617,8 +615,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var originalAssociate = nativeNpc.m_nAssociateType;
             var originalMaster = nativeNpc.m_oidMaster;
             var originalPlayerFlag = nativeDM.m_bPlayerCharacter;
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(dm.Id), "the DM fixture has no existing GUI registration");
             var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             windows.Add(dm.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NWN.Native.API;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -24,15 +25,23 @@ internal static class CharacterFileUpgrade
     /// <summary>Files without the checkpoint predate it; their record version stands in, up to this version.</summary>
     private const int LastPlayerVersionWithoutFileCheckpoint = 12;
 
-    private static readonly Lazy<ICharacterMigration[]> _migrations = new(() => typeof(ICharacterMigration).Assembly.GetTypes()
+    /// <summary>
+    /// Finds and creates every character migration, in version order. The migration service loads them once and keeps
+    /// the list; callers without a service (the tests of single migrations) read <see cref="Migrations"/>, which loads them again.
+    /// </summary>
+    internal static ICharacterMigration[] LoadMigrations() => typeof(ICharacterMigration).Assembly.GetTypes()
         .Where(type => !type.IsAbstract && !type.IsInterface && typeof(ICharacterMigration).IsAssignableFrom(type))
         .Select(type => (ICharacterMigration)Activator.CreateInstance(type))
         .OrderBy(migration => migration.Version)
-        .ToArray());
+        .ToArray();
 
-    internal static IReadOnlyList<ICharacterMigration> Migrations => _migrations.Value;
+    internal static IReadOnlyList<ICharacterMigration> Migrations => LoadMigrations();
 
-    internal static int LatestVersion => Migrations.Count == 0 ? 0 : Migrations[^1].Version;
+    internal static int LatestVersion => LatestVersionOf(Migrations);
+
+    /// <summary>The newest version among migrations in version order, or 0 when there are none.</summary>
+    internal static int LatestVersionOf(IReadOnlyList<ICharacterMigration> migrations) =>
+        migrations.Count == 0 ? 0 : migrations[^1].Version;
 
     /// <summary>The checkpoint saved in a character file: its root PlayerFileVer field.</summary>
     internal static int ReadFileVersion(SavedCharacter character) => character.ReadInteger(PlayerFileCheckpoint.FieldName);
@@ -45,8 +54,11 @@ internal static class CharacterFileUpgrade
         checkpoint != 0 ? checkpoint : Math.Min(recordVersion, LastPlayerVersionWithoutFileCheckpoint);
 
     /// <summary>True when a character file (by its checkpoint) and its record have both reached the latest version.</summary>
-    internal static bool IsCurrent(int checkpoint, Player record) =>
-        record.Version >= LatestVersion && ResolveFileVersion(checkpoint, record.Version) >= LatestVersion;
+    internal static bool IsCurrent(int checkpoint, Player record) => IsCurrentAt(checkpoint, record, LatestVersion);
+
+    /// <summary><see cref="IsCurrent"/> against a latest version the caller already knows.</summary>
+    internal static bool IsCurrentAt(int checkpoint, Player record, int latestVersion) =>
+        record.Version >= latestVersion && ResolveFileVersion(checkpoint, record.Version) >= latestVersion;
 
     /// <summary>
     /// Applies every migration the file or the record is behind on. The file and the record keep their own
@@ -57,13 +69,19 @@ internal static class CharacterFileUpgrade
     /// The record's version before this boot upgraded another file that shares it; a file without a checkpoint is
     /// judged by it rather than by the record the other file already advanced.
     /// </param>
-    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null, int? recordVersionBeforeUpgrade = null)
+    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null, int? recordVersionBeforeUpgrade = null) =>
+        UpgradeWith(Migrations, file, record, activeBeast, recordVersionBeforeUpgrade);
+
+    /// <summary><see cref="Upgrade"/> with the migrations the caller already loaded.</summary>
+    internal static CharacterUpgradeResult UpgradeWith(IReadOnlyList<ICharacterMigration> migrations, byte[] file, Player record,
+        Beast activeBeast = null, int? recordVersionBeforeUpgrade = null)
     {
+        var latestVersion = LatestVersionOf(migrations);
         var character = new SavedCharacter(file, record) { ActiveBeast = activeBeast };
         var recordVersion = recordVersionBeforeUpgrade ?? record.Version;
         var fileVersion = ResolveFileVersion(ReadFileVersion(character), recordVersion);
         var start = Math.Min(record.Version, fileVersion);
-        if (start >= LatestVersion)
+        if (start >= latestVersion)
             return null;
         // A record that reached a version received that migration's record changes with the file it was saved with
         // (at login before this upgrade existed), so an older file restored beside it changes only the file.
@@ -72,7 +90,7 @@ internal static class CharacterFileUpgrade
         // Loading a character changes some saved items before login-time migrations saw them.
         Feature.MigrationDefinition.CharacterMigration.SavedCharacterLoad.Apply(character);
 
-        foreach (var migration in Migrations.Where(migration => migration.Version > start))
+        foreach (var migration in migrations.Where(migration => migration.Version > start))
         {
             if (fileVersion < migration.Version)
             {
@@ -102,23 +120,24 @@ internal static class CharacterFileUpgrade
     /// Makes the next boot read the whole vault again, for a character file that was restored or imported after the
     /// vault was last marked current.
     /// </summary>
-    internal static void RequestVaultRescan()
+    internal static void RequestVaultRescan(IDBService db)
     {
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+        var config = db.Get<ServerConfiguration>("SWLOR_CONFIG");
         if (config == null || config.CharacterFileVersion == 0)
             return;
         config.CharacterFileVersion = 0;
-        DB.Set(config);
+        db.Set(config);
     }
 
     /// <summary>
     /// Upgrades every character file in the server vault. Returns false when any character could not be
     /// upgraded; those keep their saved state and are tried again at the next boot.
     /// </summary>
-    internal static bool UpgradeServerVault()
+    internal static bool UpgradeServerVault(IDBService db, IReadOnlyList<ICharacterMigration> migrations, SavedCharacterDataStore characterData)
     {
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
-        if (config != null && config.CharacterFileVersion >= LatestVersion)
+        var latestVersion = LatestVersionOf(migrations);
+        var config = db.Get<ServerConfiguration>("SWLOR_CONFIG");
+        if (config != null && config.CharacterFileVersion >= latestVersion)
             return true;
 
         var vault = GetServerVaultDirectory();
@@ -129,15 +148,15 @@ internal static class CharacterFileUpgrade
         }
 
         var stopwatch = Stopwatch.StartNew();
-        SavedCharacterData.Load();
+        characterData.Load();
         var files = ServerVaultFile.EnumerateFiles(vault, ".bic").ToArray();
-        Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion}: checking {files.Length} character files in '{vault}'.", true);
+        Log.Write(LogGroup.Migration, $"Character upgrade to version {latestVersion}: checking {files.Length} character files in '{vault}'.", true);
 
         // The server image links its run folder's servervault to the mounted home; keep backups beside the real folder.
         var vaultRoot = Path.TrimEndingDirectorySeparator(vault);
         var realVault = new DirectoryInfo(vaultRoot).ResolveLinkTarget(true)?.FullName ?? vaultRoot;
         var backupDirectory = Path.Combine(Path.GetDirectoryName(realVault) ?? realVault,
-            "servervault_backups", $"character-upgrade-{LatestVersion}-{DateTime.UtcNow:yyyyMMddHHmmss}");
+            "servervault_backups", $"character-upgrade-{latestVersion}-{DateTime.UtcNow:yyyyMMddHHmmss}");
         var counts = new UpgradeCounts();
         var recordVersions = new Dictionary<string, int>();
         // Files that share a record wait for a later round, so each converts from the record the previous one saved.
@@ -148,28 +167,28 @@ internal static class CharacterFileUpgrade
             var deferred = new List<string>();
             foreach (var batch in queue.Chunk(BatchSize))
             {
-                UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts, recordVersions);
+                UpgradeBatch(db, migrations, batch, vault, backupDirectory, seen, deferred, counts, recordVersions);
                 Log.Write(LogGroup.Migration, $"Character upgrade: {counts.Done}/{files.Length} files ({counts.Upgraded} upgraded, " +
                     $"{counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
             }
             queue = deferred.ToArray();
         }
 
-        Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion} finished in {stopwatch.ElapsedMilliseconds}ms: " +
+        Log.Write(LogGroup.Migration, $"Character upgrade to version {latestVersion} finished in {stopwatch.ElapsedMilliseconds}ms: " +
             $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed, " +
             $"{counts.Overflowed} items moved to overflow storage.", true);
         if (counts.Failed > 0)
             return false;
 
         config ??= new ServerConfiguration();
-        config.CharacterFileVersion = LatestVersion;
-        DB.Set(config);
+        config.CharacterFileVersion = latestVersion;
+        db.Set(config);
         return true;
     }
 
     private const int BatchSize = 500;
 
-    private static void UpgradeBatch(string[] batch, string vault, string backupDirectory, HashSet<string> seen,
+    private static void UpgradeBatch(IDBService db, IReadOnlyList<ICharacterMigration> migrations, string[] batch, string vault, string backupDirectory, HashSet<string> seen,
         List<string> deferred, UpgradeCounts counts, Dictionary<string, int> recordVersions)
     {
         var pending = new CharacterFile[batch.Length];
@@ -186,7 +205,7 @@ internal static class CharacterFileUpgrade
                 deferred.Add(character.Path);
                 continue;
             }
-            var record = DB.Get<Player>(character.Id);
+            var record = db.Get<Player>(character.Id);
             try
             {
                 // A resumed file may still be behind a newer release; it is upgraded like any other below.
@@ -208,10 +227,10 @@ internal static class CharacterFileUpgrade
                 recordVersions[character.Id] = versionBeforeUpgrade = record.Version;
             character.RecordVersionBeforeUpgrade = versionBeforeUpgrade;
             if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
-                character.ActiveBeast = DB.Get<Beast>(record.ActiveBeastId);
+                character.ActiveBeast = db.Get<Beast>(record.ActiveBeastId);
         }
 
-        Parallel.For(0, pending.Length, index => pending[index].Convert());
+        Parallel.For(0, pending.Length, index => pending[index].Convert(migrations));
 
         foreach (var character in pending)
         {
@@ -235,7 +254,7 @@ internal static class CharacterFileUpgrade
             }
             try
             {
-                Commit(character, vault, backupDirectory);
+                Commit(db, character, vault, backupDirectory);
                 counts.Upgraded++;
                 counts.Overflowed += character.Result.Overflow.Count;
             }
@@ -266,7 +285,7 @@ internal static class CharacterFileUpgrade
     /// written removes the upgraded file and its overflow items together, without touching items an earlier upgrade of
     /// another file at that path stored.
     /// </summary>
-    private static void Commit(CharacterFile character, string vault, string backupDirectory)
+    private static void Commit(IDBService db, CharacterFile character, string vault, string backupDirectory)
     {
         var result = character.Result;
         var pending = CharacterFile.PendingPath(character.Path);
@@ -278,7 +297,7 @@ internal static class CharacterFileUpgrade
             {
                 var item = result.Overflow[index];
                 var id = $"{character.Id}-{character.FileKey}-{contentKey}-{result.FromVersion}-{index}";
-                DB.Set(new OverflowItem
+                db.Set(new OverflowItem
                 {
                     Id = id,
                     PlayerId = character.Id,
@@ -295,7 +314,7 @@ internal static class CharacterFileUpgrade
             ServerVaultFile.CreateDirectory(Path.GetDirectoryName(backup)!);
             if (!ServerVaultFile.Exists(backup))
                 ServerVaultFile.Copy(character.Path, backup);
-            DB.Set(result.Record);
+            db.Set(result.Record);
         }
         catch
         {
@@ -304,7 +323,7 @@ internal static class CharacterFileUpgrade
             // boot would install a leftover upgraded file without them.
             if (DiscardPendingFile(character, pending))
                 foreach (var id in stored)
-                    DB.Delete<OverflowItem>(id);
+                    db.Delete<OverflowItem>(id);
             throw;
         }
         ServerVaultFile.Move(pending, character.Path);
@@ -432,13 +451,13 @@ internal static class CharacterFileUpgrade
 
         public void Fail(Exception ex) => Error = ex.ToString();
 
-        public void Convert()
+        public void Convert(IReadOnlyList<ICharacterMigration> migrations)
         {
             if (Error != null || Record == null)
                 return;
             try
             {
-                Result = Upgrade(Data, Record, ActiveBeast, RecordVersionBeforeUpgrade);
+                Result = UpgradeWith(migrations, Data, Record, ActiveBeast, RecordVersionBeforeUpgrade);
             }
             catch (Exception ex)
             {

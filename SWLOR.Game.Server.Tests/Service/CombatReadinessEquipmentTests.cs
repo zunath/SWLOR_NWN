@@ -372,13 +372,9 @@ public class CombatReadinessEquipmentTests
         var registration = File.ReadAllText(Path.Combine(_root, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_EQUIP_AFTER\", ScriptName.OnItemEquipValidateAfter)");
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_UNEQUIP_AFTER\", ScriptName.OnItemUnequipAfter)");
-
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.AttributeLists.ToString().Should().Contain("ScriptName.OnCharacterInitAfter");
-        migration.Body!.Statements[^3].ToString().Should().Be("Stat.RefreshCombatReadinessEquipment(player);");
-        migration.Body.Statements[^4].ToString().Should().Be("Perk.RestorePlayerFeats(player);");
+        typeof(Migration).GetMethod(nameof(Migration.AfterCharacterInitialization))!
+            .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCharacterInitAfter);
+        // MigrationServiceTests pins the login order: feats, then combat readiness (third from last), max HP, equipment stats.
     }
 
     private int Read() => (int)Call("GetCombatReadinessPercent", 1u)!;

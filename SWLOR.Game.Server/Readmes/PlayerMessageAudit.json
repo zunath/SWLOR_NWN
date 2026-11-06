@@ -1,5 +1,47 @@
 [
   {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 460,
+    "Member": "TryRecordWitness",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 465,
+    "Member": "TryRecordWitness",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 554,
+    "Member": "TryLearnTechniques",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 572,
+    "Member": "TryLearnTechniques",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 797,
+    "Member": "EquipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+    "Line": 821,
+    "Member": "UnequipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs",
     "Line": 204,
     "Member": "SendMessage",
@@ -5075,29 +5117,29 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 990,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1064,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Perk 'Research I' is required to use research terminals.\")"
+    "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 998,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1072,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1021,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1095,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
+    "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1025,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
+    "Line": 1099,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
@@ -5327,71 +5369,78 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(fishingPoint, \"The fishing point has been exhausted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 364,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 379,
     "Member": "ToggleActionMode",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You cannot use {GetActionModeName(mode)}.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 376,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 391,
     "Member": "UseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not know this ability.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 385,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 400,
     "Member": "UseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 430,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 445,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have that item.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 437,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 452,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That item cannot be used.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 482,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 497,
     "Member": "EquipHands",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You do not have {equipItem.ItemName}.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 508,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 520,
+    "Member": "EquipHands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Items cannot be equipped while crafting.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 530,
     "Member": "EquipHands",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(error))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 617,
+    "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
+    "Line": 636,
     "Member": "PutAwayHandItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Free inventory space or make room in a carried bag before putting away {GetName(item)}.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Gui.cs",
-    "Line": 267,
+    "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
+    "Line": 287,
     "Member": "HandleNuiEvents",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(uiTarget, ColorToken.Red($\"You have moved too far away from the {GetName(viewModel.TetherObject)}.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Gui.cs",
-    "Line": 760,
+    "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
+    "Line": 790,
     "Member": "Draw",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
@@ -5495,53 +5544,11 @@
     "Call": "SendMessageToPC(nearby, buildMessage(nearby))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 231,
+    "File": "SWLOR.Game.Server/Domain/Core/MigrationService.cs",
+    "Line": 313,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 443,
-    "Member": "TryRecordWitness",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 448,
-    "Member": "TryRecordWitness",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 538,
-    "Member": "TryLearnTechniques",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 556,
-    "Member": "TryLearnTechniques",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 781,
-    "Member": "EquipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 805,
-    "Member": "UnequipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",
@@ -5628,36 +5635,36 @@
     "Call": "SendMessageToPC(receiver, ColorToken.Combat(message))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
-    "Line": 49,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
+    "Line": 58,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Red(error))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
-    "Line": 71,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
+    "Line": 80,
     "Member": "Introduce",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(observer,\n                        $\"{PlayerName.GetColoredDisplayName(observer, presenter)} introduces themselves as '{name}'. \" +\n                        \"Use /introductions to remember or dismiss this name. Your private label stays unchanged until you accept.\")"
+    "Call": "SendMessageToPC(observer,\n                        $\"{_playerName.GetColoredDisplayName(observer, presenter)} introduces themselves as '{name}'. \" +\n                        \"Use /introductions to remember or dismiss this name. Your private label stays unchanged until you accept.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
-    "Line": 76,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
+    "Line": 85,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerName.cs",
-    "Line": 117,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
+    "Line": 135,
     "Member": "CheckAfkMovement",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You are no longer AFK.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PlayerName.cs",
-    "Line": 177,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
+    "Line": 194,
     "Member": "PreventAmbiguousTellTargets",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"

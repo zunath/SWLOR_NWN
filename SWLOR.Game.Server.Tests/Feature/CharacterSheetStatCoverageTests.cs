@@ -115,10 +115,7 @@ public class CharacterSheetStatCoverageTests
         statusEffects.Should().Contain("bool isReplacement = false");
         statusEffects.Should().MatchRegex(@"removeNativeEffect,\s+isReplacement\);");
 
-        var gui = ReadService("Gui.cs");
-        gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");
-        gui.Should().Contain("for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())");
-        gui.Should().Contain("!viewModel.IsViewingTarget(target)");
+        // The refresh itself (only sheets that are open and viewing the target) is covered by GuiServiceTests.
     }
 
     [Test]

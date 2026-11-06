@@ -16,7 +16,7 @@ public static class ResearchOutcomeRules
     public const int EvidenceForMaximum = 6;
 
     // How often today's roll picks credit reduction and time reduction once licensed runs are ruled out: 400 each. Ties use the same odds.
-    private static readonly IReadOnlyDictionary<ResearchCandidate, int> TieBreakWeights = new Dictionary<ResearchCandidate, int>
+    private static IReadOnlyDictionary<ResearchCandidate, int> TieBreakWeights => new Dictionary<ResearchCandidate, int>
     {
         [ResearchCandidate.CreditReduction] = 400,
         [ResearchCandidate.TimeReduction] = 400

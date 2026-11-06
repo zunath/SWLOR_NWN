@@ -21,6 +21,22 @@ namespace SWLOR.Game.Server.Tests.Domain.Economy;
 [TestFixture]
 public class CasinoSlotServiceTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     private const uint PlayerObject = 1001;
     private const uint MachineObject = 2002;
     private const uint AreaObject = 3003;
@@ -567,6 +583,8 @@ public class CasinoSlotServiceTests
         public IEnumerable<T> Search<T>(DBQuery<T> query) where T : EntityBase => _inner.Search(query);
 
         public long SearchCount<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchCount(query);
+
+        public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
 
         public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);

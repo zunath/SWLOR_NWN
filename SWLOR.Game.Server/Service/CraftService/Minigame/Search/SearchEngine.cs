@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 /// </summary>
 public sealed class SearchEngine : MinigameEngineBase<SearchState>
 {
-    private static readonly IReadOnlyList<MinigameActionInfo> ActionList = BuildActions();
+    private readonly IReadOnlyList<MinigameActionInfo> ActionList = BuildActions();
 
     private readonly SearchSetup _setup;
 

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -16,8 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var techniques = Ability.GetAllAbilityDetails().Where(entry => entry.Value.IsMimicryTechnique).ToArray();
             ctx.Assert(techniques.Length > 2, "The entire learned technique registry is available");
-            var cache = (Dictionary<FeatType, string>)typeof(Mimicry)
-                .GetField("_techniqueDescriptions", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var cache = ServiceInternals.Field<IMimicryService, Dictionary<FeatType, string>>("_techniqueDescriptions");
             ctx.AssertEqual(techniques.Length, cache.Count, "Boot cached every authored description before UI access");
 
             // Restore authored TLKs and rerun the boot routine with an empty description cache.

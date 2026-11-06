@@ -16,18 +16,18 @@ public static class FabricatorMaterials
     public const double DefaultHardness = 2.0;
 
     // Woods cut easily at the lowest grade and hold an edge at the highest.
-    private static readonly IReadOnlyDictionary<string, double> Woods = new Dictionary<string, double>
+    private static IReadOnlyDictionary<string, double> Woods => new Dictionary<string, double>
     {
         ["wood"] = 1, ["fine_wood"] = 2, ["aracia_wood"] = 3, ["hyphae_wood"] = 4, ["ancient_wood"] = 5
     };
 
     // Assembled structure parts are dense and bonded; the reinforced ones more so.
-    private static readonly IReadOnlyDictionary<string, double> StructureParts = new Dictionary<string, double>
+    private static IReadOnlyDictionary<string, double> StructureParts => new Dictionary<string, double>
     {
         ["pow_supp_unit"] = 3, ["const_parts"] = 3, ["r_pow_supp_unit"] = 4, ["r_const_parts"] = 4
     };
 
-    private static readonly HashSet<string> HardGrades = new()
+    private static HashSet<string> HardGrades => new()
     {
         "jade", "agate", "citrine", "ruby", "emerald", "diamond", "zinsiam",
         "aluminum", "steel", "obsidian", "crystal",

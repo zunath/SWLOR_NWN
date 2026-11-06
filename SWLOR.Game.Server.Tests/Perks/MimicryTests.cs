@@ -19,11 +19,28 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private const string MimicryTechniqueNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry";
     private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
     private const int CustomTlkStrrefOffset = 16777216;
@@ -606,7 +623,7 @@ public class MimicryTests
         var root = FindRepositoryRoot();
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
-        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Mimicry.cs"));
+        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
 
         statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
             "equipped trait stats reach the player only through the stat pipeline");
@@ -1101,16 +1118,17 @@ public class MimicryTests
         var mimicrySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Mimicry.cs"));
-        var revokeStart = mimicrySource.IndexOf("private static void RevokeTechniqueFeat", StringComparison.Ordinal);
-        var revokeEnd = mimicrySource.IndexOf("private static bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
+            "Domain",
+            "Abilities",
+            "MimicryService.cs"));
+        var revokeStart = mimicrySource.IndexOf("private void RevokeTechniqueFeat", StringComparison.Ordinal);
+        var revokeEnd = mimicrySource.IndexOf("private bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
         var revokeBody = mimicrySource[revokeStart..revokeEnd];
 
         revokeBody.Should().Contain("detail.StatusEffectTypesRemovedOnPerkRefund");
-        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
+        revokeBody.Should().Contain("RemoveStatusEffect(player, statusEffectType, false);");
         revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
-        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+        revokeBody.Should().Contain("RemoveStatusEffectsFromAllTargetsBySource(");
     }
 
     [Test]

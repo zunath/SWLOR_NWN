@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// from, another player or a player's pet until <see cref="PvpCombatRules.CombatWindowSeconds"/>
     /// pass without one. The longer it runs, the less healing they receive and the more damage
     /// players deal to them; see <see cref="PvpCombatRules"/> for the steps. The logic that used to be static in
-    /// <c>Service.PvpCombat</c> is moved here unchanged; the fights in progress, the update schedule and the step
-    /// tables are this instance's own fields, built once so nothing is allocated while damage is calculated. The
+    /// <c>Service.PvpCombat</c> is moved here unchanged; the fights in progress and the update schedule are
+    /// this instance's own fields; the step tables are immutable fields of <c>PvpCombatRules</c>. The
     /// facade keeps the event handlers. Calls into the unconverted <c>StatusEffect</c>, <c>CombatRecorder</c> and
     /// <c>Scheduler</c> sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
@@ -24,9 +24,6 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private readonly Dictionary<uint, PvpCombatState> _states = new();
         private IDisposable _updateSchedule;
-
-        private readonly IReadOnlyList<PvpCombatRampStep> _healingReductionSteps = PvpCombatRules.CreateHealingReductionSteps();
-        private readonly IReadOnlyList<PvpCombatRampStep> _damageIncreaseSteps = PvpCombatRules.CreateDamageIncreaseSteps();
 
         // Indexed by healing-reduction step; the countdown before the first step is shown separately.
         private readonly Type[] _healingStepStatusEffects =
@@ -94,14 +91,14 @@ namespace SWLOR.Game.Server.Domain.Combat
         public int GetHealingReductionPercent(uint player)
         {
             return IsInPvpCombat(player)
-                ? PvpCombatRules.GetStepPercent(_healingReductionSteps, GetCombatSeconds(player))
+                ? PvpCombatRules.GetStepPercent(PvpCombatRules.HealingReductionSteps, GetCombatSeconds(player))
                 : 0;
         }
 
         public int GetDamageIncreasePercent(uint player)
         {
             return IsInPvpCombat(player)
-                ? PvpCombatRules.GetStepPercent(_damageIncreaseSteps, GetCombatSeconds(player))
+                ? PvpCombatRules.GetStepPercent(PvpCombatRules.DamageIncreaseSteps, GetCombatSeconds(player))
                 : 0;
         }
 
@@ -251,7 +248,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             var seconds = (now - state.StartedAt).TotalSeconds;
-            var healingStep = PvpCombatRules.GetStepIndex(_healingReductionSteps, seconds);
+            var healingStep = PvpCombatRules.GetStepIndex(PvpCombatRules.HealingReductionSteps, seconds);
             var statusEffect = GetStepStatusEffect(healingStep);
             if (healingStep != state.ShownHealingStep || !HasStatusEffect(player, statusEffect))
             {
@@ -260,16 +257,16 @@ namespace SWLOR.Game.Server.Domain.Combat
                 {
                     SendMessageToPC(player, ColorToken.Combat(healingStep < 0
                         ? "You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage."
-                        : $"PvP combat {FormatTime(_healingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {_healingReductionSteps[healingStep].Percent}%."));
+                        : $"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%."));
                 }
 
                 state.ShownHealingStep = healingStep;
             }
 
-            var damageStep = PvpCombatRules.GetStepIndex(_damageIncreaseSteps, seconds);
+            var damageStep = PvpCombatRules.GetStepIndex(PvpCombatRules.DamageIncreaseSteps, seconds);
             if (damageStep > state.AnnouncedDamageStep)
             {
-                var step = _damageIncreaseSteps[damageStep];
+                var step = PvpCombatRules.DamageIncreaseSteps[damageStep];
                 SendMessageToPC(player, ColorToken.Combat(
                     $"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%."));
                 state.AnnouncedDamageStep = damageStep;
@@ -287,8 +284,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             foreach (var other in _allStatusEffects.Where(type => type != statusEffect))
                 RemoveStatusEffect(player, other, false);
 
-            var steps = _healingReductionSteps;
-            var duration = healingStep + 1 < steps.Count
+            var steps = PvpCombatRules.HealingReductionSteps;
+            var duration = healingStep + 1 < steps.Length
                 ? (float)Math.Max(1, steps[healingStep + 1].AtSeconds - seconds) + 1f
                 : -1f;
             RemoveStatusEffect(player, statusEffect, false);

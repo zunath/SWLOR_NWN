@@ -423,7 +423,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (count >= extraTargets)
                     break;
 
-                if (!GetIsObjectValid(nearby) || nearby == target || nearby == activator || !Space.IsShipEnemy(activator, nearby))
+                // A crew member's hidden character can resolve to their own parked ship, but it is no ship out here.
+                if (!GetIsObjectValid(nearby) || nearby == target || nearby == activator || !Space.IsShipEnemy(activator, nearby) ||
+                    !Space.IsShipInSpace(nearby))
                     continue;
 
                 var nearbyStatus = Space.GetShipStatus(nearby);

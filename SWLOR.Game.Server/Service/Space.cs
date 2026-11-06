@@ -2913,6 +2913,7 @@ namespace SWLOR.Game.Server.Service
                 .Any(nearby => nearby != creature &&
                                GetIsObjectValid(nearby) &&
                                GetIsEnemy(nearby, creature) &&
+                               IsShipInSpace(nearby) &&
                                GetShipStatus(nearby) != null);
         }
 

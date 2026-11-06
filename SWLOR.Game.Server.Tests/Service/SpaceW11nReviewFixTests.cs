@@ -820,4 +820,23 @@ public class SpaceW11nReviewFixTests
         handler.IndexOf("IncursionRules.ClaimPending(").Should().BeGreaterThan(handler.IndexOf("DelayCommand(6f"));
         handler[..handler.IndexOf("DelayCommand(6f")].Should().NotContain("PendingPayouts.Remove");
     }
+
+    [Test]
+    public void ShipSelection_LeavesOutCrewWhoseOwnShipIsParked()
+    {
+        // A crew member's hidden character resolves to their own parked ship, which nothing out here may repair, hit or
+        // count as a contact.
+        var actions = ReadSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs").Replace("\r\n", "\n");
+        actions[actions.IndexOf("public static List<uint> GetNearbyShips(", StringComparison.Ordinal)..]
+            .Should().Contain("if (!Space.IsShipInSpace(nearby) || Space.GetShipStatus(nearby) == null)");
+
+        var volley = actions[actions.IndexOf("nearby == target || nearby == activator", StringComparison.Ordinal)..];
+        volley.IndexOf("!Space.IsShipInSpace(nearby)", StringComparison.Ordinal)
+            .Should().BeInRange(0, volley.IndexOf("var nearbyStatus = Space.GetShipStatus(nearby);", StringComparison.Ordinal),
+                "Laser Battery's extra targets");
+
+        var space = ReadSource("Service", "Space.cs").Replace("\r\n", "\n");
+        var within = space[space.IndexOf("private static bool HasEnemyShipWithin(", StringComparison.Ordinal)..];
+        within[..within.IndexOf("GetShipStatus(nearby) != null", StringComparison.Ordinal)].Should().Contain("IsShipInSpace(nearby) &&");
+    }
 }

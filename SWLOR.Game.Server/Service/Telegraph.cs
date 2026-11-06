@@ -1,26 +1,21 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service.TelegraphService;
-using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// Ground telegraphs. The logic lives in <see cref="ITelegraphService"/>; the event handlers stay here and every
+    /// member forwards to the container's instance.
+    /// </summary>
     public static class Telegraph
     {
-        public const int MaxRenderCount = 16;
-        private const int TelegraphSizeScale = 10;
-        private const int MaxPackedTelegraphSize = 255;
-        private const int MaxPackedTelegraphRotation = 1023;
-        private const float TwoPi = (float)(Math.PI * 2.0);
+        public const int MaxRenderCount = Domain.Combat.TelegraphService.MaxRenderCount;
 
-        private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
-        private static readonly Dictionary<string, ActiveTelegraph> _allTelegraphs = new();
-        private static readonly Dictionary<uint, TelegraphShaderState> _sentShaderStates = new();
+        private static ITelegraphService Instance => FacadeAccessor.Resolve<ITelegraphService>();
 
         /// <summary>
         /// Creates a new telegraph effect at the specified location.
@@ -44,73 +39,28 @@ namespace SWLOR.Game.Server.Service
             TelegraphType type,
             ApplyTelegraphEffect action,
             bool isPersistentAreaIndicator = false)
-        {
-            var data = new TelegraphData
-            {
-                Creator = creator,
-                Shape = type,
-                Position = position,
-                Rotation = rotation,
-                Size = size,
-                Duration = duration,
-                IsHostile = isHostile,
-                IsPersistentAreaIndicator = isPersistentAreaIndicator,
-                Action = action
-            };
-
-            return RunTelegraphEffect(creator, data);
-        }
+            => Instance.CreateTelegraph(creator, position, rotation, size, duration, isHostile, type, action, isPersistentAreaIndicator);
 
         /// <summary>
         /// Cancels a telegraph effect before it completes.
         /// </summary>
         /// <param name="telegraphId">ID of the telegraph to cancel</param>
-        public static void CancelTelegraph(string telegraphId)
-        {
-            if (!_allTelegraphs.ContainsKey(telegraphId))
-                return;
-
-            var telegraph = _allTelegraphs[telegraphId];
-
-            if (_telegraphsByArea.ContainsKey(telegraph.Area) && _telegraphsByArea[telegraph.Area].ContainsKey(telegraphId))
-            {
-                _telegraphsByArea[telegraph.Area].Remove(telegraphId);
-            }
-
-            _allTelegraphs.Remove(telegraphId);
-            UpdateShadersForArea(telegraph.Area);
-            // RemoveEffectByLinkId is not available in SWLOR, effects are removed automatically
-        }
+        public static void CancelTelegraph(string telegraphId) => Instance.CancelTelegraph(telegraphId);
 
         /// <summary>
         /// Gets all active telegraphs in a specific area.
         /// </summary>
         /// <param name="area">Area to check</param>
         /// <returns>Dictionary of telegraph IDs to telegraph data</returns>
-        public static Dictionary<string, ActiveTelegraph> GetTelegraphsInArea(uint area)
-        {
-            return _telegraphsByArea.ContainsKey(area)
-                ? new Dictionary<string, ActiveTelegraph>(_telegraphsByArea[area])
-                : new Dictionary<string, ActiveTelegraph>();
-        }
+        public static Dictionary<string, ActiveTelegraph> GetTelegraphsInArea(uint area) => Instance.GetTelegraphsInArea(area);
 
         /// <summary>
         /// Copies the geometry of existing markers so activation warnings can be compared
         /// with later impacts after their timers expire. Missing marker IDs are ignored.
         /// </summary>
-        public static IReadOnlyList<TelegraphGeometry> CaptureGeometry(IEnumerable<string> telegraphIds)
-        {
-            return telegraphIds
-                .Where(_allTelegraphs.ContainsKey)
-                .Select(id => _allTelegraphs[id])
-                .Select(telegraph => new TelegraphGeometry(
-                    telegraph.Area,
-                    telegraph.Data.Shape,
-                    telegraph.Data.Position,
-                    telegraph.Data.Size,
-                    telegraph.Data.Rotation))
-                .ToArray();
-        }
+        public static IReadOnlyList<TelegraphGeometry> CaptureGeometry(
+            IEnumerable<string> telegraphIds)
+            => Instance.CaptureGeometry(telegraphIds);
 
         /// <summary>
         /// Requests an impact flash unless a captured activation marker already described
@@ -119,9 +69,7 @@ namespace SWLOR.Game.Server.Service
         public static bool ShouldShowImpactFlash(
             TelegraphGeometry impact,
             IReadOnlyList<TelegraphGeometry> activationTelegraphs)
-        {
-            return activationTelegraphs == null || !activationTelegraphs.Any(impact.Matches);
-        }
+            => Instance.ShouldShowImpactFlash(impact, activationTelegraphs);
 
         /// <summary>
         /// Keeps a warned impact on its displayed footprint even after its target or caster moves.
@@ -130,17 +78,7 @@ namespace SWLOR.Game.Server.Service
         public static TelegraphGeometry ResolveImpactGeometry(
             TelegraphGeometry impact,
             IReadOnlyList<TelegraphGeometry> activationTelegraphs)
-        {
-            if (activationTelegraphs != null)
-            {
-                foreach (var warning in activationTelegraphs)
-                    if (warning.Area == impact.Area && warning.Shape == impact.Shape &&
-                        Vector2.DistanceSquared(warning.Size, impact.Size) <= 0.0001f)
-                        return warning;
-            }
-
-            return impact;
-        }
+            => Instance.ResolveImpactGeometry(impact, activationTelegraphs);
 
         /// <summary>
         /// Checks if a creature is within a telegraph's area of effect.
@@ -148,294 +86,25 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">Creature to check</param>
         /// <param name="telegraphId">ID of the telegraph</param>
         /// <returns>True if creature is within the telegraph</returns>
-        public static bool IsCreatureInTelegraph(uint creature, string telegraphId)
-        {
-            if (!_allTelegraphs.ContainsKey(telegraphId))
-                return false;
+        public static bool IsCreatureInTelegraph(
+            uint creature,
+            string telegraphId)
+            => Instance.IsCreatureInTelegraph(creature, telegraphId);
 
-            var telegraph = _allTelegraphs[telegraphId];
-            return GetArea(creature) == telegraph.Area &&
-                   IsInTelegraph(creature, telegraph.Data);
-        }
-
-        private static string RunTelegraphEffect(uint telegrapher, TelegraphData data)
-        {
-            var area = GetArea(telegrapher);
-            if (!_telegraphsByArea.ContainsKey(area))
-                _telegraphsByArea[area] = new Dictionary<string, ActiveTelegraph>();
-
-            var effect = EffectRunScript(
-                ScriptName.TelegraphEffect,
-                ScriptName.TelegraphEffect,
-                string.Empty);
-
-            OnApply(telegrapher, data, effect);
-            ApplyEffectToObject(DurationType.Temporary, effect, telegrapher, data.Duration);
-            UpdateShadersForArea(area);
-
-            return GetEffectLinkId(effect);
-        }
-
-        private static void OnApply(uint telegrapher, TelegraphData data, Effect effect)
-        {
-            var area = GetArea(telegrapher);
-            var telegraphId = GetEffectLinkId(effect);
-
-            var start = GetMicrosecondCounter();
-            var end = (int)(start + data.Duration * 1000 * 1000);
-            var telegraph = new ActiveTelegraph(area, start, end, data);
-
-            if (!_telegraphsByArea.ContainsKey(area))
-                _telegraphsByArea[area] = new Dictionary<string, ActiveTelegraph>();
-
-            _telegraphsByArea[area][telegraphId] = telegraph;
-            _allTelegraphs[telegraphId] = telegraph;
-        }
-
-        public static void OnRemoved(uint telegrapher, string telegraphId)
-        {
-            // Resolve the area from the telegraph's own record rather than the telegrapher's current
-            // area. A creature that moved (or zoned) between creation and expiry would otherwise miss
-            // the lookup, leaking the entry and leaving a stale shape rendered for everyone in it.
-            if (!_allTelegraphs.TryGetValue(telegraphId, out var telegraph))
-                return;
-
-            var area = telegraph.Area;
-
-            if (!_telegraphsByArea.ContainsKey(area))
-                return;
-
-            if (!_telegraphsByArea[area].ContainsKey(telegraphId))
-                return;
-
-            RunTelegraphAction(area, telegraph.Data);
-
-            _telegraphsByArea[area].Remove(telegraphId);
-            _allTelegraphs.Remove(telegraphId);
-            UpdateShadersForArea(area);
-        }
+        public static void OnRemoved(uint telegrapher, string telegraphId) => Instance.OnRemoved(telegrapher, telegraphId);
 
         [NWNEventHandler(ScriptName.TelegraphEffect)]
-        public static void OnTelegraphEffect()
-        {
-            var scriptType = (RunScriptEffectScriptType)GetLastRunScriptEffectScriptType();
-            if (scriptType != RunScriptEffectScriptType.OnRemoved)
-                return;
-
-            var effect = GetLastRunScriptEffect();
-            OnRemoved(OBJECT_SELF, GetEffectLinkId(effect));
-        }
-
-        private static void RunTelegraphAction(uint area, TelegraphData data)
-        {
-            var action = data.Action;
-            if (action != null)
-            {
-                var maxDistance = CalculateMaxCreatureDistance(data.Shape, data.Size);
-                var creatureList = new List<uint>();
-                var candidates = GetAliveCreaturesInArea(area)
-                    .Select(creature => new
-                    {
-                        Creature = creature,
-                        Position = GetPosition(creature)
-                    })
-                    .Where(candidate => GetHorizontalDistance(candidate.Position, data.Position) <= maxDistance)
-                    .OrderBy(candidate => GetHorizontalDistance(candidate.Position, data.Position));
-
-                foreach (var candidate in candidates)
-                {
-                    if (IsPositionInTelegraph(candidate.Position, data))
-                    {
-                        creatureList.Add(candidate.Creature);
-                    }
-                }
-
-                action(data.Creator, creatureList);
-            }
-        }
-
-        private static float CalculateMaxCreatureDistance(TelegraphType shape, Vector2 size)
-        {
-            switch (shape)
-            {
-                case TelegraphType.None:
-                    return 0f;
-                case TelegraphType.Sphere:
-                    return size.X; // Sphere radius
-                case TelegraphType.Cone:
-                    return size.X; // Cone length
-                case TelegraphType.Line:
-                    var halfWidth = size.Y * 0.5f;
-                    return (float)Math.Sqrt(size.X * size.X + halfWidth * halfWidth);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
-            }
-        }
-
-        private static bool IsInTelegraph(uint creature, TelegraphData data)
-        {
-            return IsPositionInTelegraph(GetPosition(creature), data);
-        }
-
-        private static bool IsPositionInTelegraph(Vector3 position, TelegraphData data)
-        {
-            switch (data.Shape)
-            {
-                case TelegraphType.Sphere:
-                    return IsPositionInSphere(position, data);
-                case TelegraphType.Cone:
-                    return IsPositionInCone(position, data);
-                case TelegraphType.Line:
-                    return IsPositionInLine(position, data);
-                default:
-                    return false;
-            }
-        }
-
-        private static bool IsPositionInSphere(Vector3 position, TelegraphData data)
-        {
-            var radius = data.Size.X;
-            var distance = GetHorizontalDistance(position, data.Position);
-            return distance <= radius;
-        }
-
-        private static bool IsPositionInCone(Vector3 position, TelegraphData data)
-        {
-            var directionX = (float)Math.Cos(data.Rotation);
-            var directionY = (float)Math.Sin(data.Rotation);
-
-            var toPointX = position.X - data.Position.X;
-            var toPointY = position.Y - data.Position.Y;
-            var distance = GetHorizontalDistance(position, data.Position);
-            if (distance <= 0.01f)
-                return true;
-
-            // Compute the actual cone angle dynamically
-            var halfAngle = (float)Math.Atan(data.Size.Y * 0.5f / data.Size.X);
-
-            // Angle between the direction and the point
-            var dotProduct = toPointX * directionX + toPointY * directionY;
-            var cosAngle = Math.Clamp(dotProduct / distance, -1f, 1f);
-            var angleBetween = (float)Math.Acos(cosAngle);
-
-            return distance <= data.Size.X && angleBetween <= halfAngle;
-        }
-
-        private static bool IsPositionInLine(Vector3 position, TelegraphData data)
-        {
-            var toPoint = position - data.Position;
-
-            // Compute rotated position relative to the telegraph's orientation
-            var rotatedPos = new Vector2(
-                toPoint.X * (float)Math.Cos(-data.Rotation) - toPoint.Y * (float)Math.Sin(-data.Rotation),
-                toPoint.X * (float)Math.Sin(-data.Rotation) + toPoint.Y * (float)Math.Cos(-data.Rotation)
-            );
-
-            var distAlongLine = rotatedPos.X;
-            var distFromCenter = (float)Math.Abs(rotatedPos.Y);
-
-            return distAlongLine >= 0f && distAlongLine <= data.Size.X // Within length
-                   && distFromCenter <= data.Size.Y * 0.5f; // Within width
-        }
-
-        private static float GetHorizontalDistance(Vector3 position, Vector3 origin)
-        {
-            var x = position.X - origin.X;
-            var y = position.Y - origin.Y;
-
-            return (float)Math.Sqrt(x * x + y * y);
-        }
-
-        private static IEnumerable<uint> GetAliveCreaturesInArea(uint area)
-        {
-            if (!GetIsObjectValid(area))
-                yield break;
-
-            foreach (var creature in ObjectSnapshot.InArea(area, ObjectType.Creature))
-            {
-                if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)
-                    yield return creature;
-            }
-        }
-
-        private static float DegreesToRadians(float degrees)
-        {
-            return degrees * ((float)Math.PI / 180f);
-        }
-
-        // partyMember is the avatar behind a creature a DM possesses, which keeps the DM's party membership.
-        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint partyMember, uint telegrapher, bool isHostile)
-        {
-            var isOwnTelegraph = player == telegrapher;
-            var isPartyMemberTelegraph = !isOwnTelegraph &&
-                (Party.IsInParty(player, telegrapher) ||
-                 (partyMember != player && Party.IsInParty(partyMember, telegrapher)));
-
-            return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
-        }
-
-        private static TelegraphColorType SelectTelegraphColorType(
-            bool isOwnTelegraph,
-            bool isPartyMemberTelegraph,
-            bool isHostile)
-        {
-            // The player's own placement stays recognizable, while beneficial effects remain green
-            // regardless of who created them. Party gray distinguishes allied offensive placement
-            // from hostile red telegraphs created outside the party.
-            if (isOwnTelegraph)
-                return TelegraphColorType.Self;
-
-            if (!isHostile)
-                return TelegraphColorType.Beneficial;
-
-            if (isPartyMemberTelegraph)
-                return TelegraphColorType.PartyMember;
-
-            return TelegraphColorType.Hostile;
-        }
-
-        private static int PackTelegraphData(TelegraphType shapeType, TelegraphColorType colorType, Vector2 size, float rotation)
-        {
-            var sizeX = Math.Clamp((int)Math.Round(size.X * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
-            var sizeY = Math.Clamp((int)Math.Round(size.Y * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
-            var normalizedRotation = NormalizeRotation(rotation);
-            var packedRotation = Math.Clamp((int)Math.Round(normalizedRotation / TwoPi * MaxPackedTelegraphRotation), 0, MaxPackedTelegraphRotation);
-
-            return ((int)shapeType & 0x7) |
-                   (((int)colorType & 0x3) << 3) |
-                   (sizeX << 5) |
-                   (sizeY << 13) |
-                   (packedRotation << 21);
-        }
-
-        private static float NormalizeRotation(float rotation)
-        {
-            var normalized = rotation % TwoPi;
-            return normalized < 0f
-                ? normalized + TwoPi
-                : normalized;
-        }
+        public static void OnTelegraphEffect() => Instance.OnTelegraphEffect();
 
         /// <summary>
         /// Clears all telegraphs from memory. Used for cleanup.
         /// </summary>
-        public static void ClearAllTelegraphs()
-        {
-            _telegraphsByArea.Clear();
-            _allTelegraphs.Clear();
-            UpdateShadersForAllPlayers();
-        }
+        public static void ClearAllTelegraphs() => Instance.ClearAllTelegraphs();
 
         /// <summary>
         /// Updates shader uniforms for all players to display telegraphs.
         /// </summary>
-        public static void UpdateShadersForAllPlayers()
-        {
-            foreach (var player in ObjectSnapshot.Players())
-            {
-                UpdateShaderForPlayer(DMPresence.GetControlledCreature(player));
-            }
-        }
+        public static void UpdateShadersForAllPlayers() => Instance.UpdateShadersForAllPlayers();
 
         /// <summary>
         /// Refreshes active telegraphs for specific player viewers after relationship state changes.
@@ -443,39 +112,7 @@ namespace SWLOR.Game.Server.Service
         /// rebuilt even when no telegraph was created or removed.
         /// </summary>
         /// <param name="players">Players whose telegraph uniforms should be refreshed.</param>
-        public static void UpdateShadersForPlayers(IEnumerable<uint> players)
-        {
-            foreach (var player in players.Distinct())
-            {
-                if (!GetIsObjectValid(player))
-                    continue;
-
-                var viewer = DMPresence.GetControlledCreature(player);
-                if (!GetIsPC(viewer) && !GetIsDM(viewer))
-                    continue;
-
-                UpdateShaderForPlayer(viewer);
-            }
-        }
-
-        /// <summary>
-        /// Updates shader uniforms only for players standing in the given area. Telegraph shader slots
-        /// are per-area, so a telegraph created or removed in one area cannot affect players elsewhere.
-        /// Instant abilities now flash their shape on every use, so this runs far more often than the
-        /// original create/destroy-only path and must not touch every player on the server.
-        /// </summary>
-        private static void UpdateShadersForArea(uint area)
-        {
-            if (!GetIsObjectValid(area))
-                return;
-
-            foreach (var player in ObjectSnapshot.Players())
-            {
-                var viewer = DMPresence.GetControlledCreature(player);
-                if (GetArea(viewer) == area)
-                    UpdateShaderForPlayer(viewer);
-            }
-        }
+        public static void UpdateShadersForPlayers(IEnumerable<uint> players) => Instance.UpdateShadersForPlayers(players);
 
         /// <summary>
         /// Pushes the current telegraph state to a player entering an area. Without this, a player who
@@ -483,16 +120,7 @@ namespace SWLOR.Game.Server.Service
         /// telegraph happens to be created or removed in that same area.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
-        public static void OnAreaEnter()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) && !GetIsDM(player))
-                return;
-
-            // Resend every slot after an area change rather than trusting values sent before it.
-            _sentShaderStates.Remove(player);
-            UpdateShaderForPlayer(player);
-        }
+        public static void OnAreaEnter() => Instance.OnAreaEnter();
 
         /// <summary>
         /// Possession moves a DM's client to another object, so the uniforms recorded as sent to that object are
@@ -500,124 +128,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [NWNEventHandler(ScriptName.OnDMPossessBefore)]
         [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
-        public static void ResendShaderStateOnDMPossess()
-        {
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
-            var viewer = GetIsObjectValid(target)
-                ? target
-                : GetMaster(OBJECT_SELF);
-
-            if (!GetIsObjectValid(viewer))
-                return;
-
-            DelayCommand(0.1f, () =>
-            {
-                _sentShaderStates.Remove(viewer);
-                UpdateShaderForPlayer(viewer);
-            });
-        }
+        public static void ResendShaderStateOnDMPossess() => Instance.ResendShaderStateOnDMPossess();
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
-        public static void ForgetShaderStateOnExit()
-        {
-            _sentShaderStates.Remove(GetExitingObject());
-        }
-
-        /// <summary>
-        /// Updates shader uniforms for a specific player to display telegraphs.
-        /// </summary>
-        /// <param name="player">Player to update shaders for</param>
-        private static void UpdateShaderForPlayer(uint player)
-        {
-            var profile = FrameProfiler.Start();
-            try
-            {
-                UpdateShaderSlotsForPlayer(player);
-            }
-            finally
-            {
-                FrameProfiler.Stop(FrameMetric.TelegraphPlayerUpdate, profile);
-            }
-        }
-
-        private static void UpdateShaderSlotsForPlayer(uint player)
-        {
-            if (!_sentShaderStates.TryGetValue(player, out var sent))
-            {
-                sent = new TelegraphShaderState();
-                _sentShaderStates[player] = sent;
-            }
-
-            var area = GetArea(player);
-            if (!_telegraphsByArea.ContainsKey(area))
-            {
-                ResetTelegraphShaderSlots(player, sent, 0);
-                return;
-            }
-
-            var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
-            var partyMember = DMPresence.GetDM(player);
-
-            var i = 0;
-            foreach (var telegraph in telegraphs)
-            {
-                var data = telegraph.Data;
-                var position = data.Position;
-                var size = data.Size;
-
-                var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
-                var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
-
-                if (sent.PackedData[i] != packed)
-                {
-                    SetShaderUniformInt(
-                        player,
-                        ShaderUniformType.Type1 + i,
-                        packed);
-                    sent.PackedData[i] = packed;
-                    FrameProfiler.Count(FrameMetric.TelegraphUniform);
-                }
-
-                if (sent.Positions[i] != position)
-                {
-                    SetShaderUniformVec(
-                        player,
-                        ShaderUniformType.Type1 + i,
-                        position.X,
-                        position.Y,
-                        position.Z,
-                        0f);
-                    sent.Positions[i] = position;
-                    FrameProfiler.Count(FrameMetric.TelegraphUniform);
-                }
-
-                i++;
-            }
-
-            ResetTelegraphShaderSlots(player, sent, telegraphs.Length);
-        }
-
-        private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
-        {
-            return telegraphs
-                .OrderBy(telegraph => telegraph.Data.IsPersistentAreaIndicator)
-                .Take(MaxRenderCount)
-                .ToArray();
-        }
-
-        private static void ResetTelegraphShaderSlots(uint player, TelegraphShaderState sent, int startIndex)
-        {
-            for (var x = startIndex; x < MaxRenderCount; ++x)
-            {
-                if (sent.PackedData[x] == (int)TelegraphType.None)
-                    continue;
-
-                var uniformIndex = ShaderUniformType.Type1 + x;
-                SetShaderUniformInt(player, uniformIndex, (int)TelegraphType.None);
-                sent.PackedData[x] = (int)TelegraphType.None;
-                FrameProfiler.Count(FrameMetric.TelegraphUniform);
-            }
-        }
+        public static void ForgetShaderStateOnExit() => Instance.ForgetShaderStateOnExit();
 
         /// <summary>
         /// Creates a simple sphere telegraph.
@@ -637,18 +151,7 @@ namespace SWLOR.Game.Server.Service
             bool isHostile,
             ApplyTelegraphEffect action,
             bool isPersistentAreaIndicator = false)
-        {
-            return CreateTelegraph(
-                creator,
-                position,
-                0f,
-                new Vector2(radius, radius),
-                duration,
-                isHostile,
-                TelegraphType.Sphere,
-                action,
-                isPersistentAreaIndicator);
-        }
+            => Instance.CreateSphereTelegraph(creator, position, radius, duration, isHostile, action, isPersistentAreaIndicator);
 
         /// <summary>
         /// Creates a cone telegraph.
@@ -671,17 +174,7 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             ApplyTelegraphEffect action)
-        {
-            return CreateTelegraph(
-                creator,
-                position,
-                rotation,
-                new Vector2(length, width),
-                duration,
-                isHostile,
-                TelegraphType.Cone,
-                action);
-        }
+            => Instance.CreateConeTelegraph(creator, position, rotation, length, width, duration, isHostile, action);
 
         /// <summary>
         /// Creates a line telegraph.
@@ -704,17 +197,7 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             ApplyTelegraphEffect action)
-        {
-            return CreateTelegraph(
-                creator,
-                position,
-                rotation,
-                new Vector2(length, width),
-                duration,
-                isHostile,
-                TelegraphType.Line,
-                action);
-        }
+            => Instance.CreateLineTelegraph(creator, position, rotation, length, width, duration, isHostile, action);
 
         /// <summary>
         /// Creates a telegraph at a creature's position.
@@ -735,20 +218,7 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             ApplyTelegraphEffect action)
-        {
-            var position = GetPosition(target);
-            var rotation = DegreesToRadians(GetFacing(target));
-
-            return CreateTelegraph(
-                creator,
-                position,
-                rotation,
-                size,
-                duration,
-                isHostile,
-                type,
-                action);
-        }
+            => Instance.CreateTelegraphAtCreature(creator, target, type, size, duration, isHostile, action);
 
         /// <summary>
         /// Creates a telegraph in front of a creature.
@@ -771,26 +241,6 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             ApplyTelegraphEffect action)
-        {
-            var position = GetPosition(target);
-            var rotation = DegreesToRadians(GetFacing(target));
-
-            // Calculate position in front of the creature
-            var frontPosition = new Vector3(
-                position.X + (float)Math.Cos(rotation) * distance,
-                position.Y + (float)Math.Sin(rotation) * distance,
-                position.Z
-            );
-
-            return CreateTelegraph(
-                creator,
-                frontPosition,
-                rotation,
-                size,
-                duration,
-                isHostile,
-                type,
-                action);
-        }
+            => Instance.CreateTelegraphInFrontOfCreature(creator, target, distance, type, size, duration, isHostile, action);
     }
 }

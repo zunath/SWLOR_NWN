@@ -114,6 +114,11 @@ public class EshanModuleWiringTests
         }
         using var armor = Read("Module/uti/pirate_armor.uti.json");
         Assert.That(Value(armor.RootElement, "BaseItem").GetInt32(), Is.EqualTo(16));
+        var placedArmor = Value(raalo, "Equip_ItemList").EnumerateArray()
+            .Single(item => item.GetProperty("__struct_id").GetInt32() == 2);
+        Assert.That(Value(placedArmor, "Dropable").GetInt32(), Is.Zero);
+        foreach (var field in armor.RootElement.EnumerateObject().Where(field => field.Name != "__data_type"))
+            Assert.That(JsonElement.DeepEquals(placedArmor.GetProperty(field.Name), field.Value), Is.True, field.Name);
     }
 
     private static void AssertTeleport(JsonElement area, string destination)

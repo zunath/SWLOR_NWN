@@ -198,6 +198,8 @@ public class EchaniTempleMonksTests
             foreach (var point in list.GetProperty("value").EnumerateArray())
             {
                 var tag = Value(point, "Tag").GetString()!;
+                if (Path.GetFileName(file) == "pw_ar_sc_eshanto.git.json")
+                    tag.Should().NotStartWith("es_monk_", "the monks' route excludes Verdant Crown");
                 if (tag.StartsWith("es_monk_path_")) points.TryAdd(tag, (file, point)).Should().BeTrue();
                 else if (!points.ContainsKey(tag)) points.Add(tag, (file, point));
             }

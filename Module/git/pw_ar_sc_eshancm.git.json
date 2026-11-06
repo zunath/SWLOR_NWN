@@ -195074,21 +195074,6 @@
             {
               "Name": {
                 "type": "cexostring",
-                "value": "ECHANI_TRANSFER"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "eshan_uppercity"
-              },
-              "__struct_id": 0
-            },
-            {
-              "Name": {
-                "type": "cexostring",
                 "value": "ECHANI_NEXT"
               },
               "Type": {
@@ -195097,7 +195082,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "es_monk_path_037"
+                "value": "es_monk_path_044"
               },
               "__struct_id": 0
             }

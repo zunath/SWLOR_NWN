@@ -2533,62 +2533,6 @@
           "type": "cexostring",
           "value": "Local /stuck recovery at the area entrance or medical terminal"
         }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_037"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_038"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_039"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_040"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_041"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_042"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_path_043"
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_note_09"
-        }
       }
     ]
   }

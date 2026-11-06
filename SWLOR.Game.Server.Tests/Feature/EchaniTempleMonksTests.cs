@@ -156,6 +156,36 @@ public class EchaniTempleMonksTests
     }
 
     [Test]
+    public void MonkObjects_HaveEditorMetadataAtTheirMatchingIndices()
+    {
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(Root, "Module/git"), "*.git.json"))
+        {
+            if (!new[] { "esh", "es_", "sc_es" }.Any(part => Path.GetFileName(file).Contains(part))) continue;
+            using var area = JsonDocument.Parse(File.ReadAllBytes(file));
+            if (!area.RootElement.TryGetProperty("WaypointList", out var list)) continue;
+            var waypoints = list.GetProperty("value").EnumerateArray().ToArray();
+            if (!waypoints.Any(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_"))) continue;
+            var metadata = Read($"Module/gic/{Path.GetFileName(file).Replace(".git.json", ".gic.json")}");
+            foreach (var collection in new[] { "WaypointList", "Creature List" })
+            {
+                var objects = Value(area.RootElement, collection).EnumerateArray().ToArray();
+                var editorEntries = Value(metadata, collection).EnumerateArray().ToArray();
+                for (var index = 0; index < objects.Length; index++)
+                {
+                    var tag = Value(objects[index], "Tag").GetString()!;
+                    if (!tag.StartsWith("es_monk_")) continue;
+                    editorEntries.Length.Should().Be(objects.Length, $"{file} {collection}");
+                    var prefix = collection == "WaypointList" ? "Echani monk waypoint: " : "Echani temple monk: ";
+                    Value(editorEntries[index], "Comment").GetString().Should().Be(prefix + tag,
+                        "editor metadata is paired with the area object by list index");
+                    editorEntries[index].GetProperty("__struct_id").GetInt32().Should()
+                        .Be(collection == "WaypointList" ? 5 : 4);
+                }
+            }
+        }
+    }
+
+    [Test]
     public void Route_IsOneClosedLoopAndEveryAreaChangeHasAnExistingTransferDestination()
     {
         var points = new Dictionary<string, (string Area, JsonElement Point)>();

@@ -37,6 +37,8 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
 
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 
+        public bool TunedAgainstFullMods => true;
+
         public AdaptivePolicyOptions AdaptiveOptions { get; } = new()
         {
             Depth = 3,

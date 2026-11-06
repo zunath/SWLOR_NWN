@@ -22,6 +22,7 @@
     { "name": "ConversationMenu", "domain": "Core" },
     { "name": "Craft", "domain": "Crafting" },
     { "name": "Currency", "domain": "Economy" },
+    { "name": "DB", "domain": "Core" },
     { "name": "DMBlueprintCatalog", "domain": "Administration" },
     { "name": "DMCreatorFavorite", "domain": "Administration" },
     { "name": "DMCreatureManagerFavorite", "domain": "Administration" },

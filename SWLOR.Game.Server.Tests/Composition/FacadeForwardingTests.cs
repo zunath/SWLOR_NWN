@@ -109,8 +109,7 @@ public class FacadeForwardingTests
     [Test]
     public void Every_domain_service_in_the_container_is_listed_as_converted()
     {
-        // IDBService is the temporary adapter over the static DB class; it is not a converted service (DB converts in wave C).
-        var notServices = new[] { "IDBService" };
+        var notServices = Array.Empty<string>();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
 

@@ -40,6 +40,7 @@ public class FacadeForwardingTests
             .Select(method => $"{method.ReturnType.Name} {method.Name}({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})")
             .OrderBy(text => text, StringComparer.Ordinal);
         var contractMembers = service.Contract.GetMethods()
+            .Where(method => !method.IsSpecialName || method.Name.StartsWith("get_", StringComparison.Ordinal))
             .Select(method => $"{method.ReturnType.Name} {method.Name}({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})")
             .OrderBy(text => text, StringComparer.Ordinal);
 

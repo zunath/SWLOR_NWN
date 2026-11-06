@@ -72,8 +72,11 @@ namespace SWLOR.Game.Server.Composition
             // Combat
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();
+            services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
+            services.AddSingleton<IPoisonsService, PoisonsService>();
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
+            services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
 
             // Companions

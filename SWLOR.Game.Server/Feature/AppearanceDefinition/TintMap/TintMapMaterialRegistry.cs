@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
@@ -13,12 +14,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public const int CustomColorReferenceIntensity = 128;
         private const string TintMap2DA = "tintmap";
 
-        private static readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> MaterialsByModel =
-            new(StringComparer.OrdinalIgnoreCase);
-        private static TintMapEquipmentMaterialIndex _equipmentMaterialIndex =
-            TintMapEquipmentMaterialIndex.Empty;
-
-        private static readonly Dictionary<TintMapLayerType, TintMapLayerDefinition> LayerDefinitions = new()
+        // Built once and never written again, so it needs no service and the toolset reads it without a container.
+        // The material tables read from the 2DAs are runtime state and live in TintMapState.
+        private static readonly FrozenDictionary<TintMapLayerType, TintMapLayerDefinition> LayerDefinitions =
+            new Dictionary<TintMapLayerType, TintMapLayerDefinition>
         {
             { TintMapLayerType.Skin, new TintMapLayerDefinition("Skin", "rowSkin", "tintSkin", "useCustomSkin", "gui_pal_skin", 0) },
             { TintMapLayerType.Hair, new TintMapLayerDefinition("Hair", "rowHair", "tintHair", "useCustomHair", "gui_pal_hair01", 176) },
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             { TintMapLayerType.Leather2, new TintMapLayerDefinition("Leather 2", "rowLeath2", "tintLeath2", "useCustomLeath2", "gui_pal_tattoo", 880) },
             { TintMapLayerType.Tattoo1, new TintMapLayerDefinition("Tattoo 1", "rowTat1", "tintTat1", "useCustomTat1", "gui_pal_tattoo", 1056) },
             { TintMapLayerType.Tattoo2, new TintMapLayerDefinition("Tattoo 2", "rowTat2", "tintTat2", "useCustomTat2", "gui_pal_tattoo", 1056) }
-        };
+        }.ToFrozenDictionary();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
@@ -67,28 +66,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 }
             }
 
-            MaterialsByModel.Clear();
-            foreach (var (model, modelMaterials) in materials)
-            {
-                MaterialsByModel[model] = modelMaterials;
-            }
-            _equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(MaterialsByModel);
+            TintMapState.LoadMaterials(materials);
 
             Log.WriteStructured(
                 LogGroup.Server,
                 "Loaded {TintMapModelCount} tint-map models.",
-                MaterialsByModel.Count);
+                materials.Count);
         }
 
-        public static IReadOnlyList<TintMapMaterialDefinition> GetMaterials(string modelResref)
-        {
-            if (string.IsNullOrWhiteSpace(modelResref))
-                return Array.Empty<TintMapMaterialDefinition>();
-
-            return MaterialsByModel.TryGetValue(modelResref, out var materials)
-                ? materials
-                : Array.Empty<TintMapMaterialDefinition>();
-        }
+        public static IReadOnlyList<TintMapMaterialDefinition> GetMaterials(string modelResref) =>
+            TintMapState.GetMaterials(modelResref);
 
         public static bool AreEquipmentMaterialSlotsEquivalent(
             string sourceMaterialResref,
@@ -96,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string destinationMaterialResref,
             TintMapLayerType layer)
         {
-            return _equipmentMaterialIndex.AreEquivalent(
+            return TintMapState.AreEquipmentMaterialSlotsEquivalent(
                 sourceMaterialResref,
                 destinationModelResref,
                 destinationMaterialResref,
@@ -108,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string sourceMaterialResref,
             TintMapLayerType layer)
         {
-            return _equipmentMaterialIndex.GetEquivalentMaterialResrefs(
+            return TintMapState.GetEquivalentEquipmentMaterialResrefs(
                 sourceModelResref,
                 sourceMaterialResref,
                 layer);
@@ -119,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             SWLOR.NWN.API.NWScript.Enum.Item.AppearanceArmor armorPart)
         {
-            return _equipmentMaterialIndex.IsExclusiveToArmorPart(
+            return TintMapState.IsEquipmentMaterialExclusiveToArmorPart(
                 materialResref,
                 layer,
                 armorPart);

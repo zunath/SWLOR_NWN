@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
@@ -14,11 +15,9 @@ public static class CircuitActionText
     public const string NoRisk = "No overload risk.";
 
     // The meters an outcome lists, in this order.
-    private static string[] ListedMeters =>
-    new string[]
-    {
+    private static readonly ImmutableArray<string> ListedMeters = ImmutableArray.Create<string>(
         MinigameMeterIds.Progress, MinigameMeterIds.Quality, CircuitEngine.LoadId, MinigameMeterIds.Integrity, MinigameMeterIds.Cp
-    };
+    );
 
     /// <summary>The button label: the action's name and its CP cost.</summary>
     public static string ButtonText(MinigameActionPreview preview) =>

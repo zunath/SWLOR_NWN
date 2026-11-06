@@ -3,27 +3,27 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiColor
+    public sealed record GuiColor
     {
         /// <summary>
         /// The amount of red to use. 0-255
         /// </summary>
-        public byte R { get; set; }
+        public byte R { get; init; }
 
         /// <summary>
         /// The amount of green to use. 0-255
         /// </summary>
-        public byte G { get; set; }
+        public byte G { get; init; }
 
         /// <summary>
         /// The amount of blue to use. 0-255
         /// </summary>
-        public byte B { get; set; }
+        public byte B { get; init; }
 
         /// <summary>
         /// The amount of alpha (transparency) to use. 0-255
         /// </summary>
-        public byte Alpha { get; set; }
+        public byte Alpha { get; init; }
 
         public GuiColor(byte red, byte green, byte blue, byte alpha = 255)
         {
@@ -38,14 +38,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return Nui.Color(R, G, B, Alpha);
         }
 
-        public static GuiColor Green => new(0, 255, 0);
-        public static GuiColor Red => new(255, 0, 0);
-        public static GuiColor Cyan => new(0, 255, 255);
-        public static GuiColor White => new(255, 255, 255);
-        public static GuiColor Grey => new(169, 169, 169);
+        public static readonly GuiColor Green = new(0, 255, 0);
+        public static readonly GuiColor Red = new(255, 0, 0);
+        public static readonly GuiColor Cyan = new(0, 255, 255);
+        public static readonly GuiColor White = new(255, 255, 255);
+        public static readonly GuiColor Grey = new(169, 169, 169);
 
-        public static GuiColor HPColor => new(139, 0, 0);
-        public static GuiColor FPColor => new(0, 138, 250);
-        public static GuiColor STMColor => new(0, 139, 0);
+        public static readonly GuiColor HPColor = new(139, 0, 0);
+        public static readonly GuiColor FPColor = new(0, 138, 250);
+        public static readonly GuiColor STMColor = new(0, 139, 0);
     }
 }

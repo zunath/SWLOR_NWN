@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            CraftSessionService.RecoverAtLogin(player);
+            CraftSessions.RecoverAtLogin(player);
             NwnProspectingWorld.Instance.ReturnPendingHarvest(player);
             NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true);
         }
@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player))
                 return;
 
-            QuickCraftService.Interrupt(player);
-            CraftSessionService.Fail(player, CraftSessionEndReason.Died);
+            CraftQuickCraft.Interrupt(player);
+            CraftSessions.Fail(player, CraftSessionEndReason.Died);
         }
 
         [NWNEventHandler(ScriptName.OnModuleRespawn)]
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
             DelayCommand(1f, () =>
             {
                 if (GetIsObjectValid(player))
-                    CraftSessionService.GrantPendingXp(player);
+                    CraftSessions.GrantPendingXp(player);
             });
         }
 
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player))
                 return;
 
-            QuickCraftService.Interrupt(player);
+            CraftQuickCraft.Interrupt(player);
         }
     }
 }

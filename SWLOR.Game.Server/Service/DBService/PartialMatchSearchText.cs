@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Service.DBService
         {
             search ??= string.Empty;
 
-            // Stored values pass through DB.EscapeTokens before indexing, so split the search the same way.
-            var terms = SplitWords(DB.EscapeTokens(search))
+            // Stored values pass through DBTokenEscaper.Escape before indexing, so split the search the same way.
+            var terms = SplitWords(DBTokenEscaper.Escape(search))
                 .Select(BuildTerm)
                 .Where(term => term != null)
                 .ToList();
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="text">A stored value or the text the player or DM typed.</param>
         public static IReadOnlyList<string> GetWords(string text)
         {
-            return SplitWords(DB.EscapeTokens(text ?? string.Empty));
+            return SplitWords(DBTokenEscaper.Escape(text ?? string.Empty));
         }
 
         /// <summary>

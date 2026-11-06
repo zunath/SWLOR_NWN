@@ -29,6 +29,9 @@ internal static class AssemblyFactScanner
         private readonly Dictionary<TypeDefinitionHandle, bool> _generated = new();
         private readonly Dictionary<(TypeKey Source, string External), HashSet<string>> _external = new();
 
+        private readonly TypeShapeProvider _shapes = new();
+        private readonly ImmutabilityAnalyzer _immutability;
+
         private TypeKey _source;
         private string _member = string.Empty;
 
@@ -36,6 +39,7 @@ internal static class AssemblyFactScanner
         {
             _pe = pe;
             _metadata = pe.GetMetadataReader();
+            _immutability = new ImmutabilityAnalyzer(_metadata);
         }
 
         public AssemblyFacts Run()
@@ -78,7 +82,8 @@ internal static class AssemblyFactScanner
                         isBackingField ? name.Substring(1, name.Length - 1 - BackingFieldSuffix.Length) : name,
                         (field.Attributes & FieldAttributes.Literal) != 0,
                         (field.Attributes & FieldAttributes.InitOnly) != 0,
-                        isBackingField));
+                        isBackingField,
+                        _immutability.IsImmutable(field.DecodeSignature(_shapes, null))));
                 }
 
                 foreach (var methodHandle in definition.GetMethods())

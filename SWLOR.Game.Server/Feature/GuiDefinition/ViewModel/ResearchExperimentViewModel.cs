@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int SettleAndSave(ResearchJob job)
         {
             ResearchExperimentLifecycle.Settle(job, ServiceMinigameRandom.Instance);
-            var xp = ResearchExperimentService.GrantExperimentXp(Player, job);
+            var xp = CraftResearchExperiment.GrantExperimentXp(Player, job);
             DB.Set(job);
             return xp;
         }

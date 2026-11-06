@@ -335,7 +335,7 @@ scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse
   work** (no engine, database or other service calls): they run at boot before the module exists; anything that ran in
   a boot handler stays in that handler.
 - Database access in converted services goes through the injected `IDBService` (grow it with the members a service
-  needs). Until `DB` converts in Wave C it is backed by `Composition/StaticDBAdapter`, which forwards to static `DB`.
+  needs). `IDBService` is implemented by `DBService` (P2-C8); the static `DB` is its facade.
 - `Composition/` is a wiring area: its references to every service do not count as dependencies in the guard.
 - **Before Wave D**, `FacadeAccessor` must cache each resolved instance (a per-type static cache inside `Composition/`,
   cleared when the container is rebuilt), with a measurement showing the facade call costs no more than a few
@@ -396,7 +396,7 @@ them is not an option before facade removal (P2-Z).
   each read. That is behaviour-neutral when nothing writes the table, but it allocates per read, which the hot core
   (read per attack) cannot afford. Before Wave D the rule accepts `static readonly` fields of deeply immutable types
   (primitives, `string`, enums, `Regex`, frozen and immutable collections of such elements, records whose members are
-  init-only and immutable), and the rebuilt getters go back to such fields.
+  init-only and immutable), and the rebuilt getters go back to such fields. Done in P2-D1: later conversions keep an immutable constant table as a `static readonly` field of such a type (an ordered `ImmutableArray` or `ImmutableList` when a caller iterates it, a `FrozenDictionary` or `FrozenSet` for lookups only), not as an instance field or a rebuilding getter; a table that is mutable, or that needs the engine, a service or a facade to build, stays an instance field.
   **Renamed handlers:** a handler that must change its name (for example, a folder class that cannot be an extra facade)
   keeps its manifest position and is listed in `tools/Refactor/HandlerRenames.txt` in the same pull request, so the
   parity check and the sync match master's name to the new one. P2-Z facade removal uses the same file.

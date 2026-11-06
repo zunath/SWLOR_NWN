@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -70,12 +71,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
         /// <inheritdoc />
         public NwnQuickCraftWorld QuickCraftWorld { get; } = new();
-
-        /// <inheritdoc />
-        public Dictionary<uint, QuickCraftBatch> QuickCraftBatches { get; } = new();
-
-        /// <inheritdoc />
-        public CraftMinigameRouteCache MinigameRoutes { get; } = new();
 
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
@@ -1280,15 +1275,21 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
             foreach (var dbJob in dbJobs)
             {
-                Service.CraftService.Research.ResearchExperimentService.DeleteJob(dbJob);
+                DeleteResearchJob(dbJob);
             }
         }
 
         /// <summary>Applies the player's selected crafting styles again when they log in; the effects are not kept across a logout.</summary>
         public void RestoreCraftingStylesOnEnter()
         {
-            CraftingStyleSelection.Restore(GetEnteringObject());
+            RestoreCraftingStyles(GetEnteringObject());
         }
+
+        /// <summary>Deletes a research job. The research experiment service depends on this one, so it is reached through its facade.</summary>
+        protected virtual void DeleteResearchJob(ResearchJob job) => CraftResearchExperiment.DeleteJob(job);
+
+        /// <summary>Applies the creature's selected crafting styles. The style service is reached through its facade.</summary>
+        protected virtual void RestoreCraftingStyles(uint creature) => CraftStyleEffects.Restore(creature);
     }
 }
 

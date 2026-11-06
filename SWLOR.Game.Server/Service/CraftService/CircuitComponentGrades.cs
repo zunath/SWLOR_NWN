@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -17,7 +18,7 @@ public static class CircuitComponentGrades
 
     private const string NamedGradePattern = "^(elec|lth|fiberp)_([a-z]+)$";
 
-    private static IReadOnlyDictionary<string, int> NamedGrades => new Dictionary<string, int>
+    private static readonly FrozenDictionary<string, int> NamedGrades = new Dictionary<string, int>
     {
         ["ruined"] = 1,
         ["flawed"] = 2,
@@ -25,10 +26,10 @@ public static class CircuitComponentGrades
         ["imperfect"] = 4,
         ["high"] = 5,
         ["perfect"] = 5
-    };
+    }.ToFrozenDictionary();
 
     // Gems, metals, refined ores and fusion materials, by the tier of the recipes that use them.
-    private static IReadOnlyDictionary<string, int> FixedGrades => new Dictionary<string, int>
+    private static readonly FrozenDictionary<string, int> FixedGrades = new Dictionary<string, int>
     {
         ["jade"] = 1, ["agate"] = 2, ["citrine"] = 3, ["ruby"] = 4, ["emerald"] = 5, ["diamond"] = 5,
         ["aluminum"] = 1, ["steel"] = 2, ["obsidian"] = 3, ["crystal"] = 4,
@@ -39,7 +40,7 @@ public static class CircuitComponentGrades
         ["ref_keromber"] = 4, ["ref_barinium"] = 4,
         ["ref_jasioclase"] = 5, ["ref_gostian"] = 5, ["ref_arkoxit"] = 5, ["ref_arda"] = 5,
         ["chiro_shard"] = 6
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>The grade of a component, or 0 when the component has none (a quest item, a token).</summary>
     public static int GradeOf(string resref)

@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 
 /// <summary>
@@ -49,7 +51,7 @@ public static class ReactionRules
     /// The Stability every action but Stabilize costs, by Peak intensity 1 to 5. A more intense mixture wears the piece faster, which
     /// keeps the Stability budget as tight in the high tiers, where CP is plentiful, as in the low ones.
     /// </summary>
-    private static int[] ActionStabilityByIntensity => new int[] { 7, 9, 9, 10, 12 };
+    private static readonly ImmutableArray<int> ActionStabilityByIntensity = ImmutableArray.Create<int>(7, 9, 9, 10, 12);
 
     /// <summary>The extra Stability a Charge costs in Rising or Settling.</summary>
     public const int HeavyChargeStability = 36;

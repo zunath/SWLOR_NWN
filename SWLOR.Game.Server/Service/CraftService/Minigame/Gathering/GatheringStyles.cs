@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
@@ -23,28 +25,30 @@ public static class GatheringStyles
     /// <summary>The skill whose windows offer these styles. Both styles belong to it, so a gatherer has one selected at a time.</summary>
     public const SkillType Skill = SkillType.Gathering;
 
+    private static readonly ImmutableList<GatheringStyle> AllItems = ImmutableList.Create<GatheringStyle>(GatheringStyle.StripMining, GatheringStyle.CarefulHands);
+
     /// <summary>Every style, in the order the windows list them.</summary>
-    public static IReadOnlyList<GatheringStyle> All => new[] { GatheringStyle.StripMining, GatheringStyle.CarefulHands };
+    public static IReadOnlyList<GatheringStyle> All => AllItems;
 
     /// <summary>The styles as <see cref="CraftingStyleSelection"/> knows them.</summary>
     public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
         All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
-    private static IReadOnlyDictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>> StyleStats =>
-        new Dictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>>
+    private static readonly FrozenDictionary<GatheringStyle, FrozenDictionary<StatType, int>> StyleStats =
+        new Dictionary<GatheringStyle, FrozenDictionary<StatType, int>>
         {
             [GatheringStyle.StripMining] = new Dictionary<StatType, int>
             {
                 [StatType.ProspectingStrikeTimeReduction] = ProspectingPerkRules.StripMiningStrikeTimeTenths,
                 [StatType.ProspectingSeamWorkTimeReduction] = -ProspectingPerkRules.StripMiningSeamWorkTimeTenths,
                 [StatType.ProspectingStrikeStabilityReduction] = -ProspectingPerkRules.StripMiningStrikeStability
-            },
+            }.ToFrozenDictionary(),
             [GatheringStyle.CarefulHands] = new Dictionary<StatType, int>
             {
                 [StatType.SearchChancePoints] = SearchPerkRules.CarefulHandsSearchChancePoints,
                 [StatType.SearchDigRareWeight] = SearchPerkRules.CarefulHandsDigRareWeight
-            }
-        };
+            }.ToFrozenDictionary()
+        }.ToFrozenDictionary();
 
     /// <summary>The stat adjustments a style's status effect carries.</summary>
     public static IReadOnlyDictionary<StatType, int> StatsOf(GatheringStyle style) =>
@@ -120,7 +124,7 @@ public static class GatheringStyles
         if (style != GatheringStyle.None && !StatusEffect.HasEffect(StatusEffectOf(style), player))
             StatusEffect.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
 
-        CraftingStyleSelection.Record(player, Skill, PerkOf(style));
+        CraftStyleEffects.Record(player, Skill, PerkOf(style));
     }
 
     /// <summary>Removes an active style the player no longer owns, such as after refunding its perk, and forgets it as their selection.</summary>
@@ -130,7 +134,7 @@ public static class GatheringStyles
         Remove(player, unowned);
 
         foreach (var style in unowned)
-            CraftingStyleSelection.ClearIfSelected(player, Skill, PerkOf(style));
+            CraftStyleEffects.ClearIfSelected(player, Skill, PerkOf(style));
     }
 
     private static void Remove(uint player, IEnumerable<GatheringStyle> styles)

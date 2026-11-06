@@ -40,6 +40,7 @@ public class FacadeForwardingTests
             .Select(method => $"{method.ReturnType.Name} {method.Name}({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})")
             .OrderBy(text => text, StringComparer.Ordinal);
         var contractMembers = service.Contract.GetMethods()
+            .Where(method => !method.IsSpecialName || method.Name.StartsWith("get_", StringComparison.Ordinal))
             .Select(method => $"{method.ReturnType.Name} {method.Name}({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})")
             .OrderBy(text => text, StringComparer.Ordinal);
 
@@ -109,8 +110,7 @@ public class FacadeForwardingTests
     [Test]
     public void Every_domain_service_in_the_container_is_listed_as_converted()
     {
-        // IDBService is the temporary adapter over the static DB class; it is not a converted service (DB converts in wave C).
-        var notServices = new[] { "IDBService" };
+        var notServices = Array.Empty<string>();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
 

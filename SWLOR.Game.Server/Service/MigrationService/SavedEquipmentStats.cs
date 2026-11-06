@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Service.CombatService;
@@ -124,7 +125,7 @@ internal static class SavedEquipmentStats
     public static int GetMaxStamina(SavedCharacter character) =>
         character.Record.MaxStamina + GetAbilityScore(character, AbilityType.Might) * StaminaPerTwoMight / 2;
 
-    private static string[] AbilityFields => new[] { "Str", "Dex", "Con", "Int", "Wis", "Cha" };
+    private static readonly ImmutableArray<string> AbilityFields = ImmutableArray.Create<string>("Str", "Dex", "Con", "Int", "Wis", "Cha");
 
     public static int GetAbilityScore(SavedCharacter character, AbilityType ability)
     {

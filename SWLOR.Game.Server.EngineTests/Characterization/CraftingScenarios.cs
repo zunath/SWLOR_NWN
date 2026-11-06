@@ -82,7 +82,7 @@ public static class CraftingScenarios
         CraftSession session = null;
         await scenario.ExecuteInCreatureContextAsync(player, () =>
         {
-            var start = CraftSessionService.Start(player, new CraftSessionStartRequest(attempt.Recipe, OBJECT_INVALID, new uint[0]));
+            var start = CraftSessions.Start(player, new CraftSessionStartRequest(attempt.Recipe, OBJECT_INVALID, new uint[0]));
             table.Add("start succeeded", start.Succeeded);
             table.Add("start message", start.Message ?? string.Empty);
             session = start.Session;
@@ -97,7 +97,7 @@ public static class CraftingScenarios
         await scenario.ExecuteInCreatureContextAsync(player, () =>
         {
             scenario.SeedRandom(Seed);
-            var success = CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), ActionsTaken);
+            var success = CraftSessions.Succeed(player, session, new MinigameMeter(100, 100), ActionsTaken);
             scenario.Assert(success != null, "The craft succeeds");
             var outcome = success.Outcome;
             table.Add("quality fraction", outcome.QualityFraction);

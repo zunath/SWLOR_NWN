@@ -72,17 +72,33 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly INamedAnimationService _namedAnimation;
         private readonly IPerformanceAudienceService _audience;
         private readonly IPerformanceWindowsService _windows;
+        private readonly IPerformanceSongService _songs;
+        private readonly IPerformanceRiderService _riders;
 
         public PerformanceService(
             IDBService db,
             INamedAnimationService namedAnimation,
             IPerformanceAudienceService audience,
-            IPerformanceWindowsService windows)
+            IPerformanceWindowsService windows,
+            IPerformanceSongService songs,
+            IPerformanceRiderService riders)
         {
             _db = db;
             _namedAnimation = namedAnimation;
             _audience = audience;
             _windows = windows;
+            _songs = songs;
+            _riders = riders;
+        }
+
+        public IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId)
+        {
+            return _songs.GetAvailableSongs(playerId);
+        }
+
+        public int GetRequiredRank(PerkType perk)
+        {
+            return _riders.GetRequiredRank(perk);
         }
 
         public void ToggleDance(uint activator, int level)
@@ -900,7 +916,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual bool IsPlayerInSpaceMode(uint player) => Space.IsPlayerInSpaceMode(player);
 
-        protected virtual int ChooseSong(string playerId, int preferredTrackId) =>
-            PerformanceSongs.ChooseSong(playerId, preferredTrackId);
+        public virtual int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong) =>
+            _songs.ChooseSong(playerId, preferredTrackId);
     }
 }

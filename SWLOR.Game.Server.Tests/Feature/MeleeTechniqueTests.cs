@@ -286,7 +286,7 @@ public class MeleeTechniqueTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", "Service", "MeleeTechnique.cs"));
+            "SWLOR.Game.Server", "Domain", "Combat", "MeleeTechniqueService.cs"));
         foreach (var dependency in new[]
         {
             "EquipmentPredicates", "PowerGlove", "Power Glove", "SkillType.Unarmed",

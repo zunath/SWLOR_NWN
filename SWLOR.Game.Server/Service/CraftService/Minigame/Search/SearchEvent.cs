@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 /// <param name="Revealed">For a Sift, the spots whose ground it showed; zero otherwise.</param>
 public sealed record SearchEvent(SearchEventKind Kind, int Spot, SearchEventResult Result, int Revealed = 0)
 {
-    public static SearchEvent None => new(SearchEventKind.None, -1, SearchEventResult.None);
+    public static readonly SearchEvent None = new(SearchEventKind.None, -1, SearchEventResult.None);
 
     /// <summary>True for a Search or a Dig Deeper: the actions that can find something.</summary>
     public bool IsAttempt => Kind is SearchEventKind.Search or SearchEventKind.DigDeeper;

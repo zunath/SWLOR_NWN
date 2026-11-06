@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -151,7 +152,7 @@ public class CompanionControlPolicyTests
     [Test]
     public void HealCommandOptionsAreDeclaredByAbilityMetadata()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var healingAbilities = Ability.GetAllAbilityDetails()
             .Where(x => x.Value.IsHealingAbility)
             .ToDictionary(x => x.Key, x => x.Value);

@@ -46,8 +46,12 @@ namespace SWLOR.Game.Server.Composition
 
             // Abilities
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
+            services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
+            services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
+            services.AddSingleton<IForceControlCooldownsService, ForceControlCooldownsService>();
             services.AddSingleton<IMimicryService, MimicryService>();
             services.AddSingleton<IQuickCastService, QuickCastService>();
+            services.AddSingleton<IReviveHistoryService, ReviveHistoryService>();
 
             // Administration
             services.AddSingleton<IDMBlueprintCatalogService, DMBlueprintCatalogService>();

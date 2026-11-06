@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
@@ -175,7 +176,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// <summary>Reads a live renderer entry to assert native scheduler behavior without requiring a connected client.</summary>
         private static object Visual(string playerId,RecastGroup group)
         {
-            var all=(IDictionary)typeof(AbilityCooldownVisual).GetField("_activeVisuals",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);
+            var all=ServiceInternals.Field<IAbilityCooldownVisualService, IDictionary>("_activeVisuals");
             return all.Contains(playerId)&&((IDictionary)all[playerId]).Contains(group)?((IDictionary)all[playerId])[group]:null;
         }
         /// <summary>Reads a renderer state property for native lifecycle assertions.</summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
@@ -200,8 +201,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static Dictionary<uint, HashSet<string>> Observers =>
-            (Dictionary<uint, HashSet<string>>)typeof(Mimicry)
-                .GetField("_analysisObservers", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            ServiceInternals.Field<IMimicryService, Dictionary<uint, HashSet<string>>>("_analysisObservers");
 
         private static void Configure(PlayerAbilityFixture fixture, int mimicryRank, bool analyzer)
         {
@@ -247,7 +247,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static int AfterPenalty(int xp) => xp - (int)(xp * 0.3f);
 
-        private static void Sweep() => typeof(Mimicry)
-            .GetMethod("SweepStaleWitnesses", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+        private static void Sweep() => ServiceInternals.Invoke<IMimicryService>("SweepStaleWitnesses");
     }
 }

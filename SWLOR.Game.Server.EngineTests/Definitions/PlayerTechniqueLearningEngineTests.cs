@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -29,8 +30,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Mimicry.OnCreatureAbilityUsed(npc, detail.MimicrySourceFeat);
             });
-            var witnesses = (Dictionary<uint, Dictionary<string, HashSet<FeatType>>>)typeof(Mimicry)
-                .GetField("_witnesses", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var witnesses = ServiceInternals.Field<IMimicryService, Dictionary<uint, Dictionary<string, HashSet<FeatType>>>>("_witnesses");
             ctx.Assert(witnesses.TryGetValue(npc, out var recorded) && recorded.TryGetValue(fixture.Id, out var witnessed) && witnessed.Contains(feat),
                 "native PC proximity records the witnessed technique");
             ctx.Assert(recorded.TryGetValue(secondFixture.Id, out var secondWitnessed) && secondWitnessed.Contains(feat),

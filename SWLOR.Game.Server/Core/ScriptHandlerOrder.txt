@@ -104,6 +104,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
   action      SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
   action      SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
+  action      SWLOR.Game.Server.Native.StaleDriveAfterJump.RegisterHooks
   action      SWLOR.Game.Server.Native.VitalityHitPoints.RegisterHooks
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.RegisterHooks
   action      SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration
@@ -182,7 +183,7 @@ area_exit
   action      SWLOR.Game.Server.Service.Space.ClearTargetOnAreaExit
   action      SWLOR.Game.Server.Service.Spawn.QueueDespawnArea
   action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAreaExit
+  action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerAreaExit
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
   action      SWLOR.Game.Server.Feature.MiniMaps.EnableMiniMap
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnAreaExit
@@ -751,7 +752,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.Stealth.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter
   action      SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand
+  action      SWLOR.Game.Server.Service.CompanionControl.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnLogin
@@ -936,7 +937,7 @@ open_train_store
 
 pc_attacked
   action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnAttack
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttacked
+  action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerAttacked
 
 pc_cap_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerCapacitorAdjusted
@@ -945,7 +946,7 @@ pc_damaged
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnDirectDamageApplied
   action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnDamage
   action      SWLOR.Game.Server.Service.Performance.EndOnDamage
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged
+  action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerDamaged
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerDamaged
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect.CheckStandingOvationAfterDamage
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnDamage
@@ -966,7 +967,7 @@ pc_hull_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerHullAdjusted
 
 pc_roundend
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound
+  action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerCombatRound
 
 pc_shld_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerShieldAdjusted
@@ -978,7 +979,7 @@ pc_spawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.SlitherhornFit.OnSpawn
 
 pc_spellcastat
-  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner
+  action      SWLOR.Game.Server.Service.CompanionControl.OnHostileSpellCastAtOwner
 
 pc_stm_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerSTMAdjusted

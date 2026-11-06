@@ -2161,6 +2161,18 @@ namespace SWLOR.Game.Server.Service.StatService
         ThrowingAreaAbilityDamagePercentAdjustment = 388,
 
         /// <summary>
+        /// Percent damage adjustment applied to Throwing auto-attacks and single-target hostile Throwing abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingSingleTargetDamagePercentAdjustment = 1331,
+
+        /// <summary>
+        /// Attack delay reduction percent for Throwing auto-attacks against targets affected by Bleed or Hemorrhage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingAttackDelayReductionToBleedingTargetPercent = 1332,
+
+        /// <summary>
         /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -5942,6 +5954,10 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Critical Rate adjustment for ranged abilities at or beyond the long-range threshold.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
+
+        /// <summary>Percent damage adjustment for ranged weapon abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeDamagePercentAdjustment = 1330,
 
         /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

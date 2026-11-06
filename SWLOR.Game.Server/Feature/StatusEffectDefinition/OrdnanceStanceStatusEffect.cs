@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public OrdnanceStanceStatusEffect()
         {
             StatGroup.Stats[StatType.ThrowingAreaAbilityDamagePercentAdjustment] = 10;
+            StatGroup.Stats[StatType.ThrowingSingleTargetDamagePercentAdjustment] = -10;
         }
     }
 }

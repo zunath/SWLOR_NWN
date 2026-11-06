@@ -125,7 +125,7 @@ exclusions_for() {
         echo "TintMapReviewTests.ApplyingAColorUsesOneAtomicPaletteOrRgbScalar"
         echo "TintMapReviewTests.DefaultMaleHumanHandsRetainDetailedGeometryAndTintBindings"
         echo "TintMapReviewTests.EveryGeneratedTintMaterialUsesAShaderWithPaletteDerivedSpecularity"
-        echo "TintMapReviewTests.EveryPackedTintMaskDeclaresItsSingleAti2MipLevel"
+        echo "TintMapReviewTests.EveryPackedTintMaskDeclaresItsFullAti2MipChain"
         echo "TintMapReviewTests.EveryTintMaterialDeclaresScalarRowsMatchingItsShader"
         echo "TintMapReviewTests.FemaleThighSixteenVariantsExposeTheirOwnMetalAndLeatherChannels"
         echo "TintMapReviewTests.HumanHand246ModelsUseTheirAuthoredSkinTintMasks"

@@ -383,12 +383,20 @@ below original Y=0.04). The editable model is
 `SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
 `python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
 
-`SlitherhornFit` adds a separate middle-part Z offset for normal Human bodies:
-0.035 m for males and -0.028 m for females, including their robe variants. Equipment
-and appearance refreshes rebase against the saved fit delta, preserving cosmetic
-transforms and removing only this offset on unequip. Other body families retain their
-authored attachment until they have a measured profile. The saved delta belongs to the
-item's UUID, so a native `CopyItem` with copied locals and reset transforms starts unfitted.
+`HornFit` moves the held horn per body, because one playing clip serves very different heads and
+shoulders. It adds a separate middle-part Z offset to the slitherhorn on normal Human bodies:
+0.035 m for males and -0.028 m for females, including their robe variants. Each horn's other
+fits are profiles by appearance and gender, measured against the playing pose and applied only
+while music plays, so a carried horn is not tilted. Most kloo horn fits are a Y rotation at the
+grip, which keeps it in the right hand; Cathar males also slide it up the shaft and tip it back,
+since their arms hold it far out in front of the head. In item-local space +Z runs down the kloo
+horn's shaft and a negative Y rotation tips its mouth end forward; the slitherhorn keeps its carry
+layer, so the same offsets move it the other way (+Z takes its mouth end toward the face). Judge a
+fit from the side as well as the front: a horn
+held out in front of the face looks right head-on. Equipment and appearance refreshes rebase
+against the saved fit delta, preserving cosmetic transforms and removing only this offset on
+unequip. The saved delta belongs to the item's UUID, so a native `CopyItem` with copied locals and
+reset transforms starts unfitted.
 
 The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
 the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`

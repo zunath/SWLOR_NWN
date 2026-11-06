@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
@@ -320,6 +321,7 @@ namespace SWLOR.Game.Server.Service
                     PerformanceWindows.ClearFallbackStrip(player);
 
                 RestorePlayer(player);
+                HornFit.Apply(player);
                 if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
                     Activity.ClearBusy(player);
 
@@ -507,6 +509,7 @@ namespace SWLOR.Game.Server.Service
             session.SetRoleplay(preference.Roleplay, now);
 
             _sessions[player] = session;
+            HornFit.Apply(player);
             PerformanceAudience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
             PlayThenLoop(

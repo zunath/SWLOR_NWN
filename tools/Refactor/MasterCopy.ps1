@@ -226,6 +226,12 @@ function Invoke-CharacterizationReference {
     param($Copy, [string]$Configuration, [string]$ResultsDirectory, [string]$ReferenceDirectory)
     $name = 'SWLOR.Game.Server.CharacterizationTests'
     Copy-ProjectTree -Source (Join-Path $Copy.Root $name) -Destination (Join-Path $Copy.Path $name) -SkipFolders @('Snapshots')
+    # Master has no container: its facades are the real code, so the branch's container helper becomes a no-op there.
+    $facadeServices = Join-Path (Join-Path $Copy.Path $name) 'Support\FacadeServices.cs'
+    if (Test-Path -LiteralPath $facadeServices) {
+        $stub = "namespace SWLOR.Game.Server.CharacterizationTests.Support;`n`npublic sealed class FacadeServices : IDisposable`n{`n    public IDisposable Install() => this;`n`n    public void Dispose()`n    {`n    }`n}`n"
+        [System.IO.File]::WriteAllText($facadeServices, $stub, (New-Object System.Text.UTF8Encoding($false)))
+    }
     $project = Join-Path (Join-Path $Copy.Path $name) "$name.csproj"
     Invoke-DotnetBuild -Project $project -Configuration $Configuration
     New-Item -ItemType Directory -Force -Path $ReferenceDirectory | Out-Null

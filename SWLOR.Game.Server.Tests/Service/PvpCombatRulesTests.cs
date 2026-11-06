@@ -89,4 +89,13 @@ public class PvpCombatRulesTests
         StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isSelfApplied: true, isPlayerAgainstPlayer: true)
             .Should().Be(60, "self-applied control such as subdual keeps its duration");
     }
+
+    [Test]
+    public void TheRampTablesKeepTheOrderTheStepsWereWrittenIn()
+    {
+        PvpCombatRules.HealingReductionSteps.Select(step => (step.AtSeconds, step.Percent)).Should().Equal(
+            (120f, 10), (150f, 20), (180f, 30), (210f, 45), (240f, 60));
+        PvpCombatRules.DamageIncreaseSteps.Select(step => (step.AtSeconds, step.Percent)).Should().Equal(
+            (180f, 20), (210f, 40), (240f, 60), (270f, 80), (300f, 100));
+    }
 }

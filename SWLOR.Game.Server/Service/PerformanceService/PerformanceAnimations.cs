@@ -18,6 +18,17 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 ? NamedAnimationHold.LiftInPlace
                 : NamedAnimationHold.Keep;
 
+        /// <summary>
+        /// The looping carrier only stops the polearm hold from refreshing; a hold already on the character stays until the
+        /// one-shot carrier removes it. An instrument played without that hold opens on that carrier once, so the loop that
+        /// follows starts with the arm free. Repeating it would drop the pose every cycle, so nothing after the opening uses it.
+        /// </summary>
+        public static NamedAnimationHold GetOpeningHoldMode(
+            PerformanceKind kind, PerformanceInstrumentFamily family, string instrumentResref) =>
+            kind == PerformanceKind.Music && PerformanceInstrumentCatalog.PlaysWithoutCarryLayer(instrumentResref)
+                ? NamedAnimationHold.Auto
+                : GetHoldMode(kind, family);
+
         public static AnimationClip GetOpeningClip(PerformanceKind kind)
         {
             return kind == PerformanceKind.Dance ? AuthoredAnimation.Dance : AuthoredAnimation.PlayInstrument;

@@ -1,90 +1,29 @@
-using System;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using System;
 
 namespace SWLOR.Game.Server.Service
 {
-    /// <summary>
-    /// Consumes weapon poison coatings on weapon hits. Vial items stamp the coating locals onto a
-    /// weapon; every damaging swing with a coated weapon spends a charge and applies the venom
-    /// debuff, throttled by a short internal cooldown so fast dual-wield attacks do not multiply
-    /// poison output.
-    /// </summary>
+    /// <summary>Consumes weapon poison coatings on weapon hits. The logic lives in <see cref="IPoisonsService"/>; the event handlers stay here and every member forwards to the container's instance.</summary>
     public static class Poisons
     {
         public const string CoatingTierVariable = "POISON_COATING_TIER";
         public const string CoatingChargesVariable = "POISON_COATING_CHARGES";
         public const string CoatingPotencyVariable = "POISON_COATING_POTENCY";
-
-        private const string NextApplyVariable = "POISON_COATING_NEXT_APPLY";
         public const int InternalCooldownSeconds = 6;
 
-        // Venom damage per tick a coating deals by tier, before the applier's Poison Bonus.
-        private static readonly int[] CoatingVenomDamageByTier = { 8, 12, 16, 21, 26 };
-        private static readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static IPoisonsService Instance => FacadeAccessor.Resolve<IPoisonsService>();
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
-        public static void ConsumePoisonCoating()
-        {
-            var attacker = OBJECT_SELF;
-            var defender = StringToObject(EventsPlugin.GetEventData("DEFENDER"));
+        public static void ConsumePoisonCoating() => Instance.ConsumePoisonCoating();
 
-            if (!GetIsObjectValid(defender) || GetIsDead(defender))
-                return;
+        public static int GetCoatingVenomDamagePerTick(int tier) => Instance.GetCoatingVenomDamagePerTick(tier);
 
-            // Consume the coating on the exact weapon that landed the hit so a dual-wielder's two
-            // coatings are spent independently instead of always draining the right hand.
-            var weapon = StringToObject(EventsPlugin.GetEventData("WEAPON"));
-            if (!GetIsObjectValid(weapon) || GetLocalInt(weapon, CoatingChargesVariable) <= 0)
-                return;
-
-            var now = (int)(DateTime.UtcNow - _epoch).TotalSeconds;
-            if (GetLocalInt(attacker, NextApplyVariable) > now)
-                return;
-
-            SetLocalInt(attacker, NextApplyVariable, now + InternalCooldownSeconds);
-
-            var tier = GetLocalInt(weapon, CoatingTierVariable);
-            var potency = GetLocalInt(weapon, CoatingPotencyVariable);
-            var durationSeconds = GetVenomDurationSeconds(tier);
-            var damagePerTick = GetCoatingVenomDamagePerTick(tier);
-
-            // Refresh the existing instance so attacks near the six-second boundary cannot
-            // continually replace Venom before its first damage tick.
-            var venom = StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker) as VenomStatusEffect;
-            var applied = venom != null && !venom.IsFlaggedForRemoval
-                ? StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)
-                : StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency, damagePerTick), durationSeconds);
-            if (applied)
-            {
-                venom?.UpdatePotency(damagePerTick, potency);
-                CombatPoint.AddCombatPoint(attacker, defender, SkillType.Espionage);
-            }
-
-            var charges = GetLocalInt(weapon, CoatingChargesVariable) - 1;
-            if (charges > 0)
-            {
-                SetLocalInt(weapon, CoatingChargesVariable, charges);
-                return;
-            }
-
-            DeleteLocalInt(weapon, CoatingTierVariable);
-            DeleteLocalInt(weapon, CoatingChargesVariable);
-            DeleteLocalInt(weapon, CoatingPotencyVariable);
-            SendMessageToPC(attacker, $"The venom coating on {GetName(weapon)} has worn off.");
-        }
-
-        public static int GetCoatingVenomDamagePerTick(int tier)
-        {
-            return CoatingVenomDamageByTier[Math.Clamp(tier, 1, CoatingVenomDamageByTier.Length) - 1];
-        }
-
-        public static float GetVenomDurationSeconds(int tier)
-        {
-            return 6 + Math.Clamp(tier, 1, 5) * 6;
-        }
+        public static float GetVenomDurationSeconds(int tier) => Instance.GetVenomDurationSeconds(tier);
     }
 }

@@ -5670,8 +5670,8 @@
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Poisons.cs",
-    "Line": 77,
+    "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",
+    "Line": 78,
     "Member": "ConsumePoisonCoating",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, $\"The venom coating on {GetName(weapon)} has worn off.\")"
@@ -6181,29 +6181,29 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 52,
+    "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
+    "Line": 57,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You have not learned to move unseen. The Stealth perk is required.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 59,
+    "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
+    "Line": 64,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You cannot enter stealth while in combat.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 218,
+    "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
+    "Line": 221,
     "Member": "BreakStealthOnDamageDealt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, \"Your attack gives away your position.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 525,
+    "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
+    "Line": 653,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"

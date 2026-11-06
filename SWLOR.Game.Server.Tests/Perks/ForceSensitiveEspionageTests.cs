@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -24,6 +25,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class ForceSensitiveEspionageTests
 {
+    // The Stealth facade resolves the stealth service from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly PerkType[] SharedPerks =
     {
         PerkType.Stealth, PerkType.BackAttack, PerkType.Slicing, PerkType.SilentStride,
@@ -227,13 +244,13 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void CloudedMind_BlocksDetectionClearsVerdictsAndEndsOnDamage()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
-        var rollStart = stealth.IndexOf("private static bool GetOrRollVerdict", StringComparison.Ordinal);
-        var rollBody = stealth[rollStart..stealth.IndexOf("public static bool IsDetectionRollSuccessful", StringComparison.Ordinal)];
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
+        var rollStart = stealth.IndexOf("private bool GetOrRollVerdict", StringComparison.Ordinal);
+        var rollBody = stealth[rollStart..stealth.IndexOf("public bool IsDetectionRollSuccessful", StringComparison.Ordinal)];
         rollBody.Should().Contain("IsStealthDetectionBlocked(observer)");
         rollBody.Should().Contain("IsCloudedDetectionRollSuccessful(detectionDie, playerObserver)");
 
-        stealth.Should().Contain("return Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked) > 0;");
+        stealth.Should().Contain("return GetStealthDetectionBlockedAdjustment(observer) > 0;");
         stealth.Should().NotContain("CloudedMindStatusEffect", "shared detection reads the stat, never the perk's status class");
         new CloudedMindStatusEffect().StatGroup.Stats[StatType.StealthDetectionBlocked].Should().Be(1);
         new CloudedMindStatusEffect().SendsApplicationMessage.Should().BeFalse(
@@ -278,10 +295,10 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void HiddenPlayers_EmitNoSoundsEffectsOrHumsForOthers()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
         stealth.Should().Contain("(GetActionMode(creature, ActionMode.Stealth) || IsInvisible(creature))");
-        stealth.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);");
-        stealth.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);");
+        stealth.Should().Contain("SilenceLightsaberWhileHidden(creature);");
+        stealth.Should().Contain("RestoreLightsaberAfterHidden(creature);");
 
         var usePerkFeat = ReadSource("Feature", "UsePerkFeat.cs");
         usePerkFeat.Should().Contain("if (Stealth.IsConcealed(activator))\n                return;", "ability sounds reach only the hidden activator");
@@ -306,9 +323,9 @@ public class ForceSensitiveEspionageTests
         saber.Should().Contain("PlayerPlugin.PlaySound(player, \"saberoff\", player);", "unequipping while hidden is heard only by the hidden player");
         saber.Should().Contain("if (!GetActionMode(player, ActionMode.Stealth))\n                ApplyHum(player);", "the hum is tied to stealth, whose exit restores it");
         saber.Should().Contain("if (!GetIsObjectValid(player) || GetActionMode(player, ActionMode.Stealth))", "leaving stealth restores the hum even while invisible");
-        var stealthSource = ReadSource("Service", "Stealth.cs");
-        stealthSource.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);", "entering stealth silences held sabers");
-        stealthSource.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);", "leaving stealth gives the hum back");
+        var stealthSource = ReadSource("Domain", "Combat", "StealthService.cs");
+        stealthSource.Should().Contain("SilenceLightsaberWhileHidden(creature);", "entering stealth silences held sabers");
+        stealthSource.Should().Contain("RestoreLightsaberAfterHidden(creature);", "leaving stealth gives the hum back");
         new GhostProtocolAbilityDefinition().BuildAbilities()[FeatType.GhostProtocol].DisplaysActivationMessage
             .Should().BeFalse("the nearby broadcast would announce that someone is entering stealth");
     }
@@ -375,20 +392,20 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void GrantedStealth_PassesEveryOwnershipCheckSkipsUpkeepAndUsesTheCasterBonus()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
-        stealth.Should().Contain("return Perk.GetPerkLevel(creature, PerkType.Stealth) > 0 || HasGrantedStealth(creature);");
-        stealth.Should().NotContain("Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0",
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
+        stealth.Should().Contain("return GetStealthPerkLevel(creature) > 0 || HasGrantedStealth(creature);");
+        stealth.Should().NotContain("GetStealthPerkLevel(creature) <= 0",
             "the gate, entry, refresh and heartbeat paths all honor granted stealth through CanUseStealth");
         stealth.Should().Contain("var ownsStealth = CanUseStealth(creature);");
         stealth.Should().Contain("if (GetLocalInt(creature, GrantedStealthVariable) == generation)",
             "a grant whose entry never happened still expires with its window");
         stealth.Should().Contain("var generation = ScheduleTimedExit(creature, durationSeconds);");
 
-        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearGrantedStealthOnEnter()",
+        ReadSource("Service", "Stealth.cs").Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearGrantedStealthOnEnter()",
             "a grant saved with the character must not survive a reconnect");
-        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleExit)]\n        public static void ClearGrantedStealthOnExit()");
-        var exitStart = stealth.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
-        stealth[exitStart..stealth.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal)]
+        ReadSource("Service", "Stealth.cs").Should().Contain("[NWNEventHandler(ScriptName.OnModuleExit)]\n        public static void ClearGrantedStealthOnExit()");
+        var exitStart = stealth.IndexOf("public void OnStealthExited()", StringComparison.Ordinal);
+        stealth[exitStart..stealth.IndexOf("public void ResolveSpotDetection()", StringComparison.Ordinal)]
             .Should().Contain("ClearGrantedStealth(creature);");
 
         var status = ReadSource("Feature", "StatusEffectDefinition", "StealthStatusEffect.cs");

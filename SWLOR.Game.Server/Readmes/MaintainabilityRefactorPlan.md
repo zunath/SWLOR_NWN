@@ -37,6 +37,10 @@ Progress, the work queue and the handoff procedure are in
     (https://github.com/zunath/NWN.Hosting, MIT, on nuget.org), already used by another server.
     SWLOR consumes it; it never copies its code.
 11. Keep costs down: use the cheapest model that can do a task well (see "Models and cost").
+12. No namespace conflicts at handover (owner, 2026-11-06). The branch does not reach the owner with several
+    namespaces for one domain or a namespace that hides a type. Each domain ends with one root,
+    `Domain.<Domain>` (for example only `Domain.Combat`, not `Service.CombatService`, `Service.PvpCombatService`
+    and `Service.CombatRecorderService` beside it). Item P2-Z2 does this; an architecture test keeps it.
 
 ## Branch model
 
@@ -107,8 +111,9 @@ indirectly (Roslyn recompiles, reflection resets) move to the seams service by s
   healing and per-creature state).
 - Tests for every converted service reach the coverage floor in the same pull request.
 - Facades are removed at the end, area by area, after the last conversion.
+- After the facades go, P2-Z2 moves every `Service.<Name>Service` support namespace into its domain namespace.
 
-**Done:** no static service state remains; the dependency guard and architecture tests pass; parity holds.
+**Done:** no static service state remains; no namespace conflicts remain; the dependency guard and architecture tests pass; parity holds.
 
 ### Phase 3 - Integration tests and coverage
 
@@ -157,7 +162,7 @@ Project folders stay at the repository root (moving them would break hundreds of
 - `SWLOR.Game.Contracts/` (new): types that cross the host/game boundary.
 - `SWLOR.Game.Server/`: the reloadable game build. New `Composition/` (container, script dispatch),
   `Domain/<Domain>/` (interface + instance class per service) and `NativeSinks/` (game side of the hooks); `Service/`
-  keeps the static facades until facade removal;
+  keeps the static facades until facade removal (P2-Z) and the support namespaces until P2-Z2, then it is gone;
   `Native/` and the old `Core/` closure, scheduler and registry types removed.
 - `SWLOR.NWN.API/`: generated `INWScript` seam; `SWLOR.NWN.API.Testing/` (new) with fakes.
 - Tests: `SWLOR.Game.Server.Tests` (unit), `SWLOR.Game.Server.CharacterizationTests` (new, output locking),

@@ -27,7 +27,7 @@ public class RoleplayXPLoggingTests
         var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Feature", "RoleplayXP.cs"));
         var syntax = CSharpSyntaxTree.ParseText(source).GetRoot();
         var fields = syntax.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.Text is "RPTickVariable" or "RPRequiredTicks" or "_oocDetection"))
+            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.Text is "RPTickVariable" or "RPRequiredTicks"))
             .Select(field => field.NormalizeWhitespace().ToFullString());
         var methods = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.Text is "ProcessPlayerRoleplayXP" or "ProcessOOCMessage"
@@ -102,6 +102,10 @@ public class RoleplayXPLoggingTests
                         entry["Saved"] = DB.Saved;
                         Entries.Add(entry);
                     }
+                }
+                public static class RoleplayXPDetection
+                {
+                    public static OOCDetectionModel GetModel() => OOCDetectionModel.Default;
                 }
                 public static class RoleplayXP
                 {

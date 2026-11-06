@@ -1460,18 +1460,19 @@ public class TintMapReviewTests
             "equivalent inactive wearer-variant materials must retain the per-part preset too");
         resetColorMethod.ToString().Should().Contain("!resetVariables.Contains(variableName, StringComparer.Ordinal)",
             "the current material must record its preset even when inactive equivalent keys already exist");
-        FindMethod(serviceSource, "MarkPendingItemColorEdit").ParameterList.Parameters
+        var stateSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "TintMapStateService.cs");
+        FindMethod(stateSource, "MarkPendingItemColorEdit").ParameterList.Parameters
             .Select(parameter => parameter.Identifier.Text)
             .Should().Contain("armorPart");
-        var registerPendingCarry = FindMethod(serviceSource, "RegisterPendingItemColorCarry");
+        var registerPendingCarry = FindMethod(stateSource, "RegisterPendingItemColorCarry");
         registerPendingCarry.ToString().Should()
-            .Contain("new ItemColorCarryRevisionScope(layer, armorPart)",
+            .Contain("new TintMapStateRevisionScope(layer, armorPart)",
                 "two armor parts sharing a layer need independent revision scopes");
         registerPendingCarry.ToString().Should()
-            .Contain("new ItemColorCarryRevisionScope(layer, AppearanceArmor.Invalid)",
+            .Contain("new TintMapStateRevisionScope(layer, AppearanceArmor.Invalid)",
                 "every pending part carry must also capture the layer-wide global revision");
         var carryRevisionIsCurrent = FindMethod(
-            serviceSource,
+            stateSource,
             "PendingItemColorCarryLayerIsCurrent");
         carryRevisionIsCurrent.ToString().Should().Contain("globalScope");
         carryRevisionIsCurrent.ToString().Should()
@@ -2677,20 +2678,19 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
-            "TintMapMaterialRegistry.cs");
-        var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
+            "Domain",
+            "Character",
+            "TintMapStateService.cs");
+        var loadMethod = FindMethod(source, "LoadMaterials");
         loadMethod.ToString().Should().Contain(
-            "_equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(MaterialsByModel)",
+            "_equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(_materialsByModel)",
             "the complete tint-map catalog should be indexed once when the registry loads");
 
         var equivalenceMethod = FindMethod(
             source,
             nameof(TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent));
         equivalenceMethod.ToString().Should().Contain("_equipmentMaterialIndex.AreEquivalent");
-        equivalenceMethod.ToString().Should().NotContain("MaterialsByModel",
+        equivalenceMethod.ToString().Should().NotContain("_materialsByModel",
             "interactive tint changes must not rescan every registered model");
 
         var equivalentMaterialsMethod = FindMethod(
@@ -2698,7 +2698,7 @@ public class TintMapReviewTests
             nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
         equivalentMaterialsMethod.ToString().Should()
             .Contain("_equipmentMaterialIndex.GetEquivalentMaterialResrefs");
-        equivalentMaterialsMethod.ToString().Should().NotContain("MaterialsByModel",
+        equivalentMaterialsMethod.ToString().Should().NotContain("_materialsByModel",
             "equivalent material expansion should use the precomputed slot index");
     }
 

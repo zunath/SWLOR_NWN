@@ -6,12 +6,29 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Tests.Service.Fabricator.FabricatorTestData;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.Fabricator;
 
 /// <summary>Covers the Fabricator window's definition and route and the text its buttons show.</summary>
 public class FabricatorWindowTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static string ButtonText(FabricatorEngine engine, string actionId) => FabricatorActionText.ButtonText(engine.Preview(actionId));
 
     private static string ResultText(FabricatorEngine engine, string actionId) =>

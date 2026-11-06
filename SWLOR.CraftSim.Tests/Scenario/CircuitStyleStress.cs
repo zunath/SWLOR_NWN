@@ -73,7 +73,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 var stats = loadout.StatsAt(rank);
                 for (var run = 0; run < runs; run++)
                 {
-                    var level = Craft.GetRecipeLevelDetail(recipe.Level);
+                    var level = ServerRecipeLevels.For(recipe.Level);
                     var setup = new CircuitSetup(
                         recipe.Detail.MinigameParameters as CircuitParameters, recipe.Level, level.Progress, level.Quality, level.Durability, rank,
                         gear.Craftsmanship, gear.Control, gear.CpBonus, penalty, stats);

@@ -239,7 +239,7 @@ public static class ForgeRules
     public const int PerkActionRank = 0;
 
     /// <summary>The five actions every crafter has, in the order the window lists them. A crafter's perks add more (see <see cref="ForgeEngine.Actions"/>).</summary>
-    public static IReadOnlyList<string> ActionIds { get; } = new[]
+    public static IReadOnlyList<string> ActionIds => new[]
     {
         ForgeActionIds.RampPlasma,
         ForgeActionIds.HydroPress,

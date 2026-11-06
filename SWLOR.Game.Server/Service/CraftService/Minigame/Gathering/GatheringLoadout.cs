@@ -18,10 +18,10 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 public sealed record GatheringLoadout(string Name, bool Prospector, bool TreasureSeeker, GatheringStyle Style)
 {
     /// <summary>No perks and no style: the unperked gatherer every gate already judges.</summary>
-    public static readonly GatheringLoadout None = new("No perks", false, false, GatheringStyle.None);
+    public static GatheringLoadout None => new("No perks", false, false, GatheringStyle.None);
 
     /// <summary>The loadouts the gates run besides no perks.</summary>
-    public static IReadOnlyList<GatheringLoadout> Perked { get; } = new[]
+    public static IReadOnlyList<GatheringLoadout> Perked => new[]
     {
         new GatheringLoadout("Prospector, no style", true, false, GatheringStyle.None),
         new GatheringLoadout("Prospector, Strip Mining", true, false, GatheringStyle.StripMining),
@@ -36,7 +36,7 @@ public sealed record GatheringLoadout(string Name, bool Prospector, bool Treasur
     public string Slug => Name.ToLowerInvariant().Replace(", ", "-").Replace(' ', '-');
 
     /// <summary>Every loadout the gates run, the unperked gatherer first.</summary>
-    public static IReadOnlyList<GatheringLoadout> All { get; } = new[] { None }.Concat(Perked).ToList();
+    public static IReadOnlyList<GatheringLoadout> All => new[] { None }.Concat(Perked).ToList();
 
     /// <summary>The loadout a command line names, or null.</summary>
     public static GatheringLoadout Find(string slug) =>
@@ -47,13 +47,11 @@ public sealed record GatheringLoadout(string Name, bool Prospector, bool Treasur
         (Prospector ? GatheringPerkLines.Prospector : Array.Empty<PerkType>())
         .Concat(TreasureSeeker ? GatheringPerkLines.TreasureSeeker : Array.Empty<PerkType>());
 
-    // The stat pipeline's attribute cache fills itself on first use and is not thread safe; the simulator asks from many threads.
-    private static readonly object StatLock = new();
-
     /// <summary>The stat totals at a Gathering rank.</summary>
     public IReadOnlyDictionary<StatType, int> StatsAt(IReadOnlyDictionary<PerkType, PerkDetail> perks, int rank)
     {
-        lock (StatLock)
+        // The stat pipeline's attribute cache is not thread safe and the simulator asks from many threads, so every loadout locks the type: a static lock object would be static state of the service.
+        lock (typeof(GatheringLoadout))
             return GatheringPerkLines.StatsAt(perks, Owned.Where(perk => OwnsAtRank(perks, perk, rank)), rank, Style);
     }
 

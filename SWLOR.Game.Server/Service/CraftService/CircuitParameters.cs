@@ -41,5 +41,5 @@ public sealed class CircuitParameters : RecipeMinigameParameters
     public override IReadOnlyList<RecipeParameterValue> Values => _values;
 
     /// <summary>The values a recipe without parameters plays with: the middle of every bound.</summary>
-    public static CircuitParameters Fallback { get; } = new(6, 10, 50);
+    public static CircuitParameters Fallback => new(6, 10, 50);
 }

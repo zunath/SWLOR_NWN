@@ -5,7 +5,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.TwoDA;
-
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;

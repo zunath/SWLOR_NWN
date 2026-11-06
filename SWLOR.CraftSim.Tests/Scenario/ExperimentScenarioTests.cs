@@ -196,7 +196,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ExperimentStudy.JobSeconds(20, 2).Should().Be((int)(200 * Math.Pow(3, 2.2f) * 4));
             ExperimentStudy.JobSeconds(52, 10).Should().Be((int)(200 * Math.Pow(5, 2.2f) * 100));
 
-            var source = File.ReadAllText(Path.Combine(SharedData.Root, "SWLOR.Game.Server", "Service", "Craft.cs"));
+            var source = File.ReadAllText(Path.Combine(SharedData.Root, "SWLOR.Game.Server", "Domain", "Crafting", "CraftService.cs"));
             source.Should().Contain("var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));");
             source.Should().Contain("return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");
         }

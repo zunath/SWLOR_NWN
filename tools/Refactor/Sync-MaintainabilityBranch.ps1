@@ -339,7 +339,7 @@ function Invoke-Sync {
         if ($texts) {
             $manifestPath = Join-Path $root $ManifestRelative
             $manifestText = [System.IO.File]::ReadAllText($manifestPath, $script:Utf8)
-            $placed = Add-NewHandlersToManifest -ManifestText $manifestText -ReferenceText $texts['SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.txt']
+            $placed = Add-NewHandlersToManifest -ManifestText $manifestText -ReferenceText $texts['SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.txt'] -Renames (Read-HandlerRenames -ManifestText $manifestText)
             if ($placed.Inserted.Count -gt 0) {
                 [System.IO.File]::WriteAllText($manifestPath, $placed.Text, $script:Utf8)
                 Write-Host "Inserted $($placed.Inserted.Count) handler(s) into $ManifestRelative where master's order puts them:"

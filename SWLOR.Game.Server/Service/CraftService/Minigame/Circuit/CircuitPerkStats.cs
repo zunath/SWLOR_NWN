@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 /// </summary>
 public sealed record CircuitPerkStats
 {
-    public static CircuitPerkStats None { get; } = new();
+    public static CircuitPerkStats None => new();
 
     /// <summary>Percentage points of output each Load point adds, on top of the recipe's. A style may make it negative.</summary>
     public int LoadBoostPercent { get; init; }

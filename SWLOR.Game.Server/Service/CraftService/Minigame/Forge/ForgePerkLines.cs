@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 /// </summary>
 public static class ForgePerkLines
 {
-    public static IReadOnlyList<PerkType> Forgemaster { get; } = new[]
+    public static IReadOnlyList<PerkType> Forgemaster => new[]
     {
         PerkType.SmitheryPlasmaEfficiency, PerkType.SmitheryHeatRetention, PerkType.SmitheryOverdrivePress, PerkType.HotForgingStyle,
         PerkType.SmitheryHammerRhythm, PerkType.SmitheryScorchGuard, PerkType.SmitherySurgePlasma, PerkType.SmitheryFastRebond,
         PerkType.SmitheryRedLine
     };
 
-    public static IReadOnlyList<PerkType> Artisan { get; } = new[]
+    public static IReadOnlyList<PerkType> Artisan => new[]
     {
         PerkType.SmitherySteadyHands, PerkType.SmitheryCleanContainment, PerkType.SmitheryMicroHone, PerkType.ColdWorkingStyle,
         PerkType.SmitherySteadyQuench, PerkType.SmitheryCoolHand, PerkType.SmitheryTemperHold, PerkType.SmitheryContainmentFocus,

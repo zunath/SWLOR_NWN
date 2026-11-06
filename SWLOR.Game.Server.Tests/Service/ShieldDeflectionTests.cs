@@ -1,6 +1,9 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -81,13 +84,13 @@ public class ShieldDeflectionTests
         enhancementSubTypeSource.Should().Contain("[EnhancementSubType(\"Shield Deflection\")]");
         enhancementSubTypeSource.Should().Contain("ShieldDeflection = 127");
 
-        var craftSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Craft.cs"));
-        craftSource.Should().Contain("case EnhancementSubType.ShieldDeflection");
-        craftSource.Should().Contain("ItemPropertyCustom(ItemPropertyType.ShieldDeflection, -1, amount)");
+        using (var engine = new PlayerEngine())
+        {
+            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.ShieldDeflection, 9);
+
+            var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;
+            custom.Arguments.Should().Equal(ItemPropertyType.ShieldDeflection, -1, 9, -1);
+        }
 
         var enhanceArmorRows = Read2da(Path.Combine(
             root.FullName,

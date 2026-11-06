@@ -206,10 +206,11 @@ public class CraftingStyleSelectionTests
     [Test]
     public void LoginRestoresTheSelectedStyles()
     {
-        var handler = Method(Source("Service", "CraftService", "CraftingStyleSelection.cs"), "OnPlayerEnter");
+        var facade = Method(Source("Service", "Craft.cs"), "RestoreCraftingStylesOnEnter");
+        var handler = Method(Source("Domain", "Crafting", "CraftService.cs"), "RestoreCraftingStylesOnEnter");
 
-        handler.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
-        Squash(handler).Should().Contain("Restore(GetEnteringObject())");
+        facade.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
+        Squash(handler).Should().Contain("CraftingStyleSelection.Restore(GetEnteringObject())");
     }
 
     [Test]

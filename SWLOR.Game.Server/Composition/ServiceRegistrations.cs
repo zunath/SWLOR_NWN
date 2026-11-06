@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
@@ -68,6 +69,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
+
+            // Crafting
+            services.AddSingleton<ICraftService, CraftService>();
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();

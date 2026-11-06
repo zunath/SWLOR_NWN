@@ -7,5 +7,5 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <param name="Xp">The XP granted for the failed attempt.</param>
 public sealed record CraftSettlement(bool Settled, int ItemsLost, int ItemsKept, int Xp)
 {
-    public static readonly CraftSettlement None = new(false, 0, 0, 0);
+    public static CraftSettlement None => new(false, 0, 0, 0);
 }

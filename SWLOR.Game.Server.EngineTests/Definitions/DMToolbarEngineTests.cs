@@ -242,6 +242,51 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return anchors;
         }
 
+        [EngineTest("DM jumps land in every area and skip spots the engine refuses", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task DMJumpsLandWhereTheEngineAllows(EngineTestContext ctx)
+        {
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+
+            // The engine finds nothing to land on this far outside the floor, and cancels the jump.
+            var offMap = Location(ctx.Arena, new System.Numerics.Vector3(-50f, -50f, 0f), 0f);
+            ctx.Assert(!DMPresence.CanLandAt(dm.Creature, offMap), "the engine refuses a spot far outside the floor");
+
+            await InContext(ctx, dm.Creature, () => DMPresence.JumpTo(dm.Creature, ctx.GetArenaLocation(-6f, 0f), "test floor"));
+            await ctx.WaitFrameAsync();
+            var start = GetPosition(dm.Creature);
+            await InContext(ctx, dm.Creature, () => DMPresence.JumpTo(dm.Creature, offMap, "test off map"));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(start, GetPosition(dm.Creature), "a jump with nowhere to land leaves the DM in place");
+
+            // A decoration left outside the floor must not decide where an area jump goes.
+            var decoration = CreateObject(ObjectType.Placeable, "plc_invisobj", offMap);
+            try
+            {
+                ctx.Assert(GetIsObjectValid(decoration), "the off-map decoration exists");
+                var landing = DMObjectSearch.GetAreaJumpLocations(ctx.Arena).FirstOrDefault(location => DMPresence.CanLandAt(dm.Creature, location));
+                ctx.Assert(landing != null, "the arena still has somewhere to land");
+                ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(landing), "the landing is in the arena");
+
+                await InContext(ctx, dm.Creature, () => DMPresence.JumpToArea(dm.Creature, ctx.Arena, "test area"));
+                await ctx.WaitFrameAsync();
+                ctx.Assert(GetPosition(dm.Creature) != start, "an area jump moves the DM despite the off-map decoration");
+            }
+            finally
+            {
+                DestroyObject(decoration);
+            }
+
+            // Every area in the module must be reachable from the chooser.
+            var unreachable = new List<string>();
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                if (!DMObjectSearch.GetAreaJumpLocations(area).Any(location => DMPresence.CanLandAt(dm.Creature, location)))
+                    unreachable.Add(GetResRef(area));
+            }
+
+            ctx.Assert(unreachable.Count == 0, $"every area has somewhere to land (not: {string.Join(", ", unreachable)})");
+        }
+
         [EngineTest("DM chooser searches, jumps to, summons and destroys objects", Category = "DMToolbar", TimeoutSeconds = 90f)]
         public static async Task ChooserFindsAndActsOnObjects(EngineTestContext ctx)
         {
@@ -275,7 +320,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var arenaRow = GetChooserResults(model).FindIndex(result => result.Object == ctx.Arena);
                 ctx.AssertEqual(string.Empty, model.ResultInfo[arenaRow], "an area with no players leaves the Players column empty");
                 ctx.AssertEqual(DMObjectDetails.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
-                ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocation(ctx.Arena)), "area jump location");
+                ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocations(ctx.Arena).First()), "area jump location");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
 
                 await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMObjectCategory.Creatures);

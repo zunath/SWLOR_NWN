@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Entity
         public IncubationJob()
         {
             DefensePurities = Combat.CreateDefaultDefenseValues();
-            ResistancePurities = Resistance.CreateDefaultResistanceValues();
+            ResistancePurities = ResistanceRules.CreateDefaultResistanceValues();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {
                 { EnzymeColorType.Blue, 0 },

@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Entity
 
             Defenses = Combat.CreateDefaultDefenseValues();
 
-            Resistances = Resistance.CreateDefaultResistanceValues();
+            Resistances = ResistanceRules.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
             UnknownDisplayName = string.Empty;

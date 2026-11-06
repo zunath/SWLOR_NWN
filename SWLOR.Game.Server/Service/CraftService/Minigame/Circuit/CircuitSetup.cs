@@ -107,19 +107,23 @@ public sealed class CircuitSetup
 
     public int BoostLoad => CircuitRules.BoostLoad + Math.Max(0, Perks.BoostLoad);
 
-    public int WireIntegrity => ReduceIntegrity(CircuitRules.WireIntegrity);
+    public int WireIntegrity => ReduceIntegrity(ScaleIntegrity(CircuitRules.WireIntegrity));
 
-    public int TuneIntegrity => ReduceIntegrity(CircuitRules.TuneIntegrity);
+    public int TuneIntegrity => ScaleIntegrity(CircuitRules.TuneIntegrity);
 
-    public int BoostIntegrity => ReduceIntegrity(CircuitRules.BoostIntegrity);
+    public int BoostIntegrity => ReduceIntegrity(ScaleIntegrity(CircuitRules.BoostIntegrity));
 
-    public int DischargeIntegrity => ReduceIntegrity(CircuitRules.DischargeIntegrity);
+    public int DischargeIntegrity => ScaleIntegrity(CircuitRules.DischargeIntegrity);
 
-    public int MicroTuneIntegrity => ReduceIntegrity(CircuitRules.MicroTuneIntegrity);
+    public int MicroTuneIntegrity => ScaleIntegrity(CircuitRules.MicroTuneIntegrity);
+
+    public int TuneCp => CircuitRules.TuneCpAt(RecipeLevel);
+
+    public int MicroTuneCp => CircuitRules.MicroTuneCpAt(RecipeLevel);
 
     public int BoostCp => Math.Max(0, CircuitRules.BoostCp - Math.Max(0, Perks.BoostCpReduction));
 
-    public int PatchCp => Math.Max(0, CircuitRules.PatchCp - Math.Max(0, Perks.PatchCpReduction));
+    public int PatchCp => Math.Max(0, CircuitRules.PatchCpAt(RecipeLevel) - Math.Max(0, Perks.PatchCpReduction));
 
     public int PatchRestore => CircuitRules.PatchRestore + Math.Max(0, Perks.PatchRestore);
 
@@ -186,6 +190,8 @@ public sealed class CircuitSetup
 
     public bool IsUnlocked(string actionId) => Rank >= UnlockRank(actionId);
 
+    private int ScaleIntegrity(int cost) => (int)Math.Round(cost * CircuitRules.IntegrityDifficulty(RecipeLevel), MidpointRounding.AwayFromZero);
+
     private int ReduceIntegrity(int cost) =>
         Perks.ActionIntegrityReduction <= 0
             ? cost
@@ -199,7 +205,7 @@ public sealed class CircuitSetup
         (1.0 + Craftsmanship * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(CircuitRules.MaxRanksAboveRecipe);
 
     private double CalibrationFactor() =>
-        (1.0 + Control * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(0);
+        (1.0 + Control * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(0) / CircuitRules.CalibrationDifficulty(RecipeLevel);
 
     /// <summary>A crafter below the recipe's level works at a penalty; a crafter above it works faster, up to <paramref name="maxAbove"/> ranks.</summary>
     private double RankFactor(int maxAbove)

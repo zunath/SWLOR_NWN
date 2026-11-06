@@ -39,7 +39,7 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>One band at one slot count: everything its recipes played, with today's figure and the new system's.</summary>
         private sealed record Row(
             string Band, int Slots, IReadOnlyList<RecipePlay> Plays, QualityDistribution Distribution, double Today, double TodaySuccess,
-            double TodayQuality, double New, double NewStandardError, double Ratio, bool Passed);
+            double TodayQuality, double New, double NewStandardError, double Ratio, double Required, bool Passed);
 
         public GateResult Evaluate(GateContext context)
         {
@@ -120,7 +120,7 @@ namespace SWLOR.CraftSim.Gates
             if (failing.Count == 0)
             {
                 return new GateResult(Name, GateVerdict.Passed,
-                    $"At rank {rank} in {gear.Name}, the thresholds in force ({current}) transfer at least {Number(thresholds.EnhancementParityMinimumRatio, 2)} times today's " +
+                    $"At rank {rank} in {gear.Name}, the thresholds in force ({current}) transfer at least {Number(rows.Min(row => row.Required), 2)} times today's " +
                     $"expected enhancements for {string.Join(", ", slotCounts)} slot(s) in every band{lowestText}." + summaryThresholds,
                     tables);
             }
@@ -151,9 +151,18 @@ namespace SWLOR.CraftSim.Gates
             var madeToday = plays.Sum(play => play.Today.Successes);
             var todayQuality = madeToday == 0 ? 0 : plays.Sum(play => play.Today.QualitySum) / madeToday;
             var now = distribution.ExpectedTransfers(count);
-            var passed = now + 1e-9 >= thresholds.EnhancementParityMinimumRatio * today;
+            var required = RequiredRatio(run, thresholds, count);
+            var passed = now + 1e-9 >= required * today;
             var ratio = today <= 0 ? double.NaN : now / today;
-            return new Row(bandName, count, plays, distribution, today, todaySuccess, todayQuality, now, distribution.TransfersStandardError(count), ratio, passed);
+            return new Row(bandName, count, plays, distribution, today, todaySuccess, todayQuality, now, distribution.TransfersStandardError(count), ratio, required, passed);
+        }
+
+        private static double RequiredRatio(ScenarioRun run, GateThresholds thresholds, int count)
+        {
+            if (!run.Scenario.TunedAgainstFullMods)
+                return thresholds.EnhancementParityMinimumRatio;
+
+            return count >= 3 ? thresholds.EnhancementParityThreeSlotFullModsRatio : thresholds.EnhancementParityFullModsRatio;
         }
 
         private static IReadOnlyList<ParityCase> CasesOf(IEnumerable<Row> rows, GateThresholds thresholds) =>
@@ -181,7 +190,7 @@ namespace SWLOR.CraftSim.Gates
                     row.Distribution.Successes == 0 ? "n/a" : Number(row.Distribution.MeanPercent, 1) + "%",
                     $"{Number(row.New, 2)} (+/- {Number(row.NewStandardError, 2)})",
                     double.IsNaN(row.Ratio) ? "n/a" : Number(row.Ratio, 2),
-                    ">= " + Number(thresholds.EnhancementParityMinimumRatio, 2),
+                    ">= " + Number(row.Required, 2),
                     row.Passed ? "Passed" : "Failed");
             }
 

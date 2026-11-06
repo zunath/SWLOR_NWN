@@ -68,18 +68,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_repair")
 
                 .AddPerkLevel()
-                .Description("In the Fabricator, Service restores 10 more Machine Condition and costs 2 less CP, to a minimum of 1 CP.")
+                .Description("In the Fabricator, Service restores 5 more Machine Condition and costs 1 less CP, to a minimum of 1 CP.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 15)
-                .IncreasesStat(StatType.FabricatorServiceRestore, 10)
-                .IncreasesStat(StatType.FabricatorServiceCpReduction, 2)
+                .IncreasesStat(StatType.FabricatorServiceRestore, 5)
+                .IncreasesStat(StatType.FabricatorServiceCpReduction, 1)
 
                 .AddPerkLevel()
-                .Description("In the Fabricator, Service restores 20 more Machine Condition and costs 4 less CP, to a minimum of 1 CP.")
+                .Description("In the Fabricator, Service restores 10 more Machine Condition and costs 2 less CP, to a minimum of 1 CP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 40)
-                .IncreasesStat(StatType.FabricatorServiceRestore, 20)
-                .IncreasesStat(StatType.FabricatorServiceCpReduction, 4);
+                .IncreasesStat(StatType.FabricatorServiceRestore, 10)
+                .IncreasesStat(StatType.FabricatorServiceCpReduction, 2);
         }
 
         private void ProductionRun()
@@ -89,11 +89,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_mastercraft")
 
                 .AddPerkLevel()
-                .Description("Your Fabricator style, always active: Run is 60% stronger and Precision Pass 3% weaker. Cannot be purchased with Fine Tolerance.")
+                .Description("Your Fabricator style, always active: Run is 35% stronger and Precision Pass 3% weaker. Cannot be purchased with Fine Tolerance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.FineTolerance)
-                .IncreasesStat(StatType.FabricatorRunPowerPercent, 60)
+                .IncreasesStat(StatType.FabricatorRunPowerPercent, 35)
                 .IncreasesStat(StatType.FabricatorPrecisionPowerPercent, -3);
         }
 
@@ -104,12 +104,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_exmachine")
 
                 .AddPerkLevel()
-                .Description("Your Fabricator style, always active: Precision Pass is 25% stronger and Run 25% weaker. Cannot be purchased with Production Run.")
+                .Description("Your Fabricator style, always active: Precision Pass is 28% stronger and Run 15% weaker. Cannot be purchased with Production Run.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.ProductionRun)
-                .IncreasesStat(StatType.FabricatorPrecisionPowerPercent, 25)
-                .IncreasesStat(StatType.FabricatorRunPowerPercent, -25);
+                .IncreasesStat(StatType.FabricatorPrecisionPowerPercent, 28)
+                .IncreasesStat(StatType.FabricatorRunPowerPercent, -15);
         }
 
         private void DualFeed()

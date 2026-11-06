@@ -23,6 +23,45 @@ public static class CircuitRules
     /// <summary>Each point of Craftsmanship (Assembly) or Control (Calibration) adds this percent to the output.</summary>
     public const double GearPercentPerPoint = 1.0;
 
+    /// <summary>
+    /// Recipes above this level need more from the crafter, so gear and its enhancements decide how
+    /// well the top recipes turn out: Calibration comes slower, every action wears the piece more, and a Patch costs more CP.
+    /// </summary>
+    public const int DifficultyStartLevel = 30;
+
+    /// <summary>How much slower Calibration comes per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double CalibrationDifficultyPerLevel = 0.06;
+
+    /// <summary>How much more Integrity each action costs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double IntegrityDifficultyPerLevel = 0.036;
+
+    /// <summary>How much more CP a Patch costs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double PatchCpPerLevel = 1.1;
+
+    /// <summary>How much more CP a Tune costs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double TuneCpPerLevel = 0.12;
+
+    /// <summary>How much more CP a Micro-Tune costs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double MicroTuneCpPerLevel = 0.12;
+
+    /// <summary>The CP a Tune costs on a recipe of the level.</summary>
+    public static int TuneCpAt(int recipeLevel) =>
+        TuneCp + (int)Math.Round(TuneCpPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel), MidpointRounding.AwayFromZero);
+
+    /// <summary>The CP a Micro-Tune costs on a recipe of the level.</summary>
+    public static int MicroTuneCpAt(int recipeLevel) =>
+        MicroTuneCp + (int)Math.Round(MicroTuneCpPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel), MidpointRounding.AwayFromZero);
+
+    /// <summary>The factor Calibration gains are divided by on a recipe of the level.</summary>
+    public static double CalibrationDifficulty(int recipeLevel) => 1.0 + CalibrationDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
+    /// <summary>The factor on the Integrity an action costs on a recipe of the level.</summary>
+    public static double IntegrityDifficulty(int recipeLevel) => 1.0 + IntegrityDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
+    /// <summary>The CP a Patch costs on a recipe of the level.</summary>
+    public static int PatchCpAt(int recipeLevel) =>
+        PatchCp + (int)Math.Round(PatchCpPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel), MidpointRounding.AwayFromZero);
+
     /// <summary>The output each rank above or below the recipe's level adds, as a fraction.</summary>
     public const double RankStep = 0.05;
     public const int MaxRanksBelowRecipe = 3;
@@ -56,7 +95,7 @@ public static class CircuitRules
     public const int CascadeDischargeSharePercent = 60;
     public const int MicroTuneCp = 2;
     public const int MicroTuneIntegrity = 2;
-    public const int MicroTuneSharePercent = 70;
+    public const int MicroTuneSharePercent = 60;
 
     /// <summary>The Engineering rank at which each perk line offers its style.</summary>
     public const int StyleRank = 20;

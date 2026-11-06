@@ -226,15 +226,15 @@ public class FabricationPerkLineTests
         FabricatorPerkStats.FromStatTotals(Totals(line, 5, PerkType.FineTolerance)).Should().Be(
             new FabricatorPerkStats(RetoolCpReductionPercent: 25));
         FabricatorPerkStats.FromStatTotals(Totals(line, 19)).Should().Be(
-            new FabricatorPerkStats(WearReduction: 1, RetoolCpReductionPercent: 25, ServiceRestoreBonus: 10, ServiceCpReduction: 2));
+            new FabricatorPerkStats(WearReduction: 1, RetoolCpReductionPercent: 25, ServiceRestoreBonus: 5, ServiceCpReduction: 1));
 
         FabricatorPerkStats.FromStatTotals(Totals(line, 25, PerkType.FineTolerance)).Should().Be(new FabricatorPerkStats(
-            RunPowerPercent: 60, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 25,
-            ServiceRestoreBonus: 10, ServiceCpReduction: 2, DualFeedUnlocked: true));
+            RunPowerPercent: 35, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 25,
+            ServiceRestoreBonus: 5, ServiceCpReduction: 1, DualFeedUnlocked: true));
 
         FabricatorPerkStats.FromStatTotals(Totals(line, 50, PerkType.ProductionRun)).Should().Be(new FabricatorPerkStats(
-            RunPowerPercent: -25, PrecisionPowerPercent: 25, WearReduction: 1, RetoolCpReductionPercent: 50,
-            ServiceRestoreBonus: 20, ServiceCpReduction: 4, DualFeedUnlocked: true, PrimeWindowBonusActions: 1,
+            RunPowerPercent: -15, PrecisionPowerPercent: 28, WearReduction: 1, RetoolCpReductionPercent: 50,
+            ServiceRestoreBonus: 10, ServiceCpReduction: 2, DualFeedUnlocked: true, PrimeWindowBonusActions: 1,
             PrimeBonusPercentBonus: 25, AssembleCapBonusPoints: 15));
     }
 

@@ -39,6 +39,42 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>At least this share of attempts must reach the maximum quality, in each at-level band, by skilled play with the best gear and no perks.</summary>
         public double PerksOptionalMinimumFullQualityShare { get; init; } = 0.50;
 
+        /// <summary>The same in fully modded gear on recipes above the crafter's rank, where full quality is meant to be possible but not guaranteed.</summary>
+        public double PerksOptionalAboveRankFullModsShare { get; init; } = 0.35;
+
+        /// <summary>The bands the gear ladder gate plays, last one the top recipes.</summary>
+        public IReadOnlyList<RecipeBand> GearLadderBands { get; init; } = new[]
+        {
+            new RecipeBand("46-50", 46, 50),
+            new RecipeBand("51-53", 51, 53)
+        };
+
+        /// <summary>The kits each gear ladder craft holds: what the top recipes have slots for.</summary>
+        public int GearLadderEnhancements { get; init; } = 2;
+
+        /// <summary>The least each gear step must add to average quality, in points, unless the step below already averages <see cref="GearLadderSaturatedQuality"/>.</summary>
+        public double GearLadderMinimumStep { get; init; } = 5;
+
+        public double GearLadderSaturatedQuality { get; init; } = 97;
+
+        /// <summary>The share of fully modded crafts of the top band that must reach 85% quality.</summary>
+        public double GearLadderFullModsReach85Share { get; init; } = 0.60;
+
+        /// <summary>The share of fully modded crafts of the top band that may reach full quality, which must not be guaranteed.</summary>
+        public double GearLadderFullModsMaxFullQualityShare { get; init; } = 0.90;
+
+        /// <summary>How far, in points, a fully perked crafter with no gear may average above an unperked crafter in unmodded best gear.</summary>
+        public double GearLadderPerkAllowance { get; init; } = 5;
+
+        /// <summary>From this recipe level on, a minigame tuned against full mods expects gear: no gear is only reported.</summary>
+        public int UnderGearedNoGearFromLevel { get; init; } = 31;
+
+        /// <summary>From this recipe level on, a minigame tuned against full mods expects more than the middle tier: it is only reported.</summary>
+        public int UnderGearedMidGearFromLevel { get; init; } = 41;
+
+        /// <summary>The cohort's bands to play, by name, or null for all of them, for a prototype that tunes one band.</summary>
+        public IReadOnlyList<string> OnlyBands { get; init; }
+
         /// <summary>The recipe levels a rank-50 crafter works at, from just below their rank to the highest recipe in the game.</summary>
         public IReadOnlyList<RecipeBand> PerksOptionalBands { get; init; } = new[]
         {
@@ -111,6 +147,12 @@ namespace SWLOR.CraftSim.Gates
         /// </summary>
         public double EnhancementParityMinimumRatio { get; init; } = 1.0;
 
+        /// <summary>The same for one and two slots in fully modded gear: a top recipe is meant to be hard even there, so a small miss on today's near-certain transfer is expected.</summary>
+        public double EnhancementParityFullModsRatio { get; init; } = 0.95;
+
+        /// <summary>The same for three slots in fully modded gear: the third slot needs a full-quality craft, which is meant not to be guaranteed.</summary>
+        public double EnhancementParityThreeSlotFullModsRatio { get; init; } = 0.90;
+
         // Sampling.
 
         /// <summary>The fixed-rotation solver's effort for every scenario; null leaves each scenario's own <see cref="Scenario.ICraftScenario.SolverOptions"/>.</summary>
@@ -142,6 +184,18 @@ namespace SWLOR.CraftSim.Gates
             ("EnhancementParityBands", string.Join(", ", EnhancementParityBands.Select(b => b.Name)), "gate 7: the at-level recipe bands"),
             ("EnhancementSlotCounts", string.Join(", ", EnhancementSlotCounts), "gates 6 and 7: numbers of filled enhancement slots played"),
             ("EnhancementParityMinimumRatio", Number(EnhancementParityMinimumRatio), "gate 7: expected transferred enhancements per enhanced craft divided by today's"),
+            ("EnhancementParityFullModsRatio", Number(EnhancementParityFullModsRatio), "gate 7, minigames tuned against full mods: the same ratio for one and two slots in fully modded gear"),
+            ("EnhancementParityThreeSlotFullModsRatio", Number(EnhancementParityThreeSlotFullModsRatio), "gate 7, minigames tuned against full mods: the same ratio for three slots in fully modded gear"),
+            ("PerksOptionalAboveRankFullModsShare", Percent(PerksOptionalAboveRankFullModsShare), "gate 3, minigames tuned against full mods: the share in the band above the crafter's rank"),
+            ("GearLadderBands", string.Join(", ", GearLadderBands.Select(b => b.Name)), "gear ladder: the at-level recipe bands"),
+            ("GearLadderEnhancements", GearLadderEnhancements.ToString(), "gear ladder: enhancement kits played"),
+            ("GearLadderMinimumStep", Number(GearLadderMinimumStep), "gear ladder: the least each gear step adds to average quality"),
+            ("GearLadderSaturatedQuality", Number(GearLadderSaturatedQuality), "gear ladder and gate 1: an average at or above this has nothing left to earn"),
+            ("GearLadderFullModsReach85Share", Percent(GearLadderFullModsReach85Share), "gear ladder: share of top-band crafts in fully modded gear that reach 85%"),
+            ("GearLadderFullModsMaxFullQualityShare", Percent(GearLadderFullModsMaxFullQualityShare), "gear ladder: most top-band crafts in fully modded gear that reach 100%"),
+            ("GearLadderPerkAllowance", Number(GearLadderPerkAllowance), "gear ladder: how far a full perk line in no gear may beat unmodded best gear"),
+            ("UnderGearedNoGearFromLevel", UnderGearedNoGearFromLevel.ToString(), "gates 4, 5 and 6: no gear is only reported from this recipe level"),
+            ("UnderGearedMidGearFromLevel", UnderGearedMidGearFromLevel.ToString(), "gates 4, 5 and 6: mid gear is only reported from this recipe level"),
             ("RecipesPerBand", RecipesPerBand?.ToString() ?? "all", "recipes played per band"),
             ("SolverOptions", SolverOptions == null ? "the scenario's" : "overridden", "effort of the fixed-rotation solver"),
             ("ActionLimit", ActionLimit.ToString(), "actions after which an attempt counts as stalled")

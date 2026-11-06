@@ -28,10 +28,10 @@ namespace SWLOR.CraftSim.Tests.Scenario
 
             /// <summary>The magnitudes in CircuitPerkRules.</summary>
             public static readonly Values Shipped = new(
-                CircuitPerkRules.ConductiveWiringLoadBoostRank1, CircuitPerkRules.ConductiveWiringLoadBoostRank2, CircuitPerkRules.CapacitorBankDischargePercent,
-                CircuitPerkRules.HeatSinksLineRank1, CircuitPerkRules.HeatSinksLineRank2, CircuitPerkRules.OverclockExtraLoad, CircuitPerkRules.OverclockLoadBoostPercent,
+                CircuitPerkRules.ConductiveWiringLoadBoost, CircuitPerkRules.ConductiveWiringLoadBoost, CircuitPerkRules.CapacitorBankDischargePercent,
+                CircuitPerkRules.HeatSinksLineRank1, CircuitPerkRules.HeatSinksLineRank2, CircuitPerkRules.OverclockExtraLoad, 0,
                 CircuitPerkRules.OverdriveBoostExtraLoad, CircuitPerkRules.OverdriveBoostCpReduction, CircuitPerkRules.ShockAbsorbersReductionPercent,
-                CircuitPerkRules.InsulatedTracesReductionRank1, CircuitPerkRules.InsulatedTracesReductionRank2, CircuitPerkRules.FineCalibrationPercentRank1,
+                CircuitPerkRules.InsulatedTracesIntegrityReduction, CircuitPerkRules.InsulatedTracesIntegrityReduction, CircuitPerkRules.FineCalibrationPercentRank1,
                 CircuitPerkRules.FineCalibrationPercentRank2, CircuitPerkRules.SignalLockChancePercent, CircuitPerkRules.PrecisionPatchExtraRestore,
                 CircuitPerkRules.PrecisionPatchCpReduction, CircuitPerkRules.SafeModeOverloadGrace, CircuitPerkRules.SafeModeLoadBoostPercent);
         }

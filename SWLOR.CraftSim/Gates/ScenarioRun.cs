@@ -113,9 +113,11 @@ namespace SWLOR.CraftSim.Gates
             Scenario = scenario;
             Thresholds = thresholds;
             Context = context;
-            Gear = context.Gear.Levels(scenario.Skill);
+            Gear = scenario.TunedAgainstFullMods ? context.Gear.LevelsWithFullMods(scenario.Skill) : context.Gear.Levels(scenario.Skill);
             Cohort = scenario.Cohort;
-            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand);
+            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand)
+                .Where(band => thresholds.OnlyBands == null || thresholds.OnlyBands.Contains(band.Band.Name))
+                .ToList();
 
             // The XP chart loads once, before the parallel plays read it.
             ServerXp.ForDelta(0);
@@ -130,6 +132,23 @@ namespace SWLOR.CraftSim.Gates
         public ScenarioCohort Cohort { get; }
 
         /// <summary>The cohort's bands with the recipes played.</summary>
+        /// <summary>
+        /// True when a minigame tuned against the gear players really reach is played in gear far below what the band asks for. The length, XP and
+        /// economy gates only report that cell: a poor, slow craft there is what makes gear worth having.
+        /// </summary>
+        public bool IsUnderGeared(RecipeBand band, GearLevel gear)
+        {
+            if (!Scenario.TunedAgainstFullMods)
+                return false;
+
+            return gear.Name switch
+            {
+                CraftingGearCatalog.NoGearName => band.First >= Thresholds.UnderGearedNoGearFromLevel,
+                CraftingGearCatalog.MidGearName => band.First >= Thresholds.UnderGearedMidGearFromLevel,
+                _ => false
+            };
+        }
+
         public IReadOnlyList<CohortBand> Bands { get; }
 
         public int RankFor(RecipeEntry recipe) => Cohort.RankFor(recipe);

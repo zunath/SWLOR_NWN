@@ -200,7 +200,8 @@ Stat -> Item | 3
 Perk -> Quest | 2
 StatusEffect -> CapstoneProof | 1
 
-# Character -> Social (4 edges)
+# Character -> Social (5 edges)
+Feature/AppearanceDefinition -> Performance | 1
 Feature/StatusEffectDefinition -> Party | 2
 Feature/StatusEffectDefinition -> Performance | 2
 PlayerName -> ChatPortraitTells | 1
@@ -1011,7 +1012,7 @@ Feature/ChatCommandDefinition -> DMPresence | 14
 PlayerList -> DMPresence | 10
 PlayerList -> DMTool | 1
 
-# Social -> Character (18 edges)
+# Social -> Character (19 edges)
 Feature/ChatCommandDefinition -> Disguise | 3
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 Feature/ChatCommandDefinition -> Language | 1
@@ -1022,6 +1023,7 @@ Feature/ChatCommandDefinition -> PlayerName | 3
 Feature/ChatCommandDefinition -> Skill | 2
 Feature/ChatCommandDefinition -> Stat | 3
 Performance -> Activity | 4
+Performance -> Feature/AppearanceDefinition | 1
 Performance -> Feature/StatusEffectDefinition | 6
 Performance -> Perk | 10
 Performance -> PlayerName | 2

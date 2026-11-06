@@ -357,12 +357,16 @@ namespace SWLOR.Game.Server.Domain.Combat
             RestoreLightsaberAfterHidden(creature);
 
             // Enemies that lost the player while hidden hold without attacking; resume them now
-            // instead of waiting for their next AI event. Deferred because stealth can end inside
-            // the native Spot check.
+            // instead of waiting for their next AI event. Enemies the player walked up to while
+            // hidden have no enmity to resume, and their aggro aura only checks on entry, so they
+            // notice the player here. Deferred because stealth can end inside the native Spot check.
             DelayCommand(0f, () =>
             {
-                if (GetIsObjectValid(creature) && !GetActionMode(creature, ActionMode.Stealth))
-                    ReevaluateEnemyAttackTargets(creature);
+                if (!GetIsObjectValid(creature) || GetActionMode(creature, ActionMode.Stealth))
+                    return;
+
+                ReevaluateEnemyAttackTargets(creature);
+                AcquireAggroFromNearbyEnemies(creature);
             });
         }
 
@@ -744,6 +748,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual void ReevaluateEnemyAttackTargets(uint creature) =>
             Enmity.ReevaluateEnemyAttackTargets(creature);
+
+        protected virtual void AcquireAggroFromNearbyEnemies(uint target) =>
+            AI.AcquireAggroFromNearbyEnemies(target);
 
         protected virtual int GetEnmityTableCount(uint enemy) =>
             Enmity.GetEnmityTable(enemy).Count;

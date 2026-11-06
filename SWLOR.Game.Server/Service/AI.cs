@@ -236,6 +236,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Runs the normal proximity-aggro path for every enemy within aggro range of a creature
+        /// that just became visible. Their aggro auras only check on entry, so enemies the creature
+        /// reached while hidden would otherwise ignore it until it left the aura and came back.
+        /// </summary>
+        public static void AcquireAggroFromNearbyEnemies(uint target) => Instance.AcquireAggroFromNearbyEnemies(target);
+
+        /// <summary>
         /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
         /// </summary>
         public static void StopCombatAfterProximityLoss(uint enemy)

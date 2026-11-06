@@ -286,6 +286,15 @@ public class PerformanceWindowTextTests
         shown.Should().Be("b");
     }
 
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(9, true)]
+    public void SongPicker_OpensOnlyWithSongsToChooseBetween(int availableSongs, bool expected)
+    {
+        PerformanceSongs.CanChooseSong(availableSongs).Should().Be(expected);
+    }
+
     [Test]
     public void Preference_DefaultsToTheAutomaticSongAndHearingThePerformer()
     {

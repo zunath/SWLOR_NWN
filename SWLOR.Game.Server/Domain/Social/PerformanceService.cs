@@ -365,6 +365,7 @@ namespace SWLOR.Game.Server.Domain.Social
                     _windows.ClearFallbackStrip(player);
 
                 RestorePlayer(player);
+                ApplyHornFit(player);
                 if (GetBusyType(player) == ActivityStatusType.Performing)
                     ClearBusy(player);
 
@@ -544,9 +545,13 @@ namespace SWLOR.Game.Server.Domain.Social
             session.SetRoleplay(preference.Roleplay, now);
 
             _sessions[player] = session;
+            ApplyHornFit(player);
             _audience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
-            PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
+            PlayThenLoop(
+                session,
+                PerformanceAnimations.GetOpeningClip(kind),
+                PerformanceAnimations.GetOpeningHoldMode(kind, family, GetResRef(instrument)));
             ScheduleBeats(session);
 
             SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay));
@@ -787,10 +792,13 @@ namespace SWLOR.Game.Server.Domain.Social
             PerformanceAnimations.GetHoldMode(session.Kind, session.InstrumentFamily);
 
         // A one-shot clip hands back to the routine when it ends, unless a newer clip has replaced it.
-        private void PlayThenLoop(PerformanceSession session, AnimationClip clip)
+        private void PlayThenLoop(PerformanceSession session, AnimationClip clip) =>
+            PlayThenLoop(session, clip, HoldMode(session));
+
+        private void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
-            var token = _namedAnimation.Play(player, clip, holdMode: HoldMode(session));
+            var token = _namedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = UtcNow().AddSeconds(clip.Duration + AccentRecoverySeconds);
             AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>
@@ -900,6 +908,9 @@ namespace SWLOR.Game.Server.Domain.Social
 
         /// <summary>The time now.</summary>
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
+
+        protected virtual void ApplyHornFit(uint player) =>
+            Feature.AppearanceDefinition.ItemAppearance.HornFit.Apply(player);
 
         protected virtual IDisposable ScheduleRepeating(Action task, TimeSpan interval) =>
             Scheduler.ScheduleRepeating(task, interval);

@@ -96,7 +96,7 @@ public class CircuitEngineTests
     {
         var setup = new CircuitSetup(null, 10, 45, 629, 60, 10, 0, 0, 0);
 
-        setup.Parameters.Should().BeSameAs(CircuitParameters.Fallback);
+        setup.Parameters.Should().BeEquivalentTo(CircuitParameters.Fallback);
         setup.OverloadLine.Should().Be(6);
     }
 

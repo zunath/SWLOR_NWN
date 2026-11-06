@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     public sealed class RecipeParameterDefinition
     {
         private const double Tolerance = 1e-9;
-        private static readonly Regex NamePattern = new Regex("^[a-z][A-Za-z0-9]*$", RegexOptions.Compiled);
-        private static readonly Regex HeaderWhitespace = new Regex(@"\s+", RegexOptions.Compiled);
+        private const string NamePattern = "^[a-z][A-Za-z0-9]*$";
+        private const string HeaderWhitespace = @"\s+";
 
         private readonly HashSet<int> _enumValues;
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             double variation,
             Type enumType)
         {
-            if (string.IsNullOrEmpty(name) || !NamePattern.IsMatch(name))
+            if (string.IsNullOrEmpty(name) || !Regex.IsMatch(name, NamePattern, RegexOptions.Compiled))
                 throw new ArgumentException($"Parameter name '{name}' must be a camelCase identifier.", nameof(name));
             if (string.IsNullOrWhiteSpace(header))
                 throw new ArgumentException($"Parameter {name} needs a Bible header.", nameof(header));
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 throw new ArgumentOutOfRangeException(nameof(variation));
 
             Name = name;
-            Header = HeaderWhitespace.Replace(header, " ").Trim();
+            Header = Regex.Replace(header, HeaderWhitespace, " ", RegexOptions.Compiled).Trim();
             Min = min;
             Max = max;
             Decimals = decimals;

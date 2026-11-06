@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public static class CraftMinigameRouting
 {
-    private static IReadOnlyDictionary<SkillType, CraftMinigameRoute> _routes;
+    // The discovered routes live on the Craft service instance.
+    private static CraftMinigameRouteCache RouteCache => Craft.MinigameRoutes;
 
     /// <summary>The minigame route of a crafting skill. A skill with no minigame is an error, because no other window crafts recipes.</summary>
     public static CraftMinigameRoute GetRoute(SkillType skill) =>
@@ -19,8 +20,8 @@ public static class CraftMinigameRouting
     /// <summary>The minigame route of a skill, or false for a skill that crafts nothing.</summary>
     public static bool TryGetRoute(SkillType skill, out CraftMinigameRoute route)
     {
-        _routes ??= BuildRoutes(DiscoverRoutes());
-        return _routes.TryGetValue(skill, out route);
+        RouteCache.Routes ??= BuildRoutes(DiscoverRoutes());
+        return RouteCache.Routes.TryGetValue(skill, out route);
     }
 
     public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
@@ -34,8 +35,8 @@ public static class CraftMinigameRouting
     /// <summary>Every window that crafts items, each minigame's, and the research Experiment, which commits the worn gear.</summary>
     public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
-        _routes ??= BuildRoutes(DiscoverRoutes());
-        return _routes.Values.Select(route => route.Window)
+        RouteCache.Routes ??= BuildRoutes(DiscoverRoutes());
+        return RouteCache.Routes.Values.Select(route => route.Window)
             .Append(ResearchExperimentWindow)
             .Distinct()
             .ToList();

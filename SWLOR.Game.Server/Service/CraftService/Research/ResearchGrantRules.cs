@@ -24,11 +24,11 @@ public static class ResearchGrantRules
     private const int ExtraBonusSides = 1000;
 
     // The extra guaranteed bonus appears on a roll of 0 to 999 at or below these, by research level 1 to 10: 0.2% rising to 12.1%.
-    private static readonly int[] ExtraBonusCeilings = { 1, 2, 3, 10, 15, 20, 50, 80, 100, 120 };
+    private static int[] ExtraBonusCeilings => new int[] { 1, 2, 3, 10, 15, 20, 50, 80, 100, 120 };
 
     // Today's weights for licensed runs, credit reduction and time reduction; the second set applies to a blueprint with an enhancement slot.
-    private static readonly int[] StandardWeights = { 300, 400, 400 };
-    private static readonly int[] EnhancedWeights = { 310, 420, 420 };
+    private static int[] StandardWeights => new int[] { 300, 400, 400 };
+    private static int[] EnhancedWeights => new int[] { 310, 420, 420 };
 
     public static bool IsRandomLevel(int level) => level is 3 or 5 or 8;
 

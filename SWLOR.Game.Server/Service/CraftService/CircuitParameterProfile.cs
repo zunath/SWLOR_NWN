@@ -21,7 +21,7 @@ public sealed class CircuitParameterProfile : RecipeParameterProfile<CircuitPara
     private const int EnhancementBoostPercent = 8;
     private const int ModuleBoostPercent = 10;
 
-    private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
+    private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
     {
         RecipeParameterDefinition.Integer("overloadLine", "Circuit Overload Line", 3, MaxLine, 1),
         RecipeParameterDefinition.Integer("loadBoostPercent", "Circuit Load Boost %", 6, 14, 1),

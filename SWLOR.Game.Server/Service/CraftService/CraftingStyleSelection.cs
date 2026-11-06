@@ -145,8 +145,4 @@ public static class CraftingStyleSelection
             }
         }
     }
-
-    /// <summary>Applies the player's selected styles again when they log in; the effects are not kept across a logout.</summary>
-    [NWNEventHandler(ScriptName.OnModuleEnter)]
-    public static void OnPlayerEnter() => Restore(GetEnteringObject());
 }

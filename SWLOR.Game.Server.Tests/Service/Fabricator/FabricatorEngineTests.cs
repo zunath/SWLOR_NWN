@@ -102,7 +102,7 @@ public class FabricatorEngineTests
     {
         var setup = new FabricatorSetup(null, 10, 45, 10, 0, 0, 0);
 
-        setup.Parameters.Should().BeSameAs(FabricatorParameters.Fallback);
+        setup.Parameters.Should().BeEquivalentTo(FabricatorParameters.Fallback);
         setup.WearRate.Should().Be(FabricatorParameters.Fallback.WearRate);
     }
 

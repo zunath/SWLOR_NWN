@@ -1,13 +1,17 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class CraftTests
 {
+    private readonly CraftService _craft = CraftServices.Create();
+
     [Test]
     public void StarterPoison_IsAvailableAtRankZeroWithoutARecipeUnlock()
     {
@@ -15,7 +19,7 @@ public class CraftTests
 
         Assert.That(recipe.IsActive, Is.True);
         Assert.That(recipe.Skill, Is.EqualTo(SkillType.Espionage));
-        Assert.That(Craft.GetRequiredSkillRankForRecipe(recipe), Is.Zero);
+        Assert.That(_craft.GetRequiredSkillRankForRecipe(recipe), Is.Zero);
         Assert.That(recipe.Requirements, Has.Count.EqualTo(1));
         Assert.That(recipe.Requirements[0], Is.TypeOf<RecipePerkRequirement>());
         Assert.That(recipe.Requirements[0].RequirementText, Is.EqualTo("Requires Poisoncraft 1."));
@@ -28,11 +32,11 @@ public class CraftTests
 
         for (var rank = 0; rank < 15; rank++)
         {
-            Assert.That(Craft.GetRequiredSkillRankForRecipe(recipe), Is.LessThanOrEqualTo(rank));
-            Assert.That(Craft.GetBaseRecipeXP(recipe, rank), Is.GreaterThan(0),
+            Assert.That(_craft.GetRequiredSkillRankForRecipe(recipe), Is.LessThanOrEqualTo(rank));
+            Assert.That(_craft.GetBaseRecipeXP(recipe, rank), Is.GreaterThan(0),
                 $"Poisoncraft must provide a progression path at Espionage rank {rank}.");
         }
-        Assert.That(Craft.GetBaseRecipeXP(recipe, 15), Is.Zero);
+        Assert.That(_craft.GetBaseRecipeXP(recipe, 15), Is.Zero);
     }
 
     [Test]
@@ -40,7 +44,7 @@ public class CraftTests
     {
         var recipe = new RecipeDetail { Level = 10 };
         for (var rank = 0; rank <= 50; rank++)
-            Assert.That(Craft.GetBaseRecipeXP(recipe, rank), Is.EqualTo(Skill.GetDeltaXP(recipe.Level - rank)));
+            Assert.That(_craft.GetBaseRecipeXP(recipe, rank), Is.EqualTo(Skill.GetDeltaXP(recipe.Level - rank)));
     }
 
     [TestCase(40, 37)]
@@ -54,7 +58,7 @@ public class CraftTests
     {
         var recipe = new RecipeDetail { Level = recipeLevel };
 
-        var requiredSkillRank = Craft.GetRequiredSkillRankForRecipe(recipe);
+        var requiredSkillRank = _craft.GetRequiredSkillRankForRecipe(recipe);
 
         Assert.That(requiredSkillRank, Is.EqualTo(expectedSkillRank));
     }

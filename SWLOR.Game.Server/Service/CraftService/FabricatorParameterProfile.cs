@@ -27,7 +27,7 @@ public sealed class FabricatorParameterProfile : RecipeParameterProfile<Fabricat
     /// <summary>The difficulty a value outside the share rules adds, so the generator never accepts it.</summary>
     private const double InvalidShareDifficulty = 1000;
 
-    private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
+    private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
     {
         RecipeParameterDefinition.Integer("frameSizePercent", "Fabricator Frame Size %", MinimumShare, 70, 5),
         RecipeParameterDefinition.Integer("shellSizePercent", "Fabricator Shell Size %", MinimumShare, 70, 5),

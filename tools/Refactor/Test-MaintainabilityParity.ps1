@@ -136,15 +136,17 @@ function Invoke-Parity {
             foreach ($detail in $difference.Details) { $report.Add("    $detail") }
         }
 
-        $branchManifest = ConvertFrom-HandlerOrderText ([System.IO.File]::ReadAllText((Join-Path $root $ManifestRelative), $script:Utf8))
-        $masterOrder = ConvertFrom-HandlerOrderText $handlerTexts[$ProductionReferenceRelative]
+        $manifestText = [System.IO.File]::ReadAllText((Join-Path $root $ManifestRelative), $script:Utf8)
+        $renames = Read-HandlerRenames -ManifestText $manifestText
+        $branchManifest = ConvertFrom-HandlerOrderText $manifestText
+        $masterOrder = Convert-HandlerOrderNames (ConvertFrom-HandlerOrderText $handlerTexts[$ProductionReferenceRelative]) $renames
         $handlerCount = Get-HandlerCount $masterOrder
         $handlerDifferences = @(Compare-HandlerOrders -Branch $branchManifest -Reference $masterOrder)
         foreach ($line in $handlerDifferences) { $report.Add("handler order: $line") }
         if ($handlerDifferences.Count -gt 0) { $failures.Add("handler order differs from master's reflection order in $($handlerDifferences.Count) place(s)") }
 
         $branchEngine = ConvertFrom-HandlerOrderText ([System.IO.File]::ReadAllText((Join-Path $root $EngineSnapshotRelative), $script:Utf8))
-        $masterEngine = ConvertFrom-HandlerOrderText $handlerTexts[$EngineSnapshotRelative]
+        $masterEngine = Convert-HandlerOrderNames (ConvertFrom-HandlerOrderText $handlerTexts[$EngineSnapshotRelative]) $renames
         $engineCount = Get-HandlerCount $masterEngine
         $engineDifferences = @(Compare-HandlerOrders -Branch $branchEngine -Reference $masterEngine)
         foreach ($line in $engineDifferences) { $report.Add("engine-test handler order: $line") }

@@ -1,0 +1,6 @@
+# Handlers the branch renamed on purpose (for example when one moved onto a facade). One line each:
+#   <master full handler name> <branch full handler name>
+# Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
+# or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
+# same pull request that makes it.
+SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter

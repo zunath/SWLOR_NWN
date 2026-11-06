@@ -22,7 +22,8 @@ public sealed class LineMovePattern
 
     // Rare fish: the weights after each move (Run, Dive, Thrash, Tire), written for a Tire weight of RareReferenceTire.
     private const int RareReferenceTire = 20;
-    private static readonly int[][] RareRows =
+    private static int[][] RareRows =>
+    new int[][]
     {
         new[] { 30, 25, 25, 20 },
         new[] { 45, 15, 30, 10 },
@@ -31,7 +32,7 @@ public sealed class LineMovePattern
         new[] { 30, 30, 35, 5 }
     };
 
-    private static readonly FishMove[] Moves = { FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire };
+    private static FishMove[] Moves => new FishMove[] { FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire };
 
     // Row 0 follows no move (the first roll); rows 1-4 follow Run, Dive, Thrash and Tire. Never changed once built.
     private readonly int[][] _weights;

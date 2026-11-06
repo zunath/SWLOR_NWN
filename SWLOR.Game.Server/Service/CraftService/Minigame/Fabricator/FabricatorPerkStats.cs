@@ -30,7 +30,7 @@ public sealed record FabricatorPerkStats(
     int AssembleCapBonusPoints = 0)
 {
     /// <summary>No perks: the Fabricator as tuned.</summary>
-    public static readonly FabricatorPerkStats None = new();
+    public static FabricatorPerkStats None => new();
 
     /// <summary>True when any number differs from the Fabricator as tuned.</summary>
     public bool HasAny => this != None;

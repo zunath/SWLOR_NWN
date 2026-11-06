@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -79,9 +81,14 @@ public class AccuracyItemPropertyTests
         stat.Should().Contain("accuracyBonus += dbPlayer.Accuracy;");
         stat.Should().Contain("accuracyBonus += npcStats.Accuracy;");
 
-        var craft = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Craft.cs"));
-        craft.Should().NotContain("ItemPropertyAttackBonus(");
-        craft.Should().Contain("ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount)");
+        using (var engine = new PlayerEngine())
+        {
+            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
+
+            engine.Engine.CountOf("ItemPropertyAttackBonus").Should().Be(0);
+            var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;
+            custom.Arguments.Should().Equal(ItemPropertyType.Accuracy, -1, 7, -1);
+        }
 
         var equipmentStats = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"));
         equipmentStats.Should().Contain("_statChangeActions[ItemPropertyType.Accuracy] = ApplyAccuracy;");

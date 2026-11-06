@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.Reaction;
 
@@ -20,6 +21,22 @@ namespace SWLOR.Game.Server.Tests.Service.Reaction;
 /// </summary>
 public class ReactionRecipeTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly Lazy<IReadOnlyList<KeyValuePair<RecipeType, RecipeDetail>>> EspionageRecipes = new(() =>
         RecipeDefinitionLoader.LoadGame()
             .Where(pair => pair.Value.Skill == SkillType.Espionage)

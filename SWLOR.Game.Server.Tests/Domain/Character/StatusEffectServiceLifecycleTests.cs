@@ -481,6 +481,54 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
     }
 
     [Test]
+    public void TheEffectInterval_OnADeadCreatureClearsANativeEffectNothingTracks()
+    {
+        Bench.Dead.Add(Target);
+        LastScriptEffectTag("orphan");
+
+        Service.OnNWNStatusEffectInterval(Target);
+        Bench.Engine.CallsTo("RemoveEffectByTag")
+            .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"), "the creature has no tracker");
+
+        Bench.Engine.ClearCalls();
+        Applied<ProbeEffect>(Target, Caster);
+        Service.OnNWNStatusEffectInterval(Target);
+        Bench.Engine.CallsTo("RemoveEffectByTag")
+            .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"), "the tracker does not know the tag");
+    }
+
+    [Test]
+    public void AnEffectThatStoppedTicking_IsLeftAloneOnItsInterval()
+    {
+        var effect = Applied<ProbeEffect>(Target, Caster);
+        effect.ActivationValue = StatusEffectActivationType.Passive;
+        LastScriptEffectTag(effect.Id);
+        Now = Start.AddSeconds(1);
+
+        Service.OnNWNStatusEffectInterval(Target);
+
+        Log.Should().BeEmpty();
+        Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue();
+    }
+
+    [Test]
+    public void OnRemove_OfAStatusNothingTracks_NeedsNoNativeRemoval()
+    {
+        LastScriptEffectTag("orphan");
+
+        Service.OnRemoveNWNStatusEffect(Target);
+        Bench.RunDeferred("DelayCommand");
+        Bench.Engine.CallsTo("RemoveEffectByTag").Should().BeEmpty();
+
+        Applied<ProbeEffect>(Target, Caster);
+        Bench.Engine.ClearCalls();
+        Service.OnRemoveNWNStatusEffect(Target);
+        Bench.RunDeferred("DelayCommand");
+        Bench.Engine.CallsTo("RemoveEffectByTag").Should().BeEmpty();
+        Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue();
+    }
+
+    [Test]
     public void AnEffectFlaggedBeforeItsTick_IsRemovedWithoutTicking()
     {
         var effect = Applied<ProbeEffect>(Target, Caster);

@@ -1564,6 +1564,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        statusEffectSource += File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectRules.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         var linkerSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "LinkCombatUpgradeFeatSpells.ps1"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
@@ -1833,7 +1834,7 @@ public class GeneratedWeaponPerkBehaviorTests
         staminaDrainedIndex.Should().BeGreaterThan(reduceStaminaIndex);
         feedbackIndex.Should().BeGreaterThan(staminaDrainedIndex);
         staminaDrainMethod.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
-        statusEffectSource.Should().Contain("Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
+        statusEffectSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");

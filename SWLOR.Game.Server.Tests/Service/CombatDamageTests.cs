@@ -1233,7 +1233,7 @@ public class CombatDamageTests
         resistanceSource.Should().Contain("effect.DurationTicks > 0");
         resistanceSource.Should().Contain("effect.StatGroup.Resists.TryGetValue(type");
         resistanceSource.Should().Contain("effect.StatGroup.Stats.TryGetValue(statType");
-        statusEffectSource.Should().Contain("Resistance.HasImmunity(creature, resistanceType)");
+        statusEffectSource.Should().Contain("_resistance.HasImmunity(creature, resistanceType)");
         statTypeSource.Should().NotContain("StatusImmunity");
         holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance");
         holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance");

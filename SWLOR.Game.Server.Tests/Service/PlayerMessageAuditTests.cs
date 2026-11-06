@@ -187,7 +187,7 @@ public class PlayerMessageAuditTests
     {
         var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs");
         var failureCalls = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
-            .First().Identifier.ValueText == "SendStatusEffectFailure").ToArray();
+            .FirstOrDefault()?.Identifier.ValueText == "SendStatusEffectFailure").ToArray();
         failureCalls.Should().Contain(call => MethodName(call) == "SendMessageToPC");
         failureCalls.Should().NotContain(call => MethodName(call) == "SendDiagnosticToPlayer");
     }

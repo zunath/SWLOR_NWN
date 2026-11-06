@@ -490,6 +490,22 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     }
 
     [Test]
+    public void AStackingEffectThatFlagsItselfDuringApply_AlsoLeavesNoEmptyTracker()
+    {
+        var effect = Probe<ProbeEffect>(probe =>
+        {
+            probe.StackValue = StatusEffectStackType.UnlimitedStacking;
+            probe.FlagOnApply = true;
+        });
+
+        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+
+        Log.Should().ContainInOrder($"Apply:{effect.Name}:{Target}:5", $"Remove:{effect.Name}:{Target}:False");
+        Bench.Engine.CallsTo("RemoveEffectByTag")
+            .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("STATUS_EFFECT"));
+    }
+
+    [Test]
     public void AnEffectThatFlagsItselfBesideOthers_KeepsTheTracker()
     {
         var other = Applied<OtherProbeEffect>(Target, Caster);

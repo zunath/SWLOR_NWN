@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.SlicingService
 {
     public static class SlicingRewardCatalog
     {
-        public static IReadOnlyList<SlicingRewardEntry> Entries => new Builder().Build();
+        private static readonly ImmutableArray<SlicingRewardEntry> _entries = new Builder().Build().ToImmutableArray();
+
+        public static ImmutableArray<SlicingRewardEntry> Entries => _entries;
 
         public static IReadOnlyList<SlicingRewardEntry> Get(
             SlicingSourceType source,
@@ -13,7 +16,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             SlicingRewardCategory category,
             bool? exceptional = null)
         {
-            return Entries.Where(x =>
+            return _entries.Where(x =>
                     x.Source == source &&
                     x.Tier == tier &&
                     x.Category == category &&
@@ -21,7 +24,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 .ToList();
         }
 
-        /// <summary>Builds the catalog. A static list would be shared state, so each read builds its own.</summary>
+        /// <summary>Builds the catalog once, into the immutable array above.</summary>
         private sealed class Builder
         {
             private readonly List<SlicingRewardEntry> _entries = new();

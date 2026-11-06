@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using NWN.Native.API;
+using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
+using Vector = NWN.Native.API.Vector;
+using Vector2 = System.Numerics.Vector2;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,6 +17,9 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class DMPresence
     {
+        // How far from its target the engine's jump action looks for a safe point.
+        private const float JumpSearchRadius = 20f;
+
         private static readonly Dictionary<(string DMId, GuiWindowType Type), uint> _windowTargets = new();
 
         /// <summary>
@@ -77,13 +84,71 @@ namespace SWLOR.Game.Server.Service
         /// <param name="destination">What the DM jumped to, for the DM log.</param>
         public static void JumpTo(uint dm, Location location, string destination)
         {
+            var area = GetAreaFromLocation(location);
+            var position = GetPositionFromLocation(location);
+            var facing = GetFacingFromLocation(location);
+            var nearby = DMJumpSpots
+                .GetSpotsAround(new Vector2(position.X, position.Y))
+                .Select(spot => Location(area, new Vector3(spot.X, spot.Y, position.Z), facing));
+
+            JumpToFirstLanding(dm, nearby.Prepend(location), destination);
+        }
+
+        /// <summary>
+        /// Moves the DM, or the creature they possess, into an area, wherever in it the engine allows them to land.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        /// <param name="area">The area to jump to.</param>
+        /// <param name="destination">What the DM jumped to, for the DM log.</param>
+        public static void JumpToArea(uint dm, uint area, string destination)
+        {
+            JumpToFirstLanding(dm, DMObjectSearch.GetAreaJumpLocations(area), destination);
+        }
+
+        /// <summary>
+        /// Returns true when the engine would let the DM land at, or near, a location.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        /// <param name="location">The location to check.</param>
+        public static bool CanLandAt(uint dm, Location location)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetCreatureByGameObjectID(GetControlledCreature(dm));
+            var area = server.GetAreaByGameObjectID(GetAreaFromLocation(location));
+            if (creature?.m_pcPathfindInformation == null || area == null)
+                return false;
+
+            // The same search, set up the same way, as the jump action (CNWSCreature::AIActionJumpToPoint).
+            var position = GetPositionFromLocation(location);
+            var pathfinding = creature.m_pcPathfindInformation;
+            pathfinding.ResetInterTileSearchData();
+            pathfinding.ResetGridSearchData();
+            pathfinding.m_oidSelf = creature.m_idSelf;
+            using var target = new Vector { x = position.X, y = position.Y, z = position.Z };
+            using var landing = new Vector();
+            var isSafe = area.ComputeSafeLocation(target, JumpSearchRadius, pathfinding, 1, landing) == 1;
+            pathfinding.ResetInterAreaSearchData();
+            return isSafe;
+        }
+
+        // The engine cancels a jump to a spot it cannot land on and tells no one, so the spot is checked first.
+        private static void JumpToFirstLanding(uint dm, IEnumerable<Location> locations, string destination)
+        {
+            var landing = locations.FirstOrDefault(location => CanLandAt(dm, location));
+            if (landing == null)
+            {
+                SendMessage(dm, "There is nowhere to land there.");
+                Log.Write(LogGroup.DM, $"{DescribeDM(dm)} could not jump to {destination}: nowhere to land.");
+                return;
+            }
+
             AssignCommand(GetControlledCreature(dm), () =>
             {
                 ClearAllActions();
-                JumpToLocation(location);
+                JumpToLocation(landing);
             });
 
-            Log.Write(LogGroup.DM, $"{DescribeDM(dm)} jumped to {destination} in {GetResRef(GetAreaFromLocation(location))}.");
+            Log.Write(LogGroup.DM, $"{DescribeDM(dm)} jumped to {destination} in {GetResRef(GetAreaFromLocation(landing))}.");
         }
 
         /// <summary>

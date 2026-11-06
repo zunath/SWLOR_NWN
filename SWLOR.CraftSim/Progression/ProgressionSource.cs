@@ -12,7 +12,7 @@ namespace SWLOR.CraftSim.Progression
     {
         private const string Server = "SWLOR.Game.Server/";
         public const string RoleplayXp = Server + "Feature/RoleplayXP.cs";
-        public const string Guild = Server + "Service/Guild.cs";
+        public const string Guild = Server + "Domain/Economy/GuildService.cs";
         public const string ProspectingRulesFile = Server + "Service/CraftService/Minigame/Prospecting/ProspectingRules.cs";
         public const string SearchRulesFile = Server + "Service/CraftService/Minigame/Search/SearchRules.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
@@ -24,11 +24,11 @@ namespace SWLOR.CraftSim.Progression
             "private const int RPRequiredTicks = 300;", "300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes", "const int BaseXP = 1500;");
 
         public static readonly SourceReference GuildPointReward = new(
-            "Guild points per hand-in", Guild, 62, 80,
+            "Guild points per hand-in", Guild, 72, 85,
             "var rankBonus = 0.25f * dbGuild.Rank;", "(rankBonus * baseAmount)", "return (int)amount;");
 
         public static readonly SourceReference GuildBoardSize = new(
-            "Ten guild tasks per tier on the board", Guild, 124, 170,
+            "Ten guild tasks per tier on the board", Guild, 138, 166,
             "if (potentialTasks.Count <= 10)", ".OrderBy(o => Random.Next())", ".Take(10)", "_activeGuildTasksByRank[type][rank] = tasks;");
 
         public static readonly SourceReference HarvestDelay = new(

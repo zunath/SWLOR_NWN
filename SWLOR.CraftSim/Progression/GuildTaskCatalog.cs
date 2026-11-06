@@ -1,5 +1,8 @@
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.CraftSim.Data;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.QuestDefinition;
@@ -74,10 +77,12 @@ namespace SWLOR.CraftSim.Progression
             Guild.LoadData();
 
             // The task definitions look up each item's name while they build. The game fills that cache at boot by spawning
-            // every blueprint; here every blueprint file name stands in so no engine call is needed. The cache is put back after.
-            var cache = typeof(Cache).GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)
-                ?? throw new InvalidDataException("Cache no longer has an ItemNamesByResref property; update GuildTaskCatalog.");
-            var original = cache.GetValue(null);
+            // every blueprint; here every blueprint file name stands in so no engine call is needed. The cache is put back after. The cache is a
+            // private property of the container's cache service now, so the swap is made on that instance.
+            var cacheService = CompositionRoot.ServerHost.Provider.GetRequiredService<ICacheService>();
+            var cache = cacheService.GetType().GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new InvalidDataException("CacheService no longer has an ItemNamesByResref property; update GuildTaskCatalog.");
+            var original = cache.GetValue(cacheService);
             try
             {
                 var names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -86,13 +91,13 @@ namespace SWLOR.CraftSim.Progression
                 foreach (var recipe in recipes.Recipes.Where(r => !string.IsNullOrEmpty(r.Resref)))
                     names.TryAdd(recipe.Resref, "item");
 
-                cache.SetValue(null, names);
+                cache.SetValue(cacheService, names);
                 foreach (var (guild, skill, definition) in Guilds)
                     catalog.AddTasks(guild, skill, definition.BuildQuests().Values, recipes);
             }
             finally
             {
-                cache.SetValue(null, original);
+                cache.SetValue(cacheService, original);
             }
 
             return catalog;

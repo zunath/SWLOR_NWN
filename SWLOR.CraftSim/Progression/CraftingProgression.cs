@@ -38,8 +38,6 @@ namespace SWLOR.CraftSim.Progression
             GuildHandInPlan plan = null)
         {
             ServerXp.ForDelta(0); // runs the XP chart's startup so GetDeltaXP has its cap
-            if (plan != null)
-                Guild.LoadData(); // sets Guild.MaxRank
 
             var recipesByLevel = recipes.ForNewCrafter(skill).GroupBy(r => r.Level).ToDictionary(g => g.Key, g => g.ToList());
             var demand = new Dictionary<int, LevelDemand>();
@@ -99,7 +97,7 @@ namespace SWLOR.CraftSim.Progression
                 if (plan != null && plan.QuickCraftCatchUp && offers != null && !plan.IgnoreGuildRank)
                 {
                     var lowestTier = offers.Min(o => o.Tier);
-                    while (guildRank < lowestTier && guildRank < Guild.MaxRank)
+                    while (guildRank < lowestTier && guildRank < ServerGuildRules.MaxRank)
                     {
                         var eligible = plan.CraftedTasks
                             .Where(t => t.Tier == guildRank && t.Level.Value + QuickCraftRules.RankMargin <= rank)
@@ -128,7 +126,7 @@ namespace SWLOR.CraftSim.Progression
 
                         var (taskCredits, basePoints) = plan.RewardsByTier[guildRank];
                         var pointsEach = GuildHandInPlan.GuildPointsFor(basePoints, guildRank);
-                        var handInsNeeded = Math.Max(0, Guild.GetGPRequiredForRank(guildRank) - guildPoints) / pointsEach;
+                        var handInsNeeded = Math.Max(0, ServerGuildRules.GetGPRequiredForRank(guildRank) - guildPoints) / pointsEach;
 
                         // The quick craft window needs the recipe made by hand once, successfully: a failed attempt is made again, and loses
                         // its components on the usual share of rolls, so the cost is the expected attempts to a first success.
@@ -150,7 +148,7 @@ namespace SWLOR.CraftSim.Progression
                         catchUpSeconds += seconds;
                         catchUpHandIns += handInsNeeded;
                         credits += handInsNeeded * taskCredits;
-                        guildPoints = Guild.GetGPRequiredForRank(guildRank);
+                        guildPoints = ServerGuildRules.GetGPRequiredForRank(guildRank);
                         guildRank++;
                     }
                 }

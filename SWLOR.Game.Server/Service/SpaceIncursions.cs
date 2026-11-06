@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Incursions (plan section 30). Once a week a Sith or Mandalorian armada invades a region (an orbit with a dock and its
+    /// Incursions (plan section 30). Once a week a Sith or pirate warlord armada invades a region (an orbit with a dock and its
     /// starlane neighbours) for up to 48 hours: waves in every area, then each area's command group, and a blockade at
     /// every planet dock that refuses docking and closes the dock's exchange while it holds. The region's exchanges price
     /// everything higher while it lasts. Clearing every area and blockade pays each player by the contribution tracked

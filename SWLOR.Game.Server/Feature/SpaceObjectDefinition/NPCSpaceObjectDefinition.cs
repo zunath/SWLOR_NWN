@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         }
 
         /// <summary>
-        /// The Sith and Mandalorian Armadas (incursions and capital battles, plan sections 11 and 30): each invader's copy of
+        /// The Sith and Pirate Warlord Armadas (incursions and capital battles, plan sections 11 and 30): each invader's copy of
         /// the tier's role ships. Hull and weapons come from RevampNpcShipCatalog; the legacy ship item is the source ship's.
         /// </summary>
         private void IncursionArmadas()

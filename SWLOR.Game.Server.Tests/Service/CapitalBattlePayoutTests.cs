@@ -80,7 +80,7 @@ public class CapitalBattlePayoutTests
     public void PilotsSharingTheKills_ShareTheCredits_AndASlightContributorGetsNoPull()
     {
         var area = Area("space_dathomir");
-        var book = FightGroup(area, IncursionInvader.Mandalorian,
+        var book = FightGroup(area, IncursionInvader.Pirate,
             index => index == 0
                 ? new Dictionary<string, double> { ["ace"] = 800, ["helper"] = 200, ["scratch"] = 5 }
                 : new Dictionary<string, double> { ["ace"] = 100 },

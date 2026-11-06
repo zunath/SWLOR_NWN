@@ -17,7 +17,7 @@ Sources:
   because the key is consumed. The kills' own loot counts in both (the scanning.py convention: a reward tops up what the
   ships already drop), and rare-flagged drops (schematics, Rift Keys) are left out, as in every tier baseline.
 - Regions: an orbit with a dock and its starlane neighbours (trade.LANES, trade.ORBIT_TIERS).
-- Ships: the W5b role ships of each tier, the Rift Raiders and the Sith and Mandalorian capitals (npc_catalog.py).
+- Ships: the W5b role ships of each tier, the Rift Raiders and the Sith and pirate warlord capitals (npc_catalog.py).
 """
 import json
 import re
@@ -36,7 +36,7 @@ KILL_MINUTES = 60 / trade.KILLS_PER_HOUR
 # ---------------------------------------------------------------------------------------------------------------
 # Incursions (plan section 30)
 # ---------------------------------------------------------------------------------------------------------------
-# Once a week, at a fixed slot players can plan for, a Sith or Mandalorian armada invades one region for up to 48 hours.
+# Once a week, at a fixed slot players can plan for, a Sith or pirate warlord armada invades one region for up to 48 hours.
 # The schedule is persisted (the next start time), so a restart neither skips nor repeats a week; an incursion running
 # at a restart resumes with its progress and contributions, and its ships respawn.
 START_WEEKDAY = "Saturday"
@@ -45,12 +45,13 @@ DURATION_HOURS = 48
 TICK_SECONDS = 5
 
 # (enum name, display name, its capital at tier 6, the maker whose Ship Schematics a cleared region can give).
-# The tier 6 capitals are the existing faction capitals with the same FACTION_CAPITAL_SCALE (2.0): the Inquisitor
-# Assault Cruiser and the Jahavey'ir Cruiser. Below tier 6 the command ship is the tier's capital flying that capital's
-# hull appearance, so its fight stays in its tier's band.
+# The tier 6 capitals share FACTION_CAPITAL_SCALE 2.0: the Sith Armada's is the existing Inquisitor Assault Cruiser, and
+# the pirates' is their own copy of the Jahavey'ir Cruiser (no pirate capital exists at level 65). Below tier 6 the
+# command ship is the tier's capital flying the armada's command hull appearance, so its fight stays in its tier's band.
+# The pirates give Corellian schematics, the maker pirate wrecks already yield (ShipManufacturerRules.WreckManufacturer).
 INVADERS = [
     ("Sith", "Sith Armada", "sithcap3", "Sith"),
-    ("Mandalorian", "Mandalorian Armada", "mandocap1", "Mandalorian"),
+    ("Pirate", "Pirate Warlord Armada", "t6pirarmcmd", "Corellian"),
 ]
 
 # A region is an orbit with a dock and its starlane neighbours. The centre's tier is the region's tier (the command
@@ -93,25 +94,29 @@ def command_tag(tier, invader):
 # description and its hull appearance, so a fight keeps its tier's band and the ships need no renaming at spawn. Tag
 # t<tier><prefix><hull code>; npc_catalog.hull_type reads the hull code, so the presets match the source ships'.
 # Appearances: the Sith Armada flies the Imperial (Sith Empire) hulls and its Inquisitor Assault Cruiser; the
-# Mandalorian Armada flies the Clan Zel Arun hulls and its Jahavey'ir Cruiser. The tier 6 command ship stays the invader's
-# own faction capital.
-ARMADA_PREFIX = {"Sith": "sitharm", "Mandalorian": "mandoarm"}
+# Pirate Warlord Armada flies the Red Hand pirates' hulls and the Red Hand Marauder.
+ARMADA_PREFIX = {"Sith": "sitharm", "Pirate": "pirarm"}
 ARMADA_HULL_CODES = {"fighter": "ftr", "interceptor": "int", "bomber": "bmb", "gunship": "gun", "platform": "plt",
                      "capital": "cmd"}
 ARMADA_HULL_NAMES = {"fighter": "Fighter", "interceptor": "Interceptor", "bomber": "Bomber", "gunship": "Gunship",
                      "platform": "Blockade Platform", "capital": "Command Ship"}
-ARMADA_APPEARANCE_SOURCE = {"Sith": "t6", "Mandalorian": "t4"}
+ARMADA_APPEARANCE_SOURCE = {"Sith": "t6", "Pirate": "t5"}
+ARMADA_COMMAND_APPEARANCE = {"Sith": "sithcap3", "Pirate": "t5capital"}
+# The tier 6 command ships an invader has its own creature for: the ship it copies. An invader not listed flies an
+# existing faction capital at tier 6.
+ARMADA_TIER6_COMMAND_SOURCE = {"Pirate": "mandocap1"}
 ARMADA_DESCRIPTIONS = {
     "Sith": "A warship of the Sith Armada, the Empire's invasion fleet. Once a week it falls on a region of known space to "
             "blockade its docks and choke its trade.",
-    "Mandalorian": "A warship of the Mandalorian Armada, the clans' invasion fleet. Once a week it falls on a region of "
-                   "known space to blockade its docks and choke its trade.",
+    "Pirate": "A warship of the Pirate Warlord Armada, a fleet of raiders sailing under one warlord's banner. Once a week "
+              "it falls on a region of known space to blockade its docks and choke its trade.",
 }
 
 
-def armada_hulls(tier):
+def armada_hulls(tier, invader):
     """Every hull an invader's incursion needs at a tier: the waves, the blockade and the command group."""
-    hulls = wave_hulls(tier) + BLOCKADE_HULLS + COMMAND_ESCORTS + (["capital"] if tier < 6 else [])
+    own_capital = tier < 6 or invader in ARMADA_TIER6_COMMAND_SOURCE
+    hulls = wave_hulls(tier) + BLOCKADE_HULLS + COMMAND_ESCORTS + (["capital"] if own_capital else [])
     return [h for h in ARMADA_HULL_CODES if h in hulls]
 
 
@@ -122,11 +127,13 @@ def armada_tag(invader, tier, hull):
 def armada_ships():
     """(tag, invader, tier, hull, source creature, name, appearance) for every armada creature."""
     out = []
-    for invader, name, capital, _maker in INVADERS:
+    for invader, name, _capital, _maker in INVADERS:
         for tier in TIERS:
-            for hull in armada_hulls(tier):
-                appearance_source = capital if hull == "capital" else f"{ARMADA_APPEARANCE_SOURCE[invader]}{hull}"
-                out.append((armada_tag(invader, tier, hull), invader, tier, hull, f"t{tier}{hull}",
+            for hull in armada_hulls(tier, invader):
+                appearance_source = (ARMADA_COMMAND_APPEARANCE[invader] if hull == "capital"
+                                     else f"{ARMADA_APPEARANCE_SOURCE[invader]}{hull}")
+                source = ARMADA_TIER6_COMMAND_SOURCE[invader] if hull == "capital" and tier >= 6 else f"t{tier}{hull}"
+                out.append((armada_tag(invader, tier, hull), invader, tier, hull, source,
                             f"{name} {ARMADA_HULL_NAMES[hull]}", utc_appearance(appearance_source)))
     return out
 
@@ -890,10 +897,10 @@ def events_tab(Sheet):
          "one at every planet dock of the region; while it holds, the dock refuses docking and its exchange is closed"],
         ["Price spike", f"x{PRICE_MULTIPLIER:g}", "", "", "", "", "", "the region's exchanges, buying and selling, while the incursion lasts"],
         ["Command ship", "armada command ship", "", "", "", "", "",
-         "tiers 1-5: the armada's copy of the tier's capital (Inquisitor or Jahavey'ir hull); tier 6: the Sith or Mandalorian capital itself"],
+         "tiers 1-5: the armada's copy of the tier's capital (Inquisitor or Red Hand Marauder hull); tier 6: the Inquisitor Assault Cruiser or the pirates' copy of the Jahavey'ir Cruiser"],
         ["Armada ships (W11o)", f"{len(armada_ships())} creatures", "", "", "", "", "",
-         "each invader's copy of the tier's role ships (t<tier>sitharm / mandoarm + ftr, int, bmb, gun, plt, cmd): same preset, "
-         "skin, loot and legacy ship item, with the armada's name and hulls (Sith: Imperial; Mandalorian: Clan Zel Arun)"],
+         "each invader's copy of the tier's role ships (t<tier>sitharm / pirarm + ftr, int, bmb, gun, plt, cmd): same preset, "
+         "skin, loot and legacy ship item, with the armada's name and hulls (Sith: Imperial; Pirate Warlord: Red Hand)"],
     ])
     s.title("Capital battles (W11o; plan section 11 encounter type)")
     s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
@@ -902,7 +909,7 @@ def events_tab(Sheet):
         ["Areas", ", ".join(trade.ORBIT_NAMES[a] for a in CAPITAL_BATTLE_AREAS), "", "", "", "", "",
          "the open tier 5-6 orbits, where the rare capitals already fly"],
         ["Battle group", "command ship + " + " + ".join(COMMAND_ESCORTS), "", "", "", "", "",
-         "the incursion command group of the orbit's tier, Sith or Mandalorian Armada at random"],
+         "the incursion command group of the orbit's tier, Sith or Pirate Warlord Armada at random"],
         ["Duration", f"{CAPITAL_BATTLE_MINUTES} min", "", "", "", "", "", "then it withdraws; announced server-wide on arrival, destruction and withdrawal"],
         ["Reward", "the ships' own loot + a contribution payout", "", "", "", "", "",
          f"W11p: destroying the whole group pays each contributor as a cleared incursion does (damage credited by player id, offline "

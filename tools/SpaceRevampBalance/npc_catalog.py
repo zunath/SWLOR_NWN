@@ -28,11 +28,11 @@ SUPPORT = {"gunship": ("sm_hard",), "logistics": ("sm_hrep", "sm_shrep")}
 # The trade risk groups (W7b) copy a hull type of their tier: pirate raiders (pir), customs patrols of the Republic,
 # Czerka and the Sith (repcus, czkcus, sithcus), and trade convoys (a cargo hauler and gunship escorts). The Hutt Cartel
 # enforcers (huttenf, W11b) copy the tier 4 gunship and interceptor.
-# The incursion armadas (sitharm, mandoarm; events.py) also fly bombers, blockade platforms and command ships (the tier's
+# The incursion armadas (sitharm, pirarm; events.py) also fly bombers, blockade platforms and command ships (the tier's
 # capital).
 GROUP_HULLS = {"int": "interceptor", "ftr": "fighter", "gun": "gunship", "bmb": "bomber", "plt": "platform",
                "cmd": "capital"}
-GROUP_PREFIXES = ("pir", "repcus", "czkcus", "sithcus", "huttenf", "sitharm", "mandoarm")
+GROUP_PREFIXES = ("pirarm", "pir", "repcus", "czkcus", "sithcus", "huttenf", "sitharm")
 ALIASES = {"convoy": "cargo", "escort": "gunship"}
 HARDENER_RESIST = {"sm_hard": lambda step: 10 + step // 5}  # the Shield Hardener family (catalog.py FAMILIES)
 MODULE_FOR = {
@@ -45,7 +45,7 @@ MODULE_CYCLE = {"sm_laser_00": 3.0, "sm_ion_00": 3.0, "sm_beam_00": 3.0, "sm_mis
 # Faction capitals are all level 65; their legacy hull + shield (relative to the Thranta Corvette's 2000) keeps
 # the ladder from corvette to dreadnought. Damage grows with the 0.3 power of that, capped at x2.
 FACTION_CAPITAL_SCALE = {"sithcap1": 1.0, "sithcap2": 1.25, "sithcap3": 2.0, "sithcap4": 3.0, "sithcap5": 4.5,
-                         "sithcap6": 6.0, "sithcap7": 10.0, "mandocap1": 2.0, "mandocap2": 6.0, "mandocap3": 10.0}
+                         "sithcap6": 6.0, "sithcap7": 10.0, "mandocap1": 2.0, "mandocap2": 6.0, "mandocap3": 10.0, "t6pirarmcmd": 2.0}
 NUMERIC = ("mgt", "per", "wil", "vit", "agi", "hp", "stm", "dmg", "atk", "eva", "pdef", "delay")
 
 

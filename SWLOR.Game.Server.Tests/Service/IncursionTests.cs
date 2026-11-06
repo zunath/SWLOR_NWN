@@ -115,7 +115,7 @@ public class IncursionTests
 
         IncursionRules.PickRegion(IncursionTuning.Regions, string.Empty, Rolls(0))!.Center.Should().Be(IncursionTuning.Regions[0].Center);
         IncursionRules.PickInvader(Rolls(0)).Should().Be(IncursionInvader.Sith);
-        IncursionRules.PickInvader(Rolls(1)).Should().Be(IncursionInvader.Mandalorian);
+        IncursionRules.PickInvader(Rolls(1)).Should().Be(IncursionInvader.Pirate);
     }
 
     // Spawns
@@ -124,7 +124,7 @@ public class IncursionTests
     public void Spawns_AreTheInvadersArmadaShipsAndTheFactionCapitals()
     {
         var presets = RevampNpcShipCatalog.Ships.ToDictionary(x => x.CreatureTag);
-        foreach (var invader in new[] { IncursionInvader.Sith, IncursionInvader.Mandalorian })
+        foreach (var invader in new[] { IncursionInvader.Sith, IncursionInvader.Pirate })
         {
             for (var tier = 1; tier <= 6; tier++)
             {
@@ -143,24 +143,26 @@ public class IncursionTests
         }
 
         IncursionRules.WaveShips(3, IncursionInvader.Sith).Select(x => x.Tag).Should().Equal("t3sitharmftr", "t3sitharmftr", "t3sitharmint", "t3sitharmbmb");
-        IncursionRules.BlockadeShips(1, IncursionInvader.Mandalorian).Select(x => x.Tag).Should().Equal("t1mandoarmgun", "t1mandoarmgun", "t1mandoarmplt");
+        IncursionRules.BlockadeShips(1, IncursionInvader.Pirate).Select(x => x.Tag).Should().Equal("t1pirarmgun", "t1pirarmgun", "t1pirarmplt");
         IncursionRules.CommandTag(6, IncursionInvader.Sith).Should().Be("sithcap3");
-        IncursionRules.CommandTag(6, IncursionInvader.Mandalorian).Should().Be("mandocap1");
-        IncursionRules.CommandTag(2, IncursionInvader.Mandalorian).Should().Be("t2mandoarmcmd");
+        IncursionRules.CommandTag(6, IncursionInvader.Pirate).Should().Be("t6pirarmcmd");
+        presets["t6pirarmcmd"].Should().BeEquivalentTo(presets["mandocap1"], o => o.Excluding(x => x.CreatureTag),
+            "the pirates' tier 6 command ship fights exactly as the capital it copies");
+        IncursionRules.CommandTag(2, IncursionInvader.Pirate).Should().Be("t2pirarmcmd");
         IncursionRules.ShipName(IncursionInvader.Sith, "fighter").Should().Be("Sith Armada Fighter");
-        IncursionRules.ShipName(IncursionInvader.Mandalorian, "capital").Should().Be("Mandalorian Armada Command Ship");
+        IncursionRules.ShipName(IncursionInvader.Pirate, "capital").Should().Be("Pirate Warlord Armada Command Ship");
     }
 
     [Test]
     public void ArmadaCreatures_CopyTheirRoleShipWithTheArmadasNameAndHulls()
     {
-        IncursionTuning.ArmadaShips.Should().HaveCount(66);
+        IncursionTuning.ArmadaShips.Should().HaveCount(67);
         IncursionTuning.ArmadaShips.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         var definitions = new NPCSpaceObjectDefinition().BuildSpaceObjects();
         var appearances = new Dictionary<IncursionInvader, Dictionary<string, int>>
         {
             [IncursionInvader.Sith] = new() { ["ftr"] = 10092, ["int"] = 10091, ["bmb"] = 10078, ["gun"] = 10082, ["plt"] = 2152, ["cmd"] = 10141 },
-            [IncursionInvader.Mandalorian] = new() { ["ftr"] = 10105, ["int"] = 10161, ["bmb"] = 10106, ["gun"] = 10107, ["plt"] = 2152, ["cmd"] = 10154 },
+            [IncursionInvader.Pirate] = new() { ["ftr"] = 10073, ["int"] = 10071, ["bmb"] = 10060, ["gun"] = 10061, ["plt"] = 2152, ["cmd"] = 10124 },
         };
         var hulls = IncursionTuning.ArmadaHullCodes.ToDictionary(x => x.Value, x => x.Key);
         foreach (var (tag, itemTag) in IncursionTuning.ArmadaShips)
@@ -169,7 +171,8 @@ public class IncursionTests
             definitions.Should().ContainKey(tag);
             var invader = IncursionTuning.Invaders.Single(x => tag.Substring(2).StartsWith(x.TagPrefix));
             var code = tag.Substring(2 + invader.TagPrefix.Length);
-            var source = $"{tag.Substring(0, 2)}{hulls[code]}";
+            // No level 65 pirate capital exists, so the pirates' tier 6 command ship copies the Jahavey'ir Cruiser.
+            var source = tag == "t6pirarmcmd" ? "mandocap1" : $"{tag.Substring(0, 2)}{hulls[code]}";
             using var utc = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "utc", $"{tag}.utc.json")));
             using var original = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "utc", $"{source}.utc.json")));
             var root = utc.RootElement;
@@ -209,8 +212,8 @@ public class IncursionTests
 
         var korriban = IncursionTuning.CapitalBattleAreas[3];
         CapitalBattleRules.Ships(korriban, IncursionInvader.Sith).Select(x => x.Tag).Should().Equal("sithcap3", "t6sitharmgun", "t6sitharmgun");
-        CapitalBattleRules.Ships(IncursionTuning.CapitalBattleAreas[0], IncursionInvader.Mandalorian).Select(x => x.Tag)
-            .Should().Equal("t5mandoarmcmd", "t5mandoarmgun", "t5mandoarmgun");
+        CapitalBattleRules.Ships(IncursionTuning.CapitalBattleAreas[0], IncursionInvader.Pirate).Select(x => x.Tag)
+            .Should().Equal("t5pirarmcmd", "t5pirarmgun", "t5pirarmgun");
 
         var now = Wednesday;
         CapitalBattleRules.NextStart(now).Should().Be(now.AddHours(4));
@@ -310,7 +313,7 @@ public class IncursionTests
     [Test]
     public void PriceSpike_AppliesToTheRegionsExchangesOnly()
     {
-        var incursion = IncursionRules.Create(Region("viscaraorbit"), IncursionInvader.Mandalorian, Wednesday, new Dictionary<string, int>());
+        var incursion = IncursionRules.Create(Region("viscaraorbit"), IncursionInvader.Pirate, Wednesday, new Dictionary<string, int>());
         IncursionRules.GetPriceMultiplier(incursion, TradeExchangeType.Viscara).Should().Be(IncursionTuning.PriceMultiplier);
         IncursionRules.GetPriceMultiplier(incursion, TradeExchangeType.CZ220).Should().Be(IncursionTuning.PriceMultiplier);
         IncursionRules.GetPriceMultiplier(incursion, TradeExchangeType.MonCala).Should().Be(IncursionTuning.PriceMultiplier, "a neighbour orbit");
@@ -431,7 +434,7 @@ public class IncursionTests
     {
         var region = Region("dantooineorbit");
         var contribution = new IncursionContribution { Points = { [5] = 45, [2] = 10 } };
-        var payout = IncursionRules.BuildPayout(contribution, region, IncursionInvader.Mandalorian, Rolls(99));
+        var payout = IncursionRules.BuildPayout(contribution, region, IncursionInvader.Pirate, Rolls(99));
         payout.Credits.Should().Be((int)Math.Round(45 * IncursionTuning.CreditsPerPoint[5] + 10 * IncursionTuning.CreditsPerPoint[2] +
                                                    IncursionTuning.RegionCredits[5], MidpointRounding.AwayFromZero));
         payout.Pulls["SPACE_ELITE_T5"].Should().Be(2 + IncursionTuning.RegionPulls, "45 points make two pulls, plus the region reward's");
@@ -440,8 +443,8 @@ public class IncursionTests
         payout.RegionName.Should().Be("Dantooine");
         payout.Points.Should().Be(55);
 
-        var lucky = IncursionRules.BuildPayout(contribution, region, IncursionInvader.Mandalorian, Rolls(0, 0));
-        lucky.Items.Should().ContainSingle().Which.Should().BeOneOf(IncursionRules.InvaderSchematics(IncursionInvader.Mandalorian, 5));
+        var lucky = IncursionRules.BuildPayout(contribution, region, IncursionInvader.Pirate, Rolls(0, 0));
+        lucky.Items.Should().ContainSingle().Which.Should().BeOneOf(IncursionRules.InvaderSchematics(IncursionInvader.Pirate, 5));
         var makers = RevampShipCatalog.Hulls.ToDictionary(x => x.Tag, x => x.Manufacturer);
         IncursionRules.InvaderSchematics(IncursionInvader.Sith, 6).Should().NotBeEmpty()
             .And.OnlyContain(r => makers[RevampRewardCatalog.ShipSchematics.Single(s => s.Resref == r).ShipTag] == ShipManufacturer.Sith);

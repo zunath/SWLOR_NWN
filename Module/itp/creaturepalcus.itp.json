@@ -4229,11 +4229,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t1mandoarmftr"
+                      "value": "t1pirarmftr"
                     }
                   },
                   {
@@ -4248,11 +4248,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t1mandoarmint"
+                      "value": "t1pirarmint"
                     }
                   },
                   {
@@ -4267,11 +4267,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t1mandoarmgun"
+                      "value": "t1pirarmgun"
                     }
                   },
                   {
@@ -4286,11 +4286,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t1mandoarmplt"
+                      "value": "t1pirarmplt"
                     }
                   },
                   {
@@ -4305,11 +4305,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Command Ship"
+                      "value": "Pirate Warlord Armada Command Ship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t1mandoarmcmd"
+                      "value": "t1pirarmcmd"
                     }
                   },
                   {
@@ -4324,11 +4324,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t2mandoarmftr"
+                      "value": "t2pirarmftr"
                     }
                   },
                   {
@@ -4343,11 +4343,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t2mandoarmint"
+                      "value": "t2pirarmint"
                     }
                   },
                   {
@@ -4362,11 +4362,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t2mandoarmgun"
+                      "value": "t2pirarmgun"
                     }
                   },
                   {
@@ -4381,11 +4381,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t2mandoarmplt"
+                      "value": "t2pirarmplt"
                     }
                   },
                   {
@@ -4400,11 +4400,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Command Ship"
+                      "value": "Pirate Warlord Armada Command Ship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t2mandoarmcmd"
+                      "value": "t2pirarmcmd"
                     }
                   },
                   {
@@ -4419,11 +4419,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmftr"
+                      "value": "t3pirarmftr"
                     }
                   },
                   {
@@ -4438,11 +4438,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmint"
+                      "value": "t3pirarmint"
                     }
                   },
                   {
@@ -4457,11 +4457,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Bomber"
+                      "value": "Pirate Warlord Armada Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmbmb"
+                      "value": "t3pirarmbmb"
                     }
                   },
                   {
@@ -4476,11 +4476,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmgun"
+                      "value": "t3pirarmgun"
                     }
                   },
                   {
@@ -4495,11 +4495,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmplt"
+                      "value": "t3pirarmplt"
                     }
                   },
                   {
@@ -4514,11 +4514,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Command Ship"
+                      "value": "Pirate Warlord Armada Command Ship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t3mandoarmcmd"
+                      "value": "t3pirarmcmd"
                     }
                   },
                   {
@@ -4533,11 +4533,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmftr"
+                      "value": "t4pirarmftr"
                     }
                   },
                   {
@@ -4552,11 +4552,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmint"
+                      "value": "t4pirarmint"
                     }
                   },
                   {
@@ -4571,11 +4571,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Bomber"
+                      "value": "Pirate Warlord Armada Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmbmb"
+                      "value": "t4pirarmbmb"
                     }
                   },
                   {
@@ -4590,11 +4590,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmgun"
+                      "value": "t4pirarmgun"
                     }
                   },
                   {
@@ -4609,11 +4609,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmplt"
+                      "value": "t4pirarmplt"
                     }
                   },
                   {
@@ -4628,11 +4628,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Command Ship"
+                      "value": "Pirate Warlord Armada Command Ship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t4mandoarmcmd"
+                      "value": "t4pirarmcmd"
                     }
                   },
                   {
@@ -4647,11 +4647,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmftr"
+                      "value": "t5pirarmftr"
                     }
                   },
                   {
@@ -4666,11 +4666,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmint"
+                      "value": "t5pirarmint"
                     }
                   },
                   {
@@ -4685,11 +4685,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Bomber"
+                      "value": "Pirate Warlord Armada Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmbmb"
+                      "value": "t5pirarmbmb"
                     }
                   },
                   {
@@ -4704,11 +4704,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmgun"
+                      "value": "t5pirarmgun"
                     }
                   },
                   {
@@ -4723,11 +4723,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmplt"
+                      "value": "t5pirarmplt"
                     }
                   },
                   {
@@ -4742,11 +4742,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Command Ship"
+                      "value": "Pirate Warlord Armada Command Ship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t5mandoarmcmd"
+                      "value": "t5pirarmcmd"
                     }
                   },
                   {
@@ -4761,11 +4761,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Fighter"
+                      "value": "Pirate Warlord Armada Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t6mandoarmftr"
+                      "value": "t6pirarmftr"
                     }
                   },
                   {
@@ -4780,11 +4780,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Interceptor"
+                      "value": "Pirate Warlord Armada Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t6mandoarmint"
+                      "value": "t6pirarmint"
                     }
                   },
                   {
@@ -4799,11 +4799,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Bomber"
+                      "value": "Pirate Warlord Armada Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t6mandoarmbmb"
+                      "value": "t6pirarmbmb"
                     }
                   },
                   {
@@ -4818,11 +4818,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Gunship"
+                      "value": "Pirate Warlord Armada Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t6mandoarmgun"
+                      "value": "t6pirarmgun"
                     }
                   },
                   {
@@ -4837,11 +4837,30 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Armada Blockade Platform"
+                      "value": "Pirate Warlord Armada Blockade Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "t6mandoarmplt"
+                      "value": "t6pirarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Warlord Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6pirarmcmd"
                     }
                   }
                 ]

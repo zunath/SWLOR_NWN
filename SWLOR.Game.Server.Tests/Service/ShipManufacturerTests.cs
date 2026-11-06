@@ -40,6 +40,8 @@ public class ShipManufacturerTests
     [TestCase("mandocap2", ShipManufacturer.Mandalorian)]
     [TestCase("t6bomber", ShipManufacturer.Sith)]
     [TestCase("t6pirint", ShipManufacturer.Corellian)]
+    [TestCase("t4pirarmgun", ShipManufacturer.Corellian)]
+    [TestCase("t6pirarmcmd", ShipManufacturer.Corellian)]
     [TestCase("sithcap7", ShipManufacturer.Sith)]
     [TestCase("t6sithcusgun", ShipManufacturer.Sith)]
     [TestCase("t1repcusint", ShipManufacturer.Republic)]

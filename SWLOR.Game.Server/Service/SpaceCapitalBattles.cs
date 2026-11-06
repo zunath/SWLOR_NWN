@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// Capital battle events (plan section 11, encounter types). Every few hours, while no incursion runs, a Sith or
-    /// Mandalorian Armada battle group (the incursion command group of the orbit's tier) drops into one open tier 5-6
+    /// Pirate Warlord Armada battle group (the incursion command group of the orbit's tier) drops into one open tier 5-6
     /// orbit for a limited time. Its ships drop their normal loot, and destroying the whole group also pays the pilots
     /// who damaged it (W11p, <see cref="CapitalBattleRules.BuildPayout"/>). Held in memory: a restart starts the clock
     /// again and drops an unfinished battle; payouts owed to offline pilots are saved with the incursion record.

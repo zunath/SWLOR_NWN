@@ -5,6 +5,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         Invalid = 0,
         Sith = 1,
-        Mandalorian = 2,
+        Pirate = 2,
     }
 }

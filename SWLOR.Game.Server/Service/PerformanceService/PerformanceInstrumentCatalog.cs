@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
@@ -10,11 +10,18 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceInstrumentCatalog
     {
-        private static readonly ImmutableArray<string> _resrefs =
-            ImmutableArray.Create("guitar", "lute", "harp", "kloo_horn", "slitherhorn");
+        private static readonly FrozenDictionary<string, PerformanceInstrumentFamily> _families =
+            new Dictionary<string, PerformanceInstrumentFamily>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["guitar"] = PerformanceInstrumentFamily.Strings,
+                ["lute"] = PerformanceInstrumentFamily.Strings,
+                ["harp"] = PerformanceInstrumentFamily.Strings,
+                ["kloo_horn"] = PerformanceInstrumentFamily.Horns,
+                ["slitherhorn"] = PerformanceInstrumentFamily.Horns,
+            }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>Every playable instrument's resref, for checks that the Player Guide's list stays complete.</summary>
-        public static IReadOnlyCollection<string> Resrefs => _resrefs;
+        public static IReadOnlyCollection<string> Resrefs => _families.Keys;
 
         /// <summary>
         /// The kloo horn only reaches the lips once the polearm carry layer is gone. The slitherhorn's mouthpiece is
@@ -25,33 +32,10 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         public static bool TryGetFamily(string resref, out PerformanceInstrumentFamily family)
         {
-            if (!string.IsNullOrEmpty(resref))
-            {
-                if (IsOneOf(resref, "guitar", "lute", "harp"))
-                {
-                    family = PerformanceInstrumentFamily.Strings;
-                    return true;
-                }
-
-                if (IsOneOf(resref, "kloo_horn", "slitherhorn"))
-                {
-                    family = PerformanceInstrumentFamily.Horns;
-                    return true;
-                }
-            }
+            if (!string.IsNullOrEmpty(resref) && _families.TryGetValue(resref, out family))
+                return true;
 
             family = PerformanceInstrumentFamily.None;
-            return false;
-        }
-
-        private static bool IsOneOf(string resref, params string[] names)
-        {
-            foreach (var name in names)
-            {
-                if (string.Equals(resref, name, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-
             return false;
         }
     }

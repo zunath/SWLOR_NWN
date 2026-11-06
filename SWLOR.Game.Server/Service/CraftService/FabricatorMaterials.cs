@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,23 +17,23 @@ public static class FabricatorMaterials
     public const double DefaultHardness = 2.0;
 
     // Woods cut easily at the lowest grade and hold an edge at the highest.
-    private static IReadOnlyDictionary<string, double> Woods => new Dictionary<string, double>
+    private static readonly FrozenDictionary<string, double> Woods = new Dictionary<string, double>
     {
         ["wood"] = 1, ["fine_wood"] = 2, ["aracia_wood"] = 3, ["hyphae_wood"] = 4, ["ancient_wood"] = 5
-    };
+    }.ToFrozenDictionary();
 
     // Assembled structure parts are dense and bonded; the reinforced ones more so.
-    private static IReadOnlyDictionary<string, double> StructureParts => new Dictionary<string, double>
+    private static readonly FrozenDictionary<string, double> StructureParts = new Dictionary<string, double>
     {
         ["pow_supp_unit"] = 3, ["const_parts"] = 3, ["r_pow_supp_unit"] = 4, ["r_const_parts"] = 4
-    };
+    }.ToFrozenDictionary();
 
-    private static HashSet<string> HardGrades => new()
+    private static readonly FrozenSet<string> HardGrades = new HashSet<string>
     {
         "jade", "agate", "citrine", "ruby", "emerald", "diamond", "zinsiam",
         "aluminum", "steel", "obsidian", "crystal",
         "quadrenium", "vintrium", "ionite", "katrium"
-    };
+    }.ToFrozenSet();
 
     /// <summary>The hardness of one component.</summary>
     public static double HardnessOf(string resref)

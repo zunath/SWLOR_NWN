@@ -23,7 +23,7 @@ Service/Recast.cs
 Service/RecastTimestamp.cs
 Service/AbilityCooldownVisual.cs
 Service/Enmity.cs
-Service/MeleeTechnique.cs
+Domain/Combat/MeleeTechniqueService.cs
 Service/AIService/**
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs

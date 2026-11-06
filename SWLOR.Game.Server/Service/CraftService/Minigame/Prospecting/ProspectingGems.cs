@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.LootService;
 
@@ -10,8 +11,10 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// </summary>
 public static class ProspectingGems
 {
+    private static readonly ImmutableList<string> ResrefsItems = ImmutableList.Create<string>("jade", "agate", "citrine", "ruby", "emerald");
+
     /// <summary>The resrefs of the gem items harvesting tables hold, one for each tier.</summary>
-    public static IReadOnlyList<string> Resrefs => new[] { "jade", "agate", "citrine", "ruby", "emerald" };
+    public static IReadOnlyList<string> Resrefs => ResrefsItems;
 
     public static bool IsGem(string resref) => Resrefs.Contains(resref);
 

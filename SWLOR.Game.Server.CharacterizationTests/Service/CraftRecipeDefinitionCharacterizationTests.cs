@@ -16,6 +16,22 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// </summary>
 public class CraftRecipeDefinitionCharacterizationTests
 {
+    // Some recipe definitions read a converted service through its static facade while they build.
+    private FacadeServices _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeServices();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly string[] RecipeProperties =
     {
         nameof(RecipeDetail.Category),

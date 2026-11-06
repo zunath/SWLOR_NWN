@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Composition
         internal static void Register(IServiceCollection services)
         {
             // Core
-            services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+            services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
@@ -72,8 +72,11 @@ namespace SWLOR.Game.Server.Composition
             // Combat
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();
+            services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
+            services.AddSingleton<IPoisonsService, PoisonsService>();
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
+            services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
 
             // Companions
@@ -134,6 +137,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
             services.AddSingleton<IPerformanceVenueService, PerformanceVenueService>();
             services.AddSingleton<IPerformanceWindowsService, PerformanceWindowsService>();
+            services.AddSingleton<IPerformanceSongService, PerformanceSongService>();
+            services.AddSingleton<IPerformanceSnapshotService, PerformanceSnapshotService>();
+            services.AddSingleton<IPerformanceInspiredService, PerformanceInspiredService>();
+            services.AddSingleton<IPerformanceRiderService, PerformanceRiderService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI

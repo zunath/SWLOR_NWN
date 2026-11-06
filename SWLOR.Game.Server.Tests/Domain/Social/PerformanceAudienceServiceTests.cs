@@ -132,7 +132,8 @@ public class PerformanceAudienceServiceTests
             return null;
         });
 
-        _audience = new TestAudience(_db, venue, windows, music)
+        _audience = new TestAudience(
+            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(), new PerformanceInspiredService())
         {
             Now = T0,
             PositionOf = creature => _positions.GetValueOrDefault(creature, Vector3.Zero)
@@ -768,8 +769,15 @@ public class PerformanceAudienceServiceTests
 
     private sealed class TestAudience : PerformanceAudienceService
     {
-        public TestAudience(IDBService db, IPerformanceVenueService venue, IPerformanceWindowsService windows, IMusicService music)
-            : base(db, venue, windows, music)
+        public TestAudience(
+            IDBService db,
+            IPerformanceVenueService venue,
+            IPerformanceWindowsService windows,
+            IMusicService music,
+            IPerformanceSongService songs,
+            IPerformanceSnapshotService snapshots,
+            IPerformanceInspiredService inspired)
+            : base(db, venue, windows, music, songs, snapshots, inspired)
         {
         }
 

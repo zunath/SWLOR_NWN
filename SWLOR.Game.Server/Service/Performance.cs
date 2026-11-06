@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -174,6 +175,24 @@ namespace SWLOR.Game.Server.Service
         public static void EndOnInstrumentUnequipped()
         {
             Instance.EndOnInstrumentUnequipped();
+        }
+
+        /// <summary>The Cantina songs the player owns, plus the starter song every player owns, in catalog order.</summary>
+        public static IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId)
+        {
+            return Instance.GetAvailableSongs(playerId);
+        }
+
+        /// <summary>The song the musician plays: their pick when they own it, else the first collected Cantina song, else the starter.</summary>
+        public static int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong)
+        {
+            return Instance.ChooseSong(playerId, preferredTrackId);
+        }
+
+        /// <summary>The Performance skill rank that unlocks a perk's first level, or 0 when it has no rank requirement.</summary>
+        public static int GetRequiredRank(PerkType perk)
+        {
+            return Instance.GetRequiredRank(perk);
         }
     }
 }

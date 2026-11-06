@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
@@ -12,10 +13,11 @@ public sealed class ReactionCycle
     public const int MinimumLength = 4;
     public const int MaximumLength = 8;
 
-    private static IReadOnlyList<ReactionPhase> PhaseOrder => new[]
-    {
+    private static readonly ImmutableList<ReactionPhase> PhaseOrderItems = ImmutableList.Create<ReactionPhase>(
         ReactionPhase.Calm, ReactionPhase.Rising, ReactionPhase.Peak, ReactionPhase.Settling
-    };
+    );
+
+    private static IReadOnlyList<ReactionPhase> PhaseOrder => PhaseOrderItems;
 
     private readonly ReactionPhase[] _phases;
 

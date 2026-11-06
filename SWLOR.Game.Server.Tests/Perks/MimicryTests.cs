@@ -622,12 +622,12 @@ public class MimicryTests
     {
         var root = FindRepositoryRoot();
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
 
         statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
             "equipped trait stats reach the player only through the stat pipeline");
-        resistanceSource.Should().Contain("Mimicry.GetResistanceBonus(creature, type)",
+        resistanceSource.Should().Contain("_mimicry.GetResistanceBonus(creature, type)",
             "equipped trait resistances reach the player only through the resistance pipeline");
 
         // Traits are deliberately not status effects: nothing should grant or revoke them, and the

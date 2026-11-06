@@ -381,8 +381,9 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.Vibroknife:
                             AddSkillBonus(details.Skills, SkillType.Vibroknife, value);
                             break;
+                        // Droids cannot use saber weapons. Items built before the skills were removed may still carry them.
                         case DroidStatSubType.Lightsaber:
-                            AddSkillBonus(details.Skills, SkillType.Lightsaber, value);
+                        case DroidStatSubType.Saberstaff:
                             break;
                         case DroidStatSubType.HeavyVibroblade:
                             AddSkillBonus(details.Skills, SkillType.HeavyVibroblade, value);
@@ -392,9 +393,6 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.TwinBlade:
                             AddSkillBonus(details.Skills, SkillType.TwinBlade, value);
-                            break;
-                        case DroidStatSubType.Saberstaff:
-                            AddSkillBonus(details.Skills, SkillType.Saberstaff, value);
                             break;
                         case DroidStatSubType.Katar:
                             AddSkillBonus(details.Skills, SkillType.Katar, value);
@@ -538,8 +536,9 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.Vibroknife:
                             details.Vibroknife += value;
                             break;
+                        // Droids cannot use saber weapons. Parts built before the skills were removed may still carry them.
                         case DroidStatSubType.Lightsaber:
-                            details.Lightsaber += value;
+                        case DroidStatSubType.Saberstaff:
                             break;
                         case DroidStatSubType.HeavyVibroblade:
                             details.HeavyVibroblade += value;
@@ -549,9 +548,6 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.TwinBlade:
                             details.TwinBlade += value;
-                            break;
-                        case DroidStatSubType.Saberstaff:
-                            details.Saberstaff += value;
                             break;
                         case DroidStatSubType.Katar:
                             details.Katar += value;

@@ -431,8 +431,8 @@ public class CrossSkillPerkInteractionSafetyTests
     public void CooldownReduction_CannotResetCapstonesOrRunPastReady()
     {
         var root = FindRepositoryRoot();
-        var recast = Read(root, "SWLOR.Game.Server", "Service", "Recast.cs");
-        var reduction = ExtractMethod(recast, "public static void ReduceRecastDelay(");
+        var recast = Read(root, "SWLOR.Game.Server", "Domain", "Combat", "RecastService.cs");
+        var reduction = ExtractMethod(recast, "public void ReduceRecastDelay(");
 
         reduction.Should().Contain("if (group == RecastGroup.Capstone)");
         reduction.Should().Contain("if (reducedDate <= now)");

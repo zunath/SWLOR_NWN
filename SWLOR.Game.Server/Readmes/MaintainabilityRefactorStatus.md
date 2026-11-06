@@ -105,6 +105,8 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-D3 | Wave D peripheral, Abilities: `AbilityCooldownVisual`, `QuickCast`, `Mimicry`; classify `MimicryLoadouts` | P2-C | Sonnet build, Opus review | done | [#3227](https://github.com/zunath/SWLOR_NWN/pull/3227) | Merged 2026-11-05 at head `1d2dd2674` (`260011cda`), Codex clean. All in `Domain/Abilities`; 12 handlers keep their names. `Mimicry` injects `IQuickCastService`, `IDMPresenceService`, `IPlayerFeedbackService`, `IDBService`, `IGuiService`; `AbilityCooldownVisual` injects `IGuiService`; hot-core calls behind wrappers. `MimicryLoadouts` stays static (no state, engine, DB or service calls). Coordinator review: moved code matches; the `QuickCast` effect loop moved into a wrapper with the same logic. Engine tests reach the instance caches through a new `ServiceInternals` helper (compiled, not run). The agent's full run predated its merge of P2-D2, so the coordinator ran the gate on the final head: `scripts/ci/run-unit-tests.sh --no-coverage`, all green (Game.Server 13998, Characterization 148, Architecture 164, NWN.API 341, CombatSim 894, CLI 35, Formats 95). Coverage: `AbilityCooldownVisual` 6.6% -> 98.7%, `QuickCast` 15.8% -> 89.6%, `Mimicry` 18.1% -> 97.8%. |
 | P2-D5 | Wave D peripheral, Combat I: `CombatPoint`, `Enmity`, `Recast`, `Targeting`, `WeaponDelay`; classify `RecastTimestamp` | P2-C | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-d5`. Runs per attack or per damage: no new per-call allocations; order of events and rolls unchanged. |
 | P2-D9 | Wave D peripheral, Combat helpers: `PowerGloveEquipment`, `PairedRangedTraits`, `TwinPistolEquipment`, `TwinPistolAbility`, `TwinPistolMastery`, `OrdinaryAttackTraits`, `QueuedAttackAnimation`, `WeaponAttackEligibility`, `WeaponAttackPhase`, `BattleGrid` | P2-C | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-d9`. Classify each by the utility rule; convert those with state, engine, DB or service calls. Runs per attack: no new per-call allocations. |
+| P2-D11 | Wave D hot core 1: `StatusEffect` | P2-D1 | Opus | in progress | | Branch `claude/mr-p2-d11`. Runs per attack and tick: no new per-call allocations; order of events and rolls unchanged. Next in order: `Skill`, `Perk`, `Stat`, `Ability`, `Combat`, one at a time. |
+| P2-D12 | Leftover helpers: classify `BankItemPage`, casino helpers, `ColorToken`, `GameMath`, `Menu`, `MimicryLoadouts`, `NamedAnimationPlayback`, `PlayerActivityEffectTag`; list stateful statics in the support folders and `Feature/`, convert up to about 1,500 lines; `PvpCombatRules` step lists back to fields; check the `SWLOR.CLI` data errors P2-B12 saw against master | P2-D1 | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-d12`. Its list plans the rest of the P2-D? and P2-B? rows. |
 | P2-D? | Wave D peripheral (outside the hot core; not yet assigned to items): Character `Service/RoleplayXPService/` (the rest in P2-D2, P2-D4); Abilities in P2-D3; Combat services and helpers in P2-D5 to P2-D9 | P2-C | Sonnet build, Opus review | open | | Found 2026-11-05 by listing `Service/*.cs` missing from `ConvertedServices.json` (check each against `DomainMap.json`). Convert or classify in items of about 1,000-2,500 lines before the hot core (`StatusEffect`, `Skill`, `Perk`, `Stat`, `Ability`, `Combat`); calls into the hot core go behind `protected virtual` wrappers. `CombatRecorder` writes from a background thread (check like `Log`). |
 | P2-Z | Facade removal, area by area (spec in MaintainabilityRefactorSpecs.md) | all conversions | Sonnet build, Opus review | open | | Clears the `Domain.Combat` versus `Service.Combat` clash and the interim `Service.Combat.X` calls. |
 | P2-Z2 | Namespace consolidation: one root per domain, no namespace that hides a type (**owner decision 2026-11-06: required before handover**; spec in MaintainabilityRefactorSpecs.md) | P2-Z, no open item branches | Sonnet build, Opus review | open | | Scripted, one pull request. New `Service.<Name>Service` namespaces are banned from 2026-11-06 (P2-C8's existing `Service.DBService` is fine); `Service.ResistanceService` (P2-D8) came before the rule and moves with the rest. |
@@ -150,6 +152,8 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
 - P2-D10 merged (#3242, `82ecfa5d8`, 2026-11-06): Performance helpers converted; RoleplayXP folder and utilities classified.
 - P2-B11 (gathering sessions): branch `claude/mr-p2-b11`.
 - P2-B12 (CraftSim repair, gate coverage): branch `claude/mr-p2-b12`.
+- P2-D11 (`StatusEffect`, hot core): branch `claude/mr-p2-d11`.
+- P2-D12 (leftover helpers): branch `claude/mr-p2-d12`.
 - P2-D3 merged (#3227, `260011cda`, 2026-11-05): `AbilityCooldownVisual`, `QuickCast`, `Mimicry` converted (see Work queue).
 - P2-D5 (Combat I: `CombatPoint`, `Enmity`, `Recast`, `Targeting`, `WeaponDelay`): [#3232](https://github.com/zunath/SWLOR_NWN/pull/3232), branch `claude/mr-p2-d5`.
 - P2-C5 done without code change: `Random` stays static, `Time` is a utility (specs).
@@ -176,13 +180,13 @@ on another machine needs none of them (both PR descriptions are on GitHub; cover
 
 ## Next actions
 
-1. **Review and merge** P2-D5, P2-D9, P2-B11 and P2-B12 as they report.
+1. **Review and merge** P2-D5, P2-D9, P2-B12, then P2-B11, P2-D11 and P2-D12 as they report.
 2. **Daily sync** when master moves (last 2026-11-06, `04b37fdbe`). Check whether `feature/space-revamp` reached master
    (unblocks P2-A9 `Space`, `Droid`, and the ~77-line `Item` port).
-3. **Follow-ups from P2-C8 and P2-D1:** make the `IDBService` default members abstract; `PvpCombatRules` step lists back to fields.
+3. **Follow-up from P2-C8:** make the `IDBService` default members abstract when no open item adds a fake.
 4. **Rest of Wave B:** P2-B11 (Slicing, Scavenge and Prospecting sessions); `Droid` (waits for the space revamp). Follow-ups: `Loot` and
    `IncubationFieldNote` could inject `IBeastMasteryService` (check cycles).
-5. **Wave D peripheral** (row P2-D?):
+5. **Wave D peripheral** (row P2-D?; P2-D12's list plans what is left):
    split into items and convert while slots are free; then the **Wave D hot core**
    (`StatusEffect`, `Skill`, `Perk`, `Stat`, `Ability`, `Combat`, one at a time); the `FacadeAccessor` cache (P2-D0) is in.
 6. GitHub Actions is billing-locked; the gate is a local `scripts/ci/run-unit-tests.sh` run. Pace by the account's weekly

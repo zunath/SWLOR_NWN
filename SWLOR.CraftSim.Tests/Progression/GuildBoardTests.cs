@@ -125,7 +125,6 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void ABatchOfHandInsEarnsTheHigherRankBonusOnceTheThresholdIsCrossed()
         {
-            Guild.LoadData();
 
             // 900 points at rank 0 and 10 hand-ins of a 21-point task: the first 100/21 reach the 1,000-point threshold, the rest earn 26 each.
             var (rank, points) = GuildHandInPlan.AddHandIns(0, 900, 10, rank => GuildHandInPlan.GuildPointsFor(21, rank));
@@ -139,7 +138,6 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void AHandInBatchThatStaysInsideARankIsPricedAtThatRank()
         {
-            Guild.LoadData();
 
             GuildHandInPlan.AddHandIns(2, 6000, 4, rank => GuildHandInPlan.GuildPointsFor(117, rank)).Should().Be((2, 6000 + 4 * 175.0));
         }
@@ -147,12 +145,11 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void ABatchCanCrossSeveralRanksAndStopsAtTheLastOne()
         {
-            Guild.LoadData();
 
             var (rank, points) = GuildHandInPlan.AddHandIns(0, 0, 100_000, rank => GuildHandInPlan.GuildPointsFor(195, rank));
 
-            rank.Should().Be(Guild.MaxRank);
-            points.Should().BeInRange(Guild.GetGPRequiredForRank(Guild.MaxRank - 1), Guild.GetGPRequiredForRank(Guild.MaxRank) - 1);
+            rank.Should().Be(ServerGuildRules.MaxRank);
+            points.Should().BeInRange(ServerGuildRules.GetGPRequiredForRank(ServerGuildRules.MaxRank - 1), ServerGuildRules.GetGPRequiredForRank(ServerGuildRules.MaxRank) - 1);
         }
 
         [Test]

@@ -83,7 +83,7 @@ namespace SWLOR.CraftSim.Legacy
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(
-            "Crafting gear stats", EquipmentStats, 929, 1075,
+            "Crafting gear stats", EquipmentStats, 929, 1125,
             "Stat.AdjustControl(dbPlayer, skillType, amount);", "Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);",
             "Stat.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
 

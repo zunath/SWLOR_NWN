@@ -443,8 +443,7 @@ public static class TwinPistolCompanionArrivalEngineTests
 
     private static int Points(uint actor, uint target, SkillType skill)
     {
-        var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-            .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        var tracker = CombatInternals.CombatPointTracker();
         return tracker.TryGetValue(target, out var attackers) && attackers.TryGetValue(actor, out var skills)
             ? skills.GetValueOrDefault(skill) : 0;
     }

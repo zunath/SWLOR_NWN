@@ -860,13 +860,15 @@ public class ViscaraSpawnDefinitionTests
     public void ViscaraNamedRareEliteSpawnTables_ArePlacedInOneAreaFile()
     {
         var root = FindRepositoryRoot();
-        var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json");
+        // Each area file is read once, not once per spawn table.
+        var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json")
+            .ToDictionary(file => file, file => File.ReadAllText(file));
 
         foreach (var spec in NamedRareEliteSpecs)
         {
             var filesWithTable = gitFiles
-                .Where(file => File.ReadAllText(file).Contains($"\"value\": \"{spec.SpawnTableId}\"", StringComparison.Ordinal))
-                .Select(Path.GetFileName)
+                .Where(file => file.Value.Contains($"\"value\": \"{spec.SpawnTableId}\"", StringComparison.Ordinal))
+                .Select(file => Path.GetFileName(file.Key))
                 .ToArray();
 
             filesWithTable.Should().BeEquivalentTo(
@@ -2024,10 +2026,20 @@ public class ViscaraSpawnDefinitionTests
         string text)
     {
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        // One pass over the cells of the column; asking GetWorkbookCellText for every row would scan the whole sheet once per row.
         return worksheet
-            .Descendants(ns + "row")
-            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
-            .Single(row => GetWorkbookCellText(worksheet, sharedStrings, $"{column}{row}") == text);
+            .Descendants(ns + "c")
+            .Where(cell => IsCellInColumn(cell.Attribute("r")?.Value, column) && ReadCellText(cell, ns, sharedStrings) == text)
+            .Select(cell => int.Parse(cell.Attribute("r")!.Value.Substring(column.Length), CultureInfo.InvariantCulture))
+            .Single();
+    }
+
+    private static bool IsCellInColumn(string address, string column)
+    {
+        return address != null &&
+               address.Length > column.Length &&
+               address.StartsWith(column, StringComparison.Ordinal) &&
+               char.IsDigit(address[column.Length]);
     }
 
     private static string GetWorkbookCellText(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
@@ -2037,9 +2049,11 @@ public class ViscaraSpawnDefinitionTests
             .Descendants(ns + "c")
             .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address);
 
-        if (cell == null)
-            return string.Empty;
+        return cell == null ? string.Empty : ReadCellText(cell, ns, sharedStrings);
+    }
 
+    private static string ReadCellText(XElement cell, XNamespace ns, IReadOnlyList<string> sharedStrings)
+    {
         var type = cell.Attribute("t")?.Value;
         if (type == "inlineStr")
             return string.Concat(cell.Descendants(ns + "t").Select(text => text.Value));

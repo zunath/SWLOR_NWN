@@ -48,9 +48,9 @@ public abstract class AIServiceTestBase
     [TearDown]
     public void DisposeTheWorld()
     {
+        RealEnmityTables.Clear();
         _baseFacadeScope.Dispose();
         ScriptedProfiles.Build = null;
-        RealEnmityTables.Clear();
         Bench.Dispose();
     }
 

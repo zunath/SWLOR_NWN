@@ -17,6 +17,7 @@
     { "name": "CasinoSlot", "domain": "Economy" },
     { "name": "ChatCommand", "domain": "Social" },
     { "name": "ChatPortraitTells", "domain": "Social" },
+    { "name": "CombatPoint", "domain": "Combat" },
     { "name": "CombatRecorder", "domain": "Combat" },
     { "name": "Communication", "domain": "Core" },
     { "name": "CompanionControl", "domain": "Creatures" },
@@ -36,6 +37,7 @@
     { "name": "Death", "domain": "Combat" },
     { "name": "Disguise", "domain": "Character" },
     { "name": "DroidEquipmentDiagnostics", "domain": "Companions" },
+    { "name": "Enmity", "domain": "Combat" },
     { "name": "EquipmentUnequip", "domain": "Items" },
     { "name": "EspionageInfiltration", "domain": "Character" },
     { "name": "ExtraHotbars", "domain": "UI" },
@@ -82,11 +84,13 @@
     { "name": "QueuedAttackAnimation", "domain": "Combat" },
     { "name": "QuickCast", "domain": "Abilities" },
     { "name": "Race", "domain": "Character" },
+    { "name": "Recast", "domain": "Combat" },
     { "name": "Resistance", "domain": "Combat" },
     { "name": "Shuttle", "domain": "World" },
     { "name": "Snippet", "domain": "Core" },
     { "name": "Spawn", "domain": "Creatures" },
     { "name": "Stealth", "domain": "Combat" },
+    { "name": "Targeting", "domain": "Combat" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Telegraph", "domain": "Combat" },
     { "name": "TileMagic", "domain": "Core" },
@@ -97,6 +101,7 @@
     { "name": "Walkmesh", "domain": "Core" },
     { "name": "Wardrobe", "domain": "Items" },
     { "name": "WeaponAttackEligibility", "domain": "Combat" },
+    { "name": "WeaponDelay", "domain": "Combat" },
     { "name": "Weather", "domain": "World" }
   ]
 }

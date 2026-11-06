@@ -584,7 +584,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _recipe,
                 _blueprintItem,
                 _slots.Items);
-            var result = CraftSessionService.Start(Player, request);
+            var result = CraftSessions.Start(Player, request);
             if (!result.Succeeded)
             {
                 SetStatus(result.Message, GuiColor.Red);
@@ -683,7 +683,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _engine.Actions.Count)
                 return;
 
-            if (!CraftSessionService.IsActive(Player, _session))
+            if (!CraftSessions.IsActive(Player, _session))
             {
                 ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);
                 return;
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The saved craft counts its actions, so a craft settled with no window (a logout, a death, a restart) is held to the same pace.
             if (result.Status == MinigameStatus.InProgress)
-                CraftSessionService.RecordActions(Player, _session, _engine.Turn);
+                CraftSessions.RecordActions(Player, _session, _engine.Turn);
 
             SetStatus($"{action.Name}: {result.Outcome.Label}.", GuiColor.Green);
             LastResultText = KitchenText.ResultText(result.Outcome);
@@ -716,7 +716,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var quality = _engine.Meters.Quality;
             var dishName = Cache.GetItemNameByResref(Craft.GetRecipe(_recipe).Resref);
-            var success = CraftSessionService.Succeed(Player, _session, quality, _engine.Turn);
+            var success = CraftSessions.Succeed(Player, _session, quality, _engine.Turn);
             if (success == null)
             {
                 ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);
@@ -730,7 +730,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RuinDish()
         {
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
+            var settlement = CraftSessions.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             if (!settlement.Settled)
             {
                 ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);

@@ -171,7 +171,7 @@ public class PerformanceServiceTests
         });
 
         _view = new FakeView { IsOpen = true };
-        _performance = new TestPerformance(_db, _animation, _audience, _windows) { Now = T0, Perks = _perks };
+        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService()) { Now = T0, Perks = _perks };
         _perks.Clear();
     }
 
@@ -299,7 +299,7 @@ public class PerformanceServiceTests
     public void AStartThatCannotReadThePlayerRecordIsRefused()
     {
         _db = new InMemoryDBService();
-        _performance = new TestPerformance(_db, _animation, _audience, _windows) { Now = T0 };
+        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService()) { Now = T0 };
 
         _performance.ToggleDance(Player, 1);
 
@@ -1127,8 +1127,10 @@ public class PerformanceServiceTests
             IDBService db,
             INamedAnimationService animation,
             IPerformanceAudienceService audience,
-            IPerformanceWindowsService windows)
-            : base(db, animation, audience, windows)
+            IPerformanceWindowsService windows,
+            IPerformanceSongService songs,
+            IPerformanceRiderService riders)
+            : base(db, animation, audience, windows, songs, riders)
         {
         }
 
@@ -1167,6 +1169,6 @@ public class PerformanceServiceTests
 
         protected override bool IsPlayerInSpaceMode(uint player) => InSpace;
 
-        protected override int ChooseSong(string playerId, int preferredTrackId) => ChosenSong;
+        public override int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong) => ChosenSong;
     }
 }

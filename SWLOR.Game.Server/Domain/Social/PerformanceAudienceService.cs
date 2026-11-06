@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceVenueService _venue;
         private readonly IPerformanceWindowsService _windows;
         private readonly IMusicService _music;
+        private readonly IPerformanceSongService _songs;
+        private readonly IPerformanceSnapshotService _snapshots;
+        private readonly IPerformanceInspiredService _inspired;
         private readonly Dictionary<uint, PerformanceAudienceState> _states = new();
         private readonly Dictionary<uint, PerformancePerformerState> _performerStates = new();
         private readonly List<PerformerSnapshot> _scratchPartners = new();
@@ -37,12 +40,21 @@ namespace SWLOR.Game.Server.Domain.Social
         private int _tickNumber;
 
         public PerformanceAudienceService(
-            IDBService db, IPerformanceVenueService venue, IPerformanceWindowsService windows, IMusicService music)
+            IDBService db,
+            IPerformanceVenueService venue,
+            IPerformanceWindowsService windows,
+            IMusicService music,
+            IPerformanceSongService songs,
+            IPerformanceSnapshotService snapshots,
+            IPerformanceInspiredService inspired)
         {
             _db = db;
             _venue = venue;
             _windows = windows;
             _music = music;
+            _songs = songs;
+            _snapshots = snapshots;
+            _inspired = inspired;
         }
 
         public void StartAudienceTick()
@@ -999,18 +1011,18 @@ namespace SWLOR.Game.Server.Domain.Social
         protected virtual string GetDisplayName(uint observer, uint target) => PlayerName.GetDisplayName(observer, target);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
-            PerformerSnapshotBuilder.Build(session, venue, songTrackId);
+            _snapshots.Build(session, venue, songTrackId);
 
         protected virtual int ChooseSong(string playerId, int preferredTrackId) =>
-            PerformanceSongs.ChooseSong(playerId, preferredTrackId);
+            _songs.ChooseSong(playerId, preferredTrackId);
 
         protected virtual bool ApplyInspired(uint creature, InspiredEffectData data, double remainingSeconds, bool bankedAgain) =>
-            PerformanceInspiredApplier.Apply(creature, data, remainingSeconds, bankedAgain);
+            _inspired.Apply(creature, data, remainingSeconds, bankedAgain);
 
         protected virtual double GetInspiredRemainingSeconds(uint creature, DateTime nowUtc) =>
-            PerformanceInspiredApplier.GetRemainingSeconds(creature, nowUtc);
+            _inspired.GetRemainingSeconds(creature, nowUtc);
 
         protected virtual void SetInspiredRemaining(uint creature, double remainingSeconds, bool bankedAgain = false) =>
-            PerformanceInspiredApplier.SetRemaining(creature, remainingSeconds, bankedAgain);
+            _inspired.SetRemaining(creature, remainingSeconds, bankedAgain);
     }
 }

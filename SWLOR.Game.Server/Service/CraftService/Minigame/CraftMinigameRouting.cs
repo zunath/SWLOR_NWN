@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -10,60 +11,46 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public static class CraftMinigameRouting
 {
-    // The discovered routes live on the Craft service instance.
-    private static CraftMinigameRouteCache RouteCache => Craft.MinigameRoutes;
-
-    /// <summary>The minigame route of a crafting skill. A skill with no minigame is an error, because no other window crafts recipes.</summary>
-    public static CraftMinigameRoute GetRoute(SkillType skill) =>
-        TryGetRoute(skill, out var route) ? route : throw new InvalidOperationException($"{skill} has no crafting minigame.");
-
-    /// <summary>The minigame route of a skill, or false for a skill that crafts nothing.</summary>
-    public static bool TryGetRoute(SkillType skill, out CraftMinigameRoute route)
-    {
-        RouteCache.Routes ??= BuildRoutes(DiscoverRoutes());
-        return RouteCache.Routes.TryGetValue(skill, out route);
-    }
-
-    public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
+    private static ICraftMinigameRoutingService Instance => FacadeAccessor.Resolve<ICraftMinigameRoutingService>();
 
     /// <summary>
     /// The window of the research Experiment. It crafts no item, but it spends the Fabrication CP of the gear worn when it opened, so
     /// it commits that gear like a crafting window does.
     /// </summary>
-    public const GuiWindowType ResearchExperimentWindow = GuiWindowType.ResearchExperiment;
+    public const GuiWindowType ResearchExperimentWindow = Domain.Crafting.CraftMinigameRoutingService.ResearchExperimentWindow;
+
+    /// <summary>The minigame route of a crafting skill. A skill with no minigame is an error, because no other window crafts recipes.</summary>
+    public static CraftMinigameRoute GetRoute(SkillType skill)
+    {
+        return Instance.GetRoute(skill);
+    }
+
+    /// <summary>The minigame route of a skill, or false for a skill that crafts nothing.</summary>
+    public static bool TryGetRoute(SkillType skill, out CraftMinigameRoute route)
+    {
+        return Instance.TryGetRoute(skill, out route);
+    }
+
+    public static GuiWindowType GetWindow(SkillType skill)
+    {
+        return Instance.GetWindow(skill);
+    }
 
     /// <summary>Every window that crafts items, each minigame's, and the research Experiment, which commits the worn gear.</summary>
     public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
-        RouteCache.Routes ??= BuildRoutes(DiscoverRoutes());
-        return RouteCache.Routes.Values.Select(route => route.Window)
-            .Append(ResearchExperimentWindow)
-            .Distinct()
-            .ToList();
+        return Instance.GetCraftWindows();
     }
 
     /// <summary>True when the player has any crafting minigame window open, or the research Experiment.</summary>
-    public static bool IsAnyCraftWindowOpen(uint player) =>
-        GetCraftWindows().Any(window => Gui.IsWindowOpen(player, window));
+    public static bool IsAnyCraftWindowOpen(uint player)
+    {
+        return Instance.IsAnyCraftWindowOpen(player);
+    }
 
     /// <summary>Builds the lookup from route declarations. Two routes for one skill is an error.</summary>
     public static IReadOnlyDictionary<SkillType, CraftMinigameRoute> BuildRoutes(IEnumerable<ICraftMinigameRoute> declarations)
     {
-        var routes = new Dictionary<SkillType, CraftMinigameRoute>();
-        foreach (var declaration in declarations)
-        {
-            if (routes.ContainsKey(declaration.Skill))
-                throw new InvalidOperationException($"More than one crafting window is registered for {declaration.Skill}.");
-
-            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame);
-        }
-
-        return routes;
+        return Instance.BuildRoutes(declarations);
     }
-
-    private static IEnumerable<ICraftMinigameRoute> DiscoverRoutes() =>
-        typeof(ICraftMinigameRoute).Assembly.GetTypes()
-            .Where(type => typeof(ICraftMinigameRoute).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
-            .Select(type => (ICraftMinigameRoute)Activator.CreateInstance(type))
-            .ToList();
 }

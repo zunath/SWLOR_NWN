@@ -16,11 +16,11 @@ internal sealed class NwnPayoutWorld : IResearchPayoutWorld
 
     public bool CanReceiveXp() => !GetIsDead(_player) && GetCurrentHitPoints(_player) > 0;
 
-    public int BaseXp(ResearchJob job) => ResearchExperimentService.BaseXp(_player, job);
+    public int BaseXp(ResearchJob job) => CraftResearchExperiment.BaseXp(_player, job);
 
     public void SavePlayer(Player dbPlayer) => DB.Set(dbPlayer);
 
     public void SaveJob(ResearchJob job) => DB.Set(job);
 
-    public void GrantPendingXp() => CraftSessionService.GrantPendingXp(_player);
+    public void GrantPendingXp() => CraftSessions.GrantPendingXp(_player);
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
@@ -13,16 +14,18 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 /// </summary>
 public static class GatheringPerkLines
 {
-    public static IReadOnlyList<PerkType> Prospector => new[]
-    {
+    private static readonly ImmutableList<PerkType> ProspectorItems = ImmutableList.Create<PerkType>(
         PerkType.EfficientStrikes, PerkType.BulkRefining, PerkType.RichVeins, PerkType.StripMiningStyle, PerkType.CoreSample, PerkType.MotherLode
-    };
+    );
 
-    public static IReadOnlyList<PerkType> TreasureSeeker => new[]
-    {
+    public static IReadOnlyList<PerkType> Prospector => ProspectorItems;
+
+    private static readonly ImmutableList<PerkType> TreasureSeekerItems = ImmutableList.Create<PerkType>(
         PerkType.FineTrowel, PerkType.SharpChisel, PerkType.SteadyDig, PerkType.CarefulHandsStyle,
         PerkType.KeenEye, PerkType.DeepScan, PerkType.RichPickings, PerkType.Jackpot
-    };
+    );
+
+    public static IReadOnlyList<PerkType> TreasureSeeker => TreasureSeekerItems;
 
     /// <summary>
     /// The stat totals of a gatherer at <paramref name="rank"/> who owns, of <paramref name="owned"/>, the highest level that rank allows

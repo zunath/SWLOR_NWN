@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -12,6 +13,10 @@ namespace SWLOR.CLI
         public void Process()
         {
             Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "172.21.0.1:6379");
+
+            // DB forwards to the service container, which the game server builds at boot. A tool builds it itself.
+            if (!CompositionRoot.IsBuilt)
+                CompositionRoot.Build(CompositionRoot.ServerHost);
 
             DB.Load();
 

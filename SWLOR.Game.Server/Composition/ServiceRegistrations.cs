@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Composition
         internal static void Register(IServiceCollection services)
         {
             // Core
-            services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+            services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
@@ -74,9 +74,12 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
+            services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
+            services.AddSingleton<IPoisonsService, PoisonsService>();
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IRecastService, RecastService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
+            services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
             services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
@@ -88,6 +91,11 @@ namespace SWLOR.Game.Server.Composition
 
             // Crafting
             services.AddSingleton<ICraftService, CraftService>();
+            services.AddSingleton<ICraftMinigameRoutingService, CraftMinigameRoutingService>();
+            services.AddSingleton<ICraftQuickCraftService, CraftQuickCraftService>();
+            services.AddSingleton<ICraftResearchExperimentService, CraftResearchExperimentService>();
+            services.AddSingleton<ICraftSessionsService, CraftSessionsService>();
+            services.AddSingleton<ICraftStyleEffectsService, CraftStyleEffectsService>();
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
@@ -128,6 +136,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
             services.AddSingleton<IPerformanceVenueService, PerformanceVenueService>();
             services.AddSingleton<IPerformanceWindowsService, PerformanceWindowsService>();
+            services.AddSingleton<IPerformanceSongService, PerformanceSongService>();
+            services.AddSingleton<IPerformanceSnapshotService, PerformanceSnapshotService>();
+            services.AddSingleton<IPerformanceInspiredService, PerformanceInspiredService>();
+            services.AddSingleton<IPerformanceRiderService, PerformanceRiderService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI

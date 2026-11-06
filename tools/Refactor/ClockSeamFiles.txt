@@ -25,8 +25,8 @@ Service/AbilityCooldownVisual.cs
 Service/Enmity.cs
 Domain/Combat/CombatPointService.cs
 Domain/Combat/EnmityService.cs
+Domain/Combat/MeleeTechniqueService.cs
 Domain/Combat/RecastService.cs
-Service/MeleeTechnique.cs
 Service/AIService/**
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs

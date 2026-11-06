@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// <summary>One beat of the cue strip: a single cue, a two-lane chord, or a held rest that scores neither hit nor miss.</summary>
     public readonly record struct PerformanceBeat(PerformanceCue Primary, PerformanceCue? Second, bool IsRest)
     {
-        public static PerformanceBeat Rest => new(PerformanceCue.Left, null, true);
+        public static readonly PerformanceBeat Rest = new(PerformanceCue.Left, null, true);
 
         public static PerformanceBeat Single(PerformanceCue cue) => new(cue, null, false);
 

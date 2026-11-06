@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service.DBService
             var list = new List<string>();
             foreach (var s in search)
             {
-                list.Add(DB.EscapeTokens(s));
+                list.Add(DBTokenEscaper.Escape(s));
             }
 
             var searchText = string.Join("|", list);
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service.DBService
             {
                 var search = criteria.SkipEscaping
                     ? criteria.Text
-                    : DB.EscapeTokens(criteria.Text);
+                    : DBTokenEscaper.Escape(criteria.Text);
 
                 sb.Append($" @{name}:{search}");
             }

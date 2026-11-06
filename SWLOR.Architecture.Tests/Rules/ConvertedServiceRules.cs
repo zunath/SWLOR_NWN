@@ -81,15 +81,17 @@ internal static class ConvertedServiceRules
 
     /// <summary>
     /// A converted service keeps its state on the instance, so none of its types may hold a static field. Only
-    /// <c>const</c> fields are allowed. A <c>static readonly</c> field is state too when it holds a collection, so it is
-    /// not allowed either.
+    /// <c>const</c> fields and <c>static readonly</c> fields of a deeply immutable type (primitives, <c>string</c>, enums,
+    /// <c>Regex</c>, frozen and immutable collections of such elements, records whose members are all init-only and
+    /// immutable) are allowed. A <c>static readonly</c> field that holds an array, a mutable collection or any type the
+    /// check cannot prove immutable is state too, so it is reported.
     /// </summary>
     /// <param name="facts">The compiled assembly.</param>
     /// <param name="isServiceType">True for a top-level type that belongs to a converted service.</param>
     public static IReadOnlyList<string> StaticMutableFields(AssemblyFacts facts, Func<TypeKey, bool> isServiceType)
     {
         return facts.StaticFields
-            .Where(field => !field.IsLiteral && isServiceType(field.Owner))
+            .Where(field => !field.IsLiteral && !(field.IsInitOnly && field.IsDeeplyImmutable) && isServiceType(field.Owner))
             .Select(field => $"{field} is static state of a converted service: make it an instance {(field.IsAutoProperty ? "property" : "field")}" +
                              (field.IsInitOnly ? " (static readonly still shares the collection it holds)." : "."))
             .OrderBy(message => message, StringComparer.Ordinal)

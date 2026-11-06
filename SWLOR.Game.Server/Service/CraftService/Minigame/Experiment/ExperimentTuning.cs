@@ -24,7 +24,7 @@ public sealed record ExperimentTuning(
     bool PeerReview = false,
     bool Breakthrough = false)
 {
-    public static ExperimentTuning Default => new();
+    public static readonly ExperimentTuning Default = new();
 
     /// <summary>
     /// The numbers the researcher's Researcher perks give, read once from their stat totals when an experiment is set up. No perk

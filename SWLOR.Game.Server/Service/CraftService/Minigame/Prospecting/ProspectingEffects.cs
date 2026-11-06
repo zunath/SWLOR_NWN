@@ -30,7 +30,7 @@ public sealed record ProspectingEffects(
     bool PocketsFirst = false)
 {
     /// <summary>A harvester with no perks and no style.</summary>
-    public static ProspectingEffects None => new();
+    public static readonly ProspectingEffects None = new();
 
     /// <summary>The effects of a harvester whose stat totals <paramref name="read"/> returns.</summary>
     public static ProspectingEffects FromStats(Func<StatType, int> read)

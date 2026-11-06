@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -102,5 +103,14 @@ namespace SWLOR.Game.Server.Domain.Social
 
         /// <summary>Ends a musician's performance when the instrument is unequipped.</summary>
         void EndOnInstrumentUnequipped();
+
+        /// <summary>The Cantina songs the player owns, plus the starter song every player owns, in catalog order.</summary>
+        IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId);
+
+        /// <summary>The song the musician plays: their pick when they own it, else the first collected Cantina song, else the starter.</summary>
+        int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong);
+
+        /// <summary>The Performance skill rank that unlocks a perk's first level, or 0 when it has no rank requirement.</summary>
+        int GetRequiredRank(PerkType perk);
     }
 }

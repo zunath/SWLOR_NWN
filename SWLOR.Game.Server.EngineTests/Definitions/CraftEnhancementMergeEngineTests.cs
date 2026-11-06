@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var kits = Snapshot(player).Keys.Where(item => GetResRef(item) == kit).ToArray();
                     ctx.AssertEqual(2, kits.Length, $"{recipe} + {kit}: both kits are carried");
-                    var start = CraftSessionService.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, kits));
+                    var start = CraftSessions.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, kits));
                     ctx.Assert(start.Succeeded, $"{recipe} starts: {start.Message}");
                     session = start.Session;
                 });
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    ctx.Assert(CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
+                    ctx.Assert(CraftSessions.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
                     AssertMerged(ctx, player, detail, kit, expected, "in the craft's script");
                 });
                 await ctx.WaitFrameAsync();

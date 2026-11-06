@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
@@ -18,11 +19,9 @@ public readonly record struct SearchBoard(int Promising, int Known, int Searched
     public const int Spots = Size * Size;
     public const int MaxDigsPerSpot = 3;
 
-    private static string[] SpotNames =>
-    new string[]
-    {
+    private static readonly ImmutableArray<string> SpotNames = ImmutableArray.Create<string>(
         "top left", "top", "top right", "left", "center", "right", "bottom left", "bottom", "bottom right"
-    };
+    );
 
     public static SearchBoard WithPromising(int promisingMask) => new(promisingMask, 0, 0, 0, 0, 0);
 

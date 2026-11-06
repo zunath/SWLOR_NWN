@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
@@ -13,13 +14,11 @@ public static class FabricatorActionText
     public const string BreaksPiece = "Breaks the piece.";
 
     // The meters an outcome lists, in this order.
-    private static string[] ListedMeters =>
-    new string[]
-    {
+    private static readonly ImmutableArray<string> ListedMeters = ImmutableArray.Create<string>(
         FabricatorEngine.FrameProgressId, FabricatorEngine.ShellProgressId, FabricatorEngine.FittingsProgressId,
         FabricatorEngine.FrameQualityId, FabricatorEngine.ShellQualityId, FabricatorEngine.FittingsQualityId,
         MinigameMeterIds.Quality, MinigameMeterIds.Integrity, MinigameMeterIds.Cp
-    };
+    );
 
     /// <summary>The button label: the action's name and its CP cost.</summary>
     public static string ButtonText(MinigameActionPreview preview) =>

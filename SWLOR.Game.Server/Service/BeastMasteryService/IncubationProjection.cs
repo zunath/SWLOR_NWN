@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
@@ -15,19 +17,19 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         public const int NumberOfStages = 3;
 
 
-        public static IReadOnlyList<IncubationStatType> MainPurityStats => new[]
-        {
+        private static readonly ImmutableList<IncubationStatType> MainPurityStatsItems = ImmutableList.Create<IncubationStatType>(
             IncubationStatType.AttackPurity,
             IncubationStatType.AccuracyPurity,
             IncubationStatType.EvasionPurity,
             IncubationStatType.LearningPurity,
             IncubationStatType.PhysicalDefensePurity,
             IncubationStatType.ForceDefensePurity,
-            IncubationStatType.XPPenalty,
-        };
+            IncubationStatType.XPPenalty
+        );
 
-        public static IReadOnlyList<IncubationStatType> ResistancePurityStats => new[]
-        {
+        public static IReadOnlyList<IncubationStatType> MainPurityStats => MainPurityStatsItems;
+
+        private static readonly ImmutableList<IncubationStatType> ResistancePurityStatsItems = ImmutableList.Create<IncubationStatType>(
             IncubationStatType.FireResistancePurity,
             IncubationStatType.PoisonResistancePurity,
             IncubationStatType.ElectricalResistancePurity,
@@ -35,10 +37,12 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             IncubationStatType.MindResistancePurity,
             IncubationStatType.MobilityResistancePurity,
             IncubationStatType.TraumaResistancePurity,
-            IncubationStatType.DisruptionResistancePurity,
-        };
+            IncubationStatType.DisruptionResistancePurity
+        );
 
-        private static Dictionary<IncubationStatType, (string Name, string Short, string Tooltip)> StatText => new()
+        public static IReadOnlyList<IncubationStatType> ResistancePurityStats => ResistancePurityStatsItems;
+
+        private static readonly FrozenDictionary<IncubationStatType, (string Name, string Short, string Tooltip)> StatText = new Dictionary<IncubationStatType, (string Name, string Short, string Tooltip)>
         {
             { IncubationStatType.MutationChance, ("Mutation", "Mut", "Chance the egg becomes a different beast than its DNA.") },
             { IncubationStatType.AttackPurity, ("Attack", "Atk", "Improves the beast's attack rating.") },
@@ -56,9 +60,9 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             { IncubationStatType.TraumaResistancePurity, ("Trauma res.", "Trau", "Improves the beast's trauma resistance.") },
             { IncubationStatType.DisruptionResistancePurity, ("Disruption res.", "Disr", "Improves the beast's disruption resistance.") },
             { IncubationStatType.XPPenalty, ("XP penalty", "XP pen", "Increases the XP the beast needs to level up.") },
-        };
+        }.ToFrozenDictionary();
 
-        private static Dictionary<IncubationStatType, ResistanceType> ResistanceByStat => new()
+        private static readonly FrozenDictionary<IncubationStatType, ResistanceType> ResistanceByStat = new Dictionary<IncubationStatType, ResistanceType>
         {
             { IncubationStatType.FireResistancePurity, ResistanceType.Fire },
             { IncubationStatType.PoisonResistancePurity, ResistanceType.Poison },
@@ -68,7 +72,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             { IncubationStatType.MobilityResistancePurity, ResistanceType.Mobility },
             { IncubationStatType.TraumaResistancePurity, ResistanceType.Trauma },
             { IncubationStatType.DisruptionResistancePurity, ResistanceType.Disruption },
-        };
+        }.ToFrozenDictionary();
 
         private readonly IncubationJob _baseJob;
         private readonly IncubationJob _projectedJob;

@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Logging out drops the non-persistent effect; the record stays.
             StatusEffect.RemoveAllStatusEffects(creature, includeCraftingStyles: true);
             ctx.AssertEqual(ForgeStyle.None, ForgeStyles.Active(creature), "the style effect does not outlive the session");
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(ForgeStyle.HotForging, ForgeStyles.Active(creature), "login applies the selected style");
             ctx.Assert(!StatusEffect.HasEffect<ColdWorkingStatusEffect>(creature), "and not the other one");
 
             // A second login while the style is already active leaves it alone.
             var effect = StatusEffect.GetStatusEffect(creature, typeof(HotForgingStatusEffect));
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.Assert(ReferenceEquals(effect, StatusEffect.GetStatusEffect(creature, typeof(HotForgingStatusEffect))),
                 "restoring an active style does not stack or replace it");
 
             // The perk was refunded while the effect was gone: nothing comes back.
             StatusEffect.RemoveAllStatusEffects(creature, includeCraftingStyles: true);
             player.Update(record => record.Perks.Remove(PerkType.HotForgingStyle));
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(ForgeStyle.None, ForgeStyles.Active(creature), "a style whose perk is no longer owned is not applied");
             ctx.AssertEqual(PerkType.Invalid, Selected(player.Id), "and its stale selection is dropped");
         }
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(ForgeStyle.None, ForgeStyles.Active(creature), "the refunded style is removed");
             ctx.AssertEqual(PerkType.Invalid, Selected(player.Id), "and forgotten");
 
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(ForgeStyle.None, ForgeStyles.Active(creature), "nothing comes back at the next login");
         }
     }

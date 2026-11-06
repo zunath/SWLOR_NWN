@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         routine,
                         Stat.GetStatAdjustment(Player, StatType.PerformanceLightFeetSpeedPercent),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceRoutineAttributeBonus))
-                    : PerformanceRiderText.GetLockedText(PerformanceRiderCatalog.GetRequiredRank(perk)));
+                    : PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk)));
 
                 if (routine == selected)
                     _routineIndex = index;
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Stat.GetStatAdjustment(Player, StatType.PerformanceSteadyHandsBonus),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceAnglersLullabyBonus),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceSetAttributeBonus))
-                    : PerformanceRiderText.GetLockedText(PerformanceRiderCatalog.GetRequiredRank(perk)));
+                    : PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk)));
 
                 if (set == selected)
                     _setIndex = index;
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadSongs(PerformancePreference preference)
         {
             var playerId = GetObjectUUID(Player);
-            _songs = PerformanceSongs.GetAvailableSongs(playerId).ToArray();
+            _songs = Performance.GetAvailableSongs(playerId).ToArray();
 
             var options = new GuiBindingList<GuiComboEntry>();
             for (var index = 0; index < _songs.Length; index++)
@@ -371,7 +371,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_songs.Length == 0)
                 options.Add(new GuiComboEntry("No Cantina songs collected", 0));
 
-            var current = PerformanceSongs.ChooseSong(playerId, preference.SongTrackId);
+            var current = Performance.ChooseSong(playerId, preference.SongTrackId);
             SongEnabled = _songs.Length > 0;
             SongOptions = options;
             SongIndex = Math.Max(0, Array.FindIndex(_songs, song => song.TrackId == current));
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static string BuildCapstoneText(string capstone, PerkType perk)
         {
-            return $"Requires {capstone} ({PerformanceRiderText.GetLockedText(PerformanceRiderCatalog.GetRequiredRank(perk))})";
+            return $"Requires {capstone} ({PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk))})";
         }
 
         private static GuiBindingList<bool> BuildSelection(int count, int selectedIndex)

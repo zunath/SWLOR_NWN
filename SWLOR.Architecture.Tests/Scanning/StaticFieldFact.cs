@@ -6,8 +6,9 @@ namespace SWLOR.Architecture.Tests.Scanning;
 /// <param name="Name">The field name.</param>
 /// <param name="IsLiteral">True for a <c>const</c>: a compile-time value that can never change.</param>
 /// <param name="IsInitOnly">True for <c>static readonly</c>. The reference cannot change, but a collection behind it can.</param>
+/// <param name="IsDeeplyImmutable">True when the field's type can never change after it is built (see <see cref="ImmutabilityAnalyzer"/>): a <c>static readonly</c> field of such a type holds no shared state.</param>
 /// <param name="IsAutoProperty">True for the field the compiler adds behind a static auto-property; <paramref name="Name"/> is the property's name.</param>
-internal sealed record StaticFieldFact(TypeKey Owner, string Declaring, string Name, bool IsLiteral, bool IsInitOnly, bool IsAutoProperty = false)
+internal sealed record StaticFieldFact(TypeKey Owner, string Declaring, string Name, bool IsLiteral, bool IsInitOnly, bool IsAutoProperty = false, bool IsDeeplyImmutable = false)
 {
     public override string ToString() => $"{Owner.Namespace}.{Declaring}.{Name}" + (IsAutoProperty ? " (static auto-property)" : string.Empty);
 }

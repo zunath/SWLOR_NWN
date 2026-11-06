@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -72,7 +73,7 @@ internal sealed class SavedCharacter
 
     // ---- Character -----------------------------------------------------------------------------------
 
-    private static string[] AbilityFields => new[] { "Str", "Dex", "Con", "Int", "Wis", "Cha" };
+    private static readonly ImmutableArray<string> AbilityFields = ImmutableArray.Create<string>("Str", "Dex", "Con", "Int", "Wis", "Cha");
 
     public int GetRawAbilityScore(AbilityType ability) => ReadInteger(AbilityFields[(int)ability]);
 

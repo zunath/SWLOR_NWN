@@ -27,12 +27,20 @@ namespace SWLOR.Game.Server.Domain.Social
 
         private readonly IPerformanceVenueService _venue;
         private readonly IMusicService _music;
+        private readonly IPerformanceSongService _songs;
+        private readonly IPerformanceSnapshotService _snapshots;
         private IdReservation _fallbackStrip;
 
-        public PerformanceWindowsService(IPerformanceVenueService venue, IMusicService music)
+        public PerformanceWindowsService(
+            IPerformanceVenueService venue,
+            IMusicService music,
+            IPerformanceSongService songs,
+            IPerformanceSnapshotService snapshots)
         {
             _venue = venue;
             _music = music;
+            _songs = songs;
+            _snapshots = snapshots;
         }
 
         public void ReserveGuiIds()
@@ -287,10 +295,10 @@ namespace SWLOR.Game.Server.Domain.Social
         protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => Performance.IsSetUnlocked(player, set);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
-            PerformerSnapshotBuilder.Build(session, venue, songTrackId);
+            _snapshots.Build(session, venue, songTrackId);
 
         protected virtual int ChooseSong(string playerId, int preferredTrackId) =>
-            PerformanceSongs.ChooseSong(playerId, preferredTrackId);
+            _songs.ChooseSong(playerId, preferredTrackId);
 
         protected virtual int ScaleBySocial(uint performer, int baseValue, int maximum) =>
             AbilityEffectScaling.ScaleValueBySourceSocial(performer, baseValue, maximum);

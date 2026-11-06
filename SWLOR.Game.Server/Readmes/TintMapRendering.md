@@ -80,7 +80,11 @@ blending enabled and disabled, in both native `NO_DISCARD` modes.
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
 Helmet 101 and both human neck 12 textures have obsolete PLT atlases that differ
-from their authored diffuse artwork.
+from their authored diffuse artwork. Every playable family's neck 12 (human, elf,
+half-orc and dwarf bodies) shares one skinned respirator mesh whose UVs fit that
+artwork, so its bitmap names `pmh0_neck012`/`pfh0_neck012` and it binds the authored
+material; the male export's `pmh0_neck012.001` bitmap once left it on the unrelated
+torso-skin atlas. `TestTintMaterialProfiles` guards each model's respirator mesh.
 `GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
 retaining the full-resolution diffuse and normal/specular textures. Cloth 1
 controls helmet 101; Skin controls the necks' authored surfaces. Female left shin
@@ -979,7 +983,10 @@ its numerical lighting checks separate from the production compilation checks.
 Each generated ATI2/BC5 DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2` stores
 every mip level down to 1 x 1. Set `DDSD_MIPMAPCOUNT`, set `dwMipMapCount` to
 the number of levels stored, and ship a same-resref TXI containing `mipmap 1`.
-`write_packed_dds` does this. Masks, TXIs, and generated MTRs and models come
+`write_packed_dds` does this: shades are box-filtered, and an odd dimension is
+filtered by area so its last row or column still counts. A lower level whose
+layer ids BC4 cannot encode gets one placeholder id per block, because those ids
+are never read. Masks, TXIs, and generated MTRs and models come
 from the tools in `SWLOR_Haks/tools/`: change the tool and regenerate, never
 hand-edit the output.
 
@@ -996,7 +1003,12 @@ controls the condition that skips this upload loop.
 These textures stay single-level with `mipmap 0`:
 
 - The cloak atlas (`mipmaps=False` in `CloakTintAssets.py`). `fs_cloaktint`
-  reads it with a `-10` bias and has no far-shade blend.
+  reads it with a `-10` bias and has no far-shade blend. `CloakTintAssets.py`
+  derives that shader from `fs_plt_tinter`, restoring the base-level reads first
+  (`BASE_LEVEL_READS`). A new `texture2D(texUnit7, ...)` read in `fs_plt_tinter`
+  fails `CloakTintAssets.py --check`, which stops `BuildHaks.cmd`, until the cloak
+  shader handles it. The check does not catch a new `texelFetch` read, which would
+  sample the whole atlas, so review any such read for cloaks by hand.
 - The palette atlas `plt_palette`. Its rows are categories.
 
 Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`
@@ -1111,6 +1123,13 @@ behavior and verify the resulting binary mesh bindings as well as catalog
 rows. The GPU regression resolves the reported feet and shins through
 the catalog and checks their actual packed masks select Leather2 row 23 with
 zero environment-map coverage.
+
+A part whose meshes take different dye masks is the exception. Neck 152 binds
+its frames, lenses and collar to their own materials (`p?h0_n152fr`, `ln`, `nk`:
+Metal 1, Leather 1, Cloth 1), so the old single neck palette must not replace
+them. Their `TintMapSources.json` entries set `explicitMeshMaterial`; the generator
+then keeps each mesh's material and writes one `tintmap.2da` row per material.
+The source conversion preserves the flag.
 
 A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female

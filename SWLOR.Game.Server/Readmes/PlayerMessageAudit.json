@@ -6143,7 +6143,21 @@
     "Line": 810,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature, receiver =>\n                {\n                    var name = PlayerName.GetDisplayName(receiver, creature);\n                    var effectName = statusEffect.Name;\n                    var applicationMessage = $\"{name} receives the effect of {effectName}\";\n                    if (GetIsObjectValid(source) && source != creature)\n                    {\n                        var sourceName = PlayerName.GetDisplayName(receiver, source);\n                        if (!string.IsNullOrWhiteSpace(sourceName))\n                        {\n                            applicationMessage = $\"{applicationMessage} from {sourceName}\";\n                        }\n                    }\n\n                    return applicationMessage;\n                })"
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 815,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 817,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
@@ -6178,7 +6192,14 @@
     "Line": 2074,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 2076,
+    "Member": "RemoveStatusEffectInstance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",

@@ -351,10 +351,15 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.RunDeferred("DelayCommand");
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue("a renewed timer carries the same tag");
 
+        // The renewed effect ends: a second removal callback, and this time nothing carries the tag.
         Bench.NativeTags.Remove(effect.Id);
         Bench.RunDeferred("DelayCommand");
+        Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue("the first callback ran only once");
+
+        Service.OnRemoveNWNStatusEffect(Target);
+        Bench.RunDeferred("DelayCommand");
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
-        Bench.Engine.CallsTo("DelayCommand").Single().Arguments[0].Should().Be(0f);
+        Bench.Engine.CallsTo("DelayCommand").Where(call => (float)call.Arguments[0]! == 0f).Should().HaveCount(2);
     }
 
     [Test]

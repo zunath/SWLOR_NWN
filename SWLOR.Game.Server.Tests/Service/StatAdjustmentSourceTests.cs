@@ -27,9 +27,6 @@ public class StatAdjustmentSourceTests
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61249;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
@@ -40,6 +37,7 @@ public class StatAdjustmentSourceTests
     {
         Effects.Remove(Creature);
         ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+        _facadeScope.Dispose();
     }
 
     [TestCase(false)]

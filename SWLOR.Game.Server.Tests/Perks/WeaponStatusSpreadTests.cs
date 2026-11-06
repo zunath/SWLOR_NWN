@@ -24,16 +24,17 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61241;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
         StatusEffectInternals.CreatureEffects;
 
     [TearDown]
-    public void ClearEffects() => CreatureEffects.Remove(Creature);
+    public void ClearEffects()
+    {
+        CreatureEffects.Remove(Creature);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void LimitedSpread_AppliesToOnlyOneRecipientAcrossTheCast()

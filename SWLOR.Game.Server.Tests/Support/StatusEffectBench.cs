@@ -25,6 +25,7 @@ public sealed class StatusEffectBench : IDisposable
     public const uint ObjectInvalid = 0x7F000000;
 
     private readonly IDisposable _engineScope;
+    private readonly HashSet<object> _ranClosures = new(ReferenceEqualityComparer.Instance);
 
     public StatusEffectBench()
     {
@@ -151,12 +152,18 @@ public sealed class StatusEffectBench : IDisposable
     public IReadOnlyList<(uint Receiver, string Message)> Messages =>
         Engine.CallsTo("SendMessageToPC").Select(call => ((uint)call.Arguments[0]!, (string)call.Arguments[1]!)).ToList();
 
-    /// <summary>Runs the closures the code handed to an engine call that defers, such as <c>DelayCommand</c>, in order.</summary>
+    /// <summary>
+    /// Runs the closures the code handed to an engine call that defers, such as <c>DelayCommand</c>, in order. Each runs
+    /// once, as the engine runs it, also when a later call to this method asks again or the recorded calls were cleared.
+    /// </summary>
     public void RunDeferred(string member)
     {
         var closures = Engine.CallsTo(member).SelectMany(call => call.Arguments.OfType<Action>()).ToList();
         foreach (var closure in closures)
-            closure();
+        {
+            if (_ranClosures.Add(closure))
+                closure();
+        }
     }
 
     public void Dispose() => _engineScope.Dispose();

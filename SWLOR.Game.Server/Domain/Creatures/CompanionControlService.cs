@@ -1,22 +1,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 
-namespace SWLOR.Game.Server.Service.CompanionControlService
+namespace SWLOR.Game.Server.Domain.Creatures
 {
-    public static class CompanionControl
+    /// <summary>
+    /// Companion control: the follow, guard, stand-ground and attack-nearest modes of a player's droid or beast, the
+    /// authorized target it may engage and its hostile abilities. Moved here unchanged from the static
+    /// <c>Service.CompanionControl</c>; the facade still carries the event handlers and forwards every call to the
+    /// container's instance.
+    /// </summary>
+    public class CompanionControlService : ICompanionControlService
     {
         private const float FollowDistanceMeters = 2f;
         private const float GuardFollowDistanceMeters = 3f;
@@ -44,14 +55,23 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             public List<(FeatType Feat, AbilityDetail Ability)> HostileAbilities { get; } = new();
         }
 
-        private static readonly Dictionary<uint, CompanionControlState> _states = new();
+        private readonly Dictionary<uint, CompanionControlState> _states = new();
 
-        public static bool IsRegisteredCompanion(uint creature)
+        private readonly IAIService _ai;
+        private readonly IBeastMasteryService _beastMastery;
+
+        public CompanionControlService(IAIService ai, IBeastMasteryService beastMastery)
+        {
+            _ai = ai;
+            _beastMastery = beastMastery;
+        }
+
+        public bool IsRegisteredCompanion(uint creature)
         {
             return _states.ContainsKey(creature);
         }
 
-        public static bool IsControlledCompanion(uint creature)
+        public bool IsControlledCompanion(uint creature)
         {
             if (!GetIsObjectValid(creature))
                 return false;
@@ -59,10 +79,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             var master = GetMaster(creature);
             return GetIsObjectValid(master) &&
                    GetIsPC(master) &&
-                   (Droid.IsDroid(creature) || BeastMastery.IsPlayerBeast(creature));
+                   (IsDroid(creature) || _beastMastery.IsPlayerBeast(creature));
         }
 
-        public static void Initialize(uint companion, bool preserveActionQueue = false)
+        public void Initialize(uint companion, bool preserveActionQueue = false)
         {
             if (!IsControlledCompanion(companion))
                 return;
@@ -77,23 +97,23 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             IssueFollowAction(companion, !preserveActionQueue);
         }
 
-        public static void Clear(uint companion)
+        public void Clear(uint companion)
         {
             _states.Remove(companion);
-            AI.ClearAIState(companion);
+            _ai.ClearAIState(companion);
         }
 
-        public static CompanionMode GetMode(uint companion)
+        public CompanionMode GetMode(uint companion)
         {
             return GetState(companion).Mode;
         }
 
-        public static bool AreAbilitiesEnabled(uint companion)
+        public bool AreAbilitiesEnabled(uint companion)
         {
             return !IsRegisteredCompanion(companion) || GetState(companion).AbilitiesEnabled;
         }
 
-        public static bool HandleConversation(uint companion)
+        public bool HandleConversation(uint companion)
         {
             if (!IsControlledCompanion(companion))
                 return false;
@@ -147,19 +167,19 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             }
         }
 
-        public static void RegisterDefensiveThreat(uint companion, uint threat)
+        public void RegisterDefensiveThreat(uint companion, uint threat)
         {
             if (!IsControlledCompanion(companion) || !IsValidHostileTarget(companion, threat))
                 return;
 
             var state = GetState(companion);
             if (state.TrackedTarget == threat &&
-                CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, DateTime.UtcNow))
+                CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, UtcNow()))
             {
                 ResetProgress(state);
             }
 
-            state.DefensiveThreats[threat] = DateTime.UtcNow;
+            state.DefensiveThreats[threat] = UtcNow();
             state.ExplicitOrderUntil = default;
 
             if (!GetIsObjectValid(state.AttackNearestTarget))
@@ -169,7 +189,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             }
         }
 
-        public static void RegisterOwnerAttack(uint companion, uint target)
+        public void RegisterOwnerAttack(uint companion, uint target)
         {
             if (!IsControlledCompanion(companion) ||
                 GetIsObjectValid(GetState(companion).AttackNearestTarget) ||
@@ -184,29 +204,29 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ProcessCombatRound(companion);
         }
 
-        public static void BeginExplicitOrder(uint companion, float durationSeconds = 30f)
+        public void BeginExplicitOrder(uint companion, float durationSeconds = 30f)
         {
             if (!IsControlledCompanion(companion))
                 return;
 
-            UsePerkFeat.InterruptAbilityActivation(companion);
+            InterruptAbilityActivation(companion);
             var state = GetState(companion);
-            state.ExplicitOrderUntil = DateTime.UtcNow.AddSeconds(Math.Max(1f, durationSeconds));
+            state.ExplicitOrderUntil = UtcNow().AddSeconds(Math.Max(1f, durationSeconds));
         }
 
-        public static void CancelExplicitOrder(uint companion)
+        public void CancelExplicitOrder(uint companion)
         {
             if (_states.TryGetValue(companion, out var state))
                 state.ExplicitOrderUntil = default;
         }
 
-        public static void ProcessCombatRound(uint companion, bool bypassDecisionThrottle = false)
+        public void ProcessCombatRound(uint companion, bool bypassDecisionThrottle = false)
         {
             if (!IsControlledCompanion(companion))
                 return;
 
             ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));
-            if (Activity.IsBusy(companion))
+            if (IsBusy(companion))
                 return;
 
             var state = GetState(companion);
@@ -223,7 +243,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!GetIsObjectValid(target))
                 MaintainModePosition(companion);
 
-            var actionIssued = AI.ProcessTrigger(
+            var actionIssued = _ai.ProcessTrigger(
                 companion,
                 AITriggerType.CombatRound,
                 target,
@@ -236,7 +256,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             }
         }
 
-        public static void ProcessHeartbeat(uint companion)
+        public void ProcessHeartbeat(uint companion)
         {
             if (!IsControlledCompanion(companion))
             {
@@ -256,27 +276,27 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ProcessCombatRound(companion);
         }
 
-        private static void ResumeFromRestIfMasterIsActive(uint companion, uint master)
+        private void ResumeFromRestIfMasterIsActive(uint companion, uint master)
         {
-            if (Activity.GetBusyType(companion) != ActivityStatusType.Resting ||
-                Activity.GetBusyType(master) == ActivityStatusType.Resting)
+            if (GetBusyType(companion) != ActivityStatusType.Resting ||
+                GetBusyType(master) == ActivityStatusType.Resting)
             {
                 return;
             }
 
-            if (StatusEffect.HasStatusEffect(companion, typeof(RestStatusEffect)))
-                StatusEffect.RemoveStatusEffect(companion, typeof(RestStatusEffect), false);
+            if (HasRestStatusEffect(companion))
+                RemoveRestStatusEffect(companion);
             else
-                Activity.ClearBusy(companion);
+                ClearBusy(companion);
         }
 
-        public static void ResumeModePosition(uint companion)
+        public void ResumeModePosition(uint companion)
         {
             if (IsControlledCompanion(companion))
                 MaintainModePosition(companion);
         }
 
-        public static bool TryProcessPendingDefensiveReaction(uint companion)
+        public bool TryProcessPendingDefensiveReaction(uint companion)
         {
             if (!_states.TryGetValue(companion, out var state) ||
                 !state.DefensiveReactionPending)
@@ -288,7 +308,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return true;
         }
 
-        private static uint AdvanceAuthorizedTarget(uint companion)
+        private uint AdvanceAuthorizedTarget(uint companion)
         {
             if (!IsControlledCompanion(companion))
                 return OBJECT_INVALID;
@@ -338,7 +358,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return OBJECT_INVALID;
         }
 
-        public static uint PeekAuthorizedTarget(uint companion)
+        public uint PeekAuthorizedTarget(uint companion)
         {
             if (!IsControlledCompanion(companion))
                 return OBJECT_INVALID;
@@ -366,7 +386,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 : OBJECT_INVALID;
         }
 
-        public static uint ResolveHostileAbilityTarget(
+        public uint ResolveHostileAbilityTarget(
             uint companion,
             AbilityDetail ability,
             uint authorizedTarget,
@@ -423,7 +443,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 : OBJECT_INVALID;
         }
 
-        public static bool IsHostileAbilityTargetAuthorized(
+        public bool IsHostileAbilityTargetAuthorized(
             uint companion,
             AbilityDetail ability,
             uint selectedTarget)
@@ -436,7 +456,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 selectedTarget));
         }
 
-        public static bool CanIssueAttackCommand(uint companion, uint target)
+        public bool CanIssueAttackCommand(uint companion, uint target)
         {
             if (!IsRegisteredCompanion(companion))
                 return true;
@@ -449,7 +469,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return state.Mode != CompanionMode.StandGround || IsWithinWeaponRange(companion, target);
         }
 
-        public static void ResetOwnerCompanionToFollow(uint master)
+        public void ResetOwnerCompanionToFollow(uint master)
         {
             if (!GetIsObjectValid(master))
                 return;
@@ -458,51 +478,39 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (IsControlledCompanion(companion))
                 ResetToFollow(companion, false, true);
         }
-
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void RenameToggleAbilitiesCommand()
+        public void RenameToggleAbilitiesCommand()
         {
             var player = GetEnteringObject();
             if (GetIsPC(player))
                 PlayerPlugin.SetTlkOverride(player, AssociateAbilitiesLabelStrRef, "abilities");
         }
-
-        [NWNEventHandler(ScriptName.OnPlayerAttacked)]
-        public static void OnOwnerAttacked()
+        public void OnOwnerAttacked()
         {
             RegisterOwnerThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
-
-        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
-        public static void OnOwnerDamaged()
+        public void OnOwnerDamaged()
         {
             RegisterOwnerThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
-
-        [NWNEventHandler(ScriptName.OnPlayerSpellCastAt)]
-        public static void OnHostileSpellCastAtOwner()
+        public void OnHostileSpellCastAtOwner()
         {
             if (GetLastSpellHarmful())
                 RegisterOwnerThreat(OBJECT_SELF, GetLastSpellCaster());
         }
-
-        [NWNEventHandler(ScriptName.OnPlayerRoundEnd)]
-        public static void OnOwnerCombatRound()
+        public void OnOwnerCombatRound()
         {
             var master = OBJECT_SELF;
             var companion = GetAssociate(AssociateType.Henchman, master);
             RegisterOwnerAttack(companion, GetAttackTarget(master));
         }
-
-        [NWNEventHandler(ScriptName.OnAreaExit)]
-        public static void OnOwnerAreaExit()
+        public void OnOwnerAreaExit()
         {
             var exitingObject = GetExitingObject();
             if (GetIsPC(exitingObject))
                 ResetOwnerCompanionToFollow(exitingObject);
         }
 
-        private static CompanionControlState GetState(uint companion)
+        private CompanionControlState GetState(uint companion)
         {
             if (!_states.TryGetValue(companion, out var state))
             {
@@ -516,7 +524,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return state;
         }
 
-        private static void SetMode(uint companion, CompanionMode mode, string response)
+        private void SetMode(uint companion, CompanionMode mode, string response)
         {
             InterruptAndClear(companion);
             var state = GetState(companion);
@@ -530,7 +538,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             SendResponse(companion, response);
         }
 
-        private static void AttackNearest(uint companion)
+        private void AttackNearest(uint companion)
         {
             var target = FindNearestVisibleEnemy(companion);
             if (!GetIsObjectValid(target))
@@ -546,11 +554,11 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ClearEngagements(state);
             state.AttackNearestTarget = target;
             var master = GetMaster(companion);
-            SendResponse(companion, $"Attacking {PlayerName.GetDisplayName(master, target)}, then returning to Follow.");
+            SendResponse(companion, $"Attacking {GetDisplayName(master, target)}, then returning to Follow.");
             ProcessCombatRound(companion, true);
         }
 
-        private static void HealMaster(uint companion)
+        private void HealMaster(uint companion)
         {
             InterruptAndClear(companion);
             ResetToFollow(companion, false, false);
@@ -570,7 +578,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return;
             }
 
-            if (AI.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
+            if (_ai.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
             {
                 SendResponse(companion, $"Using {abilityName} on you, then returning to Follow.");
                 return;
@@ -580,13 +588,13 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             IssueFollowAction(companion);
         }
 
-        private static void ToggleAbilities(uint companion)
+        private void ToggleAbilities(uint companion)
         {
             InterruptAndClear(companion);
             var state = GetState(companion);
             state.AbilitiesEnabled = !state.AbilitiesEnabled;
             if (!state.AbilitiesEnabled)
-                UsePerkFeat.DequeueWeaponAbility(companion, false);
+                DequeueWeaponAbility(companion);
 
             SendResponse(companion, state.AbilitiesEnabled
                 ? "Abilities enabled."
@@ -594,13 +602,13 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ProcessCombatRound(companion);
         }
 
-        private static void RegisterOwnerThreat(uint master, uint threat)
+        private void RegisterOwnerThreat(uint master, uint threat)
         {
             var companion = GetAssociate(AssociateType.Henchman, master);
             RegisterDefensiveThreat(companion, threat);
         }
 
-        private static uint GetDefensiveTarget(uint companion, CompanionControlState state)
+        private uint GetDefensiveTarget(uint companion, CompanionControlState state)
         {
             var selected = SelectDefensiveTarget(companion, state, true);
 
@@ -615,13 +623,13 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return selected;
         }
 
-        private static uint SelectDefensiveTarget(
+        private uint SelectDefensiveTarget(
             uint companion,
             CompanionControlState state,
             bool updateState)
         {
             var master = GetMaster(companion);
-            var now = DateTime.UtcNow;
+            var now = UtcNow();
             var candidates = new List<uint>();
 
             foreach (var (threat, _) in state.DefensiveThreats.ToList())
@@ -657,14 +665,14 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 .FirstOrDefault(OBJECT_INVALID);
         }
 
-        private static void RemoveDefensiveThreat(CompanionControlState state, uint threat)
+        private void RemoveDefensiveThreat(CompanionControlState state, uint threat)
         {
             state.DefensiveThreats.Remove(threat);
             if (state.TrackedTarget == threat)
                 ResetProgress(state);
         }
 
-        private static bool ValidateAuthorizedTarget(
+        private bool ValidateAuthorizedTarget(
             uint companion,
             uint target,
             CompanionEngagementType engagementType)
@@ -687,7 +695,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return true;
         }
 
-        private static bool TrackProgress(
+        private bool TrackProgress(
             uint companion,
             uint target,
             CompanionEngagementType engagementType)
@@ -697,7 +705,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return true;
 
             var distance = GetDistanceBetween(companion, target);
-            var offensiveActivityAt = Combat.GetLastOffensiveActivityAt(companion);
+            var offensiveActivityAt = GetLastOffensiveActivityAt(companion);
             var hasNewOffensiveActivity = offensiveActivityAt > state.LastOffensiveActivityAt;
 
             if (CompanionControlPolicy.HasCombatProgress(
@@ -705,13 +713,13 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                     state.LastDistanceToTarget,
                     distance))
             {
-                state.LastProgressAt = DateTime.UtcNow;
+                state.LastProgressAt = UtcNow();
                 state.LastDistanceToTarget = distance;
                 state.LastOffensiveActivityAt = offensiveActivityAt;
                 return true;
             }
 
-            if (!CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, DateTime.UtcNow))
+            if (!CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, UtcNow()))
                 return true;
 
             var returnsToFollow = CompanionControlPolicy.ReturnsToFollowWhenComplete(engagementType);
@@ -728,7 +736,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return false;
         }
 
-        private static void CompleteAttackNearest(uint companion)
+        private void CompleteAttackNearest(uint companion)
         {
             var state = GetState(companion);
             state.Mode = CompanionMode.Follow;
@@ -739,21 +747,21 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             MaintainModePosition(companion);
         }
 
-        private static void StartTracking(CompanionControlState state, uint companion, uint target)
+        private void StartTracking(CompanionControlState state, uint companion, uint target)
         {
             state.TrackedTarget = target;
             state.LastDistanceToTarget = GetDistanceBetween(companion, target);
-            state.LastProgressAt = DateTime.UtcNow;
-            state.LastOffensiveActivityAt = Combat.GetLastOffensiveActivityAt(companion);
+            state.LastProgressAt = UtcNow();
+            state.LastOffensiveActivityAt = GetLastOffensiveActivityAt(companion);
         }
 
-        private static bool CanEngageWithoutMoving(uint companion, uint target)
+        private bool CanEngageWithoutMoving(uint companion, uint target)
         {
             return IsWithinWeaponRange(companion, target) ||
                    CanUseHostileAbilityWithoutMoving(companion, target);
         }
 
-        private static bool CanUseHostileAbilityWithoutMoving(uint companion, uint target)
+        private bool CanUseHostileAbilityWithoutMoving(uint companion, uint target)
         {
             if (!AreAbilitiesEnabled(companion))
                 return false;
@@ -803,16 +811,16 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                         : target);
                 var effectiveLevel = ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1
-                    : Perk.GetPerkLevel(companion, ability.EffectiveLevelPerkType);
+                    : GetPerkLevel(companion, ability.EffectiveLevelPerkType);
 
-                if (Ability.CanUseAbility(companion, abilityTarget, feat, effectiveLevel, targetLocation))
+                if (CanUseAbility(companion, abilityTarget, feat, effectiveLevel, targetLocation))
                     return true;
             }
 
             return false;
         }
 
-        private static IReadOnlyList<(FeatType Feat, AbilityDetail Ability)> GetCachedHostileAbilities(uint companion)
+        private IReadOnlyList<(FeatType Feat, AbilityDetail Ability)> GetCachedHostileAbilities(uint companion)
         {
             var state = GetState(companion);
             var featCount = CreaturePlugin.GetFeatCount(companion);
@@ -841,10 +849,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
             foreach (var feat in knownFeats)
             {
-                if (!Ability.IsFeatRegistered(feat))
+                if (!IsFeatRegistered(feat))
                     continue;
 
-                var ability = Ability.GetAbilityDetail(feat);
+                var ability = GetAbilityDetail(feat);
                 if (ability.IsHostileAbility)
                     state.HostileAbilities.Add((feat, ability));
             }
@@ -852,14 +860,14 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return state.HostileAbilities;
         }
 
-        private static bool IsWithinWeaponRange(uint companion, uint target)
+        private bool IsWithinWeaponRange(uint companion, uint target)
         {
-            var skill = Combat.GetEquippedWeaponSkillType(companion);
+            var skill = GetEquippedWeaponSkillType(companion);
             return GetDistanceBetween(companion, target) <=
-                   Combat.GetWeaponEngagementRange(skill) + AttackRangeToleranceMeters;
+                   GetWeaponEngagementRange(skill) + AttackRangeToleranceMeters;
         }
 
-        private static bool IsValidHostileTarget(uint companion, uint target)
+        private bool IsValidHostileTarget(uint companion, uint target)
         {
             return GetIsObjectValid(target) &&
                    target != companion &&
@@ -868,7 +876,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                    GetIsReactionTypeHostile(target, companion);
         }
 
-        private static uint FindNearestVisibleEnemy(uint companion)
+        private uint FindNearestVisibleEnemy(uint companion)
         {
             var master = GetMaster(companion);
             for (var nth = 1; nth <= MaximumNearestCreatureChecks; nth++)
@@ -897,7 +905,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return OBJECT_INVALID;
         }
 
-        private static void ResetToFollow(uint companion, bool sendResponse, bool interrupt)
+        private void ResetToFollow(uint companion, bool sendResponse, bool interrupt)
         {
             if (interrupt)
                 InterruptAndClear(companion);
@@ -912,7 +920,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             MaintainModePosition(companion);
         }
 
-        private static void ClearEngagements(CompanionControlState state)
+        private void ClearEngagements(CompanionControlState state)
         {
             state.AttackNearestTarget = OBJECT_INVALID;
             state.OwnerAssistTarget = OBJECT_INVALID;
@@ -921,7 +929,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ResetProgress(state);
         }
 
-        private static void ResetProgress(CompanionControlState state)
+        private void ResetProgress(CompanionControlState state)
         {
             state.TrackedTarget = OBJECT_INVALID;
             state.LastDistanceToTarget = float.MaxValue;
@@ -929,20 +937,20 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.LastOffensiveActivityAt = default;
         }
 
-        private static void InterruptAndClear(uint companion)
+        private void InterruptAndClear(uint companion)
         {
             CancelExplicitOrder(companion);
-            UsePerkFeat.InterruptAbilityActivation(companion);
+            InterruptAbilityActivation(companion);
             AssignCommand(companion, () => ClearAllActions(true));
         }
 
-        private static bool IsExplicitOrderInProgress(uint companion)
+        private bool IsExplicitOrderInProgress(uint companion)
         {
             var state = GetState(companion);
             var currentAction = GetCurrentAction(companion);
             if (!CompanionControlPolicy.ShouldPreserveExplicitOrder(
                     state.ExplicitOrderUntil,
-                    DateTime.UtcNow,
+                    UtcNow(),
                     currentAction))
             {
                 state.ExplicitOrderUntil = default;
@@ -952,9 +960,9 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return true;
         }
 
-        private static void MaintainModePosition(uint companion)
+        private void MaintainModePosition(uint companion)
         {
-            if (Activity.IsBusy(companion) || IsExplicitOrderInProgress(companion))
+            if (IsBusy(companion) || IsExplicitOrderInProgress(companion))
                 return;
 
             var state = GetState(companion);
@@ -971,7 +979,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 IssueFollowAction(companion);
         }
 
-        private static void IssueFollowAction(uint companion, bool clearActions = true)
+        private void IssueFollowAction(uint companion, bool clearActions = true)
         {
             var master = GetMaster(companion);
             if (!GetIsObjectValid(master))
@@ -989,11 +997,64 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             });
         }
 
-        private static void SendResponse(uint companion, string response)
+        private void SendResponse(uint companion, string response)
         {
             var master = GetMaster(companion);
             if (GetIsObjectValid(master))
                 SendMessageToPC(master, $"{GetName(companion)}: {response}");
         }
+    
+
+        // Each protected virtual method below has the original call as its body, so the server behaves as it did.
+        // They name the static services that are not converted yet (and the clock), so a test can answer them.
+
+        protected virtual DateTime UtcNow() => DateTime.UtcNow;
+
+        protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
+
+        protected virtual bool IsBusy(uint target) => Activity.IsBusy(target);
+
+        protected virtual ActivityStatusType GetBusyType(uint target) => Activity.GetBusyType(target);
+
+        protected virtual void ClearBusy(uint target) => Activity.ClearBusy(target);
+
+        protected virtual bool HasRestStatusEffect(uint creature) =>
+            StatusEffect.HasStatusEffect(creature, typeof(RestStatusEffect));
+
+        protected virtual void RemoveRestStatusEffect(uint creature) =>
+            StatusEffect.RemoveStatusEffect(creature, typeof(RestStatusEffect), false);
+
+        protected virtual bool InterruptAbilityActivation(uint activator) =>
+            UsePerkFeat.InterruptAbilityActivation(activator);
+
+        protected virtual void DequeueWeaponAbility(uint creature) =>
+            UsePerkFeat.DequeueWeaponAbility(creature, false);
+
+        protected virtual string GetDisplayName(uint observer, uint target) =>
+            PlayerName.GetDisplayName(observer, target);
+
+        protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
+            Combat.GetLastOffensiveActivityAt(creature);
+
+        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) =>
+            Combat.GetEquippedWeaponSkillType(creature);
+
+        protected virtual float GetWeaponEngagementRange(SkillType skill) =>
+            Combat.GetWeaponEngagementRange(skill);
+
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
+            Perk.GetPerkLevel(creature, perkType);
+
+        protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
+
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+
+        protected virtual bool CanUseAbility(
+            uint activator,
+            uint target,
+            FeatType feat,
+            int effectiveLevel,
+            Location targetLocation) =>
+            Ability.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

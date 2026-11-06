@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
 using SWLOR.Game.Server.Service.SkillService;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service.CraftService
     public sealed class ForgeParameterProfile : RecipeParameterProfile<ForgeParameters>
     {
         private const string MetalPrefix = "ref_";
-        private static string[] HeatSealedPrefixes => new string[] { "lth_", "fiberp_" };
+        private static readonly ImmutableArray<string> HeatSealedPrefixes = ImmutableArray.Create<string>("lth_", "fiberp_");
 
         // The generator's own per-parameter variation is off. The profile spreads recipes itself (see Jitter), by amounts that depend on
         // the level band, which the generator cannot express.

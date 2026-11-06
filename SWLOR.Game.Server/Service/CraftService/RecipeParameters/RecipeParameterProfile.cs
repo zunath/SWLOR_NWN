@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SkillService;
@@ -11,8 +12,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     public abstract class RecipeParameterProfile<TParameters> : IRecipeParameterProfile
         where TParameters : RecipeMinigameParameters
     {
-        private static IReadOnlyDictionary<RecipeType, RecipeType> _noDerivedRecipes =>
-            new Dictionary<RecipeType, RecipeType>();
+        private static readonly FrozenDictionary<RecipeType, RecipeType> _noDerivedRecipes = FrozenDictionary<RecipeType, RecipeType>.Empty;
 
         public abstract string Key { get; }
         public abstract SkillType Skill { get; }

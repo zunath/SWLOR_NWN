@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.FishingService;
 
@@ -22,17 +23,15 @@ public sealed class LineMovePattern
 
     // Rare fish: the weights after each move (Run, Dive, Thrash, Tire), written for a Tire weight of RareReferenceTire.
     private const int RareReferenceTire = 20;
-    private static int[][] RareRows =>
-    new int[][]
-    {
-        new[] { 30, 25, 25, 20 },
-        new[] { 45, 15, 30, 10 },
-        new[] { 15, 20, 50, 15 },
-        new[] { 35, 30, 20, 15 },
-        new[] { 30, 30, 35, 5 }
-    };
+    private static readonly ImmutableArray<ImmutableArray<int>> RareRows = ImmutableArray.Create<ImmutableArray<int>>(
+        ImmutableArray.Create(30, 25, 25, 20),
+        ImmutableArray.Create(45, 15, 30, 10),
+        ImmutableArray.Create(15, 20, 50, 15),
+        ImmutableArray.Create(35, 30, 20, 15),
+        ImmutableArray.Create(30, 30, 35, 5)
+    );
 
-    private static FishMove[] Moves => new FishMove[] { FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire };
+    private static readonly ImmutableArray<FishMove> Moves = ImmutableArray.Create<FishMove>(FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire);
 
     // Row 0 follows no move (the first roll); rows 1-4 follow Run, Dive, Thrash and Tire. Never changed once built.
     private readonly int[][] _weights;
@@ -63,7 +62,7 @@ public sealed class LineMovePattern
         rarity == FishRarity.Rare ? Rare(tireWeight) : Common(tireWeight);
 
     /// <summary>The weight of <paramref name="next"/> after <paramref name="previous"/>; null means the first move of the fight.</summary>
-    public int Weight(FishMove? previous, FishMove next) => _weights[RowOf(previous)][Array.IndexOf(Moves, next)];
+    public int Weight(FishMove? previous, FishMove next) => _weights[RowOf(previous)][Moves.IndexOf(next)];
 
     /// <summary>The share, in percent, of each move after <paramref name="previous"/>, in the order Run, Dive, Thrash, Tire.</summary>
     public IReadOnlyList<double> Shares(FishMove? previous)
@@ -88,5 +87,5 @@ public sealed class LineMovePattern
         return Moves[^1];
     }
 
-    private static int RowOf(FishMove? previous) => previous.HasValue ? Array.IndexOf(Moves, previous.Value) + 1 : StartRow;
+    private static int RowOf(FishMove? previous) => previous.HasValue ? Moves.IndexOf(previous.Value) + 1 : StartRow;
 }

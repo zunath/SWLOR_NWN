@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,18 +46,15 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>Turns spent adjusting heat and correcting flavor on top of the adds and the simmering.</summary>
         private const int HandlingTurns = 4;
 
-        private static string[] SweetWords =>
-            new string[] { "Cookies", "Juice", "AuLait", "Cake", "FlapJack", "Fizz", "Gardula", "Noga", "Treat" };
+        private static readonly ImmutableArray<string> SweetWords = ImmutableArray.Create<string>("Cookies", "Juice", "AuLait", "Cake", "FlapJack", "Fizz", "Gardula", "Noga", "Treat");
 
-        private static string[] SoupWords =>
-            new string[] { "Soup", "Broth", "Stew", "Chowder", "Curry", "Noodles", "Ramen", "Gumbo", "Consomme", "Tea", "Bowl" };
+        private static readonly ImmutableArray<string> SoupWords = ImmutableArray.Create<string>("Soup", "Broth", "Stew", "Chowder", "Curry", "Noodles", "Ramen", "Gumbo", "Consomme", "Tea", "Bowl");
 
         /// <summary>Dishes whose name points at the wrong dish: a travel cake is a savory ration, not a dessert.</summary>
-        private static IReadOnlyDictionary<RecipeType, KitchenDish> DishExceptions =>
-            new Dictionary<RecipeType, KitchenDish>
-            {
+        private static readonly FrozenDictionary<RecipeType, KitchenDish> DishExceptions = new Dictionary<RecipeType, KitchenDish>
+        {
                 [RecipeType.DustveilTravelCakes] = KitchenDish.Roast
-            };
+            }.ToFrozenDictionary();
 
         private readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
         {

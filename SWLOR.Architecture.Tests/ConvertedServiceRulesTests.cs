@@ -439,6 +439,39 @@ public class ConvertedServiceRulesTests
     }
 
     [Test]
+    public void Static_readonly_fields_of_deeply_immutable_types_are_accepted()
+    {
+        ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(ImmutableTableHolder))).Should().BeEmpty();
+    }
+
+    [TestCase("Array")]
+    [TestCase("List")]
+    [TestCase("Dictionary")]
+    [TestCase("Set")]
+    [TestCase("ReadOnlyView")]
+    [TestCase("FrozenOfMutable")]
+    [TestCase("ImmutableOfArrays")]
+    [TestCase("Settable")]
+    [TestCase("Plain")]
+    [TestCase("WithArray")]
+    [TestCase("Anything")]
+    [TestCase("TupleOfList")]
+    [TestCase("Watch")]
+    [TestCase("NotReadonly")]
+    public void Static_readonly_fields_that_are_or_may_be_mutable_are_still_reported(string field)
+    {
+        var problems = ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(MutableTableHolder)));
+
+        problems.Should().Contain(problem => problem.StartsWith($"{typeof(MutableTableHolder).Namespace}.MutableTableHolder.{field} "));
+    }
+
+    [Test]
+    public void Every_field_of_the_mutable_table_fixture_is_reported()
+    {
+        ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(MutableTableHolder))).Should().HaveCount(14);
+    }
+
+    [Test]
     public void A_service_that_keeps_its_state_on_the_instance_passes()
     {
         ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(CleanInstanceService))).Should().BeEmpty();

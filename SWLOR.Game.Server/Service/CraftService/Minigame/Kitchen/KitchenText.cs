@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
@@ -12,17 +13,15 @@ public static class KitchenText
     public const string FinishesWarning = "Finishes the item!";
     public const string RuinsWarning = "Can ruin the dish!";
 
-    private static KitchenAxis[] Axes => new KitchenAxis[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
+    private static readonly ImmutableArray<KitchenAxis> Axes = ImmutableArray.Create<KitchenAxis>(KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice);
 
-    private static (string Id, string Label)[] EffectMeters =>
-    new (string Id, string Label)[]
-    {
+    private static readonly ImmutableArray<(string Id, string Label)> EffectMeters = ImmutableArray.Create<(string Id, string Label)>(
         (MinigameMeterIds.Progress, "Doneness"),
         (KitchenEngine.SavoryMeterId, "Savory"),
         (KitchenEngine.SweetMeterId, "Sweet"),
         (KitchenEngine.SpiceMeterId, "Spice"),
         (MinigameMeterIds.Quality, "Quality")
-    };
+    );
 
     public static string Signed(int value) => value > 0 ? $"+{value}" : value.ToString();
 

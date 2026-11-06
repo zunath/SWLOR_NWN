@@ -1,12 +1,17 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 
 public static class FabricatorHeads
 {
-    public static IReadOnlyList<SubAssembly> AllParts => new[] { SubAssembly.Frame, SubAssembly.Shell, SubAssembly.Fittings };
+    private static readonly ImmutableList<SubAssembly> AllPartsItems = ImmutableList.Create<SubAssembly>(SubAssembly.Frame, SubAssembly.Shell, SubAssembly.Fittings);
 
-    public static IReadOnlyList<FabricatorHead> AllHeads => new[] { FabricatorHead.Cutter, FabricatorHead.Extruder, FabricatorHead.Bonder };
+    public static IReadOnlyList<SubAssembly> AllParts => AllPartsItems;
+
+    private static readonly ImmutableList<FabricatorHead> AllHeadsItems = ImmutableList.Create<FabricatorHead>(FabricatorHead.Cutter, FabricatorHead.Extruder, FabricatorHead.Bonder);
+
+    public static IReadOnlyList<FabricatorHead> AllHeads => AllHeadsItems;
 
     /// <summary>The sub-assembly the head works on: the Cutter the Frame, the Extruder the Shell and the Bonder the Fittings.</summary>
     public static SubAssembly Serves(this FabricatorHead head) => (SubAssembly)(int)head;

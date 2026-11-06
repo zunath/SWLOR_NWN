@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 
@@ -238,15 +239,16 @@ public static class ForgeRules
     /// </summary>
     public const int PerkActionRank = 0;
 
-    /// <summary>The five actions every crafter has, in the order the window lists them. A crafter's perks add more (see <see cref="ForgeEngine.Actions"/>).</summary>
-    public static IReadOnlyList<string> ActionIds => new[]
-    {
+    private static readonly ImmutableList<string> ActionIdsItems = ImmutableList.Create<string>(
         ForgeActionIds.RampPlasma,
         ForgeActionIds.HydroPress,
         ForgeActionIds.VibroHone,
         ForgeActionIds.Rebond,
         ForgeActionIds.CryoQuench
-    };
+    );
+
+    /// <summary>The five actions every crafter has, in the order the window lists them. A crafter's perks add more (see <see cref="ForgeEngine.Actions"/>).</summary>
+    public static IReadOnlyList<string> ActionIds => ActionIdsItems;
 
     private static int CeilingDivide(int value, int step) => (value + step - 1) / step;
 }

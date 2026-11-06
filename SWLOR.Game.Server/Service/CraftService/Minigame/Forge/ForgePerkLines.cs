@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
@@ -11,19 +12,21 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 /// </summary>
 public static class ForgePerkLines
 {
-    public static IReadOnlyList<PerkType> Forgemaster => new[]
-    {
+    private static readonly ImmutableList<PerkType> ForgemasterItems = ImmutableList.Create<PerkType>(
         PerkType.SmitheryPlasmaEfficiency, PerkType.SmitheryHeatRetention, PerkType.SmitheryOverdrivePress, PerkType.HotForgingStyle,
         PerkType.SmitheryHammerRhythm, PerkType.SmitheryScorchGuard, PerkType.SmitherySurgePlasma, PerkType.SmitheryFastRebond,
         PerkType.SmitheryRedLine
-    };
+    );
 
-    public static IReadOnlyList<PerkType> Artisan => new[]
-    {
+    public static IReadOnlyList<PerkType> Forgemaster => ForgemasterItems;
+
+    private static readonly ImmutableList<PerkType> ArtisanItems = ImmutableList.Create<PerkType>(
         PerkType.SmitherySteadyHands, PerkType.SmitheryCleanContainment, PerkType.SmitheryMicroHone, PerkType.ColdWorkingStyle,
         PerkType.SmitherySteadyQuench, PerkType.SmitheryCoolHand, PerkType.SmitheryTemperHold, PerkType.SmitheryContainmentFocus,
         PerkType.SmitheryPerfectTemper
-    };
+    );
+
+    public static IReadOnlyList<PerkType> Artisan => ArtisanItems;
 
     /// <summary>
     /// The stats of a crafter at <paramref name="rank"/> who owns, of <paramref name="owned"/>, the highest level that rank allows

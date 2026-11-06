@@ -1034,13 +1034,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
             PlayerName.GetDisplayName(observer, target);
 
         protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
-            Combat.GetLastOffensiveActivityAt(creature);
+            Service.Combat.GetLastOffensiveActivityAt(creature);
 
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) =>
-            Combat.GetEquippedWeaponSkillType(creature);
+            Service.Combat.GetEquippedWeaponSkillType(creature);
 
         protected virtual float GetWeaponEngagementRange(SkillType skill) =>
-            Combat.GetWeaponEngagementRange(skill);
+            Service.Combat.GetWeaponEngagementRange(skill);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
             Perk.GetPerkLevel(creature, perkType);

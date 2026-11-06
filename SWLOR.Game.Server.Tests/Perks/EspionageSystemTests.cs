@@ -158,7 +158,7 @@ public class EspionageSystemTests
     {
         var root = FindRepositoryRoot();
         var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
-        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Enmity.cs"));
+        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs"));
 
         var hiddenStart = stealthSource.IndexOf("public static bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
         var hiddenEnd = stealthSource.IndexOf("public static bool IsInvisible(uint creature)", StringComparison.Ordinal);
@@ -200,7 +200,7 @@ public class EspionageSystemTests
             .Should().BeGreaterThan(exitedBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
                 "enemies holding for a hidden player must resume attacking as soon as stealth ends");
 
-        enmitySource.Should().Contain("!Stealth.IsHiddenFrom(enemy, creature);");
+        enmitySource.Should().Contain("!IsHiddenFrom(enemy, creature);");
     }
 
     [Test]

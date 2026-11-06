@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
@@ -13,6 +14,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -25,9 +27,24 @@ public class AIModelTests
         Opening
     }
 
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+    private EnmityService _enmity = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades()
+    {
+        _facades = new FacadeContainer();
+        _enmity = (EnmityService)_facades.Get<IEnmityService>();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
     }
@@ -37,6 +54,7 @@ public class AIModelTests
     {
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
+        _facadeScope.Dispose();
     }
 
     [Test]
@@ -652,28 +670,28 @@ public class AIModelTests
     [Test]
     public void NpcAttackReissue_UsesGuardedEnmityAttackBeforeReattacking()
     {
-        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
-        var attackHighestIndex = enmitySource.IndexOf("public static void AttackHighestEnmityTarget", StringComparison.Ordinal);
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
+        var attackHighestIndex = enmitySource.IndexOf("public void AttackHighestEnmityTarget", StringComparison.Ordinal);
         var attackHighestBody = enmitySource.Substring(
             attackHighestIndex,
-            enmitySource.IndexOf("private static bool ShouldIssueAttackCommand", attackHighestIndex, StringComparison.Ordinal) -
+            enmitySource.IndexOf("private bool ShouldIssueAttackCommand", attackHighestIndex, StringComparison.Ordinal) -
             attackHighestIndex);
         var issueBody = enmitySource.Substring(
-            enmitySource.IndexOf("public static void IssueAttackCommand", StringComparison.Ordinal),
-            enmitySource.IndexOf("private static bool ShouldIssueAttackCommand", StringComparison.Ordinal) -
-            enmitySource.IndexOf("public static void IssueAttackCommand", StringComparison.Ordinal));
+            enmitySource.IndexOf("public void IssueAttackCommand", StringComparison.Ordinal),
+            enmitySource.IndexOf("private bool ShouldIssueAttackCommand", StringComparison.Ordinal) -
+            enmitySource.IndexOf("public void IssueAttackCommand", StringComparison.Ordinal));
         attackHighestBody.Should().Contain("ShouldRemoveStaleProximityTarget(creature, target)");
         attackHighestBody.Should().Contain("RemoveProximityEnmity(target, creature);");
-        attackHighestBody.Should().Contain("AI.TryStartCombatLeashEvade(creature, target)");
+        attackHighestBody.Should().Contain("_ai.TryStartCombatLeashEvade(creature, target)");
         attackHighestBody.Should().Contain("IssueAttackCommand(creature, target);");
-        issueBody.Should().Contain("AI.TryStartCombatLeashEvade(creature, target)");
+        issueBody.Should().Contain("_ai.TryStartCombatLeashEvade(creature, target)");
         issueBody.Should().Contain("ActionDoCommand(() =>");
         issueBody.IndexOf("ActionDoCommand(() =>", StringComparison.Ordinal)
             .Should()
             .BeGreaterThan(issueBody.IndexOf("ActionMoveToObject(target, true, GetAttackMoveRange(creature));", StringComparison.Ordinal));
         issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal)
             .Should()
-            .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
+            .BeGreaterThan(issueBody.LastIndexOf("_ai.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
         enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
@@ -683,13 +701,13 @@ public class AIModelTests
     [Test]
     public void InvisibleTargets_AreSkippedByNpcDecisionsAndAttackReissue()
     {
-        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
         var weaponSource = ReadSource("SWLOR.Game.Server", "Feature", "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs").Replace("\r\n", "\n");
-        var issueBody = ExtractMethodBody(enmitySource, "public static void IssueAttackCommand");
+        var issueBody = ExtractMethodBody(enmitySource, "public void IssueAttackCommand");
         var invisibilityBody = ExtractMethodBody(weaponSource, "private void ApplySelfInvisibility");
 
-        issueBody.IndexOf("if (Stealth.IsHiddenFrom(creature, target))", StringComparison.Ordinal)
+        issueBody.IndexOf("if (IsHiddenFrom(creature, target))", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1)
             .And.BeLessThan(issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
         invisibilityBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(activator);", StringComparison.Ordinal)
@@ -975,21 +993,21 @@ public class AIModelTests
         return context;
     }
 
-    private static Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
+    private Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
     {
         return GetEnmityField<Dictionary<uint, Dictionary<uint, int>>>("_enemyEnmityTables");
     }
 
-    private static Dictionary<uint, List<uint>> CreatureToEnemies()
+    private Dictionary<uint, List<uint>> CreatureToEnemies()
     {
         return GetEnmityField<Dictionary<uint, List<uint>>>("_creatureToEnemies");
     }
 
-    private static T GetEnmityField<T>(string name)
+    private T GetEnmityField<T>(string name)
     {
-        return (T)typeof(Enmity)
-            .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        return (T)typeof(EnmityService)
+            .GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_enmity)!;
     }
 
     private static object CreateBlockedLineMovementPlan(

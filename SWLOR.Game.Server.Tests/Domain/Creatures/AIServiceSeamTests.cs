@@ -28,9 +28,20 @@ public class AIServiceSeamTests
     private AIBench _bench = null!;
     private DefaultSeamsAIService _service = null!;
 
+    // The default enmity calls go through the Enmity facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _bench = new AIBench();
         _service = new DefaultSeamsAIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence);
     }
@@ -40,6 +51,7 @@ public class AIServiceSeamTests
     {
         RealEnmityTables.Clear();
         _bench.Dispose();
+        _facadeScope.Dispose();
     }
 
     [Test]

@@ -76,8 +76,9 @@ public class PerksWindowTests
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Recast.cs"));
+            "Domain",
+            "Combat",
+            "RecastService.cs"));
 
         viewModelSource.Should().Contain("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         viewModelSource.Should().Contain("var recastGroupText = BuildRecastGroupText(detail);");
@@ -93,8 +94,8 @@ public class PerksWindowTests
             "the recast display must use one active ability group rather than joining every granted feat");
         perkSource.Should().Contain("private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
         perkSource.Should().Contain("public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
-        recastSource.Should().Contain("private static readonly Dictionary<RecastGroup, string> _recastNames");
-        recastSource.Should().Contain("private static readonly HashSet<RecastGroup> _visibleRecastGroups");
+        recastSource.Should().Contain("private readonly Dictionary<RecastGroup, string> _recastNames");
+        recastSource.Should().Contain("private readonly HashSet<RecastGroup> _visibleRecastGroups");
 
         var categoryIndex = viewModelSource.IndexOf("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         var recastIndex = viewModelSource.IndexOf("var recastGroupText = BuildRecastGroupText(detail);");

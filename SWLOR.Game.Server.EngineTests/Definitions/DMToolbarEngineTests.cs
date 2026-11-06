@@ -226,8 +226,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // A headless fixture cannot click, so run the handler Place at Target registered for its next pick.
         private static Action<uint> PendingTargetAction(uint creature)
         {
-            var actions = (System.Collections.IDictionary)typeof(Targeting)
-                .GetField("_playerTargetingActions", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var actions = CombatInternals.PendingTargetingActions();
             var detail = actions[creature] ?? throw new InvalidOperationException("No targeting action is pending.");
             return (Action<uint>)detail.GetType().GetProperty("SelectionAction")!.GetValue(detail)!;
         }

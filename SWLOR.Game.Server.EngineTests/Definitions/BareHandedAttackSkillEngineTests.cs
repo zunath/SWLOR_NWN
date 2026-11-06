@@ -89,8 +89,7 @@ public static class BareHandedAttackSkillEngineTests
 
     private static int Points(uint player, uint creature, SkillType skill)
     {
-        var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-            .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null);
+        var tracker = CombatInternals.CombatPointTracker();
         return tracker!.TryGetValue(creature, out var byPlayer) &&
                byPlayer.TryGetValue(player, out var bySkill) &&
                bySkill.TryGetValue(skill, out var points)

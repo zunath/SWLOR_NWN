@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
@@ -63,6 +64,13 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IRaceService, RaceService>();
+
+            // Combat
+            services.AddSingleton<ICombatPointService, CombatPointService>();
+            services.AddSingleton<IEnmityService, EnmityService>();
+            services.AddSingleton<IRecastService, RecastService>();
+            services.AddSingleton<ITargetingService, TargetingService>();
+            services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
 
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();

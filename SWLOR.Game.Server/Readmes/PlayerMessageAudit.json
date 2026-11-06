@@ -6209,8 +6209,8 @@
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Targeting.cs",
-    "Line": 45,
+    "File": "SWLOR.Game.Server/Domain/Combat/TargetingService.cs",
+    "Line": 40,
     "Member": "EnterTargetingMode",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

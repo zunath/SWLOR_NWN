@@ -115,9 +115,7 @@ namespace SWLOR.CraftSim.Gates
             Context = context;
             Gear = scenario.TunedAgainstFullMods ? context.Gear.LevelsWithFullMods(scenario.Skill) : context.Gear.Levels(scenario.Skill);
             Cohort = scenario.Cohort;
-            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand)
-                .Where(band => thresholds.OnlyBands == null || thresholds.OnlyBands.Contains(band.Band.Name))
-                .ToList();
+            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand, thresholds.OnlyBands).ToList();
 
             // The XP chart loads once, before the parallel plays read it.
             ServerXp.ForDelta(0);

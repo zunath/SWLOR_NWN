@@ -123,6 +123,7 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 | Fabricator rotation | 5 cases (2 in each perked build) | smallest margin -34.0 | Open by owner decision before this pass |
 | Circuit style | Overclock vs Safe Mode, no lines, mid gear | Overclock wins 22/78 | Win share under 30%; the average gap is inside the limit |
 | Circuit length | 41-53, best gear | 20.2 actions, limit 20 | Over by 0.2 |
+| Forge ladder | 51-53, Finish-heavy, fully modded | just under 10 actions (rounds to 10.0), target 10-20 | The fully modded crafter finishes at the floor, not below it in any meaningful way |
 | Circuit ladder | 51-53, Overclock both lines, no gear | 65.7 vs 60.7, limit +5 | Over by under 0.05; the rounded figures sit exactly on the limit |
 | Fabricator style | Production Run vs Fine Tolerance, no gear | +5.1, limit 5 | Over by 0.1 |
 | Forge economy | 21-30, no gear (also Hot Forging) | ratio 1.01 | Level 24 recipe; rules below level 25 are unchanged, and master's sample differed |

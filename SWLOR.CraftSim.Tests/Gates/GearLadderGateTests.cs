@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
+using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
 using static SWLOR.CraftSim.Tests.Support.BenchHarness;
 
@@ -50,6 +51,35 @@ namespace SWLOR.CraftSim.Tests.Gates
             var result = Evaluate(GearLadderGate.Key, new BenchScenario { TunedAgainstFullMods = true }, Context(TopLevels), thresholds: impossible);
 
             result.Summary.Should().Contain("reaches 85% on only").And.Contain("reaches 100% on");
+        }
+
+        [Test]
+        public void AFullyModdedTopCraftOutsideTheScenariosLengthTargetFails()
+        {
+            var scenario = new BenchScenario { TunedAgainstFullMods = true, LengthTarget = new LengthTarget(1000, 2000, "out of reach") };
+
+            var result = Evaluate(GearLadderGate.Key, scenario, Context(TopLevels));
+
+            result.Summary.Should().Contain(CraftingGearCatalog.FullyModdedGearName + " takes");
+        }
+
+        [Test]
+        public void TheBandsOptionPlaysThoseRecipeLevelsInPlaceOfTheCohortsBands()
+        {
+            var thresholds = GateThresholds.Default with { OnlyBands = new[] { RecipeBand.Parse("51-53") } };
+
+            var result = Evaluate("length", new BenchScenario { TunedAgainstFullMods = true }, Context(TopLevels), thresholds: thresholds);
+
+            result.Verdict.Should().NotBe(GateVerdict.NotRun);
+            result.Tables[0].Rows.Select(row => row[0]).Distinct().Should().Equal("51-53");
+        }
+
+        [TestCase("46")]
+        [TestCase("50-46")]
+        [TestCase("a-b")]
+        public void AMalformedBandIsRefused(string text)
+        {
+            FluentActions.Invoking(() => RecipeBand.Parse(text)).Should().Throw<ArgumentException>();
         }
 
         [Test]

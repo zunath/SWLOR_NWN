@@ -72,8 +72,8 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>From this recipe level on, a minigame tuned against full mods expects more than the middle tier: it is only reported.</summary>
         public int UnderGearedMidGearFromLevel { get; init; } = 41;
 
-        /// <summary>The cohort's bands to play, by name, or null for all of them, for a prototype that tunes one band.</summary>
-        public IReadOnlyList<string> OnlyBands { get; init; }
+        /// <summary>The recipe levels the gates that play the cohort's bands play instead of those bands, or null for the cohort's own, for a prototype that tunes one band.</summary>
+        public IReadOnlyList<RecipeBand> OnlyBands { get; init; }
 
         /// <summary>The recipe levels a rank-50 crafter works at, from just below their rank to the highest recipe in the game.</summary>
         public IReadOnlyList<RecipeBand> PerksOptionalBands { get; init; } = new[]

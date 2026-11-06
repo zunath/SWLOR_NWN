@@ -62,7 +62,7 @@ namespace SWLOR.CraftSim.Cli
                     options, "--legacy-seconds-per-action", GateThresholds.Default.LegacySecondsPerAction),
                 SolverOptions = options.ContainsKey("--thorough") ? FixedRotationSolverOptions.Thorough : null,
                 OnlyBands = options.TryGetValue("--bands", out var onlyBands)
-                    ? onlyBands[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    ? onlyBands[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(RecipeBand.Parse).ToList()
                     : null
             };
 

@@ -37,6 +37,18 @@
   - `EnhancementParityBands` = 41-45, 46-50, 51-53: gate 7: the at-level recipe bands
   - `EnhancementSlotCounts` = 1, 2, 3: gates 6 and 7: numbers of filled enhancement slots played
   - `EnhancementParityMinimumRatio` = 1: gate 7: expected transferred enhancements per enhanced craft divided by today's
+  - `EnhancementParityFullModsRatio` = 0.95: gate 7, minigames tuned against full mods: the same ratio for one and two slots in fully modded gear
+  - `EnhancementParityThreeSlotFullModsRatio` = 0.9: gate 7, minigames tuned against full mods: the same ratio for three slots in fully modded gear
+  - `PerksOptionalAboveRankFullModsShare` = 35%: gate 3, minigames tuned against full mods: the share in the band above the crafter's rank
+  - `GearLadderBands` = 46-50, 51-53: gear ladder: the at-level recipe bands
+  - `GearLadderEnhancements` = 2: gear ladder: enhancement kits played
+  - `GearLadderMinimumStep` = 5: gear ladder: the least each gear step adds to average quality
+  - `GearLadderSaturatedQuality` = 97: gear ladder and gate 1: an average at or above this has nothing left to earn
+  - `GearLadderFullModsReach85Share` = 60%: gear ladder: share of top-band crafts in fully modded gear that reach 85%
+  - `GearLadderFullModsMaxFullQualityShare` = 90%: gear ladder: most top-band crafts in fully modded gear that reach 100%
+  - `GearLadderPerkAllowance` = 5: gear ladder: how far a full perk line in no gear may beat unmodded best gear
+  - `UnderGearedNoGearFromLevel` = 31: gates 4, 5 and 6: no gear is only reported from this recipe level
+  - `UnderGearedMidGearFromLevel` = 41: gates 4, 5 and 6: mid gear is only reported from this recipe level
   - `RecipesPerBand` = 6: recipes played per band
   - `SolverOptions` = the scenario's: effort of the fixed-rotation solver
   - `ActionLimit` = 100: actions after which an attempt counts as stalled
@@ -55,7 +67,7 @@
 | Economy parity | Failed | Outside 10% of the legacy baseline (above it only, where its success rate is below 90%), or below its quality: 21-30 / no gear (ratio 1.01). |
 | XP rate | Failed | Item crafts: XP per hour falls below 1.00x the legacy rate in 1 case(s): 11-20 / no gear (0.98x). |
 | Enhancement parity | Passed | At rank 50 in fully modded gear, the thresholds in force (50% / 85% / 100%) transfer at least 0.90 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 0.97 times today's). Thresholds that meet parity in every band for this quality: 79% / 92% / 92%. |
-| Gear ladder | Passed | Every gear step raises quality, fully modded gear makes the top recipes' target, and perks do not replace gear. |
+| Gear ladder | Failed | 51-53 / Finish-heavy / fully modded gear takes 10.0 actions. |
 
 ## No fixed rotation
 
@@ -469,7 +481,7 @@
 | 51-53 | 3 | Finish-heavy | no gear | 32.6 | 0% | 0% | 9.5 | Passed |
 | 51-53 | 3 | Finish-heavy | mid gear | 45.0 | 0% | 0% | 10.2 | Passed |
 | 51-53 | 3 | Finish-heavy | best gear | 53.6 | 0% | 0% | 9.6 | Passed |
-| 51-53 | 3 | Finish-heavy | fully modded gear | 93.2 | 78% | 42% | 10.0 | Passed |
+| 51-53 | 3 | Finish-heavy | fully modded gear | 93.2 | 78% | 42% | 10.0 | Failed |
 | 51-53 | 3 | Shape-heavy | no gear | 5.4 | 0% | 0% | 11.2 | Passed |
 | 51-53 | 3 | Shape-heavy | mid gear | 33.0 | 0% | 0% | 13.4 | Passed |
 | 51-53 | 3 | Shape-heavy | best gear | 52.8 | 0% | 0% | 13.2 | Passed |

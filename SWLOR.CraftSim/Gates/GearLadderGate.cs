@@ -65,7 +65,7 @@ namespace SWLOR.CraftSim.Gates
                                 problems.Add($"reaches 85% on only {Percent(reach85)}");
                             if (reach100 > thresholds.GearLadderFullModsMaxFullQualityShare)
                                 problems.Add($"reaches 100% on {Percent(reach100)}");
-                            if (!LengthTarget.PerkedItemCraft.Contains(actions))
+                            if (!run.Scenario.LengthTarget.Contains(actions))
                                 problems.Add($"takes {Number(actions)} actions");
                         }
 

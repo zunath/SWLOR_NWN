@@ -321,9 +321,7 @@ scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse
 2. Create the interface and instance class; move logic and state verbatim into instance members; the facade forwards.
 3. Register it in `Composition/` (one line); add it to the converted-services list that the architecture test uses to
    forbid static mutable fields in converted services.
-4. Move files into the domain namespace if the map says so. File moves change reflection order: the manifest keeps the
-   handler order; if `ScriptHandlerManifestBaselineTests` fails for that reason, delete it in this pull request as its
-   comment says (the layout-independence tests remain). A handler that must change name is listed in `tools/Refactor/HandlerRenames.txt` (`<master full name> <branch full name>`) in the same pull request; the parity run and the sync map master's name through it.
+4. Move files into the domain namespace if the map says so. File moves change reflection order: the manifest keeps the handler order (the layout-independence tests check that). A handler that must change name is listed in `tools/Refactor/HandlerRenames.txt` (`<master full name> <branch full name>`) in the same pull request; the parity run and the sync map master's name through it.
 5. Tests: unit tests against the instance with fakes (engine runtimes, fake dependencies); coverage of the service's
    lines at least 70%; CharacterizationTests unchanged; Architecture.Tests unchanged except the converted-services list;
    handler-order tests unchanged.

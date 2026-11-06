@@ -402,11 +402,17 @@ public class StealthServiceTests
         _locals.Has(Player, "STEALTH_GRANTED_BONUS").Should().BeFalse();
         _engine.CountOf("AssignCommand").Should().Be(0, "the player was not hidden");
 
+        _locals.ClearCalls();
+        _ran.Clear();
         _engine.SetReturnHandler("GetIsObjectValid", _ => false);
-        _stealth.ScheduleTimedExit(Player, 5f);
-        _engine.ClearCalls();
+        var stale = _stealth.ScheduleTimedExit(Player, 5f);
+        _engine.SetLocalInt(Player, "STEALTH_GRANTED_WINDOW", stale);
+        var validityChecks = _engine.CountOf("GetIsObjectValid");
+
         RunDeferred("DelayCommand");
-        _engine.CountOf("DeleteLocalInt").Should().Be(0);
+
+        _engine.CountOf("GetIsObjectValid").Should().Be(validityChecks + 1, "the timer callback must actually run");
+        _engine.CountOf("DeleteLocalInt").Should().Be(0, "an invalid creature is left alone");
     }
 
     [Test]

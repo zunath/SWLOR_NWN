@@ -1,147 +1,29 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the skill catalog, XP awards and rank rules. The logic lives in <see cref="ISkillService"/>;
+    /// the event handlers stay here and every member forwards to the container's instance.
+    /// </summary>
     public static partial class Skill
     {
-        // All categories, including inactive
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategories = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategoriesWithSkillContributing = new();
-
-        // Active categories only
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategories = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategoriesWithSkillContributing = new();
-
-        // All skills, including inactive
-        private static readonly Dictionary<SkillType, SkillAttribute> _allSkills = new();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _allSkillsByCategory = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _allSkillsContributingToCap = new();
-
-        // Active skills only
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkills = new();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeCraftingSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeResearchableCraftingSkills = new();
-        private static readonly List<SkillType> _activeSkillsForDisplay = new();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategoryForDisplay = new();
-
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
-            // Initialize the list of categories.
-            var categories = Enum.GetValues(typeof(SkillCategoryType)).Cast<SkillCategoryType>();
-            foreach (var category in categories)
-            {
-                var categoryDetail = category.GetAttribute<SkillCategoryType, SkillCategoryAttribute>();
-                _allCategories[category] = categoryDetail;
-                _allSkillsByCategory[category] = new List<SkillType>();
-
-                if (categoryDetail.IsActive)
-                {
-                    _activeSkillsByCategory[category] = new List<SkillType>();
-                }
-            }
-
-            // Organize skills to make later reads quicker.
-            var skills = Enum.GetValues(typeof(SkillType)).Cast<SkillType>();
-            foreach (var skillType in skills)
-            {
-                var skillDetail = skillType.GetAttribute<SkillType, SkillAttribute>();
-                var categoryDetail = _allCategories[skillDetail.Category];
-
-                // Add to the skills cache
-                _allSkills[skillType] = skillDetail;
-
-                // Add to contributing cache if the skill contributes towards the skill cap.
-                if (skillDetail.ContributesToSkillCap)
-                {
-                    _allSkillsContributingToCap[skillType] = skillDetail;
-                    _allCategoriesWithSkillContributing[skillDetail.Category] = categoryDetail;
-
-                    if (categoryDetail.IsActive)
-                    {
-                        _activeCategoriesWithSkillContributing[skillDetail.Category] = categoryDetail;
-                    }
-
-                    if (skillDetail.IsActive)
-                    {
-                        _activeSkillsContributingToCap[skillType] = skillDetail;
-                    }
-                }
-
-                // Add to active cache if the skill is active
-                if (skillDetail.IsActive)
-                {
-                    _activeSkills[skillType] = skillDetail;
-
-                    if(!_activeSkillsByCategory.ContainsKey(skillDetail.Category))
-                        _activeSkillsByCategory[skillDetail.Category] = new List<SkillType>();
-
-                    _activeSkillsByCategory[skillDetail.Category].Add(skillType);
-
-                    if (skillDetail.IsShownInCraftMenu)
-                    {
-                        _activeCraftingSkills[skillType] = skillDetail;
-                    }
-
-                    if (skillDetail.IsShownInResearchMenu)
-                    {
-                        _activeResearchableCraftingSkills[skillType] = skillDetail;
-                    }
-                }
-
-                // Add to active category cache if the skill and category are both active.
-                if (skillDetail.IsActive && categoryDetail.IsActive)
-                {
-                    _activeCategories[skillDetail.Category] = categoryDetail;
-                }
-
-                // Add to the skills by category cache.
-                _allSkillsByCategory[skillDetail.Category].Add(skillType);
-            }
-
-            OrganizeSkillsForDisplay();
-
-            EventsPlugin.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
-            Console.WriteLine($"Loaded {_activeCategories.Count} skill categories.");
-            Console.WriteLine($"Loaded {_allSkills.Count} skills.");
-        }
-
-        private static void OrganizeSkillsForDisplay()
-        {
-            _activeSkillsForDisplay.Clear();
-            _activeSkillsByCategoryForDisplay.Clear();
-
-            foreach (var (category, skills) in _activeSkillsByCategory)
-            {
-                _activeSkillsByCategoryForDisplay[category] = skills
-                    .OrderBy(skill => _activeSkills[skill].Name, StringComparer.OrdinalIgnoreCase)
-                    .ThenBy(skill => (int)skill)
-                    .ToList();
-            }
-
-            var nonLanguageSkills = _activeSkills
-                .Where(skill => skill.Value.Category != SkillCategoryType.Languages)
-                .OrderBy(skill => skill.Value.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(skill => (int)skill.Key)
-                .Select(skill => skill.Key);
-            var languageSkills = _activeSkills
-                .Where(skill => skill.Value.Category == SkillCategoryType.Languages)
-                .OrderBy(skill => skill.Value.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(skill => (int)skill.Key)
-                .Select(skill => skill.Key);
-
-            _activeSkillsForDisplay.AddRange(nonLanguageSkills);
-            _activeSkillsForDisplay.AddRange(languageSkills);
+            Instance.CacheData();
         }
 
         /// <summary>
@@ -150,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of all skills.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetAllSkills()
         {
-            return _allSkills.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllSkills();
         }
 
         /// <summary>
@@ -159,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of active skills.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetAllActiveSkills()
         {
-            return _activeSkills.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllActiveSkills();
         }
 
         /// <summary>
@@ -168,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A display-ordered list of active skills.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetAllActiveSkillsForDisplay()
         {
-            return _activeSkillsForDisplay.ToDictionary(x => x, y => _activeSkills[y]);
+            return Instance.GetAllActiveSkillsForDisplay();
         }
 
         /// <summary>
@@ -177,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of skills contributing towards the skill cap.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetAllContributingSkills()
         {
-            return _allSkillsContributingToCap.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllContributingSkills();
         }
 
         /// <summary>
@@ -186,7 +68,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of active skills contributing towards the skill cap.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetActiveContributingSkills()
         {
-            return _activeSkillsContributingToCap.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetActiveContributingSkills();
         }
 
         /// <summary>
@@ -195,7 +77,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of all skill categories</returns>
         public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllSkillCategories()
         {
-            return _allCategories.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllSkillCategories();
         }
 
         /// <summary>
@@ -204,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary of active skills which are displayed in the crafting menu.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetActiveCraftingSkills()
         {
-            return _activeCraftingSkills.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetActiveCraftingSkills();
         }
 
         /// <summary>
@@ -213,7 +95,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary of active skills which are displayed in the research menu.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetActiveResearchableCraftingSkills()
         {
-            return _activeResearchableCraftingSkills.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetActiveResearchableCraftingSkills();
         }
 
         /// <summary>
@@ -222,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of active skill categories.</returns>
         public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllActiveSkillCategories()
         {
-            return _activeCategories.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllActiveSkillCategories();
         }
 
         /// <summary>
@@ -231,7 +113,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of skill categories which have skills that contribute towards the skill cap.</returns>
         public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllContributingSkillCategories()
         {
-            return _allCategoriesWithSkillContributing.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllContributingSkillCategories();
         }
 
         /// <summary>
@@ -240,7 +122,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of skill categores which have skills that contribute towards the skill cap.</returns>
         public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetActiveContributingSkillCategories()
         {
-            return _activeCategoriesWithSkillContributing.ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetActiveContributingSkillCategories();
         }
 
         /// <summary>
@@ -250,7 +132,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing skills in the specified category.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetAllSkillsByCategory(SkillCategoryType category)
         {
-            return _allSkillsByCategory[category].ToDictionary(x => x, y => _allSkills[y]);
+            return Instance.GetAllSkillsByCategory(category);
         }
 
         /// <summary>
@@ -260,7 +142,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing active skills in the specified category.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategory(SkillCategoryType category)
         {
-            return _activeSkillsByCategory[category].ToDictionary(x => x, y => _activeSkills[y]);
+            return Instance.GetActiveSkillsByCategory(category);
         }
 
         /// <summary>
@@ -270,7 +152,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing display-ordered active skills in the specified category.</returns>
         public static Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategoryForDisplay(SkillCategoryType category)
         {
-            return _activeSkillsByCategoryForDisplay[category].ToDictionary(x => x, y => _activeSkills[y]);
+            return Instance.GetActiveSkillsByCategoryForDisplay(category);
         }
 
         /// <summary>
@@ -280,7 +162,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing details about a skill.</returns>
         public static SkillAttribute GetSkillDetails(SkillType skillType)
         {
-            return _allSkills[skillType];
+            return Instance.GetSkillDetails(skillType);
         }
 
         /// <summary>
@@ -290,7 +172,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing details about a skill category.</returns>
         public static SkillCategoryAttribute GetSkillCategoryDetails(SkillCategoryType category)
         {
-            return _allCategories[category];
+            return Instance.GetSkillCategoryDetails(category);
         }
     }
 }

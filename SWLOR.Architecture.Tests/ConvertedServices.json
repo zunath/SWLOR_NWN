@@ -96,6 +96,7 @@
     { "name": "Scavenge", "domain": "Crafting", "extras": [ { "facade": "ScavengeService.ScavengeSessions" } ] },
     { "name": "ServerTask", "domain": "Gameplay" },
     { "name": "Shuttle", "domain": "World" },
+    { "name": "Skill", "domain": "Character" },
     { "name": "Slicing", "domain": "Crafting", "extras": [ { "facade": "SlicingService.SlicingSession" } ] },
     { "name": "Snippet", "domain": "Core" },
     { "name": "Spawn", "domain": "Creatures" },

@@ -49,7 +49,7 @@
       "services": [
         "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
         "PlayerActivityEffectTag", "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
-        "EspionageInfiltration", "Language", "RoleplayXP"
+        "EspionageInfiltration", "Language", "RoleplayXP", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
       ],
       "featureFolders": [
         "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"
@@ -136,7 +136,7 @@
       "featureFolders": []
     },
     "Gameplay": {
-      "services": [],
+      "services": ["ServerTask"],
       "featureFolders": []
     }
   }

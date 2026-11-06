@@ -200,7 +200,8 @@ Stat -> Item | 3
 Perk -> Quest | 2
 StatusEffect -> CapstoneProof | 1
 
-# Character -> Social (4 edges)
+# Character -> Social (5 edges)
+Feature/AppearanceDefinition -> Performance | 1
 Feature/StatusEffectDefinition -> Party | 2
 Feature/StatusEffectDefinition -> Performance | 2
 PlayerName -> ChatPortraitTells | 1
@@ -634,7 +635,7 @@ Feature.Jukebox -> DMPresence | 1
 Feature.RoleplayXP -> DMPresence | 1
 Feature.ServerTasks -> DMPresence | 1
 
-# Gameplay -> Character (38 edges)
+# Gameplay -> Character (39 edges)
 Feature.AchievementProgression -> Achievement | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> PlayerName | 3
@@ -659,6 +660,7 @@ Feature.PlayerRest -> StatusEffect | 1
 Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
 Feature.PlayerTemporaryEffects -> Stat | 1
 Feature.RoleplayXP -> RoleplayXP | 7
+Feature.RoleplayXP -> RoleplayXPDetection | 2
 Feature.ScavengePoint -> Perk | 1
 Feature.ScavengePoint -> Skill | 1
 Feature.ScavengePoint -> Stat | 1
@@ -1011,7 +1013,7 @@ Feature/ChatCommandDefinition -> DMPresence | 14
 PlayerList -> DMPresence | 10
 PlayerList -> DMTool | 1
 
-# Social -> Character (18 edges)
+# Social -> Character (19 edges)
 Feature/ChatCommandDefinition -> Disguise | 3
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 Feature/ChatCommandDefinition -> Language | 1
@@ -1022,6 +1024,7 @@ Feature/ChatCommandDefinition -> PlayerName | 3
 Feature/ChatCommandDefinition -> Skill | 2
 Feature/ChatCommandDefinition -> Stat | 3
 Performance -> Activity | 4
+Performance -> Feature/AppearanceDefinition | 1
 Performance -> Feature/StatusEffectDefinition | 6
 Performance -> Perk | 10
 Performance -> PlayerName | 2

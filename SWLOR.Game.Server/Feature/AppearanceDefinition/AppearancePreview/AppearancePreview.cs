@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -17,15 +17,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview
         /// <summary>A plain tile shown for an empty slot or a part without a picture.</summary>
         public const string EmptyPicture = "apart_empty";
         private static readonly Regex NonHumanBody = new("^p([fm])[deoz]0_(.+)$", RegexOptions.Compiled);
-        private static readonly ConcurrentDictionary<string, bool> PictureExists = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// The picture to show for a part. Pictures of a non-human body that look the same as the
         /// human body's are not shipped, so a missing one falls back to the human picture.
         /// </summary>
         public static string Picture(string key, AppearancePreviewView view) =>
-            Picture(key, view, resref => PictureExists.GetOrAdd(resref,
-                name => !string.IsNullOrEmpty(ResManGetAliasFor(name, ResType.DDS))));
+            Picture(key, view, resref => AppearanceRenderState.PictureExists(resref));
 
         public static string Picture(string key, AppearancePreviewView view, Func<string, bool> exists)
         {

@@ -883,6 +883,15 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 target);
         }
 
+        public void AcquireAggroFromNearbyEnemies(uint target)
+        {
+            foreach (var enemy in ObjectSnapshot.InShape(Shape.Sphere, AggroRadius, GetLocation(target), false, ObjectType.Creature))
+            {
+                if (!GetIsPC(enemy) && IsAIEnabled(enemy))
+                    TryAcquireAggro(enemy, target);
+            }
+        }
+
         private bool TryAcquireAggro(uint self, uint target)
         {
             if (self == target ||

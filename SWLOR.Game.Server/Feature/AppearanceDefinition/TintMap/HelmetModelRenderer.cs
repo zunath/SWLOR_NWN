@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
@@ -173,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         /// </summary>
         public static float GetHeadScale(uint creature)
         {
-            if (BaseHeadScales.TryGetValue(creature, out var baseScale))
+            if (AppearanceRenderState.TryGetBaseHeadScale(creature, out var baseScale))
                 return baseScale;
 
             var scale = GetObjectVisualTransform(creature, ObjectVisualTransform.Scale,
@@ -183,9 +184,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         public static void SetHeadScale(uint creature, float scale)
         {
-            if (BaseHeadScales.ContainsKey(creature))
+            if (AppearanceRenderState.HasBaseHeadScale(creature))
             {
-                BaseHeadScales[creature] = scale;
+                AppearanceRenderState.SetBaseHeadScale(creature, scale);
                 ProjectHeadScale(creature);
                 return;
             }
@@ -194,25 +195,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 nScope: ObjectVisualTransformDataScopeType.CreatureHead);
         }
 
-        // Creature head scales captured while a helmet renders through the head. Runtime only:
-        // a fresh login or spawn starts unprojected, so a persisted value is never compounded.
-        private static readonly Dictionary<uint, float> BaseHeadScales = new();
-        private const int BaseHeadScalePruneThreshold = 1024;
+        // Creature head scales captured while a helmet renders through the head live in
+        // AppearanceRenderState. Runtime only: a fresh login or spawn starts unprojected,
+        // so a persisted value is never compounded.
 
         private static void ProjectHeadScale(uint creature)
         {
-            if (!BaseHeadScales.ContainsKey(creature))
+            if (!AppearanceRenderState.HasBaseHeadScale(creature))
             {
-                if (BaseHeadScales.Count >= BaseHeadScalePruneThreshold)
-                {
-                    foreach (var stale in BaseHeadScales.Keys.Where(key => !GetIsObjectValid(key)).ToList())
-                        BaseHeadScales.Remove(stale);
-                }
-
-                BaseHeadScales[creature] = GetHeadScale(creature);
+                AppearanceRenderState.PruneBaseHeadScales();
+                AppearanceRenderState.SetBaseHeadScale(creature, GetHeadScale(creature));
             }
 
-            var rendered = BaseHeadScales[creature] * GetHelmetScale(creature);
+            var rendered = AppearanceRenderState.GetBaseHeadScale(creature) * GetHelmetScale(creature);
             var current = GetObjectVisualTransform(creature, ObjectVisualTransform.Scale,
                 nScope: ObjectVisualTransformDataScopeType.CreatureHead);
             if (Math.Abs(current - rendered) > 0.0001f)
@@ -222,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static void RestoreHeadScale(uint creature)
         {
-            if (!BaseHeadScales.Remove(creature, out var baseScale))
+            if (!AppearanceRenderState.RemoveBaseHeadScale(creature, out var baseScale))
                 return;
 
             SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, baseScale,

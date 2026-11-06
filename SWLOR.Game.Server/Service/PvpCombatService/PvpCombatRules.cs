@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SWLOR.Game.Server.Service.PvpCombatService
 {
@@ -25,45 +25,31 @@ namespace SWLOR.Game.Server.Service.PvpCombatService
         /// Healing a player receives is cut by this percent once they have been in PvP combat this
         /// long. It stops at the last step, so healers always keep part of their healing.
         /// </summary>
-        public static IReadOnlyList<PvpCombatRampStep> HealingReductionSteps => CreateHealingReductionSteps();
-
-        /// <summary>
-        /// A new table of <see cref="HealingReductionSteps"/>. The PvP combat service builds one into a field and reads
-        /// that, so nothing allocates while damage is being calculated.
-        /// </summary>
-        public static PvpCombatRampStep[] CreateHealingReductionSteps() => new[]
-        {
+        public static readonly ImmutableArray<PvpCombatRampStep> HealingReductionSteps = ImmutableArray.Create(
             new PvpCombatRampStep(120f, 10),
             new PvpCombatRampStep(150f, 20),
             new PvpCombatRampStep(180f, 30),
             new PvpCombatRampStep(210f, 45),
             new PvpCombatRampStep(240f, 60)
-        };
+        );
 
         /// <summary>
         /// Damage players and their pets deal to a player rises by this percent once that player
         /// has been in PvP combat this long.
         /// </summary>
-        public static IReadOnlyList<PvpCombatRampStep> DamageIncreaseSteps => CreateDamageIncreaseSteps();
-
-        /// <summary>
-        /// A new table of <see cref="DamageIncreaseSteps"/>. The PvP combat service builds one into a field and reads
-        /// that, so nothing allocates while damage is being calculated.
-        /// </summary>
-        public static PvpCombatRampStep[] CreateDamageIncreaseSteps() => new[]
-        {
+        public static readonly ImmutableArray<PvpCombatRampStep> DamageIncreaseSteps = ImmutableArray.Create(
             new PvpCombatRampStep(180f, 20),
             new PvpCombatRampStep(210f, 40),
             new PvpCombatRampStep(240f, 60),
             new PvpCombatRampStep(270f, 80),
             new PvpCombatRampStep(300f, 100)
-        };
+        );
 
         /// <summary>The index of the latest step reached after <paramref name="seconds"/>, or -1 before the first.</summary>
-        public static int GetStepIndex(IReadOnlyList<PvpCombatRampStep> steps, double seconds)
+        public static int GetStepIndex(ImmutableArray<PvpCombatRampStep> steps, double seconds)
         {
             var index = -1;
-            for (var step = 0; step < steps.Count; step++)
+            for (var step = 0; step < steps.Length; step++)
             {
                 if (seconds >= steps[step].AtSeconds)
                     index = step;
@@ -73,7 +59,7 @@ namespace SWLOR.Game.Server.Service.PvpCombatService
         }
 
         /// <summary>The percent of the latest step reached after <paramref name="seconds"/>, or 0 before the first.</summary>
-        public static int GetStepPercent(IReadOnlyList<PvpCombatRampStep> steps, double seconds)
+        public static int GetStepPercent(ImmutableArray<PvpCombatRampStep> steps, double seconds)
         {
             var index = GetStepIndex(steps, seconds);
             return index < 0 ? 0 : steps[index].Percent;

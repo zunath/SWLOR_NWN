@@ -444,15 +444,6 @@ public class PvpCombatServiceTests
         other.IsInPvpCombat(PlayerOne).Should().BeFalse();
     }
 
-    [Test]
-    public void ThePvpRampTablesAreBuiltOncePerInstance()
-    {
-        // Reading a ramp on the damage path does not allocate: the instance owns the tables, so the same
-        // content comes back for every read and the static properties only serve other code.
-        PvpCombatRules.CreateHealingReductionSteps().Should().BeEquivalentTo(PvpCombatRules.HealingReductionSteps);
-        PvpCombatRules.CreateDamageIncreaseSteps().Should().BeEquivalentTo(PvpCombatRules.DamageIncreaseSteps);
-    }
-
     private List<string> Messages(uint player) =>
         _engine.CallsTo("SendMessageToPC").Where(call => (uint)call.Arguments[0]! == player)
             .Select(call => (string)call.Arguments[1]!).ToList();

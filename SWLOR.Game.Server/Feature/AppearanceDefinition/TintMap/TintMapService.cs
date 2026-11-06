@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -34,22 +35,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private const float RefreshDelaySeconds = 0.2f;
         private const string AreaCompatibilityRefreshVariable = "TINT_MAP_COMPAT_REFRESHED";
-
-        private readonly record struct ItemColorCarryRevisionScope(
-            TintMapLayerType Layer,
-            AppearanceArmor ArmorPart);
-
-        private sealed class PendingItemColorCarryLineage
-        {
-            public HashSet<uint> Items { get; } = new();
-            public Dictionary<ItemColorCarryRevisionScope, int> Revisions { get; } = new();
-            public int PendingCount { get; set; }
-        }
-
-        private static readonly object PendingItemColorCarryLock = new();
-        private static readonly Dictionary<uint, Guid> ItemColorCarryLineages = new();
-        private static readonly Dictionary<Guid, PendingItemColorCarryLineage> PendingItemColorCarries = new();
-
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnModuleEnter()
         {
@@ -151,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             PowerGloveFit.Apply(creature);
-            SlitherhornFit.Apply(creature);
+            HornFit.Apply(creature);
             TwinPistolEquipment.RefreshAppearance(creature);
 
             // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are
@@ -422,7 +407,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var paletteSource = selection.GetPaletteSource(layer);
             if (invalidatePendingCarry)
-                MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
+                TintMapState.MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
 
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var setVariables = GetEquivalentItemTintVariables(
@@ -453,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var paletteSource = selection.GetPaletteSource(layer);
-            MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
+            TintMapState.MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
             var resetVariables = GetEquivalentItemTintVariables(
                 paletteSource,
                 selection,
@@ -499,7 +484,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var paletteSource = selection.GetPaletteSource(layer);
-            MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
+            TintMapState.MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
             var resetVariables = GetEquivalentItemTintVariables(
                 paletteSource,
                 selection,
@@ -544,7 +529,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             itemSelections = itemSelections
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
-            MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
+            TintMapState.MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
             var hasPreviousGlobalColor = TintMapColor.TryFromStoredValue(
@@ -637,7 +622,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             IReadOnlyList<TintMapMaterialSelection> itemSelections,
             TintMapLayerType layer)
         {
-            MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
+            TintMapState.MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
             var usesExplicitInheritance = GetLocalInt(item, inheritanceStateVariable) != 0;
@@ -772,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
-            MarkPendingItemColorEdit(item, layer, armorPart);
+            TintMapState.MarkPendingItemColorEdit(item, layer, armorPart);
             foreach (var variableName in GetItemTintOverrides(item).Keys)
             {
                 if (!TintMapVariable.TryParse(
@@ -1078,125 +1063,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return new TintMapItemColorCarry(sources);
         }
 
-        private static (Guid Lineage, IReadOnlyDictionary<ItemColorCarryRevisionScope, int> Revisions)
-            RegisterPendingItemColorCarry(
-                uint sourceItem,
-                uint replacementItem,
-                AppearanceArmor armorPart,
-                IEnumerable<TintMapLayerType> layers)
-        {
-            lock (PendingItemColorCarryLock)
-            {
-                if (!ItemColorCarryLineages.TryGetValue(sourceItem, out var lineage) ||
-                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
-                {
-                    lineage = Guid.NewGuid();
-                    state = new PendingItemColorCarryLineage();
-                    PendingItemColorCarries[lineage] = state;
-                }
-
-                ItemColorCarryLineages[replacementItem] = lineage;
-                state.Items.Add(replacementItem);
-                state.PendingCount++;
-                var revisions = layers
-                    .Distinct()
-                    .SelectMany(layer => new[]
-                    {
-                        new ItemColorCarryRevisionScope(layer, armorPart),
-                        new ItemColorCarryRevisionScope(layer, AppearanceArmor.Invalid)
-                    })
-                    .Distinct()
-                    .ToDictionary(
-                        scope => scope,
-                        scope => state.Revisions.GetValueOrDefault(scope));
-                return (lineage, revisions);
-            }
-        }
-
         public static void LinkPendingItemColorCarryReplacement(uint sourceItem, uint replacementItem)
         {
-            lock (PendingItemColorCarryLock)
-            {
-                if (!ItemColorCarryLineages.TryGetValue(sourceItem, out var lineage) ||
-                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
-                {
-                    return;
-                }
-
-                ItemColorCarryLineages[replacementItem] = lineage;
-                state.Items.Add(replacementItem);
-            }
-        }
-
-        private static bool BelongsToItemColorCarryLineage(uint item, Guid lineage)
-        {
-            lock (PendingItemColorCarryLock)
-            {
-                return ItemColorCarryLineages.TryGetValue(item, out var itemLineage) &&
-                       itemLineage == lineage;
-            }
-        }
-
-        private static bool PendingItemColorCarryLayerIsCurrent(
-            Guid lineage,
-            TintMapLayerType layer,
-            AppearanceArmor armorPart,
-            IReadOnlyDictionary<ItemColorCarryRevisionScope, int> capturedRevisions)
-        {
-            var scope = new ItemColorCarryRevisionScope(layer, armorPart);
-            var globalScope = new ItemColorCarryRevisionScope(
-                layer,
-                AppearanceArmor.Invalid);
-            lock (PendingItemColorCarryLock)
-            {
-                return PendingItemColorCarries.TryGetValue(lineage, out var state) &&
-                       state.Revisions.GetValueOrDefault(scope) ==
-                       capturedRevisions.GetValueOrDefault(scope) &&
-                       state.Revisions.GetValueOrDefault(globalScope) ==
-                       capturedRevisions.GetValueOrDefault(globalScope);
-            }
-        }
-
-        private static void MarkPendingItemColorEdit(
-            uint item,
-            TintMapLayerType layer,
-            AppearanceArmor armorPart)
-        {
-            lock (PendingItemColorCarryLock)
-            {
-                if (!ItemColorCarryLineages.TryGetValue(item, out var lineage) ||
-                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
-                {
-                    return;
-                }
-
-                var scope = new ItemColorCarryRevisionScope(layer, armorPart);
-                state.Revisions[scope] = state.Revisions.GetValueOrDefault(scope) + 1;
-            }
-        }
-
-        private static void CompletePendingItemColorCarry(Guid lineage)
-        {
-            lock (PendingItemColorCarryLock)
-            {
-                if (!PendingItemColorCarries.TryGetValue(lineage, out var state))
-                    return;
-
-                state.PendingCount--;
-                if (state.PendingCount > 0)
-                    return;
-
-                foreach (var item in state.Items)
-                {
-                    if (ItemColorCarryLineages.TryGetValue(item, out var itemLineage) &&
-                        itemLineage == lineage)
-                    {
-                        ItemColorCarryLineages.Remove(item);
-                    }
-                }
-
-                PendingItemColorCarries.Remove(lineage);
-            }
+            TintMapState.LinkPendingItemColorCarryReplacement(sourceItem, replacementItem);
         }
 
         public static void QueueItemCustomColorCarry(
@@ -1219,7 +1088,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (carry == null)
                 return;
 
-            var registration = RegisterPendingItemColorCarry(
+            var registration = TintMapState.RegisterPendingItemColorCarry(
                 sourceItem,
                 item,
                 armorPart,
@@ -1239,7 +1108,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     }
                     else if (!GetIsObjectValid(item) &&
                              GetIsObjectValid(slottedItem) &&
-                             BelongsToItemColorCarryLineage(slottedItem, registration.Lineage))
+                             TintMapState.BelongsToItemColorCarryLineage(slottedItem, registration.Lineage))
                     {
                         // Rapid model clicks destroy the intermediate copy. Only follow its slot
                         // when the equipped item is a registered descendant of that replacement;
@@ -1262,7 +1131,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     {
                         // A preset/custom edit made after the model click is newer intent. Skip only
                         // that layer so unrelated queued colors can still migrate and clean up.
-                        if (!PendingItemColorCarryLayerIsCurrent(
+                        if (!TintMapState.PendingItemColorCarryLayerIsCurrent(
                                 registration.Lineage,
                                 layer,
                                 armorPart,
@@ -1373,7 +1242,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 }
                 finally
                 {
-                    CompletePendingItemColorCarry(registration.Lineage);
+                    TintMapState.CompletePendingItemColorCarry(registration.Lineage);
                 }
             }
 

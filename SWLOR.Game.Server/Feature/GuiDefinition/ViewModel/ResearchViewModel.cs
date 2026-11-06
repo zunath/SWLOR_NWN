@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // player is paid the next time the window opens.
             if (owned && ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
             {
-                ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+                CraftResearchExperiment.GrantExperimentXp(Player, dbJob);
                 jobChanged |= dbJob.Experiment.XpGranted;
             }
 
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Experiment = ResearchExperimentLifecycle.Open(
                             targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
                     };
-                    ResearchExperimentService.StampStart(Player, dbResearchJob);
+                    CraftResearchExperiment.StampStart(Player, dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    ResearchExperimentService.FinishDelivery(Player, dbJob);
+                    CraftResearchExperiment.FinishDelivery(Player, dbJob);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -549,9 +549,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craft.SetBlueprintDetails(item, blueprintDetails);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
-            var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
-            var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
-            ResearchExperimentService.FinishDelivery(Player, dbJob);
+            var experimentXp = CraftResearchExperiment.GrantExperimentXp(Player, dbJob);
+            var completionXp = CraftResearchExperiment.GrantCompletionXp(Player, dbJob, completion.Level);
+            CraftResearchExperiment.FinishDelivery(Player, dbJob);
 
             SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };

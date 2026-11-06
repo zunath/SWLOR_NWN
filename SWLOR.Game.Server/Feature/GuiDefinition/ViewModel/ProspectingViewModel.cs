@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the harvester its effect.
             // The session read its effects before this window opened, so they are read again while the node is untouched.
-            CraftingStyleSelection.Restore(Player);
+            CraftStyle.Restore(Player);
             GatheringStyles.RemoveUnowned(Player);
             if (_session != null && ProspectingSessions.IsActive(_session))
                 RefreshSessionEffects();

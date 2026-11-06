@@ -43,6 +43,6 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>Gives the XP <see cref="SaveWithCompletion"/> recorded, once, through the craft XP path.</summary>
-        public void GiveReward(uint player) => CraftSessionService.GrantPendingXp(player);
+        public void GiveReward(uint player) => CraftSessions.GrantPendingXp(player);
     }
 }

@@ -23,12 +23,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <summary>The one engine world of the quick craft batches. It keeps what the last craft created.</summary>
         NwnQuickCraftWorld QuickCraftWorld { get; }
 
-        /// <summary>Each player's quick craft batch, by player object.</summary>
-        Dictionary<uint, QuickCraftBatch> QuickCraftBatches { get; }
-
-        /// <summary>The minigame routes found on first use.</summary>
-        CraftMinigameRouteCache MinigameRoutes { get; }
-
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>

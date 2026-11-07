@@ -270,7 +270,47 @@ public class ChatPortraitTellGuardTests
         guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
         guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
 
-        guard.ConsumeRefusedTell(Observer, SharedSlot, "character-third", Now.AddSeconds(10)).Should().BeTrue();
+        guard.ConsumeRefusedTell(Observer, SharedSlot, "character-third", Now.AddSeconds(10), out var confirmedTarget).Should().BeTrue();
+        confirmedTarget.Should().BeFalse();
+    }
+
+    // The confirmed player was chosen by name, so the duplicate-name check must not refuse the tell to them.
+    [Test]
+    public void ConfirmedTell_ReportsItsTargetAsConfirmed()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(10), out var confirmedTarget).Should().BeFalse();
+        confirmedTarget.Should().BeTrue();
+    }
+
+    [TestCase(false, TestName = "A current-holder portrait tell is not reported as confirmed")]
+    [TestCase(true, TestName = "A tell after the click expired is not reported as confirmed")]
+    public void UnconfirmedTell_IsNotReportedAsConfirmed(bool expired)
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, SecondSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.CurrentHolder);
+
+        var sentAt = expired ? Now + Lifetime + TimeSpan.FromSeconds(1) : Now.AddSeconds(10);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, sentAt, out var confirmedTarget).Should().BeFalse();
+        confirmedTarget.Should().BeFalse();
+    }
+
+    [Test]
+    public void ConfirmedClickExpired_IsNotReportedAsConfirmed()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now + Lifetime + TimeSpan.FromSeconds(10), out var confirmedTarget)
+            .Should().BeFalse();
+        confirmedTarget.Should().BeFalse();
     }
 
     [Test]

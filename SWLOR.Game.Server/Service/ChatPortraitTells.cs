@@ -119,8 +119,10 @@ namespace SWLOR.Game.Server.Service
         /// Whether to refuse a tell because a portrait click that may belong to another player started it, telling
         /// the sender why. A tell from the Player List names its target exactly and is never refused.
         /// </summary>
-        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell)
+        /// <param name="confirmedTarget">True when the tell goes to the player the sender confirmed with a second portrait click.</param>
+        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell, out bool confirmedTarget)
         {
+            confirmedTarget = false;
             // A Player List tell does not send the chat prompt, so a refused click's prompt may still be open.
             if (isDirectTell)
                 return false;
@@ -132,8 +134,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetClient = server.GetClientObjectByObjectId(target);
             var refused = targetClient == null
-                ? Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, uint.MaxValue, string.Empty, DateTime.UtcNow)
-                : Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient.m_nPlayerID, GetCharacterId(targetClient), DateTime.UtcNow);
+                ? Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, uint.MaxValue, string.Empty, DateTime.UtcNow, out confirmedTarget)
+                : Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient.m_nPlayerID, GetCharacterId(targetClient), DateTime.UtcNow, out confirmedTarget);
             if (!refused)
                 return false;
 

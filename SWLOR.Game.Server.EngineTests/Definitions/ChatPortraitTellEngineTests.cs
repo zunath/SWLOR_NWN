@@ -67,6 +67,42 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Confirmed chat portrait tell reaches its player when another online player shares the name", Category = "PlayerName", TimeoutSeconds = 60f)]
+        public static async Task ConfirmedPortraitTellIgnoresSharedNames(EngineTestContext ctx)
+        {
+            const string newcomer = "A quiet newcomer";
+            using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
+            var first = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
+            PlayerAbilityFixture second = null;
+            PlayerAbilityFixture bystander = null;
+            try
+            {
+                var sharedSlot = GetSlot(first.Creature);
+                await SendClientTellAsync(ctx, first.Creature, GetSlot(observer.Creature), "first line");
+
+                // The first speaker logs out, a new player takes the slot, and another online player shares their descriptor.
+                first.Dispose();
+                second = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
+                ctx.AssertEqual(sharedSlot, GetSlot(second.Creature), "the second player takes the freed slot");
+                bystander = await PlayerAbilityFixture.CreateAsync(ctx, 5f);
+                PlayerDescriptor.SetUnknownDisplayName(second.Creature, newcomer);
+                PlayerDescriptor.SetUnknownDisplayName(bystander.Creature, newcomer);
+
+                await SendClientPortraitClickAsync(ctx, observer.Creature, second.Creature);
+                await ctx.DelaySecondsAsync((float)ChatPortraitTellGuard.ConfirmationDelay.TotalSeconds + 0.5f);
+                await SendClientPortraitClickAsync(ctx, observer.Creature, second.Creature);
+                await SendClientTellAsync(ctx, observer.Creature, sharedSlot, "confirmed despite the shared name");
+                ctx.AssertEqual(1L, ChatPortraitTells.CountLinesReceived(second.Creature), "the confirmed tell reaches the slot's holder");
+                ctx.AssertEqual(0L, ChatPortraitTells.CountLinesReceived(bystander.Creature), "the player who shares the name receives nothing");
+            }
+            finally
+            {
+                first.Dispose();
+                second?.Dispose();
+                bystander?.Dispose();
+            }
+        }
+
         [EngineTest("Chat portrait history records every hooked engine chat send and every player chat path", Category = "PlayerName", TimeoutSeconds = 90f)]
         public static async Task EveryChatPathRecordsThePortraitSpeaker(EngineTestContext ctx)
         {

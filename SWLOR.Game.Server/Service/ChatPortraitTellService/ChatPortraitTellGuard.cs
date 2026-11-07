@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
             public readonly Dictionary<uint, Dictionary<string, long>> LastLineBySpeakerBySlot = new();
         }
 
-        private sealed record PortraitClick(uint Slot, string Holder, bool Refused, DateTime Expires);
+        private sealed record PortraitClick(uint Slot, string Holder, bool Refused, bool Confirmed, DateTime Expires);
 
         private sealed record DoubtfulClick(uint Slot, string Holder, DateTime ClickedAt);
 
@@ -117,7 +117,8 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
                 _doubtfulClicksByObserver.Remove(observer);
             }
 
-            _clicksByObserver[observer] = new PortraitClick(slot, holder, IsDoubtful(result), now + _clickLifetime);
+            _clicksByObserver[observer] = new PortraitClick(slot, holder, IsDoubtful(result),
+                result == ChatPortraitClick.Confirmed, now + _clickLifetime);
             return result;
         }
 
@@ -132,15 +133,28 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
         /// the character the tell now reaches: either it already looked stale, or the slot changed hands since.
         /// Any tell ends the click, since the prompt the click filled in has been sent.
         /// </summary>
-        public bool ConsumeRefusedTell(uint observer, uint targetSlot, string target, DateTime now)
+        /// <param name="confirmedTarget">
+        /// True when the tell goes to the player the observer confirmed with a second click, still holding the slot.
+        /// That player was chosen by the name the observer sees, so a name other players share does not make it ambiguous.
+        /// </param>
+        public bool ConsumeRefusedTell(uint observer, uint targetSlot, string target, DateTime now) =>
+            ConsumeRefusedTell(observer, targetSlot, target, now, out _);
+
+        /// <inheritdoc cref="ConsumeRefusedTell(uint, uint, string, DateTime)"/>
+        public bool ConsumeRefusedTell(uint observer, uint targetSlot, string target, DateTime now, out bool confirmedTarget)
         {
+            confirmedTarget = false;
             if (!_clicksByObserver.Remove(observer, out var click))
                 return false;
 
             if (click.Slot != targetSlot || now > click.Expires)
                 return false;
 
-            return click.Refused || click.Holder != target;
+            if (click.Refused || click.Holder != target)
+                return true;
+
+            confirmedTarget = click.Confirmed;
+            return false;
         }
 
         /// <summary>

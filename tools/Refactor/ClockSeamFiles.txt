@@ -8,6 +8,7 @@ Service/CombatService/**
 Service/CombatPoint.cs
 Domain/Combat/OrdinaryAttackTraitsService.cs
 Domain/Combat/PairedRangedTraitsService.cs
+Domain/Combat/TemporaryStatModifierService.cs
 Service/StatusEffect.cs
 Domain/Character/StatusEffectService.cs
 Service/StatusEffectService/**

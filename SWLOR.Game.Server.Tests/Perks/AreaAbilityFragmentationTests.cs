@@ -46,8 +46,7 @@ public class AreaAbilityFragmentationTests
     public void ClearStatContributors()
     {
         CreatureEffects.Remove(Creature);
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!
-            .GetValue(null)!).Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
         _facadeScope.Dispose();
     }
 
@@ -88,13 +87,10 @@ public class AreaAbilityFragmentationTests
         var profile = GetProfile(ability);
         GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
         GetProperty<int>(profile, "TemporaryDefeatedEnemyEffectDurationSeconds").Should().Be(45);
-        var add = typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!;
         foreach (var stat in new[] { StatType.AreaAbilityPulseDamage, StatType.AreaAbilityPulseRadiusMeters })
         {
-            add.Invoke(null, new object[]
-            {
-                Creature, stat, GetProperty<int>(profile, $"Temporary{stat}"), 45f, "PulseTest", false
-            });
+            TemporaryStatModifierInternals.Invoke(
+                "AddInternal", Creature, stat, GetProperty<int>(profile, $"Temporary{stat}"), 45f, "PulseTest", false);
         }
 
         foreach (var skill in new[] { SkillType.TwinBlade, SkillType.Staff, SkillType.Force, SkillType.Mimicry })
@@ -109,8 +105,7 @@ public class AreaAbilityFragmentationTests
         GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationDamage).Should().Be(0);
         GetFragmentation(SkillType.Throwing, StatType.AreaAbilityFragmentationDamage).Should().Be(7);
 
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!)
-            .Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
         GetPulse(ability, true).Should().Be((0, 0), "the pulse must end with its temporary buff");
     }
 
@@ -180,7 +175,6 @@ public class AreaAbilityFragmentationTests
 
     private static void AddTemporaryFragmentation(object profile)
     {
-        var add = typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!;
         foreach (var stat in new[]
                  {
                      StatType.AreaAbilityFragmentationSkillType,
@@ -190,7 +184,7 @@ public class AreaAbilityFragmentationTests
                  })
         {
             var value = Convert.ToInt32(profile.GetType().GetProperty($"Temporary{stat}")!.GetValue(profile));
-            add.Invoke(null, new object[] { Creature, stat, value, 45f, "FragmentationTest", false });
+            TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, value, 45f, "FragmentationTest", false);
         }
     }
 

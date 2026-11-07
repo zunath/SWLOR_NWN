@@ -1,25 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatService;
 
-namespace SWLOR.Game.Server.Service.CombatService
+namespace SWLOR.Game.Server.Domain.Combat
 {
-    public static class TemporaryStatModifier
+    public class TemporaryStatModifierService : ITemporaryStatModifierService
     {
         private const string DefaultGroup = "";
 
-        private static readonly Dictionary<uint, List<TemporaryModifier>> _modifiers = new();
+        private readonly Dictionary<uint, List<TemporaryModifier>> _modifiers = new();
 
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        public static void ClearExitingObject()
+        public void ClearExitingObject()
         {
             Clear(GetExitingObject());
         }
 
-        [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
-        public static void PurgeAllExpired()
+        public void PurgeAllExpired()
         {
             foreach (var creature in _modifiers.Keys.ToList())
             {
@@ -37,12 +36,12 @@ namespace SWLOR.Game.Server.Service.CombatService
             }
         }
 
-        public static void Add(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
+        public void Add(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
         {
             AddInternal(creature, statType, amount, durationSeconds, group, true);
         }
 
-        private static void AddInternal(
+        private void AddInternal(
             uint creature,
             StatType statType,
             int amount,
@@ -72,24 +71,24 @@ namespace SWLOR.Game.Server.Service.CombatService
             }
         }
 
-        public static void Add(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
+        public void Add(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
         {
             Add(creature, statType, amount, durationSeconds, GetGroup(groupStatType));
         }
 
-        public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
+        public void Replace(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
         {
             ConsumeInternal(creature, statType, group, false);
             AddInternal(creature, statType, amount, durationSeconds, group, false);
             PublishRefresh(creature);
         }
 
-        public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
+        public void Replace(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
         {
             Replace(creature, statType, amount, durationSeconds, GetGroup(groupStatType));
         }
 
-        public static int AddCapped(
+        public int AddCapped(
             uint creature,
             StatType statType,
             int amount,
@@ -130,7 +129,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return stacks;
         }
 
-        public static int AddCapped(
+        public int AddCapped(
             uint creature,
             StatType statType,
             int amount,
@@ -151,12 +150,12 @@ namespace SWLOR.Game.Server.Service.CombatService
                 refreshExistingStacks);
         }
 
-        public static int Consume(uint creature, StatType statType, string group = null)
+        public int Consume(uint creature, StatType statType, string group = null)
         {
             return ConsumeInternal(creature, statType, group, true);
         }
 
-        private static int ConsumeInternal(
+        private int ConsumeInternal(
             uint creature,
             StatType statType,
             string group,
@@ -197,18 +196,18 @@ namespace SWLOR.Game.Server.Service.CombatService
             return total;
         }
 
-        public static int Consume(uint creature, StatType statType, StatType groupStatType)
+        public int Consume(uint creature, StatType statType, StatType groupStatType)
         {
             return Consume(creature, statType, GetGroup(groupStatType));
         }
 
         /// <summary>Consumes only the payload belonging to a previously inspected temporary source.</summary>
-        public static int ConsumeSource(uint creature, StatType statType, StatAdjustmentSource source)
+        public int ConsumeSource(uint creature, StatType statType, StatAdjustmentSource source)
         {
             return ConsumeSourceInternal(creature, statType, source, true);
         }
 
-        private static int ConsumeSourceInternal(uint creature, StatType statType, StatAdjustmentSource source, bool publishRefresh)
+        private int ConsumeSourceInternal(uint creature, StatType statType, StatAdjustmentSource source, bool publishRefresh)
         {
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return 0;
@@ -217,7 +216,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return group == null ? 0 : ConsumeInternal(creature, statType, group, publishRefresh);
         }
 
-        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
             if (PurgeExpired(creature))
                 PublishRefresh(creature);
@@ -255,7 +254,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return sources;
         }
 
-        public static int GetStatAdjustment(uint creature, StatType statType, string group = null)
+        public int GetStatAdjustment(uint creature, StatType statType, string group = null)
         {
             if (PurgeExpired(creature))
             {
@@ -269,12 +268,12 @@ namespace SWLOR.Game.Server.Service.CombatService
                 : 0;
         }
 
-        public static int GetStatAdjustment(uint creature, StatType statType, StatType groupStatType)
+        public int GetStatAdjustment(uint creature, StatType statType, StatType groupStatType)
         {
             return GetStatAdjustment(creature, statType, GetGroup(groupStatType));
         }
 
-        public static void Refresh(uint creature, StatType statType, float durationSeconds, string group = null)
+        public void Refresh(uint creature, StatType statType, float durationSeconds, string group = null)
         {
             if (durationSeconds <= 0f)
                 return;
@@ -294,12 +293,12 @@ namespace SWLOR.Game.Server.Service.CombatService
             }
         }
 
-        public static void Refresh(uint creature, StatType statType, float durationSeconds, StatType groupStatType)
+        public void Refresh(uint creature, StatType statType, float durationSeconds, StatType groupStatType)
         {
             Refresh(creature, statType, durationSeconds, GetGroup(groupStatType));
         }
 
-        public static void Clear(uint creature)
+        public void Clear(uint creature)
         {
             if (_modifiers.Remove(creature))
             {
@@ -317,7 +316,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return group == null || modifier.Group == group;
         }
 
-        private static bool PurgeExpired(uint creature)
+        private bool PurgeExpired(uint creature)
         {
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return false;
@@ -346,7 +345,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return removed;
         }
 
-        private static void PublishRefresh(uint creature)
+        private void PublishRefresh(uint creature)
         {
             if (GetIsPC(creature))
             {

@@ -32,7 +32,7 @@
         "WeaponAttackEligibility", "WeaponAttackPhase", "WeaponDelay", "OrdinaryAttackTraits",
         "PairedRangedTraits", "MeleeTechnique", "TwinPistolAbility", "TwinPistolEquipment",
         "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
-        "BattleGridSettings", "QueuedAttackAnimationPlayback"
+        "BattleGridSettings", "QueuedAttackAnimationPlayback", "TemporaryStatModifier"
       ],
       "featureFolders": []
     },

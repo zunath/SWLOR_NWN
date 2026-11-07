@@ -28,8 +28,9 @@
         generators build ("Service", "AIService"); the files themselves move (a filesystem move, then git add);
       * the handler order manifest (names are rewritten in place) and HandlerRenames.txt (a renamed handler is added with
         its old name, or its branch name is updated);
-      * the facade names of ConvertedServices.json (kept sorted) and the exact textEdits of the data file. Lists of paths
-        (ClockSeamFiles.txt, CoverageFloors.json, PlayerMessageAudit.json) follow the folder-path rewrite.
+      * ClockSeamFiles.txt (expandGlobFiles: a moved folder glob becomes the moved files), the facade names of
+        ConvertedServices.json (kept sorted) and the exact textEdits of the data file. Other path lists
+        (CoverageFloors.json, PlayerMessageAudit.json) follow the folder-path rewrite.
 
     A using line that becomes a duplicate of one above it is dropped. Files are read and written byte for byte (Latin-1),
     so BOMs, encodings and line endings stay.
@@ -115,6 +116,7 @@ $renames = @{}      # relative old namespace -> relative new namespace
 foreach ($entry in $moves.namespaceRenames) { $renames[[string]$entry.from] = [string]$entry.to }
 $textExcludes = @($moves.textExcludes)
 $facadeFiles = @($moves.facadeNameFiles)
+$globFiles = @($moves.expandGlobFiles)
 $textEdits = @($moves.textEdits)
 
 $domainMapFile = Join-Path $root $domainMapPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
@@ -342,6 +344,14 @@ $renamePathAlt = ($renames.Keys | Sort-Object Length -Descending | ForEach-Objec
 $pathRegex = New-Object System.Text.RegularExpressions.Regex(('(?<![\w])(?:Service(?<sep>[/\\]{1,2})(?<svc>[A-Za-z0-9_]+?)Service(?![\w])(?!\.\w)|(?<ren>' + $renamePathAlt + ')(?![\w]))'), $regexOptions)
 $literalRegex = New-Object System.Text.RegularExpressions.Regex('"Service"(?<gap>\s*(?:,|/)\s*)"(?<svc>[A-Za-z0-9_]+?)Service"', $regexOptions)
 $relativeRegex = New-Object System.Text.RegularExpressions.Regex('(?<![\w.])(?<svc>[A-Za-z0-9_]+?)Service\.(?<next>[A-Za-z_]\w*)', $regexOptions)
+$renameLiterals = @{}
+foreach ($from in $renames.Keys) {
+    $oldSegments = $from.Split('.')
+    $newSegments = $renames[$from].Split('.')
+    if ($oldSegments.Length -ne $newSegments.Length) { continue }
+    $pattern = ($oldSegments | ForEach-Object { '"' + [regex]::Escape($_) + '"' }) -join '(?<g>\s*(?:,|/)\s*)'
+    $renameLiterals[$from] = New-Object System.Text.RegularExpressions.Regex($pattern, $regexOptions)
+}
 $facadeRegex = New-Object System.Text.RegularExpressions.Regex('("facade"\s*:\s*")(?<svc>[A-Za-z0-9_]+?)Service(?=\.)', $regexOptions)
 $usingLineRegex = New-Object System.Text.RegularExpressions.Regex('(?m)^[ \t]*(?:global[ \t]+)?using[ \t]+(?!\()[^=;\r\n]+;[ \t]*\r?\n', $regexOptions)
 $headerEndRegex = New-Object System.Text.RegularExpressions.Regex('(?m)^[ \t]*(?:namespace\b|\[|(?:public|internal|static|sealed|abstract|partial|readonly|unsafe|file|class|struct|enum|interface|record|delegate)\b)', $regexOptions)
@@ -434,6 +444,16 @@ $relativeEvaluator = [System.Text.RegularExpressions.MatchEvaluator] {
     return $serverRoot + (Resolve-DomainNamespace $name) + '.' + $m.Groups['next'].Value
 }
 
+$script:currentRename = ''
+$renameLiteralEvaluator = [System.Text.RegularExpressions.MatchEvaluator] {
+    param($m)
+    $newSegments = $renames[$script:currentRename].Split('.')
+    $gap = $m.Groups['g'].Captures
+    $out = '"' + $newSegments[0] + '"'
+    for ($i = 1; $i -lt $newSegments.Length; $i++) { $out += $gap[$i - 1].Value + '"' + $newSegments[$i] + '"' }
+    $script:counts.literals++
+    return $out
+}
 $facadeEvaluator = [System.Text.RegularExpressions.MatchEvaluator] {
     param($m)
     $name = $m.Groups['svc'].Value
@@ -546,7 +566,10 @@ function Update-Text {
         $result = $relativeRegex.Replace($result, $relativeEvaluator)
         if ($Path.EndsWith('.cs', [System.StringComparison]::Ordinal) -or $Path.EndsWith('.py', [System.StringComparison]::Ordinal)) {
             $result = $literalRegex.Replace($result, $literalEvaluator)
-        }
+            foreach ($from in $renameLiterals.Keys) {
+                $script:currentRename = $from
+                $result = $renameLiterals[$from].Replace($result, $renameLiteralEvaluator)
+            }        }
     }
     if ($InDomain) { $result = Add-FacadeAccess $result $MovedFromService }
     foreach ($edit in $textEdits) {
@@ -568,7 +591,27 @@ foreach ($path in $allFiles) {
     if ($info.Length -gt 8MB -or $info.Length -eq 0) { continue }
     $text = Read-Latin1 $path
     $new = $text
-    $target = if ($moveMap.ContainsKey($path)) { $moveMap[$path] } else { $path }
+    if ($globFiles -contains $path) {
+        # A line `Service/<N>Service/**` of a path list names the files of a moved folder. The list means exactly those
+        # files (the Domain folder holds others that must keep their own rules), so each becomes a line of its own.
+        $builder = New-Object System.Text.StringBuilder
+        foreach ($line in [regex]::Split($new, '(?<=\n)')) {
+            if ($line -match '^(Service/[A-Za-z0-9_]+Service(?:/[A-Za-z0-9_]+)*)/\*\*(\r?\n?)$') {
+                $glob = $Matches[1]
+                $eol = if ($Matches[2]) { $Matches[2] } else { "`n" }
+                $folder = "$serverFolder/$glob/"
+                if ((Get-MappedServerPath "$glob/x") -ne "$glob/x") {
+                    $files = @($moveMap.Keys | Where-Object { $_.StartsWith($folder, [System.StringComparison]::Ordinal) -and $_.EndsWith('.cs', [System.StringComparison]::Ordinal) } |
+                            ForEach-Object { $moveMap[$_].Substring($serverFolder.Length + 1) })
+                    [System.Array]::Sort($files, [System.StringComparer]::Ordinal)
+                    foreach ($file in $files) { [void]$builder.Append($file + $eol) }
+                    continue
+                }
+            }
+            [void]$builder.Append($line)
+        }
+        $new = $builder.ToString()
+    }    $target = if ($moveMap.ContainsKey($path)) { $moveMap[$path] } else { $path }
     $isCs = $path.EndsWith(".cs", [System.StringComparison]::Ordinal)
     $new = Update-Text $path $new ($isCs -and $moveMap.ContainsKey($path) -and $path.StartsWith("$serverFolder/Service/", [System.StringComparison]::Ordinal)) ($isCs -and $target.StartsWith("$serverFolder/Domain/", [System.StringComparison]::Ordinal))
     if ($new -ne $text) {

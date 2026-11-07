@@ -166,8 +166,7 @@ public class LeadershipOffensivePartyBuffTests
         const uint creature = 0xFFFFFFFC;
         const uint firstLeader = 0xFFFFFFFE;
         const uint secondLeader = 0xFFFFFFFD;
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         var activeIcon = activeAccuracy > 0 ? EffectIconType.MarkTarget2StatusEffect : EffectIconType.MarkTarget1StatusEffect;
         var active = new HostileAbilityPartyBuffStatusEffect(activeDamage, activeAccuracy, 16780505, activeIcon);
         active.ApplyEffect(firstLeader, creature, 20);
@@ -215,8 +214,8 @@ public class LeadershipOffensivePartyBuffTests
         buff.Should().Contain("IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied)");
         buff.Should().Contain("TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown)");
         buff.Should().Contain("sequence.TryTriggerPartyBuff()");
-        var statuses = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statuses = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         statuses.Should().Contain("source != creature && GetIsReactionTypeHostile(creature, source)");
-        statuses.Should().Contain("Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
+        statuses.Should().Contain("ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
     }
 }

@@ -469,6 +469,27 @@ public class PlayerNameServiceTests
 
     private sealed class PagedDb : IDBService
     {
+        public void Load() => throw UnsupportedDBMember.For(nameof(Load));
+
+        public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
+            throw UnsupportedDBMember.For(nameof(StreamAdd));
+
+        public string GetRawJson<T>(string id) => throw UnsupportedDBMember.For(nameof(GetRawJson));
+
+        public IEnumerable<string> SearchIds<T>(DBQuery<T> query)
+            where T : EntityBase =>
+            throw UnsupportedDBMember.For(nameof(SearchIds));
+
+        public IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
+            where T : EntityBase =>
+            throw UnsupportedDBMember.For(nameof(SearchRawJson));
+
+        public void SetUnindexedJsonProperty<T>(string id, string propertyName, string json)
+            where T : EntityBase =>
+            throw UnsupportedDBMember.For(nameof(SetUnindexedJsonProperty));
+
+        public string EscapeTokens(string str) => throw UnsupportedDBMember.For(nameof(EscapeTokens));
+
         private readonly List<PlayerKnownName> _records;
 
         public PagedDb(List<PlayerKnownName> records) => _records = records;

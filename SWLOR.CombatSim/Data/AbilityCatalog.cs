@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,6 +17,8 @@ namespace SWLOR.CombatSim.Data
         // Ability delegates take an object id; outside the engine any non-zero id works for data-only lambdas.
         private const uint PlaceholderObject = 0x7F000000;
 
+        private static readonly object ContainerGate = new();
+
         private readonly Dictionary<FeatType, AbilityInfo> _abilities = new();
         private readonly List<string> _loadErrors = new();
 
@@ -31,9 +34,21 @@ namespace SWLOR.CombatSim.Data
 
         public static AbilityCatalog Load()
         {
+            EnsureServerContainer();
             var catalog = new AbilityCatalog(PerkCatalog.Load());
             catalog.LoadAll();
             return catalog;
+        }
+
+        // A few delegates read status effects through the server's static facade (Anger's recast). A tool with no game
+        // server builds the server's container itself, as SWLOR.CLI does.
+        private static void EnsureServerContainer()
+        {
+            lock (ContainerGate)
+            {
+                if (!CompositionRoot.IsBuilt)
+                    CompositionRoot.Build(CompositionRoot.ServerHost);
+            }
         }
 
         public AbilityInfo Get(FeatType feat)

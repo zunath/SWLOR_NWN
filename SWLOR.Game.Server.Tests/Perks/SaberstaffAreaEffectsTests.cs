@@ -26,16 +26,16 @@ public class SaberstaffAreaEffectsTests
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61241;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
-    public void Cleanup() => Effects.Remove(Creature);
+    public void Cleanup()
+    {
+        Effects.Remove(Creature);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void TempestStance_AdjustsAreaAndSingleTargetDamageAcrossSkills()

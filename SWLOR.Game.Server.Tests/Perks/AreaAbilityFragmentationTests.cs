@@ -35,15 +35,11 @@ public class AreaAbilityFragmentationTests
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61240;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void ClearStatContributors()
@@ -51,6 +47,7 @@ public class AreaAbilityFragmentationTests
         CreatureEffects.Remove(Creature);
         ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!
             .GetValue(null)!).Remove(Creature);
+        _facadeScope.Dispose();
     }
 
     [TestCase(1, 3)]

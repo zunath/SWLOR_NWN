@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Architecture.Tests.Fixtures.Rules;
 
@@ -21,4 +22,5 @@ public static class MutableTableHolder
     public static readonly ImmutableArray<(int Rank, List<int> Values)> TupleOfList = [];
     public static readonly Stopwatch Watch = new();
     public static ImmutableArray<int> NotReadonly = [1];
+    public static readonly FrozenDictionary<int, Effect> FrozenOfEngineClass = new Dictionary<int, Effect>().ToFrozenDictionary();
 }

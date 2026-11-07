@@ -28,6 +28,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
 {
+    // Reading an ability's recast reads the creature's status effects through the facade.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly HashSet<string> ScopedTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "Aura",

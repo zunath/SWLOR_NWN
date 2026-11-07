@@ -6118,67 +6118,88 @@
     "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"STM\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 583,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 629,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 603,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 649,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 739,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 785,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 744,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 810,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature, receiver =>\n                {\n                    var name = PlayerName.GetDisplayName(receiver, creature);\n                    var effectName = statusEffect.Name;\n                    var applicationMessage = $\"{name} receives the effect of {effectName}\";\n                    if (GetIsObjectValid(source) && source != creature)\n                    {\n                        var sourceName = PlayerName.GetDisplayName(receiver, source);\n                        if (!string.IsNullOrWhiteSpace(sourceName))\n                        {\n                            applicationMessage = $\"{applicationMessage} from {sourceName}\";\n                        }\n                    }\n\n                    return applicationMessage;\n                })"
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 913,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 815,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 817,
+    "Member": "ApplyStatusEffectInternal",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 981,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1084,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 1127,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1461,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 1504,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 1470,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 1513,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
-    "Line": 2048,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 2074,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 2076,
+    "Member": "RemoveStatusEffectInstance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",

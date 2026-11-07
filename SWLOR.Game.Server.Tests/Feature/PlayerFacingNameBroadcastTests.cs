@@ -238,10 +238,11 @@ public class PlayerFacingNameBroadcastTests
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
-        statusEffectSource.Should().Contain("PlayerName.GetDisplayName(receiver, creature)");
-        statusEffectSource.Should().Contain("PlayerName.GetDisplayName(receiver, source)");
+            "Domain",
+            "Character",
+            "StatusEffectService.cs"));
+        statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, creature)");
+        statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, source)");
         statusEffectSource.Should().NotContain("var name = GetName(creature);");
 
         var propertyPermissionsSource = File.ReadAllText(Path.Combine(

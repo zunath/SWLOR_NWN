@@ -5,19 +5,36 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
 {
+    // These tests seed the status effect tracker of the installed container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
     private const uint Creature = 61241;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
-    public void ClearEffects() => CreatureEffects.Remove(Creature);
+    public void ClearEffects()
+    {
+        CreatureEffects.Remove(Creature);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void LimitedSpread_AppliesToOnlyOneRecipientAcrossTheCast()

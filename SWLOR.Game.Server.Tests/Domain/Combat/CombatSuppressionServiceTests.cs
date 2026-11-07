@@ -417,6 +417,13 @@ public class CombatSuppressionServiceTests
         _service.ReconcileOverwatchStatus(Attacker);
         _statusCalls.Should().Equal($"Remove {Attacker} OverwatchStatusEffect", $"Apply {Attacker} {Attacker} OverwatchStatusEffect 21");
 
+        // The shorter window runs out and is dropped; the marker follows the one left.
+        _statusCalls.Clear();
+        _now = _now.AddSeconds(6);
+        _service.ReconcileOverwatchStatus(Attacker);
+        _statusCalls.Should().Equal($"Remove {Attacker} OverwatchStatusEffect", $"Apply {Attacker} {Attacker} OverwatchStatusEffect 15");
+        _service.ConsumeSuppressionRangedAttackAccuracyAdjustment(Attacker, Defender, SkillType.Rifle).Should().Be(0);
+
         // A permanent stack arms a window with no end.
         _statusCalls.Clear();
         Give(Other, Attacker, new SuppressionStatusEffect(2), -1);

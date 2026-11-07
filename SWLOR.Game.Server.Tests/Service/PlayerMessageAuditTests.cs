@@ -79,8 +79,9 @@ public class PlayerMessageAuditTests
     [TestCase("ApplyStatusAppliedTargetStaminaDrain", 1)]
     public void CombatOutcomesAndReadiness_RetainTheirProductionMessages(string member, int expectedMessages)
     {
+        // A call outside any method (a field initializer, a facade's instance property) belongs to no member.
         var messages = CombatSource.Nodes<InvocationExpressionSyntax>().Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
-                .First().Identifier.ValueText == member &&
+                .FirstOrDefault()?.Identifier.ValueText == member &&
             MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
             .ToArray();
         messages.Should().HaveCount(expectedMessages, "optional detail must not replace the actual combat outcome or readiness notice");

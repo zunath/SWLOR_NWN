@@ -26,10 +26,12 @@ public class CombatPartForwardingTests
     private static IEnumerable<Type> Parts() => new[]
     {
         typeof(ICombatAbilityBonusService),
+        typeof(ICombatAbilityHitService),
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
         typeof(ICombatDamageModifiersService),
         typeof(ICombatFeedbackService),
+        typeof(ICombatHitEffectsService),
         typeof(ICombatQueriesService),
         typeof(ICombatResourcesService),
         typeof(ICombatSuppressionService),
@@ -136,12 +138,30 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatDamageModifiersService), "ApplyCriticalDamageModifier(skillType=Invalid, defender=2130706432, criticalDamagePercentAdjustment=0)")]
     [TestCase(typeof(ICombatDamageModifiersService), "ApplyDamageDealtModifiers(abilityDamagePercentAdjustment=0, lowHPAbilityDamagePercentAdjustment=0, isOrdinaryWeaponAttack=False)")]
     [TestCase(typeof(ICombatDamageModifiersService), "ApplyDamageDealtModifiers(skillType=Invalid, damageType=Physical, isAbilityDamage=False, canApplyRandomFlatBonuses=True, isLandedAttack=True, ability=null)")]
-    public void TheMovedDefaultsKeepTheirValues(Type part, string expected)
-    {
-        static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
-            .Where(parameter => parameter.HasDefaultValue)
-            .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
+    public void TheMovedDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 8, typeof(ICombatAbilityBonusService), typeof(ICombatDamageModifiersService));
 
+    // The members of the ability hit and hit effects parts that have default arguments, with the defaults they had as static
+    // members of Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatAbilityHitService), "CalculateAbilityCriticalRating(criticalRateAdjustment=0, defender=2130706432)")]
+    [TestCase(typeof(ICombatAbilityHitService), "GetAbilityCriticalRate(criticalRateAdjustment=0, defender=2130706432)")]
+    [TestCase(typeof(ICombatAbilityHitService), "TryResolveAbilityHit(hitChancePercentAdjustment=0, skillLevelOverride=-1, statOverride=Invalid, accuracyFlatAdjustment=0)")]
+    [TestCase(typeof(ICombatHitEffectsService), "ApplyAutoAttackDamageModifiers(skillType=Invalid)")]
+    [TestCase(typeof(ICombatHitEffectsService), "ApplyDamageDealtEffects(skillType=Invalid, damageType=Physical, deliveryType=Direct, isAbilityDamage=False, allowsHitProcs=True)")]
+    [TestCase(typeof(ICombatHitEffectsService), "ApplyCriticalHitEffects(isSingleTargetImpact=False, skillType=Invalid)")]
+    [TestCase(typeof(ICombatHitEffectsService), "ApplyDefeatedEnemyEffects(defeated=2130706432)")]
+    [TestCase(typeof(ICombatHitEffectsService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
+    public void TheMovedHitDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 8, typeof(ICombatAbilityHitService), typeof(ICombatHitEffectsService));
+
+    private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
+        .Where(parameter => parameter.HasDefaultValue)
+        .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
+
+    // The member of the part with these defaults has them on Combat's forwarder and the instance class too, and the parts of
+    // one pull request have exactly the members it lists.
+    private static void AssertMovedDefaults(Type part, string expected, int listed, params Type[] pullRequestParts)
+    {
         var service = part.Assembly.GetTypes().Single(type => type.IsClass && !type.IsAbstract && part.IsAssignableFrom(type));
         var members = part.GetMethods().Where(method => Defaults(method) == expected).ToArray();
         members.Should().ContainSingle(expected);
@@ -151,11 +171,11 @@ public class CombatPartForwardingTests
         Defaults(map.TargetMethods[Array.IndexOf(map.InterfaceMethods, member)]).Should().Be(expected, service.Name);
         NWScript.OBJECT_INVALID.Should().Be(2130706432u);
 
-        var all = Parts().Where(type => type == typeof(ICombatAbilityBonusService) || type == typeof(ICombatDamageModifiersService))
+        var all = Parts().Where(pullRequestParts.Contains)
             .SelectMany(type => type.GetMethods())
             .Where(method => method.GetParameters().Any(parameter => parameter.HasDefaultValue))
             .Select(Defaults);
-        all.Should().HaveCount(8, "the PR lists these eight members");
+        all.Should().HaveCount(listed, $"the PR lists these {listed} members");
     }
 
     [Test]

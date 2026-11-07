@@ -4886,8 +4886,8 @@
     "Call": "SpeakString(\"Jackpot! This machine has paid out 10,000 credits!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.AbilityHit.cs",
-    "Line": 101,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs",
+    "Line": 132,
     "Member": "ApplyGuardedHitNextAttackEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
@@ -5082,15 +5082,15 @@
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.HitEffects.cs",
-    "Line": 812,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
+    "Line": 889,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.HitEffects.cs",
-    "Line": 1017,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
+    "Line": 1094,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"

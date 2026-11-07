@@ -194,7 +194,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         triggeredDamage.Should().Contain(
             "ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().Contain(
-            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
+            "_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().NotContain("ApplyDamageReflectionEffects");
 
         statusBase.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)",
@@ -557,7 +557,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
 
-        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextAttackEffects(");
+        var crossSkillCounter = ExtractMethod(combat, "public static void ApplyGuardedHitNextAttackEffects(");
         crossSkillCounter.Should().Contain("StatType.GuardedHitNextAttackDMGBonus");
         crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackDMGBonus");
         crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackEnmityBonus");

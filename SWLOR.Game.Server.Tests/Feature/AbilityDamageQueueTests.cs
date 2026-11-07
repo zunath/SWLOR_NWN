@@ -424,7 +424,7 @@ public class AbilityDamageQueueTests
         queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");
         damageRiders.Should().Contain("StatType.KatarVenomCurrentSecondStrikeDamageBonus");
         damageRiders.Should().Contain("ApplyTriggeredDamage(activator, target, bonus, damageType);");
-        triggeredDamage.Should().Contain("Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
+        triggeredDamage.Should().Contain("_ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
         triggeredDamage.Should().Contain("AssignCommand(");
     }
 

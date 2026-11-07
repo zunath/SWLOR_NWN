@@ -736,6 +736,149 @@ public class CombatFacadeAllocationTests
         }
     }
 
+    private sealed record HitParts(ICombatAbilityHitService Hit, ICombatHitEffectsService Effects);
+
+    // The same world as the timing parts (a container of its own, the constant engine, the clock held still, a status table
+    // for both creatures and the stat service that allocates nothing), with the ability hit and hit effects parts. The three
+    // tests that use it are named to run after every other combat part test of the fixture: the hit paths run the same status
+    // and stat reads, so running them first would change what the JIT has done to the reads those tests compare, and running
+    // after the damage roll loop above finds those reads already settled.
+    private static HitParts InstallHitParts(List<IDisposable> scopes)
+    {
+        InstallTimingParts(scopes);
+        var container = FacadeContainer.Current;
+        return new HitParts(container.Get<ICombatAbilityHitService>(), container.Get<ICombatHitEffectsService>());
+    }
+
+    [Test]
+    public void WhereAnAbilityHitOrHitEffectAllocatesNothingItsForwarderAllocatesNothing()
+    {
+        // Run per ability hit roll or per hit. Each allocated nothing before the move either (measured against the base
+        // assembly in the same sequence).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (hit, effects) = InstallHitParts(scopes);
+            var sink = 0;
+            bool? forced = null;
+            var guarded = Private<Action<uint>>("ApplyGuardedHitNextAttackEffects", typeof(uint));
+            var sourceStack = Private<Action<uint, uint>>("ApplySourceStatusStackEffects", typeof(uint), typeof(uint));
+            var spreadPoison = Private<Action<uint, uint>>("SpreadPoisonFromTarget", typeof(uint), typeof(uint));
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                // Ability hit roll.
+                ("ApplyRangedAbilityTargetDefenseReduction", () => hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle), () => CombatFacade.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle)),
+                ("ApplyGuardedHitNextAttackEffects", () => hit.ApplyGuardedHitNextAttackEffects(Attacker), () => guarded(Attacker)),
+                ("SetAbilityHitResolutionOverride", () => hit.SetAbilityHitResolutionOverride(null), () => CombatFacade.SetAbilityHitResolutionOverride(null)),
+                ("SetAutoAttackHitResolutionOverride", () => hit.SetAutoAttackHitResolutionOverride(null), () => CombatFacade.SetAutoAttackHitResolutionOverride(null)),
+                ("GetAutoAttackHitResolutionOverride", () => forced = hit.GetAutoAttackHitResolutionOverride(), () => forced = CombatFacade.GetAutoAttackHitResolutionOverride()),
+                // Hit effects.
+                ("ApplyAutoAttackDamageModifiers(0)", () => sink += effects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0), () => sink += CombatFacade.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0)),
+                ("ApplyDamageDealtEffects(triggered)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered), () => CombatFacade.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered)),
+                ("ApplyDamageDealtEffects(0)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 0), () => CombatFacade.ApplyDamageDealtEffects(Attacker, Defender, 0)),
+                ("ApplyCriticalHitEffects(0)", () => effects.ApplyCriticalHitEffects(Attacker, Defender, 10, 0), () => CombatFacade.ApplyCriticalHitEffects(Attacker, Defender, 10, 0)),
+                ("ApplyNonCriticalAbilityEffects", () => effects.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle), () => CombatFacade.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle)),
+                ("ApplySourceStatusStackEffects", () => effects.ApplySourceStatusStackEffects(Attacker, Defender), () => sourceStack(Attacker, Defender)),
+                ("SpreadPoisonFromTarget", () => effects.SpreadPoisonFromTarget(Attacker, Defender), () => spreadPoison(Attacker, Defender)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                LeastAllocated(part).Should().Be(0, $"{name} runs per ability hit roll or per hit");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+
+            GC.KeepAlive(sink);
+            GC.KeepAlive(forced);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereAnAbilityHitOrHitEffectAllocatesItsPinnedBytesItsForwarderAddsNothing()
+    {
+        // Bytes per call in this setup, each the same as the base assembly's in the same sequence and with tiered compilation
+        // off: the temporary modifier reads build their closures, the forget query its LINQ iterator, and triggered damage its
+        // effect closure on entry (which holds only the target, the damage and its type, not the part), as before the move.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (_, effects) = InstallHitParts(scopes);
+            var sink = 0;
+            var forget = Private<Action<uint>>("ForgetHitEffectState", typeof(uint));
+            var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
+            {
+                ("ApplyAutoAttackDamageModifiers", 168, () => sink += effects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle), () => sink += CombatFacade.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle)),
+                ("ConsumeSuppressedAutoAttackDamageBonuses", 168, () => effects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle), () => CombatFacade.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle)),
+                ("ApplyTriggeredDamage(0)", 32, () => sink += effects.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical), () => sink += CombatFacade.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical)),
+                ("ForgetHitEffectState", 192, () => effects.ForgetHitEffectState(Attacker), () => forget(Attacker)),
+            };
+
+            foreach (var (name, bytes, part, forwarder) in reads)
+            {
+                PerCall(part).Should().Be(bytes, $"{name} allocates what it did before the move");
+                PerCall(forwarder).Should().Be(bytes, $"Combat.{name} adds nothing to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereAnAbilityHitOrHitEffectMemberAllocatesMoreItsForwarderAddsNothing()
+    {
+        // These read the skill's attribute by reflection (IsWeaponSkillType), the status table, the NPC stats of an accuracy
+        // or evasion read, or run the damage taken part, as before the move. What they allocate per call depends on what the
+        // JIT has done with those reads by the time they run (with tiered compilation off, the base and this head allocate the
+        // same bytes for each), so it moves with test order, and between rounds by up to about 50 bytes. A forwarder is one
+        // call with the same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate
+        // (88 bytes or more): the margin is below that.
+        // The direct auto-attack is 8 bytes more than before the move: the splash rider's closure class, created on entry,
+        // now also holds the part.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (hit, effects) = InstallHitParts(scopes);
+            var sink = 0;
+            var recentDamagers = Private<Action<uint>>("ApplyRecentDamagerDefeatedEnemyEffects", typeof(uint));
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("ApplyRecentDamagerDefeatedEnemyEffects", () => effects.ApplyRecentDamagerDefeatedEnemyEffects(Defender), () => recentDamagers(Defender)),
+                ("GetAbilityCriticalRate", () => sink += hit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += CombatFacade.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender)),
+                ("CalculateAbilityCriticalRating", () => sink += hit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += CombatFacade.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender)),
+                ("TryResolveAbilityHit", () => sink += hit.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0, () => sink += CombatFacade.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0),
+                ("GetHitChanceAgainstSunderedTargetAdjustment", () => sink += hit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += CombatFacade.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender)),
+                ("GetCriticalRateAgainstSunderedTargetAdjustment", () => sink += hit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += CombatFacade.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender)),
+                ("ConsumeAutoAttackCycleDamageBonus", () => sink += effects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle), () => sink += CombatFacade.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle)),
+                ("ApplyDamageDealtEffects(auto)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle), () => CombatFacade.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle)),
+                ("ApplyDamageDealtEffects(ability)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true), () => CombatFacade.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true)),
+                ("ApplyCriticalHitEffects", () => effects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle), () => CombatFacade.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle)),
+                ("ApplyDefeatedEnemyEffects", () => effects.ApplyDefeatedEnemyEffects(Attacker, Defender), () => CombatFacade.ApplyDefeatedEnemyEffects(Attacker, Defender)),
+                ("ApplyTriggeredDamage", () => sink += effects.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle), () => sink += CombatFacade.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var (own, forwarded) = InterleavedPerCall(part, forwarder);
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                forwarded.Should().BeCloseTo(own, 64, $"Combat.{name} adds no closure or delegate to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
     [Test]
     public void TheDamageTypeDetailsAreReadWithoutAllocating()
     {

@@ -380,6 +380,61 @@ public class CombatSourceTests
             "Combat keeps no copy");
     }
 
+    [TestCase("_criticalHitSequenceStates", typeof(CombatHitEffectsService))]
+    [TestCase("_autoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("_sourceStatusAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("_meleeAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("MimicryTraitProcs", typeof(CombatHitEffectsService))]
+    [TestCase("_abilityHitResolutionOverride", typeof(CombatAbilityHitService))]
+    [TestCase("_autoAttackHitResolutionOverride", typeof(CombatAbilityHitService))]
+    public void ReflectionReachesTheHitTablesAndOverridesOfTheInstalledContainer(string name, Type owner)
+    {
+        // The hit effect tables, the proc table and the two test overrides of the hit rolls moved from static fields of Combat
+        // to the instance; a test that reads one by name gets the installed container's.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().Be(!name.EndsWith("Override", StringComparison.Ordinal), "only the test overrides are written after construction");
+        field.DeclaringType.Should().Be(owner);
+        object instance = owner == typeof(CombatHitEffectsService)
+            ? facades.Get<ICombatHitEffectsService>()
+            : facades.Get<ICombatAbilityHitService>();
+        if (field.FieldType.IsValueType)
+            CombatMembers.FieldValue<object>(name).Should().Be(field.GetValue(instance));
+        else
+            CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(instance));
+        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
+            "Combat keeps no copy");
+    }
+
+    [Test]
+    public void TheTestOverridesOfTheHitRollsAreTheInstalledContainersAndCombatSetsThem()
+    {
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        SWLOR.Game.Server.Service.Combat.SetAbilityHitResolutionOverride(false);
+        SWLOR.Game.Server.Service.Combat.SetAutoAttackHitResolutionOverride(true);
+        try
+        {
+            CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeFalse();
+            CombatMembers.FieldValue<bool?>("_autoAttackHitResolutionOverride").Should().BeTrue();
+            SWLOR.Game.Server.Service.Combat.GetAutoAttackHitResolutionOverride().Should().BeTrue();
+            facades.Get<ICombatAbilityHitService>().GetAutoAttackHitResolutionOverride().Should().BeTrue();
+        }
+        finally
+        {
+            SWLOR.Game.Server.Service.Combat.SetAbilityHitResolutionOverride(null);
+            SWLOR.Game.Server.Service.Combat.SetAutoAttackHitResolutionOverride(null);
+        }
+
+        CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeNull();
+        SWLOR.Game.Server.Service.Combat.GetAutoAttackHitResolutionOverride().Should().BeNull();
+    }
+
     [Test]
     public void ReflectionReachesAPartsInstanceMembersInTheInstalledContainer()
     {

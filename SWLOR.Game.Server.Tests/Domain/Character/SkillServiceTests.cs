@@ -953,6 +953,23 @@ public class SkillServiceTests
 
         public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
 
+        public void Load() => _inner.Load();
+
+        public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key,
+            StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
+            _inner.StreamAdd(key, streamPairs, maxLength, useApproximateMaxLength);
+
+        public string GetRawJson<T>(string id) => _inner.GetRawJson<T>(id);
+
+        public IEnumerable<string> SearchIds<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchIds(query);
+
+        public IEnumerable<string> SearchRawJson<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchRawJson(query);
+
+        public void SetUnindexedJsonProperty<T>(string id, string propertyName, string json) where T : EntityBase =>
+            _inner.SetUnindexedJsonProperty<T>(id, propertyName, json);
+
+        public string EscapeTokens(string str) => _inner.EscapeTokens(str);
+
         public Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key,
             StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);

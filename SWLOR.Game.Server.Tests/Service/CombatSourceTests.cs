@@ -447,6 +447,58 @@ public class CombatSourceTests
         }
     }
 
+    [TestCase("_sameTargetHostileAbilityHitCounts")]
+    [TestCase("_areaAbilityTargetHitSequences")]
+    public void ReflectionReachesTheImpactTablesOfTheInstalledContainer(string name)
+    {
+        // The same-target hit counts and the area ability hit sequences moved from static fields of Combat to the instance; a
+        // test that reads one by name gets the installed container's table, which Combat's forget forwarder clears.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityImpactService>()));
+        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
+            "Combat keeps no copy");
+
+        // The hit sequence state moved with its table; Combat keeps no copy of the type either.
+        typeof(SWLOR.Game.Server.Service.Combat).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic).Should().BeNull();
+        var value = name == "_sameTargetHostileAbilityHitCounts"
+            ? (object)1
+            : Activator.CreateInstance(typeof(CombatAbilityImpactService).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic)!)!;
+
+        // A record put into the reflected table is the one Combat's private forget forwarder clears.
+        const uint creature = 0xFFFFFFF3;
+        table[(creature, 0xFFFFFFF4u)] = value;
+        table[(0xFFFFFFF5u, 0xFFFFFFF6u)] = value;
+        CombatMembers.FindMethod("ForgetImpactState")!.IsStatic.Should().BeTrue("the private forwarder on Combat is found first");
+        CombatMembers.Invoke("ForgetImpactState", creature);
+        table.Keys.Cast<(uint, uint)>().Should().Equal((0xFFFFFFF5u, 0xFFFFFFF6u));
+    }
+
+    [TestCase("GetAreaAbilityPulseSources")]
+    [TestCase("GetAreaAbilityFragmentationStatAdjustment")]
+    [TestCase("ApplyAreaAbilityPulse")]
+    public void ReflectionReachesTheImpactPartsPrivateHelpersOnTheInstalledContainer(string name)
+    {
+        // AreaAbilityFragmentationTests and StatAdjustmentSourceTests call these by name; they are private members of the
+        // impact part now, with no forwarder on Combat, and CombatMembers calls them on the installed container's instance.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var method = CombatMembers.FindMethod(name);
+        method.Should().NotBeNull();
+        method!.IsStatic.Should().BeFalse("only the impact part has it");
+        method.IsPrivate.Should().BeTrue();
+        method.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+        typeof(SWLOR.Game.Server.Service.Combat).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull();
+    }
+
     [Test]
     public void TheTestOverridesOfTheHitRollsAreTheInstalledContainersAndCombatSetsThem()
     {

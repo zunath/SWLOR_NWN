@@ -128,7 +128,6 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.MaxFP = 100;
         record.MaxStamina = 100;
-        Bench.Items.Add(PlayerCreature);
 
         Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
 

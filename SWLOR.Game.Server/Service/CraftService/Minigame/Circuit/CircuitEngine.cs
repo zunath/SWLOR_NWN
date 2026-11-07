@@ -208,16 +208,16 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
 
     private MinigameActionRule<CircuitState> ResolveGround(MinigameActionInfo info, CircuitState state)
     {
-        if (Locked(info, CircuitRules.GroundIntegrity, CircuitRules.GroundCp, out var locked))
+        if (Locked(info, _setup.GroundIntegrity, CircuitRules.GroundCp, out var locked))
             return locked;
 
         if (state.Load <= 0)
         {
             return MinigameActionRule<CircuitState>.Disabled(
-                info, CircuitRules.GroundCp, CircuitRules.GroundIntegrity, "There is no Load to ground.");
+                info, CircuitRules.GroundCp, _setup.GroundIntegrity, "There is no Load to ground.");
         }
 
-        return Safe(info, CircuitRules.GroundCp, CircuitRules.GroundIntegrity, "Grounded",
+        return Safe(info, CircuitRules.GroundCp, _setup.GroundIntegrity, "Grounded",
             s => s with { Load = Math.Max(0, s.Load - CircuitRules.GroundLoad) });
     }
 

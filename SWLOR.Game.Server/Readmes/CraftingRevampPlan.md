@@ -278,7 +278,7 @@ You build circuit load to amplify your work, then discharge it before it overloa
   - Component grade sets the overload line.
   - Category sets the per-Load multiplier: droid parts, enhancements and modules amplify differently.
   - The Assembly/Calibration split.
-- **Difficulty with recipe level** (`CircuitRules`, November 2026). Above level 30, each level adds 6% to the Calibration a recipe needs and 3.6% to the Integrity actions cost, 1.1 CP to Patch and 0.12 CP to Tune and Micro-Tune. Levels 1-30 are unchanged.
+- **Difficulty with recipe level** (`CircuitRules`, November 2026). Above level 30, each level adds 6% to the Calibration a recipe needs and 3.3% to the Integrity actions cost, 1.1 CP to Patch and 0.12 CP to Tune and Micro-Tune. Levels 1-30 are unchanged.
 - **The decision:** push your luck for a bigger discharge, or bank it now.
 
 ### Fabrication: the Fabricator

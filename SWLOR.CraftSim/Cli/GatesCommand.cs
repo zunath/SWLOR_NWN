@@ -66,6 +66,9 @@ namespace SWLOR.CraftSim.Cli
                     : null
             };
 
+            if (thresholds.OnlyBands is { Count: 0 })
+                throw new ArgumentException("--bands needs at least one recipe level range.");
+
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
             var outPath = options.TryGetValue("--out", out var outValues) ? outValues[0] : DefaultReportPath(root, scenario);
 

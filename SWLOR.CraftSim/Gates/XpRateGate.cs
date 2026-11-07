@@ -5,7 +5,8 @@ namespace SWLOR.CraftSim.Gates
     /// <summary>One row of an XP-rate comparison: a recipe band and gear tier, a node tier, a site level or a fish-level band.</summary>
     /// <param name="Group">The grouping the plan's cohort uses, such as the recipe band "21-30".</param>
     /// <param name="Label">The variant within the group, such as the gear tier "mid gear".</param>
-    public sealed record XpRateCase(string Group, string Label);
+    /// <param name="Judged">False when the case is only reported: gear too far below what a crafter would bring to that many kits.</param>
+    public sealed record XpRateCase(string Group, string Label, bool Judged = true);
 
     /// <summary>The time a loop costs the player: seconds for each action they take, plus fixed seconds for each run of the loop.</summary>
     /// <param name="SecondsPerAction">An estimate until the client evidence measures it, separately for each loop.</param>
@@ -111,12 +112,12 @@ namespace SWLOR.CraftSim.Gates
                 var legacyRate = legacy.XpPerHour(legacyTiming);
                 var newRate = replacement.XpPerHour(replacementTiming);
                 var ratio = legacyRate <= 0 ? double.PositiveInfinity : newRate / legacyRate;
-                var passed = ratio >= _thresholds.XpRateMinimumRatio;
+                var passed = !xpCase.Judged || ratio >= _thresholds.XpRateMinimumRatio;
                 var label = $"{xpCase.Group} / {xpCase.Label}";
                 if (!passed)
                     failures.Add($"{label} ({Number(ratio, 2)}x)");
 
-                if (ratio < lowest)
+                if (xpCase.Judged && ratio < lowest)
                 {
                     lowest = ratio;
                     lowestCase = label;

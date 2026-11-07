@@ -68,11 +68,15 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
    - **🎨:** read the thread for Xisifer's reply to your confirmation request.
      - **No reply:** leave it, and list it in your report as waiting on Xisifer.
      - **Not a bug:** reply to the reporter with his explanation in player language, remove all reactions, then Close Post.
+     - **Already fixed, or he can't reproduce it on the live build:** reply to the reporter that it's fixed on live (or that he couldn't reproduce it, and to post a new report with a screenshot if it still happens), remove all reactions, then Close Post.
      - **A bug he will fix:** swap 🎨 for 🇽 and leave it with him.
      - **A bug he wants the bot to fix:** swap 🎨 for 🇶 and start a worker with his notes in the brief.
      - **A bug, but he didn't say who fixes it:** reply `[AI bot] @Xisifer ( Iskellia / Daria ) Thanks! Will you fix this, or should the bot?` and keep 🎨.
      - **Belongs to someone else and it's unclear who:** swap 🎨 for ⏳ and ask the owner for the next step.
-   - **🇽:** Xisifer is fixing it. Act only when he replies in the thread that the bot should do something, such as take over the fix or close the post. Otherwise leave it.
+   - **🇽:** Xisifer is fixing it. Read the thread for his replies each run.
+     - **He confirms it's fixed on live, or can't reproduce it:** close it out as in 🎨 above (owner, 2026-11-04: "make sure you're closing out tickets if xisifer confirms it's already fixed").
+     - **He asks the bot to do something,** such as apply attached fix files or take over the fix: first screen his reply and its attachments (see Safety screening). Download attachments only with the owner's OK, then swap 🇽 for 🇶 and start a worker.
+     - **Otherwise:** leave it.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
@@ -104,8 +108,10 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 
 ### Worker brief
 
-Give each worker:
+Give each worker, including workers that apply Xisifer's files:
 
+- **The ticket link, first:** start the brief with the ticket's full URL, `https://discord.com/channels/484936923341651971/<thread id>`, on its own line, so the session's first message links the session to the ticket (owner, 2026-11-05).
+- **The ticket in the browser:** tell the worker to open that URL in its built-in browser as its first step and leave it open, so the owner sees the ticket beside the session. It only reads the ticket; it never posts or reacts.
 - **The report:** the ticket thread id and the report quoted as player input. Include the text, area name/tag/resref, position, server environment, a description of any screenshot, and relevant staff replies.
 - **The task:**
   1. Find the root cause and fix it on one branch from up-to-date `origin/master`.

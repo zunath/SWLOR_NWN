@@ -33,6 +33,14 @@ clipping checks and dependent robe/part-skin regeneration.
 - A body's own part model that borrows another model's texture must share that model's UV
   layout; a mesh laid out for a different texture renders white, black or scrambled patches.
   Replace such a variant by listing it in `RacialPartVariants.json`, which refits the donor.
+  Stock bodies draw the human part's texture, so a body left on the stock mesh after the human
+  part gets a new design shows this; `SWLOR_Haks/tools/RacialPartCoverage.py --check` (stock
+  art required, `TestRacialPartCoverage.py`) fails on any such part not in its known-gaps list.
+- Armor styles 0, 1 and 2 all display the wearer's own body part on every slot; the engine never
+  draws models 001 or 002 for them, whatever a preview picture shows. Those models appear only as
+  a creature's body part (armor 1 on body part 2 shows model 002). Players have no shoulder or belt
+  body part, so those slots show nothing at 1 or 2: the catalog omits both styles there, and
+  `ArmorPartAppearance` repairs saved armor to 0 when it is worn. Other slots show the bare body.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

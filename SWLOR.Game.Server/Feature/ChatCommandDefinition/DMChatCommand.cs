@@ -975,13 +975,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var notificationMessage = $"Manual restart initiated by {initiatorName} ({accountName}) [{cdKey}] at {restartUtc:yyyy-MM-dd HH:mm:ss} UTC.";
                     ServerTasks.SendServerLifecycleNotificationForShutdown(notificationMessage);
 
-                    uint player = GetFirstPC();
-                    while (player != OBJECT_INVALID)
-                    {
-                        ExportSingleCharacter(player);
-                        BootPC(player, "The server is restarting.");
-                        player = GetNextPC();
-                    }
+                    ServerRestart.BootAllPlayers("The server is restarting.");
 
                     AdministrationPlugin.ShutdownServer();
                 });

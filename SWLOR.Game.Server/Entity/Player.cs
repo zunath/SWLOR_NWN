@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
@@ -175,8 +176,9 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
-        // The hot bar saved while a performance mode replaces it; null when not performing.
+        // Kept until a login confirms the character file contains the restored hot bar.
         public string PerformanceSavedHotBar { get; set; }
+        public int PerformanceHotBarRestoreSequence { get; set; }
         public string ActiveShipId { get; set; }
         [Indexed]
         public string UnknownDisplayName { get; set; }
@@ -275,6 +277,9 @@ namespace SWLOR.Game.Server.Entity
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }
         public string ActiveMimicryLoadoutId { get; set; } = string.Empty;
+        // The class names of the stances and toggles to apply again at the next login, saved when a server restart boots everyone.
+        // Records saved before this existed hold null, which means none.
+        public List<string> TogglesToRestore { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
@@ -352,6 +357,10 @@ namespace SWLOR.Game.Server.Entity
         public bool DisplayCooldownFloatingText { get; set; }
         public bool SelfQuickCastEnabled { get; set; }
         public bool EnemyQuickCastEnabled { get; set; }
+
+        // The market categories switched off in the market search, kept as exclusions so a category added later still shows.
+        // Empty means no filter. Records saved before this existed hold null, which means the same.
+        public HashSet<MarketCategoryType> MarketExcludedCategories { get; set; }
 
         // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
         // instead of the standalone HP/STM/FP window docked in the lower-right corner.

@@ -332,6 +332,7 @@ namespace SWLOR.Toolset.Archives
         private ErfArchiveSession? _session;
         private CancellationTokenSource? _exportLoadCts;
         private CancellationTokenSource? _resourceNameLoadCts;
+        private Task _resourceNameLoading = Task.CompletedTask;
         private bool _isUpdatingVisibleSelection;
         private bool _disposed;
 
@@ -1040,8 +1041,15 @@ namespace SWLOR.Toolset.Archives
             CancelResourceNameLoading();
             var cancellation = new CancellationTokenSource();
             _resourceNameLoadCts = cancellation;
-            _ = RunResourceNameLoadingAsync(load, cancellation);
+            _resourceNameLoading = RunResourceNameLoadingAsync(load, cancellation);
         }
+
+        /// <summary>
+        /// Completes when the most recently started optional resource name discovery finishes or
+        /// is canceled. It never faults. The window does not wait for it; tests await it so they
+        /// observe a settled view model instead of racing the name batches.
+        /// </summary>
+        internal Task ResourceNameLoading => _resourceNameLoading;
 
         private async Task RunResourceNameLoadingAsync(
             Func<CancellationToken, Task> load,

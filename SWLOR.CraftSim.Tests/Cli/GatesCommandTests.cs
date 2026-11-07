@@ -170,6 +170,7 @@ namespace SWLOR.CraftSim.Tests.Cli
         [TestCase("--gates", ",,", "--gates needs at least one of")]
         [TestCase("--legacy-seconds-per-action", "0", "--legacy-seconds-per-action needs a number above zero")]
         [TestCase("--legacy-seconds-per-action", "fast", "--legacy-seconds-per-action needs a number above zero")]
+        [TestCase("--bands", ",,", "--bands needs at least one recipe level range")]
         [TestCase("--bogus", "1", "Unknown option '--bogus'")]
         public void BadOptionsAreRejectedBeforeAnythingIsPlayed(string option, string value, string message)
         {

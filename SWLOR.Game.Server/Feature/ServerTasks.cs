@@ -37,11 +37,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
 
-                for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-                {
-                    ExportSingleCharacter(player);
-                    BootPC(player, "The server is automatically restarting.");
-                }
+                ServerRestart.BootAllPlayers("The server is automatically restarting.");
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
 

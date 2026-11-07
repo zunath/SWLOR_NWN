@@ -94,9 +94,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             return items.Count == 0 ? experience : $"{experience}\n{string.Join("; ", items)}";
         }
 
-        public static string RowDetail(string routineOrSetText, PerformanceQuality quality)
+        public static string RowDetail(string routineOrSetText, PerformanceQuality quality, bool isRoleplay = false)
         {
-            return $"{routineOrSetText} - {quality}";
+            return isRoleplay ? $"{routineOrSetText} - Roleplay" : $"{routineOrSetText} - {quality}";
         }
 
         private static void AddAttribute(List<string> items, int value, string label)

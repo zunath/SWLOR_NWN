@@ -50,8 +50,7 @@ def point(n: int) -> str:
 def style_text(k: dict[str, int]) -> dict[str, str]:
     return {
         "Overclock": (
-            f"Wire and Tune add {k['OverclockExtraLoad']} extra Load, and each Load point adds "
-            f"{k['OverclockLoadBoostPercent']} more {point(k['OverclockLoadBoostPercent'])} of output."),
+            f"Wire and Tune add {k['OverclockExtraLoad']} extra Load."),
         "Safe Mode": (
             f"Actions cannot overload while Load is no more than {k['SafeModeOverloadGrace']} over the line, and each Load point adds "
             f"{-k['SafeModeLoadBoostPercent']} fewer {point(-k['SafeModeLoadBoostPercent'])} of output."),
@@ -70,7 +69,7 @@ def rows(k: dict[str, int]) -> list[dict]:
 
     return [
         row("Overclocker", 1, "Conductive Wiring I", 5, "Trait",
-            f"In the Circuit, each Load point adds {k['ConductiveWiringLoadBoostRank1']} more {point(k['ConductiveWiringLoadBoostRank1'])} of output to Wire, Tune and Discharge.",
+            f"In the Circuit, each Load point adds {k['ConductiveWiringLoadBoost']} more {point(k['ConductiveWiringLoadBoost'])} of output to Wire, Tune and Discharge.",
             notes="Stat CircuitLoadBoostPercent. Ranks replace earlier ranks."),
         row("Overclocker", 1, "Capacitor Bank", 10, "Trait",
             f"In the Circuit, Discharge bursts are {k['CapacitorBankDischargePercent']}% larger.",
@@ -92,17 +91,17 @@ def rows(k: dict[str, int]) -> list[dict]:
             f"In the Circuit, the overload line rises by {k['HeatSinksLineRank2']}.",
             notes="Replaces Heat Sinks I's +1."),
         row("Overclocker", 3, "Shock Absorbers", 40, "Trait",
-            f"In the Circuit, an overload costs a third less Integrity ({k['OverloadIntegrityPercent']}% of the piece's maximum becomes {kept}%).",
+            f"In the Circuit, an overload costs {k['ShockAbsorbersReductionPercent']}% less Integrity ({k['OverloadIntegrityPercent']}% of the piece's maximum becomes {kept}%).",
             notes="Stat CircuitOverloadIntegrityReductionPercent."),
         row("Overclocker", 3, "Conductive Wiring II", 45, "Trait",
-            f"In the Circuit, each Load point adds {k['ConductiveWiringLoadBoostRank2']} more {point(k['ConductiveWiringLoadBoostRank2'])} of output to Wire, Tune and Discharge.",
-            notes="Replaces Conductive Wiring I's total."),
+            f"In the Circuit, each Load point adds {k['ConductiveWiringLoadBoost']} more {point(k['ConductiveWiringLoadBoost'])} of output to Wire, Tune and Discharge, and Discharge bursts are {k['ConductiveWiringDischargePercent']}% larger.",
+            notes="Replaces Conductive Wiring I's total. Stats CircuitLoadBoostPercent and CircuitDischargePowerPercent."),
         row("Overclocker", 4, "Surge", 50, "Trait",
             "Once per Circuit craft, the first overload does not cost Integrity. It discharges all your Load at full strength into whichever of Assembly or Calibration is further from full (Assembly on a tie).",
             notes="Capstone, automatic. Stat CircuitSurgeUnlocked. No quest requirement."),
         row("Technician", 1, "Insulated Traces I", 5, "Trait",
-            f"In the Circuit, Wire, Tune, Boost and Discharge cost {k['InsulatedTracesReductionRank1']} less Integrity, to a minimum of {minimum}. Ground and Patch are unchanged.",
-            notes="Stat CircuitActionIntegrityReduction. Also applies to Micro-Tune and Cascade Discharge. Ranks replace earlier ranks."),
+            f"In the Circuit, Wire and Boost cost {k['InsulatedTracesIntegrityReduction']} less Integrity, to a minimum of {minimum}. Other actions are unchanged.",
+            notes="Stat CircuitActionIntegrityReduction. Ranks replace earlier ranks."),
         row("Technician", 1, "Fine Calibration I", 10, "Trait",
             f"In the Circuit, Tune builds {k['FineCalibrationPercentRank1']}% more Calibration.",
             notes="Stat CircuitTunePowerPercent. Also raises Micro-Tune. Ranks replace earlier ranks."),
@@ -113,7 +112,7 @@ def rows(k: dict[str, int]) -> list[dict]:
             f"{style_prefix}{styles['Safe Mode']}",
             notes="Style: the status effect Safe Mode carries CircuitOverloadGrace and CircuitLoadBoostPercent. Not exclusive with Overclock as a purchase; only one style is active."),
         row("Technician", 3, "Micro-Tune", 25, "Active",
-            f"Adds the Micro-Tune action to the Circuit. It builds {k['MicroTuneSharePercent']}% of a Tune's Calibration, adds no Load and costs {k['MicroTuneCp']} CP and {k['MicroTuneIntegrity']} Integrity. It can overload only when Load is already over the line.",
+            f"Adds the Micro-Tune action to the Circuit. It builds {k['MicroTuneSharePercent']}% of a Tune's Calibration, adds no Load and costs {k['MicroTuneCp']} CP and {k['MicroTuneIntegrity']} Integrity, more on recipes above level {k['DifficultyStartLevel']}. It can overload only when Load is already over the line.",
             cp=str(k["MicroTuneCp"]), durability="Yes",
             notes="Stat CircuitMicroTuneUnlocked. A Clean Signal doubles a Tune, not a Micro-Tune."),
         row("Technician", 3, "Signal Lock", 30, "Trait",
@@ -123,8 +122,8 @@ def rows(k: dict[str, int]) -> list[dict]:
             f"In the Circuit, Patch restores {k['PrecisionPatchExtraRestore']} more Integrity and costs {k['PrecisionPatchCpReduction']} less CP.",
             notes="Stats CircuitPatchRestore and CircuitPatchCpReduction."),
         row("Technician", 3, "Insulated Traces II", 40, "Trait",
-            f"In the Circuit, Wire, Tune, Boost and Discharge cost {k['InsulatedTracesReductionRank2']} less Integrity, to a minimum of {minimum}. Ground and Patch are unchanged.",
-            notes="Replaces Insulated Traces I's total."),
+            f"In the Circuit, Wire and Boost cost {k['InsulatedTracesIntegrityReduction']} less Integrity, to a minimum of {minimum}. Patch restores {k['InsulatedTracesPatchRestore']} more Integrity.",
+            notes="Replaces Insulated Traces I's total. Stats CircuitActionIntegrityReduction and CircuitPatchRestore."),
         row("Technician", 3, "Fine Calibration II", 45, "Trait",
             f"In the Circuit, Tune builds {k['FineCalibrationPercentRank2']}% more Calibration.",
             notes="Replaces Fine Calibration I's total."),

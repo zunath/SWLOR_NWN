@@ -21,19 +21,21 @@ namespace SWLOR.CraftSim.Tests.Scenario
     {
         private sealed record Values(
             int Cw1, int Cw2, int Cap, int Heat1, int Heat2, int OcLoad, int OcBoost, int OverLoad, int OverCp, int Shock,
-            int Ins1, int Ins2, int Fc1, int Fc2, int Signal, int PatchRestore, int PatchCp, int SafeGrace, int SafeBoost)
+            int Ins1, int Ins2, int Fc1, int Fc2, int Signal, int PatchRestore, int PatchCp, int SafeGrace, int SafeBoost,
+            int CwDischarge, int InsPatchRestore)
         {
             /// <summary>The magnitudes of the approved draft.</summary>
-            public static readonly Values Draft = new(1, 3, 10, 1, 2, 1, 3, 1, 1, 33, 1, 2, 10, 25, 10, 10, 2, 2, -3);
+            public static readonly Values Draft = new(1, 3, 10, 1, 2, 1, 3, 1, 1, 33, 1, 2, 10, 25, 10, 10, 2, 2, -3, 0, 0);
 
             /// <summary>The magnitudes in CircuitPerkRules.</summary>
             public static readonly Values Shipped = new(
-                CircuitPerkRules.ConductiveWiringLoadBoostRank1, CircuitPerkRules.ConductiveWiringLoadBoostRank2, CircuitPerkRules.CapacitorBankDischargePercent,
-                CircuitPerkRules.HeatSinksLineRank1, CircuitPerkRules.HeatSinksLineRank2, CircuitPerkRules.OverclockExtraLoad, CircuitPerkRules.OverclockLoadBoostPercent,
+                CircuitPerkRules.ConductiveWiringLoadBoost, CircuitPerkRules.ConductiveWiringLoadBoost, CircuitPerkRules.CapacitorBankDischargePercent,
+                CircuitPerkRules.HeatSinksLineRank1, CircuitPerkRules.HeatSinksLineRank2, CircuitPerkRules.OverclockExtraLoad, 0,
                 CircuitPerkRules.OverdriveBoostExtraLoad, CircuitPerkRules.OverdriveBoostCpReduction, CircuitPerkRules.ShockAbsorbersReductionPercent,
-                CircuitPerkRules.InsulatedTracesReductionRank1, CircuitPerkRules.InsulatedTracesReductionRank2, CircuitPerkRules.FineCalibrationPercentRank1,
+                CircuitPerkRules.InsulatedTracesIntegrityReduction, CircuitPerkRules.InsulatedTracesIntegrityReduction, CircuitPerkRules.FineCalibrationPercentRank1,
                 CircuitPerkRules.FineCalibrationPercentRank2, CircuitPerkRules.SignalLockChancePercent, CircuitPerkRules.PrecisionPatchExtraRestore,
-                CircuitPerkRules.PrecisionPatchCpReduction, CircuitPerkRules.SafeModeOverloadGrace, CircuitPerkRules.SafeModeLoadBoostPercent);
+                CircuitPerkRules.PrecisionPatchCpReduction, CircuitPerkRules.SafeModeOverloadGrace, CircuitPerkRules.SafeModeLoadBoostPercent,
+                CircuitPerkRules.ConductiveWiringDischargePercent, CircuitPerkRules.InsulatedTracesPatchRestore);
         }
 
         private static CircuitPerkStats Stats(int rank, Values v, bool overclocker, bool technician, CircuitStyle style)
@@ -44,7 +46,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 s = s with
                 {
                     LoadBoostPercent = rank >= 45 ? v.Cw2 : rank >= 5 ? v.Cw1 : 0,
-                    DischargePowerPercent = rank >= 10 ? v.Cap : 0,
+                    DischargePowerPercent = (rank >= 10 ? v.Cap : 0) + (rank >= 45 ? v.CwDischarge : 0),
                     OverloadLine = rank >= 35 ? v.Heat2 : rank >= 15 ? v.Heat1 : 0,
                     CascadeDischarge = rank >= 25,
                     BoostLoad = rank >= 30 ? v.OverLoad : 0,
@@ -63,7 +65,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                     ForecastTurns = rank >= 15 ? 1 : 0,
                     MicroTune = rank >= 25,
                     SignalChancePercent = rank >= 30 ? v.Signal : 0,
-                    PatchRestore = rank >= 35 ? v.PatchRestore : 0,
+                    PatchRestore = (rank >= 35 ? v.PatchRestore : 0) + (rank >= 40 ? v.InsPatchRestore : 0),
                     PatchCpReduction = rank >= 35 ? v.PatchCp : 0,
                     Failsafe = rank >= 50
                 };

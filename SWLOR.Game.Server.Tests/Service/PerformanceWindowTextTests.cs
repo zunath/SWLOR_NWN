@@ -99,6 +99,55 @@ public class PerformanceWindowTextTests
     }
 
     [Test]
+    public void AudienceGets_ComposesTheRidersTheBankingRateTheCapAndTheDebt()
+    {
+        var dancer = PerformanceTestSnapshots.Dancer(
+            1,
+            xpScaled: 24,
+            routine: PerformanceRoutineType.PowerStep,
+            venue: 2,
+            hasStandingOvation: true,
+            routineAttributeBonus: 1,
+            crowdPleaserPercent: 20,
+            debtClearPercent: 4,
+            capBonusMinutes: 40,
+            quality: PerformanceQuality.Great);
+
+        // 4 min x 1.25 (Great) x (1 + 0.2 venue + 0.2 Crowd Pleaser) = 7; cap 60 + 2 x 12 + 40 Encore = 124.
+        PerformanceAudienceText.AudienceGets(dancer).Should().Be(
+            "Your audience gets +26% skill XP\n+2 MGT; Standing Ovation\n" +
+            "Banks 7 min per minute watched after 3 min, up to 124 min. Clears 4% XP debt per minute.");
+    }
+
+    [Test]
+    public void AudienceGets_ForARoleplayMusicianUsesTheRoughRateAndHarmonyOnlyWhileADancerIsNear()
+    {
+        var musician = new PerformerSnapshot
+        {
+            Performer = 2,
+            Kind = PerformanceKind.Music,
+            XpScaled = 6,
+            Set = PerformanceSetType.KeenEar,
+            BankingBonusPercent = 10,
+            Quality = PerformanceMath.RoleplayQuality,
+            IsRoleplay = true
+        };
+
+        PerformanceAudienceText.AudienceGets(musician).Should().Be(
+            "Your audience gets +6% skill XP\n+1 PER\nBanks 2 min per minute watched after 3 min, up to 60 min.");
+
+        musician.HarmonyActive = true;
+        PerformanceAudienceText.AudienceGets(musician).Should().EndWith("Banks 2.2 min per minute watched after 3 min, up to 60 min.");
+    }
+
+    [Test]
+    public void RowDetail_NamesRoleplayInsteadOfTheQuality()
+    {
+        PerformanceWatchText.RowDetail("Quickstep", PerformanceQuality.Great).Should().Be("Quickstep - Great");
+        PerformanceWatchText.RowDetail("Quickstep", PerformanceQuality.Rough, true).Should().Be("Quickstep - Roleplay");
+    }
+
+    [Test]
     public void Header_NamesTheTroupeBonusOnlyWhenThereIsOne()
     {
         PerformanceWatchText.Header(3, 0.2).Should().Be("3 performers in range - Troupe +20%");
@@ -235,6 +284,15 @@ public class PerformanceWindowTextTests
         PerformanceBindCache.Changed(ref shown, "b").Should().BeTrue();
         PerformanceBindCache.Changed(ref shown, "b").Should().BeFalse();
         shown.Should().Be("b");
+    }
+
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(9, true)]
+    public void SongPicker_OpensOnlyWithSongsToChooseBetween(int availableSongs, bool expected)
+    {
+        PerformanceSongs.CanChooseSong(availableSongs).Should().Be(expected);
     }
 
     [Test]

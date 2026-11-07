@@ -195,4 +195,181 @@ public class ChatPortraitTellGuardTests
 
         guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.Unrecorded);
     }
+
+    // A doubtful click that is clicked again, after the player was told who now holds the slot, sends the tell.
+    [Test]
+    public void AmbiguousPortraitClickedAgain_ConfirmsTheCurrentHolderAndSendsTheTell()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.RecordLine(Observer, SharedSlot, SecondSpecialist);
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.Ambiguous);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(30)).Should().BeFalse();
+    }
+
+    [Test]
+    public void FormerHolderPortraitClickedAgain_ConfirmsTheCurrentHolderAndSendsTheTell()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.FormerHolder);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(30)).Should().BeFalse();
+    }
+
+    [Test]
+    public void DoubleClick_DoesNotConfirmBeforeThePlayerCouldReadWhoTheTellReaches()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.RecordLine(Observer, SharedSlot, SecondSpecialist);
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.Ambiguous);
+        var tooSoon = Now + ChatPortraitTellGuard.ConfirmationDelay - TimeSpan.FromMilliseconds(1);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, tooSoon).Should().Be(ChatPortraitClick.Ambiguous);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, tooSoon).Should().BeTrue();
+
+        // A deliberate click after reading the message still confirms.
+        guard.Click(Observer, SharedSlot, SecondSpecialist, tooSoon + ChatPortraitTellGuard.ConfirmationDelay)
+            .Should().Be(ChatPortraitClick.Confirmed);
+    }
+
+    [Test]
+    public void ConfirmingClickAfterTheWindow_IsDoubtfulAgain()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.RecordLine(Observer, SharedSlot, SecondSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+
+        var late = Now + ChatPortraitTellGuard.ConfirmationWindow + TimeSpan.FromSeconds(1);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, late).Should().Be(ChatPortraitClick.Ambiguous);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, late).Should().BeTrue();
+    }
+
+    [Test]
+    public void SlotChangesHandsBetweenTheTwoClicks_DoesNotConfirmTheNewHolder()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.FormerHolder);
+
+        // The second character logs out and a third takes the slot before the confirming click.
+        guard.Click(Observer, SharedSlot, "character-third", Now.AddSeconds(5)).Should().Be(ChatPortraitClick.FormerHolder);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, "character-third", Now.AddSeconds(10)).Should().BeTrue();
+    }
+
+    [Test]
+    public void SlotChangesHandsAfterAConfirmedClick_RefusesTheTell()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+
+        guard.ConsumeRefusedTell(Observer, SharedSlot, "character-third", Now.AddSeconds(10), out var confirmedTarget).Should().BeTrue();
+        confirmedTarget.Should().BeFalse();
+    }
+
+    // The confirmed player was chosen by name, so the duplicate-name check must not refuse the tell to them.
+    [Test]
+    public void ConfirmedTell_ReportsItsTargetAsConfirmed()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(10), out var confirmedTarget).Should().BeFalse();
+        confirmedTarget.Should().BeTrue();
+    }
+
+    [TestCase(false, TestName = "A current-holder portrait tell is not reported as confirmed")]
+    [TestCase(true, TestName = "A tell after the click expired is not reported as confirmed")]
+    public void UnconfirmedTell_IsNotReportedAsConfirmed(bool expired)
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, SecondSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now).Should().Be(ChatPortraitClick.CurrentHolder);
+
+        var sentAt = expired ? Now + Lifetime + TimeSpan.FromSeconds(1) : Now.AddSeconds(10);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, sentAt, out var confirmedTarget).Should().BeFalse();
+        confirmedTarget.Should().BeFalse();
+    }
+
+    [Test]
+    public void ConfirmedClickExpired_IsNotReportedAsConfirmed()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now + Lifetime + TimeSpan.FromSeconds(10), out var confirmedTarget)
+            .Should().BeFalse();
+        confirmedTarget.Should().BeFalse();
+    }
+
+    [Test]
+    public void ClickOnAnotherPortraitBetween_CancelsTheConfirmation()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.RecordLine(Observer, OtherSlot, "character-chatty");
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+
+        guard.Click(Observer, OtherSlot, "character-chatty", Now.AddSeconds(3)).Should().Be(ChatPortraitClick.CurrentHolder);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(6)).Should().Be(ChatPortraitClick.FormerHolder);
+    }
+
+    [Test]
+    public void RefusedTellBetweenTheTwoClicks_StillLetsTheSecondClickConfirm()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(20)).Should().BeTrue();
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(30)).Should().Be(ChatPortraitClick.Confirmed);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(50)).Should().BeFalse();
+    }
+
+    [Test]
+    public void EachPortraitTell_NeedsItsOwnConfirmation()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+        guard.ConsumeRefusedTell(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(10)).Should().BeFalse();
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(15)).Should().Be(ChatPortraitClick.FormerHolder);
+    }
+
+    [Test]
+    public void Classify_DoesNotCountAsAClick()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+
+        guard.Classify(Observer, SharedSlot, SecondSpecialist).Should().Be(ChatPortraitClick.FormerHolder);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.Confirmed);
+    }
+
+    [Test]
+    public void ForgottenObserver_LosesAPendingConfirmation()
+    {
+        var guard = new ChatPortraitTellGuard(Lifetime);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now);
+
+        guard.ForgetObserver(Observer);
+        guard.RecordLine(Observer, SharedSlot, FirstSpecialist);
+
+        guard.Click(Observer, SharedSlot, SecondSpecialist, Now.AddSeconds(5)).Should().Be(ChatPortraitClick.FormerHolder);
+    }
 }

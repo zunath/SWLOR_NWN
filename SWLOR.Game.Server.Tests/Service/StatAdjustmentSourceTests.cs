@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Collections;
 using System.Reflection;
 using FluentAssertions;
@@ -221,7 +222,7 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 8), (StatType.AreaAbilityPulseRadiusMeters, 5)));
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 3), (StatType.AreaAbilityPulseRadiusMeters, 2)));
         var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true };
-        var pulses = (IReadOnlyList<StatAdjustmentSource>)typeof(Combat).GetMethod("GetAreaAbilityPulseSources", PrivateStatic)!
+        var pulses = (IReadOnlyList<StatAdjustmentSource>)CombatMembers.FindMethod("GetAreaAbilityPulseSources")!
             .Invoke(null, new object[] { Creature, ability, true })!;
         pulses.Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .Should().BeEquivalentTo(new[] { (8, 5), (3, 2) });
@@ -233,7 +234,7 @@ public class StatAdjustmentSourceTests
     [TestCase(true, true, true)]
     public void IneligibleOrMissingPulses_DoNotAllocatePerTarget(bool hostile, bool area, bool firstTarget)
     {
-        var apply = typeof(Combat).GetMethod("ApplyAreaAbilityPulse", PrivateStatic)!
+        var apply = CombatMembers.FindMethod("ApplyAreaAbilityPulse")!
             .CreateDelegate<Action<uint, uint, AbilityDetail, bool>>();
         var ability = new AbilityDetail { IsHostileAbility = hostile, IsAreaAbility = area };
         for (var index = 0; index < 100; index++)

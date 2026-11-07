@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -11,6 +12,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatUpgradeBibleWorkbookFormattingTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private const decimal MinimumNotesColumnWidth = 45m;
     private static readonly XNamespace SpreadsheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace RelationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";

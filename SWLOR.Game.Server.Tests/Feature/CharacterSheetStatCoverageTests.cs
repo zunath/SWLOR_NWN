@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -134,7 +135,7 @@ public class CharacterSheetStatCoverageTests
     public void StatAndCombatServices_ExposeTheAccessorsTheCharacterSheetConsumes()
     {
         var stat = ReadService("Stat.cs");
-        var combat = ReadService("Combat.cs");
+        var combat = CombatSource.Read();
 
         // The sheet must reuse these rather than re-deriving the shield bonus or the Guard clamp.
         stat.Should().Contain("public static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)");

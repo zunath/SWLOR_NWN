@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Collections;
 using System.Reflection;
 using FluentAssertions;
@@ -114,7 +115,7 @@ public class AreaAbilityFragmentationTests
     }
 
     private static (int Damage, int Radius) GetPulse(AbilityDetail ability, bool firstTarget) =>
-        ((IReadOnlyList<StatAdjustmentSource>)typeof(Combat).GetMethod("GetAreaAbilityPulseSources", PrivateStatic)!
+        ((IReadOnlyList<StatAdjustmentSource>)CombatMembers.FindMethod("GetAreaAbilityPulseSources")!
             .Invoke(null, new object[] { Creature, ability, firstTarget })!)
             .Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .SingleOrDefault();
@@ -194,7 +195,7 @@ public class AreaAbilityFragmentationTests
     }
 
     private static int GetFragmentation(SkillType skill, StatType stat) =>
-        (int)typeof(Combat).GetMethod("GetAreaAbilityFragmentationStatAdjustment", PrivateStatic)!
+        (int)CombatMembers.FindMethod("GetAreaAbilityFragmentationStatAdjustment")!
             .Invoke(null, new object[] { Creature, skill, stat })!;
 
     private static object GetProfile(AbilityDetail ability) =>

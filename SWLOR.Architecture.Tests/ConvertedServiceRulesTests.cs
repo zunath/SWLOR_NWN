@@ -536,6 +536,102 @@ public class ConvertedServiceRulesTests
         problems.Should().ContainSingle().Which.Should().Contain("AchievementService").And.Contain("AchievementService::Give");
     }
 
+    // ---- the temporary in-progress list (Combat only; P2-CB10 removes it)
+
+    private const string CombatMapJson = """
+        {
+          "platformDomain": "Platform",
+          "featureTypeDomain": "Gameplay",
+          "unrestrictedTargetDomains": ["Core", "Platform"],
+          "domains": {
+            "Combat": { "services": ["Combat", "CombatPoint"], "featureFolders": [] },
+            "Character": { "services": ["Stat"], "featureFolders": [] },
+            "Gameplay": { "services": [], "featureFolders": [] }
+          }
+        }
+        """;
+
+    private const string CombatInProgress = """
+        { "services": [ { "name": "CombatPoint", "domain": "Combat" } ], "inProgress": [ { "name": "Combat", "domain": "Combat" } ] }
+        """;
+
+    [Test]
+    public void Combat_may_be_listed_in_progress_in_its_domain()
+    {
+        var list = ConvertedServiceList.Parse(CombatInProgress);
+
+        list.InProgress.Select(service => service.Name).Should().Equal("Combat");
+        ConvertedServiceRules.ListProblems(list, DomainMap.Parse(CombatMapJson)).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_list_without_in_progress_services_has_none()
+    {
+        ConvertedServiceList.Parse("""{ "services": [] }""").InProgress.Should().BeEmpty();
+    }
+
+    [Test]
+    public void No_other_service_may_be_listed_in_progress()
+    {
+        var list = ConvertedServiceList.Parse("""
+            { "services": [], "inProgress": [ { "name": "Stat", "domain": "Character" } ] }
+            """);
+
+        ConvertedServiceRules.ListProblems(list, DomainMap.Parse(CombatMapJson))
+            .Should().Contain(problem => problem.Contains("Stat is listed in inProgress, but only Combat may be"));
+    }
+
+    [Test]
+    public void Combat_in_progress_must_agree_with_the_domain_map_and_not_also_be_listed_under_services()
+    {
+        var list = ConvertedServiceList.Parse("""
+            { "services": [ { "name": "Combat", "domain": "Combat" } ], "inProgress": [ { "name": "Combat", "domain": "Character" }, { "name": "Combat", "domain": "Character" } ] }
+            """);
+
+        var problems = ConvertedServiceRules.ListProblems(list, DomainMap.Parse(CombatMapJson));
+
+        problems.Should().Contain(problem => problem.Contains("Combat is listed in inProgress in the Character domain but DomainMap.json puts it in Combat"));
+        problems.Should().Contain(problem => problem.Contains("Combat is listed both in services and in inProgress"));
+        problems.Should().Contain(problem => problem.Contains("Combat is listed twice in inProgress"));
+    }
+
+    [Test]
+    public void The_facade_of_the_service_in_progress_may_resolve_from_the_container_and_no_other_unlisted_class_may()
+    {
+        var allowed = ConvertedServiceRules.FacadesMayLocate(ConvertedServiceList.Parse(CombatInProgress));
+
+        allowed.Should().Contain(new TypeKey("SWLOR.Game.Server.Service", "Combat"));
+        allowed.Should().Contain(new TypeKey("SWLOR.Game.Server.Service", "CombatPoint"));
+        allowed.Should().HaveCount(2);
+
+        var problems = ServiceLocationRule.Find(
+            Graph,
+            Facts,
+            typeof(ContainerOwner).Namespace!,
+            KeyOf(typeof(FixtureAccessor)),
+            allowed.Contains);
+
+        problems.Should().Contain(problem => problem.StartsWith(KeyOf(typeof(AccessorFacade)).ToString() + " "),
+            "a class that is neither listed nor Combat still may not use the accessor");
+        problems.Should().Contain(problem => problem.StartsWith(KeyOf(typeof(AccessorIntruder)).ToString() + " "));
+    }
+
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "CombatQueriesService", true)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "ICombatQueriesService", true)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "CombatService", true)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "CombatPointService", false)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "ICombatPointService", false)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "CombatRecordWriter", false)]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "StealthService", false)]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "CombatQueriesService", false)]
+    [TestCase("SWLOR.Game.Server.Service", "Combat", false)]
+    public void A_part_of_the_service_in_progress_is_found_by_its_name_and_namespace(string @namespace, string name, bool isPart)
+    {
+        var list = ConvertedServiceList.Parse(CombatInProgress);
+
+        ConvertedServiceRules.IsInProgressPart(new TypeKey(@namespace, name), list).Should().Be(isPart);
+    }
+
     // ---- service location
 
     private static IReadOnlyList<string> Locate()

@@ -10,6 +10,12 @@ namespace SWLOR.Game.Server.Tests.Composition;
 /// without being edited. A service that lists extras (<c>"extras": [ { "facade": "QuestService.QuestEncounter" } ]</c>, or a
 /// <c>{ "part": "PropertyCatalog" }</c> of a split service) yields one more entry per extra, with its interface and its
 /// instance class, and its facade type when it has one.
+/// <para>
+/// A service in the top-level <c>inProgress</c> list (only <c>Combat</c>, while it is split; P2-CB10 removes the list)
+/// is not loaded itself, but its parts are: every interface <c>I&lt;Service&gt;*Service</c> in its domain namespace that
+/// is not the interface of a service already listed, with the class that implements it. They are tested like the parts
+/// of a listed service, so the rules stay strict for them.
+/// </para>
 /// </summary>
 public static class ConvertedServiceFixtures
 {
@@ -52,7 +58,51 @@ public static class ConvertedServiceFixtures
             }
         }
 
+        if (document.RootElement.TryGetProperty("inProgress", out var inProgress))
+        {
+            var listed = services.Select(service => service.Contract.Name).ToHashSet(StringComparer.Ordinal);
+            foreach (var element in inProgress.EnumerateArray())
+            {
+                var name = element.GetProperty("name").GetString()!;
+                var domain = element.GetProperty("domain").GetString()!;
+                var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
+                foreach (var contract in assembly.GetTypes().Where(type =>
+                             type.IsInterface && type.Namespace == domainNamespace && IsInProgressPartContract(name, type.Name, listed))
+                             .OrderBy(type => type.Name, StringComparer.Ordinal))
+                {
+                    var typeName = contract.Name[1..];
+                    services.Add(new ConvertedServiceTypes(
+                        typeName,
+                        domain,
+                        null,
+                        contract,
+                        assembly.GetType($"{domainNamespace}.{typeName}", throwOnError: true)!));
+                }
+            }
+        }
+
         return services;
+    }
+
+    /// <summary>
+    /// Whether an interface name is the interface of a part of a service in progress: <c>I&lt;Service&gt;*Service</c>
+    /// (<c>ICombatQueriesService</c> for <c>Combat</c>) that no service already listed owns (<c>ICombatPointService</c>).
+    /// </summary>
+    public static bool IsInProgressPartContract(string service, string interfaceName, ISet<string> listedContracts) =>
+        interfaceName.Length > 1 &&
+        interfaceName[0] == 'I' &&
+        interfaceName[1..].StartsWith(service, StringComparison.Ordinal) &&
+        interfaceName.EndsWith("Service", StringComparison.Ordinal) &&
+        !listedContracts.Contains(interfaceName);
+
+    /// <summary>The services in the top-level <c>inProgress</c> list of <c>ConvertedServices.json</c>.</summary>
+    public static IReadOnlyList<string> InProgressServices()
+    {
+        var path = Path.Combine(FindRepositoryRoot(), "SWLOR.Architecture.Tests", "ConvertedServices.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        return document.RootElement.TryGetProperty("inProgress", out var inProgress)
+            ? inProgress.EnumerateArray().Select(element => element.GetProperty("name").GetString()!).ToArray()
+            : Array.Empty<string>();
     }
 
     /// <summary>Every class of every converted service, parts included.</summary>

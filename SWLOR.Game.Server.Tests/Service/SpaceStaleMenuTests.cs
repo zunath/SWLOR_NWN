@@ -24,6 +24,11 @@ public class SpaceStaleMenuTests
         Index(refit, "var dbShip = GetShipDockedHere(shipId);")
             .Should().BeLessThan(Index(refit, "access.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip)"),
                 "the Refit Ship permission can be revoked while the window is open");
+        Index(refit, "if (ShipTransfer.IsListedForSale(dbShip.Id))")
+            .Should().BeInRange(Index(refit, "var dbShip = GetShipDockedHere(shipId);"), Index(refit, "return dbShip;"),
+                "a ship listed while a refit prompt was open is locked when the prompt is answered");
+        ShipManagement().Should().Contain("isAtCurrentLocation &&\n                                 !ShipTransfer.IsListedForSale(ship.Id);",
+            "the refit buttons are off while the ship is listed");
     }
 
     [Test]

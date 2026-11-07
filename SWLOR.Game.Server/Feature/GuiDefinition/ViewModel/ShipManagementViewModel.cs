@@ -1533,7 +1533,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 IsBoardShipEnabled = CanBoardShip(ship.PropertyId) && isAtCurrentLocation;
                 IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
-                IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
+                IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation &&
+                                 !ShipTransfer.IsListedForSale(ship.Id);
                 IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
                 HullTraitsText = ShipTraitRules.HullTraitsText(ship.Status.HullTraits);
                 HullTraitsTooltip = ShipTraitRules.HullTraitsTooltip(ship.Status.HullTraits);
@@ -1723,12 +1724,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return null;
         }
 
-        /// <summary>The ship as saved now, when the player may still refit it here (its modules and its design).</summary>
+        /// <summary>
+        /// The ship as saved now, when the player may still refit it here (its modules and its design). A ship listed on
+        /// the market is locked, so a buyer gets the fittings the listing showed them.
+        /// </summary>
         private PlayerShip GetShipToRefit(string shipId)
         {
             var dbShip = GetShipDockedHere(shipId);
             if (dbShip == null)
                 return null;
+
+            if (ShipTransfer.IsListedForSale(dbShip.Id))
+            {
+                FloatingTextStringOnCreature("This ship is listed for sale and cannot be refitted until the listing ends.", Player, false);
+                RefreshShipIfOpen(dbShip);
+                return null;
+            }
 
             var access = GetShipPermission(dbShip.PropertyId);
             if (access != null && access.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip))

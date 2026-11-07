@@ -6,6 +6,7 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -137,9 +138,9 @@ public class WeaponLineTests
     {
         var attacker = State("a", 1, "None", "CrushingMastery");
         var target = State("t", 2);
-        attacker.Weapon.ApplyCriticalDamage(100, Combat.StandardCriticalRating, target, 0).Should().Be(100);
+        attacker.Weapon.ApplyCriticalDamage(100, CombatRules.StandardCriticalRating, target, 0).Should().Be(100);
         target.Weapon.Control.TryDaze(0, 8).Should().BeTrue();
-        attacker.Weapon.ApplyCriticalDamage(100, Combat.StandardCriticalRating, target, 1).Should().Be(115);
+        attacker.Weapon.ApplyCriticalDamage(100, CombatRules.StandardCriticalRating, target, 1).Should().Be(115);
         attacker.Weapon.ApplyCriticalDamage(100, 0, target, 1).Should().Be(100);
     }
 

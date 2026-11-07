@@ -656,7 +656,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         costlyEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
         var costlyDamage = ExtractMethod(combat, "public static int GetCostlyAbilityDamageBonus(");
         costlyDamage.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
-        var globalSkillMatch = ExtractMethod(combat, "private static bool SkillTypeMatchesOrGlobal(");
+        var globalSkillMatch = CombatSource.Method("SkillTypeMatchesOrGlobal").ToString();
         globalSkillMatch.Should().Contain(
             "requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType)");
 

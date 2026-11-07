@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();

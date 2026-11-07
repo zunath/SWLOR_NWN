@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -27,42 +28,33 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Combat
     {
-        private const float DamageStatDeltaMultiplier = 0.35f;
         public const int BaseGuardDamageReductionPercent = 20;
         public const int MaximumGuardDamageReductionPercent = 55;
-        public const int MaximumNormalDamageReductionPercent = 95;
-        public const int MaximumDamageBonusPercent = 100;
-        private const int MaximumCrossResourceRestorePercent = 95;
-        public const int MaximumCombinedDamageReductionPercent = 85;
-        public const int MaximumAttackDelayAdjustmentPercent = 50;
-        public const int BaseHitRate = 75;
-        public const int MinimumHitRate = 20;
+        public const int MaximumNormalDamageReductionPercent = CombatRules.MaximumNormalDamageReductionPercent;
+        public const int MaximumDamageBonusPercent = CombatRules.MaximumDamageBonusPercent;
+        public const int MaximumCombinedDamageReductionPercent = CombatRules.MaximumCombinedDamageReductionPercent;
+        public const int MaximumAttackDelayAdjustmentPercent = CombatRules.MaximumAttackDelayAdjustmentPercent;
+        public const int BaseHitRate = CombatRules.BaseHitRate;
+        public const int MinimumHitRate = CombatRules.MinimumHitRate;
         /// <summary>A boss's floor, so stacking Evasion can't make a boss harmless.</summary>
         public const int BossMinimumHitRate = 35;
-        public const int MaximumHitRate = 95;
-        public const int MinimumCriticalRate = 5;
-        public const int MaximumCriticalRate = 50;
-        public const int MaximumDamageDerivedHealingPercentPerHit = 50;
+        public const int MaximumHitRate = CombatRules.MaximumHitRate;
+        public const int MinimumCriticalRate = CombatRules.MinimumCriticalRate;
+        public const int MaximumCriticalRate = CombatRules.MaximumCriticalRate;
+        public const int MaximumDamageDerivedHealingPercentPerHit = CombatRules.MaximumDamageDerivedHealingPercentPerHit;
         public const int MaximumActivatedDamageHealingMaxHPPercent = 15;
         public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
         public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = 12;
         public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
         public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
         public const int CombatHealingWindowSeconds = 6;
-        public const int MaximumCriticalDamagePercentAdjustment = 200;
-        public const int StandardCriticalRating = 2;
-        public const int BaseAttackDelayMilliseconds = 1750;
-        public const float MeleeWeaponEngagementRange = 1.5f;
-        public const float RangedWeaponEngagementRange = 10f;
-        // The engine/client cannot play swing animations faster than the base attack delay.
-        // Delays below it are honored by resolving multiple attack rolls within a single swing,
-        // mirroring the stock engine's flurry behavior for high attacks-per-round builds.
-        public const int MaxAttacksPerSwing = 3;
-        public const int MinimumAttackDelayMilliseconds =
-            (BaseAttackDelayMilliseconds + MaxAttacksPerSwing - 1) / MaxAttacksPerSwing;
-        private const int AttackDelayUnitsPerSecond = 60;
-        private const int MillisecondsPerSecond = 1000;
-        private const int BaseAttackDelayUnits = BaseAttackDelayMilliseconds * AttackDelayUnitsPerSecond / MillisecondsPerSecond;
+        public const int MaximumCriticalDamagePercentAdjustment = CombatRules.MaximumCriticalDamagePercentAdjustment;
+        public const int StandardCriticalRating = CombatRules.StandardCriticalRating;
+        public const int BaseAttackDelayMilliseconds = CombatRules.BaseAttackDelayMilliseconds;
+        public const float MeleeWeaponEngagementRange = CombatRules.MeleeWeaponEngagementRange;
+        public const float RangedWeaponEngagementRange = CombatRules.RangedWeaponEngagementRange;
+        public const int MaxAttacksPerSwing = CombatRules.MaxAttacksPerSwing;
+        public const int MinimumAttackDelayMilliseconds = CombatRules.MinimumAttackDelayMilliseconds;
         private static readonly IdleSkillAbilityStatChannel[] _idleSkillAbilityStatChannels =
         {
             new(

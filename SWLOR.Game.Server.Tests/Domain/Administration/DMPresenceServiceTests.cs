@@ -43,13 +43,13 @@ public class DMPresenceServiceTests
     private const uint Spaceport = 101;
 
     private DMPossessionEngine _world = null!;
-    private DMPresenceService _service = null!;
+    private LandingPresenceService _service = null!;
 
     [SetUp]
     public void SetUp()
     {
         _world = new DMPossessionEngine();
-        _service = new DMPresenceService();
+        _service = new LandingPresenceService();
     }
 
     [TearDown]
@@ -235,6 +235,48 @@ public class DMPresenceServiceTests
     }
 
     [Test]
+    public void JumpTo_TriesTheSpotsAroundTheDestinationWhenItCannotLandThere()
+    {
+        PossessingDM(DMPossess);
+        var destination = EngineStructures.Create<Location>(77);
+        _service.CanLand = location => !ReferenceEquals(location, destination);
+
+        _service.JumpTo(DM, destination, "the cantina");
+
+        var assigned = _world.Engine.CallsTo("AssignCommand").Should().ContainSingle().Subject;
+        ((Action)assigned.Arguments[1]!)();
+        _world.Engine.CallsTo("JumpToLocation").Should().ContainSingle().Which.Arguments[0].Should().NotBeSameAs(destination);
+    }
+
+    [Test]
+    public void JumpTo_TellsTheDMWhenNothingNearbyAllowsALanding()
+    {
+        PossessingDM(DMPossess);
+        _service.CanLand = _ => false;
+
+        _service.JumpTo(DM, EngineStructures.Create<Location>(77), "the cantina");
+
+        _world.Engine.CallsTo("AssignCommand").Should().BeEmpty();
+        _world.Messages.Should().ContainSingle().Which.Message.Should().Be("There is nowhere to land there.");
+    }
+
+    [Test]
+    public void JumpToArea_LandsOnTheFirstSpotTheEngineAccepts()
+    {
+        PossessingDM(DMPossess);
+        var first = EngineStructures.Create<Location>(11);
+        var second = EngineStructures.Create<Location>(12);
+        _service.AreaLocations = new[] { first, second };
+        _service.CanLand = location => ReferenceEquals(location, second);
+
+        _service.JumpToArea(DM, Cantina, "the cantina");
+
+        var assigned = _world.Engine.CallsTo("AssignCommand").Should().ContainSingle().Subject;
+        ((Action)assigned.Arguments[1]!)();
+        _world.Engine.CallsTo("JumpToLocation").Should().ContainSingle().Which.Arguments[0].Should().BeSameAs(second);
+    }
+
+    [Test]
     public void Summon_RefusesATargetThatNoLongerExists()
     {
         _world.AddPlayer(DM, isDM: true);
@@ -375,4 +417,16 @@ public class DMPresenceServiceTests
         _world.AddPlayer(Player);
         _service.GetShownOn(Player, GuiWindowType.DMToolbar).Should().Equal(Player);
     }
+}
+
+/// <summary>The instance with the engine's safe-point search and the area spot list answered by the test.</summary>
+internal sealed class LandingPresenceService : DMPresenceService
+{
+    public Func<Location, bool> CanLand { get; set; } = _ => true;
+
+    public IEnumerable<Location> AreaLocations { get; set; } = Array.Empty<Location>();
+
+    protected override bool ComputeSafeLanding(uint dm, Location location) => CanLand(location);
+
+    protected override IEnumerable<Location> GetAreaJumpLocations(uint area) => AreaLocations;
 }

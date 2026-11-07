@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// a cooldown stat and consumes it through <c>TryUseStatTrigger</c>. Guard rolls on every landed
 /// physical hit from every attacker, which makes the gate load-bearing rather than cosmetic.
 /// </summary>
-public class TriggeredResourceRestoreGateTests
+public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
 {
     // Restores that fire off an incoming attack are limited by the attacker count, not by the
     // defender's own rotation, so each one is gated by a cooldown or by a proc chance. Guard was

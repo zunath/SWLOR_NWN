@@ -11,12 +11,12 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// data and arithmetic once <see cref="Skill.CacheXPChartData"/> has built the cumulative table.
 /// </summary>
 [NonParallelizable]
-public class SkillXPChartCharacterizationTests
+public class SkillXPChartCharacterizationTests : FacadeFixture
 {
-    [OneTimeSetUp]
+    [SetUp]
     public void BuildChart()
     {
-        // Pure: sums the chart into the cumulative table and records the highest rank difference. The same call runs at module load.
+        // The same call runs at module load; the chart tables are constants, so it builds nothing.
         Skill.CacheXPChartData();
     }
 

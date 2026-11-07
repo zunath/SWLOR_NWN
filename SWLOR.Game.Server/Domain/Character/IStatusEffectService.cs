@@ -34,6 +34,12 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         void OnPlayerExit();
 
+        /// <summary>
+        /// Saves the stances and toggles of everyone online or holding effects from an earlier logout. Those effects are only kept in
+        /// memory, so without this a server restart loses them.
+        /// </summary>
+        void SaveTogglesForRestart();
+
         void ClearStatusEffectsOnDeath(uint player);
 
         /// <summary>

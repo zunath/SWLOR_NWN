@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
-public class DroidInstructionsTests
+public class DroidInstructionsTests : SkillFacadeFixture
 {
     // Building the default AI profiles asks the StatusEffect facade which effects are stances.
     private FacadeContainer _facades = null!;

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.ProspectingService;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 /// Covers a session from the use of a harvester to its end: the one-player lock, what each action hands the player and pays, how the
 /// charges and the node are kept, every way of leaving, and Quick Harvest against the harvests it replaces.
 /// </summary>
-public class ProspectingLifecycleTests
+public class ProspectingLifecycleTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint OtherPlayer = 12;
@@ -30,7 +31,10 @@ public class ProspectingLifecycleTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]

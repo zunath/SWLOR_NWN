@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CrossSkillPerkInteractionSafetyTests
+public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 {
     [Test]
     public void IdleAbilityBonuses_KeepStaffAndRifleChannelsIndependent()

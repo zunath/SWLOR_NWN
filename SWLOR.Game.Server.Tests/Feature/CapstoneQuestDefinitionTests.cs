@@ -17,10 +17,11 @@ using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class CapstoneQuestDefinitionTests
+public class CapstoneQuestDefinitionTests : SkillFacadeFixture
 {
     private const int SignatureAbilityFeatStart = 2719;
     private const int SignatureAbilityFeatEnd = 2753;

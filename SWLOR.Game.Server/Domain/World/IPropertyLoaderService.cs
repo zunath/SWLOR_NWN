@@ -130,6 +130,17 @@ namespace SWLOR.Game.Server.Domain.World
         void EnterPropertyInstance();
 
         /// <summary>
+        /// Shows a property's description to a player arriving from outside it. Coming back to the property's area, such as after a
+        /// reload, does not repeat it.
+        /// </summary>
+        void ShowPropertyDescription();
+
+        /// <summary>
+        /// Shows a structure's player-given name on its placeable. A structure that still has its catalog name keeps its template's.
+        /// </summary>
+        void ApplyStructureWorldName(uint placeable, WorldProperty structure);
+
+        /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
         void ExitPropertyInstance();

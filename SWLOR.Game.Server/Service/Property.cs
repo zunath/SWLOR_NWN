@@ -461,6 +461,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Shows a property's description to a player arriving from outside it. Coming back to the property's area, such as after a
+        /// reload, does not repeat it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void ShowPropertyDescription()
+        {
+            Instance.ShowPropertyDescription();
+        }
+
+        /// <summary>
+        /// Shows a structure's player-given name on its placeable. A structure that still has its catalog name keeps its template's.
+        /// </summary>
+        public static void ApplyStructureWorldName(uint placeable, WorldProperty structure)
+        {
+            Instance.ApplyStructureWorldName(placeable, structure);
+        }
+
+        /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaExit)]

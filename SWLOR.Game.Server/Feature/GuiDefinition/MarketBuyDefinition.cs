@@ -59,6 +59,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             col2.AddRow(row2 =>
                             {
+                                row2.AddButton()
+                                    .SetText("Select All")
+                                    .SetHeight(35f)
+                                    .SetWidth(180f)
+                                    .BindOnClicked(model => model.OnClickSelectAllFilters());
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
                                 row2.AddList(template =>
                                     {
                                         template.AddCell(cell =>

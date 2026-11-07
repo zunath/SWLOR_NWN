@@ -55,6 +55,27 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Moves the DM, or the creature they possess, into an area, wherever in it the engine allows them to land.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        /// <param name="area">The area to jump to.</param>
+        /// <param name="destination">What the DM jumped to, for the DM log.</param>
+        public static void JumpToArea(uint dm, uint area, string destination)
+        {
+            Instance.JumpToArea(dm, area, destination);
+        }
+
+        /// <summary>
+        /// Returns true when the engine would let the DM land at, or near, a location.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        /// <param name="location">The location to check.</param>
+        public static bool CanLandAt(uint dm, Location location)
+        {
+            return Instance.CanLandAt(dm, location);
+        }
+
+        /// <summary>
         /// Brings a creature or player to the DM, or to the creature they possess. Players piloting a ship in
         /// space cannot be summoned, because moving them would move their ship instead.
         /// </summary>

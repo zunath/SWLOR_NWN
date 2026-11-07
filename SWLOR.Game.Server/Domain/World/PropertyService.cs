@@ -1113,6 +1113,18 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <inheritdoc />
+        public void ShowPropertyDescription()
+        {
+            _loader.ShowPropertyDescription();
+        }
+
+        /// <inheritdoc />
+        public void ApplyStructureWorldName(uint placeable, WorldProperty structure)
+        {
+            _loader.ApplyStructureWorldName(placeable, structure);
+        }
+
+        /// <inheritdoc />
         public void ExitPropertyInstance()
         {
             _loader.ExitPropertyInstance();

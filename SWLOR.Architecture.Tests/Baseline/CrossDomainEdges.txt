@@ -122,7 +122,7 @@ DMPresence -> Gui | 16
 DMObjectDetails -> Area | 1
 DMPlayerDirectory -> Area | 2
 
-# Character -> Abilities (11 edges)
+# Character -> Abilities (12 edges)
 Feature/PerkDefinition -> Feature/AbilityDefinition | 2
 Feature/PerkDefinition -> Mimicry | 3
 Feature/StatusEffectDefinition -> Ability | 19
@@ -134,6 +134,7 @@ Stat -> Feature/AbilityDefinition | 3
 Stat -> Mimicry | 2
 StatusEffect -> Ability | 14
 StatusEffect -> Feature/AbilityDefinition | 1
+StatusEffect -> QuickCast | 3
 
 # Character -> Administration (1 edge)
 Disguise -> DMPresence | 1
@@ -367,6 +368,9 @@ BeastMastery -> AI | 1
 BeastMastery -> CompanionControl | 6
 Droid -> AI | 1
 Droid -> CompanionControl | 10
+
+# Companions -> Gameplay (1 edge)
+Droid -> ServerRestart | 1
 
 # Companions -> Items (5 edges)
 BeastMastery -> Item | 1
@@ -635,7 +639,7 @@ Feature.Jukebox -> DMPresence | 1
 Feature.RoleplayXP -> DMPresence | 1
 Feature.ServerTasks -> DMPresence | 1
 
-# Gameplay -> Character (39 edges)
+# Gameplay -> Character (40 edges)
 Feature.AchievementProgression -> Achievement | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> PlayerName | 3
@@ -676,6 +680,7 @@ Feature.UsePerkFeat -> PlayerName | 3
 Feature.UsePerkFeat -> Skill | 2
 Feature.UsePerkFeat -> Stat | 1
 
+ServerRestart -> StatusEffect | 1
 # Gameplay -> Combat (36 edges)
 Feature.CivilianPatrol -> Enmity | 2
 Feature.EquipmentRestrictions -> PowerGloveEquipment | 2
@@ -1050,10 +1055,11 @@ Feature/ChatCommandDefinition -> Craft | 1
 # Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> CompanionControl | 1
 
-# Social -> Gameplay (3 edges)
+# Social -> Gameplay (4 edges)
 Feature/ChatCommandDefinition -> Feature.ArmorDisplay | 1
 Feature/ChatCommandDefinition -> Feature.PlayerTemporaryEffects | 1
 Feature/ChatCommandDefinition -> Feature.ServerTasks | 1
+Feature/ChatCommandDefinition -> ServerRestart | 1
 
 # Social -> Items (1 edge)
 Feature/ChatCommandDefinition -> OverflowStorage | 1

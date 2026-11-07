@@ -17,7 +17,12 @@ public class EspionageXpRegressionTests
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+    public void BuildFacades()
+    {
+        _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+        using (_facades.Install())
+            Skill.CacheXPChartData();
+    }
 
     [OneTimeTearDown]
     public void DisposeFacades() => _facades.Dispose();
@@ -30,9 +35,6 @@ public class EspionageXpRegressionTests
 
     // Espionage ranks the slicing grid is read at.
     private static readonly int[] Ranks = { 0, 10, 15, 20, 22, 28, 30, 40, 42, 45, 48, 50 };
-
-    [OneTimeSetUp]
-    public void LoadTheXpChart() => Skill.CacheXPChartData();
 
     // npcLevel, espionageRank, undetected, detected (detection pays 15% of the undetected XP, rounded down).
     [TestCase(1, 0, 676, 101)]

@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -21,7 +23,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Item properties that feed one summed number on the record, with the record they feed.
         /// </summary>
-        private static readonly Dictionary<ItemPropertyType, EquipmentRecordStats> SummedRecords = new()
+        private static readonly FrozenDictionary<ItemPropertyType, EquipmentRecordStats> SummedRecords = new Dictionary<ItemPropertyType, EquipmentRecordStats>
         {
             [ItemPropertyType.FPRegen] = EquipmentRecordStats.FPRegen,
             [ItemPropertyType.STMRegen] = EquipmentRecordStats.STMRegen,
@@ -34,15 +36,13 @@ namespace SWLOR.Game.Server.Service.StatService
             [ItemPropertyType.Disarm] = EquipmentRecordStats.TrapDisarm,
             [ItemPropertyType.PoisonBonus] = EquipmentRecordStats.PoisonBonus,
             [ItemPropertyType.Lockpicking] = EquipmentRecordStats.Lockpicking,
-        };
+        }.ToFrozenDictionary();
 
         /// <summary>
         /// The crafting skills gear can grant Control, Craftsmanship and CP to, in iprp_crafttype.2da subtype order.
         /// </summary>
-        public static readonly SkillType[] CraftSkills =
-        {
-            SkillType.Smithery, SkillType.Engineering, SkillType.Fabrication, SkillType.Agriculture,
-        };
+        public static readonly ImmutableArray<SkillType> CraftSkills = ImmutableArray.Create(
+            SkillType.Smithery, SkillType.Engineering, SkillType.Fabrication, SkillType.Agriculture);
 
         public int Evasion { get; private set; }
         public int FP { get; private set; }

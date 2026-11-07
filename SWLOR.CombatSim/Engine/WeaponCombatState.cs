@@ -1,6 +1,7 @@
 using System.Reflection;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -96,7 +97,7 @@ public sealed partial class WeaponCombatState
     }
     private IEnumerable<IReadOnlyDictionary<StatType, int>> AllSources =>
         Sources.Cast<IReadOnlyDictionary<StatType, int>>().Concat(_owner.Statuses.Values.Select(s => s.Stats));
-    public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => SWLOR.Game.Server.Service.Stat.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
+    public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => StatRules.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
     public int LineStat(MeleeTechniqueLine line, StatType stat) => AllSources.Where(s => s.GetValueOrDefault(StatType.TechniqueLine) == (int)line).Sum(s => s.GetValueOrDefault(stat));
     public void Count(string key, double amount = 1) => Diagnostics[key] = Diagnostics.GetValueOrDefault(key) + amount;
     public void ClearSetup(bool spent = false)

@@ -43,11 +43,8 @@ public class CombatReadinessEquipmentTests
             root = root.Parent;
         root.Should().NotBeNull();
         _root = root!.FullName;
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "GetCombatReadinessPercent" or "GetEquippedCombatReadiness"
-                or "RefreshCombatReadinessEquipment" or "AdjustCombatReadiness");
+        var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "GetCombatReadinessPercent" or "GetEquippedCombatReadiness"
+            or "RefreshCombatReadinessEquipment" or "AdjustCombatReadiness");
         var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()

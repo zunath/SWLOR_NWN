@@ -388,7 +388,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
         attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
         attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
         attackSource.Should().Contain("Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
@@ -411,9 +411,9 @@ public class CombatDamageTests
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
         attackSource.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
-        var accuracy = ExtractMethod(statSource, "public static int GetAccuracyNative");
+        var accuracy = ExtractMethod(statSource, "public int GetAccuracyNative");
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");
-        accuracy.Should().Contain("Skill.GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",
+        accuracy.Should().Contain("GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",
             "ordinary paired shots use Twin Pistol while queued abilities retain their explicit skill");
         accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
         accuracy.Should().Contain("var statType = accuracyAbilityOverride != AbilityType.Invalid");
@@ -457,8 +457,8 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var applyDeflectionEffects = ExtractMethod(statSource, "public static void ApplyDeflectionEffectsNative");
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var applyDeflectionEffects = ExtractMethod(statSource, "public void ApplyDeflectionEffectsNative");
         var grantNextSkillBonuses = ExtractMethod(
             combatSource.Replace("\r\n", "\n"),
             "public static void GrantNextSkillAbilityBonuses(\n            uint creature,\n            SkillType skillType");

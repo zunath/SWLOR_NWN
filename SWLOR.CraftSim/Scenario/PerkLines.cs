@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -11,11 +12,11 @@ namespace SWLOR.CraftSim.Scenario
     /// </summary>
     public static class PerkLines
     {
-        // The game fills its stat metadata on first use, which is not safe from several threads: do it once, here, before any
-        // parallel play reads a total.
+        // The stat metadata builds on first use and says so on the console: do it here, before any parallel play reads a
+        // total, so the line prints at the same point of a run.
         static PerkLines()
         {
-            Stat.GetStatTypeAggregation(StatType.Invalid);
+            StatRules.GetStatTypeAggregation(StatType.Invalid);
         }
 
         /// <summary>The stat totals of a crafter of <paramref name="rank"/> who has bought every perk the filter accepts.</summary>
@@ -42,7 +43,7 @@ namespace SWLOR.CraftSim.Scenario
                 foreach (var bonus in owned.StatBonuses)
                 {
                     totals.TryGetValue(bonus.Stat, out var current);
-                    totals[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
+                    totals[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
                 }
             }
 

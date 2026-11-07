@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -29,14 +30,14 @@ public class DMPossessedCombatTargetTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var stat = ParseService(root, "Stat.cs");
-        var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => StatMethods.Contains(method.Identifier.ValueText) &&
+        var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"))).GetRoot();
+        var methods = StatHarnessSource.Methods(method => StatMethods.Contains(method.Identifier.ValueText) &&
                              (method.Identifier.ValueText != "GetEvasion" ||
                               method.ParameterList.Parameters[0].Identifier.ValueText == "creature"));
         var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText is
-                "DefenseSkillMultiplier" or "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable"));
+                "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable"));
         // The resistance logic is the instance class of the converted service; its injected database and mimicry
         // service and the shared clamp are replaced by this harness's stand-ins.
         var resistance = new[] { "GetStoredResistance", "CalculateTotalResistance" }
@@ -51,6 +52,7 @@ public class DMPossessedCombatTargetTests
             using System;
             using System.Collections.Generic;
             using System.Globalization;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.Game.Server.Service.CombatRecorderService;
             using SWLOR.Game.Server.Service.CombatService;
             using SWLOR.Game.Server.Service.SkillService;
@@ -178,9 +180,6 @@ public class DMPossessedCombatTargetTests
         Call("EvasionRating").Should().Be(20007);
         Call("ElectricalResistance").Should().Be(75);
     }
-
-    private static SyntaxNode ParseService(DirectoryInfo root, string file) =>
-        CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", file))).GetRoot();
 
     private object Call(string method, params object[] args) => _harness.GetMethod(method).Invoke(null, args);
 }

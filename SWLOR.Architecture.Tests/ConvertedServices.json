@@ -101,6 +101,7 @@
     { "name": "Slicing", "domain": "Crafting", "extras": [ { "facade": "SlicingService.SlicingSession" } ] },
     { "name": "Snippet", "domain": "Core" },
     { "name": "Spawn", "domain": "Creatures" },
+    { "name": "Stat", "domain": "Character" },
     { "name": "StatusEffect", "domain": "Character" },
     { "name": "Stealth", "domain": "Combat" },
     { "name": "Targeting", "domain": "Combat" },

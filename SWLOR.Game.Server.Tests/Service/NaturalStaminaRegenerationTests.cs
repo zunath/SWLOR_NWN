@@ -2,11 +2,28 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class NaturalStaminaRegenerationTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(0, 0, 0, 10)]
     [TestCase(10, 0, 0, 12)]
     [TestCase(26, 0, 0, 16)]
@@ -92,17 +109,18 @@ public class NaturalStaminaRegenerationTests
         var stat = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Stat.cs"));
+            "Domain",
+            "Character",
+            "StatService.cs"));
 
         // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
         stat.Should().Contain("RestoreNPCStats(false, true);");
-        stat.Should().Contain("BeastMastery.IsPlayerBeast(creature)");
+        stat.Should().Contain("_beastMastery.IsPlayerBeast(creature)");
 
         var restoreBeastStats = stat.Substring(
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal),
-            stat.IndexOf("public static bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal));
+            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal),
+            stat.IndexOf("public bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
+            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal));
         restoreBeastStats.Should().NotContain("GetIsInCombat");
     }
 

@@ -16,13 +16,10 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class EquipmentStats
     {
-        private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
-        private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
-
         /// <summary>
         /// The item property types equipping adds to the wearer.
         /// </summary>
-        public static IReadOnlyCollection<ItemPropertyType> HandledPropertyTypes => _statChangeActions.Keys;
+        public static IReadOnlyCollection<ItemPropertyType> HandledPropertyTypes => Stat.EquipmentStatActionTypes;
 
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
@@ -30,27 +27,27 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterStatActions()
         {
-            _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
-            _statChangeActions[ItemPropertyType.FP] = ApplyFPBonus;
-            _statChangeActions[ItemPropertyType.FPRegen] = ApplyFPRegenBonus;
-            _statChangeActions[ItemPropertyType.Stamina] = ApplySTMBonus;
-            _statChangeActions[ItemPropertyType.STMRegen] = ApplySTMRegenBonus;
-            _statChangeActions[ItemPropertyType.CombatReadiness] = ApplyCombatReadiness;
-            _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
-            _statChangeActions[ItemPropertyType.Accuracy] = ApplyAccuracy;
-            _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
-            _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
-            _statChangeActions[ItemPropertyType.Resistance] = ApplyResistance;
-            _statChangeActions[ItemPropertyType.Evasion] = ApplyEvasion;
-            _statChangeActions[ItemPropertyType.Control] = ApplyControl;
-            _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
-            _statChangeActions[ItemPropertyType.CPBonus] = ApplyCPBonus;
-            _statChangeActions[ItemPropertyType.Stealth] = ApplyStealth;
-            _statChangeActions[ItemPropertyType.Detection] = ApplyDetection;
-            _statChangeActions[ItemPropertyType.TrapBonus] = ApplyTrapBonus;
-            _statChangeActions[ItemPropertyType.Disarm] = ApplyTrapDisarm;
-            _statChangeActions[ItemPropertyType.PoisonBonus] = ApplyPoisonBonus;
-            _statChangeActions[ItemPropertyType.Lockpicking] = ApplyLockpicking;
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.HPBonus, ApplyHPBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.FP, ApplyFPBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.FPRegen, ApplyFPRegenBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Stamina, ApplySTMBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.STMRegen, ApplySTMRegenBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.CombatReadiness, ApplyCombatReadiness);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Attack, ApplyAttack);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Accuracy, ApplyAccuracy);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.ForceAttack, ApplyForceAttack);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Defense, ApplyDefense);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Resistance, ApplyResistance);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Evasion, ApplyEvasion);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Control, ApplyControl);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Craftsmanship, ApplyCraftsmanship);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.CPBonus, ApplyCPBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Stealth, ApplyStealth);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Detection, ApplyDetection);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.TrapBonus, ApplyTrapBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Disarm, ApplyTrapDisarm);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.PoisonBonus, ApplyPoisonBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Lockpicking, ApplyLockpicking);
         }
 
         private static void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
@@ -162,7 +159,7 @@ namespace SWLOR.Game.Server.Feature
             var copies = PowerGloveEquipment.GetEquipmentStatCopies(baseItem);
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                if (!_statChangeActions.TryGetValue(GetItemPropertyType(ip), out var action)) continue;
+                if (!Stat.TryGetEquipmentStatAction(GetItemPropertyType(ip), out var action)) continue;
                 for (var copy = 0; copy < copies; copy++)
                     action(creature, item, ip, isAdding);
             }
@@ -181,7 +178,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var baseItem = GetBaseItemType(item);
             if (baseItem == BaseItem.CompanionPistol) return;
-            if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
+            if (amount <= 0 || !Stat.TryGetEquipmentStatAction(type, out var action))
                 return;
             for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(baseItem); copy++)
                 action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);

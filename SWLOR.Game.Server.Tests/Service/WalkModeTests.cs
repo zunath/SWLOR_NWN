@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -22,14 +23,13 @@ public class WalkModeTests
             root = root.Parent;
         root.Should().NotBeNull();
         var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-            "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
+            "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
             "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
-        var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => methodNames.Contains(method.Identifier.Text)).ToArray();
+        var methods = StatHarnessSource.Methods(method => methodNames.Contains(method.Identifier.Text)).ToArray();
         methods.Should().HaveCount(methodNames.Count);
         var fields = stat.DescendantNodes().OfType<FieldDeclarationSyntax>().Where(field =>
             field.Declaration.Variables.Any(variable => variable.Identifier.Text.Contains("Walk", StringComparison.Ordinal) ||
@@ -44,7 +44,7 @@ public class WalkModeTests
             public static class Movement
             {
                 {{string.Join("\n", fields.Select(field => field.ToFullString()))}}
-                {{string.Join("\n", methods.Select(method => method.ToFullString()))}}
+                {{string.Join("\n", methods)}}
             }
             public static class CreaturePlugin
             {
@@ -56,7 +56,6 @@ public class WalkModeTests
             {
                 public static void SetAlwaysWalk(uint creature, bool value) => AlwaysWalk = value;
             }
-            public static class Droid { public static bool IsDroid(uint creature) => false; }
             public static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; }
             public static class World
             {
@@ -68,6 +67,7 @@ public class WalkModeTests
                 public static bool InCombat;
                 public static readonly Dictionary<string, int> Ints = new();
                 public static readonly Dictionary<string, float> Floats = new();
+                public static bool IsDroid(uint creature) => false;
                 public static bool GetIsObjectValid(uint creature) => creature == 1;
                 public static ObjectType GetObjectType(uint creature) => ObjectType.Creature;
                 public static bool GetIsPC(uint creature) => IsPlayer && !IsPossessed;

@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             Func<int, int> fallback, Func<string, bool> exists)
         {
             if (string.IsNullOrEmpty(body) || body.Length < 4 || style <= 0 ||
+                ShowsNoNativeBodyPart(part, style) ||
                 !ModelParts.TryGetValue(part, out var modelPart) ||
                 !int.TryParse(body.AsSpan(3), out var phenotype))
                 return string.Empty;
@@ -60,6 +61,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             }
             return string.Empty;
         }
+
+        /// <summary>
+        /// Native armor styles 1 and 2 display the wearer's own body part, exactly like 0, whatever
+        /// models exist under those numbers. Players have no shoulder or belt body part, so those
+        /// slots show nothing at 1 or 2 even though the models exist.
+        /// </summary>
+        private static bool ShowsNoNativeBodyPart(AppearanceArmor part, int style) =>
+            style is 1 or 2 &&
+            part is AppearanceArmor.LeftShoulder or AppearanceArmor.RightShoulder or AppearanceArmor.Belt;
 
         public static GuiBindingList<GuiComboEntry> FilterOptions(string body, AppearanceArmor part,
             IEnumerable<GuiComboEntry> options, Func<int, int> fallback, Func<string, bool> exists)

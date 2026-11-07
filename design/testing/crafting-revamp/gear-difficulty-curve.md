@@ -171,10 +171,29 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 | Kitchen ladder | 46-50, Flash and Slow full lines, single seeds | over +5 on some seeds | Seed 1 passes at +3.3 and +3.4; the three-seed averages are +5.0 and +4.9 |
 | Kitchen enhancement | 41-45, 3 slots, no perks, fully modded | 0.894 (2.62 against 2.93), shown as 0.90, limit 0.90 | The Kitchen's rules did not change in this pass; the gate now plays fully modded gear |
 | Kitchen XP | 21-30, no gear, 1 enhancement, perked builds | Flash 0.99x, Slow just under 1.00x | 4 recipes per band; unperked passes (lowest 1.03x) |
+| Research style | Methodical alone against Intuitive alone: fixed levels in every gear level, and evidence-decides levels in best and fully modded gear | Methodical better on 75-100% of cases; mean gaps +2.7 to +7.4 | Owner decision: styles stay "trials against chance", so poor gear favors Intuitive and good gear favors Methodical. With the whole line, all 8 comparisons pass |
 
-## Not retuned
+## Research
 
-- **Research and Espionage.** Out of scope.
+Before this pass the research Experiment read no gear stat besides CP: tier 5 at rank 50 scored 6.1% reduction in no gear and in best gear alike, while the full Researcher line gave 9.5% and the 25% time-cut cap. It is now tuned like the crafts (report `fabrication-researcher-gear-ladder.md`, seed 1, 400 runs; the score is the reduction as a share of 10%, or the time cut as a share of the 25% cap).
+
+- **Control** adds a point of Test chance for each 2 Control up to 30 (best unmodded gear), then one for each 4. Fully modded gear gets +37.
+- **Craftsmanship** adds a trial for each 120, so fully modded gear gets one more trial. Craftsmanship first added to Analyze's time cut instead, but that took fully modded gear to the maximum every time.
+- **Research tier.** The base Test chance (60%) drops 5 points for each tier above tier 2, so tier 5 starts at 45%.
+- **Researcher line** cut so a full line in no gear stays within 5 points of unperked best gear: Field Notes +1/+2 (was +10/+20), Efficient Analysis 5.3%/5.5% per evidence (was 6%/7%), Methodical +1 trial and -15 (was +2 trials), Intuitive -1 trial and +4 (was +20), and Breakthrough only makes the next Test succeed (it no longer doubles the time cut). Broader Hypotheses, Steady Hands, Peer Review and Second Opinion are unchanged. The time cut per evidence is now counted in tenths of a percent.
+
+Unperked mean score (no gear / mid gear / best gear / fully modded), and how often fully modded gear reaches 85:
+
+| Tier, level kind | Ladder | Fully modded reaches 85 |
+| --- | --- | --- |
+| 4, evidence decides | 49.7 / 56.7 / 64.1 / 96.3 | 84% |
+| 4, fixed levels | 53.9 / 59.5 / 70.5 / 97.3 | 88% |
+| 5, evidence decides | 45.9 / 51.9 / 59.6 / 92.9 | 72% |
+| 5, fixed levels | 47.6 / 57.0 / 65.4 / 95.5 | 82% |
+
+A full line in no gear against unperked best gear: tier 4 is 6.9 to 13.6 points under it; tier 5 is -3.8 to +3.8 (Intuitive at fixed levels, 69.2 against 65.4).
+
+**Espionage** needs no change: its Reaction minigame reads Espionage rank only, with no crafting gear and no crafting perks.
 
 ## Limits
 

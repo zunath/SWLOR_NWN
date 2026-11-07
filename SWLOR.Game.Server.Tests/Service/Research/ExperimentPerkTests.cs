@@ -40,13 +40,13 @@ public class ExperimentPerkTests
             [StatType.ExperimentTestChancePercent] = -4,
             [StatType.ExperimentRefineCpReduction] = 5,
             [StatType.ExperimentRefineChancePercent] = 5,
-            [StatType.ExperimentTimeCutPerEvidencePercent] = 2,
+            [StatType.ExperimentTimeCutPerEvidenceTenths] = 2,
             [StatType.ExperimentPeerReviewUnlocked] = 1,
             [StatType.ExperimentBreakthroughUnlocked] = 1
         };
 
         ExperimentTuning.FromStatTotals(stat => totals.GetValueOrDefault(stat)).Should().Be(
-            new ExperimentTuning(9, -4, 20, 25, 7, 25, true, true));
+            new ExperimentTuning(9, -4, 20, 25, 52, 25, true, true));
         ExperimentTuning.FromStatTotals(_ => 0).Should().Be(ExperimentTuning.Default);
         var act = () => ExperimentTuning.FromStatTotals(null!);
         act.Should().Throw<ArgumentNullException>();
@@ -59,7 +59,7 @@ public class ExperimentPerkTests
         {
             StatType.ExperimentTrials => -20,
             StatType.ExperimentRefineCpReduction => 100,
-            StatType.ExperimentTimeCutPerEvidencePercent => 50,
+            StatType.ExperimentTimeCutPerEvidenceTenths => 500,
             _ => 0
         });
 
@@ -71,25 +71,25 @@ public class ExperimentPerkTests
     // ---- trials and Test chance: the styles and the traits ---------------------------------------------------------
 
     [Test]
-    public void Methodical_GivesTwoMoreTrialsAndFifteenFewerPointsOfTestChance()
+    public void Methodical_GivesOneMoreTrialAndFifteenFewerPointsOfTestChance()
     {
-        var engine = Engine(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -15 });
+        var engine = Engine(ExperimentTuning.Default with { Trials = 7, TestChanceBonusPercent = -15 });
 
-        engine.Meters.Progress.Max.Should().Be(8);
-        engine.TrialsRemaining.Should().Be(8);
-        engine.Setup.Trials.Should().Be(8);
+        engine.Meters.Progress.Max.Should().Be(7);
+        engine.TrialsRemaining.Should().Be(7);
+        engine.Setup.Trials.Should().Be(7);
         engine.TestChancePercent.Should().Be(45);
         engine.Preview(ExperimentActionIds.TestCreditReduction).Outcomes[0].ChancePercent.Should().Be(45);
     }
 
     [Test]
-    public void Intuitive_GivesOneFewerTrialAndTwentyMorePointsOfTestChance()
+    public void Intuitive_GivesOneFewerTrialAndFourMorePointsOfTestChance()
     {
-        var engine = Engine(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 20 });
+        var engine = Engine(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 4 });
 
         engine.Meters.Progress.Max.Should().Be(5);
-        engine.TestChancePercent.Should().Be(80);
-        engine.Preview(ExperimentActionIds.TestTimeReduction).Outcomes[0].ChancePercent.Should().Be(80);
+        engine.TestChancePercent.Should().Be(64);
+        engine.Preview(ExperimentActionIds.TestTimeReduction).Outcomes[0].ChancePercent.Should().Be(64);
     }
 
     [TestCase(0, 60)]
@@ -156,15 +156,15 @@ public class ExperimentPerkTests
     [Test]
     public void EfficientAnalysis_CutsMoreOfTheJobsTimePerPieceOfEvidence_ButNeverPastTheCap()
     {
-        foreach (var (perEvidence, evidence, expected) in new[] { (5, 3, 15), (6, 3, 18), (7, 3, 21), (7, 4, 25), (7, 6, 25) })
+        foreach (var (perEvidence, evidence, expected) in new[] { (50, 3, 15), (53, 3, 15), (55, 3, 16), (55, 4, 22), (55, 5, 25), (70, 4, 25) })
         {
-            var engine = Engine(ExperimentTuning.Default with { TimeCutPerEvidence = perEvidence, Trials = 10 }, FixedLevel, 200, Hits(10));
+            var engine = Engine(ExperimentTuning.Default with { TimeCutTenthsPerEvidence = perEvidence, Trials = 10 }, FixedLevel, 200, Hits(10));
             for (var test = 0; test < evidence; test++)
                 engine.Perform(ExperimentActionIds.TestFixed);
 
             var preview = engine.Preview(ExperimentActionIds.Analyze);
 
-            preview.Outcomes[0].Change(ExperimentActionIds.TimeCutMeter)!.After.Should().Be(expected, $"{evidence} evidence at {perEvidence}%");
+            preview.Outcomes[0].Change(ExperimentActionIds.TimeCutMeter)!.After.Should().Be(expected, $"{evidence} evidence at {perEvidence} tenths of a percent, rounded down");
             engine.Perform(ExperimentActionIds.Analyze).Performed.Should().BeTrue();
             engine.TimeCutPercent.Should().Be(expected);
         }
@@ -346,27 +346,7 @@ public class ExperimentPerkTests
     }
 
     [Test]
-    public void AfterBreakthroughEachPieceOfSpareEvidenceCutsTwiceAsMuchOfTheJobsTime_InsideTheCap()
-    {
-        foreach (var (evidence, expected) in new[] { (1, 10), (2, 20), (3, 25), (5, 25) })
-        {
-            var engine = Engine(Breakthrough, FixedLevel, 200, Hits(10));
-            engine.Perform(ExperimentActionIds.Breakthrough);
-            for (var test = 0; test < evidence - 1; test++)
-                engine.Perform(ExperimentActionIds.TestFixed);
-
-            // The first Test after Breakthrough is the guaranteed one.
-            engine.Perform(ExperimentActionIds.TestFixed);
-            var preview = engine.Preview(ExperimentActionIds.Analyze);
-
-            preview.Outcomes[0].Change(ExperimentActionIds.TimeCutMeter)!.After.Should().Be(expected, $"{evidence} evidence");
-            engine.Perform(ExperimentActionIds.Analyze).Performed.Should().BeTrue();
-            engine.TimeCutPercent.Should().Be(expected);
-        }
-    }
-
-    [Test]
-    public void EvidenceAnalyzedBeforeBreakthroughCutsTheUsualShare_AndTheCapNeverRises()
+    public void EvidenceAnalyzedAfterBreakthroughCutsTheUsualShare_AndTheCapNeverRises()
     {
         var engine = Engine(ExperimentTuning.Default with { Breakthrough = true, Trials = 10 }, FixedLevel, 200, Hits(10));
         engine.Perform(ExperimentActionIds.TestFixed);
@@ -376,22 +356,17 @@ public class ExperimentPerkTests
         engine.TimeCutPercent.Should().Be(10, "two pieces at 5% each, before Breakthrough");
 
         engine.Perform(ExperimentActionIds.Breakthrough);
+        engine.Perform(ExperimentActionIds.TestFixed);
+        engine.Perform(ExperimentActionIds.TestFixed);
+        engine.Perform(ExperimentActionIds.Analyze);
+
+        engine.TimeCutPercent.Should().Be(20, "two more pieces at the same 5% each");
         for (var test = 0; test < 3; test++)
             engine.Perform(ExperimentActionIds.TestFixed);
         engine.Perform(ExperimentActionIds.Analyze);
 
-        engine.TimeCutPercent.Should().Be(25, "10 + 3 x 10 is capped at 25");
+        engine.TimeCutPercent.Should().Be(25, "20 + 3 x 5 is capped at 25");
         engine.Setup.TimeCutCap.Should().Be(25);
-    }
-
-    [Test]
-    public void ABreakthroughStacksWithEfficientAnalysis_StillInsideTheCap()
-    {
-        var engine = Engine(ExperimentTuning.Default with { Breakthrough = true, TimeCutPerEvidence = 7 }, FixedLevel, 200, Hits(10));
-        engine.Perform(ExperimentActionIds.Breakthrough);
-        engine.Perform(ExperimentActionIds.TestFixed);
-
-        engine.Preview(ExperimentActionIds.Analyze).Outcomes[0].Change(ExperimentActionIds.TimeCutMeter)!.After.Should().Be(14);
     }
 
     [Test]
@@ -440,7 +415,7 @@ public class ExperimentPerkTests
     // ---- every perk together ------------------------------------------------------------------------------------------
 
     private static readonly ExperimentTuning Everything = new(
-        Trials: 9, TestChanceBonusPercent: -4, RefineChanceBonus: 20, RefineCp: 25, TimeCutPerEvidence: 7, TimeCutCap: 25,
+        Trials: 9, TestChanceBonusPercent: -4, RefineChanceBonus: 20, RefineCp: 25, TimeCutTenthsPerEvidence: 55, TimeCutCap: 25,
         PeerReview: true, Breakthrough: true);
 
     [TestCase(1)]
@@ -541,7 +516,7 @@ public class ExperimentPerkTests
         ExperimentDisplay.PerkSummary(ExperimentTuning.Default).Should().Be("Researcher perks: none.");
         ExperimentDisplay.PerkSummary(Everything).Should().Be(
             "Researcher perks: 9 trials, Test chance -4 points, Refine Method costs 25 CP, Refine Method adds 20 points, " +
-            "Analyze cuts 7% per evidence, Peer Review, Breakthrough.");
+            "Analyze cuts 5.5% per evidence, Peer Review, Breakthrough.");
     }
 
     [Test]
@@ -549,7 +524,7 @@ public class ExperimentPerkTests
     {
         var view = ExperimentDisplay.DescribeAction(Engine(Breakthrough).Preview(ExperimentActionIds.Breakthrough));
 
-        view.Summary.Should().Be("your next Test succeeds, and Analyze cuts more time per piece of evidence");
+        view.Summary.Should().Be("your next Test succeeds");
         view.Tooltip.Should().Contain("Cost: nothing.");
     }
 

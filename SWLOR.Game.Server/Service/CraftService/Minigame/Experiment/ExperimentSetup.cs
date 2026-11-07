@@ -19,6 +19,8 @@ public sealed class ExperimentSetup
     /// At a random level, the licensed runs (1 to 3) rolled when the experiment opened, or 0 when the level grants a reduction that
     /// evidence decides. Must be 0 at every other level.
     /// </param>
+    /// <param name="control">The researcher's Fabrication Control, which raises every Test's chance.</param>
+    /// <param name="craftsmanship">The researcher's Fabrication Craftsmanship, which adds trials.</param>
     public ExperimentSetup(
         int targetLevel,
         int rank,
@@ -26,7 +28,9 @@ public sealed class ExperimentSetup
         int gearCp,
         bool extraBonus,
         ExperimentTuning tuning = null,
-        int licensedRunsGrant = 0)
+        int licensedRunsGrant = 0,
+        int control = 0,
+        int craftsmanship = 0)
     {
         tuning ??= ExperimentTuning.Default;
         if (tuning.Trials < 1)
@@ -51,17 +55,23 @@ public sealed class ExperimentSetup
         ExtraBonus = extraBonus;
         ExtraBonusTier = ResearchGrantRules.ExtraBonusTier(targetLevel);
 
-        Trials = tuning.Trials;
+        Control = Math.Max(0, control);
+        Craftsmanship = Math.Max(0, craftsmanship);
+        CraftsmanshipTrials = TrialsFromCraftsmanship(Craftsmanship);
+        Trials = tuning.Trials + CraftsmanshipTrials;
+        ResearchTier = Math.Clamp(RequiredRank / CraftRankMilestones.RanksPerTier, 1, CraftRankMilestones.MaxResearchTier);
+        TierChancePenalty = Math.Max(0, ResearchTier - ExperimentRules.TestChanceCurveStartTier) * ExperimentRules.TestChanceDropPerTier;
         RankChanceBonus = Math.Clamp(Rank - RequiredRank, 0, ExperimentRules.RankChanceBonusMaximum);
+        ControlChanceBonus = ControlChance(Control);
         BaseTestChancePercent = Math.Clamp(
-            ExperimentRules.BaseTestChancePercent + RankChanceBonus + tuning.TestChanceBonusPercent,
+            ExperimentRules.BaseTestChancePercent - TierChancePenalty + RankChanceBonus + ControlChanceBonus + tuning.TestChanceBonusPercent,
             ExperimentRules.MinimumTestChancePercent,
             ExperimentRules.MaximumTestChancePercent);
         MaxCp = (int)(GearCp + Rank * ExperimentRules.CpPerRank) +
                 (Rank >= ExperimentRules.RankPassiveCpRank ? ExperimentRules.RankPassiveCp : 0);
         RefineCp = tuning.RefineCp;
         RefineChanceBonus = tuning.RefineChanceBonus;
-        TimeCutPerEvidence = tuning.TimeCutPerEvidence;
+        TimeCutTenthsPerEvidence = tuning.TimeCutTenthsPerEvidence;
         TimeCutCap = tuning.TimeCutCap;
         PeerReviewUnlocked = tuning.PeerReview;
         BreakthroughUnlocked = tuning.Breakthrough;
@@ -107,14 +117,47 @@ public sealed class ExperimentSetup
     /// <summary>The points of Test chance the researcher's rank adds.</summary>
     public int RankChanceBonus { get; }
 
+    /// <summary>The researcher's Fabrication Control.</summary>
+    public int Control { get; }
+
+    /// <summary>The researcher's Fabrication Craftsmanship.</summary>
+    public int Craftsmanship { get; }
+
+    /// <summary>The recipe's research tier, 1 to 5.</summary>
+    public int ResearchTier { get; }
+
+    /// <summary>The points of Test chance the research tier takes away.</summary>
+    public int TierChancePenalty { get; }
+
+    /// <summary>The trials the researcher's Craftsmanship adds.</summary>
+    public int CraftsmanshipTrials { get; }
+
+    /// <summary>The points of Test chance the researcher's Control adds.</summary>
+    public int ControlChanceBonus { get; }
+
+    /// <summary>What each piece of spare evidence cuts from the job's time, in tenths of a percent, before Breakthrough.</summary>
+    public int TimeCutTenthsPerEvidence { get; }
+
     /// <summary>The chance of a Test finding evidence before Refine Method, in percent.</summary>
     public int BaseTestChancePercent { get; }
 
     public int MaxCp { get; }
     public int RefineCp { get; }
     public int RefineChanceBonus { get; }
-    public int TimeCutPerEvidence { get; }
     public int TimeCutCap { get; }
+
+    /// <summary>The trials <paramref name="craftsmanship"/> points of Fabrication Craftsmanship add.</summary>
+    public static int TrialsFromCraftsmanship(int craftsmanship) => Math.Max(0, craftsmanship) / ExperimentRules.CraftsmanshipPerTrial;
+
+    /// <summary>The points of Test chance <paramref name="control"/> points of Fabrication Control add.</summary>
+    public static int ControlChance(int control)
+    {
+        control = Math.Max(0, control);
+        var belowSoftCap = Math.Min(control, ExperimentRules.ControlChanceSoftCap);
+        var aboveSoftCap = control - belowSoftCap;
+        return belowSoftCap / ExperimentRules.ControlPerTestChancePoint +
+               aboveSoftCap / ExperimentRules.ControlPerTestChancePointAboveSoftCap;
+    }
 
     public int IndexOf(ResearchCandidate candidate)
     {
@@ -138,7 +181,9 @@ public sealed class ExperimentSetup
         int gearCp,
         bool extraBonus,
         ExperimentTuning tuning = null,
-        int licensedRunsGrant = 0)
+        int licensedRunsGrant = 0,
+        int control = 0,
+        int craftsmanship = 0)
     {
         if (recipe == null)
             throw new ArgumentNullException(nameof(recipe));
@@ -151,6 +196,8 @@ public sealed class ExperimentSetup
             gearCp,
             extraBonus,
             tuning,
-            licensedRunsGrant);
+            licensedRunsGrant,
+            control,
+            craftsmanship);
     }
 }

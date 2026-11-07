@@ -17,7 +17,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         public int RequiredRank => CraftRankMilestones.RequiredFabricationRankForResearchTier(Tier);
 
         public ExperimentSetup CreateSetup(ExperimentTuning tuning = null) =>
-            new(ResearchLevel, Rank, RequiredRank, Gear.CpBonus, extraBonus: false, tuning, LicensedRunsGrant);
+            new(ResearchLevel, Rank, RequiredRank, Gear.CpBonus, extraBonus: false, tuning, LicensedRunsGrant, Gear.Control, Gear.Craftsmanship);
     }
 
     /// <summary>What many experiments played by one policy at one case came to.</summary>

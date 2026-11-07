@@ -68,7 +68,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine("## Inputs");
             text.AppendLine();
             text.AppendLine($"- Seed {options.Seed}; {options.Runs} experiments per case for the focused player and {options.AdaptiveRuns} for the adaptive player. Each experiment's dice come from its own stream of the seed.");
-            text.AppendLine($"- Starting values (`ExperimentRules`): {ExperimentRules.Trials} trials; Test chance {ExperimentRules.BaseTestChancePercent}% plus one point per Fabrication rank past the recipe tier's required rank, up to {ExperimentRules.RankChanceBonusMaximum}; Refine Method +{ExperimentRules.RefineChanceBonusPercent} points for the next Test at {ExperimentRules.RefineCp} CP; Analyze {ExperimentRules.TimeCutPercentPerEvidence}% of the job's time per piece of spare evidence, capped at {ExperimentRules.TimeCutCapPercent}%; evidence pays today's dice minimum at 1 and maximum at {ResearchOutcomeRules.EvidenceForMaximum}.");
+            text.AppendLine($"- Starting values (`ExperimentRules`): {ExperimentRules.Trials} trials; Test chance {ExperimentRules.BaseTestChancePercent}% plus one point per Fabrication rank past the recipe tier's required rank, up to {ExperimentRules.RankChanceBonusMaximum}; Refine Method +{ExperimentRules.RefineChanceBonusPercent} points for the next Test at {ExperimentRules.RefineCp} CP; Analyze {ExperimentRules.TimeCutTenthsPerEvidence / 10.0:0.#}% of the job's time per piece of spare evidence; one more point of Test chance per {ExperimentRules.ControlPerTestChancePoint} Fabrication Control and one more trial per {ExperimentRules.CraftsmanshipPerTrial} Craftsmanship, and {ExperimentRules.TestChanceDropPerTier} fewer points for each research tier above tier {ExperimentRules.TestChanceCurveStartTier}; capped at {ExperimentRules.TimeCutCapPercent}%; evidence pays today's dice minimum at 1 and maximum at {ResearchOutcomeRules.EvidenceForMaximum}.");
             text.AppendLine($"- CP is gear CP plus 0.75 per rank with no rank passive (the Experiment's only CP sink is Refine Method). Gear: {string.Join("; ", gear.Select(level => $"{level.Name} = {level.CpBonus} CP"))}.");
             text.AppendLine("- Focused player: at a random level every Test goes to one chosen candidate; at a fixed level every Test banks evidence and the last trial analyzes it; it refines its method before every Test it can afford.");
             text.AppendLine("- Adaptive player: `AdaptivePolicy` over the previews (depth 3), valuing evidence only.");
@@ -209,7 +209,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                     var capShare = CapShare(experimentCase, options);
                     table.Add(
                         tier.ToString(), rank.ToString(), level.Name, $"{experimentCase.CreateSetup().BaseTestChancePercent}%",
-                        Number(sample.MeanTimeCutPercent / ExperimentRules.TimeCutPercentPerEvidence, 2), Number(sample.MeanTimeCutPercent) + "%", Percent(capShare));
+                        Number(sample.MeanTimeCutPercent * 10 / experimentCase.CreateSetup().TimeCutTenthsPerEvidence, 2), Number(sample.MeanTimeCutPercent) + "%", Percent(capShare));
                 }
             }
 

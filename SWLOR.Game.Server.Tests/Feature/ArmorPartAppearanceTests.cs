@@ -95,6 +95,59 @@ public class ArmorPartAppearanceTests
     }
 
     [Test]
+    public void CatalogsOfferNoShoulderOrBeltThatShowsNothing()
+    {
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        {
+            Assert.That(definition.Shoulder, Does.Not.Contain(1).And.Not.Contain(2).And.Contain(0), $"{type} shoulder");
+            Assert.That(definition.Belt, Does.Not.Contain(1).And.Not.Contain(2).And.Contain(0), $"{type} belt");
+        }
+    }
+
+    [TestCase(AppearanceArmor.LeftShoulder, "shol")]
+    [TestCase(AppearanceArmor.RightShoulder, "shor")]
+    [TestCase(AppearanceArmor.Belt, "belt")]
+    public void SavedShouldersAndBeltsAtStyleOneOrTwoRepairToNoPart(AppearanceArmor part, string model)
+    {
+        // The models exist, but the engine draws the wearer's own (empty) body part for these styles.
+        var models = new HashSet<string> { $"pfh0_{model}001", $"pfh0_{model}002" };
+        var human = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
+
+        foreach (var style in new[] { 1, 2 })
+        {
+            Assert.That(ArmorPartAppearance.IsRenderable("pfh0", part, style, _ => 0, models.Contains), Is.False);
+            var repairs = ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
+                saved => saved == part ? style : 0, _ => 0, models.Contains);
+            Assert.That(repairs, Is.EquivalentTo(new Dictionary<AppearanceArmor, int> { [part] = 0 }));
+        }
+    }
+
+    [TestCase(AppearanceArmor.Torso, "chest")]
+    [TestCase(AppearanceArmor.Pelvis, "pelvis")]
+    [TestCase(AppearanceArmor.LeftBicep, "bicepl")]
+    [TestCase(AppearanceArmor.LeftForearm, "forel")]
+    [TestCase(AppearanceArmor.LeftHand, "handl")]
+    [TestCase(AppearanceArmor.LeftThigh, "legl")]
+    [TestCase(AppearanceArmor.LeftShin, "shinl")]
+    [TestCase(AppearanceArmor.LeftFoot, "footl")]
+    public void BareBodyPartsAtStyleOneOrTwoAreKept(AppearanceArmor part, string model)
+    {
+        // These slots do show something at 1 and 2: the wearer's own bare body part. Hundreds of
+        // blueprints wear style 1, and droid catalogs offer no 0 for most of them.
+        var models = new HashSet<string> { $"pfh0_{model}001", $"pfh0_{model}002" };
+        var human = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
+        var droid = ArmorAppearanceCatalog.Definitions[AppearanceType.Droid];
+
+        foreach (var style in new[] { 1, 2 })
+        {
+            Assert.That(ArmorAppearanceCatalog.GetStyles(human, part), Does.Contain(style));
+            Assert.That(ArmorAppearanceCatalog.GetStyles(droid, part), Does.Contain(style));
+            Assert.That(ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
+                saved => saved == part ? style : 0, _ => 0, models.Contains), Is.Empty);
+        }
+    }
+
+    [Test]
     public void OnlyPlayableAppearancesAreRepaired()
     {
         var models = new HashSet<string> { "pfh0_legl001", "pfh0_shinl001" };

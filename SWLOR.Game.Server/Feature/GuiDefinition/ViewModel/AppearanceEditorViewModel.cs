@@ -953,75 +953,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // An empty slot has no parts: the browser must not keep showing the last item's.
             if (!hasItemEquipped)
                 ClearBrowser();
-            RefreshWeaponFit();
         }
-
-        public bool IsWeaponFitVisible { get => Get<bool>(); set => Set(value); }
-        public string WeaponFitTranslateXText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitTranslateYText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitTranslateZText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitRotateXText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitRotateYText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitRotateZText { get => Get<string>(); set => Set(value); }
-        public string WeaponFitScaleText { get => Get<string>(); set => Set(value); }
-
-        private InventorySlot GetWeaponFitHand() => SelectedItemTypeIndex switch
-        {
-            3 => InventorySlot.RightHand,
-            4 => InventorySlot.LeftHand,
-            _ => InventorySlot.Invalid
-        };
-
-        private bool TryGetWeaponFitTarget(out uint owner, out InventorySlot hand)
-        {
-            hand = GetWeaponFitHand();
-            owner = OBJECT_INVALID;
-            if (!IsEquipmentSelected || !HasItemEquipped || hand == InventorySlot.Invalid ||
-                !WeaponFit.CanFit(_target, hand))
-                return false;
-            owner = GetItem();
-            return GetIsObjectValid(owner);
-        }
-
-        private void RefreshWeaponFit()
-        {
-            var visible = TryGetWeaponFitTarget(out var owner, out var hand);
-            IsWeaponFitVisible = visible;
-            string Text(WeaponFitAxis axis) =>
-                WeaponFitLimits.Format(axis, visible ? WeaponFit.GetSteps(owner, hand, axis) : 0);
-            WeaponFitTranslateXText = Text(WeaponFitAxis.TranslateX);
-            WeaponFitTranslateYText = Text(WeaponFitAxis.TranslateY);
-            WeaponFitTranslateZText = Text(WeaponFitAxis.TranslateZ);
-            WeaponFitRotateXText = Text(WeaponFitAxis.RotateX);
-            WeaponFitRotateYText = Text(WeaponFitAxis.RotateY);
-            WeaponFitRotateZText = Text(WeaponFitAxis.RotateZ);
-            WeaponFitScaleText = Text(WeaponFitAxis.Scale);
-        }
-
-        public Action OnAdjustWeaponFit(WeaponFitAxis axis, int direction) => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (!TryGetWeaponFitTarget(out var owner, out var hand))
-                return;
-            var steps = WeaponFit.GetSteps(owner, hand, axis);
-            var next = WeaponFitLimits.ClampSteps(axis, steps + Math.Sign(direction));
-            if (next == steps)
-            {
-                DMPresence.SendMessage(Player, "That is as far as this weapon can be adjusted.");
-                return;
-            }
-            WeaponFit.SetSteps(_target, owner, hand, axis, next);
-            RefreshWeaponFit();
-        };
-
-        public Action OnResetWeaponFit() => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (!TryGetWeaponFitTarget(out var owner, out var hand))
-                return;
-            WeaponFit.Reset(_target, owner, hand);
-            RefreshWeaponFit();
-        };
 
         /// <summary>The slot tabs' "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
         public bool IsNoEditableItemVisible { get => Get<bool>(); set => Set(value); }

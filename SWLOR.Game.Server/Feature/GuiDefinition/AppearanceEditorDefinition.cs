@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
@@ -59,9 +58,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// <summary>The Equipment tab's Armor / Main Hand / Off Hand row, measured in the client.</summary>
         public const float EquipmentTabsHeight = 36f;
         private const float NoItemLabelWidth = 130f;
-        private const float WeaponFitLabelWidth = 64f;
-        private const float WeaponFitButtonWidth = 32f;
-        private const float WeaponFitValueWidth = 76f;
         private const float OutfitButtonWidth = 64f;
         private const float OutfitListWidth = 280f;
         /// <summary>New and Delete share the list's width; unsized buttons take about 150 each and overflow it.</summary>
@@ -253,74 +249,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             preview.AddRow(previewRow =>
                             {
                                 previewRow.AddColumn(AddPartPreview).SetWidth(PreviewColumnWidth);
-                                previewRow.AddColumn(AddWeaponFit);
+                                previewRow.AddSpacer();
                             });
                             preview.AddRow(fill => fill.AddSpacer());
                         });
                     });
                 });
-            });
-        }
-
-        private void AddWeaponFit(GuiColumn<AppearanceEditorViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsWeaponFitVisible);
-                row.AddLabel()
-                    .SetText("Weapon Fit")
-                    .SetTooltip("Small corrections to how this weapon sits in your hand.")
-                    .SetHeight(20f);
-            });
-            AddWeaponFitRow(col, "Move X", WeaponFitAxis.TranslateX, model => model.WeaponFitTranslateXText);
-            AddWeaponFitRow(col, "Move Y", WeaponFitAxis.TranslateY, model => model.WeaponFitTranslateYText);
-            AddWeaponFitRow(col, "Move Z", WeaponFitAxis.TranslateZ, model => model.WeaponFitTranslateZText);
-            AddWeaponFitRow(col, "Turn X", WeaponFitAxis.RotateX, model => model.WeaponFitRotateXText);
-            AddWeaponFitRow(col, "Turn Y", WeaponFitAxis.RotateY, model => model.WeaponFitRotateYText);
-            AddWeaponFitRow(col, "Turn Z", WeaponFitAxis.RotateZ, model => model.WeaponFitRotateZText);
-            AddWeaponFitRow(col, "Size", WeaponFitAxis.Scale, model => model.WeaponFitScaleText);
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsWeaponFitVisible);
-                row.AddButton()
-                    .SetId("ae_weapon_fit_reset")
-                    .SetText("Reset Fit")
-                    .SetTooltip("Returns this weapon to its original position and size.")
-                    .SetWidth(WeaponFitLabelWidth + WeaponFitValueWidth + 2f * WeaponFitButtonWidth)
-                    .SetHeight(28f)
-                    .BindOnClicked(model => model.OnResetWeaponFit());
-                row.AddSpacer();
-            });
-        }
-
-        private void AddWeaponFitRow(GuiColumn<AppearanceEditorViewModel> col, string label, WeaponFitAxis axis,
-            Expression<System.Func<AppearanceEditorViewModel, string>> value)
-        {
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsWeaponFitVisible);
-                row.AddLabel()
-                    .SetText(label)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetWidth(WeaponFitLabelWidth)
-                    .SetHeight(28f);
-                row.AddButton()
-                    .SetId($"ae_weapon_fit_{axis}_down")
-                    .SetText("-")
-                    .SetWidth(WeaponFitButtonWidth)
-                    .SetHeight(28f)
-                    .BindOnClicked(model => model.OnAdjustWeaponFit(axis, -1));
-                row.AddLabel()
-                    .BindText(value)
-                    .SetWidth(WeaponFitValueWidth)
-                    .SetHeight(28f);
-                row.AddButton()
-                    .SetId($"ae_weapon_fit_{axis}_up")
-                    .SetText("+")
-                    .SetWidth(WeaponFitButtonWidth)
-                    .SetHeight(28f)
-                    .BindOnClicked(model => model.OnAdjustWeaponFit(axis, 1));
-                row.AddSpacer();
             });
         }
 

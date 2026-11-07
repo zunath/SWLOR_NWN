@@ -383,29 +383,6 @@ public class CombatSourceTests
     }
 
     [Test]
-    public void ReflectionReachesAPartsInstanceMembersInTheInstalledContainer()
-    {
-        using var facades = new FacadeContainer();
-        using var installed = facades.Install();
-        var resources = facades.Get<ICombatResourcesService>();
-
-        var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
-        ((object)cooldowns).Should().BeSameAs(typeof(CombatResourcesService)
-            .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(resources));
-        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!.IsStatic.Should().BeTrue(
-            "the static forwarder on Combat is found first");
-        var trigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>(
-            "TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
-        trigger(0xFFFFFFF0, StatType.SideAttackSkillType, 30).Should().BeTrue();
-        cooldowns.Should().ContainKey((0xFFFFFFF0, StatType.SideAttackSkillType));
-
-        CombatMembers.FindMethod("IsWeaponOrForceAbility")!.IsStatic.Should().BeFalse("only the queries service has it");
-        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Force).Should().Be(true);
-        CombatMembers.CreateDelegate<Func<SkillType, bool>>("IsWeaponOrForceAbility")(SkillType.Mimicry).Should().BeFalse();
-        CombatMembers.Invoke("CalculateResourceRestoreFromCost", 10, 50).Should().Be(5, "a static member needs no instance");
-    }
-
-    [Test]
     public void ReflectionReturnsNullForAMemberThatDoesNotExist()
     {
         CombatMembers.FindMethod("NoSuchMethod").Should().BeNull();

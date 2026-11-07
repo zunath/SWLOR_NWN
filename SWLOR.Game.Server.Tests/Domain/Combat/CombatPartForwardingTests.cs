@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
 using CombatFacade = SWLOR.Game.Server.Service.Combat;
@@ -22,19 +23,34 @@ public class CombatPartForwardingTests
 
     private static IEnumerable<Type> Parts() => new[]
     {
+        typeof(ICombatActivityService),
+        typeof(ICombatAttackTimingService),
         typeof(ICombatFeedbackService),
         typeof(ICombatQueriesService),
         typeof(ICombatResourcesService),
+        typeof(ICombatSuppressionService),
     };
+
+    // The methods of a part; a property (the activity part's shared table) is checked by its own test below.
+    private static MethodInfo[] Members(Type part) => part.GetMethods().Where(method => !method.IsSpecialName).ToArray();
 
     private static MethodInfo Forwarder(MethodInfo member) =>
         typeof(CombatFacade).GetMethod(member.Name, Statics, member.GetParameters().Select(parameter => parameter.ParameterType).ToArray())
         ?? throw new AssertionException($"Combat has no forwarder {member.Name}({string.Join(", ", member.GetParameters().Select(p => p.ParameterType.Name))}).");
 
+    [Test]
+    public void OnlyTheActivityPartHasAProperty()
+    {
+        Parts().SelectMany(part => part.GetProperties().Select(property => $"{part.Name}.{property.Name}"))
+            .Should().Equal("ICombatActivityService.RecentDamageTargets");
+        Parts().SelectMany(part => part.GetMethods().Where(method => method.IsSpecialName).Select(method => method.Name))
+            .Should().Equal("get_RecentDamageTargets");
+    }
+
     [TestCaseSource(nameof(Parts))]
     public void CombatKeepsAForwarderWithTheSameSignatureForEveryMember(Type part)
     {
-        var members = part.GetMethods();
+        var members = Members(part);
         members.Should().NotBeEmpty();
 
         foreach (var member in members)
@@ -58,7 +74,7 @@ public class CombatPartForwardingTests
     [TestCaseSource(nameof(Parts))]
     public void EveryForwarderMakesOneCallWithTheSameArgumentsAndReturnsItsResult(Type part)
     {
-        foreach (var member in part.GetMethods())
+        foreach (var member in Members(part))
         {
             var forwarder = Forwarder(member);
             var proxyInstance = RecordingProxy.Create(part, out var proxy);
@@ -83,6 +99,34 @@ public class CombatPartForwardingTests
             else
                 result.Should().BeSameAs(returned, $"Combat.{member.Name} returns what the instance returned");
         }
+    }
+
+    [Test]
+    public void TheRecentDamageTargetsTheUnmovedPartsReadAreTheActivityPartsOwnTable()
+    {
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        var activity = facades.Get<ICombatActivityService>();
+        var forwarder = typeof(CombatFacade).GetProperty("_recentDamageTargets", Statics)
+                        ?? throw new AssertionException("Combat has no _recentDamageTargets forwarder.");
+
+        forwarder.GetMethod!.IsPrivate.Should().BeTrue();
+        forwarder.SetMethod.Should().BeNull("the hit effects and damage taken parts only read and prune the table");
+        var table = forwarder.GetValue(null);
+        table.Should().BeSameAs(activity.RecentDamageTargets);
+        table.Should().BeSameAs(typeof(CombatActivityService)
+            .GetField("_recentDamageTargets", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(activity));
+        forwarder.GetValue(null).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
+    }
+
+    [TestCase("PurgeInvalidOffensiveActivity", ScriptName.OnModuleHeartbeat)]
+    [TestCase("RestoreIdleReadinessOnPlayerEnter", ScriptName.OnModuleEnter)]
+    public void TheActivityHandlersStayOnCombatUnderTheirNames(string name, string script)
+    {
+        var handler = typeof(CombatFacade).GetMethod(name, BindingFlags.Public | BindingFlags.Static, Type.EmptyTypes)!;
+        handler.GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(script);
+        typeof(CombatActivityService).GetMethod(name)!.GetCustomAttributes<NWNEventHandler>().Should()
+            .BeEmpty("handlers stay on the facade");
     }
 
     [Test]

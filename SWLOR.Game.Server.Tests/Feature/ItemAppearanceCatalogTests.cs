@@ -15,12 +15,8 @@ public class ItemAppearanceCatalogTests
     private sealed record ArmorSlot(string Name, string Field, Func<BaseArmorAppearanceDefinition, int[]> Catalog, bool AllowsNone = false,
         bool KeepsBareStyleTwo = true);
 
-    /// <summary>
-    /// Style 2 left every part list, but existing armor keeps it: it draws the same bare body part as 1, and
-    /// moving it to 1 would change how the part takes dyes (the pelvis and droid parts would start showing
-    /// the armor's colors). Shoulders, belts and robes show nothing at 2 and were moved off it.
-    /// </summary>
-    private const int BareStyleTwo = 2;
+    /// <summary>The editor accepts existing armor on style 2 (<see cref="ArmorAppearanceCatalog.RetainedBareStyle"/>).</summary>
+    private const int BareStyleTwo = ArmorAppearanceCatalog.RetainedBareStyle;
 
     private static readonly ArmorSlot[] ArmorSlots =
     {

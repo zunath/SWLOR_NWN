@@ -156,6 +156,24 @@ public class ArmorPartAppearanceTests
         }
     }
 
+    [Test]
+    public void SavedStyleTwoStaysEditableOnBareSlotsOnly()
+    {
+        // Moving saved style 2 would change how the pelvis and droid parts take dyes, so it stays and the
+        // editor still accepts it. Shoulders, belts and robes show nothing at 2 and are repaired instead.
+        var kept = new[] { AppearanceArmor.Belt, AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.Robe };
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        foreach (var part in ArmorParts)
+        {
+            Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, 2), Is.EqualTo(!kept.Contains(part)), $"{type} {part}");
+            foreach (var style in ArmorAppearanceCatalog.GetStyles(definition, part))
+                Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, style), Is.True, $"{type} {part} {style}");
+            Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, 9999), Is.False, $"{type} {part}");
+        }
+        Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], AppearanceArmor.Neck, 0), Is.True,
+            "the editor offers None for the neck");
+    }
+
     private static readonly AppearanceArmor[] ArmorParts =
     {
         AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,

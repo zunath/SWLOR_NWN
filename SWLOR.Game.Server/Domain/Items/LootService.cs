@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LogService;
@@ -25,6 +26,13 @@ namespace SWLOR.Game.Server.Domain.Items
         private const float CorpseLifespanSeconds = 360f;
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
+
+        private readonly IBeastMasteryService _beastMastery;
+
+        public LootService(IBeastMasteryService beastMastery)
+        {
+            _beastMastery = beastMastery;
+        }
 
         public void RegisterLootTables()
         {
@@ -397,12 +405,12 @@ namespace SWLOR.Game.Server.Domain.Items
         }
 
         /// <summary>
-        /// The details of a beast type. <c>BeastMastery.GetBeastDetail</c> reads the beast cache the module load fills,
+        /// The details of a beast type. <c>IBeastMasteryService.GetBeastDetail</c> reads the beast cache the module load fills,
         /// which a unit test does not load, so a test overrides this.
         /// </summary>
         protected virtual BeastDetail GetBeastDetail(BeastType type)
         {
-            return BeastMastery.GetBeastDetail(type);
+            return _beastMastery.GetBeastDetail(type);
         }
 
         public void DisturbCorpseContainer()

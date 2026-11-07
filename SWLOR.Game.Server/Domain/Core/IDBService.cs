@@ -44,40 +44,30 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
         Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
 
-        // The members below are only what the static DB facade forwards. The many test fakes of this interface, and the
-        // fakes of services converted at the same time, model none of them, so each has a default that refuses.
+        // The members below are what the static DB facade forwards.
 
         /// <summary>Connects to Redis, registers the entity types and builds their search indexes. Same as <c>DB.Load</c>.</summary>
-        void Load() => throw Unsupported(nameof(Load));
+        void Load();
 
         /// <summary>Appends an entry to a Redis stream and waits for the reply. Same as <c>DB.StreamAdd</c>.</summary>
-        RedisValue StreamAdd(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
-            => throw Unsupported(nameof(StreamAdd));
+        RedisValue StreamAdd(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
 
         /// <summary>The raw JSON stored under an id, or an empty string. Same as <c>DB.GetRawJson&lt;T&gt;</c>.</summary>
-        string GetRawJson<T>(string id) => throw Unsupported(nameof(GetRawJson));
+        string GetRawJson<T>(string id);
 
         /// <summary>The ids of the entities a query matches, without reading them. Same as <c>DB.SearchIds&lt;T&gt;</c>.</summary>
         IEnumerable<string> SearchIds<T>(DBQuery<T> query)
-            where T : EntityBase
-            => throw Unsupported(nameof(SearchIds));
+            where T : EntityBase;
 
         /// <summary>The raw JSON of the entities a query matches. Same as <c>DB.SearchRawJson&lt;T&gt;</c>.</summary>
         IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
-            where T : EntityBase
-            => throw Unsupported(nameof(SearchRawJson));
+            where T : EntityBase;
 
         /// <summary>Updates one unindexed property of a stored entity without reading the entity. Same as <c>DB.SetUnindexedJsonProperty&lt;T&gt;</c>.</summary>
         void SetUnindexedJsonProperty<T>(string id, string propertyName, string json)
-            where T : EntityBase
-            => throw Unsupported(nameof(SetUnindexedJsonProperty));
+            where T : EntityBase;
 
         /// <summary>Escapes the characters that are tokens in a Redis query. Same as <c>DB.EscapeTokens</c>.</summary>
-        string EscapeTokens(string str) => throw Unsupported(nameof(EscapeTokens));
-
-        private static NotSupportedException Unsupported(string member)
-        {
-            return new NotSupportedException($"This IDBService does not implement {member}.");
-        }
+        string EscapeTokens(string str);
     }
 }

@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LootService;
@@ -71,7 +72,7 @@ public class LootServiceTests
 
         _engine = new FakeNWScript();
         _locals = new LocalVariables(_engine);
-        _service = new TestLootService { Definitions = new[] { typeof(SampleDefinition) } };
+        _service = new TestLootService(ScriptedProxy.Create<IBeastMasteryService>(out _)) { Definitions = new[] { typeof(SampleDefinition) } };
 
         _engine.SetReturnHandler("GetIsObjectValid", arguments => _valid.Contains((uint)arguments[0]!));
         _engine.SetReturnHandler("CreateItemOnObject", _ => NewObject());
@@ -129,6 +130,11 @@ public class LootServiceTests
     /// <summary>The registry with the search for loot table definitions and the calls into services that need a server answered by the test.</summary>
     private sealed class TestLootService : LootService
     {
+        public TestLootService(IBeastMasteryService beastMastery)
+            : base(beastMastery)
+        {
+        }
+
         public IEnumerable<Type> Definitions { get; set; } = null!;
         public Dictionary<(uint Creature, PerkType Perk), int> PerkLevels { get; } = new();
         public Dictionary<(uint Creature, StatType Stat), int> StatAdjustments { get; } = new();

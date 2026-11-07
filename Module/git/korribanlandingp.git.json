@@ -270907,7 +270907,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -271066,166 +271066,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Lightsaber Boost I"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dlsab1"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4801"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 22,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -271384,7 +271225,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -271543,7 +271384,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -271702,166 +271543,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Saberstaff Boost I"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dsabst1"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4805"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 23,
+                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -272020,7 +271702,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -272179,7 +271861,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -272338,7 +272020,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -272497,7 +272179,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -287955,7 +287637,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -288114,166 +287796,7 @@
                     }
                   },
                   {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Lightsaber Boost II"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dlsab2"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4813"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 22,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -288432,7 +287955,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -288591,7 +288114,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -288750,166 +288273,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 30000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Blueprint: Saberstaff Boost II"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 52
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "RECIPE"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "recipe_dsabst2"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "RECIPES"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "4817"
-                          }
-                        }
-                      ]
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 52
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.579332453879287e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 23,
+                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -289068,7 +288432,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -289227,7 +288591,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -289386,7 +288750,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -289545,7 +288909,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000

@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private static void InterruptTargetActivation(uint target)
         {
             ActionInterruption.ClearActions(target);
-            UsePerkFeat.InterruptAbilityActivation(target);
+            UsePerkFeat.InterruptAbilityActivationFromHit(target);
         }
 
         private static int GetPounceScore(AIContext context, int abilityLevel)

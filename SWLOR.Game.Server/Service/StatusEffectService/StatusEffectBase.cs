@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public DateTime LastTickTime => _lastRun;
         public virtual bool PreservesTickScheduleOnRefresh => false;
         public virtual bool PersistsOnLogout => true;
+        public virtual bool RestoresAfterServerRestart => SourceType == StatusEffectSourceType.Stance && PersistsOnLogout;
         public virtual bool IsRemovedOnJobChange => true;
         protected bool IsBeingReplaced { get; private set; }
         public StatGroup StatGroup { get; }

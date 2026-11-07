@@ -417,14 +417,8 @@ public class AbilityDamageQueueTests
             abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
             abilitySource.IndexOf("private TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
             abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
-        var triggeredDamage = combatSource.Substring(
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyGuardiansResolve", StringComparison.Ordinal) -
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal));
-        var damageRiders = combatSource.Substring(
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyRicochetDamage", StringComparison.Ordinal) -
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal));
+        var triggeredDamage = CombatSource.Members("ApplyTriggeredDamage", "ApplyTriggeredDamageTargetAdjustment", "GetRangedDeflectionReflectionAmount", "GetRangedDeflectionReflectionRates", "ApplyRangedDeflectionReflection", "BuildDeflectingReturnCombatLogMessage");
+        var damageRiders = CombatSource.Members("ApplyAbilityDamageRiders", "ApplyFoggyMindResourceDrain", "GetAreaAbilityPulseSources", "ApplyAreaAbilityPulse", "ApplyAreaAbilityFragmentation", "GetAreaAbilityFragmentationStatAdjustment");
 
         queueMethod.Should().Contain("GetTrackedAbilityImpact(activator)");
         queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");

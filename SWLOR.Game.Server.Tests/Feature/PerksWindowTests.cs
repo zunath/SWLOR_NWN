@@ -71,8 +71,9 @@ public class PerksWindowTests
         var perkSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Perk.cs"));
+            "Domain",
+            "Character",
+            "PerkService.cs"));
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -92,8 +93,8 @@ public class PerksWindowTests
         var recastMethodEnd = viewModelSource.IndexOf("private (bool meetsRequirements,", recastMethodStart, StringComparison.Ordinal);
         viewModelSource[recastMethodStart..recastMethodEnd].Should().NotContain("string.Join",
             "the recast display must use one active ability group rather than joining every granted feat");
-        perkSource.Should().Contain("private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
-        perkSource.Should().Contain("public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
+        perkSource.Should().Contain("private readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
+        perkSource.Should().Contain("public RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
         recastSource.Should().Contain("private readonly Dictionary<RecastGroup, string> _recastNames");
         recastSource.Should().Contain("private readonly HashSet<RecastGroup> _visibleRecastGroups");
 

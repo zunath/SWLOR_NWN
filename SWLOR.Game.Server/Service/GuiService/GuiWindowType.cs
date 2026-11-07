@@ -97,7 +97,6 @@ namespace SWLOR.Game.Server.Service.GuiService
         Line = 92,
         Prospecting = 93,
         Search = 94,
-        ShipHud = 104,
         TradeExchange = 105,
         HoloNetBoard = 106,
         CustomsScan = 107,
@@ -115,6 +114,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         DMCities = 113,
         HouseSpecialization = 117,
         CityProjects = 118,
+        ShipHud = 119,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

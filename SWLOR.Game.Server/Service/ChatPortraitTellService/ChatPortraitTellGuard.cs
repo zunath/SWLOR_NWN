@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
     /// portrait starts a tell to whoever holds that slot when it is clicked. The server reuses a slot as soon as its
     /// player logs out, so an old portrait can address a different character. This records, for each observer, the
     /// characters whose lines arrived from each slot, and refuses a tell started from a portrait that may no longer
-    /// belong to the character it was shown for.
+    /// belong to the character it was shown for, unless the player clicks the portrait again to confirm who now
+    /// holds the slot.
     /// </summary>
     public sealed class ChatPortraitTellGuard
     {
@@ -19,6 +20,18 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
         /// </summary>
         public const int ChatLogHorizon = 1000;
 
+        /// <summary>
+        /// How long after a doubtful click a second click on the same portrait still confirms it. The player is told
+        /// who the tell now reaches, so the second click is a choice of that player, like Send Tell in the Player List.
+        /// </summary>
+        public static readonly TimeSpan ConfirmationWindow = TimeSpan.FromMinutes(2);
+
+        /// <summary>
+        /// How long a confirming click must come after the doubtful one, so a double-click, made before the player
+        /// could read who the tell reaches, does not confirm it.
+        /// </summary>
+        public static readonly TimeSpan ConfirmationDelay = TimeSpan.FromSeconds(1);
+
         private sealed class ObserverLog
         {
             public long LinesReceived;
@@ -27,9 +40,12 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
 
         private sealed record PortraitClick(uint Slot, string Holder, bool Refused, DateTime Expires);
 
+        private sealed record DoubtfulClick(uint Slot, string Holder, DateTime ClickedAt);
+
         private readonly TimeSpan _clickLifetime;
         private readonly Dictionary<uint, ObserverLog> _logsByObserver = new();
         private readonly Dictionary<uint, PortraitClick> _clicksByObserver = new();
+        private readonly Dictionary<uint, DoubtfulClick> _doubtfulClicksByObserver = new();
 
         /// <param name="clickLifetime">How long after a portrait click its tell is still checked.</param>
         public ChatPortraitTellGuard(TimeSpan clickLifetime)
@@ -67,18 +83,48 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
         {
             _logsByObserver.Remove(observer);
             _clicksByObserver.Remove(observer);
+            _doubtfulClicksByObserver.Remove(observer);
         }
 
         /// <summary>
         /// Classifies a portrait click that resolved to the slot's current holder, and remembers it so the tell it
-        /// starts can be checked.
+        /// starts can be checked. A doubtful click (<see cref="ChatPortraitClick.FormerHolder"/> or
+        /// <see cref="ChatPortraitClick.Ambiguous"/>) is <see cref="ChatPortraitClick.Confirmed"/> when it repeats the
+        /// player's previous doubtful click on the same slot and holder within <see cref="ConfirmationWindow"/>, but no
+        /// sooner than <see cref="ConfirmationDelay"/>.
         /// </summary>
         public ChatPortraitClick Click(uint observer, uint slot, string holder, DateTime now)
         {
             var result = Classify(observer, slot, holder);
-            var refused = result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous;
-            _clicksByObserver[observer] = new PortraitClick(slot, holder, refused, now + _clickLifetime);
+            if (IsDoubtful(result))
+            {
+                if (_doubtfulClicksByObserver.TryGetValue(observer, out var previous) &&
+                    previous.Slot == slot &&
+                    previous.Holder == holder &&
+                    now - previous.ClickedAt >= ConfirmationDelay &&
+                    now - previous.ClickedAt <= ConfirmationWindow)
+                {
+                    _doubtfulClicksByObserver.Remove(observer);
+                    result = ChatPortraitClick.Confirmed;
+                }
+                else
+                {
+                    _doubtfulClicksByObserver[observer] = new DoubtfulClick(slot, holder, now);
+                }
+            }
+            else
+            {
+                _doubtfulClicksByObserver.Remove(observer);
+            }
+
+            _clicksByObserver[observer] = new PortraitClick(slot, holder, IsDoubtful(result), now + _clickLifetime);
             return result;
+        }
+
+        /// <summary>Whether a click may have come from a line of someone other than the slot's current holder.</summary>
+        public static bool IsDoubtful(ChatPortraitClick click)
+        {
+            return click is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous;
         }
 
         /// <summary>
@@ -97,7 +143,10 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
             return click.Refused || click.Holder != target;
         }
 
-        private ChatPortraitClick Classify(uint observer, uint slot, string holder)
+        /// <summary>
+        /// Classifies a portrait of the slot by the lines the observer received from it, without counting as a click.
+        /// </summary>
+        public ChatPortraitClick Classify(uint observer, uint slot, string holder)
         {
             if (!_logsByObserver.TryGetValue(observer, out var log) ||
                 !log.LastLineBySpeakerBySlot.TryGetValue(slot, out var speakers))

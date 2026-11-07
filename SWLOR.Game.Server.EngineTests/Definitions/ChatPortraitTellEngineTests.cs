@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 // The first speaker's line reaches the observer through the engine's own tell path.
                 await SendClientTellAsync(ctx, first.Creature, GetSlot(observer.Creature), "first line");
-                ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClickPortrait(observer.Creature, first.Creature),
+                ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClassifyPortrait(observer.Creature, first.Creature),
                     "a portrait whose speaker is still online");
 
                 // The first speaker logs out and a different character with the same descriptor takes the slot.
@@ -36,21 +36,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 // The observer clicks the first speaker's old portrait; the client resolves it to the slot's new holder.
                 await SendClientPortraitClickAsync(ctx, observer.Creature, second.Creature);
-                await SendClientTellAsync(ctx, observer.Creature, sharedSlot, "meant for the first speaker");
-                ctx.AssertEqual(ChatPortraitClick.Unrecorded, ChatPortraitTells.ClickPortrait(second.Creature, observer.Creature),
-                    "the tell from the stale portrait never reaches the new holder");
-
-                // The Player List names its target exactly, so it still reaches the new holder after a stale click.
-                ctx.AssertEqual(ChatPortraitClick.FormerHolder, ChatPortraitTells.ClickPortrait(observer.Creature, second.Creature),
+                ctx.AssertEqual(ChatPortraitClick.FormerHolder, ChatPortraitTells.ClassifyPortrait(observer.Creature, second.Creature),
                     "the stale portrait click");
+
+                // The Player List names its target exactly, so it reaches the new holder after a stale click.
                 await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
                     ctx.AssertEqual(string.Empty, PlayerList.SendTell(observer.Creature, second.Creature, "chosen from the player list"),
                         "player list tell"));
-                ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClickPortrait(second.Creature, observer.Creature),
-                    "the player list tell reaches the new holder");
+                ctx.AssertEqual(1L, ChatPortraitTells.CountLinesReceived(second.Creature), "the player list tell reaches the new holder");
+
                 // The Player List tell left the stale click's prompt unsent, so that prompt is still refused.
-                ctx.Assert(ChatPortraitTells.RefuseStalePortraitTell(observer.Creature, second.Creature, false),
-                    "the stale prompt sent after a player list tell");
+                await SendClientTellAsync(ctx, observer.Creature, sharedSlot, "meant for the first speaker");
+                ctx.AssertEqual(1L, ChatPortraitTells.CountLinesReceived(second.Creature), "the tell from the stale portrait never reaches the new holder");
+
+                // After being told who the portrait now reaches, the observer clicks it again to choose that player.
+                await ctx.DelaySecondsAsync((float)ChatPortraitTellGuard.ConfirmationDelay.TotalSeconds + 0.5f);
+                await SendClientPortraitClickAsync(ctx, observer.Creature, second.Creature);
+                await SendClientTellAsync(ctx, observer.Creature, sharedSlot, "confirmed for the new holder");
+                ctx.AssertEqual(2L, ChatPortraitTells.CountLinesReceived(second.Creature), "the confirmed portrait tell reaches the new holder");
+
+                // Each portrait tell needs its own confirmation.
+                await SendClientPortraitClickAsync(ctx, observer.Creature, second.Creature);
+                await SendClientTellAsync(ctx, observer.Creature, sharedSlot, "not confirmed again");
+                ctx.AssertEqual(2L, ChatPortraitTells.CountLinesReceived(second.Creature), "an unconfirmed portrait tell is refused again");
             }
             finally
             {
@@ -108,7 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => ChatPortraitTells.CountLinesReceived(observer.Creature) > before, 5f, name + " line recorded");
             }
 
-            ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClickPortrait(observer.Creature, speaker.Creature),
+            ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClassifyPortrait(observer.Creature, speaker.Creature),
                 "every line came from the speaker who holds the slot");
             ctx.AssertEqual(0L, ChatPortraitTells.CountLinesReceived(speaker.Creature), "a speaker's own lines are not recorded for them");
         }

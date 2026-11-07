@@ -73,11 +73,17 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var player = GetLastGuiEventPlayer();
-            var result = ClickPortrait(player, GetLastGuiEventObject());
-            if (result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous)
+            var portraitOwner = GetLastGuiEventObject();
+            var result = ClickPortrait(player, portraitOwner);
+            if (ChatPortraitTellGuard.IsDoubtful(result))
             {
-                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so it could now point to someone else. " +
-                    "A tell started from it will not be sent. Use Send Tell in the Player List instead."));
+                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so a tell started from it now goes to ") +
+                    PlayerName.GetColoredDisplayName(player, portraitOwner) +
+                    ColorToken.Red(". Click the portrait again to send your tell to them, or use Send Tell in the Player List."));
+            }
+            else if (result == ChatPortraitClick.Confirmed)
+            {
+                SendMessageToPC(player, "Your tell from that chat portrait goes to " + PlayerName.GetColoredDisplayName(player, portraitOwner) + ".");
             }
         }
 
@@ -93,6 +99,20 @@ namespace SWLOR.Game.Server.Service
                 return ChatPortraitClick.Unrecorded;
 
             return Guard.Click(observer.m_oidPCObject, holder.m_nPlayerID, GetCharacterId(holder), DateTime.UtcNow);
+        }
+
+        /// <summary>
+        /// Classifies a chat-log portrait the way a click on it would, without counting as a click.
+        /// </summary>
+        public static ChatPortraitClick ClassifyPortrait(uint player, uint portraitOwner)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var observer = server.GetClientObjectByObjectId(player);
+            var holder = server.GetClientObjectByObjectId(portraitOwner);
+            if (observer == null || holder == null)
+                return ChatPortraitClick.Unrecorded;
+
+            return Guard.Classify(observer.m_oidPCObject, holder.m_nPlayerID, GetCharacterId(holder));
         }
 
         /// <summary>
@@ -118,7 +138,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             SendMessageToPC(sender, ColorToken.Red("Tell not sent: the chat portrait you clicked may belong to a player who has logged out. " +
-                "Use Send Tell in the Player List instead."));
+                "Click the portrait again to confirm who it goes to, or use Send Tell in the Player List."));
             return true;
         }
 

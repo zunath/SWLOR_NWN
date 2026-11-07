@@ -157,7 +157,7 @@ public class FabricationPerkLineTests
             StatType.FabricatorDualFeedUnlocked, StatType.FabricatorPrimeWindowActions, StatType.FabricatorPrimeBonusPercent,
             StatType.FabricatorAssembleCapPoints, StatType.ExperimentTrials, StatType.ExperimentTestChancePercent,
             StatType.ExperimentRefineCpReduction, StatType.ExperimentRefineChancePercent,
-            StatType.ExperimentTimeCutPerEvidencePercent, StatType.ExperimentPeerReviewUnlocked, StatType.ExperimentBreakthroughUnlocked
+            StatType.ExperimentTimeCutPerEvidenceTenths, StatType.ExperimentPeerReviewUnlocked, StatType.ExperimentBreakthroughUnlocked
         };
 
         foreach (var stat in stats)
@@ -245,18 +245,18 @@ public class FabricationPerkLineTests
 
         ExperimentTuning.FromStatTotals(Totals(line, 4)).Should().Be(ExperimentTuning.Default);
         ExperimentTuning.FromStatTotals(Totals(line, 10, PerkType.Intuitive, PerkType.Methodical)).Should().Be(
-            ExperimentTuning.Default with { TestChanceBonusPercent = 10, TimeCutPerEvidence = 6 });
+            ExperimentTuning.Default with { TestChanceBonusPercent = 1, TimeCutTenthsPerEvidence = 53 });
         ExperimentTuning.FromStatTotals(Totals(line, 15, PerkType.Intuitive, PerkType.Methodical)).Should().Be(
-            ExperimentTuning.Default with { TestChanceBonusPercent = 20, TimeCutPerEvidence = 6 });
+            ExperimentTuning.Default with { TestChanceBonusPercent = 2, TimeCutTenthsPerEvidence = 53 });
 
-        // Methodical at rank 50: 6 + 1 (Broader Hypotheses) + 2 trials, 20 - 15 points of Test chance, every trait.
+        // Methodical at rank 50: 6 + 1 (Broader Hypotheses) + 1 trials, 2 - 15 points of Test chance, every trait.
         ExperimentTuning.FromStatTotals(Totals(line, 50, PerkType.Intuitive)).Should().Be(new ExperimentTuning(
-            Trials: 9, TestChanceBonusPercent: 20 - 15, RefineChanceBonus: 20, RefineCp: 25, TimeCutPerEvidence: 7,
+            Trials: 8, TestChanceBonusPercent: 2 - 15, RefineChanceBonus: 20, RefineCp: 25, TimeCutTenthsPerEvidence: 55,
             TimeCutCap: 25, PeerReview: true, Breakthrough: true));
 
-        // Intuitive at rank 50: 6 + 1 - 1 trials, 20 + 20 points of Test chance.
+        // Intuitive at rank 50: 6 + 1 - 1 trials, 2 + 4 points of Test chance.
         ExperimentTuning.FromStatTotals(Totals(line, 50, PerkType.Methodical)).Should().Be(new ExperimentTuning(
-            Trials: 6, TestChanceBonusPercent: 20 + 20, RefineChanceBonus: 20, RefineCp: 25, TimeCutPerEvidence: 7,
+            Trials: 6, TestChanceBonusPercent: 2 + 4, RefineChanceBonus: 20, RefineCp: 25, TimeCutTenthsPerEvidence: 55,
             TimeCutCap: 25, PeerReview: true, Breakthrough: true));
     }
 

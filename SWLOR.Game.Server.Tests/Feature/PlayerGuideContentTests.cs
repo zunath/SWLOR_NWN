@@ -14,10 +14,11 @@ using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerGuideContentTests
+public class PlayerGuideContentTests : SkillFacadeFixture
 {
     // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
     private FacadeContainer _facades = null!;

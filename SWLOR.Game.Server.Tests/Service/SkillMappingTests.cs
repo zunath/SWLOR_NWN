@@ -19,7 +19,8 @@ public class SkillMappingTests
     public void OneTimeSetUp()
     {
         _facades = new FacadeContainer();
-        Skill.LoadMappings();
+        using (_facades.Install())
+            Skill.LoadMappings();
     }
 
     [OneTimeTearDown]

@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class WeaponIndependentPerkTests
+public class WeaponIndependentPerkTests : SkillFacadeFixture
 {
     // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
     private FacadeContainer _facades = null!;

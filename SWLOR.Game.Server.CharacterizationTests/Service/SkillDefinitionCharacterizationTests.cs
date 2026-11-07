@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// fingerprint, not by text.
 /// </summary>
 [NonParallelizable]
-public class SkillDefinitionCharacterizationTests
+public class SkillDefinitionCharacterizationTests : FacadeFixture
 {
     private static readonly string[] SkillProperties =
     {
@@ -32,7 +32,7 @@ public class SkillDefinitionCharacterizationTests
         nameof(SkillAttribute.Name),
     };
 
-    [OneTimeSetUp]
+    [SetUp]
     public void LoadItemMappings()
     {
         // Pure: fills the base item to skill table (and prints how many it loaded). The same call runs at module load.

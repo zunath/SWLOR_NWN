@@ -1,13 +1,15 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerSkillPointAccountingTests
+public class PlayerSkillPointAccountingTests : SkillFacadeFixture
 {
     [Test]
     public void TotalSkillPoints_IncludesStartingPointsAndEarnedSkillPoints()
@@ -64,12 +66,13 @@ public class PlayerSkillPointAccountingTests
         int totalRanks,
         bool expected)
     {
-        var method = typeof(Skill).GetMethod(
+        var service = SkillFacades.Get<ISkillService>();
+        var method = service.GetType().GetMethod(
             "ShouldDecaySkillRank",
-            BindingFlags.NonPublic | BindingFlags.Static);
+            BindingFlags.NonPublic | BindingFlags.Instance);
 
         method.Should().NotBeNull();
-        var result = (bool)method!.Invoke(null, new object[] { contributesToSkillCap, totalRanks })!;
+        var result = (bool)method!.Invoke(service, new object[] { contributesToSkillCap, totalRanks })!;
 
         result.Should().Be(expected);
     }

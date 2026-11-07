@@ -1423,8 +1423,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     pair[0].Type == JTokenType.String && pair[1].Type == JTokenType.Integer),
                     $"{stage}: {prefix} combo must use native [label, value] entries.");
                 ctx.AssertEqual(armor.Models[(int)part], selected, $"{stage}: {prefix} selected model");
-                ctx.Assert(options.Any(entry => entry[1].Value<int>() == selected),
-                    $"{stage}: {prefix} selected model must occur in its published options.");
+                // A retained bare style (the civilian outfit's neck and hands 1) is kept but no longer offered.
+                ctx.Assert(options.Any(entry => entry[1].Value<int>() == selected) ||
+                    ArmorAppearanceCatalog.RetainedBareStyles.Contains(selected) &&
+                    ArmorAppearanceCatalog.AcceptsSavedStyle(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], part, selected),
+                    $"{stage}: {prefix} selected model must occur in its published options or be a retained bare style.");
             }
 
             var regions = MaterialRegionProperties();

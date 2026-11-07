@@ -227,8 +227,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAction(int index) => () => PerformAction(index);
 
-        public Action OnClickClose() => () => Gui.TogglePlayerWindow(Player, GuiWindowType.ResearchExperiment);
-
         private void PerformAction(int index)
         {
             if (_engine == null || _over || index < 0 || index >= ActionCount || _slotActions[index] == null)
@@ -321,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkText = ExperimentDisplay.PerkSummary(setup.Tuning);
 
             ExtraBonusText = setup.ExtraBonus
-                ? $"Extra guaranteed bonus: YES (tier {setup.ExtraBonusTier}). It is added when the job completes."
+                ? $"Extra guaranteed bonus: YES (tier {setup.ExtraBonusTier}), added when the job completes."
                 : "Extra guaranteed bonus: none this time.";
             ExtraBonusColor = setup.ExtraBonus ? GuiColor.Green : GuiColor.Grey;
 
@@ -362,14 +360,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var preview = previews[actionId];
+                // The button carries the action's name; its chance and CP cost go in the wrapped line beside it.
                 var view = ExperimentDisplay.DescribeAction(preview);
-                var text = ExperimentActionIds.TryGetCandidate(actionId, out _) && preview.Enabled
-                    ? $"{preview.Action.Name} [{preview.Outcomes[0].ChancePercent}%]"
-                    : preview.CpCost > 0
-                        ? $"{preview.Action.Name} [{preview.CpCost} CP]"
-                        : preview.Action.Name;
+                var summary = preview.Enabled && preview.CpCost > 0 ? $"{preview.CpCost} CP: {view.Summary}" : view.Summary;
 
-                SetAction(index, text, view.Summary, view.Tooltip, KindColor(view.Kind), preview.Enabled && !_over, true);
+                SetAction(index, preview.Action.Name, summary, view.Tooltip, KindColor(view.Kind), preview.Enabled && !_over, true);
             }
         }
 

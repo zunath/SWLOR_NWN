@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using SWLOR.Game.Server.Service.CraftService.Research;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
@@ -13,20 +12,22 @@ public static class ExperimentDisplay
 {
     public const string EndsTheExperiment = "Ends the experiment";
 
-    /// <summary>The summary and tooltip of an action from its preview.</summary>
+    private const string NoChange = "no change to your evidence";
+
+    /// <summary>
+    /// The line beside an action's button and its tooltip, from its preview. The line names the chance and the outcome that changes
+    /// something (the miss is the rest of the chance); the tooltip is the action's own description on one line, because a NUI
+    /// tooltip neither wraps nor breaks lines.
+    /// </summary>
     public static ExperimentActionView DescribeAction(MinigameActionPreview preview)
     {
-        var tooltip = new StringBuilder();
-        tooltip.Append(preview.Action.Name).Append(": ").Append(preview.Action.Description);
+        var tooltip = preview.Action.Description;
 
         if (!preview.Enabled)
         {
-            tooltip.Append('\n').Append(preview.DisabledReason);
-            return new ExperimentActionView($"Unavailable: {preview.DisabledReason}", tooltip.ToString(), ExperimentActionKind.Unavailable);
+            // The greyed button already says it is unavailable, so the line beside it gives only the reason.
+            return new ExperimentActionView(preview.DisabledReason, tooltip, ExperimentActionKind.Unavailable);
         }
-
-        var cost = Cost(preview);
-        tooltip.Append("\nCost: ").Append(cost).Append('.');
 
         var single = preview.Outcomes.Count == 1;
         var lines = new List<string>();
@@ -35,33 +36,27 @@ public static class ExperimentDisplay
             var result = preview.Action.Id == ExperimentActionIds.Breakthrough
                 ? "your next Test succeeds"
                 : DescribeOutcome(outcome);
-            lines.Add(single ? result : $"{outcome.ChancePercent}% {outcome.Label}: {result}");
-            tooltip.Append(single ? "\nResult: " : $"\n{outcome.ChancePercent}% {outcome.Label}: ").Append(result).Append('.');
+            if (single)
+                lines.Add(result);
+            else if (result != NoChange)
+                lines.Add($"{outcome.ChancePercent}% chance: {result}");
         }
+
+        if (lines.Count == 0)
+            lines.Add(NoChange);
 
         var summary = string.Join(" / ", lines);
         var kind = ExperimentActionKind.Normal;
         if (preview.FinishesItem)
         {
             kind = ExperimentActionKind.EndsExperiment;
-            summary = $"{EndsTheExperiment}. {summary}";
-            tooltip.Append('\n').Append(EndsTheExperiment).Append(": the result is stored and the job runs.");
+            summary = summary == NoChange
+                ? $"{EndsTheExperiment} with the evidence so far."
+                : $"{EndsTheExperiment}: {summary}.";
+            tooltip = $"{tooltip} {EndsTheExperiment}: the result is stored and the job runs.";
         }
 
-        return new ExperimentActionView(summary, tooltip.ToString(), kind);
-    }
-
-    /// <summary>What an action costs: a trial, CP, or nothing.</summary>
-    public static string Cost(MinigameActionPreview preview)
-    {
-        var uses = preview.Outcomes.Count > 0 && preview.Outcomes[0].Change(MinigameMeterIds.Progress)?.Delta > 0;
-        var parts = new List<string>();
-        if (uses)
-            parts.Add("1 trial");
-        if (preview.CpCost > 0)
-            parts.Add($"{preview.CpCost} CP");
-
-        return parts.Count == 0 ? "nothing" : string.Join(" and ", parts);
+        return new ExperimentActionView(summary, tooltip, kind);
     }
 
     /// <summary>The change a result makes to the evidence, the time cut and the waiting method bonus.</summary>
@@ -88,7 +83,7 @@ public static class ExperimentDisplay
         }
 
         if (parts.Count == 0)
-            parts.Add("no change to your evidence");
+            parts.Add(NoChange);
 
         return string.Join(", ", parts);
     }

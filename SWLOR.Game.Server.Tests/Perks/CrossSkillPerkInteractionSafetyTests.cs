@@ -636,7 +636,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var skillEvasionChannel = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasionChannel(");
         skillEvasionChannel.Should().Contain("new EvasiveFootworkStatusEffect(evasionPercent)",
             "Lateral and Mobile Footwork need a visible timed status while retaining their shared stat-driven trigger");
-        skillEvasionChannel.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        skillEvasionChannel.Should().Contain("_statusEffect.ApplyStatusEffect(");
 
         var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
         var outgoingDamageIndex = damageModifiers.IndexOf("ApplyOutgoingDamageModifier", StringComparison.Ordinal);

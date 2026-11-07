@@ -397,6 +397,7 @@ them is not an option before facade removal (P2-Z).
   (read per attack) cannot afford. Before Wave D the rule accepts `static readonly` fields of deeply immutable types
   (primitives, `string`, enums, `Regex`, frozen and immutable collections of such elements, records whose members are
   init-only and immutable), and the rebuilt getters go back to such fields. Done in P2-D1: later conversions keep an immutable constant table as a `static readonly` field of such a type (an ordered `ImmutableArray` or `ImmutableList` when a caller iterates it, a `FrozenDictionary` or `FrozenSet` for lookups only), not as an instance field or a rebuilding getter; a table that is mutable, or that needs the engine, a service or a facade to build, stays an instance field.
+  **Decision (coordinator, 2026-11-07, from P2-D20): the `Combat` split** is in [MaintainabilityRefactorCombatSplit.md](MaintainabilityRefactorCombatSplit.md): items P2-CB0 to P2-CB10.
   **Renamed handlers:** a handler that must change its name (for example, a folder class that cannot be an extra facade)
   keeps its manifest position and is listed in `tools/Refactor/HandlerRenames.txt` in the same pull request, so the
   parity check and the sync match master's name to the new one. P2-Z facade removal uses the same file.

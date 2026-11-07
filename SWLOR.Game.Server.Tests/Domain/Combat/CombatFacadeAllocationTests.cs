@@ -955,9 +955,8 @@ public class CombatFacadeAllocationTests
         // per call depends on what the JIT has done with those reads by the time it runs (336 bytes on the base and 344 here
         // when run alone, with tiered compilation on or off; less after the fixture's other tests). It is 8 bytes more than
         // before the move: the closure class it creates on entry for its message builder now also holds the part, because
-        // the builder calls the part's own BuildDeflectingReturnCombatLogMessage. A forwarder is one call with the same
-        // parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or more): the
-        // margin is below that.
+        // the builder calls the part's own BuildDeflectingReturnCombatLogMessage. The forwarder is checked on the upper side
+        // only (ForwarderAddsNothing): it could only add a closure and its delegate (88 bytes or more).
         var scopes = new List<IDisposable>();
         try
         {
@@ -972,7 +971,7 @@ public class CombatFacadeAllocationTests
             {
                 var (own, forwarded) = InterleavedPerCall(part, forwarder);
                 own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
-                forwarded.Should().BeCloseTo(own, 64, $"Combat.{name} adds no closure or delegate to what the part allocates");
+                ForwarderAddsNothing(name, own, forwarded, 64);
             }
 
             GC.KeepAlive(sink);

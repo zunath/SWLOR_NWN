@@ -75,6 +75,9 @@ public class ProductionCopyMigrationTests
         stored.Should().NotBeNull("a production database has its server configuration");
         var before = stored.MigrationVersion;
         db.EndFrame();
+        if (before < MigrationService.RetiredServerMigrationVersion)
+            Assert.Inconclusive($"The dump is at server migration {before}; this build only upgrades databases at " +
+                                $"{MigrationService.RetiredServerMigrationVersion} or later (upgrade the copy with an older build first).");
 
         var clock = Stopwatch.StartNew();
         var service = new IntegrationMigrationService(db);

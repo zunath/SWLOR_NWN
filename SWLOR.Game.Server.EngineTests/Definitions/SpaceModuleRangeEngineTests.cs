@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const string FuelCapsule = "ship_fuelcapsule";
         private const string SpaceTarget = "SPACE_TARGET";
         private const int StartingPoints = 10;
+        private const int StartingCapacitor = 100;
 
         [EngineTest("Far enemy target does not block a module that acts on the player's own ship", Category = "SpaceModuleRange", TimeoutSeconds = 60f)]
         public static async Task FarEnemyTarget_AllowsSelfModules(EngineTestContext ctx)
@@ -22,10 +23,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 // The reported case: an enemy capital ship is selected beyond the injector's range.
-                await GiveFuelCapsuleAsync(ctx, player);
+                var capsule = await GiveFuelCapsuleAsync(ctx, player);
                 var status = await ActivateAsync(ctx, player, "cap_inject1", enemy);
-                ctx.Assert(status.Capacitor > StartingPoints, $"the injector restores the player's capacitor ({status.Capacitor})");
-                ctx.Assert(!GetIsObjectValid(GetItemPossessedBy(player.Creature, FuelCapsule)), "the injector consumes its fuel capsule");
+                ctx.Assert(status.Capacitor > StartingCapacitor, $"the injector restores the player's capacitor ({status.Capacitor})");
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(capsule), 5f, "the injector to consume its fuel capsule");
                 ctx.Assert(RecastStarted(status), "the injector starts its recast");
 
                 status = await ActivateAsync(ctx, player, "shld_rep_1", enemy);
@@ -59,25 +60,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // A friendly ship beyond range receives nothing, and nothing is spent.
                 var friendStatus = Space.GetShipStatus(friend);
                 friendStatus.Capacitor = 1;
-                await GiveFuelCapsuleAsync(ctx, player);
+                var capsule = await GiveFuelCapsuleAsync(ctx, player);
                 var status = await ActivateAsync(ctx, player, "cap_inject1", friend);
                 ctx.AssertEqual(1, friendStatus.Capacitor, "out of range friend's capacitor");
-                ctx.AssertEqual(StartingPoints, status.Capacitor, "player's capacitor after the refused injector");
-                ctx.Assert(GetIsObjectValid(GetItemPossessedBy(player.Creature, FuelCapsule)), "the refused injector keeps its fuel capsule");
+                ctx.AssertEqual(StartingCapacitor, status.Capacitor, "player's capacitor after the refused injector");
+                ctx.AssertEqual(player.Creature, GetItemPossessor(capsule), "fuel capsule holder after the refused injector");
                 ctx.Assert(!RecastStarted(status), "the refused injector starts no recast");
 
                 status = await ActivateAsync(ctx, player, "shld_rep_1", friend);
-                ctx.Assert(!RecastStarted(status), "the shield repairer is refused on a far friend");
+                AssertRefused(ctx, status, "the shield repairer on a far friend");
 
                 status = await ActivateAsync(ctx, player, "hull_rep_1", friend);
-                ctx.Assert(!RecastStarted(status), "the hull repairer is refused on a far friend");
+                AssertRefused(ctx, status, "the hull repairer on a far friend");
 
                 // Self-capable weapons still need their selected target in range.
                 status = await ActivateAsync(ctx, player, "turbolas1", enemy);
-                ctx.Assert(!RecastStarted(status), "the turbolaser is refused on a far enemy");
+                AssertRefused(ctx, status, "the turbolaser on a far enemy");
 
                 status = await ActivateAsync(ctx, player, "lasbattery1", enemy);
-                ctx.Assert(!RecastStarted(status), "the laser battery is refused on a far enemy");
+                AssertRefused(ctx, status, "the laser battery on a far enemy");
             }
             finally
             {
@@ -100,10 +101,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return ship;
         }
 
-        private static async Task GiveFuelCapsuleAsync(EngineTestContext ctx, PlayerAbilityFixture player)
+        private static async Task<uint> GiveFuelCapsuleAsync(EngineTestContext ctx, PlayerAbilityFixture player)
         {
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => CreateItemOnObject(FuelCapsule, player.Creature));
-            ctx.Assert(GetIsObjectValid(GetItemPossessedBy(player.Creature, FuelCapsule)), "the player holds a fuel capsule");
+            var capsule = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => capsule = CreateItemOnObject(FuelCapsule, player.Creature));
+            ctx.Assert(GetIsObjectValid(capsule), "a fuel capsule exists");
+            await ctx.WaitUntilAsync(() => GetItemPossessor(capsule) == player.Creature, 5f, "the fuel capsule to enter the player's inventory");
+            return capsule;
         }
 
         /// <summary>
@@ -123,7 +127,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     MaxHull = 500,
                     Shield = StartingPoints,
                     MaxShield = 500,
-                    Capacitor = StartingPoints,
+                    Capacitor = StartingCapacitor,
                     MaxCapacitor = 500,
                 }
             };
@@ -139,6 +143,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(player.Creature,
                 () => Space.ActivateShipModule(player.Creature, Space.HighSlotToFeat(1)));
             return Space.GetShipStatus(player.Creature);
+        }
+
+        private static void AssertRefused(EngineTestContext ctx, ShipStatus status, string use)
+        {
+            ctx.Assert(!RecastStarted(status), $"{use} starts no recast");
+            ctx.AssertEqual(StartingCapacitor, status.Capacitor, $"capacitor after {use}");
         }
 
         private static bool RecastStarted(ShipStatus status)

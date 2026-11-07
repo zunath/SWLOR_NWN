@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -129,6 +130,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Performance.TryGetSession(player, out _), "a refused second activation leaves the performance running");
                 ctx.Assert(Performance.IsModeFeat(player, feat), "the performer's own toggle feat is routed to the performance handler");
 
+                var previousSequence = NwnCraftSessionWorld.Instance.FileSequence(player);
                 await ctx.ExecuteInCreatureContextAsync(player, () => Performance.HandleInput(player, feat));
 
                 ctx.Assert(!Performance.TryGetSession(player, out _), "using the toggle feat again ends the performance");
@@ -141,7 +143,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var restoredBar = SnapshotQuickbar(player);
                 for (var slot = 0; slot < QuickbarSlotCount; slot++)
                     ctx.AssertEqual(originalBar[slot], restoredBar[slot], $"ending the performance restores quickbar slot {slot}");
-                ctx.Assert(string.IsNullOrEmpty(DB.Get<Player>(fixture.Id).PerformanceSavedHotBar), "the saved hot bar is cleared once restored");
+                var restoredPlayer = DB.Get<Player>(fixture.Id);
+                ctx.Assert(!string.IsNullOrEmpty(restoredPlayer.PerformanceSavedHotBar),
+                    "the recovery copy survives until a login acknowledges the restored character file");
+                ctx.Assert(restoredPlayer.PerformanceHotBarRestoreSequence > previousSequence,
+                    "restoring the hot bar advances the character file checkpoint");
+                await ctx.WaitUntilAsync(
+                    () => NwnCraftSessionWorld.Instance.ExportedSequence(player) >= restoredPlayer.PerformanceHotBarRestoreSequence,
+                    5f, "the restored hot bar export");
             }
             finally
             {

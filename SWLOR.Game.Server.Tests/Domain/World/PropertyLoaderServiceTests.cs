@@ -1058,6 +1058,7 @@ public class PropertyLoaderServiceTests
     {
         _world.AddPlayer(Player, PlayerId);
         EnterableInstance(out var apartment);
+        _world.Engine.SetReturn("GetEnteringObject", Player);
         _world.Engine.SetReturn("GetExitingObject", Player);
 
         Loader.EnterPropertyInstance();
@@ -1072,6 +1073,33 @@ public class PropertyLoaderServiceTests
     }
 
     [Test]
+    public void A_player_who_leaves_an_instance_is_removed_even_when_they_no_longer_read_as_a_player()
+    {
+        EnterableInstance(out var apartment);
+        Loader.TryGetLoadedInstance(apartment.Id, out var instance);
+        instance.Players.Add(7777u);
+        _world.Engine.SetReturn("GetExitingObject", 7777u);
+
+        Loader.ExitPropertyInstance();
+
+        instance.Players.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Entering_lists_the_entering_object_not_the_last_one_who_left()
+    {
+        _world.AddPlayer(Player, PlayerId);
+        EnterableInstance(out var apartment);
+        _world.Engine.SetReturn("GetEnteringObject", Player);
+        _world.Engine.SetReturn("GetExitingObject", 7777u);
+
+        Loader.EnterPropertyInstance();
+
+        Loader.TryGetLoadedInstance(apartment.Id, out var instance);
+        instance.Players.Should().Equal(Player);
+    }
+
+    [Test]
     public void Dms_and_creatures_are_not_listed_in_an_instance()
     {
         var dm = _world.AddDm(6001);
@@ -1080,6 +1108,7 @@ public class PropertyLoaderServiceTests
 
         foreach (var who in new[] { dm, 7777u })
         {
+            _world.Engine.SetReturn("GetEnteringObject", who);
             _world.Engine.SetReturn("GetExitingObject", who);
             Loader.EnterPropertyInstance();
             Loader.ExitPropertyInstance();
@@ -1094,6 +1123,7 @@ public class PropertyLoaderServiceTests
         _world.AddPlayer(Player, PlayerId);
         var area = _world.NewObject();
         _world.Engine.SetReturn("OBJECT_SELF", area);
+        _world.Engine.SetReturn("GetEnteringObject", Player);
         _world.Engine.SetReturn("GetExitingObject", Player);
 
         Loader.EnterPropertyInstance();

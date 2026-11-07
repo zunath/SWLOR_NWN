@@ -327,7 +327,10 @@ public class PerformanceServiceTests
         _performance.TryGetSession(Player, out _).Should().BeFalse();
         Messages().Should().Contain("You finish your performance.");
         _creature.CallsTo("DeserializeQuickbar").Should().ContainSingle();
-        _db.Get<Player>("uuid-1001").PerformanceSavedHotBar.Should().BeNull();
+        var stopped = _db.Get<Player>("uuid-1001");
+        stopped.PerformanceSavedHotBar.Should().Be("saved-bar", "the recovery copy stays until a login acknowledges the restored file");
+        stopped.PerformanceHotBarRestoreSequence.Should().Be(1);
+        _performance.PersistCalls.Should().Be(1);
         _performance.BusyCleared.Should().BeTrue();
         _windowCalls.Should().Contain("CloseCueWindow");
         _audienceCalls.Should().Contain(call => call.Member == "OnSessionEnded");
@@ -625,6 +628,36 @@ public class PerformanceServiceTests
         _creature.ClearCalls();
         _performance.RecoverOnLogin();
         _creature.CallsTo("DeserializeQuickbar").Should().BeEmpty();
+    }
+
+    [Test]
+    public void LoggingInAfterTheRestoredBarWasSavedForgetsTheRecoveryCopy()
+    {
+        var player = _db.Get<Player>("uuid-1001");
+        player.PerformanceSavedHotBar = "left-over";
+        player.PerformanceHotBarRestoreSequence = 8;
+        _performance.LoadedFileSequence = 8;
+
+        _performance.RecoverOnLogin();
+
+        _creature.CallsTo("DeserializeQuickbar").Should().BeEmpty();
+        player.PerformanceSavedHotBar.Should().BeNull();
+        player.PerformanceHotBarRestoreSequence.Should().Be(0);
+    }
+
+    [Test]
+    public void LoggingInOnAFileOlderThanTheRestoredBarRestoresItAgain()
+    {
+        var player = _db.Get<Player>("uuid-1001");
+        player.PerformanceSavedHotBar = "left-over";
+        player.PerformanceHotBarRestoreSequence = 8;
+        _performance.LoadedFileSequence = 7;
+        _performance.FileSequence = 8;
+
+        _performance.RecoverOnLogin();
+
+        _creature.CallsTo("DeserializeQuickbar").Should().ContainSingle();
+        player.PerformanceHotBarRestoreSequence.Should().BeGreaterThan(8);
     }
 
     [Test]
@@ -1130,11 +1163,14 @@ public class PerformanceServiceTests
             IPerformanceWindowsService windows,
             IPerformanceSongService songs,
             IPerformanceRiderService riders)
-            : base(db, animation, audience, windows, songs, riders)
+            : base(db, animation, audience, windows, songs, riders, null!)
         {
         }
 
         public DateTime Now { get; set; }
+        public int FileSequence { get; set; }
+        public int LoadedFileSequence { get; set; }
+        public int PersistCalls { get; private set; }
         public Dictionary<PerkType, int> Perks { get; set; } = new();
         public bool Busy { get; set; }
         public bool InSpace { get; set; }
@@ -1153,6 +1189,12 @@ public class PerformanceServiceTests
         }
 
         protected override int GetPerkLevel(uint creature, PerkType perk) => Perks.GetValueOrDefault(perk);
+
+        protected override int AdvanceFileSequence(uint player) => ++FileSequence;
+
+        protected override int LoadedSequence(uint player) => LoadedFileSequence;
+
+        protected override void PersistCharacter(uint player) => PersistCalls++;
 
         protected override bool IsBusy(uint target) => Busy;
 

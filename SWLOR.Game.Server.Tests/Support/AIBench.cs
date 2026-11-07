@@ -32,6 +32,8 @@ public sealed class AIBench : IDisposable
     private uint _nextId = 1000;
     private nint _nextLocation = 100;
     private int _playerCursor;
+    private List<uint> _shapeHits = new();
+    private int _shapeCursor;
 
     public AIBench()
     {
@@ -318,6 +320,20 @@ public sealed class AIBench : IDisposable
             return written != null ? (Location)written.Arguments[2]! : EngineStructures.Create<Location>(0);
         });
 
+        Engine.SetReturnHandler("GetFirstObjectInShape", arguments =>
+        {
+            var (area, center) = Describe((Location)arguments[2]!);
+            var radius = (float)arguments[1]!;
+            _shapeHits = _objects.Values
+                .Where(sim => !sim.IsArea && !sim.Destroyed && sim.Area == area &&
+                              Vector3.Distance(sim.Position, center) <= radius)
+                .Select(sim => sim.Id)
+                .ToList();
+            _shapeCursor = 0;
+            return ShapeHitAt(_shapeCursor);
+        });
+        Engine.SetReturnHandler("GetNextObjectInShape", _ => ShapeHitAt(++_shapeCursor));
+
         Engine.SetReturnHandler("GetFirstPC", _ =>
         {
             _playerCursor = 0;
@@ -351,6 +367,8 @@ public sealed class AIBench : IDisposable
         Events.SetReturnHandler("GetEventData", _ => EventObject.ToString());
         Creatures.SetReturnHandler("GetHitDistance", arguments => Sim(arguments[0])?.HitDistance ?? 0f);
     }
+
+    private uint ShapeHitAt(int index) => index >= 0 && index < _shapeHits.Count ? _shapeHits[index] : Invalid;
 
     private uint PlayerAt(int index)
     {

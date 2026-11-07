@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
@@ -109,13 +110,21 @@ public sealed class StatusEffectBench : IDisposable
             return null;
         });
 
-        Service = new TestStatusEffectService(this, resistance, pvp, stealth, melee, recorder, messaging, playerName, gui, capstone);
+        var quickCast = ScriptedProxy.Create<IQuickCastService>(out var quickCastProxy);
+        quickCastProxy.On("KnowsFeat", args => KnownFeats.Contains(((uint)args[0]!, (FeatType)args[1]!)));
+
+        Service = new TestStatusEffectService(this, resistance, pvp, stealth, melee, recorder, messaging, playerName, gui, capstone, Db, quickCast);
     }
 
     /// <summary>The creature <see cref="IMessagingService.SendMessageNearbyToPlayers(uint, BuildMessageDelegate, float)"/> builds its text for.</summary>
     public const uint Observer = 9001;
 
     public StatusEffectEngine Engine { get; }
+
+    public InMemoryDBService Db { get; } = new();
+
+    /// <summary>The feats a creature knows, as <c>IQuickCastService.KnowsFeat</c> reports them.</summary>
+    public HashSet<(uint Creature, FeatType Feat)> KnownFeats { get; } = new();
 
     public TestStatusEffectService Service { get; }
 
@@ -196,8 +205,10 @@ public sealed class TestStatusEffectService : StatusEffectService
         IMessagingService messaging,
         IPlayerNameService playerName,
         IGuiService gui,
-        ICapstoneProofService capstoneProof)
-        : base(resistance, pvpCombat, stealth, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof)
+        ICapstoneProofService capstoneProof,
+        IDBService db,
+        IQuickCastService quickCast)
+        : base(resistance, pvpCombat, stealth, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof, db, quickCast)
     {
         _bench = bench;
     }
@@ -208,6 +219,8 @@ public sealed class TestStatusEffectService : StatusEffectService
 
     public AbilityImpactSummary? ActiveImpact { get; set; }
 
+    public Dictionary<FeatType, AbilityDetail> AbilityDetails { get; } = new();
+
     public HashSet<uint> AttackDelaySuppressed { get; } = new();
 
     public IEnumerable<Type> DefaultDefinitionTypes() => base.GetStatusEffectTypes();
@@ -215,6 +228,8 @@ public sealed class TestStatusEffectService : StatusEffectService
     protected override IEnumerable<Type> GetStatusEffectTypes() => DefinitionTypes ?? Array.Empty<Type>();
 
     protected override void ReapplyFoodHP(uint player) => _bench.Log.Add($"ReapplyFoodHP:{player}");
+
+    protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => AbilityDetails;
 
     protected override void ApplyCreatureMovementRate(uint creature) => _bench.Log.Add($"ApplyCreatureMovementRate:{creature}");
 

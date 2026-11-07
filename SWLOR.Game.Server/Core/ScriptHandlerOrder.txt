@@ -152,6 +152,7 @@ area_enter
   action      SWLOR.Game.Server.Service.Gui.CloseAllWindows
   action      SWLOR.Game.Server.Service.Music.ApplyPlayerMusic
   action      SWLOR.Game.Server.Service.Property.EnterPropertyInstance
+  action      SWLOR.Game.Server.Service.Property.ShowPropertyDescription
   action      SWLOR.Game.Server.Service.Space.UpdateSpacePosition
   action      SWLOR.Game.Server.Service.Spawn.SpawnArea
   action      SWLOR.Game.Server.Service.Telegraph.OnAreaEnter

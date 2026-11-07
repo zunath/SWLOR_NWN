@@ -4,13 +4,18 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
-public class BareHandedAttackSkillTests
+public class BareHandedAttackSkillTests : SkillFacadeFixture
 {
     [OneTimeSetUp]
-    public void LoadMappings() => Skill.LoadMappings();
+    public void LoadMappings()
+    {
+        using (SkillFacades.Install())
+            Skill.LoadMappings();
+    }
 
     // The engine attacks with arms-slot gloves or bracers when no weapon is in hand.
     [TestCase(BaseItem.Gloves)]

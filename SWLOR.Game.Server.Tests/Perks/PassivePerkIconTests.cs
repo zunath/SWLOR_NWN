@@ -4,10 +4,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class PassivePerkIconTests
+public class PassivePerkIconTests : SkillFacadeFixture
 {
     private const int CustomTlkOffset = 16777216;
 

@@ -37,12 +37,20 @@ public class ReactionRecipeTests
     [TearDown]
     public void RemoveFacades() => _facadeScope.Dispose();
 
+    // The recipe definitions read the skill catalog through the Skill facade; the sources also run during discovery,
+    // before the fixture has installed a container, so the list is built in one of its own.
     private static readonly Lazy<IReadOnlyList<KeyValuePair<RecipeType, RecipeDetail>>> EspionageRecipes = new(() =>
-        RecipeDefinitionLoader.LoadGame()
-            .Where(pair => pair.Value.Skill == SkillType.Espionage)
-            .OrderBy(pair => pair.Value.Level)
-            .ThenBy(pair => pair.Key.ToString(), StringComparer.Ordinal)
-            .ToList());
+    {
+        using var container = new FacadeContainer();
+        using (container.Install())
+        {
+            return RecipeDefinitionLoader.LoadGame()
+                .Where(pair => pair.Value.Skill == SkillType.Espionage)
+                .OrderBy(pair => pair.Value.Level)
+                .ThenBy(pair => pair.Key.ToString(), StringComparer.Ordinal)
+                .ToList();
+        }
+    });
 
     private static IEnumerable<TestCaseData> EveryRecipe() =>
         EspionageRecipes.Value.Select(pair => new TestCaseData(pair.Key).SetName($"{{m}}({pair.Key})"));

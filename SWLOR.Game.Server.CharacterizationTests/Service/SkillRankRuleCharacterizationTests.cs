@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// private helper that no public call reaches on its own (both are Tier B); these are the public rules around them.
 /// </summary>
 [NonParallelizable]
-public class SkillRankRuleCharacterizationTests
+public class SkillRankRuleCharacterizationTests : FacadeFixture
 {
     private static readonly SkillType[] CappedFillers =
     {
@@ -163,7 +163,7 @@ public class SkillRankRuleCharacterizationTests
     [Test]
     public void SkillCapRules()
     {
-        using var cache = new SkillCacheScope();
+        using var cache = new SkillCacheScope(Facades);
         var scenarios = Scenarios();
 
         var table = new SnapshotTable(
@@ -198,7 +198,7 @@ public class SkillRankRuleCharacterizationTests
     [Test]
     public void GetMaxDistributableXP_ForInvalidSkill()
     {
-        using var cache = new SkillCacheScope();
+        using var cache = new SkillCacheScope(Facades);
         Assert.That(Skill.GetMaxDistributableXP(new Player(), SkillType.Invalid), Is.EqualTo(0));
     }
 

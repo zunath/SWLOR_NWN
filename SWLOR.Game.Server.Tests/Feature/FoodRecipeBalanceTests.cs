@@ -3,16 +3,18 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class FoodRecipeBalanceTests
+public class FoodRecipeBalanceTests : SkillFacadeFixture
 {
-    public static IEnumerable<TestCaseData> FoodRecipes() => typeof(IRecipeListDefinition).Assembly.GetTypes()
+    public static IEnumerable<TestCaseData> FoodRecipes() => WithFacades(() => typeof(IRecipeListDefinition).Assembly.GetTypes()
         .Where(type => typeof(IRecipeListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
         .SelectMany(type => ((IRecipeListDefinition)Activator.CreateInstance(type)!).BuildRecipes())
         .Where(pair => pair.Value.IsActive && pair.Value.Category == RecipeCategoryType.Food)
-        .Select(pair => new TestCaseData(pair.Value).SetName($"FoodBudget_{pair.Key}"));
+        .Select(pair => new TestCaseData(pair.Value).SetName($"FoodBudget_{pair.Key}"))
+        .ToList());
 
     [TestCaseSource(nameof(FoodRecipes))]
     public void FoodBonuses_StayWithinAttributeAndRegenerationBudgets(RecipeDetail recipe)

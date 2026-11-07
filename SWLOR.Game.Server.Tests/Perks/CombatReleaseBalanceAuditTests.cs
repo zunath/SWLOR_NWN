@@ -6,10 +6,11 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatReleaseBalanceAuditTests
+public class CombatReleaseBalanceAuditTests : SkillFacadeFixture
 {
     private const int SkillPointCap = Skill.TotalSkillPointCap;
     private const int DefaultWeaponDeflectionCap = 50;

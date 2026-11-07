@@ -1,5 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -83,7 +84,7 @@ namespace SWLOR.CraftSim.Progression
                 var consumed = ConsumedShare(success);
                 var craftSeconds = cell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft;
 
-                var required = Math.Min(Skill.GetRequiredXP(rank), assumptions.RequiredXpCap ?? int.MaxValue);
+                var required = Math.Min(SkillXPChart.GetRequiredXP(rank), assumptions.RequiredXpCap ?? int.MaxValue);
                 var remaining = (double)required;
                 double crafts = 0, handIns = 0, guildXp = 0, handInSeconds = 0, credits = 0;
                 double catchUpHandIns = 0, catchUpSeconds = 0, lockedCrafts = 0;

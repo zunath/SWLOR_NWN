@@ -1,4 +1,6 @@
 using System.Reflection;
+using SWLOR.Game.Server.CharacterizationTests.Support;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -16,11 +18,12 @@ internal sealed class SkillCacheScope : IDisposable
     private readonly Dictionary<SkillType, SkillAttribute> _cache;
     private readonly Dictionary<SkillType, SkillAttribute> _original;
 
-    public SkillCacheScope()
+    public SkillCacheScope(FacadeServices facades)
     {
-        _cache = (Dictionary<SkillType, SkillAttribute>)typeof(Skill)
-            .GetField("_allSkills", BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        var service = facades.Get<ISkillService>();
+        _cache = (Dictionary<SkillType, SkillAttribute>)service.GetType()
+            .GetField("_allSkills", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(service)!;
         _original = new Dictionary<SkillType, SkillAttribute>(_cache);
 
         _cache.Clear();

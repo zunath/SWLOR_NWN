@@ -35,6 +35,7 @@ public class TwinPistolAbilityServiceTests
     private const string ActivationId = "activation-1";
 
     private readonly List<IDisposable> _scopes = new();
+    private FacadeContainer _facades = null!;
     private FakeNWScript _engine = null!;
     private ItemWorld _world = null!;
     private ScriptedProxy _traitsProxy = null!;
@@ -42,9 +43,17 @@ public class TwinPistolAbilityServiceTests
     private TestAbility _ability = null!;
     private static readonly TwinPistolAbilitySpec Single = new() { FlatPower = 4, MaxRange = 20f };
 
+    // A volley pushes its weapon impact source through Combat, whose combat queries service holds the table.
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _scopes.Add(_facades.Install());
         _engine = new FakeNWScript();
         _world = new ItemWorld(_engine);
         _world.Add(Actor);

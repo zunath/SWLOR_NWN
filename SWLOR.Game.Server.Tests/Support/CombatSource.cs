@@ -16,9 +16,12 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <para>
 /// The text is combined as it is, apart from two rewrites in the part services, which change a line only where the
 /// move itself changed it: <c>static</c> is put back on a member declaration at member indentation, and a call on an
-/// injected part (<c>_queries.GetFoo(x)</c>, a field declared as <c>ICombat...Service</c> in the same file) loses its
-/// receiver (<c>GetFoo(x)</c>). Nothing else is rewritten, so a changed condition, a removed or reordered call, or a
-/// different argument still fails a needle. <see cref="Normalise"/> is public so the tests of this helper can show that.
+/// injected part (<c>_queries.GetFoo(x)</c>, a field declared as <c>ICombat...Service</c> in the same file, where
+/// <c>Combat...Service</c> is a part by <see cref="CombatParts.IsPartTypeName"/>) loses its receiver (<c>GetFoo(x)</c>).
+/// A call on another injected service, <c>ICombatRecorderService</c> included, keeps it. The one-line forwarders a moved
+/// member leaves in the partial class are left out (<see cref="ElidePartForwarders"/>), so each member appears once,
+/// with its body. Nothing else is rewritten, so a changed condition, a removed or reordered call, or a different argument
+/// still fails a needle. <see cref="Normalise"/> is public so the tests of this helper can show that.
 /// </para>
 /// </summary>
 public static class CombatSource
@@ -29,7 +32,7 @@ public static class CombatSource
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));
 
     private static readonly Regex InjectedField = new(
-        @"^\s*(?:private|protected|internal|public)\s+(?:readonly\s+)?ICombat\w*Service\s+(?<name>_\w+)\s*(?:;|=)",
+        @"^\s*(?:private|protected|internal|public)\s+(?:readonly\s+)?I(?<type>Combat\w*Service)\s+(?<name>_\w+)\s*(?:;|=)",
         RegexOptions.Multiline | RegexOptions.CultureInvariant);
 
     private static readonly Regex InstanceMember = new(
@@ -85,7 +88,7 @@ public static class CombatSource
             files.Add(new SourceFile(Path.GetFullPath(facade), File.ReadAllText(facade)));
 
         foreach (var path in Sorted(Path.Combine(server, "Service", "CombatParts"), "*.cs", _ => true))
-            files.Add(new SourceFile(Path.GetFullPath(path), File.ReadAllText(path)));
+            files.Add(new SourceFile(Path.GetFullPath(path), ElidePartForwarders(File.ReadAllText(path))));
 
         foreach (var path in Sorted(Path.Combine(server, "Domain", "Combat"), "Combat*.cs", CombatParts.IsPartTypeName))
             files.Add(new SourceFile(
@@ -121,7 +124,12 @@ public static class CombatSource
     /// </summary>
     public static string Normalise(string text, string typeName)
     {
-        var injected = InjectedField.Matches(text).Select(match => match.Groups["name"].Value).Distinct().ToArray();
+        // Only a part of Combat lost its receiver in the move; a service of its own (ICombatRecorderService) kept its facade's.
+        var injected = InjectedField.Matches(text)
+            .Where(match => CombatParts.IsPartTypeName(match.Groups["type"].Value))
+            .Select(match => match.Groups["name"].Value)
+            .Distinct()
+            .ToArray();
         var builder = new StringBuilder(text.Length);
         foreach (var line in SplitKeepingEndings(text))
         {
@@ -135,6 +143,37 @@ public static class CombatSource
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// Drops, from a partial class file of <c>Combat</c>, the one-line forwarders to a part service: a method whose whole
+    /// body is <c>=&gt; Part.SameName(...)</c>, where <c>Part</c> is a property of that file declared as the interface of a
+    /// part (<c>private static ICombatQueriesService Queries =&gt; ...</c>). The member's body is in the part service, so the
+    /// combined source lists it once, as the static class did. The forwarders themselves are proven by
+    /// <c>CombatPartForwardingTests</c>; forwarders to <c>CombatRules</c> and everything else stay.
+    /// </summary>
+    public static string ElidePartForwarders(string text)
+    {
+        var root = CSharpSyntaxTree.ParseText(text).GetRoot();
+        var parts = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
+            .Where(property => property.Modifiers.Any(SyntaxKind.StaticKeyword) &&
+                               property.Type is IdentifierNameSyntax { Identifier.Text: var type } &&
+                               type.Length > 1 && type[0] == 'I' && CombatParts.IsPartTypeName(type[1..]) &&
+                               type[1..] != CombatParts.RulesTypeName)
+            .Select(property => property.Identifier.Text)
+            .ToHashSet(StringComparer.Ordinal);
+        var forwarders = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(method => method.ExpressionBody?.Expression is InvocationExpressionSyntax
+                             {
+                                 Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax receiver } access
+                             } &&
+                             parts.Contains(receiver.Identifier.Text) &&
+                             access.Name.Identifier.Text == method.Identifier.Text)
+            .ToArray();
+
+        return forwarders.Length == 0
+            ? text
+            : root.RemoveNodes(forwarders, SyntaxRemoveOptions.KeepNoTrivia)!.ToFullString();
     }
 
     private static string RestoreStatic(string line, string typeName)

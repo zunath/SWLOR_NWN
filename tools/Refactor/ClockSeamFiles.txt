@@ -4,6 +4,7 @@
 # of files this mechanical rewrite owns).
 Service/Combat.cs
 Service/CombatParts/**
+Domain/Combat/CombatResourcesService.cs
 Service/CombatService/**
 Service/CombatPoint.cs
 Domain/Combat/OrdinaryAttackTraitsService.cs

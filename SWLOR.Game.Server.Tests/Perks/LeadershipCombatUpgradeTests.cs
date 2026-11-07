@@ -121,14 +121,13 @@ public class LeadershipCombatUpgradeTests
         var flash = new FlashStatusEffect(15);
         flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-15);
 
-        var classifier = CombatMembers.FindMethod("IsWeaponOrForceAbility");
+        CombatMembers.FindMethod("IsWeaponOrForceAbility").Should().NotBeNull();
 
-        classifier.Should().NotBeNull();
-        classifier!.Invoke(null, new object[] { SkillType.BeastMastery }).Should().Be(true,
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.BeastMastery).Should().Be(true,
             "NPC natural-creature abilities such as Disorienting Screech resolve through Beast Mastery");
-        classifier.Invoke(null, new object[] { SkillType.Force }).Should().Be(true);
-        classifier.Invoke(null, new object[] { SkillType.Rifle }).Should().Be(true);
-        classifier.Invoke(null, new object[] { SkillType.Mimicry }).Should().Be(false,
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Force).Should().Be(true);
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Rifle).Should().Be(true);
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Mimicry).Should().Be(false,
             "the physical/Force modifier deliberately does not affect player Mimicry techniques");
     }
 

@@ -259,42 +259,4 @@ public class StatFacadeAllocationTests
 
         protected override int GetPerkStatBonus(uint creature, StatType stat) => 0;
     }
-
-    /// <summary>The instance with its calls into unconverted code answered without allocating.</summary>
-    private sealed class AllocationStatService : StatService
-    {
-        public AllocationStatService(
-            IDBService db,
-            ICombatRecorderService combatRecorder,
-            IPlayerFeedbackService playerFeedback,
-            IStatusEffectService statusEffect,
-            IMimicryService mimicry,
-            ITwinPistolEquipmentService twinPistolEquipment,
-            IPowerGloveEquipmentService powerGloveEquipment,
-            IItemService item,
-            IRecastService recast,
-            IBeastMasteryService beastMastery,
-            IEnmityService enmity,
-            IResistanceService resistance,
-            IPvpCombatService pvpCombat)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat)
-        {
-        }
-
-        protected override int GetPerkStatBonus(uint creature, StatType stat) => 0;
-
-        protected override int GetTemporaryStatAdjustment(uint creature, StatType stat) => 0;
-
-        protected override bool IsDroid(uint creature) => false;
-
-        protected override int GetNearbyStatusTargetAttackAdjustment(uint creature) => 0;
-
-        protected override int GetLowHPAttackAdjustment(uint creature) => 0;
-
-        protected override int GetLowFPAttackAdjustment(uint creature) => 0;
-
-        protected override SkillType GetWeaponSkill(uint creature, uint weapon) => SkillType.Invalid;
-
-        protected override bool IsRangedDamageSkill(SkillType skillType) => false;
-    }
 }

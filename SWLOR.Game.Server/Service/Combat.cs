@@ -37,17 +37,17 @@ namespace SWLOR.Game.Server.Service
         public const int BaseHitRate = CombatRules.BaseHitRate;
         public const int MinimumHitRate = CombatRules.MinimumHitRate;
         /// <summary>A boss's floor, so stacking Evasion can't make a boss harmless.</summary>
-        public const int BossMinimumHitRate = 35;
+        public const int BossMinimumHitRate = CombatQueriesService.BossMinimumHitRate;
         public const int MaximumHitRate = CombatRules.MaximumHitRate;
         public const int MinimumCriticalRate = CombatRules.MinimumCriticalRate;
         public const int MaximumCriticalRate = CombatRules.MaximumCriticalRate;
         public const int MaximumDamageDerivedHealingPercentPerHit = CombatRules.MaximumDamageDerivedHealingPercentPerHit;
-        public const int MaximumActivatedDamageHealingMaxHPPercent = 15;
-        public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
-        public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = 12;
-        public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
-        public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
-        public const int CombatHealingWindowSeconds = 6;
+        public const int MaximumActivatedDamageHealingMaxHPPercent = CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerHit;
+        public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = CombatResourcesService.MaximumCooldownDamageHealingMaxHPPercentPerHit;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow;
+        public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow;
+        public const int CombatHealingWindowSeconds = CombatResourcesService.CombatHealingWindowSeconds;
         public const int MaximumCriticalDamagePercentAdjustment = CombatRules.MaximumCriticalDamagePercentAdjustment;
         public const int StandardCriticalRating = CombatRules.StandardCriticalRating;
         public const int BaseAttackDelayMilliseconds = CombatRules.BaseAttackDelayMilliseconds;

@@ -4900,67 +4900,67 @@
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 340,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 399,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 341,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 400,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)\"),\n                    attacker,\n                    false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)\"),\n                    attacker,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 382,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 441,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 383,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 442,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike ready ({maximumCount} {stackLabel})\"),\n                    attacker,\n                    false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike ready ({maximumCount} {stackLabel})\"),\n                    attacker,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 409,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 468,
     "Member": "ReportFirstStrikeCombatEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 603,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 661,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Activity.cs",
-    "Line": 617,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
+    "Line": 675,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.AttackTiming.cs",
-    "Line": 436,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
+    "Line": 458,
     "Member": "ShowReadyCue",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.AttackTiming.cs",
-    "Line": 779,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
+    "Line": 801,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
+    "Call": "_playerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{_playerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
   },
   {
     "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
@@ -5096,29 +5096,29 @@
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Suppression.cs",
-    "Line": 62,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
+    "Line": 72,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Suppression.cs",
-    "Line": 63,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
+    "Line": 73,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Pinning Fire\"), attacker, false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Pinning Fire\"), attacker, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Suppression.cs",
-    "Line": 297,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
+    "Line": 307,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($\"Overwatch: +{adjustment}% Accuracy.\"))"
+    "Call": "_playerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($\"Overwatch: +{adjustment}% Accuracy.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Suppression.cs",
-    "Line": 298,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
+    "Line": 308,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"

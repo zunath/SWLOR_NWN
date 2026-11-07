@@ -908,7 +908,7 @@ public class CombatAttackDelayTests
             "if (appliesToRangedStatus)",
             System.StringComparison.Ordinal);
         var firstConsume = method.IndexOf(
-            "TemporaryStatModifier.Consume(",
+            "_temporaryStatModifier.Consume(",
             System.StringComparison.Ordinal);
 
         rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);

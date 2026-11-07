@@ -527,7 +527,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
-        var schedule = ExtractMethod(combatSource, "private static void ScheduleIdleReadinessRefresh(uint creature)");
+        var schedule = ExtractMethod(combatSource, "public static void ScheduleIdleReadinessRefresh(uint creature)");
 
         refresh.Should().Contain("GetLastCompletedOffensiveActivityAt(creature)");
         refresh.Should().NotContain("GetLastOffensiveActivityAt(creature)");
@@ -542,7 +542,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var trackAttempt = ExtractMethod(combatSource, "public static void TrackHostileAbilityActivity(uint creature, bool countAsCompletedOffensiveActivity = false)");
-        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+        var trackCompleted = ExtractMethod(combatSource, "public static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
 
         trackAttempt.Should().Contain("ScheduleIdleReadinessRefresh(creature);",
             "a cancelled cast must not leave its readiness marker permanently removed");
@@ -568,7 +568,7 @@ public class CombatDamageTests
             "SWLOR.Game.Server",
             "Feature",
             "UsePerkFeat.cs"));
-        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+        var trackCompleted = ExtractMethod(combatSource, "public static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
         trackCompleted.Should().Contain("if (!ability.IsHostileAbility)");
         trackCompleted.Should().Contain("return;");
 

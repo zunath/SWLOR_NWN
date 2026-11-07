@@ -331,7 +331,32 @@ public class CombatSourceTests
         CombatMembers.FindMethod("CalculateResourceRestoreFromCost").Should().NotBeNull();
         CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int)).Should().NotBeNull();
         CombatMembers.FindField("_attackSwingDebts").Should().NotBeNull();
-        CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts").Should().NotBeNull();
+        CombatMembers.FindField("_lastAttackActivity").Should().NotBeNull();
+        CombatMembers.FindField("_lastCombatAbilityUse").Should().NotBeNull();
+    }
+
+    [Test]
+    public void ReflectionReachesTheTimingAndActivityTablesOfTheInstalledContainer()
+    {
+        // CombatAttackDelayTests reads the swing debts and RifleIdleReadinessEngineTests the activity records this way.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        const BindingFlags Instance = BindingFlags.NonPublic | BindingFlags.Instance;
+
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
+        ((object)debts).Should().BeSameAs(typeof(CombatAttackTimingService).GetField("_attackSwingDebts", Instance)!
+            .GetValue(facades.Get<ICombatAttackTimingService>()));
+        var attacks = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastAttackActivity");
+        ((object)attacks).Should().BeSameAs(typeof(CombatActivityService).GetField("_lastAttackActivity", Instance)!
+            .GetValue(facades.Get<ICombatActivityService>()));
+        var abilities = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastCombatAbilityUse");
+        ((object)abilities).Should().BeSameAs(typeof(CombatActivityService).GetField("_lastCombatAbilityUse", Instance)!
+            .GetValue(facades.Get<ICombatActivityService>()));
+
+        SWLOR.Game.Server.Service.Combat.ConsumeAttacksPerSwing(0xFFFFFFF1, 1500);
+        debts.Should().ContainKey(0xFFFFFFF1, "the facade and the reflected table are the same instance's");
+        SWLOR.Game.Server.Service.Combat.ClearAttackSwingDebt(0xFFFFFFF1);
+        debts.Should().NotContainKey(0xFFFFFFF1);
     }
 
     [Test]

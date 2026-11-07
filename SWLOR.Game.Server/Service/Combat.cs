@@ -55,29 +55,9 @@ namespace SWLOR.Game.Server.Service
         public const float RangedWeaponEngagementRange = CombatRules.RangedWeaponEngagementRange;
         public const int MaxAttacksPerSwing = CombatRules.MaxAttacksPerSwing;
         public const int MinimumAttackDelayMilliseconds = CombatRules.MinimumAttackDelayMilliseconds;
-        private static readonly IdleSkillAbilityStatChannel[] _idleSkillAbilityStatChannels =
-        {
-            new(
-                StatType.IdleSkillAbilitySkillType,
-                StatType.IdleSkillAbilityRequiredIdleSeconds,
-                StatType.IdleSkillAbilityDamageBonus,
-                StatType.IdleSkillAbilityHitChancePercentAdjustment,
-                StatType.IdleSkillAbilityCriticalDamagePercentAdjustment),
-            new(
-                StatType.AlternateIdleSkillAbilitySkillType,
-                StatType.AlternateIdleSkillAbilityRequiredIdleSeconds,
-                StatType.AlternateIdleSkillAbilityDamageBonus,
-                StatType.AlternateIdleSkillAbilityHitChancePercentAdjustment,
-                StatType.AlternateIdleSkillAbilityCriticalDamagePercentAdjustment),
-        };
 
-        private readonly record struct IdleSkillAbilityStatChannel(
-            StatType SkillType,
-            StatType RequiredIdleSeconds,
-            StatType DamageBonus,
-            StatType HitChancePercentAdjustment,
-            StatType CriticalDamagePercentAdjustment);
-
+        // The area ability hit sequences of AbilityImpact use this; CombatActivityService has its own copy for the First
+        // Strike stacks it moved with.
         private sealed class TargetHitSequenceState
         {
             public int Count { get; init; }

@@ -1,7 +1,9 @@
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
@@ -9,6 +11,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -287,6 +291,240 @@ public class CombatFacadeAllocationTests
         {
             foreach (var scope in scopes)
                 scope.Dispose();
+        }
+    }
+
+    private static readonly DateTime FrozenNow = new(2026, 11, 7, 12, 0, 0, DateTimeKind.Utc);
+
+    private sealed record TimingParts(ICombatAttackTimingService Timing, ICombatSuppressionService Suppression,
+        ICombatActivityService Activity, AbilityDetail Hostile);
+
+    // A container of its own, so the activity, timing and status tables start empty whatever ran before; the engine that answers
+    // from constants; the clock held still, so no window or temporary modifier expires between runs; and the stat service
+    // whose calls into unconverted code allocate nothing. What is counted is Combat's forwarder and the part.
+    private static TimingParts InstallTimingParts(List<IDisposable> scopes)
+    {
+        var container = new FacadeContainer(services =>
+            services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>()));
+        scopes.Add(container);
+        scopes.Add(container.Install());
+        scopes.Add(NWScriptRuntime.Override(StatReadEngine.Create(StatReadEngine.NpcAnswers())));
+        scopes.Add(Clock.OverrideForTests(() => FrozenNow));
+        // Both creatures have a status table, as a creature in combat does: the status service hands an unknown creature a
+        // new empty table on every read, which would dwarf what the parts allocate.
+        foreach (var creature in new[] { Attacker, Defender })
+            StatusEffectInternals.CreatureEffects[creature] = new CreatureStatusEffect { StatGroup = new StatGroup() };
+        var hostile = new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle };
+        hostile.Requirements.Add(new AbilityRequirementStamina(10));
+        return new TimingParts(container.Get<ICombatAttackTimingService>(), container.Get<ICombatSuppressionService>(),
+            container.Get<ICombatActivityService>(), hostile);
+    }
+
+    private static void DisposeInReverse(List<IDisposable> scopes)
+    {
+        for (var i = scopes.Count - 1; i >= 0; i--)
+            scopes[i].Dispose();
+    }
+
+    // Bytes per call of the part and of its forwarder, the least of three rounds taken in turn, so both are measured with the
+    // same warm caches and table sizes.
+    private static (long Part, long Forwarder) InterleavedPerCall(Action part, Action forwarder)
+    {
+        long ownBytes = long.MaxValue, forwardedBytes = long.MaxValue;
+        for (var round = 0; round < 3; round++)
+        {
+            ownBytes = Math.Min(ownBytes, Allocated(part));
+            forwardedBytes = Math.Min(forwardedBytes, Allocated(forwarder));
+        }
+
+        return (ownBytes / Calls, forwardedBytes / Calls);
+    }
+
+    // A private forwarder of Combat (a member only other parts call), as a delegate so the call itself costs nothing.
+    private static TDelegate Private<TDelegate>(string name, params Type[] parameterTypes)
+        where TDelegate : Delegate
+    {
+        var method = typeof(CombatFacade).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static, null, parameterTypes, null)
+                     ?? throw new AssertionException($"Combat has no private forwarder {name}.");
+        return method.CreateDelegate<TDelegate>();
+    }
+
+    [Test]
+    public void TheTimingSuppressionAndActivityReadsAndWritesAllocateNothingDirectlyOrThroughTheCombatForwarders()
+    {
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (timing, suppression, activity, hostile) = InstallTimingParts(scopes);
+            var sink = 0;
+            var trackRecentDamageTarget = Private<Action<uint, uint>>("TrackRecentDamageTarget", typeof(uint), typeof(uint));
+            var trackRecentDamageTaken = Private<Action<uint>>("TrackRecentDamageTaken", typeof(uint));
+            var trackCombatActivity = Private<Action<uint>>("TrackCombatActivity", typeof(uint));
+            var firstAttackRestore = Private<Action<uint>>("ApplyFirstCombatAttackStaminaRestore", typeof(uint));
+            var directDamage = Private<Func<uint, uint, int>>("GetDirectDamageToStatusCategoryOrStealthBonus", typeof(uint), typeof(uint));
+            var firstStrikeBonus = Private<Func<uint, AbilityDetail, int>>("GetFirstHostileAbilityHitDamageBonus", typeof(uint), typeof(AbilityDetail));
+            var firstStrikeCount = Private<Action<uint, AbilityDetail>>("ApplyFirstHostileAbilityHitCount", typeof(uint), typeof(AbilityDetail));
+            var forgetOpening = Private<Action<uint>>("ForgetOpeningActivityState", typeof(uint));
+            var forgetTiming = Private<Action<uint>>("ForgetAttackTimingState", typeof(uint));
+            var recentDamageTargets = Private<Func<Dictionary<(uint, uint), DateTime>>>("get__recentDamageTargets");
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                // Per swing.
+                ("ConsumeAttacksPerSwing(2)", () => sink += timing.ConsumeAttacksPerSwing(Attacker, 1500), () => sink += CombatFacade.ConsumeAttacksPerSwing(Attacker, 1500)),
+                ("ConsumeAttacksPerSwing(4)", () => sink += timing.ConsumeAttacksPerSwing(Attacker, 1500, 1500, true), () => sink += CombatFacade.ConsumeAttacksPerSwing(Attacker, 1500, 1500, true)),
+                ("ConsumeAttacksPerSwing(11)", () => sink += timing.ConsumeAttacksPerSwing(Attacker, 900, 1500, false, 1500, 2, 0, 2), () => sink += CombatFacade.ConsumeAttacksPerSwing(Attacker, 900, 1500, false, 1500, 2, 0, 2)),
+                ("ClearAttackSwingDebt", () => timing.ClearAttackSwingDebt(Attacker), () => CombatFacade.ClearAttackSwingDebt(Attacker)),
+                ("CalculateAttackDelayReduction", () => sink += timing.CalculateAttackDelayReduction(Attacker), () => sink += CombatFacade.CalculateAttackDelayReduction(Attacker)),
+                ("CalculateOffhandAttackDelayReduction", () => sink += timing.CalculateOffhandAttackDelayReduction(Attacker), () => sink += CombatFacade.CalculateOffhandAttackDelayReduction(Attacker)),
+                ("GetTargetAttackDelayReduction", () => sink += timing.GetTargetAttackDelayReduction(Attacker, Defender, SkillType.Rifle), () => sink += CombatFacade.GetTargetAttackDelayReduction(Attacker, Defender, SkillType.Rifle)),
+                ("GetWeaponDelay", () => sink += timing.GetWeaponDelay(Attacker), () => sink += CombatFacade.GetWeaponDelay(Attacker)),
+                ("IsAttackDelayReductionSuppressed", () => sink += timing.IsAttackDelayReductionSuppressed(Attacker) ? 1 : 0, () => sink += CombatFacade.IsAttackDelayReductionSuppressed(Attacker) ? 1 : 0),
+                ("ApplyBleedingStatusExpiredEffects", () => timing.ApplyBleedingStatusExpiredEffects(Attacker), () => CombatFacade.ApplyBleedingStatusExpiredEffects(Attacker)),
+                ("ForgetAttackTimingState", () => timing.ForgetAttackTimingState(Attacker), () => forgetTiming(Attacker)),
+                // Per attack.
+                ("ApplySuppressionStack", () => sink += suppression.ApplySuppressionStack(Attacker, Defender, 0, 6, CombatDamageType.Physical) ? 1 : 0, () => sink += CombatFacade.ApplySuppressionStack(Attacker, Defender, 0, 6, CombatDamageType.Physical) ? 1 : 0),
+                ("GetRangedAbilityLongRangeHitChanceAdjustment", () => sink += suppression.GetRangedAbilityLongRangeHitChanceAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += CombatFacade.GetRangedAbilityLongRangeHitChanceAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("GetRangedAbilityLongRangeCriticalRateAdjustment", () => sink += suppression.GetRangedAbilityLongRangeCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += CombatFacade.GetRangedAbilityLongRangeCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("TrackRecentDamageTarget", () => activity.TrackRecentDamageTarget(Attacker, Defender), () => trackRecentDamageTarget(Attacker, Defender)),
+                ("TrackRecentDamageTaken", () => activity.TrackRecentDamageTaken(Defender), () => trackRecentDamageTaken(Defender)),
+                ("TrackCombatActivity", () => activity.TrackCombatActivity(Attacker), () => trackCombatActivity(Attacker)),
+                ("TrackHostileDefensiveCombatEntryActivity", () => activity.TrackHostileDefensiveCombatEntryActivity(Defender, Attacker), () => CombatFacade.TrackHostileDefensiveCombatEntryActivity(Defender, Attacker)),
+                ("ApplyFirstCombatAttackStaminaRestore", () => activity.ApplyFirstCombatAttackStaminaRestore(Attacker), () => firstAttackRestore(Attacker)),
+                ("GetDirectDamageToStatusCategoryOrStealthBonus", () => sink += activity.GetDirectDamageToStatusCategoryOrStealthBonus(Attacker, Defender), () => sink += directDamage(Attacker, Defender)),
+                ("GetFirstHostileAbilityHitDamageBonus", () => sink += activity.GetFirstHostileAbilityHitDamageBonus(Attacker, hostile), () => sink += firstStrikeBonus(Attacker, hostile)),
+                ("ApplyFirstHostileAbilityHitCount", () => activity.ApplyFirstHostileAbilityHitCount(Attacker, hostile), () => firstStrikeCount(Attacker, hostile)),
+                ("ForgetOpeningActivityState", () => activity.ForgetOpeningActivityState(Defender), () => forgetOpening(Defender)),
+                // Activity reads.
+                ("HasRecentDamageTaken", () => sink += activity.HasRecentDamageTaken(Defender, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentDamageTaken(Defender, 6f) ? 1 : 0),
+                ("HasRecentDamageTarget", () => sink += activity.HasRecentDamageTarget(Attacker, Defender, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentDamageTarget(Attacker, Defender, 6f) ? 1 : 0),
+                ("HasRecentHostileCombatActivity", () => sink += activity.HasRecentHostileCombatActivity(Attacker) ? 1 : 0, () => sink += CombatFacade.HasRecentHostileCombatActivity(Attacker) ? 1 : 0),
+                ("HasRecentAttackActivity", () => sink += activity.HasRecentAttackActivity(Attacker, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentAttackActivity(Attacker, 6f) ? 1 : 0),
+                ("HasRecentCombatAbilityUse", () => sink += activity.HasRecentCombatAbilityUse(Attacker, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentCombatAbilityUse(Attacker, 6f) ? 1 : 0),
+                ("GetLastOffensiveActivityAt", () => sink += activity.GetLastOffensiveActivityAt(Attacker).Second, () => sink += CombatFacade.GetLastOffensiveActivityAt(Attacker).Second),
+                ("GetLastCompletedOffensiveActivityAt", () => sink += activity.GetLastCompletedOffensiveActivityAt(Attacker).Second, () => sink += CombatFacade.GetLastCompletedOffensiveActivityAt(Attacker).Second),
+                ("IsUsingAbility", () => sink += activity.IsUsingAbility(Attacker) ? 1 : 0, () => sink += CombatFacade.IsUsingAbility(Attacker) ? 1 : 0),
+                ("RecentDamageTargets", () => sink += activity.RecentDamageTargets.Count, () => sink += recentDamageTargets().Count),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                LeastAllocated(part).Should().Be(0, $"{name} runs per swing, per attack or per hit");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void TheTimingSuppressionAndActivityMembersThatAllocateKeepTheirBytesThroughTheCombatForwarders()
+    {
+        // Bytes per call in this setup. Each allocated before the move too, the same amount unless a comment says otherwise:
+        // a closure of a moved method now captures the part's instance to reach its injected services, which makes the
+        // closure object 8 bytes larger (HandleParalyze's warning, the idle-readiness schedule and channel checks, the login
+        // refresh). The rest comes from LINQ over the stat channels, the temporary modifiers and the log lines, as before.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (timing, suppression, activity, _) = InstallTimingParts(scopes);
+            var sink = 0;
+            var schedule = Private<Action<uint>>("ScheduleIdleReadinessRefresh", typeof(uint));
+            var hasChannel = Private<Func<uint, bool>>("HasConfiguredIdleSkillAbilityChannel", typeof(uint));
+            var idleHitChance = Private<Func<uint, SkillType, int>>("GetIdleAbilityHitChanceAdjustment", typeof(uint), typeof(SkillType));
+            var forgetActivity = Private<Action<uint>>("ForgetActivityState", typeof(uint));
+            var forgetSuppression = Private<Action<uint>>("ForgetSuppressionState", typeof(uint));
+            var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
+            {
+                ("CalculateAttackDelay(1)", 136, () => sink += timing.CalculateAttackDelay(Attacker), () => sink += CombatFacade.CalculateAttackDelay(Attacker)),
+                ("CalculateAttackDelay(2)", 136, () => sink += timing.CalculateAttackDelay(Attacker, -10), () => sink += CombatFacade.CalculateAttackDelay(Attacker, -10)),
+                ("GetTargetAttackDelayReduction(Throwing)", 152, () => sink += timing.GetTargetAttackDelayReduction(Attacker, Defender, SkillType.Throwing), () => sink += CombatFacade.GetTargetAttackDelayReduction(Attacker, Defender, SkillType.Throwing)),
+                ("HasTemporaryNextAutoAttackNoDelay", 112, () => sink += timing.HasTemporaryNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0, () => sink += CombatFacade.HasTemporaryNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0),
+                ("ConsumeNextAutoAttackCriticalRateBonus", 56, () => sink += timing.ConsumeNextAutoAttackCriticalRateBonus(Attacker, SkillType.Rifle), () => sink += CombatFacade.ConsumeNextAutoAttackCriticalRateBonus(Attacker, SkillType.Rifle)),
+                // 32 before the move: the warning's closure also holds the part, to reach the player name service.
+                ("HandleParalyze", 40, () => sink += timing.HandleParalyze(Attacker) ? 1 : 0, () => sink += CombatFacade.HandleParalyze(Attacker) ? 1 : 0),
+                ("ReconcileOverwatchStatus", 216, () => suppression.ReconcileOverwatchStatus(Attacker), () => CombatFacade.ReconcileOverwatchStatus(Attacker)),
+                ("ForgetSuppressionState", 528, () => suppression.ForgetSuppressionState(Attacker), () => forgetSuppression(Attacker)),
+                // 320 before the move: the idle-readiness schedule's closure also holds the part.
+                ("TrackAttackActivity", 328, () => activity.TrackAttackActivity(Attacker), () => CombatFacade.TrackAttackActivity(Attacker)),
+                ("TrackHostileAbilityActivity", 328, () => activity.TrackHostileAbilityActivity(Attacker), () => CombatFacade.TrackHostileAbilityActivity(Attacker)),
+                ("ScheduleIdleReadinessRefresh", 328, () => activity.ScheduleIdleReadinessRefresh(Attacker), () => schedule(Attacker)),
+                ("TrackStealthOpeningWindow", 32, () => activity.TrackStealthOpeningWindow(Attacker), () => CombatFacade.TrackStealthOpeningWindow(Attacker)),
+                ("GetIdleSkillAbilityBonuses", 56, () => sink += activity.GetIdleSkillAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus, () => sink += CombatFacade.GetIdleSkillAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus),
+                ("GetIdleAbilityHitChanceAdjustment", 56, () => sink += activity.GetIdleAbilityHitChanceAdjustment(Attacker, SkillType.Rifle), () => sink += idleHitChance(Attacker, SkillType.Rifle)),
+                // 88 before the move: the channel check's closure also holds the part.
+                ("HasConfiguredIdleSkillAbilityChannel", 96, () => sink += activity.HasConfiguredIdleSkillAbilityChannel(Attacker) ? 1 : 0, () => sink += hasChannel(Attacker) ? 1 : 0),
+                // 24 before the move: the delayed refresh's closure also holds the part.
+                ("RestoreIdleReadinessOnPlayerEnter", 32, () => activity.RestoreIdleReadinessOnPlayerEnter(), () => CombatFacade.RestoreIdleReadinessOnPlayerEnter()),
+                ("PurgeInvalidOffensiveActivity", 480, () => activity.PurgeInvalidOffensiveActivity(), () => CombatFacade.PurgeInvalidOffensiveActivity()),
+                ("ForgetActivityState", 184, () => activity.ForgetActivityState(Attacker), () => forgetActivity(Attacker)),
+            };
+
+            foreach (var (name, bytes, part, forwarder) in reads)
+            {
+                PerCall(part).Should().Be(bytes, $"{name} allocates what it did before the move");
+                PerCall(forwarder).Should().Be(bytes, $"Combat.{name} adds nothing to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void ATimingSuppressionOrActivityForwarderAddsNothingToTheLargeReads()
+    {
+        // These read the skill's attribute by reflection (IsWeaponSkillType), a creature's status effects or the temporary
+        // modifiers, as before the move, so what they allocate per call moves between rounds: the runtime rebuilds its
+        // reflection cache after a collection (up to 24 bytes a call) and the tables grow. A forwarder is one call with the
+        // same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or more).
+        // StoreAbilityActivationIdleBonuses is left out: its temporary modifier writes vary by hundreds of bytes from run to run.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (timing, suppression, activity, hostile) = InstallTimingParts(scopes);
+            var sink = 0;
+            var autoAttackSuppression = Private<Action<uint, uint, SkillType, CombatDamageType>>("ApplyAutoAttackSuppressionStack",
+                typeof(uint), typeof(uint), typeof(SkillType), typeof(CombatDamageType));
+            var rangedSuppression = Private<Action<uint, uint, SkillType, CombatDamageType>>("ApplyRangedHitSuppressionStack",
+                typeof(uint), typeof(uint), typeof(SkillType), typeof(CombatDamageType));
+            var trackSuppression = Private<Action<uint, DateTime>>("TrackSuppressionAbilityUse", typeof(uint), typeof(DateTime));
+            var trackAbility = Private<Action<uint, AbilityDetail>>("TrackCombatAbilityUse", typeof(uint), typeof(AbilityDetail));
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("ConsumeNextAbilityDelayReductionPercent", () => sink += timing.ConsumeNextAbilityDelayReductionPercent(Attacker, hostile), () => sink += CombatFacade.ConsumeNextAbilityDelayReductionPercent(Attacker, hostile)),
+                ("HasNextAutoAttackNoDelay", () => sink += timing.HasNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0, () => sink += CombatFacade.HasNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0),
+                ("ConsumeNextAutoAttackNoDelay", () => sink += timing.ConsumeNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0, () => sink += CombatFacade.ConsumeNextAutoAttackNoDelay(Attacker, SkillType.Rifle) ? 1 : 0),
+                ("GrantNextAbilityNoDelay", () => timing.GrantNextAbilityNoDelay(Attacker, SkillType.Rifle, 6, 50), () => CombatFacade.GrantNextAbilityNoDelay(Attacker, SkillType.Rifle, 6, 50)),
+                ("GetSuppressionStackCount", () => sink += suppression.GetSuppressionStackCount(Defender, Attacker), () => sink += CombatFacade.GetSuppressionStackCount(Defender, Attacker)),
+                ("ConsumeSuppressionRangedAttackAccuracyAdjustment", () => sink += suppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += CombatFacade.ConsumeSuppressionRangedAttackAccuracyAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("ApplyAutoAttackSuppressionStack", () => suppression.ApplyAutoAttackSuppressionStack(Attacker, Defender, SkillType.Rifle, CombatDamageType.Physical), () => autoAttackSuppression(Attacker, Defender, SkillType.Rifle, CombatDamageType.Physical)),
+                ("ReconcileContainmentNetStatuses", () => suppression.ReconcileContainmentNetStatuses(Defender), () => CombatFacade.ReconcileContainmentNetStatuses(Defender)),
+                ("ApplyRangedHitSuppressionStack", () => suppression.ApplyRangedHitSuppressionStack(Attacker, Defender, SkillType.Rifle, CombatDamageType.Physical), () => rangedSuppression(Attacker, Defender, SkillType.Rifle, CombatDamageType.Physical)),
+                ("TrackSuppressionAbilityUse", () => suppression.TrackSuppressionAbilityUse(Defender, FrozenNow), () => trackSuppression(Defender, FrozenNow)),
+                // 8 bytes more than before the move: it schedules idle readiness, whose closure now also holds the part.
+                ("TrackCombatAbilityUse", () => activity.TrackCombatAbilityUse(Attacker, hostile), () => trackAbility(Attacker, hostile)),
+                ("ClearAbilityActivationIdleBonuses", () => activity.ClearAbilityActivationIdleBonuses(Attacker), () => CombatFacade.ClearAbilityActivationIdleBonuses(Attacker)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var (own, forwarded) = InterleavedPerCall(part, forwarder);
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                forwarded.Should().BeCloseTo(own, 32, $"Combat.{name} adds no closure or delegate to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
         }
     }
 

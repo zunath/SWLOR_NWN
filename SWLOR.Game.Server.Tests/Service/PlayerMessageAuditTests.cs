@@ -263,7 +263,7 @@ public class PlayerMessageAuditTests
             .Single(call => MethodName(call) == "SendWarningNearby" &&
                 call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "HandleParalyze");
         warning.ArgumentList.Arguments[0].ToString().Should().Be("attacker");
-        warning.ArgumentList.Arguments[2].ToString().Should().Contain("PlayerName.GetDisplayName(receiver, attacker)");
+        warning.ArgumentList.Arguments[2].ToString().Should().Contain("_playerName.GetDisplayName(receiver, attacker)");
         warning.ArgumentList.Arguments[3].ToString().Should().Be("5");
 
         var delivery = ReadCalls(Path.Combine(root, "..", "Domain", "Core", "PlayerFeedbackService.cs"))

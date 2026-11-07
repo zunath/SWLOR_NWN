@@ -54,6 +54,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 
+# Coverage files left by an earlier run must not leak into this one (the floors check reads the whole folder): a full
+# run starts with an empty folder, a run of named projects replaces only those projects' files.
+if [ "$FULL_RUN" = 1 ]; then
+    rm -f "$OUT"/coverage/*.cobertura.xml
+else
+    for project in "${PROJECTS[@]}"; do rm -f "$OUT/coverage/$project.cobertura.xml"; done
+fi
+
 # Each project is its own dotnet test process, one after the other. The characterization tests seed the global
 # game Random, so they must never share a process (or run in parallel) with other projects that use it.
 #

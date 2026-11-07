@@ -27,20 +27,17 @@ public class StatAdjustmentSourceTests
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61249;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void Cleanup()
     {
         Effects.Remove(Creature);
         ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+        _facadeScope.Dispose();
     }
 
     [TestCase(false)]

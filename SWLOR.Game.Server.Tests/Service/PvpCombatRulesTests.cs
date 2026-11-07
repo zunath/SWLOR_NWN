@@ -80,13 +80,13 @@ public class PvpCombatRulesTests
     {
         const StatusEffectCategory hardControl = StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
 
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isPlayerAgainstPlayer: true)
             .Should().Be(15, "the 30-second budget applies first, then players take half");
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f, isPlayerAgainstPlayer: true).Should().Be(5);
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f).Should().Be(10, "NPC targets keep the full duration");
-        StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Control, 10, 1f, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f, isPlayerAgainstPlayer: true).Should().Be(5);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f).Should().Be(10, "NPC targets keep the full duration");
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Control, 10, 1f, isPlayerAgainstPlayer: true)
             .Should().Be(10, "soft control is not shortened");
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isSelfApplied: true, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isSelfApplied: true, isPlayerAgainstPlayer: true)
             .Should().Be(60, "self-applied control such as subdual keeps its duration");
     }
 

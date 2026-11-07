@@ -5,7 +5,7 @@ namespace SWLOR.Architecture.Tests.Scanning;
 
 /// <summary>
 /// Decides from metadata whether a type is deeply immutable, so a <c>static readonly</c> field of it cannot carry
-/// shared state. Accepted: primitives, <c>string</c>, enums of the scanned assembly, <c>Regex</c>, the frozen and
+/// shared state. Accepted: primitives, <c>string</c>, enums of the scanned assembly and of the engine API, <c>Regex</c>, the frozen and
 /// immutable collections of <c>System.Collections.Frozen</c> and <c>System.Collections.Immutable</c> when every
 /// argument is accepted, <c>Nullable&lt;T&gt;</c> and value tuples of accepted types, the immutable value types <c>decimal</c>, <c>TimeSpan</c>,
 /// <c>DateTime</c>, <c>DateTimeOffset</c>, <c>DateOnly</c>, <c>TimeOnly</c> and <c>Guid</c>, and sealed records and record structs whose
@@ -46,6 +46,9 @@ internal sealed class ImmutabilityAnalyzer
         "System.ValueTuple",
     ];
 
+    // Constant tables of the server key on the engine's enums (EffectIconType, AbilityType, ...).
+    private static readonly Assembly EngineApi = typeof(SWLOR.NWN.API.NWScript.Enum.AbilityType).Assembly;
+
     private readonly MetadataReader _metadata;
     private readonly TypeShapeProvider _provider = new();
     private readonly Dictionary<TypeDefinitionHandle, bool> _verdicts = new();
@@ -68,6 +71,8 @@ internal sealed class ImmutabilityAnalyzer
                     return false;
                 if (ImmutableExternal.Contains(shape.Name))
                     return shape.Args.Count == 0;
+                if (shape.Args.Count == 0 && EngineApi.GetType(shape.Name)?.IsEnum == true)
+                    return true;
                 return ImmutableCollections.Contains(shape.Name) && shape.Args.Count > 0 && shape.Args.All(IsImmutable);
             case TypeShapeKind.Defined:
                 return shape.Args.Count == 0 && IsImmutableDefinition(shape.Definition);

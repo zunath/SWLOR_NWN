@@ -135,11 +135,7 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         const uint Creature = 418;
         const int PhysicalDamage = 125;
-        var bindingFlags = System.Reflection.BindingFlags.NonPublic |
-                           System.Reflection.BindingFlags.Static;
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", bindingFlags)!
-            .GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
 
         try
         {
@@ -660,7 +656,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "recurring impacts must not consume a new activation's pending attack bonuses");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+            root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
         statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
         statusEffectSource.Should().Contain("TryGetLimitedAttackDelayReduction(");
@@ -714,7 +710,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var nativeAttackSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+            root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
 
         var beginSwing = nativeAttackSource.IndexOf(
             "StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);",
@@ -764,16 +760,9 @@ public class GeneratedWeaponPerkBehaviorTests
         uint creature,
         IStatusEffect statusEffect)
     {
-        var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
-        var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
-            .GetField("_nativeAttackSwingDepth", bindingFlags)!
-            .GetValue(null)!;
-        var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
-            .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
-            .GetValue(null)!;
-        var creatureEffects = (System.Collections.IDictionary)typeof(StatusEffect)
-            .GetField("_creatureEffects", bindingFlags)!
-            .GetValue(null)!;
+        var swingDepth = StatusEffectInternals.NativeAttackSwingDepth;
+        var deferredEffects = StatusEffectInternals.DeferredNativeAttackStatusEffects;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
 
         try
         {
@@ -1574,7 +1563,8 @@ public class GeneratedWeaponPerkBehaviorTests
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        statusEffectSource += File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectRules.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         var linkerSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "LinkCombatUpgradeFeatSpells.ps1"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
@@ -1844,7 +1834,7 @@ public class GeneratedWeaponPerkBehaviorTests
         staminaDrainedIndex.Should().BeGreaterThan(reduceStaminaIndex);
         feedbackIndex.Should().BeGreaterThan(staminaDrainedIndex);
         staminaDrainMethod.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
-        statusEffectSource.Should().Contain("Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
+        statusEffectSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");
@@ -1998,7 +1988,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "Combat.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
 
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         combatSource.Should().Contain("StatusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");
 

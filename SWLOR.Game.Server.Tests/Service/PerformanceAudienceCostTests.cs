@@ -130,7 +130,7 @@ public class PerformanceAudienceCostTests
             SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Service", "Fishing.cs"),
             SourcePath("Service", "Stat.cs"),
-            SourcePath("Service", "StatusEffect.cs"),
+            SourcePath("Domain", "Character", "StatusEffectService.cs"),
             SourcePath("Service", "Combat.cs")
         };
 

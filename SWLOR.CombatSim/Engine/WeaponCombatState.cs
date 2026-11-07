@@ -268,7 +268,7 @@ public sealed partial class WeaponCombatState
             ResistanceType.Invalid => 0,
             _ => throw new InvalidDataException($"Unsupported weapon status resistance {status.ResistanceType}.")
         };
-        return WeaponControlState.Duration(status, seconds, StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, Stat), resistance, false);
+        return WeaponControlState.Duration(status, seconds, StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, Stat), resistance, false);
     }
     public void DirectHpDamage(Combatant attacker, double now)
     {

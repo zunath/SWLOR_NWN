@@ -257,13 +257,12 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((payload, 12), (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60)));
         AddTemporary("other-source", payload, 7);
         AddTemporary("other-source", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80);
-        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        var impactType = AbilityInternals.TrackedImpactType;
+        var service = AbilityInternals.NoNeighbours();
         Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>> CreateImpactReader()
         {
-            var impact = impactType.GetConstructors().Single().Invoke(new object[]
-            {
-                new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null
-            });
+            var impact = AbilityInternals.NewTrackedImpact(
+                service, new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null);
             return impactType.GetMethod("GetStatSources")!
                 .CreateDelegate<Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>>>(impact);
         }

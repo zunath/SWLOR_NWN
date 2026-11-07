@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Tests.Support;
@@ -64,6 +65,7 @@ public class PartyServiceTests
         telegraphScript.On("UpdateShadersForPlayers", _ => null);
         _provider = ContainerHost.Create(new ServiceCollection()
             .AddSingleton<IPartyService>(_service)
+            .AddSingleton<IAbilityService>(AbilityInternals.WithParty(_service))
             .AddSingleton(telegraph));
         _containerScope = CompositionRoot.InstallForTests(_provider);
         _engineScope = NWScriptRuntime.Override(_engine);

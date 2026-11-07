@@ -129,7 +129,7 @@ public class ForceDarkRavagerTests
     {
         var root = FindRepositoryRoot();
 
-        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
         ability.Should().Contain("ApplyDarkForceCastConversion(activator, target)");
         ability.Should().Contain("ApplyDarkForceDamageRestoration(activator, damage)");
 

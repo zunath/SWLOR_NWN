@@ -128,10 +128,10 @@ public class EquipmentAnimationPlaybackTests
         AssertEquipmentPlayback(activationBody.DescendantNodes().OfType<InvocationExpressionSyntax>(), "NamedAnimation.Queue", "ability.AnimationEquipmentRequirement");
         var queued = activation.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.Text == "QueueWeaponAbility");
         AssertCreatureBinding(queued.DescendantNodes().OfType<InvocationExpressionSyntax>(), "QueuedClip");
-        var impact = Read("SWLOR.Game.Server/Service/Ability.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var impact = Read("SWLOR.Game.Server/Domain/Abilities/AbilityService.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(method => method.Identifier.Text == "PlayCombatImpactAnimation");
         AssertCreatureBinding(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "ImpactClip");
-        AssertEquipmentPlayback(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "NamedAnimation.Play", "trackedAbility.AnimationEquipmentRequirement");
+        AssertEquipmentPlayback(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "_namedAnimation.Play", "trackedAbility.AnimationEquipmentRequirement");
         // The facade keeps the handler: the equipment events reach the service through it. What the service does with
         // an equipment change is covered by NamedAnimationServiceTests.
         typeof(NamedAnimation).GetMethod(nameof(NamedAnimation.OnEquipmentChanging))!

@@ -15,6 +15,10 @@ The line is implemented on `claude/crafting-revamp-perks-fabrication`. This file
 - Every effect acts only on the research Experiment. Perks grant `StatType` adjustments; the window reads them once through `ExperimentTuning.FromStatTotals` when it sets the experiment up, and the engine never tests a perk by name. A job's stored record keeps the trials it was opened with (`TrialsTotal`), so a perk change cannot alter a saved experiment.
 - The Experiment has no rank-gated actions: Test, Refine Method, Analyze and Conclude work from the first experiment at any rank. Peer Review and Breakthrough are unlocked by buying the perk.
 
+## Gear retune (November 2026)
+
+Research now reads Fabrication gear like the crafts: Control adds Test chance, Craftsmanship adds a trial at 120, and each research tier above tier 2 lowers the base chance by 5 points. The line was cut so a full line in no gear stays within 5 points of unperked best gear, and the table below has the new values. The owner kept the styles as trials against chance, so alone Methodical leads at fixed levels and where evidence decides in good gear, and Intuitive only where evidence decides in no gear; with the whole line both styles balance at every gear level. Values, ladder and gaps: `gear-difficulty-curve.md` (Research) and `fabrication-researcher-gear-ladder.md`. The sections below keep the October history and evidence as it was; their numbers are the October values.
+
 ## Owner decisions applied (22 October 2026)
 
 - Intuitive is +20% Test chance and -1 trial; Methodical is +2 trials and a Test chance cost. The 22 October decision kept the plan's -10; the balance study (below) found -10 out of balance, and on 23 October 2026 the cost became **-15 points** (the plan and the Bible row now say -15).
@@ -28,17 +32,17 @@ The line is implemented on `claude/crafting-revamp-perks-fabrication`. This file
 
 | Rank | SP | Perk | Type | Effect | StatTypes the engine reads |
 | --- | --- | --- | --- | --- | --- |
-| 5 | 1 | Field Notes I | trait | Every Test has 10 more points of chance. | `ExperimentTestChancePercent` +10 |
-| 10 | 1 | Efficient Analysis I | trait | Analyze cuts 6% of the job's time per piece of spare evidence instead of 5%. The 25% cap stays. | `ExperimentTimeCutPerEvidencePercent` +1 |
-| 15 | 2 | Field Notes II | trait | Every Test has 20 more points of chance in total (replaces Field Notes I's 10). | `ExperimentTestChancePercent` +20 |
-| 20 | 2 | Methodical | style (exclusive with Intuitive) | 2 more trials and every Test has 15 fewer points of chance. | `ExperimentTrials` +2, `ExperimentTestChancePercent` -15 |
-| 20 | 2 | Intuitive | style (exclusive with Methodical) | Every Test has 20 more points of chance and the experiment has 1 fewer trial. | `ExperimentTestChancePercent` +20, `ExperimentTrials` -1 |
+| 5 | 1 | Field Notes I | trait | Every Test has 1 more point of chance. | `ExperimentTestChancePercent` +1 |
+| 10 | 1 | Efficient Analysis I | trait | Analyze cuts 5.3% of the job's time per piece of spare evidence instead of 5%. The 25% cap stays. | `ExperimentTimeCutPerEvidenceTenths` +3 |
+| 15 | 2 | Field Notes II | trait | Every Test has 2 more points of chance in total (replaces Field Notes I's 1). | `ExperimentTestChancePercent` +2 |
+| 20 | 2 | Methodical | style (exclusive with Intuitive) | 1 more trial and every Test has 15 fewer points of chance. | `ExperimentTrials` +1, `ExperimentTestChancePercent` -15 |
+| 20 | 2 | Intuitive | style (exclusive with Methodical) | Every Test has 4 more points of chance and the experiment has 1 fewer trial. | `ExperimentTestChancePercent` +4, `ExperimentTrials` -1 |
 | 25 | 3 | Broader Hypotheses | trait | The experiment has 1 more trial (6 becomes 7). | `ExperimentTrials` +1 |
-| 30 | 3 | Efficient Analysis II | trait | Analyze cuts 7% per piece of spare evidence (replaces Efficient Analysis I's 6%). The cap stays, so four pieces reach it. | `ExperimentTimeCutPerEvidencePercent` +2 |
+| 30 | 3 | Efficient Analysis II | trait | Analyze cuts 5.5% per piece of spare evidence (replaces Efficient Analysis I's 5.3%). The cap stays. | `ExperimentTimeCutPerEvidenceTenths` +5 |
 | 35 | 3 | Steady Hands | trait | Refine Method costs 5 less CP (30 becomes 25), to a minimum of 1. | `ExperimentRefineCpReduction` +5 |
 | 40 | 3 | Peer Review | active | Where evidence decides between a credit and a time reduction: once per experiment, for 25 CP and no trial, move half of one candidate's evidence (rounded up) to the other. Two actions, credit to time and time to credit. | `ExperimentPeerReviewUnlocked` (flag) |
 | 45 | 3 | Second Opinion | trait | Refine Method raises the next Test by 20 points instead of 15. | `ExperimentRefineChancePercent` +5 |
-| 50 | 4 | Breakthrough | capstone, active | A free action, once per experiment, no trial: the next Test succeeds, and for the rest of the experiment each piece of spare evidence cuts twice as much of the job's time, still inside the 25% cap. No extra bonuses. | `ExperimentBreakthroughUnlocked` (flag) |
+| 50 | 4 | Breakthrough | capstone, active | A free action, once per experiment, no trial: the next Test succeeds. No extra bonuses. | `ExperimentBreakthroughUnlocked` (flag) |
 
 SP check: 1 + 1 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 4 = 25. Only one of the two rank-20 perks can be bought.
 

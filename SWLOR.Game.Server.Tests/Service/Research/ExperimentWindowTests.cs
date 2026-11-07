@@ -107,11 +107,18 @@ public class ExperimentWindowTests
     }
 
     [Test]
-    public void TheResearchWindowOpensEachExperimentWithTheTrialsTheResearchersPerksGive()
+    public void TheResearchWindowOpensEachExperimentWithTheTrialsTheResearchersPerksAndCraftsmanshipGive()
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
 
         source.Should().Contain("ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials");
+        source.Should().Contain("ExperimentSetup.TrialsFromCraftsmanship(Stat.CalculateCraftsmanship(Player, SkillType.Fabrication))");
+
+        var experiment = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchExperimentViewModel.cs");
+        experiment.Should().Contain("Stat.CalculateControl(Player, SkillType.Fabrication)", "Control raises every Test's chance");
+        experiment.Should().Contain(
+            "job.Experiment.TrialsTotal - ExperimentSetup.TrialsFromCraftsmanship(craftsmanship)",
+            "the saved trials already hold the Craftsmanship trials, so the perk summary must not count them");
         source.Should().Contain("targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant");
         source.Should().NotContain("ExperimentRules.Trials, researchJob.TimeCost");
     }

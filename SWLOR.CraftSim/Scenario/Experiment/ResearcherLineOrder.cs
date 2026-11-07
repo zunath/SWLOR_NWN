@@ -73,10 +73,10 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// The numbers the Experiment reads for a researcher of this rank with this style and the shared purchases in this order,
         /// as <see cref="ExperimentTuning.FromStatTotals"/> would from the perk definitions' effects.
         /// </summary>
-        public static ExperimentTuning TuningAt(Arrangement arrangement, bool methodical, int rank, int fieldNotesPoints = 10)
+        public static ExperimentTuning TuningAt(Arrangement arrangement, bool methodical, int rank, int fieldNotesPoints = 1)
         {
-            var trials = methodical ? 2 : -1;
-            var chance = methodical ? -15 : 20;
+            var trials = methodical ? 1 : -1;
+            var chance = methodical ? -15 : 4;
             var refineChance = 0;
             var refineCpReduction = 0;
             var timeCut = 0;
@@ -96,7 +96,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                         break;
                     case PerkType.EfficientAnalysis:
                         analysis++;
-                        timeCut = analysis == 1 ? 1 : 2;
+                        timeCut = analysis == 1 ? 3 : 5;
                         break;
                     case PerkType.BroaderHypotheses:
                         trials++;
@@ -118,7 +118,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 chance,
                 ExperimentRules.RefineChanceBonusPercent + refineChance,
                 Math.Max(ExperimentRules.MinimumRefineCp, ExperimentRules.RefineCp - refineCpReduction),
-                ExperimentRules.TimeCutPercentPerEvidence + timeCut,
+                ExperimentRules.TimeCutTenthsPerEvidence + timeCut,
                 ExperimentRules.TimeCutCapPercent,
                 peerReview,
                 rank >= 50);
@@ -180,7 +180,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         }
 
         public static IReadOnlyList<Result> Search(
-            ResearcherPerkStudyOptions options, IReadOnlyList<Arrangement> arrangements = null, int fieldNotesPoints = 10)
+            ResearcherPerkStudyOptions options, IReadOnlyList<Arrangement> arrangements = null, int fieldNotesPoints = 1)
         {
             var gear = options.Gear ?? throw new ArgumentException("The search needs gear levels.", nameof(options));
             arrangements ??= Candidates(Rule.EveryPurchase);
@@ -216,7 +216,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine();
             text.AppendLine("## Inputs");
             text.AppendLine();
-            text.AppendLine($"- Seed {options.Seed}; {options.Runs} experiments per case and build, every build on the same dice, as `researcher-perks`. The styles are Methodical +2 trials and -15 points, Intuitive -1 trial and +20 points; the effects of the shared purchases are the perk definitions' (Steady Hands -5 CP, Second Opinion +5, Peer Review, Efficient Analysis +1 then +2 points of time cut per evidence, Broader Hypotheses +1 trial, Field Notes as each setting says), and Breakthrough is the capstone at 50. Prices stay with the ranks.");
+            text.AppendLine($"- Seed {options.Seed}; {options.Runs} experiments per case and build, every build on the same dice, as `researcher-perks`. The styles are Methodical +1 trial and -15 points, Intuitive -1 trial and +4 points; the effects of the shared purchases are the perk definitions' (Steady Hands -5 CP, Second Opinion +5, Peer Review, Efficient Analysis +0.3 then +0.5 points of time cut per evidence, Broader Hypotheses +1 trial, Field Notes as each setting says), and Breakthrough is the capstone at 50. Prices stay with the ranks.");
             text.AppendLine($"- A purchase that spends CP does nothing for a researcher whose gear gives no CP until their rank alone pays for it (CP is {ExperimentRules.CpPerRank} a rank): Steady Hands needs {ExperimentRules.RefineCp - 5} CP, Second Opinion the CP of a Refine Method ({ExperimentRules.RefineCp}, or {ExperimentRules.RefineCp - 5} with Steady Hands owned) and Peer Review {ExperimentRules.PeerReviewCp}. \"Second Opinion affordable\" requires only that one; \"every CP purchase affordable\" requires all three, which puts them at ranks 35, 40 and 45 and the five purchases that work without CP (Field Notes twice, Efficient Analysis twice, Broader Hypotheses) at 5, 10, 15, 25 and 30 in some order.");
             text.AppendLine("- \"Failed\" counts the six comparisons (two level kinds by three gear levels) of the styles on the whole line outside the style-balance gate's thresholds; the gaps are the mean score gap over the level kind (positive favors Methodical). A passing order fails none.");
             text.AppendLine();

@@ -33,7 +33,7 @@ public static class ExperimentDisplay
         foreach (var outcome in preview.Outcomes)
         {
             var result = preview.Action.Id == ExperimentActionIds.Breakthrough
-                ? "your next Test succeeds, and Analyze cuts more time per piece of evidence"
+                ? "your next Test succeeds"
                 : DescribeOutcome(outcome);
             lines.Add(single ? result : $"{outcome.ChancePercent}% {outcome.Label}: {result}");
             tooltip.Append(single ? "\nResult: " : $"\n{outcome.ChancePercent}% {outcome.Label}: ").Append(result).Append('.');
@@ -118,8 +118,8 @@ public static class ExperimentDisplay
             parts.Add($"Refine Method costs {tuning.RefineCp} CP");
         if (tuning.RefineChanceBonus != ExperimentRules.RefineChanceBonusPercent)
             parts.Add($"Refine Method adds {tuning.RefineChanceBonus} points");
-        if (tuning.TimeCutPerEvidence != ExperimentRules.TimeCutPercentPerEvidence)
-            parts.Add($"Analyze cuts {tuning.TimeCutPerEvidence}% per evidence");
+        if (tuning.TimeCutTenthsPerEvidence != ExperimentRules.TimeCutTenthsPerEvidence)
+            parts.Add($"Analyze cuts {Tenths(tuning.TimeCutTenthsPerEvidence)}% per evidence");
         if (tuning.PeerReview)
             parts.Add("Peer Review");
         if (tuning.Breakthrough)
@@ -130,6 +130,12 @@ public static class ExperimentDisplay
 
     public static string MeterText(string label, MinigameMeter meter) =>
         meter.Max > 0 ? $"{label}: {meter.Value}/{meter.Max}" : $"{label}: {meter.Value}";
+
+    /// <summary>Tenths of a percent as a percent, with one decimal only when it is not whole: 50 is "5", 57 is "5.7".</summary>
+    public static string Tenths(int tenths) =>
+        tenths % 10 == 0
+            ? (tenths / 10).ToString(CultureInfo.InvariantCulture)
+            : (tenths / 10.0).ToString("0.0", CultureInfo.InvariantCulture);
 
     public static string Signed(int value) =>
         value > 0 ? "+" + value.ToString(CultureInfo.InvariantCulture) : value.ToString(CultureInfo.InvariantCulture);

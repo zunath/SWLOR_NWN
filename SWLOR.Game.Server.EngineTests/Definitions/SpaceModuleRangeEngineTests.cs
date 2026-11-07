@@ -35,12 +35,62 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 status = await ActivateAsync(ctx, player, "hull_rep_1", enemy);
                 ctx.Assert(status.Hull > StartingPoints, $"the hull repairer restores the player's hull ({status.Hull})");
 
-                // Pulses around the player's ship never read the selected target.
-                foreach (var pulse in new[] { "repairfield", "bulwarkgen", "cap_ewar" })
+                // Pulses and the laser battery act around the player's ship and never read the selected target.
+                foreach (var pulse in new[] { "repairfield", "bulwarkgen", "cap_ewar", "lasbattery1" })
                 {
                     status = await ActivateAsync(ctx, player, pulse, enemy);
                     ctx.Assert(RecastStarted(status), $"{pulse} starts its recast");
                 }
+            }
+            finally
+            {
+                RemoveShip(player);
+            }
+        }
+
+        [EngineTest("Asteroid target falls back to the player's own ship for modules that can act on it", Category = "SpaceModuleRange", TimeoutSeconds = 60f)]
+        public static async Task AsteroidTarget_FallsBackToOwnShip(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            var asteroid = CreateObject(ObjectType.Placeable, "spc_asteroid", ctx.GetArenaLocation(4f, 0f));
+            ctx.Assert(GetIsObjectValid(asteroid), "an asteroid exists");
+            ctx.Track(asteroid);
+
+            try
+            {
+                var capsule = await GiveFuelCapsuleAsync(ctx, player);
+                var status = await ActivateAsync(ctx, player, "cap_inject1", asteroid);
+                ctx.Assert(status.Capacitor > StartingCapacitor, $"the injector restores the player's capacitor ({status.Capacitor})");
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(capsule), 5f, "the injector to consume its fuel capsule");
+
+                status = await ActivateAsync(ctx, player, "shld_rep_1", asteroid);
+                ctx.Assert(status.Shield > StartingPoints, $"the shield repairer restores the player's shield ({status.Shield})");
+
+                status = await ActivateAsync(ctx, player, "hull_rep_1", asteroid);
+                ctx.Assert(status.Hull > StartingPoints, $"the hull repairer restores the player's hull ({status.Hull})");
+
+                status = await ActivateAsync(ctx, player, "lasbattery1", asteroid);
+                ctx.Assert(RecastStarted(status), "the laser battery starts its recast");
+
+                // Targeted weapons still need a ship to fire at.
+                status = await ActivateAsync(ctx, player, "turbolas1", asteroid);
+                AssertRefused(ctx, status, "the turbolaser on an asteroid");
+            }
+            finally
+            {
+                RemoveShip(player);
+            }
+        }
+
+        [EngineTest("Turbolaser with nothing selected is refused without spending anything", Category = "SpaceModuleRange", TimeoutSeconds = 60f)]
+        public static async Task Turbolaser_NoTarget_IsRefused(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+
+            try
+            {
+                var status = await ActivateAsync(ctx, player, "turbolas1", OBJECT_INVALID);
+                AssertRefused(ctx, status, "the turbolaser with no target");
             }
             finally
             {
@@ -73,12 +123,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 status = await ActivateAsync(ctx, player, "hull_rep_1", friend);
                 AssertRefused(ctx, status, "the hull repairer on a far friend");
 
-                // Self-capable weapons still need their selected target in range.
+                // Targeted weapons still need their selected target in range.
                 status = await ActivateAsync(ctx, player, "turbolas1", enemy);
                 AssertRefused(ctx, status, "the turbolaser on a far enemy");
-
-                status = await ActivateAsync(ctx, player, "lasbattery1", enemy);
-                AssertRefused(ctx, status, "the laser battery on a far enemy");
             }
             finally
             {

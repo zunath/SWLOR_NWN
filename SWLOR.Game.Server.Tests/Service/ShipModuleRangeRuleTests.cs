@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -18,14 +19,11 @@ public class ShipModuleRangeRuleTests
         [ShipModuleType.ShieldRepairer] = ShipModuleRangeRule.NonEnemyTarget,
         [ShipModuleType.HullRepairer] = ShipModuleRangeRule.NonEnemyTarget,
 
-        // Support pulses around the user's ship never read the selected target.
+        // Pulses around the user's ship never read the selected target.
         [ShipModuleType.RepairFieldGenerator] = ShipModuleRangeRule.NoTarget,
         [ShipModuleType.BulwarkShieldGenerator] = ShipModuleRangeRule.NoTarget,
         [ShipModuleType.CapitalEwar] = ShipModuleRangeRule.NoTarget,
-
-        // Weapons keep the firing rule they had: the selected target must be in range.
-        [ShipModuleType.TurboLaser] = ShipModuleRangeRule.AnyTarget,
-        [ShipModuleType.LaserBattery] = ShipModuleRangeRule.AnyTarget,
+        [ShipModuleType.LaserBattery] = ShipModuleRangeRule.NoTarget,
     };
 
     private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(Space).Assembly.GetTypes()
@@ -42,6 +40,23 @@ public class ShipModuleRangeRuleTests
     public void RequiresTargetInRange_FollowsTheRule(ShipModuleRangeRule rule, bool targetIsEnemy, bool expected)
     {
         new ShipModuleDetail { RangeRule = rule }.RequiresTargetInRange(targetIsEnemy).Should().Be(expected);
+    }
+
+    [TestCase(ShipModuleRangeRule.AnyTarget, false)]
+    [TestCase(ShipModuleRangeRule.NonEnemyTarget, true)]
+    [TestCase(ShipModuleRangeRule.NoTarget, true)]
+    public void FallsBackToOwnShip_FollowsTheRule(ShipModuleRangeRule rule, bool expected)
+    {
+        new ShipModuleDetail { RangeRule = rule }.FallsBackToOwnShip.Should().Be(expected);
+    }
+
+    [Test]
+    public void TargetedWeapons_CannotFireWithoutATarget()
+    {
+        // Turbolaser damage reads the target's ship, so it must never activate with nothing selected.
+        AllModules().Where(module => module.Type == ShipModuleType.TurboLaser)
+            .Should().NotBeEmpty()
+            .And.OnlyContain(module => !module.CanTargetSelf && module.ValidTargetTypes.Contains(ObjectType.Creature));
     }
 
     [Test]

@@ -56,5 +56,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 _ => true,
             };
         }
+
+        /// <summary>
+        /// Whether a selected target the module cannot act on, such as an asteroid or a creature without a ship,
+        /// is treated as no target so the module acts on or around the user's own ship instead of being refused.
+        /// </summary>
+        public bool FallsBackToOwnShip => RangeRule != ShipModuleRangeRule.AnyTarget;
     }
 }

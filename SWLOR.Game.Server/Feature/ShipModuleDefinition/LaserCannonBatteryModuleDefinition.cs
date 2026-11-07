@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Capacitor(15)
             .CapitalClassModule()
             .CanTargetSelf()
+            .IgnoresSelectedTarget()
             .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
             {
                 var attackBonus = activatorShipStatus.ThermalDamage;

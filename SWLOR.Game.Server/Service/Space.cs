@@ -1331,6 +1331,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             var (target, targetShipStatus) = GetCurrentTarget(activator);
+            // Modules that act on their user's own ship treat a target they cannot act on as no target.
+            if (shipModuleDetails.FallsBackToOwnShip &&
+                GetIsObjectValid(target) &&
+                (targetShipStatus == null ||
+                 shipModuleDetails.ValidTargetTypes.Count > 0 && !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target))))
+            {
+                target = OBJECT_INVALID;
+                targetShipStatus = null;
+            }
+
             // Check for valid object type if the ship module requires it.
             if (shipModuleDetails.ValidTargetTypes.Count > 0 &&
                 !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)) &&

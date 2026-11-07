@@ -47,8 +47,9 @@ clipping checks and dependent robe/part-skin regeneration.
   are not moved: SWLOR binds dyes to the material named by the armor part number, so 2 sends them to
   a model the engine never draws. Moving 2 to 1 or 0 would recolor the pelvis (cloth dye on the
   underwear), the female human chest and droid parts (metal dye on chrome); moving to 1 would also
-  undye body part 2 on human necks, hands and feet. The editor shows such a slot with no part selected until the player picks
-  one. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
+  undye body part 2 on human necks, hands and feet. The editor accepts a saved 2 on these slots
+  (`ArmorAppearanceCatalog.AcceptsSavedStyle`) and shows it as style 1, which it looks like; the item
+  keeps 2 until the player picks a part. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

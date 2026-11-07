@@ -40,19 +40,22 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
+        private readonly ITemporaryStatModifierService _temporaryStatModifier;
 
         public CombatResourcesService(
             ICombatQueriesService queries,
             IAbilityService ability,
             IStatService stat,
             IStatusEffectService statusEffect,
-            ICombatRecorderService combatRecorder)
+            ICombatRecorderService combatRecorder,
+            ITemporaryStatModifierService temporaryStatModifier)
         {
             _queries = queries;
             _ability = ability;
             _stat = stat;
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
+            _temporaryStatModifier = temporaryStatModifier;
         }
 
         public IDisposable BeginDamageDerivedHealing(uint creature, uint target)
@@ -506,13 +509,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (skillType == SkillType.Invalid)
                 return 0;
 
-            var storedSkillType = GetSkillTypeFromStat(GetTemporaryStatAdjustment(
+            var storedSkillType = GetSkillTypeFromStat(_temporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAbilityFPCostAdjustmentSkillType,
                 StatType.NextAbilityFPCostAdjustmentSkillType));
 
             return storedSkillType == skillType
-                ? GetTemporaryStatAdjustment(
+                ? _temporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.NextAbilityFPCostAdjustment,
                     StatType.NextAbilityFPCostAdjustmentSkillType)
@@ -525,11 +528,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (adjustment == 0)
                 return 0;
 
-            ConsumeTemporaryStatModifier(
+            _temporaryStatModifier.Consume(
                 creature,
                 StatType.NextAbilityFPCostAdjustment,
                 StatType.NextAbilityFPCostAdjustmentSkillType);
-            ConsumeTemporaryStatModifier(
+            _temporaryStatModifier.Consume(
                 creature,
                 StatType.NextAbilityFPCostAdjustmentSkillType,
                 StatType.NextAbilityFPCostAdjustmentSkillType);
@@ -586,7 +589,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (haste == 0 || duration <= 0)
                 return;
 
-            ReplaceTemporaryStatModifier(
+            _temporaryStatModifier.Replace(
                 activator,
                 StatType.AttackDelayReductionPercent,
                 haste,
@@ -657,14 +660,5 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _abilityStaminaCosts.Remove(key);
             }
         }
-        // TemporaryStatModifier is not converted yet; a test subclass answers these.
-        protected virtual int GetTemporaryStatAdjustment(uint creature, StatType statType, StatType groupStatType) =>
-            TemporaryStatModifier.GetStatAdjustment(creature, statType, groupStatType);
-
-        protected virtual int ConsumeTemporaryStatModifier(uint creature, StatType statType, StatType groupStatType) =>
-            TemporaryStatModifier.Consume(creature, statType, groupStatType);
-
-        protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
-            TemporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
     }
 }

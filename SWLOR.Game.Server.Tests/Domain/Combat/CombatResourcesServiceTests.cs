@@ -15,16 +15,14 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
-using TemporaryStatModifier = SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
 /// The FP, stamina and healing bookkeeping of <c>Combat</c>: stat trigger cooldowns, damage-derived healing and its
 /// per-hit and per-window caps, the stamina a hostile ability paid and what its hits may refund, and the riders that
-/// restored FP or stamina grant. The engine and the object plugin are recording fakes, the clock is held still, the
-/// converted services are scripted proxies over tables the test fills, and the not-yet-converted temporary stat modifiers
-/// are answered by a test subclass.
+/// restored FP or stamina grant. The engine and the object plugin are recording fakes, the clock is held still, and the
+/// converted services, the temporary stat modifiers included, are scripted proxies over tables the test fills.
 /// </summary>
 [TestFixture]
 public class CombatResourcesServiceTests
@@ -36,7 +34,9 @@ public class CombatResourcesServiceTests
     private readonly List<IDisposable> _scopes = new();
     private FakeNWScript _engine = null!;
     private FakeObjectPlugin _objects = null!;
-    private TestResources _service = null!;
+    private CombatResourcesService _service = null!;
+    private Dictionary<(uint, StatType, StatType), int> _temporary = null!;
+    private List<string> _temporaryCalls = null!;
     private DateTime _now;
 
     private Dictionary<(uint, StatType), int> _stats = null!;
@@ -54,45 +54,6 @@ public class CombatResourcesServiceTests
     private ScriptedProxy _statusCalls = null!;
     private ScriptedProxy _recorderCalls = null!;
     private ScriptedProxy _queryCalls = null!;
-
-    private sealed class TestResources : CombatResourcesService
-    {
-        public TestResources(ICombatQueriesService queries, IAbilityService ability, IStatService stat,
-            IStatusEffectService statusEffect, ICombatRecorderService combatRecorder)
-            : base(queries, ability, stat, statusEffect, combatRecorder)
-        {
-        }
-
-        public Dictionary<(uint, StatType, StatType), int> Temporary { get; } = new();
-        public List<string> TemporaryCalls { get; } = new();
-
-        protected override int GetTemporaryStatAdjustment(uint creature, StatType statType, StatType groupStatType) =>
-            Temporary.GetValueOrDefault((creature, statType, groupStatType));
-
-        protected override int ConsumeTemporaryStatModifier(uint creature, StatType statType, StatType groupStatType)
-        {
-            TemporaryCalls.Add($"Consume {creature} {statType} {groupStatType}");
-            Temporary.Remove((creature, statType, groupStatType), out var value);
-            return value;
-        }
-
-        protected override void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
-            TemporaryCalls.Add($"Replace {creature} {statType} {amount} {durationSeconds} {groupStatType}");
-    }
-
-    // The default wrappers call the temporary stat modifiers themselves.
-    private sealed class DefaultResources : CombatResourcesService
-    {
-        public DefaultResources()
-            : base(null!, null!, null!, null!, null!)
-        {
-        }
-
-        public int Get(uint creature, StatType statType, StatType group) => GetTemporaryStatAdjustment(creature, statType, group);
-        public int Consume(uint creature, StatType statType, StatType group) => ConsumeTemporaryStatModifier(creature, statType, group);
-        public void Replace(uint creature, StatType statType, int amount, float seconds, StatType group) =>
-            ReplaceTemporaryStatModifier(creature, statType, amount, seconds, group);
-    }
 
     [SetUp]
     public void SetUp()
@@ -149,7 +110,25 @@ public class CombatResourcesServiceTests
             .On(nameof(ICombatRecorderService.BeginRiderAttribution), _ => default(CombatRecordAttributionScope))
             .On(nameof(ICombatRecorderService.BeginStatTriggerAttribution), _ => default(CombatRecordAttributionScope));
 
-        _service = new TestResources(queries, ability, stat, statusEffect, recorder);
+        _temporary = new();
+        _temporaryCalls = new();
+        var temporary = ScriptedProxy.Create<ITemporaryStatModifierService>(out var temporaryCalls);
+        temporaryCalls
+            .On(nameof(ITemporaryStatModifierService.GetStatAdjustment), args =>
+                _temporary.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!, (StatType)args[2]!)))
+            .On(nameof(ITemporaryStatModifierService.Consume), args =>
+            {
+                _temporaryCalls.Add($"Consume {args[0]} {args[1]} {args[2]}");
+                _temporary.Remove(((uint)args[0]!, (StatType)args[1]!, (StatType)args[2]!), out var value);
+                return value;
+            })
+            .On(nameof(ITemporaryStatModifierService.Replace), args =>
+            {
+                _temporaryCalls.Add($"Replace {args[0]} {args[1]} {args[2]} {args[3]} {args[4]}");
+                return null;
+            });
+
+        _service = new CombatResourcesService(queries, ability, stat, statusEffect, recorder, temporary);
     }
 
     [TearDown]
@@ -537,17 +516,17 @@ public class CombatResourcesServiceTests
     [Test]
     public void TheNextAbilityFPCostAdjustmentAppliesToItsStoredSkillAndIsConsumedOnce()
     {
-        _service.Temporary[(Creature, StatType.NextAbilityFPCostAdjustmentSkillType, StatType.NextAbilityFPCostAdjustmentSkillType)] = (int)SkillType.Force;
-        _service.Temporary[(Creature, StatType.NextAbilityFPCostAdjustment, StatType.NextAbilityFPCostAdjustmentSkillType)] = -3;
+        _temporary[(Creature, StatType.NextAbilityFPCostAdjustmentSkillType, StatType.NextAbilityFPCostAdjustmentSkillType)] = (int)SkillType.Force;
+        _temporary[(Creature, StatType.NextAbilityFPCostAdjustment, StatType.NextAbilityFPCostAdjustmentSkillType)] = -3;
 
         _service.GetNextAbilityFPCostAdjustment(Creature, SkillType.Invalid).Should().Be(0);
         _service.GetNextAbilityFPCostAdjustment(Creature, SkillType.Rifle).Should().Be(0);
         _service.GetNextAbilityFPCostAdjustment(Creature, SkillType.Force).Should().Be(-3);
         _service.ConsumeNextAbilityFPCostAdjustment(Creature, SkillType.Rifle).Should().Be(0);
-        _service.TemporaryCalls.Should().BeEmpty();
+        _temporaryCalls.Should().BeEmpty();
 
         _service.ConsumeNextAbilityFPCostAdjustment(Creature, SkillType.Force).Should().Be(-3);
-        _service.TemporaryCalls.Should().Equal(
+        _temporaryCalls.Should().Equal(
             $"Consume {Creature} {StatType.NextAbilityFPCostAdjustment} {StatType.NextAbilityFPCostAdjustmentSkillType}",
             $"Consume {Creature} {StatType.NextAbilityFPCostAdjustmentSkillType} {StatType.NextAbilityFPCostAdjustmentSkillType}");
         _service.GetNextAbilityFPCostAdjustment(Creature, SkillType.Force).Should().Be(0);
@@ -561,7 +540,7 @@ public class CombatResourcesServiceTests
         _service.ApplyAbilityRestoredFPEffects(Creature);
         _service.ApplyAbilityRestoredBothResourcesEffects(Creature);
         _statusCalls.Calls.Should().BeEmpty();
-        _service.TemporaryCalls.Should().BeEmpty();
+        _temporaryCalls.Should().BeEmpty();
 
         Stat(StatType.RestoredFPForceAttackPercentAdjustment, 5);
         Stat(StatType.RestoredFPForceAttackDurationSeconds, 4);
@@ -576,7 +555,7 @@ public class CombatResourcesServiceTests
         _statusCalls.Calls.Select(call => call.Arguments[2]!.GetType()).Should().Equal(
             typeof(ForceLensForceAttackStatusEffect), typeof(ForceLensAttackStatusEffect));
         _statusCalls.Calls.Select(call => call.Arguments[3]).Should().Equal(4f, 3f);
-        _service.TemporaryCalls.Should().Equal(
+        _temporaryCalls.Should().Equal(
             $"Replace {Creature} {StatType.AttackDelayReductionPercent} 10 8 {StatType.AbilityRestoredBothResourcesHastePercentAdjustment}");
     }
 
@@ -621,29 +600,5 @@ public class CombatResourcesServiceTests
 
         _service.GetHighResourceStatAdjustment(Creature, StatType.DamageTakenPercentAdjustment, StatType.SideAttackSkillType, null!)
             .Should().Be(4, "FP and stamina are above 50% but not 90%");
-    }
-
-    [Test]
-    public void TheDefaultTemporaryStatWrappersCallTheTemporaryStatModifiers()
-    {
-        const uint creature = 0xFFFF0001;
-        using var facades = new FacadeContainer();
-        using var installed = facades.Install();
-        var resources = new DefaultResources();
-        try
-        {
-            resources.Replace(creature, StatType.AttackDelayReductionPercent, 10, 30f, StatType.AbilityRestoredBothResourcesHastePercentAdjustment);
-            resources.Get(creature, StatType.AttackDelayReductionPercent, StatType.AbilityRestoredBothResourcesHastePercentAdjustment)
-                .Should().Be(TemporaryStatModifier.GetStatAdjustment(creature, StatType.AttackDelayReductionPercent,
-                    StatType.AbilityRestoredBothResourcesHastePercentAdjustment)).And.Be(10);
-            resources.Consume(creature, StatType.AttackDelayReductionPercent, StatType.AbilityRestoredBothResourcesHastePercentAdjustment)
-                .Should().Be(10);
-            resources.Get(creature, StatType.AttackDelayReductionPercent, StatType.AbilityRestoredBothResourcesHastePercentAdjustment)
-                .Should().Be(0);
-        }
-        finally
-        {
-            TemporaryStatModifier.Clear(creature);
-        }
     }
 }

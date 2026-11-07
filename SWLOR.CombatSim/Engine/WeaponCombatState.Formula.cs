@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Data;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -69,7 +70,7 @@ public sealed partial class WeaponCombatState
         if (critical <= 0 || damage <= 0) return damage;
         var adjustment = Stat(StatType.CriticalDamageTargetStatusPercentAdjustment);
         if (adjustment == 0 || !HasCategory(target, (StatusEffectCategory)Stat(StatType.CriticalDamageTargetStatusCategory), now)) return damage;
-        adjustment = Combat.ClampCriticalDamagePercentAdjustment(adjustment);
+        adjustment = CombatRules.ClampCriticalDamagePercentAdjustment(adjustment);
         Count("TargetStatusCriticalBonuses");
         return damage + damage * adjustment / 100;
     }
@@ -109,18 +110,18 @@ public sealed partial class WeaponCombatState
         var lowHp = Stat(StatType.TargetLowHPDamagePercentAdjustment);
         if (threshold > 0 && lowHp != 0)
         {
-            var adjusted = Combat.ApplyTargetHPDamageAdjustment(damage, (int)(target.Hp + target.TemporaryHpTotal), (int)target.Spec.MaxHp, threshold, lowHp);
+            var adjusted = CombatRules.ApplyTargetHPDamageAdjustment(damage, (int)(target.Hp + target.TemporaryHpTotal), (int)target.Spec.MaxHp, threshold, lowHp);
             if (adjusted != damage) Count("LowHpTargetBonuses");
             damage = adjusted;
         }
         var control = Stat(StatType.DamageToControlTargetPercentAdjustment);
         if (control != 0 && HasCategory(target, StatusEffectCategory.Control, now))
         {
-            damage = Combat.ApplyPercentDamageAdjustment(damage, control);
+            damage = CombatRules.ApplyPercentDamageAdjustment(damage, control);
             Count("ControlledTargetBonuses");
         }
         var flat = ordinary ? RepeatedTargetBonus(target) : 0;
-        return Combat.CapOutgoingDamageBonus(before, damage, flat);
+        return CombatRules.CapOutgoingDamageBonus(before, damage, flat);
     }
 
     // Combat.ApplyMeleeRepeatedTargetDamageModifier: landed ordinary attacks on one target build stacks; a new target restarts them.

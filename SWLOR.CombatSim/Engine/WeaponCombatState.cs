@@ -1,6 +1,7 @@
 using System.Reflection;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -296,13 +297,13 @@ public sealed partial class WeaponCombatState
     public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + AreaHaste(now) + _owner.Spec.WeaponCombat.ExternalHastePercent +
         (_owner.Spec.WeaponCombat.PairedHands ? Stat(StatType.DualWieldAttackDelayReductionPercent) : 0) +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish ? LineStat(WindowLine, StatType.TechniqueFinishFinisherHastePercent) : 0);
-    public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(_owner.Spec.WeaponCombat.AttackDelayMilliseconds(HastePercent(now))) / 1000d;
+    public double AttackSeconds(double now) => CombatRules.CalculateEffectiveAttackDelay(_owner.Spec.WeaponCombat.AttackDelayMilliseconds(HastePercent(now))) / 1000d;
     /// <summary>Weapon rolls per attack cycle: both hands for Power Gloves, as the server's dual-wield cycle resolves.</summary>
     public int RollsPerCycle => _owner.Spec.WeaponCombat.PairedHands ? 2 : 1;
-    public double SwingSeconds(double now) => Combat.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
+    public double SwingSeconds(double now) => CombatRules.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
     public int TakeSwingAttacks(double now)
     {
-        var attacks = Combat.CalculateAttacksPerSwing((int)Math.Round(AttackSeconds(now)*1000), _attackDebt, out var debt);
+        var attacks = CombatRules.CalculateAttacksPerSwing((int)Math.Round(AttackSeconds(now)*1000), _attackDebt, out var debt);
         _attackDebt = debt;
         Count("SwingAnimations");
         Count("BatchedExtraAttacks", attacks-1);

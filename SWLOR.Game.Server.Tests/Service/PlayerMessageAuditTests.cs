@@ -49,7 +49,7 @@ public class PlayerMessageAuditTests
     public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Domain/Character/StatusEffectService.cs",
+        var files = new[] { "Service/Space.cs", "Domain/Abilities/AbilityService.cs", "Domain/Character/StatusEffectService.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Service/QuestService/QuestObjectives.cs", "Service/QuestService/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
@@ -79,15 +79,16 @@ public class PlayerMessageAuditTests
     [TestCase("ApplyStatusAppliedTargetStaminaDrain", 1)]
     public void CombatOutcomesAndReadiness_RetainTheirProductionMessages(string member, int expectedMessages)
     {
+        // A call outside any method (a field initializer, a facade's instance property) belongs to no member.
         var messages = CombatSource.Nodes<InvocationExpressionSyntax>().Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
-                .First().Identifier.ValueText == member &&
+                .FirstOrDefault()?.Identifier.ValueText == member &&
             MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
             .ToArray();
         messages.Should().HaveCount(expectedMessages, "optional detail must not replace the actual combat outcome or readiness notice");
         messages.Should().NotContain(call => UsesDiagnostics(call));
     }
 
-    [TestCase("Service/Ability.cs", "SendCombatImpactNoTargetsMessage")]
+    [TestCase("Domain/Abilities/AbilityService.cs", "SendCombatImpactNoTargetsMessage")]
     [TestCase("Feature/AbilityDefinition/Force/ThrowLightsaberAbilityDefinition.cs", "ApplyThrowLightsaber")]
     public void NoTargetOutcomes_ReachTheActorAndNearbyObservers(string relative, string member)
     {
@@ -97,7 +98,7 @@ public class PlayerMessageAuditTests
         messages.Should().ContainSingle();
         var message = messages.Single();
         message.ArgumentList.Arguments[0].ToString().Should().Be("activator");
-        message.ArgumentList.Arguments[1].ToString().Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        message.ArgumentList.Arguments[1].ToString().Should().Contain("BuildAbilityNoTargetCombatLogMessage");
         message.ArgumentList.Arguments[2].ToString().Should().Be("60f");
         UsesDiagnostics(message).Should().BeFalse();
     }

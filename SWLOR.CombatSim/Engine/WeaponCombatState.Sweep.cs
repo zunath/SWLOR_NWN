@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 
@@ -62,7 +63,7 @@ public sealed partial class WeaponCombatState
     public double RestoreHitStamina(TechniqueActivation activation, int requested, string diagnostic, bool retainMinimumCost = true)
     {
         var refund = retainMinimumCost
-            ? Combat.CalculateAbilityHitStaminaRestore(activation.PaidStamina, activation.HitStaminaRefunded, requested)
+            ? CombatRules.CalculateAbilityHitStaminaRestore(activation.PaidStamina, activation.HitStaminaRefunded, requested)
             : Math.Clamp(requested, 0, Math.Max(0, activation.PaidStamina - activation.HitStaminaRefunded));
         activation.HitStaminaRefunded += refund;
         var restored = Math.Min(_owner.Spec.MaxStm - _owner.Stm, refund);

@@ -129,7 +129,7 @@ public class StatusEffectDeliveryTests
     {
         var root = FindRepositoryRoot();
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
 
         statusEffectSource.Should().NotContain("ApplyActiveForceAffinityDurationAdjustment");
         abilitySource.Should().NotContain("ApplyActiveForceAffinityDurationAdjustment");

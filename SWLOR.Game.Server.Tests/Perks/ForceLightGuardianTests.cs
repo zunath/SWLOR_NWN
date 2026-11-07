@@ -207,13 +207,13 @@ public class ForceLightGuardianTests
         var weaponProcessDamage = weaponDamage.Substring(
             weaponProcessDamageStart,
             weaponAddDamageStart - weaponProcessDamageStart);
-        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
         var abilityPreDamageNotification = abilityDamage.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         abilityPreDamageNotification.Should().BeGreaterThan(-1);
         var abilityPostDamageNotification = abilityDamage.IndexOf(
-            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         var immediateDamageApplication = abilityDamage.IndexOf(
             "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
@@ -238,13 +238,13 @@ public class ForceLightGuardianTests
             queuedDamageFlushStart,
             pendingDamageEffectStart - queuedDamageFlushStart);
         var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(",
+            "_statusEffect.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         var queuedDamageApplication = queuedDamageFlush.IndexOf(
             "EffectDamage(effect.Damage, effect.DamageType)",
             StringComparison.Ordinal);
         var queuedReflection = queuedDamageFlush.IndexOf(
-            "Combat.ApplyDamageReflectionEffects(",
+            "_service.ApplyDamageReflectionEffects(",
             StringComparison.Ordinal);
         queuedPreDamageNotification.Should().BeGreaterThan(-1);
         queuedPreDamageNotification.Should().BeLessThan(

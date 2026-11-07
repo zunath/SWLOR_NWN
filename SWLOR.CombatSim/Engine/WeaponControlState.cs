@@ -7,7 +7,7 @@ namespace SWLOR.CombatSim.Engine;
 
 public sealed class WeaponControlState
 {
-    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(Ability)
+    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(SWLOR.Game.Server.Domain.Abilities.AbilityService)
         .GetField("TemporaryImmunityBaseDurationSeconds", BindingFlags.NonPublic | BindingFlags.Static)?.GetRawConstantValue()
         ?? throw new InvalidDataException("Cannot read the production post-control immunity duration."));
 

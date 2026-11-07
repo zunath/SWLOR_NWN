@@ -384,11 +384,11 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var characterSheet = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
         var ability = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
         var combat = CombatSource.Read();
 
         characterSheet.Should().Contain("Assault Gadget Crit");
-        ability.Split("Combat.SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
+        ability.Split("                SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
             "player and NPC-scaled ability criticals both need visible combat feedback");
         combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
         combat.Should().Contain("critically hits");

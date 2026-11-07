@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
 
             // Abilities
+            services.AddSingleton<IAbilityService, AbilityService>();
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<IDeathService, DeathService>();

@@ -12,16 +12,17 @@ public class AbilityLineOfSightTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
+            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
         var helperBody = source.Substring(
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal),
+            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal),
             source.IndexOf("/// <summary>\n        /// Whenever a weapon's OnHit event is fired", StringComparison.Ordinal) -
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal));
+            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal));
 
         validationBody.Should().Contain("!HasAbilityLineOfSight(activator, target)");
         // Denials route through the local Deny helper (which both records the reason for the
@@ -39,12 +40,13 @@ public class AbilityLineOfSightTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
+            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
 
         validationBody.Should().Contain("if (ability.RequiresLocationTarget)");
         validationBody.Should().Contain("GetAreaFromLocation(targetLocation)");
@@ -98,21 +100,22 @@ public class AbilityLineOfSightTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
+            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
+            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
         var areaValidationBody = source.Substring(
-            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal),
-            source.IndexOf("private static bool TryGetCombatImpactShape", StringComparison.Ordinal) -
-            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal));
+            source.IndexOf("private string ValidateHostileAreaLineOfSight", StringComparison.Ordinal),
+            source.IndexOf("private bool TryGetCombatImpactShape", StringComparison.Ordinal) -
+            source.IndexOf("private string ValidateHostileAreaLineOfSight", StringComparison.Ordinal));
 
         var areaValidationIndex = validationBody.IndexOf(
             "ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability)",
             StringComparison.Ordinal);
-        var recastIndex = validationBody.IndexOf("Recast.IsOnRecastDelay", StringComparison.Ordinal);
+        var recastIndex = validationBody.IndexOf("_recast.IsOnRecastDelay", StringComparison.Ordinal);
 
         areaValidationIndex.Should().BeGreaterThanOrEqualTo(0);
         recastIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -130,17 +133,18 @@ public class AbilityLineOfSightTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var shapeImpactStartIndex = source.IndexOf("private static int ApplyCombatImpactInShape", StringComparison.Ordinal);
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
+        var shapeImpactStartIndex = source.IndexOf("private int ApplyCombatImpactInShape", StringComparison.Ordinal);
         var shapeImpactBody = source.Substring(
             shapeImpactStartIndex,
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
             shapeImpactStartIndex);
         var telegraphActionBody = source.Substring(
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
-            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
+            source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
 
         shapeImpactBody.Should().Contain(".Where(creature => HasAbilityLineOfSight(activator, creature))");
         telegraphActionBody.Should().Contain("HasAbilityLineOfSight(creator, creature)");

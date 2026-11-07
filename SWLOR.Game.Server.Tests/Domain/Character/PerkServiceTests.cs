@@ -895,6 +895,8 @@ public class PerkServiceTests
         _bench.Service.DefaultAggregateStatAdjustment(StatType.AttackPercentAdjustment, 4, 3).Should().Be(7);
         _bench.Service.DefaultIsDroid(PerkBench.Npc).Should().BeFalse();
         _bench.Service.DefaultDroidControllerItem(PerkBench.DroidCreature).Should().Be(PerkBench.ObjectInvalid);
+        using var facades = new FacadeContainer();
+        using var scope = facades.Install();
         _bench.Service.DefaultAllAbilityDetails().Should().NotBeNull();
     }
 

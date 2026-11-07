@@ -545,6 +545,10 @@ public class CapstoneProofServiceTests
     [Test]
     public void The_ability_table_defaults_go_to_the_ability_service()
     {
+        using var facades = new FacadeContainer();
+        using var scope = facades.Install();
+        AbilityCache.Load();
+
         // The defaults are the original Ability calls. Their answer depends on the shared ability table, so each is
         // compared with the answer of the static service itself.
         var feat = FeatType.QuickDraw1;

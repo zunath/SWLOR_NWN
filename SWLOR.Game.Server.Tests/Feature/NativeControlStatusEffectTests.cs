@@ -150,13 +150,14 @@ public class NativeControlStatusEffectTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
         var methodStart = abilitySource.IndexOf(
-            "private static void ApplyTemporaryImmunitySingle(",
+            "private void ApplyTemporaryImmunitySingle(",
             StringComparison.Ordinal);
         var methodEnd = abilitySource.IndexOf(
-            "public static bool HasTemporaryImmunity(",
+            "public bool HasTemporaryImmunity(",
             methodStart,
             StringComparison.Ordinal);
         methodStart.Should().BeGreaterThanOrEqualTo(0);
@@ -192,9 +193,10 @@ public class NativeControlStatusEffectTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
-        var method = ExtractMethod(abilitySource, "public static void ApplyPostControlImmunity(");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
+        var method = ExtractMethod(abilitySource, "public void ApplyPostControlImmunity(");
 
         method.Should().Contain(
             "TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded)");
@@ -280,7 +282,7 @@ public class NativeControlStatusEffectTests
                 "stacks during its duration or blocks without ever releasing");
         }
 
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"))
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"))
             .Should().Contain("HasActiveHardCrowdControlStatus(target)",
                 "the shared immunity gate must treat an active hard-CC status as immunity");
     }

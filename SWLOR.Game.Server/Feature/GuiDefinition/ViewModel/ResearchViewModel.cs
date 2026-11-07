@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -378,7 +379,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
                     var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
                         targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
-                    var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials;
+                    // The experiment keeps the trials it opens with: the perks' and the ones Craftsmanship adds now.
+                    var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials +
+                                 ExperimentSetup.TrialsFromCraftsmanship(Stat.CalculateCraftsmanship(Player, SkillType.Fabrication));
                     var dbResearchJob = new ResearchJob
                     {
                         ParentPropertyId = _researchTerminalPropertyId,

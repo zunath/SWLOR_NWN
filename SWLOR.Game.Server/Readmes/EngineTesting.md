@@ -717,6 +717,20 @@ do not commit); 4 the script could not run (dirty snapshot folder, `SWLOR_Haks` 
 no base hak set); 5 the compose project is in use. The script is also the way to check that the committed snapshots still
 match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` pointer change.
 
+## Coverage floors
+
+`bash scripts/ci/run-unit-tests.sh --out <dir>` ends with `tools/Refactor/check_coverage.py <dir>/coverage`, which merges the
+Cobertura files (a source line counts once, covered if any project hit it), drops the `excludes` listed in
+`tools/Refactor/CoverageFloors.json` (each with its reason) and compares the `SWLOR.Game.Server` figure and each area with the
+file's floors. Areas: each top-level folder, `Domain/<Domain>`, `Service` (facade files) and `Service/folders`, and every other
+`SWLOR.*` assembly. A drop fails the run; `--no-coverage` or naming projects skips the check. Integration-tier coverage stays
+out of the measure (it needs Docker and Redis and runs in its own job).
+
+- Coverage rose: the check says so; run `python tools/Refactor/check_coverage.py <dir>/coverage --update` and commit the JSON.
+  `--update` only raises floors (whole percents, rounded down). Lowering one is a by-hand edit with the reason in the pull
+  request (code moved to another area, or deleted); never lower a floor to hide missing tests.
+- `--top-files N` lists the files with the most uncovered lines. Tests: `python -B -m unittest tools.tests.test_check_coverage`.
+
 ## CI
 
 `.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on

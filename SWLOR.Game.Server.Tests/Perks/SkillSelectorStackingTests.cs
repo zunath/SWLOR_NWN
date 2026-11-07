@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -20,21 +21,21 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class SkillSelectorStackingTests
 {
-    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
 
     [OneTimeTearDown]
-    public void DisposeFacades() => _facades.Dispose();
+    public void DisposeCombatFacades() => _facades.Dispose();
 
     [SetUp]
-    public void InstallFacades() => _facadeScope = _facades.Install();
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
 
     [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
 
     [Test]
     public void TwoForceAccuracyBuffs_BothApplyToForceAbilitiesAndNothingElse()
@@ -217,7 +218,7 @@ public class SkillSelectorStackingTests
         if (directory == null)
             throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
 
-        return File.ReadAllText(Path.Combine(directory.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        return CombatSource.Read();
     }
 
     private static int Sum(IReadOnlyList<StatAdjustmentSource> sources, SkillType skillType) =>

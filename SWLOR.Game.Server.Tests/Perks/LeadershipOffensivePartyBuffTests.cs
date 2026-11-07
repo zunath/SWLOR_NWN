@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -32,8 +33,7 @@ public class LeadershipOffensivePartyBuffTests
     [TearDown]
     public void RemoveFacades() => _facadeScope.Dispose();
 
-    private static readonly Func<AbilityDetail, int, bool, bool> IsSuccessfulImpact = typeof(Combat)
-        .GetMethod("IsSuccessfulHostileAbilityImpact", BindingFlags.NonPublic | BindingFlags.Static)!
+    private static readonly Func<AbilityDetail, int, bool, bool> IsSuccessfulImpact = CombatMembers.FindMethod("IsSuccessfulHostileAbilityImpact")!
         .CreateDelegate<Func<AbilityDetail, int, bool, bool>>();
 
     [TestCase(SkillType.Leadership)]
@@ -76,11 +76,9 @@ public class LeadershipOffensivePartyBuffTests
     [Test]
     public void SharedCooldown_BlocksOtherSkillsAndReopensAfter45Seconds()
     {
-        var useTrigger = typeof(Combat).GetMethod("TryUseStatTrigger", BindingFlags.NonPublic | BindingFlags.Static,
-                null, new[] { typeof(uint), typeof(StatType), typeof(int) }, null)!
+        var useTrigger = CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!
             .CreateDelegate<Func<uint, StatType, int, bool>>();
-        var cooldowns = (Dictionary<(uint, StatType), DateTime>)typeof(Combat)
-            .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
         var key = (0xFFFFFFFEu, StatType.HostileAbilityPartyBuffDamagePercent);
         var otherKey = (0xFFFFFFFDu, key.Item2);
         cooldowns.Remove(key);
@@ -204,7 +202,7 @@ public class LeadershipOffensivePartyBuffTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var combat = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combat = CombatSource.Read();
         var impact = combat[combat.IndexOf("public static void ApplySuccessfulAbilityImpactRiders(", StringComparison.Ordinal)..];
         impact = impact[..impact.IndexOf("private static void ApplyCostlyAbilityHitEffects(", StringComparison.Ordinal)];
         impact.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);");

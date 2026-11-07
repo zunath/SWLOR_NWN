@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -11,21 +12,21 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryPotencyTests
 {
-    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
 
     [OneTimeTearDown]
-    public void DisposeFacades() => _facades.Dispose();
+    public void DisposeCombatFacades() => _facades.Dispose();
 
     [SetUp]
-    public void InstallFacades() => _facadeScope = _facades.Install();
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
 
     [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
 
     /// <summary>Checks stack replacement, the three-stack cap, and independent expiry of Momentum and Overload.</summary>
     [Test]

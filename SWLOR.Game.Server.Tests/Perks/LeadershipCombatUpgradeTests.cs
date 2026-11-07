@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -120,9 +121,7 @@ public class LeadershipCombatUpgradeTests
         var flash = new FlashStatusEffect(15);
         flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-15);
 
-        var classifier = typeof(Combat).GetMethod(
-            "IsWeaponOrForceAbility",
-            BindingFlags.NonPublic | BindingFlags.Static);
+        var classifier = CombatMembers.FindMethod("IsWeaponOrForceAbility");
 
         classifier.Should().NotBeNull();
         classifier!.Invoke(null, new object[] { SkillType.BeastMastery }).Should().Be(true,
@@ -208,7 +207,7 @@ public class LeadershipCombatUpgradeTests
         temporaryHitPoints.Should().NotContain("Dictionary<(uint Target, string EffectKey)",
             "ownership belongs to the game object and must not leak through process-global tracking");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         combat.Should().Contain("new HostileAbilityPartyBuffStatusEffect(");
         combat.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius)");
         combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -375,7 +374,7 @@ public class LeadershipCombatUpgradeTests
     public void LeadershipPhysicalAndForceReduction_CoversNonDirectDamageWithoutDoubleApplyingDirectDamage()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         var genericStage = combat[combat.IndexOf(
             "public static int ApplyDamageTakenModifiers(",
             StringComparison.Ordinal)..combat.IndexOf(
@@ -625,9 +624,7 @@ public class LeadershipCombatUpgradeTests
         CombatDamageType damageType,
         bool typedLeadershipReductionAlreadyApplied)
     {
-        var method = typeof(Combat).GetMethod(
-            "ApplyDamageTakenPercentageModifiers",
-            BindingFlags.Static | BindingFlags.NonPublic);
+        var method = CombatMembers.FindMethod("ApplyDamageTakenPercentageModifiers");
         method.Should().NotBeNull();
         method!.GetParameters().Select(x => x.Name).Should().Equal(
             "damage",
@@ -658,9 +655,7 @@ public class LeadershipCombatUpgradeTests
         int forceAdjustment,
         int otherAdjustment)
     {
-        var method = typeof(Combat).GetMethod(
-            "ApplyTypedLeadershipDamageTakenPercentageModifier",
-            BindingFlags.Static | BindingFlags.NonPublic);
+        var method = CombatMembers.FindMethod("ApplyTypedLeadershipDamageTakenPercentageModifier");
         method.Should().NotBeNull();
         method!.GetParameters().Select(x => x.Name).Should().Equal(
             "damage",

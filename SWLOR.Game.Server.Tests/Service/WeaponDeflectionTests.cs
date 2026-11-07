@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -86,7 +87,7 @@ public class WeaponDeflectionTests
         source.Should().Contain("Combat.GetDeflectionResultName(source)");
         source.Should().NotContain("private static string GetDeflectionName");
 
-        var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combatSource = CombatSource.Read();
         combatSource.Should().Contain("DeflectionSource.Melee => \"melee deflect\"");
         combatSource.Should().Contain("DeflectionSource.Ranged => \"ranged deflect\"");
         combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
@@ -106,7 +107,7 @@ public class WeaponDeflectionTests
     {
         var statSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
         var statRulesSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatRules.cs");
-        var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combatSource = CombatSource.Read();
         var abilitySource = ReadSource(
             "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
         var forceSupportSource = ReadSource(
@@ -207,7 +208,7 @@ public class WeaponDeflectionTests
     [Test]
     public void DeflectingReturn_ReportsNamedReflectionDamage()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var source = CombatSource.Read();
 
         source.Should().Contain("BuildDeflectingReturnCombatLogMessage");
         source.Should().Contain("'s Deflecting Return reflects {damage} Force damage to");

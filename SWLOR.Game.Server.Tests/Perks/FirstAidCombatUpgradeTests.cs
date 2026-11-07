@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -316,7 +317,6 @@ public class FirstAidCombatUpgradeTests
         {
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "WeaponActiveAbilityDefinitionBase.cs",
-            root / "SWLOR.Game.Server" / "Service" / "Combat.cs",
             root / "SWLOR.Game.Server" / "Feature" / "NaturalRegeneration.cs",
             root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "RestStatusEffect.cs"
         };
@@ -329,6 +329,12 @@ public class FirstAidCombatUpgradeTests
                     "Stat.ApplyOutgoingAbilityHealingAdjustment",
                     $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
         }
+
+        CombatSource.Read()
+            .Should()
+            .NotContain(
+                "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                "Combat should not apply Medical Injector Rig to damage-derived or system healing");
     }
 
     [Test]

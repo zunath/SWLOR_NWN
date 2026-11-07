@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using FluentAssertions;
 using NUnit.Framework;
@@ -130,14 +131,16 @@ public class PerformanceAudienceCostTests
             SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Service", "Fishing.cs"),
             SourcePath("Domain", "Character", "StatService.cs"),
-            SourcePath("Domain", "Character", "StatusEffectService.cs"),
-            SourcePath("Service", "Combat.cs")
+            SourcePath("Domain", "Character", "StatusEffectService.cs")
         };
 
-        foreach (var file in shared)
+        // Combat is one shared system however many files hold it.
+        var sources = shared.ToDictionary(file => Path.GetFileName(file), file => File.ReadAllText(file));
+        sources["Combat"] = CombatSource.Read();
+
+        foreach (var (name, source) in sources)
         {
-            var source = File.ReadAllText(file);
-            source.Should().NotContain("InspiredStatusEffect", $"{Path.GetFileName(file)} is a shared system");
+            source.Should().NotContain("InspiredStatusEffect", $"{name} is a shared system");
             source.Should().NotContain("PerkType.Requiem");
             source.Should().NotContain("PerkType.StandingOvation");
             source.Should().NotContain("PerkType.LightFeet");

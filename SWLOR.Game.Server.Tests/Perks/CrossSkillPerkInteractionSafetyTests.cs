@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -65,7 +67,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
                 "Steady Aim and Dead Center each promise the same three-second opening window");
 
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         combat.Should().Contain("_idleSkillAbilityStatChannels");
         combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
@@ -110,7 +112,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var getStatBonus = ExtractMethod(perkSource, "public int GetStatBonus(uint creature, StatType stat)");
         getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
         statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
 
@@ -162,7 +164,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         applyImpactStatus.Should().Contain("appliedStatusCategories |= categories;");
         abilitySource.Should().Contain("StatusEffect.GetStatusEffect(target, type, activator)?.Categories");
 
-        var combatSource = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combatSource = CombatSource.Read();
         var applyStatusRider = ExtractMethod(combatSource, "private static void ApplyStatusAppliedEffects(");
         applyStatusRider.Should().Contain("(appliedStatusCategories & requiredCategory) == 0");
         applyStatusRider.Should().NotContain("AbilityAppliedAnyStatusCategory",
@@ -173,7 +175,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var statusBase = Read(root, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectBase.cs");
         var blazingSpikes = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BlazingSpikesStatusEffect.cs");
         var markedForDeath = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "MarkedForDeathStatusEffect.cs");
@@ -229,7 +231,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
         var reflectionDispatchFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
-            .Where(path => !path.EndsWith(Path.Combine("Service", "Combat.cs"), StringComparison.OrdinalIgnoreCase))
+            .Where(path => !CombatSource.IsCombatFile(path))
             .Where(path => File.ReadAllText(path).Contains("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal))
             .Select(path => Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
             .OrderBy(path => path)
@@ -243,7 +245,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
 
         var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
@@ -288,7 +290,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void DamageSharingAndRedirects_HaveNoRecursiveTransferCycle()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var modifiers = ExtractMethod(combat, "public static int ApplyDamageTakenModifiers(");
         var share = ExtractMethod(combat, "private static int ApplyDamageTakenShareToStatusSource(");
         var redirect = ExtractMethod(combat, "private static int ApplyDamageTakenRedirectToStatusSource(");
@@ -389,7 +391,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var root = FindRepositoryRoot();
         var stamina = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementStamina.cs");
         var force = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementFP.cs");
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
 
         stamina.IndexOf("Stat.ReduceStamina(player, requiredSTM)", StringComparison.Ordinal)
             .Should().BeLessThan(stamina.IndexOf("Combat.ApplyAbilityStaminaCostFPRestore", StringComparison.Ordinal));
@@ -424,7 +426,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void AvoidedAttackRangedDeflectionRefresh_RunsAbilityGrantedDeflectionRiders()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var refresh = ExtractMethod(
             combat,
             "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
@@ -440,8 +442,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
     private static int CalculateCrossResourceRestore(int cost, int percent)
     {
-        return (int)typeof(Combat)
-            .GetMethod("CalculateResourceRestoreFromCost", BindingFlags.Static | BindingFlags.NonPublic)!
+        return (int)CombatMembers.FindMethod("CalculateResourceRestoreFromCost")!
             .Invoke(null, new object[] { cost, percent })!;
     }
 
@@ -463,7 +464,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void CrossSkillDamageHealing_UsesOneAggregatePerHitCap()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
         var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
 
@@ -551,7 +552,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             "the superseded shared costly-ability threshold must not remain as usable stat API");
 
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var guardedBonuses = ExtractMethod(combat, "private static void ApplyGuardedHitNextSkillAbilityEffects(");
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");

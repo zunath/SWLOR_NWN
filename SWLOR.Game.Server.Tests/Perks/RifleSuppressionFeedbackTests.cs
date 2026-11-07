@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System;
 using System.IO;
 using FluentAssertions;
@@ -46,7 +47,7 @@ public sealed class RifleSuppressionFeedbackTests
     public void RifleSuppressionBranches_KeepFeedbackAndTargetingContracts()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combat = CombatSource.Read();
         var killBox = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Rifle", "KillBoxAbilityDefinition.cs"));
         var killBoxStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "KillBoxStatusEffect.cs"));
         var containmentNetStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ContainmentNetStatusEffect.cs"));

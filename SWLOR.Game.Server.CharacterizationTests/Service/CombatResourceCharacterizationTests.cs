@@ -7,6 +7,22 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// <summary>Locks the healing budget and stamina restore arithmetic of <see cref="Combat"/>.</summary>
 public class CombatResourceCharacterizationTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeServices _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeServices();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void CalculateMaxHPHealingBudget()
     {

@@ -28,6 +28,14 @@ public class ConvertedServicesTests
     }
 
     [Test]
+    public void The_in_progress_list_holds_only_Combat()
+    {
+        // Temporary: P2-CB10 removes the inProgress list when Combat is listed under services.
+        List.InProgress.Select(service => service.Name).Should().Equal(new[] { ConvertedServiceList.OnlyInProgressService });
+        Fail(ConvertedServiceRules.InProgressProblems(List, Map), $"{ListName} lists a service in progress it should not");
+    }
+
+    [Test]
     public void Every_converted_service_has_a_facade_an_interface_and_an_instance_class()
     {
         Fail(ConvertedServiceRules.MissingPieces(List, ArchitectureProject.Facts), "A converted service is missing a piece");
@@ -38,7 +46,9 @@ public class ConvertedServicesTests
     {
         var map = Map;
         var services = List.Services;
-        bool IsServiceType(TypeKey type) => ServiceOf(type, map, services) is not null;
+        // A part of the service in progress (CombatQueriesService) keeps the rules of a converted service.
+        bool IsServiceType(TypeKey type) =>
+            ServiceOf(type, map, services) is not null || ConvertedServiceRules.IsInProgressPart(type, List);
 
         Fail(ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, IsServiceType),
             "Converted services must keep their state on the instance");
@@ -63,7 +73,7 @@ public class ConvertedServicesTests
     [Test]
     public void Nothing_locates_a_service_outside_composition_and_the_facades_of_converted_services()
     {
-        var facades = List.Services.SelectMany(service => service.Facades).ToHashSet();
+        var facades = ConvertedServiceRules.FacadesMayLocate(List);
 
         var problems = ServiceLocationRule.Find(
             ArchitectureProject.Graph,

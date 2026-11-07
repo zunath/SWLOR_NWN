@@ -12,6 +12,22 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// </summary>
 public class CombatSkillRuleCharacterizationTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeServices _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeServices();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private static readonly SkillType[] RepresentativeSkills =
     {
         SkillType.Invalid, SkillType.Force, SkillType.Armor, SkillType.Devices, SkillType.Vibroblade,

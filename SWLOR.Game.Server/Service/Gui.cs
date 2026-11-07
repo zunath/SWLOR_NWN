@@ -243,6 +243,14 @@ namespace SWLOR.Game.Server.Service
             var playerWindow = _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
 
+            // NUI fires "click" on the press, so a click handler that changes the layout would replace the
+            // pressed control before the release and lock the window. Track the press for every element,
+            // not only the ones with handlers, so the layout waits for the release.
+            if (eventType == "click" || eventType == "mousedown")
+                viewModel.OnPointerPressed();
+            else if (eventType == "mouseup")
+                viewModel.OnPointerReleased();
+
             if (!_elementEvents.ContainsKey(eventKey))
             {
                 if (eventType == "close")

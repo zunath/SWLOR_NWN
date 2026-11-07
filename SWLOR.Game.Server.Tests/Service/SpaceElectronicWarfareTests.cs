@@ -295,6 +295,10 @@ public class SpaceElectronicWarfareTests
             .And.Contain("BreakCloakByElectronicWarfare(target, \"An Interdictor broke your cloak.\");")
             .And.Contain("BreakCloakByElectronicWarfare(target, \"An Ion Web broke your cloak.\");");
         ReadSource("Feature", "PlaceableScripts.cs").Should().Contain("Space.RefuseWhileInterdicted(user)");
+        var exit = ReadSource("Feature", "ChatCommandDefinition", "SpaceChatCommand.cs");
+        exit = exit[exit.IndexOf("private void ExitSpaceCommand()", StringComparison.Ordinal)..];
+        exit.IndexOf("if (Space.RefuseWhileInterdicted(user))", StringComparison.Ordinal)
+            .Should().BeInRange(0, exit.IndexOf("Space.WarpPlayerInsideShip(user);", StringComparison.Ordinal), "/exit leaves the controls");
         ReadSource("Feature", "DialogDefinition", "StarportDockDialog.cs").Should().Contain("Space.RefuseWhileInterdicted(player)");
         ReadSource("Service", "SpaceDocking.cs").Should().Contain("if (RefuseWhileInterdicted(player))");
         ReadSource("Service", "SpaceDerelicts.cs").Should().Contain("if (RefuseWhileInterdicted(player))");

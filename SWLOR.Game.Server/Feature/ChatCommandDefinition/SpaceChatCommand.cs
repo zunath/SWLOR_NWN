@@ -54,6 +54,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (Space.RefuseLeavingControlsInPvp(user))
                         return;
 
+                    // An Interdictor's hold keeps the pilot at the controls, even before its user has dealt any damage.
+                    if (Space.RefuseWhileInterdicted(user))
+                        return;
+
                     Space.WarpPlayerInsideShip(user);
                 });
         }

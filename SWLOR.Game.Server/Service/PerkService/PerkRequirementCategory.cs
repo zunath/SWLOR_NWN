@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -27,18 +28,18 @@ namespace SWLOR.Game.Server.Service.PerkService
         public const string MetIcon = "req_met";     // green check: requirement met / perk purchasable
         public const string MaxedIcon = "req_other"; // neutral check: perk fully upgraded
 
-        public class Detail
+        public sealed record Detail
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
             // Red, type-specific icon shown when the requirement is not met.
-            public string IconResrefLocked { get; set; }
+            public string IconResrefLocked { get; init; }
 
             // Green check when met, otherwise the red type-specific icon.
             public string GetIcon(bool met) => met ? MetIcon : IconResrefLocked;
         }
 
-        private static readonly Dictionary<PerkRequirementCategory, Detail> Details = new()
+        private static readonly FrozenDictionary<PerkRequirementCategory, Detail> Details = new Dictionary<PerkRequirementCategory, Detail>
         {
             { PerkRequirementCategory.Skill, new Detail { Name = "Skill", IconResrefLocked = "req_skill_r" } },
             { PerkRequirementCategory.Quest, new Detail { Name = "Quest", IconResrefLocked = "req_quest_r" } },
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             { PerkRequirementCategory.BeastRole, new Detail { Name = "Beast Role", IconResrefLocked = "req_beastrole_r" } },
             { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResrefLocked = "req_unlock_r" } },
             { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResrefLocked = "req_other_r" } },
-        };
+        }.ToFrozenDictionary();
 
         public static Detail GetDetail(PerkRequirementCategory category)
         {

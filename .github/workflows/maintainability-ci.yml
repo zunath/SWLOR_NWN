@@ -124,3 +124,50 @@ jobs:
             ci-out/results/*.log
           if-no-files-found: warn
           retention-days: 14
+
+  integration-tests:
+    name: Integration tests (real container, real Redis)
+    # Linux, because the job starts a throwaway Redis container of the production image (redislabs/redismod:latest);
+    # Windows runners cannot run Linux containers. The tier is scripts/ci/run-integration-tests.sh; run it locally the same way.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+
+      - name: Fetch the SWLOR_Haks folders the tests read
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD:SWLOR_Haks)"
+          url="$(git config -f .gitmodules submodule.SWLOR_Haks.url)"
+          rm -rf SWLOR_Haks
+          git init -q SWLOR_Haks
+          git -C SWLOR_Haks remote add origin "$url"
+          # shellcheck disable=SC2086
+          git -C SWLOR_Haks sparse-checkout set --cone $HAKS_FOLDERS
+          git -C SWLOR_Haks fetch -q --depth 1 --filter=blob:none origin "$sha"
+          git -C SWLOR_Haks -c advice.detachedHead=false checkout -q --detach FETCH_HEAD
+          test "$(git -C SWLOR_Haks rev-parse HEAD)" = "$sha"
+
+      - name: Build the integration tests (Release)
+        run: dotnet build SWLOR.Game.Server.IntegrationTests -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+
+      - name: Integration tests
+        run: bash scripts/ci/run-integration-tests.sh --out "$RUNNER_TEMP/integration-results"
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: integration-tests
+          path: ${{ runner.temp }}/integration-results/*.trx
+          if-no-files-found: warn
+          retention-days: 14

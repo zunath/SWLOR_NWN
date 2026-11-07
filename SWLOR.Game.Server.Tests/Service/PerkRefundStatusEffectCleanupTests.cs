@@ -128,11 +128,11 @@ public class PerkRefundStatusEffectCleanupTests
     public void SourceOwnedRefundPath_PassesTheOriginatingAbilityToCleanup()
     {
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Perk.cs"))).GetRoot();
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"))).GetRoot();
         var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "RemoveStatusEffectsOnPerkRefund");
         var cleanup = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "StatusEffect.RemoveStatusEffectsFromAllTargetsBySource");
+            .Single(node => node.Expression.ToString() == "_statusEffect.RemoveStatusEffectsFromAllTargetsBySource");
         cleanup.ArgumentList.Arguments.Select(argument => argument.ToString()).Should()
             .Equal("creature", "sourceOwnedStatusEffect.StatusEffectType", "false", "sourceOwnedStatusEffect.Ability");
     }
@@ -176,7 +176,7 @@ public class PerkRefundStatusEffectCleanupTests
     public void PerkRefundPaths_RemoveMarkedStatusEffects()
     {
         var root = FindRepositoryRoot();
-        var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Perk.cs"));
+        var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"));
         var perksViewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -193,10 +193,10 @@ public class PerkRefundStatusEffectCleanupTests
             "CharacterFullRebuildViewModel.cs"));
 
         perkSource.Should().Contain("StatusEffectTypesRemovedOnPerkRefund");
-        perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
+        perkSource.Should().Contain("_statusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
         perkSource.Should().Contain("SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
-        perkSource.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
-        perkSource.Should().Contain("Combat.RefreshStatDrivenTrackerEffects(creature);");
+        perkSource.Should().Contain("_statusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+        perkSource.Should().Contain("RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
         perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
         rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");

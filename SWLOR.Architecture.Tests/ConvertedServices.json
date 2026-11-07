@@ -72,6 +72,7 @@
     { "name": "PairedRangedTraits", "domain": "Combat" },
     { "name": "Party", "domain": "Social" },
     { "name": "Performance", "domain": "Social", "extras": [ { "part": "PerformanceInspired" }, { "part": "PerformanceRider" }, { "facade": "PerformanceService.PerformanceAudience" }, { "facade": "PerformanceService.PerformanceVenue" }, { "facade": "PerformanceService.PerformanceWindows" }, { "part": "PerformanceSnapshot" }, { "part": "PerformanceSong" } ] },
+    { "name": "Perk", "domain": "Character" },
     { "name": "Planet", "domain": "World" },
     { "name": "PlayerDescriptor", "domain": "Character" },
     { "name": "PlayerFeedback", "domain": "Core" },

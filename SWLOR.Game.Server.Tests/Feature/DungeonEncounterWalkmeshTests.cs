@@ -169,6 +169,44 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    // Inner circle guards stand on four fixed waypoints. Four of them were placed on udp2's black filler tile,
+    // which only counted as floor because the tile had no walkmesh; the guards stood in the void.
+    [TestCase("pw_sc_emfbackr", "sw_t_office", 12)]
+    [TestCase("pw_sc_jedihalls", "sw_t_office", 12)]
+    public void CapstoneInnerCircleSpawns_StandOnClearNativeFloor(string areaName, string hakFolder, int count)
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", areaName + ".git.json")));
+        var area = git.RootElement;
+        var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag").StartsWith("CAPSTONE_") && Text(w, "Tag").EndsWith("_IC_SPAWN")).ToArray();
+        spawns.Should().HaveCount(count, "each of the dungeon's three capstone lines has four inner circle spawns");
+        spawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
+
+        var floor = ReadWalkableFloor(root, areaName, hakFolder);
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        foreach (var spawn in spawns)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample)).Should().BeTrue($"{Text(spawn, "Tag")} at {position} needs walkable floor at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse($"{Text(spawn, "Tag")} at {position} must clear scenery at {sample}");
+            }
+        }
+    }
+
     [Test]
     public void FightClubBackrooms_EverySpawnIsReachableOnFootFromTheEntrance()
     {
@@ -184,8 +222,8 @@ public class DungeonEncounterWalkmeshTests
         var reachable = ReachableOnFoot(root, "pw_sc_emfbackr", "sw_t_office", "SMUG_BACKROOMS");
 
         var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP" or "FIGHTCLUB_BACKROOMS_RARES"
-            || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
-        spawns.Should().HaveCount(24);
+            || Text(w, "Tag").EndsWith("_WD_SPAWN") || Text(w, "Tag").EndsWith("_IC_SPAWN")).ToArray();
+        spawns.Should().HaveCount(36);
         foreach (var spawn in spawns)
         {
             reachable(Number(spawn, "XPosition"), Number(spawn, "YPosition")).Should().BeTrue(

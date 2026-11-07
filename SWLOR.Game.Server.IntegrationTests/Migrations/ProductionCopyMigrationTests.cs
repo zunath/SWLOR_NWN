@@ -58,10 +58,11 @@ public class ProductionCopyMigrationTests
         var endpoint = StartContainerWithDump(dump);
         using var redis = RedisEnvironment.Connect(endpoint);
         var database = redis.GetDatabase();
-        var keysBefore = redis.GetServer(redis.GetEndPoints()[0]).DatabaseSize();
 
         var db = new IntegrationDBService(endpoint);
         db.Load();
+        // After Load: it may create search entries and fingerprints, which are not the migrations' doing.
+        var keysBefore = redis.GetServer(redis.GetEndPoints()[0]).DatabaseSize();
 
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

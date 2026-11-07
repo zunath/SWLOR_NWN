@@ -217,4 +217,16 @@ public class QueryTests : IntegrationTestBase
         entries.Should().HaveCount(3);
         entries.Last().Values.Single().Value.ToString().Should().Be("async");
     }
+
+    [Test]
+    public void WipingTheDatabase_AlsoDropsTheJsonCachedAcrossFrames()
+    {
+        Db.Set(new Player("cached-player"));
+        Db.EndFrame();
+        Db.Get<Player>("cached-player").Should().NotBeNull("the read fills the cross-frame cache of the Player type");
+
+        IntegrationEnvironment.Wipe();
+
+        Db.Get<Player>("cached-player").Should().BeNull("the next test must not see a record an earlier test wrote");
+    }
 }

@@ -62,6 +62,7 @@ public static class IntegrationEnvironment
         foreach (var batch in doomed.Chunk(500))
             Database.KeyDelete(batch);
 
+        Db.ForgetCrossFrameJson();
         Db.EndFrame();
     }
 }

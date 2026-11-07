@@ -25,6 +25,18 @@ public sealed class IntegrationDBService : DBService
     /// </summary>
     public void EndFrame() => _scriptContextEnd?.Invoke();
 
+    /// <summary>
+    /// Drops the JSON the service keeps across frames for types marked <c>JsonCachedAcrossFrames</c>. The server only
+    /// changes those records through the service, which keeps the cache current; the tier also deletes keys behind its back
+    /// between tests, so it clears the cache then.
+    /// </summary>
+    public void ForgetCrossFrameJson()
+    {
+        var field = typeof(DBService).GetField("_jsonAcrossFrames", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?? throw new InvalidOperationException("DBService no longer has the cross-frame JSON cache this tier clears.");
+        ((System.Collections.IDictionary)field.GetValue(this)!).Clear();
+    }
+
     protected override IConnectionMultiplexer Connect(ConfigurationOptions options)
     {
         if (_endpoint != null)

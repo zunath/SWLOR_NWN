@@ -472,7 +472,7 @@ public class CombatDamageTests
         grantNextSkillBonuses.Should().NotContain("skillType == SkillType.Invalid");
         consumeNextSkillBonuses.Should().Contain("if (!SkillTypeMatches(skillType, storedSkillType))");
         consumeNextSkillBonuses.Should().NotContain("storedSkillType != skillType");
-        consumeNextSkillBonuses.Should().Contain("TemporaryStatModifier.Consume(",
+        consumeNextSkillBonuses.Should().Contain("_temporaryStatModifier.Consume(",
             "ordinary next-ability Critical Rate bonuses must still be consumed on the next ability");
 
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
@@ -491,12 +491,12 @@ public class CombatDamageTests
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
-        combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
+        combatSource.Should().Contain("SkillType.Staff => _stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("StatType.WeaponCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
-        combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
+        combatSource.Should().Contain("SkillType.Staff => _stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
         combatSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         abilitySource.Should().Contain("ApplyCriticalDamageModifier(");
         abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
@@ -798,10 +798,10 @@ public class CombatDamageTests
         combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
         combatSource.Should().Contain(
-            "criticalDamage = Math.Max(criticalDamage, TemporaryStatModifier.Consume(",
+            "criticalDamage = Math.Max(criticalDamage, _temporaryStatModifier.Consume(",
             "a queued Headshot is both the opening attack and the queued ability, so Dead Center must apply only once");
         combatSource.Should().NotContain(
-            "criticalDamage += TemporaryStatModifier.Consume(",
+            "criticalDamage += _temporaryStatModifier.Consume(",
             "the same Dead Center rider must not stack through both opening-attack channels");
         var queuedAccuracyIndex = attackRollSource.IndexOf(
             "Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",

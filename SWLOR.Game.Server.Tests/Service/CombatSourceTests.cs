@@ -359,6 +359,27 @@ public class CombatSourceTests
         debts.Should().NotContainKey(0xFFFFFFF1);
     }
 
+    [TestCase("_autoAttackCycleCriticalCounts")]
+    [TestCase("_repeatedTargetDamageStates")]
+    [TestCase("_meleeRepeatedTargetDamageStates")]
+    [TestCase("_rangedRepeatedTargetDamageStates")]
+    [TestCase("_sameTargetPressureStates")]
+    public void ReflectionReachesTheDamageModifierTablesOfTheInstalledContainer(string name)
+    {
+        // The damage modifier stacks moved from static fields of Combat to the instance; a test that reads one by name
+        // gets the installed container's table.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.DeclaringType.Should().Be(typeof(CombatDamageModifiersService));
+        CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageModifiersService>()));
+        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
+            "Combat keeps no copy");
+    }
+
     [Test]
     public void ReflectionReachesAPartsInstanceMembersInTheInstalledContainer()
     {

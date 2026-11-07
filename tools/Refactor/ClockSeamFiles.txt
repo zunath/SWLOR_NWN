@@ -7,6 +7,8 @@ Service/CombatParts/**
 Domain/Combat/CombatResourcesService.cs
 Domain/Combat/CombatSuppressionService.cs
 Domain/Combat/CombatActivityService.cs
+Domain/Combat/CombatAbilityBonusService.cs
+Domain/Combat/CombatDamageModifiersService.cs
 Service/CombatService/**
 Service/CombatPoint.cs
 Domain/Combat/OrdinaryAttackTraitsService.cs

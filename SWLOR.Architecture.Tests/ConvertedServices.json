@@ -108,6 +108,7 @@
     { "name": "Targeting", "domain": "Combat" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Telegraph", "domain": "Combat" },
+    { "name": "TemporaryStatModifier", "domain": "Combat" },
     { "name": "TileMagic", "domain": "Core" },
     { "name": "TintMapState", "domain": "Character" },
     { "name": "Traps", "domain": "World" },

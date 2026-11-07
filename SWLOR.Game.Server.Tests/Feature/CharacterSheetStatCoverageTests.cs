@@ -87,9 +87,9 @@ public class CharacterSheetStatCoverageTests
         var temporaryModifiers = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CombatService",
-            "TemporaryStatModifier.cs"));
+            "Domain",
+            "Combat",
+            "TemporaryStatModifierService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");

@@ -31,15 +31,15 @@ public class PerkCombinationBehaviorTests
     [SetUp]
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-    [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
-
     private const uint Creature = 61250;
     private const BindingFlags PrivateStatic = BindingFlags.Static | BindingFlags.NonPublic;
 
     [TearDown]
-    public void Cleanup() => ((IDictionary)typeof(TemporaryStatModifier)
-        .GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+    public void Cleanup()
+    {
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void IndependentDamageProcs_PreserveTheirIndividualExpectedDamage()
@@ -454,16 +454,14 @@ public class PerkCombinationBehaviorTests
     }
 
     private static void AddTemporary(string group, StatType stat, int amount) =>
-        typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, stat, amount, 30f, group, false });
+        TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, amount, 30f, group, false);
 
     private static void ConsumeMatchingDiscounts(SkillType skill)
     {
         foreach (var source in TemporaryStatModifier.GetStatSources(Creature, StatType.NextSkillAbilityStaminaCostAdjustment))
         {
             if (Combat.MatchesStaminaDiscount(source, skill, true))
-                typeof(TemporaryStatModifier).GetMethod("ConsumeSourceInternal", PrivateStatic)!
-                    .Invoke(null, new object[] { Creature, StatType.NextSkillAbilityStaminaCostAdjustment, source, false });
+                TemporaryStatModifierInternals.Invoke("ConsumeSourceInternal", Creature, StatType.NextSkillAbilityStaminaCostAdjustment, source, false);
         }
     }
 }

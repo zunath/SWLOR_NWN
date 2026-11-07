@@ -53555,7 +53555,7 @@
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 2
+                      "value": 1
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -53595,7 +53595,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 2
+                      "value": 1
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -53854,7 +53854,7 @@
                     },
                     "xArmorPart_LShin": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "xArmorPart_LShou": {
                       "type": "word",
@@ -53894,7 +53894,7 @@
                     },
                     "xArmorPart_RShin": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "xArmorPart_RShou": {
                       "type": "word",

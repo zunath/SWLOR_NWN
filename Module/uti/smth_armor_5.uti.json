@@ -18,7 +18,7 @@
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -313,7 +313,7 @@
   },
   "xArmorPart_LFoot": {
     "type": "word",
-    "value": 2
+    "value": 0
   },
   "xArmorPart_LHand": {
     "type": "word",
@@ -349,7 +349,7 @@
   },
   "xArmorPart_RFoot": {
     "type": "word",
-    "value": 2
+    "value": 0
   },
   "xArmorPart_RHand": {
     "type": "word",

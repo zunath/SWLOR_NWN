@@ -130,22 +130,94 @@ public class ArmorPartAppearanceTests
     [TestCase(AppearanceArmor.LeftThigh, "legl")]
     [TestCase(AppearanceArmor.LeftShin, "shinl")]
     [TestCase(AppearanceArmor.LeftFoot, "footl")]
-    public void BareBodyPartsAtStyleOneOrTwoAreKept(AppearanceArmor part, string model)
+    public void BareBodyPartsAtStyleOneAreKept(AppearanceArmor part, string model)
     {
-        // These slots do show something at 1 and 2: the wearer's own bare body part. Hundreds of
-        // blueprints wear style 1, and droid catalogs offer no 0 for most of them.
-        var models = new HashSet<string> { $"pfh0_{model}001", $"pfh0_{model}002" };
+        // Style 1 shows the wearer's own bare body part. Hundreds of blueprints wear it, and the
+        // general shin list and most droid lists offer no 0, so it stays until Xisifer decides.
+        var models = new HashSet<string> { $"pfh0_{model}001" };
         var human = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
         var droid = ArmorAppearanceCatalog.Definitions[AppearanceType.Droid];
 
-        foreach (var style in new[] { 1, 2 })
+        Assert.That(ArmorAppearanceCatalog.GetStyles(human, part), Does.Contain(1));
+        Assert.That(ArmorAppearanceCatalog.GetStyles(droid, part), Does.Contain(1));
+        Assert.That(ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
+            saved => saved == part ? 1 : 0, _ => 0, models.Contains), Is.Empty);
+    }
+
+    [Test]
+    public void NoCatalogOffersStyleTwo()
+    {
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        foreach (var part in ArmorParts)
         {
-            Assert.That(ArmorAppearanceCatalog.GetStyles(human, part), Does.Contain(style));
-            Assert.That(ArmorAppearanceCatalog.GetStyles(droid, part), Does.Contain(style));
-            Assert.That(ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
-                saved => saved == part ? style : 0, _ => 0, models.Contains), Is.Empty);
+            Assert.That(ArmorAppearanceCatalog.GetStyles(definition, part),
+                Does.Not.Contain(ArmorPartAppearance.RemovedBareStyle), $"{type} {part}");
         }
     }
+
+    [Test]
+    public void StyleTwoRepairsToAStyleTheListOffers()
+    {
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        foreach (var part in ArmorParts)
+        {
+            // The editor always offers 0 (None) for the neck.
+            var offered = ArmorAppearanceCatalog.GetStyles(definition, part).AsEnumerable();
+            if (part == AppearanceArmor.Neck)
+                offered = offered.Prepend(0);
+            Assert.That(offered, Does.Contain(ArmorPartAppearance.GetBareStyle(definition, part)), $"{type} {part}");
+        }
+    }
+
+    [TestCase(AppearanceType.Human, AppearanceArmor.Neck, "neck", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.Torso, "chest", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.Pelvis, "pelvis", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.RightBicep, "bicepr", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.LeftForearm, "forel", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.RightHand, "handr", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.LeftThigh, "legl", 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.RightShin, "shinr", 1)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.LeftFoot, "footl", 0)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.Neck, "neck", 0)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, "chest", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.Pelvis, "pelvis", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftBicep, "bicepl", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.RightForearm, "forer", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftHand, "handl", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.RightThigh, "legr", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftShin, "shinl", 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.RightFoot, "footr", 1)]
+    public void SavedStyleTwoRepairsToZeroWhereListedOtherwiseOne(AppearanceType type, AppearanceArmor part, string model, int expected)
+    {
+        // Style 2 shows the wearer's own body part like 0 and 1. Its models exist, so only the
+        // retirement moves it; every other saved part is kept.
+        var body = type == AppearanceType.Droid ? "pmz0" : "pfh0";
+        var models = new HashSet<string> { $"{body}_{model}001", $"{body}_{model}002", $"{body}_chest004" };
+        var saved = new Dictionary<AppearanceArmor, int> { [AppearanceArmor.Torso] = 4, [part] = 2 };
+
+        var repairs = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[type], 0, body,
+            slot => saved.TryGetValue(slot, out var style) ? style : 0, _ => 0, models.Contains);
+
+        Assert.That(repairs, Is.EquivalentTo(new Dictionary<AppearanceArmor, int> { [part] = expected }));
+    }
+
+    [Test]
+    public void StyleTwoOnUncataloguedCreaturesIsKept()
+    {
+        Assert.That(ArmorPartAppearance.PlanRepairs(null, 0, "pmh0", _ => 2, _ => 0, _ => true), Is.Empty);
+        Assert.That(ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], 3,
+            "pmh0", _ => 2, _ => 0, _ => true), Is.Empty);
+    }
+
+    private static readonly AppearanceArmor[] ArmorParts =
+    {
+        AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,
+        AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.LeftBicep,
+        AppearanceArmor.RightBicep, AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm,
+        AppearanceArmor.LeftHand, AppearanceArmor.RightHand, AppearanceArmor.LeftThigh, AppearanceArmor.RightThigh,
+        AppearanceArmor.LeftShin, AppearanceArmor.RightShin, AppearanceArmor.LeftFoot, AppearanceArmor.RightFoot,
+        AppearanceArmor.Robe,
+    };
 
     [Test]
     public void OnlyPlayableAppearancesAreRepaired()

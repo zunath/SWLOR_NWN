@@ -102162,7 +102162,7 @@
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
-                      "value": 2
+                      "value": 0
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
@@ -102493,7 +102493,7 @@
                     },
                     "xArmorPart_Neck": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "xArmorPart_Pelvi": {
                       "type": "word",

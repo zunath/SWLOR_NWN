@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -74,7 +74,7 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "ArmorPart_Torso": {
     "type": "byte",
@@ -204,7 +204,7 @@
   },
   "xArmorPart_LThig": {
     "type": "word",
-    "value": 2
+    "value": 0
   },
   "xArmorPart_Neck": {
     "type": "word",
@@ -244,7 +244,7 @@
   },
   "xArmorPart_RThig": {
     "type": "word",
-    "value": 2
+    "value": 0
   },
   "xArmorPart_Torso": {
     "type": "word",

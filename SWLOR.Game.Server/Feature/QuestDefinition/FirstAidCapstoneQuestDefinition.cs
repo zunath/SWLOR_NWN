@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EmergencyCocktailBreach()
         {
             _builder.Create(EmergencyCocktailBreachQuestId, "One Dose Too Strong")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EmergencyCocktailMeasureQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EmergencyCocktailMastery()
         {
             _builder.Create(EmergencyCocktailMasteryQuestId, "The Perfected Batch")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EmergencyCocktailCircleQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
 

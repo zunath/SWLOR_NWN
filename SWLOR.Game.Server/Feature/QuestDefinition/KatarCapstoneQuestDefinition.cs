@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AdamantineGuardBreach()
         {
             _builder.Create(AdamantineGuardBreachQuestId, "Two Spotters for the Sheared Bay")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AdamantineGuardMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Katar, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneAdamantineGuardShearedBaySigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AdamantineGuardMastery()
         {
             _builder.Create(AdamantineGuardMasteryQuestId, "The Last Order on the Book")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AdamantineGuardCircleQuestId)
                 .PrerequisiteSkill(SkillType.Katar, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ScrapheapLockdownBreach()
         {
             _builder.Create(ScrapheapLockdownBreachQuestId, "Containment Failure, Sheared Bay")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ScrapheapLockdownMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Katar, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneScrapheapLockdownShearedBaySigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ScrapheapLockdownMastery()
         {
             _builder.Create(ScrapheapLockdownMasteryQuestId, "Final Incident, Case Closed")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ScrapheapLockdownCircleQuestId)
                 .PrerequisiteSkill(SkillType.Katar, 50)
 

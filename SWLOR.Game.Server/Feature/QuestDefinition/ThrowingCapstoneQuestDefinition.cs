@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void RainOfSteelBreach()
         {
             _builder.Create(RainOfSteelBreachQuestId, "Write-Off: One Warden")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(RainOfSteelMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneRainOfSteelScoredRangeCrest)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void RainOfSteelMastery()
         {
             _builder.Create(RainOfSteelMasteryQuestId, "Paid in Full")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(RainOfSteelCircleQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void PerfectFlurryBreach()
         {
             _builder.Create(PerfectFlurryBreachQuestId, "The Warden Takes the Stage")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(PerfectFlurryMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstonePerfectFlurryFrostburnedTestCrest)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void PerfectFlurryMastery()
         {
             _builder.Create(PerfectFlurryMasteryQuestId, "The Final Bow")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(PerfectFlurryCircleQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
 

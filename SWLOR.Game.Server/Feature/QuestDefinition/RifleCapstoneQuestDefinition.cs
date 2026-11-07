@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void KillBoxBreach()
         {
             _builder.Create(KillBoxBreachQuestId, "Liability Clause")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(KillBoxMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillBoxScoredRangeCrest)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void KillBoxMastery()
         {
             _builder.Create(KillBoxMasteryQuestId, "Termination Clause")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(KillBoxCircleQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void OneShotBreach()
         {
             _builder.Create(OneShotBreachQuestId, "Send It")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(OneShotMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotScoredRangeCrest)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void OneShotMastery()
         {
             _builder.Create(OneShotMasteryQuestId, "One Answer")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(OneShotCircleQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
 

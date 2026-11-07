@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ForcebaneBreach()
         {
             _builder.Create(ForcebaneBreachQuestId, "Never Duel a Warden Fairly")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ForcebaneMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ForcebaneMastery()
         {
             _builder.Create(ForcebaneMasteryQuestId, "Finish What You Teach")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ForcebaneCircleQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void CripplingDefenseBreach()
         {
             _builder.Create(CripplingDefenseBreachQuestId, "Eliminator at the Cage Door")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(CripplingDefenseMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneCripplingDefenseCrackedPitSigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void CripplingDefenseMastery()
         {
             _builder.Create(CripplingDefenseMasteryQuestId, "Last Bout on the Book")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(CripplingDefenseCircleQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
 

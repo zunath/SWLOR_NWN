@@ -168,6 +168,31 @@ public class QuestLifecycleTests
     }
 
     [Test]
+    public void EncounterReplay_DoesNotReopenTheQuestOrPayCompletionAgain()
+    {
+        var reward = new RecordingReward();
+        _quest.IsRepeatable = false;
+        _quest.AllowEncounterReplay = true;
+        _quest.Rewards.Add(reward);
+        ((bool)_quest.Accept(1u, 2u)).Should().BeTrue();
+        ((bool)_quest.Advance(1u, 2u)).Should().BeTrue();
+        _quest.Complete(1u, 2u, null);
+
+        QuestEncounter.CanActivateEncounter(_player, "quest", 1, (bool)_quest.AllowEncounterReplay)
+            .Should().BeTrue();
+        ((bool)_quest.Accept(1u, 2u)).Should().BeFalse();
+        ((bool)_quest.Advance(1u, 2u)).Should().BeFalse();
+        _quest.Complete(1u, 2u, null);
+
+        reward.Grants.Should().Be(1);
+        _player.Quests["quest"].TimesCompleted.Should().Be(1);
+        _player.Quests["quest"].KillProgresses.Should().BeEmpty();
+        Entries.Clear();
+        _harness.GetType("QuestLifecycleHarness.Quest")!.GetMethod("LoadPlayerQuests")!.Invoke(null, null);
+        Entries.Should().BeEmpty();
+    }
+
+    [Test]
     public void ActiveQuestLogin_RepairsChangedObjectivesWithoutResettingExistingProgress()
     {
         _quest.States[1].AddObjective(new CollectItemObjective("peeled_crayfish", 1));

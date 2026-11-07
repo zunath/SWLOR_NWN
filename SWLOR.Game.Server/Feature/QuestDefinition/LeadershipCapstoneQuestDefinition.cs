@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void HoldTheLineBreach()
         {
             _builder.Create(HoldTheLineBreachQuestId, "Breach in Recovery")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(HoldTheLineMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void HoldTheLineMastery()
         {
             _builder.Create(HoldTheLineMasteryQuestId, "The Last Bed Held")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(HoldTheLineCircleQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DecisiveCommandBreach()
         {
             _builder.Create(DecisiveCommandBreachQuestId, "One Voice in the Breach")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(DecisiveCommandMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDecisiveCommandCrackedCommandCrest)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DecisiveCommandMastery()
         {
             _builder.Create(DecisiveCommandMasteryQuestId, "The Last Order Stands")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(DecisiveCommandCircleQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
 

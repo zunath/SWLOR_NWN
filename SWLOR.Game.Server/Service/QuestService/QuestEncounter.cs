@@ -158,6 +158,17 @@ namespace SWLOR.Game.Server.Service.QuestService
             return quest.CurrentState == questState && quest.TimesCompleted <= 0;
         }
 
+        public static bool CanActivateEncounter(Player dbPlayer, string questId, int questState, bool allowReplay)
+        {
+            if (dbPlayer == null || string.IsNullOrWhiteSpace(questId) || questState <= 0)
+                return false;
+            if (!dbPlayer.Quests.TryGetValue(questId, out var quest))
+                return false;
+
+            return IsPlayerOnQuestState(dbPlayer, questId, questState) ||
+                   (allowReplay && quest.TimesCompleted > 0);
+        }
+
         public static TimeSpan GetCooldownRemaining(Player dbPlayer, string encounterId, DateTime now)
         {
             if (dbPlayer?.EncounterCooldowns == null)
@@ -233,6 +244,8 @@ namespace SWLOR.Game.Server.Service.QuestService
                 if (!dbPlayer.Quests.TryGetValue(questId, out var playerQuest)) continue;
 
                 var questDetail = Quest.GetQuestById(questId);
+                if (playerQuest.DateLastCompleted != null ||
+                    (playerQuest.TimesCompleted > 0 && !questDetail.IsRepeatable)) continue;
                 if (!questDetail.States.TryGetValue(playerQuest.CurrentState, out var questState)) continue;
 
                 var killRequiredForQuestAndState = false;
@@ -304,7 +317,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (string.IsNullOrWhiteSpace(questId) || questState <= 0)
                 return false;
 
-            return IsPlayerOnQuestState(GetPlayer(player), questId, questState);
+            var quest = Quest.GetQuestByIdOrDefault(questId);
+            return quest != null && CanActivateEncounter(GetPlayer(player), questId, questState, quest.AllowEncounterReplay);
         }
 
         private static void RefreshVisibilityForActivator(uint player, uint activator)

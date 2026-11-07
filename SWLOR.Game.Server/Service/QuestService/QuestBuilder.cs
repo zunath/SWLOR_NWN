@@ -50,6 +50,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             return this;
         }
 
+        public QuestBuilder AllowEncounterReplay()
+        {
+            _activeQuest.AllowEncounterReplay = true;
+
+            return this;
+        }
+
         /// <summary>
         /// Marks the quest as a guild task.
         /// </summary>

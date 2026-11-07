@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void VitalRuptureBreach()
         {
             _builder.Create(VitalRuptureBreachQuestId, "Cardiac Access")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(VitalRuptureMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void VitalRuptureMastery()
         {
             _builder.Create(VitalRuptureMasteryQuestId, "Terminal Bleed")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(VitalRuptureCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SystemicShutdownBreach()
         {
             _builder.Create(SystemicShutdownBreachQuestId, "Point of Failure")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SystemicShutdownMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSystemicShutdownScoredChallengeBadge)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SystemicShutdownMastery()
         {
             _builder.Create(SystemicShutdownMasteryQuestId, "End of Transmission")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SystemicShutdownCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
 

@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SaberStormBreach()
         {
             _builder.Create(SaberStormBreachQuestId, "The Third Door Drill")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SaberStormMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SaberStormMastery()
         {
             _builder.Create(SaberStormMasteryQuestId, "The Storm Without an Eye")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SaberStormCircleQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void GuardianMasterBreach()
         {
             _builder.Create(GuardianMasterBreachQuestId, "Between Harm and the Helpless")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(GuardianMasterMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void GuardianMasterMastery()
         {
             _builder.Create(GuardianMasterMasteryQuestId, "Every Oath but One")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(GuardianMasterCircleQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
 

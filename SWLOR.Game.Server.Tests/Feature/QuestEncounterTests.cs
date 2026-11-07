@@ -8,6 +8,39 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class QuestEncounterTests
 {
+    [TestCase(1, 0, false, true)]
+    [TestCase(1, 0, true, true)]
+    [TestCase(2, 0, true, false)]
+    [TestCase(0, 0, true, false)]
+    [TestCase(2, 1, false, false)]
+    [TestCase(2, 1, true, true)]
+    [TestCase(1, 1, false, false)]
+    [TestCase(1, 1, true, true)]
+    public void CanActivateEncounter_RequiresTheQuestStateOrOptedInCompletion(
+        int currentState, int timesCompleted, bool allowReplay, bool expected)
+    {
+        var player = new Player("player-id");
+        player.Quests["trial"] = new PlayerQuest
+        {
+            CurrentState = currentState,
+            TimesCompleted = timesCompleted,
+        };
+
+        QuestEncounter.CanActivateEncounter(player, "trial", 1, allowReplay).Should().Be(expected);
+    }
+
+    [Test]
+    public void CanActivateEncounter_RejectsMissingQuestsAndInvalidActivators()
+    {
+        var player = new Player("player-id");
+        player.Quests["trial"] = new PlayerQuest { CurrentState = 2, TimesCompleted = 1 };
+
+        QuestEncounter.CanActivateEncounter(player, "missing", 1, true).Should().BeFalse();
+        QuestEncounter.CanActivateEncounter(player, "trial", 0, true).Should().BeFalse();
+        QuestEncounter.CanActivateEncounter(player, "", 1, true).Should().BeFalse();
+        QuestEncounter.CanActivateEncounter(null!, "trial", 1, true).Should().BeFalse();
+    }
+
     [Test]
     public void IsPlayerOnQuestState_RequiresExactQuestState()
     {

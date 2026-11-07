@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void InvincibleBreach()
         {
             _builder.Create(InvincibleBreachQuestId, "Inner Gate Challenge")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(InvincibleMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInvincibleScoredChallengeBadge)
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void InvincibleMastery()
         {
             _builder.Create(InvincibleMasteryQuestId, "Final Grading")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(InvincibleCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
 

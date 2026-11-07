@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UnmovingCenterBreach()
         {
             _builder.Create(UnmovingCenterBreachQuestId, "Where the Warden Stopped")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UnmovingCenterMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UnmovingCenterMastery()
         {
             _builder.Create(UnmovingCenterMasteryQuestId, "The One Who Stopped Moving")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UnmovingCenterCircleQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void WorldbreakerBreach()
         {
             _builder.Create(WorldbreakerBreachQuestId, "Single Point of Failure")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(WorldbreakerMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneWorldbreakerShearedBaySigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void WorldbreakerMastery()
         {
             _builder.Create(WorldbreakerMasteryQuestId, "Exceeded Rating")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(WorldbreakerCircleQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
 

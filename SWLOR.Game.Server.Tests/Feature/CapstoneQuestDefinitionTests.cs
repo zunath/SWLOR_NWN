@@ -296,6 +296,28 @@ public class CapstoneQuestDefinitionTests
     }
 
     [Test]
+    public void BossQuests_AllowEncounterReplayWhileKeepingCompletionRewardsOneTime()
+    {
+        var quests = BuildCapstoneQuests();
+        foreach (var line in CapstoneQuestDefinitionTestData.Lines)
+        {
+            for (var step = 0; step < line.QuestIds.Count; step++)
+            {
+                var quest = quests[line.QuestIds[step]];
+                quest.AllowEncounterReplay.Should().Be(step is 2 or 4, quest.QuestId);
+                quest.IsRepeatable.Should().BeFalse(quest.QuestId);
+            }
+        }
+
+        foreach (var quest in new BloodFrenzyQuestDefinition().BuildQuests().Values)
+        {
+            quest.AllowEncounterReplay.Should().Be(
+                quest.QuestId is "blood_frenzy_glass" or "blood_frenzy_mastery", quest.QuestId);
+            quest.IsRepeatable.Should().BeFalse(quest.QuestId);
+        }
+    }
+
+    [Test]
     public void BeastCapstoneQuests_RequireBeastMasterySkillOnEveryStep()
     {
         var quests = BuildCapstoneQuests();

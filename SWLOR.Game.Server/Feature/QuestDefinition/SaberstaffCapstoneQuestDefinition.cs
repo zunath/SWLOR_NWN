@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SaberCycloneBreach()
         {
             _builder.Create(SaberCycloneBreachQuestId, "The Warden's Orbit")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SaberCycloneMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberCycloneFracturedTrialSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SaberCycloneMastery()
         {
             _builder.Create(SaberCycloneMasteryQuestId, "The Eye of the Cyclone")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SaberCycloneCircleQuestId)
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void InfiniteConduitBreach()
         {
             _builder.Create(InfiniteConduitBreachQuestId, "Breaking the Dam")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(InfiniteConduitMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInfiniteConduitFracturedWardSigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void InfiniteConduitMastery()
         {
             _builder.Create(InfiniteConduitMasteryQuestId, "The River Without End")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(InfiniteConduitCircleQuestId)
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
 

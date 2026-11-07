@@ -1,0 +1,89 @@
+{
+  "comment": "Data for tools/Refactor/Move-SupportNamespaces.ps1 (P2-Z2). namespaceRenames: names relative to SWLOR.Game.Server; the namespace, its folder and the same names written as paths move together, children included. The coordinator approved the three Feature names on 2026-11-07; Domain.Foundation is the spec's name. expandGlobFiles: path lists whose `Service/<N>Service/**` lines become the moved files (a folder glob would also take the files already in the Domain folder, and the clock seam must not reach the ambient loops). textExcludes: PowerShell -like patterns on repository paths the script must not rewrite. facadeNameFiles: files whose \"facade\" values name a type relative to Service (<N>Service.Topic.Type) and become <Domain>.Topic.Type. textEdits: exact text replaced in one file; each is idempotent (the old or the new text must be present).",
+  "namespaceRenames": [
+    { "from": "Domain.Core", "to": "Domain.Foundation" },
+    { "from": "Feature.PerkDefinition.Beast", "to": "Feature.PerkDefinition.BeastPerks" },
+    { "from": "Feature.AppearanceDefinition.AppearancePreview", "to": "Feature.AppearanceDefinition.Preview" },
+    { "from": "Feature.AppearanceDefinition.RacialAppearance", "to": "Feature.AppearanceDefinition.Species" }
+  ],
+  "textExcludes": [
+    "SWLOR.Game.Server/Readmes/Maintainability*",
+    "SWLOR.Toolset/WORKLOG.md",
+    "tools/Refactor/Move-SupportNamespaces.ps1",
+    "tools/Refactor/NamespaceMoves.json",
+    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs"
+  ],
+  "expandGlobFiles": [
+    "tools/Refactor/ClockSeamFiles.txt"
+  ],
+  "facadeNameFiles": [
+    "SWLOR.Architecture.Tests/ConvertedServices.json"
+  ],
+  "textEdits": [
+    {
+      "file": "SWLOR.Game.Server.Tests/Feature/QuestLifecycleTests.cs",
+      "find": "Path.Combine(service, \"QuestService\", \"QuestDetail.cs\")",
+      "replace": "Path.Combine(root!.FullName, \"SWLOR.Game.Server\", \"Domain\", \"Quests\", \"QuestDetail.cs\")"
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Combat/**\",",
+      "replace": "\"Domain/Combat/BossCreature.cs\","
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Character/**\",",
+      "replace": "\"Domain/Character/CreatureStatusEffect.cs\","
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Abilities/**\",",
+      "replace": "\"Domain/Abilities/AbilityBuilder.cs\","
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/Domains/ConvertedPieces.cs",
+      "find": "ConvertedService.ServerNamespace + \".Service\" + parent",
+      "replace": "ConvertedService.ServerNamespace + \".Domain\" + parent"
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Composition/ConvertedServiceFixtures.cs",
+      "find": "assembly.GetType($\"{ServerNamespace}.Service.{facade}\", throwOnError: true)!",
+      "replace": "assembly.GetType($\"{ServerNamespace}.Domain.{facade}\", throwOnError: true)!"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServiceRulesTests.cs",
+      "find": "TrackerFacade = \"AchievementService.AchievementTracker\"",
+      "replace": "TrackerFacade = \"Character.AchievementTracker\""
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
+      "find": "named relative to SWLOR.Game.Server.Service:",
+      "replace": "named relative to SWLOR.Game.Server.Domain:"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
+      "find": "\"domain\": \"Core\"",
+      "replace": "\"domain\": \"Foundation\""
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/DomainMap.json",
+      "find": "\"unrestrictedTargetDomains\": [\"Core\", \"Platform\"]",
+      "replace": "\"unrestrictedTargetDomains\": [\"Foundation\", \"Platform\"]"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/DomainMap.json",
+      "find": "\"Core\": {",
+      "replace": "\"Foundation\": {"
+    },
+    {
+      "file": "tools/UpdateProgressionPaceBible.py",
+      "find": "SERVICE / \"CraftService\" / \"Minigame\" / \"CraftMinigameXp.cs\"",
+      "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Minigame\" / \"CraftMinigameXp.cs\""
+    },
+    {
+      "file": "tools/UpdateProgressionPaceBible.py",
+      "find": "SERVICE / \"CraftService\" / \"Research\" / \"ResearchXpRules.cs\"",
+      "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Research\" / \"ResearchXpRules.cs\""
+    }
+  ]
+}

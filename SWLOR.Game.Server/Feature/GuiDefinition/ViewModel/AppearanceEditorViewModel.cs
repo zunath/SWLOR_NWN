@@ -831,6 +831,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private static readonly AppearanceArmor[] EditedArmorParts =
+        {
+            AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,
+            AppearanceArmor.LeftShoulder, AppearanceArmor.LeftBicep, AppearanceArmor.LeftForearm, AppearanceArmor.LeftHand,
+            AppearanceArmor.LeftThigh, AppearanceArmor.LeftShin, AppearanceArmor.LeftFoot,
+            AppearanceArmor.RightShoulder, AppearanceArmor.RightBicep, AppearanceArmor.RightForearm, AppearanceArmor.RightHand,
+            AppearanceArmor.RightThigh, AppearanceArmor.RightShin, AppearanceArmor.RightFoot, AppearanceArmor.Robe,
+        };
+
+        private bool AllowsArmorParts(uint item)
+        {
+            var definition = _armorAppearances[GetAppearanceType(_target)];
+            return EditedArmorParts.All(part => ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part,
+                GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part)));
+        }
+
         private bool IsValidItem()
         {
             // Treated as a valid item if we're not in the item customization page.
@@ -849,38 +865,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Armors must have parts that are publicly available.
             // If any single part ID is not in the list of available parts, the entire outfit cannot be edited.
-            if (SelectedItemTypeIndex == 0)
-            {
-                var appearanceType = GetAppearanceType(_target);
-
-                if (!_armorAppearances[appearanceType].Neck.Prepend(0).Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
-                    !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso)) ||
-                    !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt)) ||
-                    !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis)) ||
-
-                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder)) ||
-                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep)) ||
-                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm)) ||
-                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand)) ||
-
-                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh)) ||
-                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin)) ||
-                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot)) ||
-
-                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder)) ||
-                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep)) ||
-                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm)) ||
-                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand)) ||
-
-                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh)) ||
-                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin)) ||
-                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot)) ||
-
-                    !_armorAppearances[appearanceType].Robe.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe)))
-                {
-                    return false;
-                }
-            }
+            if (SelectedItemTypeIndex == 0 && !AllowsArmorParts(item))
+                return false;
 
             // Helmets and cloaks must use a model offered for the wearer's appearance.
             if (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2) // 1 = Helmet, 2 = Cloak

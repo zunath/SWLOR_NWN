@@ -429,6 +429,56 @@ public class CombatRulesTests
     }
 
     [Test]
+    public void EveryForwarderReturnsWhatItsRuleReturnsForTheSameArguments()
+    {
+        static object? Argument(Type type) => type switch
+        {
+            _ when type == typeof(int) => 40,
+            _ when type == typeof(uint) => 2u,
+            _ when type == typeof(float) || type == typeof(float).MakeByRefType() => 0.25f,
+            _ when type == typeof(bool) => true,
+            _ when type == typeof(int?) => (int?)5,
+            _ when type == typeof(SkillType) => SkillType.Rifle,
+            _ when type == typeof(StatType) => StatType.AutoAttackDamageBonus,
+            _ when type == typeof(CombatDamageType) => CombatDamageType.Force,
+            _ when type == typeof(StatusEffectCategory) => StatusEffectCategory.Bleeding,
+            _ when type == typeof(PerkType) => PerkType.AlphaRhythm,
+            _ when type == typeof(DeflectionSource) => DeflectionSource.Ranged,
+            _ when type == typeof(AbilityDetail) => new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle },
+            _ when type == typeof(IStatusEffect) => Status(StatusEffectCategory.Debuff),
+            _ when type == typeof(StatGroup) => new StatGroup(),
+            _ when type == typeof(StatAdjustmentSource) => Source((StatType.AutoAttackDamageBonusChance, 50), (StatType.AutoAttackDamageBonus, 10)),
+            _ when type == typeof(IEnumerable<StatAdjustmentSource>) || type == typeof(IReadOnlyList<StatAdjustmentSource>) =>
+                new[] { Source((StatType.AutoAttackDamageBonusChance, 50), (StatType.AutoAttackDamageBonus, 10)) },
+            _ when type == typeof(IEnumerable<uint>) => new uint[] { 1, 2, 3, 2 },
+            _ when type == typeof(Func<int>) => new Func<int>(() => 1),
+            _ => throw new NotSupportedException($"No test argument for {type}"),
+        };
+
+        var rules = typeof(CombatRules).GetMethods(Statics).Where(method => !method.IsPrivate && !method.IsSpecialName).ToArray();
+        foreach (var rule in rules)
+        {
+            var types = rule.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+            var forwarder = typeof(CombatFacade).GetMethod(rule.Name, Statics, types)!;
+            var ruleArguments = types.Select(Argument).ToArray();
+            var forwarderArguments = (object?[])ruleArguments.Clone();
+
+            var expected = rule.Invoke(null, ruleArguments);
+            var actual = forwarder.Invoke(null, forwarderArguments);
+
+            if (expected is System.Collections.IEnumerable sequence and not string)
+                actual.Should().BeEquivalentTo(sequence, options => options.WithStrictOrdering(), rule.Name);
+            else
+                actual.Should().Be(expected, rule.Name);
+            for (var i = 0; i < types.Length; i++)
+            {
+                if (types[i].IsByRef)
+                    forwarderArguments[i].Should().Be(ruleArguments[i], $"{rule.Name} writes its out value back");
+            }
+        }
+    }
+
+    [Test]
     public void EachForwarderPassesItsParametersInOrderToTheRuleOfTheSameName()
     {
         var parts = new[] { "Combat.Rules.cs", "Combat.DamageCatalog.cs" };

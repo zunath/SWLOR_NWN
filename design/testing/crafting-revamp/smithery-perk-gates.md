@@ -1,5 +1,7 @@
 # Smithery perk lines: balance gates, the 8-action floor and XP per hour
 
+**Superseded in part (November 2026):** the gear difficulty pass changed these perk values. `gear-difficulty-curve.md` has the current values and results; the tables below are the earlier pass's.
+
 What CraftSim says about the Forgemaster and Artisan lines and the two styles at the shipped magnitudes (`ForgePerkRules.cs`) after the tuning pass for gates 4 and 6. Reports: `forge-style-gates.md` (gates 2 and 3, 100 runs), `forge-forgemaster-gates.md`, `forge-artisan-gates.md`, `forge-both-gates.md`, `forge-both-cold-gates.md`, `forge-hot-gates.md` and `forge-cold-gates.md` (gates 4 to 7 for a crafter who bought the line or lines in full, or the style alone; 30 runs, 6 recipes per band, the adaptive player, gear none, mid and best, rank equal to the recipe's level, at most 50), and the unperked Plasma Forge's own `forge-gates.md`. A perked crafter owns every purchase of the lines that their rank allows (`ForgeLoadout`, read from the real perk definitions), so a level 30 recipe is played with the perks up to Smithery 30.
 
 Rules this pass applied (owner decisions, October 2026; the plan's "Balance gates and tooling" has them):

@@ -55,14 +55,12 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// <summary>The trials a style adds and the points of Test chance it gives (negative for a cost), as candidates a retune could try.</summary>
         private static readonly (string Name, int Trials, int Chance)[] MethodicalCandidates =
         {
-            ("Methodical +2 trials, -15 points", 2, -15),
-            ("Methodical +2 trials, -14 points", 2, -14),
-            ("Methodical +2 trials, -13 points", 2, -13),
-            ("Methodical +2 trials, -12 points", 2, -12),
-            ("Methodical +2 trials, -11 points", 2, -11),
-            ("Methodical +2 trials, -10 points (the plan's number)", 2, -10),
-            ("Methodical +2 trials, -5 points", 2, -5),
-            ("Methodical +3 trials, -10 points", 3, -10)
+            ("Methodical +1 trial, -15 points", 1, -15),
+            ("Methodical +1 trial, -12 points", 1, -12),
+            ("Methodical +1 trial, -20 points", 1, -20),
+            ("Methodical +2 trials, -15 points (the October number)", 2, -15),
+            ("Methodical +2 trials, -20 points", 2, -20),
+            ("Methodical +2 trials, -25 points", 2, -25)
         };
 
         /// <summary>The line's other purchases with no style, so a candidate style can be added to it.</summary>
@@ -72,14 +70,18 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
         private static readonly (string Name, int Trials, int Chance)[] IntuitiveCandidates =
         {
-            ("Intuitive -1 trial, +20 points", -1, 20),
-            ("Intuitive -1 trial, +15 points", -1, 15),
-            ("Intuitive -1 trial, +25 points", -1, 25)
+            ("Intuitive -1 trial, +4 points", -1, 4),
+            ("Intuitive -1 trial, +6 points", -1, 6),
+            ("Intuitive -1 trial, +20 points (the October number)", -1, 20)
         };
 
         /// <summary>What many experiments of one build at one case came to.</summary>
         public sealed record Sample(
-            double Actions, double TrialsUsed, double Trials, double TimeCut, double Magnitude, double AtMaximum, double AtCap, double NoEvidence);
+            double Actions, double TrialsUsed, double Trials, double TimeCut, double Magnitude, double AtMaximum, double AtCap, double NoEvidence,
+            double AtHigh = 0);
+
+        /// <summary>The score the gear ladder asks fully modded gear to reach on most top experiments, as the crafting ladder asks 85% quality.</summary>
+        internal const double HighScore = 85;
 
         /// <summary>One comparison of two styles: a level kind and a gear level over every rank and tier the study plays.</summary>
         internal sealed record StyleRow(
@@ -94,6 +96,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine($"Command: `{command}`");
             text.AppendLine();
             AppendInputs(text, options, gear);
+            AppendGearLadder(text, options, gear);
             AppendStyleBalance(text, options, gear);
             AppendStyleMagnitudes(text, options, gear);
             AppendEachPerk(text, options, gear);
@@ -113,6 +116,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             double actions = 0, trialsUsed = 0, cut = 0, magnitude = 0;
             var atMaximum = 0;
             var atCap = 0;
+            var atHigh = 0;
             var noEvidence = 0;
             for (var run = 0; run < runs; run++)
             {
@@ -134,7 +138,11 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                     atCap++;
 
                 if (!setup.IsContested)
+                {
+                    if (engine.TimeCutPercent * 100.0 / ExperimentRules.TimeCutCapPercent >= HighScore)
+                        atHigh++;
                     continue;
+                }
 
                 var (winner, size) = ResearchOutcomeRules.Resolve(
                     experimentCase.ResearchLevel, experimentCase.LicensedRunsGrant, engine.Snapshot().Evidence, random);
@@ -147,11 +155,13 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 magnitude += size;
                 if (size >= ResearchGrantRules.ReductionMaximum)
                     atMaximum++;
+                if (size * 100.0 / ResearchGrantRules.ReductionMaximum >= HighScore)
+                    atHigh++;
             }
 
             return new Sample(
                 actions / runs, trialsUsed / runs, setup.Trials, cut / runs, magnitude / runs, atMaximum / (double)runs, atCap / (double)runs,
-                noEvidence / (double)runs);
+                noEvidence / (double)runs, atHigh / (double)runs);
         }
 
         internal static Func<ExperimentSetup, ICraftPolicy> Focused { get; } =
@@ -174,11 +184,107 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine("## Inputs");
             text.AppendLine();
             text.AppendLine($"- Seed {options.Seed}; {options.Runs} experiments per case and build, every build on the same dice (the build is left out of each experiment's stream), so a difference between two builds is theirs and not the luck of two samples.");
-            text.AppendLine($"- Every build takes its numbers from the perk definitions (`FabricationResearcherPerkDefinition`) at the researcher's rank; a perk with two ranks gives the highest rank that rank allows. Base values (`ExperimentRules`): {ExperimentRules.Trials} trials, Test chance {ExperimentRules.BaseTestChancePercent}% plus up to {ExperimentRules.RankChanceBonusMaximum} points for rank, Refine Method {ExperimentRules.RefineChanceBonusPercent} points for {ExperimentRules.RefineCp} CP, Analyze {ExperimentRules.TimeCutPercentPerEvidence}% per piece of spare evidence up to {ExperimentRules.TimeCutCapPercent}%, Peer Review {ExperimentRules.PeerReviewCp} CP.");
-            text.AppendLine($"- Gear: {string.Join("; ", gear.Select(level => $"{level.Name} = {level.CpBonus} CP"))}. CP is gear CP plus 0.75 per rank.");
+            text.AppendLine($"- Every build takes its numbers from the perk definitions (`FabricationResearcherPerkDefinition`) at the researcher's rank; a perk with two ranks gives the highest rank that rank allows. Base values (`ExperimentRules`): {ExperimentRules.Trials} trials, Test chance {ExperimentRules.BaseTestChancePercent}% plus up to {ExperimentRules.RankChanceBonusMaximum} points for rank, Refine Method {ExperimentRules.RefineChanceBonusPercent} points for {ExperimentRules.RefineCp} CP, Analyze {ExperimentRules.TimeCutTenthsPerEvidence / 10.0:0.#}% per piece of spare evidence up to {ExperimentRules.TimeCutCapPercent}%, Peer Review {ExperimentRules.PeerReviewCp} CP. Gear: one point of Test chance per {ExperimentRules.ControlPerTestChancePoint} Fabrication Control, one more trial per {ExperimentRules.CraftsmanshipPerTrial} Craftsmanship; the base chance drops {ExperimentRules.TestChanceDropPerTier} points for each research tier above tier {ExperimentRules.TestChanceCurveStartTier}.");
+            text.AppendLine($"- Gear: {string.Join("; ", gear.Select(level => $"{level.Name} = Control {level.Control}, Craftsmanship {level.Craftsmanship}, {level.CpBonus} CP"))}. CP is gear CP plus 0.75 per rank; mods add no CP.");
             text.AppendLine($"- Cases: research level {FixedLevel} stands for the fixed levels and licensed-run rolls (every Test banks evidence and the last trial Analyzes it); level {ContestedLevel} stands for the levels where evidence decides between a credit and a time reduction. Researchers at ranks 20, 30, 40 and 50 research the tier their rank opens, at that tier's first rank, and rank 50 also researches tiers 1 and 3 (up to 15 more points of Test chance).");
             text.AppendLine("- Focused player: refines before every Test it can afford, puts every Test on one reduction (credit), Analyzes with the last trial at a fixed level, and with Breakthrough spends it first. Undecided player (Peer Review only): tests both reductions for half the trials, then backs the leader and, with Peer Review, pools the evidence behind it into the leader, keeping the CP it costs back from Refine Method.");
             text.AppendLine($"- Score (0-100): where evidence decides, the reduction won as a share of today's largest ({ResearchGrantRules.ReductionMaximum}%), a run with no evidence counting 0; at a fixed level, the time cut as a share of the cap ({ExperimentRules.TimeCutCapPercent}%). Style balance uses the style-balance gate's thresholds: each style the better choice on at least {Percent(GateThresholds.Default.StyleMinimumWinShare)} of cases, a mean gap of at most {Number(GateThresholds.Default.StyleMaximumMeanDifferencePoints, 0)} points, ties within {Number(TieMargin)} point count half.");
+            text.AppendLine();
+        }
+
+        // ---- gear ladder ----------------------------------------------------------------------------------------------
+
+        /// <summary>The top research tiers the gear ladder plays, each at the tier's first rank: what the top crafting bands are to the crafting ladder.</summary>
+        internal static readonly (int Tier, int Rank)[] LadderTiers = { (4, 40), (5, 50) };
+
+        /// <summary>One gear ladder row: an unperked researcher at one tier, level kind and gear level.</summary>
+        internal sealed record LadderRow(int Tier, int Level, string Gear, double Score, double AtHigh, double AtMaximum, double Actions, string Verdict);
+
+        /// <summary>One perk-against-gear row: a full line in no gear against the unperked researcher in unmodded best gear.</summary>
+        internal sealed record PerkGearRow(int Tier, int Level, string Build, double PerkedScore, double GearScore, string Verdict);
+
+        /// <summary>Only the gear ladder, the quick check a retune iterates on.</summary>
+        public static string BuildLadder(ResearcherPerkStudyOptions options, string command)
+        {
+            var gear = options.Gear ?? throw new ArgumentException("The study needs gear levels.", nameof(options));
+            var text = new StringBuilder();
+            text.AppendLine("# Crafting revamp: the Fabrication Researcher gear ladder");
+            text.AppendLine();
+            text.AppendLine($"Command: `{command}`");
+            text.AppendLine();
+            AppendInputs(text, options, gear);
+            AppendGearLadder(text, options, gear);
+            return text.ToString();
+        }
+
+        internal static (List<LadderRow> Ladder, List<PerkGearRow> Perks) GearLadder(ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear)
+        {
+            var thresholds = GateThresholds.Default;
+            var ladder = new List<LadderRow>();
+            var perks = new List<PerkGearRow>();
+            var best = gear.FirstOrDefault(level => level.Name == CraftingGearCatalog.BestGearName) ?? gear[^1];
+            var none = gear[0];
+            foreach (var (tier, rank) in LadderTiers)
+            {
+                foreach (var level in new[] { ContestedLevel, FixedLevel })
+                {
+                    double? previous = null;
+                    foreach (var gearLevel in gear)
+                    {
+                        var experimentCase = new ExperimentCase(level, tier, rank, gearLevel);
+                        var sample = Play(experimentCase, ResearcherBuild.Unperked.TuningAt(rank), Focused, options.Runs, options.Seed);
+                        var score = Score(experimentCase, sample);
+                        var failures = new List<string>();
+                        if (previous is { } below && below < thresholds.GearLadderSaturatedQuality && score - below < thresholds.GearLadderMinimumStep)
+                            failures.Add($"+{Number(score - below)} over the gear below");
+                        if (gearLevel.Name == CraftingGearCatalog.FullyModdedGearName)
+                        {
+                            if (sample.AtHigh < thresholds.GearLadderFullModsReach85Share)
+                                failures.Add($"reaches {Number(HighScore, 0)} on {Percent(sample.AtHigh)}");
+                            if (sample.AtMaximum > thresholds.GearLadderFullModsMaxFullQualityShare || (level == FixedLevel && sample.AtCap > thresholds.GearLadderFullModsMaxFullQualityShare))
+                                failures.Add($"reaches the maximum on {Percent(level == FixedLevel ? sample.AtCap : sample.AtMaximum)}");
+                        }
+
+                        ladder.Add(new LadderRow(tier, level, gearLevel.Name, score, sample.AtHigh, level == FixedLevel ? sample.AtCap : sample.AtMaximum, sample.Actions,
+                            failures.Count == 0 ? "Passed" : "Failed: " + string.Join("; ", failures)));
+                        previous = score;
+                    }
+
+                    var gearCase = new ExperimentCase(level, tier, rank, best);
+                    var gearScore = Score(gearCase, Play(gearCase, ResearcherBuild.Unperked.TuningAt(rank), Focused, options.Runs, options.Seed));
+                    foreach (var build in new[] { ResearcherBuild.MethodicalLine, ResearcherBuild.IntuitiveLine })
+                    {
+                        var perkCase = new ExperimentCase(level, tier, rank, none);
+                        var perkedScore = Score(perkCase, Play(perkCase, build.TuningAt(rank), Focused, options.Runs, options.Seed));
+                        perks.Add(new PerkGearRow(tier, level, build.Name, perkedScore, gearScore,
+                            perkedScore - gearScore <= thresholds.GearLadderPerkAllowance ? "Passed" : $"Failed: +{Number(perkedScore - gearScore)}"));
+                    }
+                }
+            }
+
+            return (ladder, perks);
+        }
+
+        private static void AppendGearLadder(StringBuilder text, ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear)
+        {
+            var thresholds = GateThresholds.Default;
+            var (ladder, perks) = GearLadder(options, gear);
+            text.AppendLine("## Gear ladder");
+            text.AppendLine();
+            text.AppendLine($"The crafting gear ladder's thresholds, on the score above, at the top research tiers (each at its first rank, focused player): each gear step adds at least {Number(thresholds.GearLadderMinimumStep, 0)} points unless the step below averages {Number(thresholds.GearLadderSaturatedQuality, 0)}; fully modded gear reaches {Number(HighScore, 0)} on at least {Percent(thresholds.GearLadderFullModsReach85Share)} of experiments and the maximum on at most {Percent(thresholds.GearLadderFullModsMaxFullQualityShare)}; a full line in no gear beats the unperked researcher in unmodded best gear by at most {Number(thresholds.GearLadderPerkAllowance, 0)} points.");
+            text.AppendLine();
+            var table = new MarkdownTable("Tier", "Level kind", "Gear", "Mean score", $"Reaches {Number(HighScore, 0)}", "Reaches the maximum", "Mean actions", "Verdict");
+            foreach (var row in ladder)
+                table.Add(row.Tier.ToString(), Kind(row.Level), row.Gear, Number(row.Score), Percent(row.AtHigh), Percent(row.AtMaximum), Number(row.Actions), row.Verdict);
+            text.AppendLine(table.ToString());
+            text.AppendLine();
+            var perkTable = new MarkdownTable("Tier", "Level kind", "Build, no gear", "Score", "Unperked, unmodded best gear", "Verdict");
+            foreach (var row in perks)
+                perkTable.Add(row.Tier.ToString(), Kind(row.Level), row.Build, Number(row.PerkedScore), Number(row.GearScore), row.Verdict);
+            text.AppendLine(perkTable.ToString());
+            text.AppendLine();
+            var failed = ladder.Count(row => row.Verdict != "Passed") + perks.Count(row => row.Verdict != "Passed");
+            text.AppendLine(failed == 0 ? "Verdict: passed." : $"Verdict: failed in {failed} row(s).");
             text.AppendLine();
         }
 

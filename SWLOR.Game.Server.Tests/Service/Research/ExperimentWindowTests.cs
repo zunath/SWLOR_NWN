@@ -107,11 +107,18 @@ public class ExperimentWindowTests
     }
 
     [Test]
-    public void TheResearchWindowOpensEachExperimentWithTheTrialsTheResearchersPerksGive()
+    public void TheResearchWindowOpensEachExperimentWithTheTrialsTheResearchersPerksAndCraftsmanshipGive()
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
 
         source.Should().Contain("ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials");
+        source.Should().Contain("ExperimentSetup.TrialsFromCraftsmanship(Stat.CalculateCraftsmanship(Player, SkillType.Fabrication))");
+
+        var experiment = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchExperimentViewModel.cs");
+        experiment.Should().Contain("Stat.CalculateControl(Player, SkillType.Fabrication)", "Control raises every Test's chance");
+        experiment.Should().Contain(
+            "job.Experiment.TrialsTotal - ExperimentSetup.TrialsFromCraftsmanship(craftsmanship)",
+            "the saved trials already hold the Craftsmanship trials, so the perk summary must not count them");
         source.Should().Contain("targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant");
         source.Should().NotContain("ExperimentRules.Trials, researchJob.TimeCost");
     }
@@ -182,9 +189,9 @@ public class ExperimentWindowTests
         var view = ExperimentDisplay.DescribeAction(Engine(3).Preview(ExperimentActionIds.TestCreditReduction));
 
         view.Kind.Should().Be(ExperimentActionKind.Normal);
-        view.Summary.Should().Be("75% Evidence found: Credit Reduction evidence +1 / 25% Inconclusive: no change to your evidence");
-        view.Tooltip.Should().Contain("Cost: 1 trial.");
-        view.Tooltip.Should().Contain("75% Evidence found");
+        view.Summary.Should().Be("75% chance: Credit Reduction evidence +1");
+        view.Tooltip.Should().Contain("Uses one trial.");
+        view.Tooltip.Should().NotContain("\n", "a NUI tooltip shows a line break as a question mark");
     }
 
     [Test]
@@ -193,7 +200,7 @@ public class ExperimentWindowTests
         var view = ExperimentDisplay.DescribeAction(Engine(1).Preview(ExperimentActionIds.RefineMethod));
 
         view.Summary.Should().Be("next Test chance +15%");
-        view.Tooltip.Should().Contain("Cost: 30 CP.");
+        view.Tooltip.Should().Contain("Costs CP and no trial.");
     }
 
     [Test]
@@ -206,7 +213,7 @@ public class ExperimentWindowTests
         var view = ExperimentDisplay.DescribeAction(engine.Preview(ExperimentActionIds.Analyze));
 
         view.Summary.Should().Be("Evidence -3, job time cut +15% (now 15%)");
-        view.Tooltip.Should().Contain("Cost: 1 trial.");
+        view.Tooltip.Should().Contain("Uses one trial.");
     }
 
     [Test]
@@ -231,7 +238,7 @@ public class ExperimentWindowTests
         var view = ExperimentDisplay.DescribeAction(Engine(1).Preview(ExperimentActionIds.Analyze));
 
         view.Kind.Should().Be(ExperimentActionKind.Unavailable);
-        view.Summary.Should().Be("Unavailable: Run a Test first: there is no evidence to analyze.");
+        view.Summary.Should().Be("Run a Test first: there is no evidence to analyze.");
     }
 
     [TestCase(ResearchCandidate.CreditReduction, 0, "No evidence yet.")]

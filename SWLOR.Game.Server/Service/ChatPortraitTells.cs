@@ -73,11 +73,17 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var player = GetLastGuiEventPlayer();
-            var result = ClickPortrait(player, GetLastGuiEventObject());
-            if (result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous)
+            var portraitOwner = GetLastGuiEventObject();
+            var result = ClickPortrait(player, portraitOwner);
+            if (ChatPortraitTellGuard.IsDoubtful(result))
             {
-                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so it could now point to someone else. " +
-                    "A tell started from it will not be sent. Use Send Tell in the Player List instead."));
+                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so a tell started from it now goes to ") +
+                    PlayerName.GetColoredDisplayName(player, portraitOwner) +
+                    ColorToken.Red(". Click the portrait again to send your tell to them, or use Send Tell in the Player List."));
+            }
+            else if (result == ChatPortraitClick.Confirmed)
+            {
+                SendMessageToPC(player, "Your tell from that chat portrait goes to " + PlayerName.GetColoredDisplayName(player, portraitOwner) + ".");
             }
         }
 
@@ -96,11 +102,27 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Classifies a chat-log portrait the way a click on it would, without counting as a click.
+        /// </summary>
+        public static ChatPortraitClick ClassifyPortrait(uint player, uint portraitOwner)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var observer = server.GetClientObjectByObjectId(player);
+            var holder = server.GetClientObjectByObjectId(portraitOwner);
+            if (observer == null || holder == null)
+                return ChatPortraitClick.Unrecorded;
+
+            return Guard.Classify(observer.m_oidPCObject, holder.m_nPlayerID, GetCharacterId(holder));
+        }
+
+        /// <summary>
         /// Whether to refuse a tell because a portrait click that may belong to another player started it, telling
         /// the sender why. A tell from the Player List names its target exactly and is never refused.
         /// </summary>
-        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell)
+        /// <param name="confirmedTarget">True when the tell goes to the player the sender confirmed with a second portrait click.</param>
+        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell, out bool confirmedTarget)
         {
+            confirmedTarget = false;
             // A Player List tell does not send the chat prompt, so a refused click's prompt may still be open.
             if (isDirectTell)
                 return false;
@@ -112,13 +134,13 @@ namespace SWLOR.Game.Server.Service
 
             var targetClient = server.GetClientObjectByObjectId(target);
             var refused = targetClient == null
-                ? Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, uint.MaxValue, string.Empty, DateTime.UtcNow)
-                : Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient.m_nPlayerID, GetCharacterId(targetClient), DateTime.UtcNow);
+                ? Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, uint.MaxValue, string.Empty, DateTime.UtcNow, out confirmedTarget)
+                : Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient.m_nPlayerID, GetCharacterId(targetClient), DateTime.UtcNow, out confirmedTarget);
             if (!refused)
                 return false;
 
             SendMessageToPC(sender, ColorToken.Red("Tell not sent: the chat portrait you clicked may belong to a player who has logged out. " +
-                "Use Send Tell in the Player List instead."));
+                "Click the portrait again to confirm who it goes to, or use Send Tell in the Player List."));
             return true;
         }
 

@@ -197,18 +197,17 @@ public class CircuitPerkEngineTests
 
     // ---- stats the Technician line grants --------------------------------------------------------------------------------
 
-    [TestCase(1, 2, 2, 2, 3)]
-    [TestCase(2, 1, 1, 1, 2)]
-    public void InsulatedTraces_CutWireTuneBoostAndDischargeIntegrity_ButNotGroundOrPatch(
-        int reduction, int wire, int tune, int boost, int discharge)
+    [TestCase(1, 2, 2)]
+    [TestCase(2, 1, 1)]
+    public void InsulatedTraces_CutWireAndBoostIntegrity_ButNothingElse(int reduction, int wire, int boost)
     {
         var engine = Perked(new CircuitPerkStats { ActionIntegrityReduction = reduction }, 5);
 
         engine.Preview(CircuitActionIds.Wire).IntegrityCost.Should().Be(wire);
-        engine.Preview(CircuitActionIds.Tune).IntegrityCost.Should().Be(tune);
         engine.Preview(CircuitActionIds.Boost).IntegrityCost.Should().Be(boost);
-        engine.Preview(CircuitActionIds.DischargeAssembly).IntegrityCost.Should().Be(discharge);
-        engine.Preview(CircuitActionIds.DischargeCalibration).IntegrityCost.Should().Be(discharge);
+        engine.Preview(CircuitActionIds.Tune).IntegrityCost.Should().Be(CircuitRules.TuneIntegrity);
+        engine.Preview(CircuitActionIds.DischargeAssembly).IntegrityCost.Should().Be(CircuitRules.DischargeIntegrity);
+        engine.Preview(CircuitActionIds.DischargeCalibration).IntegrityCost.Should().Be(CircuitRules.DischargeIntegrity);
         engine.Preview(CircuitActionIds.Ground).IntegrityCost.Should().Be(2);
         engine.Preview(CircuitActionIds.Patch).IntegrityCost.Should().Be(0);
     }
@@ -216,16 +215,10 @@ public class CircuitPerkEngineTests
     [Test]
     public void InsulatedTraces_NeverTakeAnActionBelowOneIntegrity()
     {
-        var engine = Perked(new CircuitPerkStats { ActionIntegrityReduction = 10, CascadeDischarge = true, MicroTune = true }, 5);
+        var engine = Perked(new CircuitPerkStats { ActionIntegrityReduction = 10 }, 5);
 
-        foreach (var id in new[]
-                 {
-                     CircuitActionIds.Wire, CircuitActionIds.Tune, CircuitActionIds.MicroTune, CircuitActionIds.Boost,
-                     CircuitActionIds.DischargeAssembly, CircuitActionIds.DischargeBoth
-                 })
-        {
-            engine.Preview(id).IntegrityCost.Should().Be(1, id);
-        }
+        engine.Preview(CircuitActionIds.Wire).IntegrityCost.Should().Be(1);
+        engine.Preview(CircuitActionIds.Boost).IntegrityCost.Should().Be(1);
     }
 
     [Test]
@@ -286,11 +279,11 @@ public class CircuitPerkEngineTests
         preview.CpCost.Should().Be(2);
         preview.IntegrityCost.Should().Be(2);
         preview.Outcomes.Should().ContainSingle();
-        preview.Outcomes[0].Delta.Should().Be(new MinigameMeterDelta(Quality: 56, Integrity: -2, Cp: -2));
+        preview.Outcomes[0].Delta.Should().Be(new MinigameMeterDelta(Quality: 48, Integrity: -2, Cp: -2));
         preview.Outcomes[0].Change(CircuitEngine.LoadId)!.Delta.Should().Be(0);
-        Perked(new CircuitPerkStats { MicroTune = true }, 6).Preview(CircuitActionIds.MicroTune).Outcomes[0].Delta.Quality.Should().Be(90);
+        Perked(new CircuitPerkStats { MicroTune = true }, 6).Preview(CircuitActionIds.MicroTune).Outcomes[0].Delta.Quality.Should().Be(77);
         Perked(new CircuitPerkStats { MicroTune = true, TunePowerPercent = 10 }, 6).Preview(CircuitActionIds.MicroTune).Outcomes[0].Delta.Quality
-            .Should().Be(99, "Fine Calibration raises it as it raises a Tune");
+            .Should().Be(85, "Fine Calibration raises it as it raises a Tune");
     }
 
     [Test]

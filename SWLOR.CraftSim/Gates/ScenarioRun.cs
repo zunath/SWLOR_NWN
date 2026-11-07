@@ -113,9 +113,9 @@ namespace SWLOR.CraftSim.Gates
             Scenario = scenario;
             Thresholds = thresholds;
             Context = context;
-            Gear = context.Gear.Levels(scenario.Skill);
+            Gear = scenario.TunedAgainstFullMods ? context.Gear.LevelsWithFullMods(scenario.Skill) : context.Gear.Levels(scenario.Skill);
             Cohort = scenario.Cohort;
-            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand);
+            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand, thresholds.OnlyBands).ToList();
 
             // The XP chart loads once, before the parallel plays read it.
             ServerXp.ForDelta(0);
@@ -130,6 +130,23 @@ namespace SWLOR.CraftSim.Gates
         public ScenarioCohort Cohort { get; }
 
         /// <summary>The cohort's bands with the recipes played.</summary>
+        /// <summary>
+        /// True when a minigame tuned against the gear players really reach is played in gear far below what the band asks for. The length, XP and
+        /// economy gates only report that cell: a poor, slow craft there is what makes gear worth having.
+        /// </summary>
+        public bool IsUnderGeared(RecipeBand band, GearLevel gear)
+        {
+            if (!Scenario.TunedAgainstFullMods)
+                return false;
+
+            return gear.Name switch
+            {
+                CraftingGearCatalog.NoGearName => band.First >= Thresholds.UnderGearedNoGearFromLevel,
+                CraftingGearCatalog.MidGearName => band.First >= Thresholds.UnderGearedMidGearFromLevel,
+                _ => false
+            };
+        }
+
         public IReadOnlyList<CohortBand> Bands { get; }
 
         public int RankFor(RecipeEntry recipe) => Cohort.RankFor(recipe);
@@ -140,8 +157,8 @@ namespace SWLOR.CraftSim.Gates
         private static bool IsEnhanceable(RecipeEntry recipe) => recipe.EnhancementSlots > 0 && recipe.EnhancementType != RecipeEnhancementType.None;
 
         /// <summary>
-        /// The cohort's recipes that can hold an enhancement, an even sample of each band (the cohort's own bands unless
-        /// <paramref name="bands"/> are given), each with the representative enhancement of its kind at the best level it accepts. Empty when the
+        /// The cohort's recipes that can hold an enhancement, an even sample of each band (<paramref name="bands"/> if given, else
+        /// the same bands as <see cref="Bands"/>), each with the representative enhancement of its kind at the best level it accepts. Empty when the
         /// context has no enhancement items.
         /// </summary>
         public IReadOnlyList<EnhancedBand> EnhancedBands(IReadOnlyList<RecipeBand> bands = null)
@@ -152,7 +169,7 @@ namespace SWLOR.CraftSim.Gates
 
             var enhanceable = RecipeCatalog.From(Context.Recipes.Recipes.Where(IsEnhanceable));
             var result = new List<EnhancedBand>();
-            foreach (var band in Cohort.Select(enhanceable, Thresholds.RecipesPerBand, bands))
+            foreach (var band in Cohort.Select(enhanceable, Thresholds.RecipesPerBand, bands ?? Thresholds.OnlyBands))
             {
                 var recipes = new List<EnhancedRecipe>();
                 var dropped = new List<string>();

@@ -43,9 +43,9 @@ public sealed record ForgeSetup(
     /// <summary>The highest Thermal inside the working range, with the style's shift.</summary>
     public int RangeHigh => Parameters.RangeHigh + RangeShift;
 
-    public int ShapeMax => ForgeRules.ShapeMax(Parameters.ShapeShare, EnhancementShapePercent);
+    public int ShapeMax => ForgeRules.ShapeMax(Parameters.ShapeShare, EnhancementShapePercent, RecipeLevel);
 
-    public int FinishMax => ForgeRules.FinishMax(Parameters.ShapeShare);
+    public int FinishMax => ForgeRules.FinishMax(Parameters.ShapeShare, RecipeLevel);
 
     public int MaxCp => ForgeRules.MaxCp(GearCp, Rank);
 

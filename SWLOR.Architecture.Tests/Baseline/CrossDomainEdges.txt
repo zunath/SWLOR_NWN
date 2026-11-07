@@ -1054,8 +1054,9 @@ Party -> Telegraph | 2
 # Social -> Companions (1 edge)
 Feature/ChatCommandDefinition -> BeastMastery | 6
 
-# Social -> Crafting (1 edge)
+# Social -> Crafting (2 edges)
 Feature/ChatCommandDefinition -> Craft | 1
+Performance -> Craft | 5
 
 # Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> CompanionControl | 1

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceWindowsService _windows;
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceRiderService _riders;
+        private readonly ICraftService _craft;
 
         public PerformanceService(
             IDBService db,
@@ -81,7 +83,8 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceAudienceService audience,
             IPerformanceWindowsService windows,
             IPerformanceSongService songs,
-            IPerformanceRiderService riders)
+            IPerformanceRiderService riders,
+            ICraftService craft)
         {
             _db = db;
             _namedAnimation = namedAnimation;
@@ -89,6 +92,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _windows = windows;
             _songs = songs;
             _riders = riders;
+            _craft = craft;
         }
 
         public IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId)
@@ -396,7 +400,7 @@ namespace SWLOR.Game.Server.Domain.Social
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            RecoverInterruptedPerformance(player);
+            RecoverInterruptedPerformance(player, atLogin: true);
         }
 
         /// <summary>Talking or emoting keeps a Roleplay mode performance going. Chat commands do not count.</summary>
@@ -514,6 +518,7 @@ namespace SWLOR.Game.Server.Domain.Social
             var toggleFeat = toggleFeats[Math.Clamp(level, 1, toggleFeats.Length) - 1];
 
             dbPlayer.PerformanceSavedHotBar = CreaturePlugin.SerializeQuickbar(player) ?? string.Empty;
+            dbPlayer.PerformanceHotBarRestoreSequence = 0;
             _db.Set(dbPlayer);
 
             foreach (var feat in GetModeFeats(kind))
@@ -761,21 +766,39 @@ namespace SWLOR.Game.Server.Domain.Social
             if (string.IsNullOrWhiteSpace(saved) || !CreaturePlugin.DeserializeQuickbar(player, saved))
                 ClearFirstBar(player);
 
-            dbPlayer.PerformanceSavedHotBar = null;
+            // An export finishes after this script, so only a later login can acknowledge the restored bar.
+            dbPlayer.PerformanceHotBarRestoreSequence = AdvanceFileSequence(player);
             _db.Set(dbPlayer);
+            PersistCharacter(player);
         }
 
         // Restores the hot bar and feats after a crash, a failed cleanup, or a stale mode button.
-        private void RecoverInterruptedPerformance(uint player)
+        private void RecoverInterruptedPerformance(uint player, bool atLogin = false)
         {
             if (_sessions.ContainsKey(player))
                 return;
 
             var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer?.PerformanceSavedHotBar == null)
+            if (dbPlayer == null)
                 return;
 
-            RestorePlayer(player);
+            var action = PerformanceHotbarRecovery.Decide(
+                dbPlayer.PerformanceSavedHotBar,
+                dbPlayer.PerformanceHotBarRestoreSequence,
+                LoadedSequence(player),
+                atLogin);
+            if (action == PerformanceHotbarRecoveryAction.None)
+                return;
+
+            if (action == PerformanceHotbarRecoveryAction.Restore)
+                RestorePlayer(player);
+            else
+            {
+                dbPlayer.PerformanceSavedHotBar = null;
+                dbPlayer.PerformanceHotBarRestoreSequence = 0;
+                _db.Set(dbPlayer);
+            }
+
             if (GetBusyType(player) == ActivityStatusType.Performing)
                 ClearBusy(player);
         }
@@ -916,6 +939,13 @@ namespace SWLOR.Game.Server.Domain.Social
             Scheduler.ScheduleRepeating(task, interval);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perk) => Perk.GetPerkLevel(creature, perk);
+
+        // The craft session world's character file checkpoint, behind the converted Craft service.
+        protected virtual int AdvanceFileSequence(uint player) => _craft.SessionWorld.AdvanceFileSequence(player);
+
+        protected virtual int LoadedSequence(uint player) => _craft.SessionWorld.LoadedSequence(player);
+
+        protected virtual void PersistCharacter(uint player) => _craft.SessionWorld.PersistCharacter(player);
 
         protected virtual bool IsBusy(uint target) => Activity.IsBusy(target);
 

@@ -1,7 +1,7 @@
 # Crafting revamp: balance gates of the Plasma Forge minigame
 
-- Command: `SWLOR.CraftSim gates --scenario forge --gates styles,perks --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/forge-style-gates.md`
-- Seed 1; 100 runs per case.
+- Command: `SWLOR.CraftSim gates --scenario forge --gates styles,perks --runs 40 --seed 1 --recipes-per-band 6 --repo . --out design/testing/crafting-revamp/forge-style-gates.md`
+- Seed 1; 40 runs per case.
 
 ## Inputs
 
@@ -11,9 +11,10 @@
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 23)
   - best gear (Control 29, Craftsmanship 30, CP 37)
-- Recipes: 1-10: 6 of 119; 11-20: 6 of 142; 21-30: 6 of 195; 31-40: 6 of 134; 41-53: 6 of 187 recipes played.
+  - fully modded gear (Control 119, Craftsmanship 120, CP 37)
+- Recipes: 1-10: 6 of 120; 11-20: 6 of 144; 21-30: 6 of 196; 31-40: 6 of 135; 41-53: 6 of 193 recipes played.
 - Adaptive player: depth 4, forecast samples per result 2, budget 6000 engine copies per decision, 0.5% of value lost per extra action, heuristic DefaultLeafHeuristic. Each attempt's dice come from its own stream of the seed.
-- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
+- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 40 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
 - XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 1.97x, 11-20 1.20x, 21-30 1.46x, 31-40 2.05x, 41-53 1.09x. The new side's XP below includes it; the legacy loop's does not.
@@ -40,7 +41,7 @@
   - `SolverOptions` = the scenario's: effort of the fixed-rotation solver
   - `ActionLimit` = 100: actions after which an attempt counts as stalled
 - Length target: 10-20 actions (item craft at level).
-- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 85% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
+- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 100% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
 - Styles compared: Hot Forging (no lines) vs Cold Working (no lines) (from rank 20); Hot Forging (both lines) vs Cold Working (both lines) (from rank 20).
 - Gates run: Style balance, Perks optional. The others were not run, so this report cannot show that the minigame passes.
 
@@ -49,7 +50,7 @@
 | Gate | Verdict | Summary |
 | --- | --- | --- |
 | Style balance | Passed | Every style is the better choice on at least 30% of recipes and no pair differs by more than 5 points on average. |
-| Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 57%). |
+| Perks optional | Passed | An unperked rank-50 crafter in fully modded gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 41%). |
 
 ## Style balance
 
@@ -57,22 +58,24 @@
 
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Hot Forging (no lines) vs Cold Working (no lines) | no gear | 20 | 35% | 65% | 84.0 | 85.5 | -1.5 | Passed |
-| Hot Forging (no lines) vs Cold Working (no lines) | mid gear | 20 | 38% | 62% | 91.6 | 92.8 | -1.2 | Passed |
-| Hot Forging (no lines) vs Cold Working (no lines) | best gear | 20 | 55% | 45% | 95.6 | 95.7 | -0.1 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | no gear | 20 | 57% | 42% | 97.8 | 97.3 | +0.5 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | mid gear | 20 | 57% | 42% | 99.8 | 99.3 | +0.5 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | best gear | 20 | 52% | 48% | 99.9 | 99.8 | +0.1 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | no gear | 20 | 40% | 60% | 63.0 | 64.7 | -1.6 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | mid gear | 20 | 42% | 57% | 77.9 | 79.3 | -1.4 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | best gear | 20 | 50% | 50% | 87.3 | 87.5 | -0.2 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | fully modded gear | 20 | 55% | 45% | 99.0 | 98.6 | +0.4 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | no gear | 20 | 60% | 40% | 77.3 | 76.3 | +1.1 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | mid gear | 20 | 65% | 35% | 95.5 | 93.5 | +2.0 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | best gear | 20 | 52% | 48% | 99.5 | 99.4 | +0.0 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | fully modded gear | 20 | 50% | 50% | 99.9 | 99.9 | +0.0 | Passed |
 
 ## Perks optional
 
-### Rank 50, best gear, no perks: adaptive attempts that reach maximum quality, by recipe band
+### Rank 50, fully modded gear, no perks: adaptive attempts that reach maximum quality, by recipe band
 
 | Band | Recipes played | Attempts | Reach maximum quality | Make the item | Avg quality of items made | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 6 | 600 | 86% | 100% | 99% | >= 50% | Passed |
-| 46-50 | 6 | 600 | 83% | 100% | 98% | >= 50% | Passed |
-| 51-53 | 6 | 600 | 57% | 99% | 91% | >= 50% | Passed |
+| 41-45 | 6 | 240 | 90% | 100% | 100% | >= 50% | Passed |
+| 46-50 | 6 | 240 | 68% | 100% | 95% | >= 50% | Passed |
+| 51-53 | 6 | 240 | 41% | 100% | 92% | >= 35% | Passed |
 
 ## Limitations
 

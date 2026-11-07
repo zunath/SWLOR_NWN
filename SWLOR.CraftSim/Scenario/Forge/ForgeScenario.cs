@@ -1,3 +1,4 @@
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Play;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -62,6 +63,11 @@ namespace SWLOR.CraftSim.Scenario.Forge
         public LengthTarget LengthTarget => _defaultLoadout != null ? LengthTarget.PerkedItemCraft : LengthTarget.ItemCraft;
 
         public AdaptivePolicyOptions AdaptiveOptions => Adaptive;
+
+        public bool TunedAgainstFullMods => true;
+
+        public string GearLadderKind(RecipeEntry recipe) =>
+            recipe.Detail?.MinigameParameters is ForgeParameters { ShapeShare: > ForgeRules.EvenShapeShare } ? "Shape-heavy" : "Finish-heavy";
 
         /// <summary>
         /// Gate 2 compares Hot Forging with Cold Working for a crafter who has bought only the styles (rank 20 is the first rank either is

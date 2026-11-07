@@ -26,9 +26,12 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public string Name { get; init; } = "bench";
 
+        /// <summary>Plays the gear ladder up to fully modded gear and runs the gear ladder gate.</summary>
+        public bool TunedAgainstFullMods { get; init; }
+
         public string Title => "Test Bench";
 
-        public SkillType Skill => SkillType.Smithery;
+        public SkillType Skill { get; init; } = SkillType.Smithery;
 
         public CraftMinigameType Minigame => CraftMinigameType.Forge;
 

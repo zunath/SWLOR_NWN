@@ -1,5 +1,7 @@
 # Engineering perk lines: balance gates and the length shortfall
 
+**Superseded in part (November 2026):** the gear difficulty pass changed these perk values. `gear-difficulty-curve.md` has the current values and results; the tables below are the earlier pass's.
+
 What CraftSim says about the Overclocker and Technician lines at the shipped magnitudes (`CircuitPerkRules.cs`). Reports: `circuit-style-gates.md` (gates 2 and 3), `circuit-overclocker-gates.md`, `circuit-technician-gates.md` and `circuit-both-gates.md` (gates 1, 4, 5, 6 and 7 for a crafter who bought the line or lines in full). The unperked Circuit's own report is `circuit-gates.md`. All runs: seed 1, 100 runs per case, 6 recipes per band, the adaptive player, gear none, mid and best, rank equal to the recipe's level (at most 50). A perked crafter owns every purchase of the lines that their rank allows (`CircuitLoadout`, read from the real perk definitions), so a level 30 recipe is played with the perks up to Engineering 30.
 
 Scenarios (`gates --scenario <name>`):

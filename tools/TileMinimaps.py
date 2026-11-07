@@ -95,11 +95,13 @@ class Resources:
                 self.entries[file.name.lower()] = ("file", str(file))
         listing = subprocess.check_output(
             ["git", "-C", str(self.haks), "ls-tree", "-r", "HEAD"], text=True)
+        deleted = set(subprocess.check_output(
+            ["git", "-C", str(self.haks), "ls-files", "--deleted"], text=True).splitlines())
         tracked = defaultdict(dict)
         for line in listing.splitlines():
             info, path = line.split("\t", 1)
             parts = Path(path).parts
-            if len(parts) == 2:
+            if len(parts) == 2 and path not in deleted:
                 tracked[parts[0]][parts[1].lower()] = ("git", path, info.split()[2])
         ifo = json.loads(Path(module).read_bytes().decode("latin1"))
         self.hak_order = [entry["Mod_Hak"]["value"] for entry in ifo["Mod_HakList"]["value"]]

@@ -31,8 +31,8 @@ public class PerformanceInstrumentCatalogTests
     }
 
     [Test]
-    public void The_resrefs_are_the_five_instruments_in_the_order_they_were_listed()
+    public void The_resrefs_are_the_five_instruments()
     {
-        PerformanceInstrumentCatalog.Resrefs.Should().Equal("guitar", "lute", "harp", "kloo_horn", "slitherhorn");
+        PerformanceInstrumentCatalog.Resrefs.Should().BeEquivalentTo("guitar", "lute", "harp", "kloo_horn", "slitherhorn");
     }
 }

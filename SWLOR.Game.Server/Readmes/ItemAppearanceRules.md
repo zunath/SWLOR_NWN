@@ -43,10 +43,12 @@ clipping checks and dependent robe/part-skin regeneration.
   `ArmorPartAppearance` repairs saved armor to 0 when it is worn. Other slots show the bare body.
 - No armor part list offers style 2 (neck and every other slot, general and droid catalogs): it shows
   the same bare body part as 0 and 1 while its picture shows another model. Style 1 stays on every
-  list (Xisifer's rule: keep 1 where it is a list's first ID). Saved armor moved from 2 to 1 once, in
-  player migration 26 and server migration 31 (`RetiredArmorStyleMigration`); player blueprints and
-  their placed copies use 0 where the general list offers it, otherwise 1. Body-part lists
-  (Appearance tab) still offer 1 and 2, so their names stay.
+  list (Xisifer's rule: keep 1 where it is a list's first ID). Saved armor and blueprints keep 2 and
+  are not moved: SWLOR binds dyes to the material named by the armor part number, so 2 sends them to
+  a model the engine never draws. Moving 2 to 1 or 0 would recolor the pelvis (cloth dye on the
+  underwear), the female human chest and droid parts (metal dye on chrome); moving to 1 would also
+  undye body part 2 on human necks, hands and feet. The editor shows such a slot with no part selected until the player picks
+  one. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

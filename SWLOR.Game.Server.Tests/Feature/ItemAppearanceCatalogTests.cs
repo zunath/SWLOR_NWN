@@ -12,16 +12,24 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ItemAppearanceCatalogTests
 {
-    private sealed record ArmorSlot(string Name, string Field, Func<BaseArmorAppearanceDefinition, int[]> Catalog, bool AllowsNone = false);
+    private sealed record ArmorSlot(string Name, string Field, Func<BaseArmorAppearanceDefinition, int[]> Catalog, bool AllowsNone = false,
+        bool KeepsBareStyleTwo = true);
+
+    /// <summary>
+    /// Style 2 left every part list, but existing armor keeps it: it draws the same bare body part as 1, and
+    /// moving it to 1 would change how the part takes dyes (the pelvis and droid parts would start showing
+    /// the armor's colors). Shoulders, belts and robes show nothing at 2 and were moved off it.
+    /// </summary>
+    private const int BareStyleTwo = 2;
 
     private static readonly ArmorSlot[] ArmorSlots =
     {
         new("Neck", "ArmorPart_Neck", a => a.Neck, AllowsNone: true),
         new("Torso", "ArmorPart_Torso", a => a.Torso),
-        new("Belt", "ArmorPart_Belt", a => a.Belt),
+        new("Belt", "ArmorPart_Belt", a => a.Belt, KeepsBareStyleTwo: false),
         new("Pelvis", "ArmorPart_Pelvis", a => a.Pelvis),
-        new("LShoulder", "ArmorPart_LShoul", a => a.Shoulder),
-        new("RShoulder", "ArmorPart_RShoul", a => a.Shoulder),
+        new("LShoulder", "ArmorPart_LShoul", a => a.Shoulder, KeepsBareStyleTwo: false),
+        new("RShoulder", "ArmorPart_RShoul", a => a.Shoulder, KeepsBareStyleTwo: false),
         new("LBicep", "ArmorPart_LBicep", a => a.Bicep),
         new("RBicep", "ArmorPart_RBicep", a => a.Bicep),
         new("LForearm", "ArmorPart_LFArm", a => a.Forearm),
@@ -34,7 +42,7 @@ public class ItemAppearanceCatalogTests
         new("RShin", "ArmorPart_RShin", a => a.Shin),
         new("LFoot", "ArmorPart_LFoot", a => a.Foot),
         new("RFoot", "ArmorPart_RFoot", a => a.Foot),
-        new("Robe", "ArmorPart_Robe", a => a.Robe),
+        new("Robe", "ArmorPart_Robe", a => a.Robe, KeepsBareStyleTwo: false),
     };
 
     private sealed record Catalogs(
@@ -190,7 +198,8 @@ public class ItemAppearanceCatalogTests
             foreach (var slot in ArmorSlots)
             {
                 var part = ReadPart(blueprint, slot.Field);
-                if (!slot.Catalog(catalog).Contains(part) && !(slot.AllowsNone && part == 0))
+                if (!slot.Catalog(catalog).Contains(part) && !(slot.AllowsNone && part == 0) &&
+                    !(slot.KeepsBareStyleTwo && part == BareStyleTwo))
                     problems.Add($"{slot.Name} {part}");
             }
 

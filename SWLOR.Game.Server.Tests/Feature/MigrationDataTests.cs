@@ -125,7 +125,7 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_31_ShrinkEnzymesAndRetireArmorStyle" },
+        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_31_ShrinkEnzymes" },
             $"the next release adds one combined stored-item pass as server migration {NextServerVersion}");
         remaining.Single().Version.Should().Be(NextServerVersion);
     }

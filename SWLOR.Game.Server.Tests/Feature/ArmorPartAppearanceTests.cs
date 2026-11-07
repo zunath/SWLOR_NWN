@@ -148,7 +148,7 @@ public class ArmorPartAppearanceTests
     public void NoCatalogOffersStyleTwo()
     {
         // Style 2 shows the wearer's own body part like 0 and 1, while its preview pictured another model.
-        // Saved armor moved off it in one release (RetiredArmorStyleMigration).
+        // Existing armor keeps 2: moving it would change how the pelvis and droid parts take dyes.
         foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
         foreach (var part in ArmorParts)
         {

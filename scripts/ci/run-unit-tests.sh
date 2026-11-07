@@ -8,6 +8,10 @@
 #   scripts/ci/run-unit-tests.sh --out <directory outside the repository> [--no-coverage] [--configuration Release]
 #                                [project name ...]
 #
+# With coverage, a run of the default project list ends with tools/Refactor/check_coverage.py, which fails the run when
+# overall or per-area line coverage drops below tools/Refactor/CoverageFloors.json (Readmes/EngineTesting.md, "Coverage
+# floors"). --no-coverage skips the check, and so does naming projects (a partial run cannot meet whole-solution floors).
+#
 # It does not build (build the solution once first). It needs SWLOR_Haks checked out with at least sw_2da, sw_tlk
 # and sw_ability (Readmes/AgentEnvironment.md). Every project runs even when an earlier one fails; the exit code is
 # 0 only when all of them pass. Results go to <out>/<project>/ (TRX), <out>/<project>.log and, with coverage,
@@ -38,7 +42,9 @@ if [ -z "$OUT" ]; then
     echo "--out <directory> is required (keep it outside the repository)." >&2
     exit 2
 fi
+FULL_RUN=0
 if [ ${#PROJECTS[@]} -eq 0 ]; then
+    FULL_RUN=1
     PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
               SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests
               SWLOR.CraftSim.Tests)
@@ -248,6 +254,19 @@ for project in "${PROJECTS[@]}"; do
         run_pass "$project" "$project" "$(build_filter exclude <<< "$exclusions")" 0 "$(count_terms "$exclusions")"
     fi
 done
+
+# Coverage ratchet: only after a complete default run, so a missing project cannot read as a drop.
+if [ "$COVERAGE" = 1 ] && [ "$FULL_RUN" = 1 ]; then
+    echo "::group::coverage floors"
+    if python tools/Refactor/check_coverage.py "$OUT/coverage"; then
+        coverage_check="passed"
+    else
+        coverage_check="failed"
+        failed+=("coverage floors")
+    fi
+    echo "::endgroup::"
+    summary_rows+=("| coverage floors (tools/Refactor/CoverageFloors.json) | - | $coverage_check | - |")
+fi
 
 if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     {

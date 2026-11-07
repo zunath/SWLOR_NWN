@@ -1,0 +1,68 @@
+{
+  "comment": "Line-coverage floors for tools/Refactor/check_coverage.py (Readmes/EngineTesting.md, Coverage floors). Floors are whole percents; --update only raises them. excludes: source files that are not game logic, on top of the coverlet.runsettings exclusions.",
+  "overall": 67,
+  "tolerance": 0.0,
+  "areas": {
+    "(project root)": 86,
+    "Composition": 99,
+    "Core": 42,
+    "Domain/Abilities": 97,
+    "Domain/Administration": 95,
+    "Domain/Character": 98,
+    "Domain/Combat": 95,
+    "Domain/Companions": 95,
+    "Domain/Core": 97,
+    "Domain/Crafting": 85,
+    "Domain/Creatures": 97,
+    "Domain/Economy": 93,
+    "Domain/Gameplay": 100,
+    "Domain/Items": 97,
+    "Domain/Quests": 98,
+    "Domain/Social": 94,
+    "Domain/UI": 96,
+    "Domain/World": 97,
+    "Entity": 92,
+    "Enumeration": 100,
+    "Extension": 25,
+    "Feature": 65,
+    "Native": 10,
+    "Service": 26,
+    "Service/folders": 78,
+    "SWLOR.CLI": 39,
+    "SWLOR.CombatSim": 94,
+    "SWLOR.EngineSeamGenerator": 87,
+    "SWLOR.NWN.API": 94,
+    "SWLOR.NWN.Formats": 81,
+    "SWLOR.RecipeParameters": 93
+  },
+  "excludes": [
+    {
+      "pattern": "SWLOR.Game.Server/Properties/Annotations.cs",
+      "reason": "Vendored JetBrains.Annotations attribute declarations (174 lines, no logic)."
+    },
+    {
+      "pattern": "**/GeneratedRecipeParameters.cs",
+      "reason": "Written by the SWLOR.RecipeParameters generator; data only."
+    },
+    {
+      "pattern": "**/*.Designer.cs",
+      "reason": "Designer-generated code."
+    },
+    {
+      "pattern": "**/*.g.cs",
+      "reason": "Compiler/source-generator output."
+    },
+    {
+      "pattern": "**/*.Generated.cs",
+      "reason": "Generator output marked auto-generated (mirrors coverlet.runsettings)."
+    },
+    {
+      "pattern": "**/Generated/**",
+      "reason": "Generated folders, such as the NWScript/NWNX bindings in SWLOR.NWN.API/Generated (mirrors coverlet.runsettings)."
+    },
+    {
+      "pattern": "SWLOR.Game.Server/Feature/BeastDefinition/**",
+      "reason": "Generated beast definitions, hundreds of thousands of lines of data (mirrors coverlet.runsettings)."
+    }
+  ]
+}

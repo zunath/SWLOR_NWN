@@ -375,21 +375,9 @@ public class LeadershipCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
-        var genericStage = combat[combat.IndexOf(
-            "public static int ApplyDamageTakenModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyDamageTakenPercentageModifiers(",
-            StringComparison.Ordinal)];
-        var percentageStage = combat[combat.IndexOf(
-            "private static int ApplyDamageTakenPercentageModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyDamageTakenRedirectToStatusSource(",
-            StringComparison.Ordinal)];
-        var typedStage = combat[combat.IndexOf(
-            "private static int ApplyTargetStatusDamageModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "public static int ApplyTwinBladeAbilityShapeDamageModifier(",
-            StringComparison.Ordinal)];
+        var genericStage = CombatSource.Members("ApplyDamageTakenModifiers");
+        var percentageStage = CombatSource.Members("ApplyDamageTakenPercentageModifiers", "ApplyTypedLeadershipDamageTakenModifier", "GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment", "ApplyTypedLeadershipDamageTakenPercentageModifier");
+        var typedStage = CombatSource.Members("ApplyTargetStatusDamageModifiers");
 
         genericStage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
         genericStage.Should().Contain("ApplyDamageTakenPercentageModifiers(");
@@ -406,20 +394,12 @@ public class LeadershipCombatUpgradeTests
         typedStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         typedStage.Should().NotContain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
-        var directTypedStage = combat[combat.IndexOf(
-            "public static int ApplyTypedLeadershipDamageTakenModifier(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
-            StringComparison.Ordinal)];
+        var directTypedStage = CombatSource.Members("ApplyTypedLeadershipDamageTakenModifier", "GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)");
         directTypedStage.Should().Contain("GetLeadershipForceDamageTakenPercentAdjustment(defender)");
 
-        var combinedLeadershipChannels = combat[combat.IndexOf(
-            "private static int GetLeadershipPhysicalDamageTakenPercentAdjustment(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
-            StringComparison.Ordinal)];
+        var combinedLeadershipChannels = CombatSource.Members("GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -456,19 +436,12 @@ public class LeadershipCombatUpgradeTests
         nativeDamageRoll.Should().Contain(
             "ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)");
 
-        var triggeredDamage = combat[combat.IndexOf(
-            "public static int ApplyTriggeredDamage(",
-            StringComparison.Ordinal)..];
-        triggeredDamage = triggeredDamage[..triggeredDamage.IndexOf("public static ", 1, StringComparison.Ordinal)];
+        var triggeredDamage = CombatSource.Members("ApplyTriggeredDamage");
         triggeredDamage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
         triggeredDamage.Should().Contain(
             "typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied");
 
-        var conversion = combat[combat.IndexOf(
-            "public static int ApplyIncomingPhysicalToForceConversion(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "public static int ApplyStatusSourceAccuracyModifiers(",
-            StringComparison.Ordinal)];
+        var conversion = CombatSource.Members("ApplyIncomingPhysicalToForceConversion");
         conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: false",
             "the converted Force portion must apply its own typed Leadership channel");
     }

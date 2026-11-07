@@ -10,3 +10,5 @@ SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttack
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged SWLOR.Game.Server.Service.CompanionControl.OnOwnerDamaged
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound SWLOR.Game.Server.Service.CompanionControl.OnOwnerCombatRound
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner SWLOR.Game.Server.Service.CompanionControl.OnHostileSpellCastAtOwner
+SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject SWLOR.Game.Server.Service.TemporaryStatModifier.ClearExitingObject
+SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired SWLOR.Game.Server.Service.TemporaryStatModifier.PurgeAllExpired

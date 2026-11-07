@@ -178,8 +178,8 @@ TwinPistolEquipment -> ColorToken | 2
 TwinPistolEquipment -> Feature/MigrationDefinition | 1
 TwinPistolMastery -> DB | 1
 
-# Combat -> Platform (29 edges)
-Combat -> Platform/Core | 58
+# Combat -> Platform (30 edges)
+Combat -> Platform/Core | 53
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3
 CombatPoint -> Platform/Core | 7
@@ -205,6 +205,7 @@ Stealth -> Platform/Core | 11
 Stealth -> Platform/Native | 1
 Targeting -> Platform/Core | 1
 Telegraph -> Platform/Core | 7
+TemporaryStatModifier -> Platform/Core | 5
 TwinPistolAbility -> Platform/Native | 2
 TwinPistolMastery -> Platform/Entity | 1
 WeaponDelay -> Platform/Core | 2

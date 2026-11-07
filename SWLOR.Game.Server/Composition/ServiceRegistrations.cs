@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
+            services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();

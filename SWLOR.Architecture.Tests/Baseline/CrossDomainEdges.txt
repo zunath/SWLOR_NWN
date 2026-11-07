@@ -28,7 +28,7 @@ Mimicry -> Skill | 8
 Mimicry -> Stat | 8
 Mimicry -> StatusEffect | 1
 
-# Abilities -> Combat (23 edges)
+# Abilities -> Combat (24 edges)
 Ability -> Combat | 68
 Ability -> CombatPoint | 2
 Ability -> CombatRecorder | 9
@@ -40,7 +40,7 @@ Ability -> RecastTimestamp | 2
 Ability -> Resistance | 4
 Ability -> Stealth | 1
 Ability -> Telegraph | 11
-Feature/AbilityDefinition -> Combat | 79
+Feature/AbilityDefinition -> Combat | 69
 Feature/AbilityDefinition -> CombatPoint | 32
 Feature/AbilityDefinition -> CombatRecorder | 17
 Feature/AbilityDefinition -> Enmity | 19
@@ -49,6 +49,7 @@ Feature/AbilityDefinition -> PvpCombat | 4
 Feature/AbilityDefinition -> Resistance | 1
 Feature/AbilityDefinition -> Stealth | 4
 Feature/AbilityDefinition -> Telegraph | 8
+Feature/AbilityDefinition -> TemporaryStatModifier | 12
 Feature/AbilityDefinition -> TwinPistolAbility | 1
 Mimicry -> Combat | 5
 Mimicry -> CombatPoint | 1
@@ -139,13 +140,13 @@ StatusEffect -> QuickCast | 3
 # Character -> Administration (1 edge)
 Disguise -> DMPresence | 1
 
-# Character -> Combat (32 edges)
+# Character -> Combat (34 edges)
 EspionageInfiltration -> Enmity | 3
 EspionageInfiltration -> Stealth | 3
 Feature/AppearanceDefinition -> PowerGloveEquipment | 2
 Feature/AppearanceDefinition -> TwinPistolEquipment | 1
 Feature/PerkDefinition -> Stealth | 1
-Feature/StatusEffectDefinition -> Combat | 131
+Feature/StatusEffectDefinition -> Combat | 125
 Feature/StatusEffectDefinition -> CombatPoint | 1
 Feature/StatusEffectDefinition -> CombatRecorder | 3
 Feature/StatusEffectDefinition -> Enmity | 3
@@ -153,18 +154,20 @@ Feature/StatusEffectDefinition -> OrdinaryAttackTraits | 2
 Feature/StatusEffectDefinition -> PairedRangedTraits | 2
 Feature/StatusEffectDefinition -> Resistance | 12
 Feature/StatusEffectDefinition -> Stealth | 4
+Feature/StatusEffectDefinition -> TemporaryStatModifier | 6
 Perk -> Combat | 2
 Perk -> PowerGloveEquipment | 1
 Perk -> TwinPistolEquipment | 1
 PlayerIntroduction -> Recast | 2
 Skill -> TwinPistolEquipment | 1
-Stat -> Combat | 1249
+Stat -> Combat | 1246
 Stat -> CombatRecorder | 8
 Stat -> Enmity | 1
 Stat -> PowerGloveEquipment | 3
 Stat -> PvpCombat | 1
 Stat -> Recast | 1
 Stat -> Resistance | 4
+Stat -> TemporaryStatModifier | 3
 Stat -> TwinPistolEquipment | 1
 StatusEffect -> Combat | 40
 StatusEffect -> CombatRecorder | 9
@@ -238,13 +241,13 @@ TwinPistolAbility -> Ability | 5
 CombatRecorder -> DMPresence | 1
 Telegraph -> DMPresence | 4
 
-# Combat -> Character (45 edges)
+# Combat -> Character (46 edges)
 Combat -> Activity | 1
 Combat -> Feature/StatusEffectDefinition | 99
 Combat -> Perk | 26
 Combat -> PlayerName | 10
 Combat -> Skill | 206
-Combat -> Stat | 350
+Combat -> Stat | 334
 Combat -> StatusEffect | 148
 CombatPoint -> Skill | 13
 CombatPoint -> Stat | 2
@@ -280,6 +283,7 @@ Stealth -> Feature/StatusEffectDefinition | 5
 Stealth -> Perk | 1
 Stealth -> Stat | 2
 Stealth -> StatusEffect | 5
+TemporaryStatModifier -> Stat | 32
 TwinPistolAbility -> StatusEffect | 1
 TwinPistolEquipment -> Feature/AppearanceDefinition | 1
 TwinPistolEquipment -> Skill | 2
@@ -327,8 +331,8 @@ Telegraph -> Party | 1
 CombatPoint -> Space | 1
 
 # Combat -> UI (2 edges)
-Combat -> Feature/GuiDefinition | 1
-Combat -> Gui | 1
+TemporaryStatModifier -> Feature/GuiDefinition | 1
+TemporaryStatModifier -> Gui | 1
 
 # Combat -> World (3 edges)
 Death -> Area | 1
@@ -894,7 +898,7 @@ Platform/Native -> Stat | 11
 Platform/Native -> StatusEffect | 10
 Platform/Root -> RoleplayXP | 1
 
-# Platform -> Combat (14 edges)
+# Platform -> Combat (15 edges)
 Platform/Core -> CombatRecorder | 1
 Platform/Entity -> Combat | 21
 Platform/Entity -> Resistance | 3
@@ -906,6 +910,7 @@ Platform/Native -> OrdinaryAttackTraits | 2
 Platform/Native -> PairedRangedTraits | 3
 Platform/Native -> PowerGloveEquipment | 3
 Platform/Native -> Resistance | 1
+Platform/Native -> TemporaryStatModifier | 1
 Platform/Native -> TwinPistolEquipment | 7
 Platform/Native -> TwinPistolMastery | 2
 Platform/Native -> WeaponAttackEligibility | 3

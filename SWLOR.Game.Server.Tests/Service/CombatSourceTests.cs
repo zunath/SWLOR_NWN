@@ -1,7 +1,10 @@
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -95,6 +98,81 @@ public class CombatSourceTests
     {
         Normalised().Should().Contain("            _other.GetWeapon(creature);",
             "only fields declared as an ICombat...Service in the same file are rewritten");
+    }
+
+    [Test]
+    public void APartsOneLineForwardersAreLeftOutAndEverythingElseStays()
+    {
+        var partial = Lines(
+            "namespace SWLOR.Game.Server.Service",
+            "{",
+            "    public static partial class Combat",
+            "    {",
+            "        private static ICombatQueriesService Queries => FacadeAccessor.Resolve<ICombatQueriesService>();",
+            "        private static ICombatRecorderService Recorder => FacadeAccessor.Resolve<ICombatRecorderService>();",
+            "",
+            "        /// <inheritdoc cref=\"ICombatQueriesService.GetWeapon\"/>",
+            "        public static uint GetWeapon(uint creature) => Queries.GetWeapon(creature);",
+            "",
+            "        private static bool IsBehind(uint a, uint b) =>",
+            "            Queries.IsBehind(a, b);",
+            "",
+            "        public static uint Renamed(uint creature) => Queries.GetWeapon(creature);",
+            "        public static int Rule(int value) => CombatRules.Rule(value);",
+            "        public static void Record(uint creature) => Recorder.Record(creature);",
+            "        public static uint Block(uint creature)",
+            "        {",
+            "            return Queries.Block(creature);",
+            "        }",
+            "    }",
+            "}");
+
+        var text = CombatSource.ElidePartForwarders(partial);
+
+        text.Should().NotContain("GetWeapon(uint creature) => Queries.GetWeapon").And.NotContain("inheritdoc").And.NotContain("IsBehind");
+        text.Should().Contain("public static uint Renamed(uint creature) => Queries.GetWeapon(creature);", "it forwards to another name");
+        text.Should().Contain("public static int Rule(int value) => CombatRules.Rule(value);", "rule forwarders stay");
+        text.Should().Contain("public static void Record(uint creature) => Recorder.Record(creature);", "the recorder is not a part");
+        text.Should().Contain("            return Queries.Block(creature);", "a block body is code, not a forwarder");
+        text.Should().Contain("private static ICombatQueriesService Queries => FacadeAccessor.Resolve<ICombatQueriesService>();");
+        CombatSource.ElidePartForwarders("namespace N { class C { int A() => B.A(); } }").Should().Be("namespace N { class C { int A() => B.A(); } }");
+    }
+
+    [Test]
+    public void TheRealSourceHoldsAMovedMemberOnceWithItsBody()
+    {
+        var source = CombatSource.Read();
+
+        Occurrences(source, "uint GetRelevantSkillWeapon(").Should().Be(1);
+        Occurrences(source, "bool TryUseStatTrigger(").Should().Be(2, "it has two overloads");
+        CombatSource.Method("GetRelevantSkillWeapon").Body.Should().NotBeNull("the one declaration left is the body");
+    }
+
+    private static int Occurrences(string text, string needle)
+    {
+        var count = 0;
+        for (var index = text.IndexOf(needle, StringComparison.Ordinal); index >= 0; index = text.IndexOf(needle, index + 1, StringComparison.Ordinal))
+            count++;
+        return count;
+    }
+
+    [Test]
+    public void ACallOnACombatServiceThatIsNotAPartKeepsItsReceiver()
+    {
+        var text = Lines(
+            "        private readonly ICombatRecorderService _combatRecorder;",
+            "        private readonly ICombatPointService _combatPoint;",
+            "        private void Record(uint creature)",
+            "        {",
+            "            using var scope = _combatRecorder.BeginRiderAttribution(creature, 1);",
+            "            _combatPoint.AddCombatPoint(creature);",
+            "        }");
+
+        var normalised = Normalised(text);
+
+        normalised.Should().Contain("using var scope = _combatRecorder.BeginRiderAttribution(creature, 1);",
+            "CombatRecorder converted on its own, so the move did not take its facade's name away");
+        normalised.Should().Contain("_combatPoint.AddCombatPoint(creature);");
     }
 
     [Test]
@@ -254,6 +332,29 @@ public class CombatSourceTests
         CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int)).Should().NotBeNull();
         CombatMembers.FindField("_attackSwingDebts").Should().NotBeNull();
         CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts").Should().NotBeNull();
+    }
+
+    [Test]
+    public void ReflectionReachesAPartsInstanceMembersInTheInstalledContainer()
+    {
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        var resources = facades.Get<ICombatResourcesService>();
+
+        var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
+        ((object)cooldowns).Should().BeSameAs(typeof(CombatResourcesService)
+            .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(resources));
+        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!.IsStatic.Should().BeTrue(
+            "the static forwarder on Combat is found first");
+        var trigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>(
+            "TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
+        trigger(0xFFFFFFF0, StatType.SideAttackSkillType, 30).Should().BeTrue();
+        cooldowns.Should().ContainKey((0xFFFFFFF0, StatType.SideAttackSkillType));
+
+        CombatMembers.FindMethod("IsWeaponOrForceAbility")!.IsStatic.Should().BeFalse("only the queries service has it");
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Force).Should().Be(true);
+        CombatMembers.CreateDelegate<Func<SkillType, bool>>("IsWeaponOrForceAbility")(SkillType.Mimicry).Should().BeFalse();
+        CombatMembers.Invoke("CalculateResourceRestoreFromCost", 10, 50).Should().Be(5, "a static member needs no instance");
     }
 
     [Test]

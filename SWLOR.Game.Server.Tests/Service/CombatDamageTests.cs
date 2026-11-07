@@ -138,7 +138,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var weaponLookup = ExtractMethod(
-            combatSource, "private static uint GetRelevantSkillWeapon");
+            combatSource, "public static uint GetRelevantSkillWeapon");
 
         weaponLookup.Should().Contain("GetCreatureNaturalWeapon(creature)",
             "creature-weapon NPCs carry nothing in either hand");
@@ -376,8 +376,8 @@ public class CombatDamageTests
         abilitySource.Should().Contain("triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage");
         combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
         var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
-        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
-        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(leftHand)) == skillType");
+        selection.Should().Contain("_skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
+        selection.Should().Contain("_skill.GetSkillTypeByBaseItem(GetBaseItemType(leftHand)) == skillType");
         var equipped = ExtractMethod(combatSource, "public static bool HasEquippedWeaponForAbility");
         equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.RightHand, creature))");
         equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.LeftHand, creature))");
@@ -428,7 +428,7 @@ public class CombatDamageTests
         var combatSource = CombatSource.Read();
         var endAbilityImpact = ExtractMethod(abilitySource, "public AbilityImpactSummary EndAbilityImpact");
         var getFlatAdjustment = ExtractMethod(combatSource, "public static int GetAbilityStaminaCostFlatAdjustment(uint creature, AbilityDetail ability)");
-        var getSurcharge = ExtractMethod(combatSource, "private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        var getSurcharge = ExtractMethod(combatSource, "public static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
         var refundSurcharge = ExtractMethod(combatSource, "public static int RefundCriticalRangedAbilityStaminaCost");
         var trackStaminaCost = ExtractMethod(combatSource, "private static void TrackAbilityStaminaCost");
         var resourceThreshold = ExtractMethod(combatSource, "public static bool IsCurrentFPAndStaminaAbovePercent");
@@ -447,7 +447,7 @@ public class CombatDamageTests
         trackStaminaCost.Should().Contain("Cost = staminaCost - nonCriticalRangedAbilityStaminaCost");
         trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost");
         refundSurcharge.Should().Contain("state.NonCriticalRangedAbilityStaminaCost = 0");
-        refundSurcharge.Should().Contain("Stat.RestoreStamina(creature, amount)");
+        refundSurcharge.Should().Contain("_stat.RestoreStamina(creature, amount)");
         resourceThreshold.Should().Contain("TryGetAbilityStaminaCostState(creature, ability, out var costState)");
         resourceThreshold.Should().Contain("currentStamina += costState.NonCriticalRangedAbilityStaminaCost");
     }
@@ -1138,7 +1138,7 @@ public class CombatDamageTests
         combatSource.Should().Contain("TryUseStatTrigger(");
         combatSource.Should().Contain("TimeSpan.FromMilliseconds(cooldownMilliseconds)");
         combatSource.Should().Contain("public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)");
-        combatSource.Should().Contain("PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false);");
+        combatSource.Should().Contain("_playerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false);");
 
         abilitySource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
         abilitySource.Should().Contain("SendIncomingCriticalHitDowngradeFeedback(activator, target);");

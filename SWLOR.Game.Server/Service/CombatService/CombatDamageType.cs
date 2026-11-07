@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System.Collections.Frozen;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Extension;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using NativeDamageType = NWN.Native.API.DamageType;
@@ -151,14 +152,15 @@ namespace SWLOR.Game.Server.Service.CombatService
 
     public static class CombatDamageTypeExtensions
     {
-        private static readonly IReadOnlyDictionary<CombatDamageType, CombatDamageAttribute> DamageAttributes =
+        // Read only by key (GetDetails), never iterated, so the frozen table's order does not matter.
+        private static readonly FrozenDictionary<CombatDamageType, CombatDamageDetails> DamageAttributes =
             Enum.GetValues(typeof(CombatDamageType))
                 .Cast<CombatDamageType>()
-                .ToDictionary(
+                .ToFrozenDictionary(
                     type => type,
-                    type => type.GetAttribute<CombatDamageType, CombatDamageAttribute>());
+                    type => CombatDamageDetails.From(type.GetAttribute<CombatDamageType, CombatDamageAttribute>()));
 
-        public static CombatDamageAttribute GetDetails(this CombatDamageType type)
+        public static CombatDamageDetails GetDetails(this CombatDamageType type)
         {
             if (!DamageAttributes.TryGetValue(type, out var details))
             {

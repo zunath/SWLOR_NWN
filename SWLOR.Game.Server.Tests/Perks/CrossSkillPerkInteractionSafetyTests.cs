@@ -660,7 +660,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         globalSkillMatch.Should().Contain(
             "requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType)");
 
-        combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState>",
+        combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), CombatAbilityStaminaCostState>",
             "cost-gated riders must bind the paid STM to the exact ability instead of a later ability");
         var costlyHitEffects = ExtractMethod(combat, "private static void ApplyCostlyAbilityHitEffects(");
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost");

@@ -5026,60 +5026,60 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 35,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 32,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 36,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 33,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($\"Guard (-{preventedDamage})\"), defender, false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($\"Guard (-{preventedDamage})\"), defender, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 42,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 39,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 61,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 58,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 62,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 59,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 70,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 67,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 173,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 170,
     "Member": "SendAbilityCriticalHitFeedback",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.Feedback.cs",
-    "Line": 206,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
+    "Line": 203,
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/CombatParts/Combat.HitEffects.cs",

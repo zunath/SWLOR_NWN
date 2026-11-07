@@ -1,5 +1,8 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
@@ -7,6 +10,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using CombatFacade = SWLOR.Game.Server.Service.Combat;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
@@ -21,12 +26,16 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 public class CombatFacadeAllocationTests
 {
     private const int Calls = 20000;
+    private const uint Attacker = 501;
+    private const uint Defender = 502;
 
     private FacadeContainer _container = null!;
     private IDisposable _installed = null!;
 
+    // The stat service answers its calls into unconverted code without allocating, so the part reads count only Combat.
     [OneTimeSetUp]
-    public void BuildContainer() => _container = new FacadeContainer();
+    public void BuildContainer() => _container = new FacadeContainer(services =>
+        services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>()));
 
     [OneTimeTearDown]
     public void DisposeContainer() => _container.Dispose();
@@ -159,6 +168,136 @@ public class CombatFacadeAllocationTests
         Allocated(() => sink += CombatFacade.GetDefenseDamageTypes().Count).Should().Be(0);
         Allocated(() => sink += CombatFacade.GetAllDamageTypes().Count).Should().Be(0);
         Allocated(() => sink += CombatFacade.GetDefenseDamageTypes()[0] == CombatDamageType.Physical ? 1 : 0).Should().Be(0);
+        GC.KeepAlive(sink);
+    }
+
+    // The least of three runs, so a one-off allocation of the runtime (tiering, a lazily built table) cannot fail a pin;
+    // an allocation per call shows in every run.
+    private static long LeastAllocated(Action call) => Enumerable.Range(0, 3).Min(_ => Allocated(call));
+
+    // Bytes per call, from the least of three runs.
+    private static long PerCall(Action call) => LeastAllocated(call) / Calls;
+
+    private sealed record PartReads(ICombatQueriesService Queries, ICombatResourcesService Resources, ICombatFeedbackService Feedback,
+        AbilityDetail Hostile, AbilityDetail Plain);
+
+    // The parts of the container with an engine that answers from constants and records nothing, and a stat service whose
+    // calls into unconverted code allocate nothing, so what is counted is Combat's forwarder and the part.
+    private PartReads InstallPartReads(List<IDisposable> scopes)
+    {
+        scopes.Add(NWScriptRuntime.Override(StatReadEngine.Create(StatReadEngine.NpcAnswers())));
+        var hostile = new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle };
+        hostile.Requirements.Add(new AbilityRequirementStamina(10));
+        return new PartReads(_container.Get<ICombatQueriesService>(), _container.Get<ICombatResourcesService>(),
+            _container.Get<ICombatFeedbackService>(), hostile, new AbilityDetail { SkillType = SkillType.Force });
+    }
+
+    [Test]
+    public void TheQueryAndResourceReadsAllocateNothingDirectlyOrThroughTheCombatForwarders()
+    {
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (queries, resources, _, hostile, plain) = InstallPartReads(scopes);
+            var sink = 0;
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("GetMinimumHitRate", () => sink += queries.GetMinimumHitRate(Attacker), () => sink += CombatFacade.GetMinimumHitRate(Attacker)),
+                ("IsAttackerBehindTarget", () => sink += queries.IsAttackerBehindTarget(Attacker, Defender) ? 1 : 0, () => sink += CombatFacade.IsAttackerBehindTarget(Attacker, Defender) ? 1 : 0),
+                ("IsAttackerBesideTarget", () => sink += queries.IsAttackerBesideTarget(Attacker, Defender) ? 1 : 0, () => sink += CombatFacade.IsAttackerBesideTarget(Attacker, Defender) ? 1 : 0),
+                ("IsTargetNotFacingAttacker", () => sink += queries.IsTargetNotFacingAttacker(Attacker, Defender) ? 1 : 0, () => sink += CombatFacade.IsTargetNotFacingAttacker(Attacker, Defender) ? 1 : 0),
+                ("HasDamageImmunity", () => sink += queries.HasDamageImmunity(Defender, CombatDamageType.Physical) ? 1 : 0, () => sink += CombatFacade.HasDamageImmunity(Defender, CombatDamageType.Physical) ? 1 : 0),
+                ("GetRangedAttackDamageFlatAdjustment", () => sink += queries.GetRangedAttackDamageFlatAdjustment(Attacker, SkillType.Rifle), () => sink += CombatFacade.GetRangedAttackDamageFlatAdjustment(Attacker, SkillType.Rifle)),
+                ("GetRangedAttackDefenseIgnorePercentAdjustment", () => sink += queries.GetRangedAttackDefenseIgnorePercentAdjustment(Attacker, SkillType.Rifle), () => sink += CombatFacade.GetRangedAttackDefenseIgnorePercentAdjustment(Attacker, SkillType.Rifle)),
+                ("GetPowerAttackDMGBonus", () => sink += queries.GetPowerAttackDMGBonus(Attacker), () => sink += CombatFacade.GetPowerAttackDMGBonus(Attacker)),
+                ("GetAbilitySkillType", () => sink += (int)queries.GetAbilitySkillType(Attacker, hostile), () => sink += (int)CombatFacade.GetAbilitySkillType(Attacker, hostile)),
+                ("GetEquippedWeaponSkillType", () => sink += (int)queries.GetEquippedWeaponSkillType(Attacker), () => sink += (int)CombatFacade.GetEquippedWeaponSkillType(Attacker)),
+                ("HasEquippedWeaponForAbility", () => sink += queries.HasEquippedWeaponForAbility(Attacker) ? 1 : 0, () => sink += CombatFacade.HasEquippedWeaponForAbility(Attacker) ? 1 : 0),
+                ("GetAbilityAttackWeapon", () => sink += (int)queries.GetAbilityAttackWeapon(Attacker, SkillType.Rifle), () => sink += (int)CombatFacade.GetAbilityAttackWeapon(Attacker, SkillType.Rifle)),
+                ("GetWeaponDamageAbilityType", () => sink += (int)queries.GetWeaponDamageAbilityType(Attacker, BaseItem.Longsword), () => sink += (int)CombatFacade.GetWeaponDamageAbilityType(Attacker, BaseItem.Longsword)),
+                ("GetWeaponAccuracyAbilityType", () => sink += (int)queries.GetWeaponAccuracyAbilityType(Attacker, BaseItem.Longsword), () => sink += (int)CombatFacade.GetWeaponAccuracyAbilityType(Attacker, BaseItem.Longsword)),
+                ("GetMiscDMGBonus", () => sink += queries.GetMiscDMGBonus(Attacker, BaseItem.Longsword), () => sink += CombatFacade.GetMiscDMGBonus(Attacker, BaseItem.Longsword)),
+                ("GetPerkAdjustedAbilityScore", () => sink += queries.GetPerkAdjustedAbilityScore(Attacker), () => sink += CombatFacade.GetPerkAdjustedAbilityScore(Attacker)),
+                ("GetWeaponImpactProfile", () => sink += queries.GetWeaponImpactProfile(Attacker) == null ? 1 : 0, () => sink += WeaponImpactProfile.Get(Attacker) == null ? 1 : 0),
+                ("GetAbilityStaminaPaid", () => sink += resources.GetAbilityStaminaPaid(Attacker, hostile), () => sink += CombatFacade.GetAbilityStaminaPaid(Attacker, hostile)),
+                ("GetPaidAbilityStaminaCost", () => sink += resources.GetPaidAbilityStaminaCost(Attacker, hostile), () => sink += CombatFacade.GetPaidAbilityStaminaCost(Attacker, hostile)),
+                ("GetNextAbilityFPCostAdjustment", () => sink += resources.GetNextAbilityFPCostAdjustment(Attacker, SkillType.Invalid), () => sink += CombatFacade.GetNextAbilityFPCostAdjustment(Attacker, SkillType.Invalid)),
+                ("RestoreAbilityHitStamina", () => sink += resources.RestoreAbilityHitStamina(Attacker, hostile, 0), () => sink += CombatFacade.RestoreAbilityHitStamina(Attacker, hostile, 0)),
+                ("DeferAbilityStaminaCostContext", () => resources.DeferAbilityStaminaCostContext(Attacker, hostile), () => CombatFacade.DeferAbilityStaminaCostContext(Attacker, hostile)),
+                ("CompleteAbilityStaminaCostContext", () => resources.CompleteAbilityStaminaCostContext(Attacker, hostile), () => CombatFacade.CompleteAbilityStaminaCostContext(Attacker, hostile)),
+                ("CompleteDeferredAbilityStaminaCostContext", () => resources.CompleteDeferredAbilityStaminaCostContext(Attacker, hostile), () => CombatFacade.CompleteDeferredAbilityStaminaCostContext(Attacker, hostile)),
+                ("ApplyDamageDerivedHealing", () => sink += resources.ApplyDamageDerivedHealing(Attacker, 10, 10), () => sink += CombatFacade.ApplyDamageDerivedHealing(Attacker, 10, 10)),
+                ("ApplyAbilityFPCostStaminaRestore", () => resources.ApplyAbilityFPCostStaminaRestore(Attacker, plain, 0), () => CombatFacade.ApplyAbilityFPCostStaminaRestore(Attacker, plain, 0)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                LeastAllocated(part).Should().Be(0, $"{name} runs per attack or per hit");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            foreach (var scope in scopes)
+                scope.Dispose();
+        }
+    }
+
+    [Test]
+    public void APartForwarderAddsNothingWhereTheMemberItselfAllocates()
+    {
+        // As on the base: IsWeaponSkillType reads the skill's attribute by reflection, the NPC stat reads build their
+        // NPCStats, TemporaryStatModifier.GetStatAdjustment builds a closure, RestoreAbilityHitStamina's OfType().Any()
+        // builds an iterator and the log lines build strings. A healing scope builds its state and its scope object, which
+        // now also holds the service that began it (8 bytes more than the base's).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (queries, resources, feedback, hostile, _) = InstallPartReads(scopes);
+            var sink = 0;
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("CanItemTriggerWeaponAbility", () => sink += queries.CanItemTriggerWeaponAbility(0x7F000000, SkillType.Force) ? 1 : 0, () => sink += CombatFacade.CanItemTriggerWeaponAbility(0x7F000000, SkillType.Force) ? 1 : 0),
+                ("IncludesCombatImpactWeaponDamage", () => sink += queries.IncludesCombatImpactWeaponDamage(SkillType.Rifle, false) ? 1 : 0, () => sink += CombatFacade.IncludesCombatImpactWeaponDamage(SkillType.Rifle, false) ? 1 : 0),
+                ("GetQueuedAbilityAccuracyAbilityType", () => sink += (int)queries.GetQueuedAbilityAccuracyAbilityType(Attacker, SkillType.Rifle), () => sink += (int)CombatFacade.GetQueuedAbilityAccuracyAbilityType(Attacker, SkillType.Rifle)),
+                ("GetCombatImpactWeaponDamage", () => sink += queries.GetCombatImpactWeaponDamage(Attacker, SkillType.Force), () => sink += CombatFacade.GetCombatImpactWeaponDamage(Attacker, SkillType.Force)),
+                ("IsCurrentFPAndStaminaAtOrBelowPercent", () => sink += resources.IsCurrentFPAndStaminaAtOrBelowPercent(Attacker, 50) ? 1 : 0, () => sink += CombatFacade.IsCurrentFPAndStaminaAtOrBelowPercent(Attacker, 50) ? 1 : 0),
+                ("IsCurrentFPAndStaminaAbovePercent", () => sink += resources.IsCurrentFPAndStaminaAbovePercent(Attacker, 50, hostile) ? 1 : 0, () => sink += CombatFacade.IsCurrentFPAndStaminaAbovePercent(Attacker, 50, hostile) ? 1 : 0),
+                ("GetNextAbilityFPCostAdjustment", () => sink += resources.GetNextAbilityFPCostAdjustment(Attacker, SkillType.Force), () => sink += CombatFacade.GetNextAbilityFPCostAdjustment(Attacker, SkillType.Force)),
+                ("RestoreAbilityHitStamina", () => sink += resources.RestoreAbilityHitStamina(Attacker, hostile, 5), () => sink += CombatFacade.RestoreAbilityHitStamina(Attacker, hostile, 5)),
+                ("BeginDamageDerivedHealing", () => resources.BeginDamageDerivedHealing(Attacker, Defender).Dispose(), () => CombatFacade.BeginDamageDerivedHealing(Attacker, Defender).Dispose()),
+                ("BuildCombatLogMessage", () => sink += feedback.BuildCombatLogMessage(Attacker, Attacker, Defender, 1, 50).Length, () => sink += CombatFacade.BuildCombatLogMessage(Attacker, Attacker, Defender, 1, 50).Length),
+                ("BuildAbilityCombatLogMessage", () => sink += feedback.BuildAbilityCombatLogMessage(Attacker, Attacker, Defender, "Shot", 3, 50).Length, () => sink += CombatFacade.BuildAbilityCombatLogMessage(Attacker, Attacker, Defender, "Shot", 3, 50).Length),
+                ("BuildAbilityNoTargetCombatLogMessage", () => sink += feedback.BuildAbilityNoTargetCombatLogMessage(Attacker, Attacker, "Shot").Length, () => sink += CombatFacade.BuildAbilityNoTargetCombatLogMessage(Attacker, Attacker, "Shot").Length),
+                ("BuildAbilityCriticalHitCombatLogMessage", () => sink += feedback.BuildAbilityCriticalHitCombatLogMessage(Attacker, Attacker, Defender, "Shot").Length, () => sink += CombatFacade.BuildAbilityCriticalHitCombatLogMessage(Attacker, Attacker, Defender, "Shot").Length),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var own = PerCall(part);
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                PerCall(forwarder).Should().Be(own, $"Combat.{name} adds nothing to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            foreach (var scope in scopes)
+                scope.Dispose();
+        }
+    }
+
+    [Test]
+    public void TheDamageTypeDetailsAreReadWithoutAllocating()
+    {
+        var sink = 0;
+
+        LeastAllocated(() => sink += CombatDamageType.Fire.IsPhysicalDamageType() ? 1 : 0).Should().Be(0);
+        LeastAllocated(() => sink += (int)CombatDamageType.Fire.GetDefenseDamageType()).Should().Be(0);
+        LeastAllocated(() => sink += (int)CombatDamageType.Force.GetDetails().NativeDamageType).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

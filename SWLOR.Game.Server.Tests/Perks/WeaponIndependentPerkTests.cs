@@ -73,9 +73,7 @@ public class WeaponIndependentPerkTests : SkillFacadeFixture
     public void BackAttack_UsesWeaponEligibilityAndPreservesPositioning()
     {
         var source = CombatSource.Read();
-        var start = source.IndexOf("private static bool IsMatchingBackAttack(", StringComparison.Ordinal);
-        var end = source.IndexOf("public static int ApplyBackAttackDamageModifier(", start, StringComparison.Ordinal);
-        var eligibility = source[start..end];
+        var eligibility = CombatSource.Members("IsMatchingBackAttack");
         eligibility.Should().Contain("IsWeaponSkillType(skillType)");
         eligibility.Should().Contain("IsAttackerBehindTarget(attacker, defender)");
         eligibility.Should().NotContain("IsRangedWeaponSkill");

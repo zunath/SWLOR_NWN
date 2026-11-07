@@ -210,11 +210,7 @@ public class LightsaberPerkBehaviorTests
         // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
         // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
         var combat = CombatSource.Read();
-        var conversion = combat[combat.IndexOf(
-            "public static int ApplyIncomingPhysicalToForceConversion(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "public static int ApplyStatusSourceAccuracyModifiers(",
-            StringComparison.Ordinal)];
+        var conversion = CombatSource.Members("ApplyIncomingPhysicalToForceConversion");
         conversion.Should().Contain("ApplyTriggeredDamage(",
             "the converted Force share must be dispatched as real damage");
         conversion.Should().Contain("forcePortion",

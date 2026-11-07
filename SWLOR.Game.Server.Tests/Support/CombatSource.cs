@@ -63,6 +63,13 @@ public static class CombatSource
             .OrderByDescending(method => method.FullSpan.Length)
             .First();
 
+    /// <summary>
+    /// The text of every method with one of these names (all overloads), in the order the names are given, for tests that
+    /// check a method body without depending on where the partial class files place it.
+    /// </summary>
+    public static string Members(params string[] names) =>
+        string.Join('\n', names.SelectMany(name => Nodes<MethodDeclarationSyntax>().Where(method => method.Identifier.Text == name)).Select(method => method.ToString()));
+
     /// <summary>Whether a path is one of the files <see cref="Read"/> combines.</summary>
     public static bool IsCombatFile(string path) =>
         Paths().Contains(Path.GetFullPath(path), StringComparer.OrdinalIgnoreCase);

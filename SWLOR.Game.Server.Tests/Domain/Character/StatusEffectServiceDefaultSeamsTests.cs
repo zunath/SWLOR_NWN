@@ -133,7 +133,7 @@ public class StatusEffectServiceDefaultSeamsTests
     private sealed class Defaults : StatusEffectService
     {
         public Defaults()
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!)
+            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!)
         {
         }
 

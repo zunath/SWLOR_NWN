@@ -36,22 +36,23 @@ namespace SWLOR.Game.Server.Domain.Administration
             return new DMObjectScan(category, GetObjectType(category), areas, search);
         }
 
-        public Location GetAreaJumpLocation(uint area)
+        public IEnumerable<Location> GetAreaJumpLocations(uint area)
         {
-            var waypoint = GetFirstObjectInArea(area, ObjectType.Waypoint);
-            if (GetIsObjectValid(waypoint))
-                return GetLocation(waypoint);
+            var locations = new List<Location>();
+            for (var waypoint = GetFirstObjectInArea(area, ObjectType.Waypoint);
+                 GetIsObjectValid(waypoint);
+                 waypoint = GetNextObjectInArea(area, ObjectType.Waypoint))
+            {
+                locations.Add(GetLocation(waypoint));
+            }
 
-            const ObjectType anchorTypes = ObjectType.Door | ObjectType.Placeable | ObjectType.Creature;
-            var anchor = GetFirstObjectInArea(area, anchorTypes);
-            if (GetIsObjectValid(anchor))
-                return GetLocation(anchor);
+            foreach (var spot in DMJumpSpots.GetAreaSpots(GetAreaSize(Dimension.Width, area), GetAreaSize(Dimension.Height, area)))
+            {
+                locations.Add(Location(area, new Vector3(spot.X, spot.Y, 0f), 0f));
+            }
 
-            var width = GetAreaSize(Dimension.Width, area) * 10f;
-            var height = GetAreaSize(Dimension.Height, area) * 10f;
-            return Location(area, new Vector3(width / 2f, height / 2f, 0f), 0f);
+            return locations;
         }
-
         private List<uint> GetAllAreas()
         {
             var areas = new List<uint>();

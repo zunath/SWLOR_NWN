@@ -46,6 +46,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnPlayerExit() => Instance.OnPlayerExit();
 
+        /// <summary>
+        /// Saves the stances and toggles of everyone online or holding effects from an earlier logout. Those effects are only kept in
+        /// memory, so without this a server restart loses them.
+        /// </summary>
+        public static void SaveTogglesForRestart() => Instance.SaveTogglesForRestart();
+
         public static void ClearStatusEffectsOnDeath(uint player) => Instance.ClearStatusEffectsOnDeath(player);
 
         /// <summary>

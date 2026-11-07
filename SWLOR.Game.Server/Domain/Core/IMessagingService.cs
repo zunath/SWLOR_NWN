@@ -17,6 +17,11 @@ namespace SWLOR.Game.Server.Domain.Core
         bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed);
 
         /// <summary>
+        /// Floats text over a creature for every player within range. A creature in stealth or invisible only shows it to itself.
+        /// </summary>
+        void FloatTextNearbyToPlayers(uint creature, string text, float range = 30f);
+
+        /// <summary>
         /// Sends a message to all nearby players within a certain distance.
         /// </summary>
         /// <param name="sender">The sender of the message.</param>

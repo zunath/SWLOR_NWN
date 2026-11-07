@@ -1,12 +1,16 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
@@ -100,7 +104,7 @@ public class PlayerListServiceTests
         _chatScope = ChatPluginRuntime.Override(_chat);
         _playerScope = PlayerPluginRuntime.Override(_playerPlugin);
         // The service calls the DMPresence facade, which resolves its instance from a container.
-        _container = new FacadeContainer();
+        _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IDMPresenceService, LandableDMPresenceService>()));
         _containerScope = _container.Install();
     }
 
@@ -845,5 +849,11 @@ public class PlayerListServiceTests
 
         _engine.CallsTo("NuiFindWindow").Should().NotBeEmpty();
         _engine.CallsTo("NuiDestroy").Should().NotBeEmpty();
+    }
+
+    /// <summary>The DM presence instance with the engine's safe-point search answered, so a jump lands without nwserver's structures.</summary>
+    private sealed class LandableDMPresenceService : DMPresenceService
+    {
+        protected override bool ComputeSafeLanding(uint dm, Location location) => true;
     }
 }

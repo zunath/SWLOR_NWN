@@ -807,7 +807,7 @@
               }
             },
             {
-              "__struct_id": 21,
+              "__struct_id": 22,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -826,26 +826,7 @@
               }
             },
             {
-              "__struct_id": 21,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "recipe_dlsab2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 8
-              }
-            },
-            {
-              "__struct_id": 22,
+              "__struct_id": 23,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -864,7 +845,7 @@
               }
             },
             {
-              "__struct_id": 22,
+              "__struct_id": 24,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -883,7 +864,7 @@
               }
             },
             {
-              "__struct_id": 22,
+              "__struct_id": 25,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -902,26 +883,7 @@
               }
             },
             {
-              "__struct_id": 22,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "recipe_dsabst2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 9
-              }
-            },
-            {
-              "__struct_id": 23,
+              "__struct_id": 26,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -940,7 +902,7 @@
               }
             },
             {
-              "__struct_id": 23,
+              "__struct_id": 27,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -959,7 +921,7 @@
               }
             },
             {
-              "__struct_id": 24,
+              "__struct_id": 28,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -978,7 +940,7 @@
               }
             },
             {
-              "__struct_id": 24,
+              "__struct_id": 29,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -997,7 +959,7 @@
               }
             },
             {
-              "__struct_id": 24,
+              "__struct_id": 30,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -1016,7 +978,7 @@
               }
             },
             {
-              "__struct_id": 25,
+              "__struct_id": 31,
               "Infinite": {
                 "type": "byte",
                 "value": 1
@@ -1035,7 +997,7 @@
               }
             },
             {
-              "__struct_id": 25,
+              "__struct_id": 32,
               "Infinite": {
                 "type": "byte",
                 "value": 1

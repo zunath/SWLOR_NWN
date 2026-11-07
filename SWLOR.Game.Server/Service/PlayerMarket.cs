@@ -15,6 +15,11 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class PlayerMarket
     {
+        /// <summary>
+        /// A blueprint local int that keeps an item off the market.
+        /// </summary>
+        public const string NoMarketListingVariable = "NO_MARKET_LISTING";
+
         public const int MaxListingsPerMarket = 25;
 
         private static IPlayerMarketService Instance => FacadeAccessor.Resolve<IPlayerMarketService>();

@@ -69,7 +69,7 @@ public class AgriculturePerkBibleTests
         rows.Where(row => row["A"] == "Farmer").Select(row => row["F"]).Should().OnlyContain(type => type == "Trait",
             "the Farmer line has no style choice and no capstone");
         rows.Single(row => row["C"] == "Reduce I")["K"].Should().Be("12");
-        rows.Single(row => row["C"] == "Reduce II")["K"].Should().Be("9");
+        rows.Single(row => row["C"] == "Reduce II")["K"].Should().Be("11");
     }
 
     [Test]

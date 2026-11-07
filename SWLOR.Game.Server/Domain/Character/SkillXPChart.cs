@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Domain.Character
         private static readonly ImmutableArray<int> _slicingRanks = ImmutableArray.Create(0, 22, 30, 42, 48);
 
         /// <summary>The XP needed to complete each level, in level order.</summary>
-        private static readonly ImmutableArray<KeyValuePair<int, int>> _requirementsByLevel = BuildRequirements();
-        private static readonly FrozenDictionary<int, int> _skillXPRequirements = _requirementsByLevel.ToFrozenDictionary();
+        private static readonly ImmutableArray<(int Level, int XP)> _requirementsByLevel = BuildRequirements();
+        private static readonly FrozenDictionary<int, int> _skillXPRequirements = _requirementsByLevel.ToFrozenDictionary(x => x.Level, x => x.XP);
 
-        private static ImmutableArray<KeyValuePair<int, int>> BuildRequirements()
+        private static ImmutableArray<(int Level, int XP)> BuildRequirements()
         {
             var entries = new Dictionary<int, int>
             {
@@ -129,12 +129,12 @@ namespace SWLOR.Game.Server.Domain.Character
                 { 100, 400000 }
             };
 
-            return entries.ToImmutableArray();
+            return entries.Select(x => (x.Key, x.Value)).ToImmutableArray();
         }
 
         /// <summary>Each level with the total XP attained once it is completed, in level order.</summary>
-        private static readonly ImmutableArray<KeyValuePair<int, int>> _totalXPByLevel = BuildTotalXP();
-        private static readonly FrozenDictionary<int, int> _skillTotalXP = _totalXPByLevel.ToFrozenDictionary();
+        private static readonly ImmutableArray<(int Level, int TotalXP)> _totalXPByLevel = BuildTotalXP();
+        private static readonly FrozenDictionary<int, int> _skillTotalXP = _totalXPByLevel.ToFrozenDictionary(x => x.Level, x => x.TotalXP);
 
         private static readonly FrozenDictionary<int, int> _skillDeltaXP = new Dictionary<int, int>
         {
@@ -156,14 +156,14 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Determines the total XP required for each level.
         /// </summary>
-        private static ImmutableArray<KeyValuePair<int, int>> BuildTotalXP()
+        private static ImmutableArray<(int Level, int TotalXP)> BuildTotalXP()
         {
-            var totals = ImmutableArray.CreateBuilder<KeyValuePair<int, int>>();
+            var totals = ImmutableArray.CreateBuilder<(int Level, int TotalXP)>();
             var totalXP = 0;
             foreach (var (level, xp) in _requirementsByLevel)
             {
                 totalXP += xp;
-                totals.Add(new KeyValuePair<int, int>(level, totalXP));
+                totals.Add((level, totalXP));
             }
 
             return totals.ToImmutable();
@@ -203,8 +203,8 @@ namespace SWLOR.Game.Server.Domain.Character
         public static (int, int) GetLevelByTotalXP(int totalXP)
         {
             var (level, requiredXP) = _totalXPByLevel
-                .OrderBy(o => o.Value)
-                .First(x => x.Value >= totalXP);
+                .OrderBy(o => o.TotalXP)
+                .First(x => x.TotalXP >= totalXP);
 
             var remainderXP = requiredXP - totalXP;
             remainderXP = _skillXPRequirements[level] - remainderXP;

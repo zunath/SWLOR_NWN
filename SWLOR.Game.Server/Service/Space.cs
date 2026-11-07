@@ -1349,7 +1349,10 @@ namespace SWLOR.Game.Server.Service
 
             // Check to ensure activator is within maximum distance.
             var maxDistance = shipModuleDetails.ModuleMaxDistanceAction == null ? 10f : shipModuleDetails.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
-            if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
+            var targetIsEnemy = GetIsObjectValid(target) && GetIsEnemy(target, activator);
+            if (GetIsPC(activator) &&
+                shipModuleDetails.RequiresTargetInRange(targetIsEnemy) &&
+                GetDistanceBetween(activator, target) > maxDistance)
             {
                 SendMessageToPC(activator, $"Target is too far away. Maximum distance: {maxDistance} meters.");
                 return;

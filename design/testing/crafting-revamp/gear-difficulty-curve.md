@@ -64,15 +64,15 @@ The adaptive player is a floor on skilled play, and in the Circuit and the Fabri
 | Circuit 51-53 | 47.0 | 69.4 | 81.4 | 100.0 |
 | Fabricator 46-50 | 29.8 | 63.9 | 82.3 | 100.0 |
 | Fabricator 51-53 | 27.5 | 50.3 | 60.9 | 100.0 |
+| Kitchen 46-50 | 42.9 | 53.9 | 65.3 | 73.2 |
+| Kitchen 51-53 | 26.9 | 30.1 | 40.0 | 54.2 |
 
 Two things follow:
 
 - Gear still matters at every step for a player who has found the best sequence.
-- In the Circuit and the Fabricator, one memorized sequence reaches 100% on these top recipes in fully modded gear, so "not guaranteed" holds only for players who have not solved it. Fixed rotations in those two minigames were already an open owner decision before this pass. The Forge does not have this problem.
+- In the Circuit and the Fabricator, one memorized sequence reaches 100% on these top recipes in fully modded gear, so "not guaranteed" holds only for players who have not solved it. Fixed rotations in those two minigames were already an open owner decision before this pass. The Forge and the Kitchen do not have this problem: the Kitchen's split passes gate 1, with a smallest margin of 22.2 in 46-50, best gear.
 
 The recipe sample matters. The base Fabricator report's combined 41-53 band (levels 42-50, a different sample) has a mid gear rotation at 99.3, and the 46-50 sample above has 63.9. Some Fabricator recipes are much easier than others at the same level.
-
-The Kitchen is not in this table: see "Limits" for why its rotation search did not run in this pass.
 
 ## Perk values
 
@@ -182,5 +182,5 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 - The base reports use 40 runs per case, not 100, so differences under about 2 points are noise.
 - The adaptive player reads only shared meters and previews. It is a floor, as the rotation table shows.
 - Seconds per action is an estimate, so XP per hour and the length limits are estimates too.
-- The Kitchen reports leave out gate 1. The search takes many CPU hours, and the full run was stopped after 3 hours. The unperked Kitchen's rules did not change in this pass, and its last full report (100 runs) passed with a smallest margin of 19.4. Gate 1 for perked Chef builds was already failing and stays open by owner decision.
+- The Kitchen reports leave out gate 1. The search takes many CPU hours, and the run over every band was stopped after 3 hours. The unperked Kitchen's rules did not change in this pass, and its last full report (100 runs) passed with a smallest margin of 19.4. Only the 46-50 and 51-53 split above ran here. Gate 1 for perked Chef builds was already failing, was not rerun, and stays open by owner decision.
 - The Kitchen's style and perks-optional gates are in `kitchen-perks-gates.md`, not `kitchen-gates.md`, which holds the length, economy, XP, enhancement and ladder gates.

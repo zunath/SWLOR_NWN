@@ -65,7 +65,7 @@ class CheckCoverageTests(unittest.TestCase):
 
     def test_relative_file_names_resolve_against_the_source_root(self):
         path = self.dir / "formats.cobertura.xml"
-        path.write_text('<coverage><sources><source>C:\repo\SWLOR.NWN.Formats\</source></sources><packages><package name="p"><classes>'
+        path.write_text(r'<coverage><sources><source>C:\repo\SWLOR.NWN.Formats\</source></sources><packages><package name="p"><classes>'
                         r'<class name="C" filename="Bif\BifFile.cs"><lines><line number="1" hits="1" /></lines></class>'
                         '</classes></package></packages></coverage>', encoding="utf-8")
         areas, _, _ = check_coverage.measure(check_coverage.read_lines([str(path)]), [])

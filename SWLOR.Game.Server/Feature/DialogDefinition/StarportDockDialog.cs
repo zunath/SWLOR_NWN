@@ -141,6 +141,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         return;
                     }
 
+                    // Enmity leaves out player-versus-player fights, so a pilot a hostile player just hit cannot dock
+                    // away from the controls and log out without risking the ship.
+                    if (Space.RefuseLeavingControlsInPvp(player))
+                    {
+                        Close();
+                        return;
+                    }
+
                     // A hold that started while the menu was open still stops the docking, before anything is saved.
                     if (Space.RefuseWhileInterdicted(player))
                     {

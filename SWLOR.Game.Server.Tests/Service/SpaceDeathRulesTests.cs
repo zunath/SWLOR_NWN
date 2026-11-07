@@ -61,6 +61,10 @@ public class SpaceDeathRulesTests
         var dock = docking[docking.IndexOf("public static bool DockWithTarget(", StringComparison.Ordinal)..];
         dock.IndexOf("if (RefuseLeavingControlsInPvp(player))", StringComparison.Ordinal)
             .Should().BeInRange(0, dock.IndexOf("ExitSpaceMode(player);", StringComparison.Ordinal));
+        var starport = Read("Feature", "DialogDefinition", "StarportDockDialog.cs");
+        var guard = starport.IndexOf("if (Space.RefuseLeavingControlsInPvp(player))", StringComparison.Ordinal);
+        guard.Should().BeInRange(0, starport.IndexOf("DB.Set(dbProperty);", StringComparison.Ordinal), "a Starport dock saves nothing first");
+        guard.Should().BeLessThan(starport.IndexOf("Space.WarpPlayerInsideShip(player);", StringComparison.Ordinal));
     }
 
     private static string FindRoot()

@@ -1061,11 +1061,12 @@ public class MimicryTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
 
         abilitySource.Should().Contain("ability.IsMimicryTechnique &&");
-        abilitySource.Should().Contain("!Mimicry.IsTechniqueEquipped(activator, abilityType)",
+        abilitySource.Should().Contain("!_mimicry.IsTechniqueEquipped(activator, abilityType)",
             "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
 
         var equipped = new Player();

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SWLOR.NWN.API.Engine;
@@ -87,6 +88,13 @@ public class RecordingProxy : DispatchProxy
         // An array cannot be made uninitialized; a new one-element array is just as distinct.
         if (returnType.IsArray)
             return Array.CreateInstance(returnType.GetElementType()!, 1);
+        // A delegate cannot be made uninitialized either; a new one that does nothing is just as distinct.
+        if (typeof(Delegate).IsAssignableFrom(returnType))
+        {
+            var invoke = returnType.GetMethod("Invoke")!;
+            var parameters = invoke.GetParameters().Select(parameter => Expression.Parameter(parameter.ParameterType)).ToArray();
+            return Expression.Lambda(returnType, Expression.Default(invoke.ReturnType), parameters).Compile();
+        }
 
         var uninitialized = RuntimeHelpers.GetUninitializedObject(returnType);
         // An engine structure frees its native handle when the garbage collector finalizes it, which crashes a process

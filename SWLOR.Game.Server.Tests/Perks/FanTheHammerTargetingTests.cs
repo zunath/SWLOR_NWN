@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -65,8 +66,7 @@ public class FanTheHammerTargetingTests
     [TestCase(5f, 3f, false, TestName = "TargetOutsideConeWidthIsOutside")]
     public void BothRanks_CombatConeIncludesOnlyTargetsInForwardRange(float x, float y, bool expected)
     {
-        var abilityShape = typeof(SWLOR.Game.Server.Service.Ability)
-            .GetMethod("IsPositionInCombatImpactShape", BindingFlags.NonPublic | BindingFlags.Static);
+        var abilityShape = AbilityInternals.Method("IsPositionInCombatImpactShape");
         abilityShape.Should().NotBeNull("Fan the Hammer uses the shared combat impact shape matcher");
 
         var abilities = new FanTheHammerAbilityDefinition().BuildAbilities();
@@ -75,7 +75,7 @@ public class FanTheHammerTargetingTests
             var targeting = abilities[feat].Targeting;
             targeting.Shape.Should().Be(AbilityTargetingShapeType.Cone);
 
-            var inside = (bool)abilityShape!.Invoke(null, new object[]
+            var inside = (bool)abilityShape!.Invoke(AbilityInternals.NoNeighbours(), new object[]
             {
                 new Vector3(x, y, 0f),
                 Vector3.Zero,

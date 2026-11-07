@@ -38,8 +38,9 @@ public class AbilityImpactAnimationAuditTests
         var abilityServiceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
 
         abilityServiceSource.Should().NotContain(
             "Animation.DoubleStrike",
@@ -56,12 +57,13 @@ public class AbilityImpactAnimationAuditTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var impactAnimationBody = source.Substring(
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
-            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
         var queuedWeaponEarlyReturn = System.Text.RegularExpressions.Regex.Match(
             impactAnimationBody,
@@ -118,12 +120,13 @@ public class AbilityImpactAnimationAuditTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var impactAnimationBody = source.Substring(
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
-            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
         var helperCall = System.Text.RegularExpressions.Regex.Match(
             impactAnimationBody,

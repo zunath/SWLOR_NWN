@@ -288,7 +288,7 @@ public class ForceSensitiveEspionageTests
         new MessagingService().ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
         var messaging = ReadSource("Domain", "Core", "MessagingService.cs");
         messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
-        var ability = ReadSource("Service", "Ability.cs");
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
         ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");
     }
 
@@ -304,8 +304,8 @@ public class ForceSensitiveEspionageTests
         usePerkFeat.Should().Contain("if (Stealth.IsConcealed(activator))\n                return;", "ability sounds reach only the hidden activator");
         usePerkFeat.Should().Contain("ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator)");
 
-        var ability = ReadSource("Service", "Ability.cs");
-        ability.Should().Contain("if (Stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        ability.Should().Contain("if (_stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
 
         foreach (var file in new[] { "GhostProtocolAbilityDefinition.cs", "SharedPresenceAbilityDefinition.cs" })
         {
@@ -434,8 +434,8 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void ForcePowerHelper_DrivesForceDisruptionAndFpSpendTriggers()
     {
-        var ability = ReadSource("Service", "Ability.cs");
-        ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
             "Force Disruption blocks the new powers");
         var combat = CombatSource.Read().Replace("\r\n", "\n");
         var triggerStart = combat.IndexOf("private static void ApplyForceFPCostActivatedEffects", StringComparison.Ordinal);

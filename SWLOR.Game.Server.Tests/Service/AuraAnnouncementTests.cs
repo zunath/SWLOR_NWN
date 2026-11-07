@@ -61,7 +61,7 @@ public class AuraAnnouncementTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
 
-        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         source.Should().Contain("aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);");
         source.Should().Contain("detail?.AnnouncedTo.Add(recipient);");
         source.Should().Contain("aura.AnnouncedTo.Remove(target);");

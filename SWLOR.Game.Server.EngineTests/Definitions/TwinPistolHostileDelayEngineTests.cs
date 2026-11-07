@@ -196,8 +196,7 @@ public static class TwinPistolHostileDelayEngineTests
             else if (winner == FeatType.Headshot1)
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
-                queuedTraits = ((Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
-                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))[actor];
+                ctx.Assert(Ability.TryGetQueuedWeaponTraits(actor, out queuedTraits), "the queued Headshot captures its traits");
                 ctx.Assert(queuedTraits.ContinuesChain, "Headshot is paid within six seconds of Paired Volley, so it continues the chain");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
                 // Any hostile weapon ability that costs STM spends all Cadence when its cost is paid.

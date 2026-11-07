@@ -205,8 +205,8 @@ public class GeneratedWeaponPerkBehaviorTests
             "Lucky Chamber must advance before hit, miss, or deflection resolution");
         resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
         resolveAttackRoll.Should().Contain("Combat.StoreQueuedWeaponAbilityCriticalRateBonus(");
-        var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        ability.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
+        var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        ability.Should().Contain("ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
             "shared combat must not couple generic near-target stats to one perk-specific status class");
@@ -625,7 +625,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "automatic hits against destructible placeables must spend attack charges");
 
         var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+            root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         abilitySource.Should().Contain(
             "if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)");
         abilitySource.Should().Contain("impact.Summary.SkillType");
@@ -1546,7 +1546,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
@@ -1576,7 +1576,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("typeof(SpottersRhythmStatusEffect)");
         var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
-        var applyDamageDealtIndex = abilitySource.IndexOf("Combat.ApplyDamageDealtEffects(", StringComparison.Ordinal);
+        var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(", StringComparison.Ordinal);
         consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);
         applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
         consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
@@ -1717,23 +1717,23 @@ public class GeneratedWeaponPerkBehaviorTests
                 "concealment can convert a provisional hit into an avoided attack");
 
         var hostileCombatImpactStart = abilitySource.IndexOf(
-            "private static int ApplyHostileCombatImpact(",
+            "private int ApplyHostileCombatImpact(",
             StringComparison.Ordinal);
         var hostileCombatImpactEnd = abilitySource.IndexOf(
-            "private static bool ShouldResolveCombatImpactHit(",
+            "private bool ShouldResolveCombatImpactHit(",
             hostileCombatImpactStart,
             StringComparison.Ordinal);
         hostileCombatImpactEnd.Should().BeGreaterThan(hostileCombatImpactStart);
         var hostileCombatImpactSource = abilitySource[hostileCombatImpactStart..hostileCombatImpactEnd];
-        hostileCombatImpactSource.Should().Contain("Combat.TrackHostileAbilityActivity(activator);");
-        hostileCombatImpactSource.Should().Contain("Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);");
-        hostileCombatImpactSource.IndexOf("Combat.TrackHostileAbilityActivity(activator);", StringComparison.Ordinal)
+        hostileCombatImpactSource.Should().Contain("TrackHostileAbilityActivity(activator);");
+        hostileCombatImpactSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(target, activator);");
+        hostileCombatImpactSource.IndexOf("TrackHostileAbilityActivity(activator);", StringComparison.Ordinal)
             .Should().BeLessThan(
-                hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
+                hostileCombatImpactSource.IndexOf("TryResolveAbilityHit(", StringComparison.Ordinal),
                 "a missed opening cast still enters combat and must report First Strike readiness");
-        hostileCombatImpactSource.IndexOf("Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);", StringComparison.Ordinal)
+        hostileCombatImpactSource.IndexOf("TrackHostileDefensiveCombatEntryActivity(target, activator);", StringComparison.Ordinal)
             .Should().BeLessThan(
-                hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
+                hostileCombatImpactSource.IndexOf("TryResolveAbilityHit(", StringComparison.Ordinal),
                 "the defender must enter combat even when the opening hostile cast misses");
         hostileCombatImpactSource.Should().Contain("firstHostileAbilityHitDamageBonusApplied: impactDamage.DealsDamage",
             "control-only casts must preserve First Strike stacks because they did not receive the damage bonus");
@@ -1773,7 +1773,7 @@ public class GeneratedWeaponPerkBehaviorTests
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");
         abilitySource.Should().Contain("beforeSuccessfulImpactRiders?.Invoke(target)");
-        abilitySource.Should().Contain("Combat.ApplySuccessfulAbilityImpactRiders(");
+        abilitySource.Should().Contain("ApplySuccessfulAbilityImpactRiders(");
         abilitySource.Should().Contain("beforeSuccessfulImpactRiders");
 
         var bleedSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BleedStatusEffect.cs"));

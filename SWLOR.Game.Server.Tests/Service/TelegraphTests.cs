@@ -139,7 +139,7 @@ public class TelegraphTests
     public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
-        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var branchStart = source.IndexOf("if (telegraphDuration <= 0f)", StringComparison.Ordinal);
 
         branchStart.Should().BeGreaterThan(
@@ -156,9 +156,9 @@ public class TelegraphTests
         branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
 
-        var flashStart = source.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal);
+        var flashStart = source.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal);
         var flashBody = ExtractBlockBody(source, flashStart);
-        flashBody.Should().Contain("Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
+        flashBody.Should().Contain("_telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ public class TelegraphTests
         impactBody.Should().NotContain("ImpactDelay",
             "a separate delay must not discard the warned footprint");
 
-        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         abilitySource.Should().Contain("trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs",
             "a separately delayed impact still needs a fresh flash at the original footprint");
     }

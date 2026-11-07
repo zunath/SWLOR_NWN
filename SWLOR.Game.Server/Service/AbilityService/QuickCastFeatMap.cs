@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -8,16 +10,18 @@ namespace SWLOR.Game.Server.Service.AbilityService;
 public static class QuickCastFeatMap
 {
     public const string AliasPrefix = "AutoCast";
-    private static readonly IReadOnlyDictionary<FeatType, FeatType> _originals = BuildOriginals();
-    private static readonly IReadOnlyDictionary<FeatType, FeatType> _aliases =
-        _originals.ToDictionary(entry => entry.Value, entry => entry.Key);
+    // Enumerated in ascending feat order, the order the feats are found in: callers add and remove feats while iterating.
+    private static readonly ImmutableSortedDictionary<FeatType, FeatType> _ordered = BuildOriginals();
+    private static readonly FrozenDictionary<FeatType, FeatType> _originals = _ordered.ToFrozenDictionary();
+    private static readonly FrozenDictionary<FeatType, FeatType> _aliases =
+        _ordered.ToDictionary(entry => entry.Value, entry => entry.Key).ToFrozenDictionary();
 
-    public static IReadOnlyDictionary<FeatType, FeatType> Originals => _originals;
+    public static IReadOnlyDictionary<FeatType, FeatType> Originals => _ordered;
     public static FeatType GetOriginal(FeatType feat) => _originals.TryGetValue(feat, out var original) ? original : feat;
     public static bool IsAlias(FeatType feat) => _originals.ContainsKey(feat);
     public static bool TryGetAlias(FeatType feat, out FeatType alias) => _aliases.TryGetValue(GetOriginal(feat), out alias);
 
-    private static IReadOnlyDictionary<FeatType, FeatType> BuildOriginals()
+    private static ImmutableSortedDictionary<FeatType, FeatType> BuildOriginals()
     {
         var result = new Dictionary<FeatType, FeatType>();
         foreach (var feat in Enum.GetValues<FeatType>())
@@ -29,6 +33,6 @@ public static class QuickCastFeatMap
                 throw new InvalidOperationException($"Automatic targeting feat {name} has no original feat.");
             result.Add(feat, original);
         }
-        return result;
+        return result.ToImmutableSortedDictionary();
     }
 }

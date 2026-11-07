@@ -12,8 +12,9 @@ public class AbilityAreaVisualEffectTests
         var source = File.ReadAllText(Path.Combine(
                 root.FullName,
                 "SWLOR.Game.Server",
-                "Service",
-                "Ability.cs"))
+                "Domain",
+                "Abilities",
+                "AbilityService.cs"))
             .Replace("\r\n", "\n");
 
         source.Should().Contain(

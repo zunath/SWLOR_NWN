@@ -35,6 +35,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
     [OneTimeSetUp]
     public void LoadTheAbilities()
     {
+        using var scope = BaseFacades.Install();
         AbilityCache.Load();
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.NWN.API.Engine;
 
@@ -24,9 +25,11 @@ namespace SWLOR.Game.Server.Domain.Administration
             string search);
 
         /// <summary>
-        /// Picks where a DM lands when jumping to an area: a waypoint, then any placed object, then the area's center.
+        /// Lists where a DM can land when jumping to an area, best first: its waypoints, then its center and the
+        /// rest of its floor. Placeables and creatures are left out, because they come and go, and a decoration
+        /// outside the walkable floor would send the jump nowhere.
         /// </summary>
         /// <param name="area">The area to jump to.</param>
-        Location GetAreaJumpLocation(uint area);
+        IEnumerable<Location> GetAreaJumpLocations(uint area);
     }
 }

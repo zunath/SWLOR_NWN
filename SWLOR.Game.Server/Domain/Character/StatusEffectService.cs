@@ -2,10 +2,12 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Native;
@@ -200,6 +202,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPlayerNameService _playerName;
         private readonly IGuiService _gui;
         private readonly ICapstoneProofService _capstoneProof;
+        private readonly IDBService _db;
+        private readonly IQuickCastService _quickCast;
 
         public StatusEffectService(
             IResistanceService resistance,
@@ -210,7 +214,9 @@ namespace SWLOR.Game.Server.Domain.Character
             IMessagingService messaging,
             IPlayerNameService playerName,
             IGuiService gui,
-            ICapstoneProofService capstoneProof)
+            ICapstoneProofService capstoneProof,
+            IDBService db,
+            IQuickCastService quickCast)
         {
             _resistance = resistance;
             _pvpCombat = pvpCombat;
@@ -221,6 +227,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _playerName = playerName;
             _gui = gui;
             _capstoneProof = capstoneProof;
+            _db = db;
+            _quickCast = quickCast;
         }
 
         /// <summary>
@@ -300,6 +308,84 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             ReapplyFoodHP(player);
+            DelayCommand(1f, () => RestoreSavedToggles(player));
+        }
+
+        /// <summary>
+        /// Saves the stances and toggles of everyone online or holding effects from an earlier logout. Those effects are only kept in
+        /// memory, so without this a server restart loses them.
+        /// </summary>
+        public void SaveTogglesForRestart()
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsDM(player) && _creatureEffects.TryGetValue(player, out var effects))
+                    SaveToggles(GetObjectUUID(player), effects);
+            }
+
+            foreach (var (playerId, loggedOut) in _loggedOutPlayerEffects)
+            {
+                SaveToggles(playerId, loggedOut.Effects);
+            }
+        }
+
+        private void SaveToggles(string playerId, CreatureStatusEffect effects)
+        {
+            var toggles = effects.GetAllEffects()
+                .Where(effect => effect.RestoresAfterServerRestart && effect.DurationTicks < 0)
+                .Select(effect => effect.GetType().Name)
+                .Distinct()
+                .ToList();
+            if (toggles.Count == 0)
+                return;
+
+            var dbPlayer = _db.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.TogglesToRestore = toggles;
+            _db.Set(dbPlayer);
+        }
+
+        private void RestoreSavedToggles(uint player)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer?.TogglesToRestore == null)
+                return;
+
+            var toggles = dbPlayer.TogglesToRestore;
+            dbPlayer.TogglesToRestore = null;
+            _db.Set(dbPlayer);
+
+            if (GetCurrentHitPoints(player) <= 0)
+                return;
+
+            foreach (var toggle in toggles)
+            {
+                var type = _statusEffects.Keys.FirstOrDefault(key => key.Name == toggle);
+                var ability = type == null ? null : FindKnownToggleAbility(player, type);
+                if (ability == null || HasStatusEffect(player, type) || !TryCreateStatusEffect(type, out var statusEffect))
+                    continue;
+
+                statusEffect.OriginatingAbility = ability;
+                RemoveOtherStanceStatuses(player, type);
+                ApplyStatusEffect(player, player, statusEffect, 0f);
+            }
+        }
+
+        // A deploy can change perks while the server is down, so a toggle only returns if the player still knows its ability.
+        private AbilityDetail FindKnownToggleAbility(uint player, Type statusEffectType)
+        {
+            foreach (var (feat, ability) in GetAllAbilityDetails())
+            {
+                if (ability.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType) && _quickCast.KnowsFeat(player, feat))
+                    return ability;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -2593,6 +2679,8 @@ namespace SWLOR.Game.Server.Domain.Character
         }
 
         protected virtual void ReapplyFoodHP(uint player) => Stat.ReapplyFoodHP(player);
+
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
 
         protected virtual void ApplyCreatureMovementRate(uint creature) => Stat.ApplyCreatureMovementRate(creature);
 

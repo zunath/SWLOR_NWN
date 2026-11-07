@@ -38,8 +38,8 @@ Rank 50, 2 enhancements, no perks. "Reach" is the share of crafts at or above th
 | Circuit 51-53 | 15.6 | 36.1 | 49.4 | 93.9 | 85% | 78% |
 | Fabricator 46-50 | 28.3 | 72.7 | 88.3 | 99.3 | 99% | 80% |
 | Fabricator 51-53 | 3.8 | 14.6 | 48.2 | 95.8 | 91% | 72% |
-| Kitchen 46-50 | 70.2 | 77.4 | 83.7 | 95.2 | 92% | 84% |
-| Kitchen 51-53 | 55.1 | 58.3 | 68.4 | 86.2 | 80% | 73% |
+| Kitchen 46-50 | 71.6 | 81.6 | 89.7 | 97.3 | 95% | 86% |
+| Kitchen 51-53 | 51.1 | 64.5 | 69.6 | 93.4 | 88% | 79% |
 
 The Kitchen rows are seed 1. See "The Kitchen retune" for the other seeds.
 
@@ -47,10 +47,10 @@ Fully perked with no gear against no perks in unmodded best gear (plain crafts, 
 
 | Band | Forge | Circuit | Fabricator | Kitchen | Unmodded best gear (Forge / Circuit / Fabricator / Kitchen) |
 | --- | --- | --- | --- | --- | --- |
-| 46-50 | Hot 68.7, Cold 58.1 | Overclock 83.0, Safe Mode 82.8 | Run 70.0, Fine 62.2 | Slow 90.6, Flash 90.5 | 82.0 / 78.5 / 75.0 / 87.2 |
-| 51-53 | Hot 64.0, Cold 63.3 | Overclock 63.5, Safe Mode 59.9 | Run 41.7, Fine 35.5 | Slow 82.2, Flash 83.6 | 59.8 / 64.3 / 37.1 / 78.6 |
+| 46-50 | Hot 68.7, Cold 58.1 | Overclock 83.0, Safe Mode 82.8 | Run 70.0, Fine 62.2 | Slow 90.6, Flash 90.5 | 82.0 / 78.5 / 75.0 / 89.6 |
+| 51-53 | Hot 64.0, Cold 63.3 | Overclock 63.5, Safe Mode 59.9 | Run 41.7, Fine 35.5 | Slow 82.2, Flash 83.6 | 59.8 / 64.3 / 37.1 / 77.8 |
 
-The Circuit's 46-50 row depends on the seed: seed 1 passes, and on seed 2 Overclock is 87.5 and Safe Mode 83.7 against 78.6, over the limit by 3.9 and 0.1. Averaged over the two seeds, Overclock is over by 1.7 and Safe Mode is inside the limit.
+The Circuit's 46-50 row depends on the seed: seed 1 passes, and on seed 2 Overclock is 87.5 and Safe Mode 83.7 against 78.6, over the limit by 3.9 and 0.1. Averaged over the two seeds, Overclock is over by 1.7 and Safe Mode is inside the limit. The Kitchen's 51-53 Flash row is over by 0.8 on seed 1 only; see "The Kitchen retune".
 
 ## Does the ladder hold for a player better than the bot?
 
@@ -125,23 +125,31 @@ Pantry Staples, Flash Cooking and Signature Dish did not change.
 
 ## The Kitchen retune
 
-The Kitchen did not get a recipe curve. It already had a ladder, so this pass only cut the Chef line, which beat unmodded best gear by far more than the limit (46-50: 94.6 and 94.4 against 87.2; 51-53: 90.9 and 89.3 against 78.6). The gear ladder gate plays each full line with Seasoned Palate off and on, because a Chef can toggle it and the gate had only tested it on.
+The Kitchen did not get a recipe curve. It already had a ladder, so this pass cut the Chef line, which beat unmodded best gear by far more than the limit (46-50: 94.6 and 94.4 against 87.2; 51-53: 90.9 and 89.3 against 78.6). The gear ladder gate plays each full line with Seasoned Palate off and on, because a Chef can toggle it and the gate had only tested it on.
 
 Average quality for a full Chef line in no gear, and its gap over unmodded best gear, averaged over seeds 1, 2 and 3 at 40 runs and 6 recipes per band. The limit is +5.
 
 | Band | Unmodded best gear | Flash | Slow | Flash, Seasoned on | Slow, Seasoned on |
 | --- | --- | --- | --- | --- | --- |
-| 46-50 | 87.3 | 92.3 (+5.0) | 92.2 (+4.9) | 90.7 (+3.4) | 90.8 (+3.5) |
-| 51-53 | 80.8 | 84.0 (+3.2) | 83.1 (+2.3) | 80.2 (-0.6) | 80.6 (-0.1) |
+| 46-50 | 90.0 | 92.3 (+2.3) | 92.2 (+2.2) | 90.7 (+0.7) | 90.8 (+0.8) |
+| 51-53 | 81.4 | 84.0 (+2.6) | 83.1 (+1.7) | 80.2 (-1.2) | 80.6 (-0.7) |
 
 The unperked ladder, by seed (no gear / mid gear / best gear / fully modded):
 
 | Band | Seed 1 | Seed 2 | Seed 3 |
 | --- | --- | --- | --- |
-| 46-50 | 70.2 / 77.4 / 83.7 / 95.2 | 70.4 / 76.9 / 84.3 / 95.9 | 66.7 / 76.7 / 84.6 / 96.4 |
-| 51-53 | 55.1 / 58.3 / 68.4 / 86.2 | 46.9 / 61.3 / 68.3 / 86.0 | 52.4 / 55.0 / 69.3 / 85.5 |
+| 46-50 | 71.6 / 81.6 / 89.7 / 97.3 | 72.9 / 78.8 / 91.2 / 98.4 | 69.0 / 80.1 / 89.3 / 98.0 |
+| 51-53 | 51.1 / 64.5 / 69.6 / 93.4 | 52.1 / 66.4 / 76.0 / 92.6 | 52.2 / 63.3 / 73.3 / 90.7 |
 
-Fully modded gear at 51-53 reaches 85% on about 80% of crafts and 100% on 70-73%. No single seed is exact: the same cell moves several points between seeds, which is why candidates were judged on the three-seed average. The 51-53 mid gear step is the clearest case, at +3.2 / +14.4 / +2.6 for an average of +6.8.
+Fully modded gear at 51-53 reaches 85% on 85-88% of crafts and 100% on 78-79%. No single seed is exact: the same cell moves several points between seeds, which is why candidates were judged on the three-seed average. Unmodded best gear's plain crafts at 51-53 are the clearest case, at 77.8 / 85.3 / 81.0, so the full Flash line's gap over them is +5.8 on seed 1 and under the limit on seeds 2 and 3.
+
+Three Kitchen rules changed after the first review, each to close a gate the first retune left failing (`KitchenTuning.cs`):
+
+- **Craftsmanship** adds 1.1% to each action's Doneness per point (was 0.8%). At 0.8% the 51-53 mid gear step was +3.2 and +2.6 on seeds 1 and 3; it is now +11.1 to +14.3, and the smallest step on any seed is +5.1 (51-53 best gear, seed 1). No gear has no Craftsmanship, so the perked no-gear rows did not move.
+- **Enhancements** add 20% of their penalty to the Doneness a dish needs (was 25%). Three enhancements on a 41-45 dish in fully modded gear transferred 0.89 of today's; now 0.92 (2.70 against 2.93), and the Flash and Slow builds' lowest is 0.97 and 1.01.
+- **XP at levels 21-30** uses a 1.12 multiplier (was 1.1). The perked builds with no gear and one enhancement were at 0.99x and just under 1.00x; they are now 1.04x (Flash) and 1.02x (Slow).
+
+Two other candidates were played on the 51-53 ladder and rejected: 20% enhancements alone (the best gear step stayed under +5 on seeds 1 and 2) and that plus a larger Control spread step (the mid-to-best step fell to +1.0 on seed 2).
 
 ## Gate changes
 
@@ -167,10 +175,7 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 | Fabricator style | Production Run vs Fine Tolerance, no gear | +5.1, limit 5 | Over by 0.1 |
 | Forge economy | 21-30, no gear (also Hot Forging) | ratio 1.01 | Level 24 recipe; rules below level 25 are unchanged, and master's sample differed |
 | Forge XP | 11-20, no gear (also both-line builds) | 0.98x | Rules there are unchanged, and master's sample differed |
-| Kitchen ladder | 51-53, mid gear step, seeds 1 and 3 | +3.2 and +2.6, limit +5 | Sample noise: seed 2 is +14.4 and the three-seed average is +6.8 |
-| Kitchen ladder | 46-50, Flash and Slow full lines, single seeds | over +5 on some seeds | Seed 1 passes at +3.3 and +3.4; the three-seed averages are +5.0 and +4.9 |
-| Kitchen enhancement | 41-45, 3 slots, no perks, fully modded | 0.894 (2.62 against 2.93), shown as 0.90, limit 0.90 | The Kitchen's rules did not change in this pass; the gate now plays fully modded gear |
-| Kitchen XP | 21-30, no gear, 1 enhancement, perked builds | Flash 0.99x, Slow just under 1.00x | 4 recipes per band; unperked passes (lowest 1.03x) |
+| Kitchen ladder | 51-53, Flash full line, no gear, seed 1 only | 83.6 against unmodded best gear's 77.8 (+5.8), limit +5 | Seeds 2 and 3 pass; unmodded best gear moves 77.8 / 85.3 / 81.0 between seeds, and the three-seed gap is +2.6 |
 | Research style | Methodical alone against Intuitive alone: fixed levels in every gear level, and evidence-decides levels in best and fully modded gear | Methodical better on 75-100% of cases; mean gaps +2.7 to +7.4 | Owner decision: styles stay "trials against chance". Alone, Methodical leads at fixed levels in every gear level and where evidence decides in best and fully modded gear; Intuitive leads only where evidence decides in no gear (67% of cases, -0.4), and the two split mid gear. With the whole line, all 8 comparisons pass |
 
 ## Research
@@ -201,5 +206,5 @@ A full line in no gear against unperked best gear: tier 4 is 6.9 to 13.6 points 
 - The base reports use 40 runs per case, not 100, so differences under about 2 points are noise.
 - The adaptive player reads only shared meters and previews. It is a floor, as the rotation table shows.
 - Seconds per action is an estimate, so XP per hour and the length limits are estimates too.
-- The Kitchen reports leave out gate 1. The search takes many CPU hours, and the run over every band was stopped after 3 hours. The unperked Kitchen's rules did not change in this pass, and its last full report (100 runs) passed with a smallest margin of 19.4. Only the 46-50 and 51-53 split above ran here. Gate 1 for perked Chef builds was already failing, was not rerun, and stays open by owner decision.
+- The Kitchen reports leave out gate 1. The search takes many CPU hours, and the run over every band was stopped after 3 hours. Its last full report (100 runs) passed with a smallest margin of 19.4, and the 46-50 and 51-53 split above passed with 22.2. Both ran before the three Kitchen rule changes in "The Kitchen retune" and were not rerun; those changes give geared crafts more Doneness and lower the enhancement cost, so the rotation margins are not expected to shrink, but that is not measured. Gate 1 for perked Chef builds was already failing, was not rerun, and stays open by owner decision.
 - The Kitchen's style and perks-optional gates are in `kitchen-perks-gates.md`, not `kitchen-gates.md`, which holds the length, economy, XP, enhancement and ladder gates.

@@ -17,7 +17,7 @@
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 40 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.15x, 11-20 1.15x, 21-30 1.10x, 31-40 1.20x, 41-53 1.05x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.15x, 11-20 1.15x, 21-30 1.12x, 31-40 1.20x, 41-53 1.05x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -62,8 +62,8 @@
 | Gate | Verdict | Summary |
 | --- | --- | --- |
 | Economy parity | Passed | Component stacks per item are within 10% of the legacy baseline where its success rate is at least 90%, and at most 10% above it where it is lower, at no less quality, in every band and gear tier. |
-| XP rate | Failed | Item crafts: XP per hour falls below 1.00x the legacy rate in 1 case(s): 21-30 / no gear, 1 enhancement (1.00x). |
-| Enhancement parity | Passed | At rank 50 in fully modded gear, the thresholds in force (50% / 85% / 100%) transfer at least 0.90 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 0.98 times today's). Thresholds that meet parity in every band for this quality: 76% / 99% / 99%. |
+| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.02x in 21-30 / no gear, 1 enhancement). |
+| Enhancement parity | Passed | At rank 50 in fully modded gear, the thresholds in force (50% / 85% / 100%) transfer at least 0.90 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.01 times today's). Thresholds that meet parity in every band for this quality: 85% / 98% / 100%. |
 
 ## Economy parity
 
@@ -72,24 +72,24 @@
 | Band | Gear | Recipes played | New stacks per item | Legacy stacks per item | Ratio | New success | Legacy success | New avg quality | Legacy avg quality | Quality matched | Never made (new / legacy) | Parity rule | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1-10 | no gear | 4 | 1.81 | 1.82 | 0.99 | 99% | 97% | 94% | 1% | yes | 0% / 0% | within 10% | Passed |
-| 1-10 | mid gear | 4 | 1.81 | 1.81 | 1.00 | 99% | 98% | 96% | 7% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | mid gear | 4 | 1.80 | 1.81 | 0.99 | 100% | 98% | 98% | 7% | yes | 0% / 0% | within 10% | Passed |
 | 1-10 | best gear | 4 | 1.80 | 1.81 | 1.00 | 99% | 99% | 99% | 16% | yes | 0% / 0% | within 10% | Passed |
 | 1-10 | fully modded gear | 4 | 1.80 | 1.81 | 0.99 | 100% | 98% | 100% | 51% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | no gear | 4 | 2.05 | 2.11 | 0.97 | 96% | 92% | 90% | 1% | yes | 0% / 0% | within 10% | Passed |
-| 11-20 | mid gear | 4 | 2.01 | 2.02 | 1.00 | 99% | 99% | 96% | 11% | yes | 0% / 0% | within 10% | Passed |
+| 11-20 | mid gear | 4 | 2.00 | 2.02 | 0.99 | 100% | 99% | 95% | 11% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | best gear | 4 | 2.01 | 2.00 | 1.00 | 99% | 100% | 98% | 30% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | fully modded gear | 4 | 2.00 | 2.01 | 1.00 | 100% | 99% | 99% | 95% | yes | 0% / 0% | within 10% | Passed |
 | 21-30 | no gear | 4 | 1.64 | 1.62 | 1.01 | 98% | 97% | 89% | 7% | yes | 0% / 0% | within 10% | Passed |
-| 21-30 | mid gear | 4 | 1.62 | 1.61 | 1.01 | 98% | 98% | 93% | 15% | yes | 0% / 0% | within 10% | Passed |
-| 21-30 | best gear | 4 | 1.60 | 1.60 | 1.00 | 99% | 99% | 97% | 30% | yes | 0% / 0% | within 10% | Passed |
-| 21-30 | fully modded gear | 4 | 1.61 | 1.60 | 1.01 | 99% | 99% | 98% | 91% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | mid gear | 4 | 1.63 | 1.61 | 1.01 | 98% | 98% | 92% | 15% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | best gear | 4 | 1.60 | 1.60 | 1.00 | 100% | 99% | 98% | 30% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | fully modded gear | 4 | 1.60 | 1.60 | 1.00 | 100% | 99% | 99% | 91% | yes | 0% / 0% | within 10% | Passed |
 | 31-40 | no gear | 4 | 2.29 | 2.29 | 1.00 | 98% | 98% | 89% | 8% | yes | 0% / 0% | within 10% | Reported |
-| 31-40 | mid gear | 4 | 2.28 | 2.30 | 0.99 | 98% | 97% | 93% | 14% | yes | 0% / 0% | within 10% | Passed |
-| 31-40 | best gear | 4 | 2.27 | 2.26 | 1.00 | 99% | 99% | 94% | 25% | yes | 0% / 0% | within 10% | Passed |
-| 31-40 | fully modded gear | 4 | 2.25 | 2.26 | 1.00 | 100% | 99% | 100% | 82% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | mid gear | 4 | 2.26 | 2.30 | 0.98 | 99% | 97% | 94% | 14% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | best gear | 4 | 2.27 | 2.26 | 1.00 | 99% | 99% | 96% | 25% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | fully modded gear | 4 | 2.25 | 2.26 | 1.00 | 100% | 99% | 99% | 82% | yes | 0% / 0% | within 10% | Passed |
 | 41-53 | no gear | 4 | 1.63 | 1.62 | 1.00 | 97% | 99% | 81% | 43% | yes | 0% / 25% | within 10% | Reported |
-| 41-53 | mid gear | 4 | 1.83 | 1.96 | 0.94 | 100% | 79% | 91% | 55% | yes | 0% / 0% | at most +10% | Reported |
-| 41-53 | best gear | 4 | 1.86 | 1.88 | 0.99 | 99% | 92% | 96% | 76% | yes | 0% / 0% | within 10% | Passed |
+| 41-53 | mid gear | 4 | 1.86 | 1.96 | 0.95 | 98% | 79% | 91% | 55% | yes | 0% / 0% | at most +10% | Reported |
+| 41-53 | best gear | 4 | 1.84 | 1.88 | 0.98 | 99% | 92% | 96% | 76% | yes | 0% / 0% | within 10% | Passed |
 | 41-53 | fully modded gear | 4 | 1.83 | 1.85 | 0.99 | 100% | 99% | 99% | 90% | yes | 0% / 0% | within 10% | Passed |
 
 ### Recipes the legacy policy never makes in the cell, left out of the stack and quality comparison above (they still count in the never-made check)
@@ -105,85 +105,85 @@
 | Group | Variant | Legacy XP per craft | Legacy actions per craft | Legacy XP per hour | New XP per craft | New actions per craft | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1-10 | no gear | 589 | 4.8 | 73511 | 2488 | 13.2 | 84692 | 1.15 | - | Passed |
-| 1-10 | no gear, 1 enhancement | 498 | 6.1 | 48684 | 2448 | 13.2 | 83503 | 1.72 | - | Passed |
-| 1-10 | no gear, 2 enhancements | 176 | 6.0 | 17606 | 2444 | 12.9 | 85187 | 4.84 | - | Passed |
-| 1-10 | no gear, 3 enhancements | 90 | 6.0 | 9000 | 2368 | 13.7 | 77982 | 8.66 | - | Passed |
-| 1-10 | mid gear | 644 | 6.0 | 64781 | 2513 | 12.4 | 91458 | 1.41 | - | Passed |
-| 1-10 | mid gear, 1 enhancement | 602 | 5.9 | 61514 | 2513 | 12.4 | 91245 | 1.48 | - | Passed |
-| 1-10 | mid gear, 2 enhancements | 587 | 6.6 | 53030 | 2514 | 12.3 | 91740 | 1.73 | - | Passed |
-| 1-10 | mid gear, 3 enhancements | 519 | 7.5 | 41440 | 2516 | 12.2 | 92618 | 2.23 | - | Passed |
-| 1-10 | best gear | 710 | 6.5 | 65640 | 2554 | 10.5 | 109448 | 1.67 | - | Passed |
-| 1-10 | best gear, 1 enhancement | 668 | 6.3 | 63621 | 2553 | 11.2 | 103018 | 1.62 | - | Passed |
-| 1-10 | best gear, 2 enhancements | 667 | 6.8 | 58475 | 2538 | 11.1 | 102618 | 1.75 | - | Passed |
-| 1-10 | best gear, 3 enhancements | 646 | 6.8 | 56713 | 2577 | 10.4 | 110961 | 1.96 | - | Passed |
-| 1-10 | fully modded gear | 976 | 5.5 | 105745 | 2579 | 8.8 | 131597 | 1.24 | - | Passed |
-| 1-10 | fully modded gear, 1 enhancement | 844 | 4.4 | 113911 | 2578 | 8.6 | 135296 | 1.19 | - | Passed |
-| 1-10 | fully modded gear, 2 enhancements | 856 | 4.7 | 109518 | 2571 | 8.7 | 132811 | 1.21 | - | Passed |
-| 1-10 | fully modded gear, 3 enhancements | 830 | 5.0 | 99336 | 2579 | 8.6 | 135359 | 1.36 | - | Passed |
+| 1-10 | no gear, 1 enhancement | 498 | 6.1 | 48684 | 2436 | 13.2 | 82967 | 1.70 | - | Passed |
+| 1-10 | no gear, 2 enhancements | 176 | 6.0 | 17606 | 2437 | 12.9 | 84902 | 4.82 | - | Passed |
+| 1-10 | no gear, 3 enhancements | 90 | 6.0 | 9000 | 2404 | 13.6 | 79533 | 8.84 | - | Passed |
+| 1-10 | mid gear | 644 | 6.0 | 64781 | 2557 | 11.4 | 100915 | 1.56 | - | Passed |
+| 1-10 | mid gear, 1 enhancement | 602 | 5.9 | 61514 | 2540 | 12.4 | 92515 | 1.50 | - | Passed |
+| 1-10 | mid gear, 2 enhancements | 587 | 6.6 | 53030 | 2499 | 12.3 | 91456 | 1.72 | - | Passed |
+| 1-10 | mid gear, 3 enhancements | 519 | 7.5 | 41440 | 2516 | 11.8 | 96119 | 2.32 | - | Passed |
+| 1-10 | best gear | 710 | 6.5 | 65640 | 2561 | 10.4 | 110951 | 1.69 | - | Passed |
+| 1-10 | best gear, 1 enhancement | 668 | 6.3 | 63621 | 2565 | 10.8 | 106389 | 1.67 | - | Passed |
+| 1-10 | best gear, 2 enhancements | 667 | 6.8 | 58475 | 2540 | 11.0 | 104079 | 1.78 | - | Passed |
+| 1-10 | best gear, 3 enhancements | 646 | 6.8 | 56713 | 2568 | 10.3 | 112071 | 1.98 | - | Passed |
+| 1-10 | fully modded gear | 976 | 5.5 | 105745 | 2579 | 8.2 | 141852 | 1.34 | - | Passed |
+| 1-10 | fully modded gear, 1 enhancement | 844 | 4.4 | 113911 | 2579 | 8.1 | 143727 | 1.26 | - | Passed |
+| 1-10 | fully modded gear, 2 enhancements | 856 | 4.7 | 109518 | 2573 | 8.5 | 136116 | 1.24 | - | Passed |
+| 1-10 | fully modded gear, 3 enhancements | 830 | 5.0 | 99336 | 2578 | 8.2 | 141147 | 1.42 | - | Passed |
 | 11-20 | no gear | 564 | 8.7 | 39031 | 1292 | 12.9 | 45103 | 1.16 | - | Passed |
-| 11-20 | no gear, 1 enhancement | 304 | 8.9 | 20379 | 1257 | 16.0 | 35329 | 1.73 | - | Passed |
-| 11-20 | no gear, 2 enhancements | 90 | 6.5 | 8308 | 1207 | 16.4 | 33199 | 4.00 | - | Passed |
-| 11-20 | no gear, 3 enhancements | 90 | 6.5 | 8308 | 1173 | 16.7 | 31533 | 3.80 | - | Passed |
-| 11-20 | mid gear | 661 | 10.8 | 36706 | 1347 | 11.5 | 52802 | 1.44 | - | Passed |
-| 11-20 | mid gear, 1 enhancement | 621 | 11.8 | 31594 | 1329 | 14.3 | 41835 | 1.32 | - | Passed |
-| 11-20 | mid gear, 2 enhancements | 601 | 13.2 | 27274 | 1281 | 15.8 | 36454 | 1.34 | - | Passed |
-| 11-20 | mid gear, 3 enhancements | 579 | 13.6 | 25520 | 1321 | 14.5 | 41081 | 1.61 | - | Passed |
-| 11-20 | best gear | 782 | 14.4 | 32501 | 1361 | 9.8 | 62160 | 1.91 | - | Passed |
-| 11-20 | best gear, 1 enhancement | 766 | 15.1 | 30378 | 1350 | 12.9 | 47258 | 1.56 | - | Passed |
-| 11-20 | best gear, 2 enhancements | 750 | 16.4 | 27508 | 1317 | 13.1 | 45332 | 1.65 | - | Passed |
-| 11-20 | best gear, 3 enhancements | 731 | 15.8 | 27734 | 1335 | 14.3 | 42147 | 1.52 | - | Passed |
-| 11-20 | fully modded gear | 1169 | 13.7 | 51313 | 1372 | 8.4 | 73278 | 1.43 | - | Passed |
-| 11-20 | fully modded gear, 1 enhancement | 1139 | 13.8 | 49523 | 1380 | 10.3 | 60426 | 1.22 | - | Passed |
-| 11-20 | fully modded gear, 2 enhancements | 1154 | 14.5 | 47757 | 1375 | 10.7 | 57707 | 1.21 | - | Passed |
-| 11-20 | fully modded gear, 3 enhancements | 1162 | 14.3 | 48582 | 1373 | 10.9 | 56562 | 1.16 | - | Passed |
-| 21-30 | no gear | 633 | 10.5 | 36274 | 1248 | 13.9 | 40447 | 1.12 | - | Passed |
-| 21-30 | no gear, 1 enhancement | 613 | 10.6 | 34849 | 1160 | 15.0 | 34847 | 1.00 | 1.00x | Failed |
-| 21-30 | no gear, 2 enhancements | 621 | 11.6 | 32271 | 1130 | 15.2 | 33474 | 1.04 | - | Passed |
-| 21-30 | no gear, 3 enhancements | 570 | 12.4 | 27559 | 1109 | 16.0 | 31256 | 1.13 | - | Passed |
-| 21-30 | mid gear | 686 | 16.1 | 25528 | 1270 | 13.5 | 42296 | 1.66 | - | Passed |
-| 21-30 | mid gear, 1 enhancement | 668 | 15.2 | 26317 | 1253 | 13.9 | 40436 | 1.54 | - | Passed |
-| 21-30 | mid gear, 2 enhancements | 653 | 15.6 | 25201 | 1228 | 14.6 | 37815 | 1.50 | - | Passed |
-| 21-30 | mid gear, 3 enhancements | 653 | 16.2 | 24194 | 1203 | 15.3 | 35476 | 1.47 | - | Passed |
-| 21-30 | best gear | 781 | 21.6 | 21681 | 1303 | 12.2 | 47901 | 2.21 | - | Passed |
-| 21-30 | best gear, 1 enhancement | 750 | 20.4 | 22054 | 1272 | 12.8 | 44540 | 2.02 | - | Passed |
-| 21-30 | best gear, 2 enhancements | 751 | 20.7 | 21725 | 1284 | 13.4 | 43113 | 1.98 | - | Passed |
-| 21-30 | best gear, 3 enhancements | 725 | 20.8 | 20881 | 1240 | 13.8 | 40410 | 1.94 | - | Passed |
-| 21-30 | fully modded gear | 1155 | 20.9 | 33077 | 1307 | 9.6 | 61193 | 1.85 | - | Passed |
-| 21-30 | fully modded gear, 1 enhancement | 1111 | 19.9 | 33505 | 1314 | 10.4 | 57086 | 1.70 | - | Passed |
-| 21-30 | fully modded gear, 2 enhancements | 1108 | 20.0 | 33299 | 1315 | 10.4 | 56810 | 1.71 | - | Passed |
-| 21-30 | fully modded gear, 3 enhancements | 1105 | 20.1 | 33033 | 1308 | 10.9 | 53915 | 1.63 | - | Passed |
+| 11-20 | no gear, 1 enhancement | 304 | 8.9 | 20379 | 1255 | 16.0 | 35257 | 1.73 | - | Passed |
+| 11-20 | no gear, 2 enhancements | 90 | 6.5 | 8308 | 1209 | 16.3 | 33466 | 4.03 | - | Passed |
+| 11-20 | no gear, 3 enhancements | 90 | 6.5 | 8308 | 1185 | 16.7 | 31890 | 3.84 | - | Passed |
+| 11-20 | mid gear | 661 | 10.8 | 36706 | 1345 | 10.8 | 56306 | 1.53 | - | Passed |
+| 11-20 | mid gear, 1 enhancement | 621 | 11.8 | 31594 | 1336 | 14.0 | 42894 | 1.36 | - | Passed |
+| 11-20 | mid gear, 2 enhancements | 601 | 13.2 | 27274 | 1320 | 15.1 | 39386 | 1.44 | - | Passed |
+| 11-20 | mid gear, 3 enhancements | 579 | 13.6 | 25520 | 1311 | 14.9 | 39687 | 1.56 | - | Passed |
+| 11-20 | best gear | 782 | 14.4 | 32501 | 1365 | 9.8 | 62668 | 1.93 | - | Passed |
+| 11-20 | best gear, 1 enhancement | 766 | 15.1 | 30378 | 1366 | 12.5 | 49216 | 1.62 | - | Passed |
+| 11-20 | best gear, 2 enhancements | 750 | 16.4 | 27508 | 1345 | 13.1 | 46131 | 1.68 | - | Passed |
+| 11-20 | best gear, 3 enhancements | 731 | 15.8 | 27734 | 1357 | 13.3 | 46044 | 1.66 | - | Passed |
+| 11-20 | fully modded gear | 1169 | 13.7 | 51313 | 1375 | 7.6 | 81270 | 1.58 | - | Passed |
+| 11-20 | fully modded gear, 1 enhancement | 1139 | 13.8 | 49523 | 1370 | 10.6 | 58165 | 1.17 | - | Passed |
+| 11-20 | fully modded gear, 2 enhancements | 1154 | 14.5 | 47757 | 1372 | 10.3 | 59926 | 1.25 | - | Passed |
+| 11-20 | fully modded gear, 3 enhancements | 1162 | 14.3 | 48582 | 1374 | 9.6 | 64737 | 1.33 | - | Passed |
+| 21-30 | no gear | 633 | 10.5 | 36274 | 1271 | 13.9 | 41182 | 1.14 | - | Passed |
+| 21-30 | no gear, 1 enhancement | 613 | 10.6 | 34849 | 1180 | 14.9 | 35701 | 1.02 | - | Passed |
+| 21-30 | no gear, 2 enhancements | 621 | 11.6 | 32271 | 1149 | 15.1 | 34207 | 1.06 | - | Passed |
+| 21-30 | no gear, 3 enhancements | 570 | 12.4 | 27559 | 1182 | 15.0 | 35560 | 1.29 | - | Passed |
+| 21-30 | mid gear | 686 | 16.1 | 25528 | 1296 | 12.6 | 46189 | 1.81 | - | Passed |
+| 21-30 | mid gear, 1 enhancement | 668 | 15.2 | 26317 | 1271 | 14.1 | 40672 | 1.55 | - | Passed |
+| 21-30 | mid gear, 2 enhancements | 653 | 15.6 | 25201 | 1278 | 14.5 | 39665 | 1.57 | - | Passed |
+| 21-30 | mid gear, 3 enhancements | 653 | 16.2 | 24194 | 1248 | 14.9 | 37704 | 1.56 | - | Passed |
+| 21-30 | best gear | 781 | 21.6 | 21681 | 1333 | 12.0 | 50180 | 2.31 | - | Passed |
+| 21-30 | best gear, 1 enhancement | 750 | 20.4 | 22054 | 1323 | 12.6 | 47310 | 2.15 | - | Passed |
+| 21-30 | best gear, 2 enhancements | 751 | 20.7 | 21725 | 1322 | 12.2 | 48681 | 2.24 | - | Passed |
+| 21-30 | best gear, 3 enhancements | 725 | 20.8 | 20881 | 1283 | 13.3 | 43540 | 2.09 | - | Passed |
+| 21-30 | fully modded gear | 1155 | 20.9 | 33077 | 1339 | 9.1 | 66078 | 2.00 | - | Passed |
+| 21-30 | fully modded gear, 1 enhancement | 1111 | 19.9 | 33505 | 1342 | 9.6 | 62847 | 1.88 | - | Passed |
+| 21-30 | fully modded gear, 2 enhancements | 1108 | 20.0 | 33299 | 1330 | 9.5 | 62857 | 1.89 | - | Passed |
+| 21-30 | fully modded gear, 3 enhancements | 1105 | 20.1 | 33033 | 1335 | 10.0 | 60005 | 1.82 | - | Passed |
 | 31-40 | no gear | 637 | 12.7 | 30125 | 1346 | 15.9 | 38171 | 1.27 | - | Passed |
-| 31-40 | no gear, 1 enhancement | 626 | 14.1 | 26707 | 1249 | 16.4 | 34232 | 1.28 | - | Passed |
-| 31-40 | no gear, 2 enhancements | 594 | 14.2 | 25103 | 1154 | 17.8 | 29250 | 1.17 | - | Passed |
-| 31-40 | no gear, 3 enhancements | 579 | 15.2 | 22871 | 1117 | 18.0 | 27903 | 1.22 | - | Passed |
-| 31-40 | mid gear | 666 | 17.5 | 22794 | 1381 | 13.8 | 45045 | 1.98 | - | Passed |
-| 31-40 | mid gear, 1 enhancement | 659 | 18.0 | 22009 | 1341 | 16.1 | 37493 | 1.70 | - | Passed |
-| 31-40 | mid gear, 2 enhancements | 657 | 18.0 | 21902 | 1300 | 16.1 | 36227 | 1.65 | - | Passed |
-| 31-40 | mid gear, 3 enhancements | 636 | 18.0 | 21155 | 1271 | 16.4 | 34815 | 1.65 | - | Passed |
-| 31-40 | best gear | 747 | 24.1 | 18569 | 1389 | 12.9 | 48414 | 2.61 | - | Passed |
-| 31-40 | best gear, 1 enhancement | 732 | 24.8 | 17689 | 1378 | 13.6 | 45463 | 2.57 | - | Passed |
-| 31-40 | best gear, 2 enhancements | 730 | 25.8 | 17000 | 1380 | 14.6 | 42476 | 2.50 | - | Passed |
-| 31-40 | best gear, 3 enhancements | 707 | 24.3 | 17478 | 1392 | 15.1 | 41545 | 2.38 | - | Passed |
-| 31-40 | fully modded gear | 1086 | 25.4 | 25611 | 1438 | 10.2 | 63488 | 2.48 | - | Passed |
-| 31-40 | fully modded gear, 1 enhancement | 1093 | 25.8 | 25408 | 1431 | 10.7 | 60408 | 2.38 | - | Passed |
-| 31-40 | fully modded gear, 2 enhancements | 1092 | 26.5 | 24713 | 1424 | 11.8 | 54438 | 2.20 | - | Passed |
-| 31-40 | fully modded gear, 3 enhancements | 1067 | 26.5 | 24136 | 1426 | 11.8 | 54392 | 2.25 | - | Passed |
+| 31-40 | no gear, 1 enhancement | 626 | 14.1 | 26707 | 1303 | 16.1 | 36330 | 1.36 | - | Passed |
+| 31-40 | no gear, 2 enhancements | 594 | 14.2 | 25103 | 1266 | 16.5 | 34452 | 1.37 | - | Passed |
+| 31-40 | no gear, 3 enhancements | 579 | 15.2 | 22871 | 1216 | 17.5 | 31261 | 1.37 | - | Passed |
+| 31-40 | mid gear | 666 | 17.5 | 22794 | 1393 | 13.2 | 47297 | 2.08 | - | Passed |
+| 31-40 | mid gear, 1 enhancement | 659 | 18.0 | 22009 | 1359 | 15.7 | 38987 | 1.77 | - | Passed |
+| 31-40 | mid gear, 2 enhancements | 657 | 18.0 | 21902 | 1313 | 15.8 | 37449 | 1.71 | - | Passed |
+| 31-40 | mid gear, 3 enhancements | 636 | 18.0 | 21155 | 1343 | 15.8 | 38117 | 1.80 | - | Passed |
+| 31-40 | best gear | 747 | 24.1 | 18569 | 1404 | 13.1 | 48353 | 2.60 | - | Passed |
+| 31-40 | best gear, 1 enhancement | 732 | 24.8 | 17689 | 1407 | 13.3 | 47642 | 2.69 | - | Passed |
+| 31-40 | best gear, 2 enhancements | 730 | 25.8 | 17000 | 1378 | 13.6 | 45513 | 2.68 | - | Passed |
+| 31-40 | best gear, 3 enhancements | 707 | 24.3 | 17478 | 1390 | 14.5 | 43196 | 2.47 | - | Passed |
+| 31-40 | fully modded gear | 1086 | 25.4 | 25611 | 1432 | 10.0 | 64720 | 2.53 | - | Passed |
+| 31-40 | fully modded gear, 1 enhancement | 1093 | 25.8 | 25408 | 1435 | 10.3 | 62619 | 2.46 | - | Passed |
+| 31-40 | fully modded gear, 2 enhancements | 1092 | 26.5 | 24713 | 1430 | 10.5 | 61185 | 2.48 | - | Passed |
+| 31-40 | fully modded gear, 3 enhancements | 1067 | 26.5 | 24136 | 1438 | 10.6 | 60994 | 2.53 | - | Passed |
 | 41-53 | no gear | 675 | 16.3 | 24807 | 1216 | 19.1 | 28599 | 1.15 | - | Passed |
-| 41-53 | no gear, 1 enhancement | 597 | 14.9 | 23989 | 1064 | 19.3 | 24842 | 1.04 | - | Passed |
-| 41-53 | no gear, 2 enhancements | 555 | 15.2 | 21993 | 962 | 19.8 | 21869 | 0.99 | - | Passed |
-| 41-53 | no gear, 3 enhancements | 502 | 15.3 | 19685 | 894 | 20.3 | 19818 | 1.01 | - | Passed |
-| 41-53 | mid gear | 810 | 23.1 | 21016 | 1271 | 18.4 | 31136 | 1.48 | - | Passed |
-| 41-53 | mid gear, 1 enhancement | 745 | 21.5 | 20764 | 1137 | 19.0 | 26930 | 1.30 | - | Passed |
-| 41-53 | mid gear, 2 enhancements | 688 | 19.6 | 21074 | 1091 | 19.2 | 25537 | 1.21 | - | Passed |
-| 41-53 | mid gear, 3 enhancements | 607 | 17.8 | 20439 | 1011 | 19.9 | 22870 | 1.12 | - | Passed |
-| 41-53 | best gear | 1008 | 27.8 | 21759 | 1302 | 15.7 | 37431 | 1.72 | - | Passed |
-| 41-53 | best gear, 1 enhancement | 974 | 28.2 | 20741 | 1210 | 17.5 | 31041 | 1.50 | - | Passed |
-| 41-53 | best gear, 2 enhancements | 857 | 25.4 | 20238 | 1169 | 18.1 | 29050 | 1.44 | - | Passed |
-| 41-53 | best gear, 3 enhancements | 765 | 22.6 | 20327 | 1072 | 19.1 | 25212 | 1.24 | - | Passed |
-| 41-53 | fully modded gear | 1167 | 27.8 | 25181 | 1335 | 13.2 | 45664 | 1.81 | - | Passed |
-| 41-53 | fully modded gear, 1 enhancement | 1133 | 27.4 | 24831 | 1319 | 13.9 | 42593 | 1.72 | - | Passed |
-| 41-53 | fully modded gear, 2 enhancements | 1174 | 29.0 | 24296 | 1307 | 14.6 | 40202 | 1.65 | - | Passed |
-| 41-53 | fully modded gear, 3 enhancements | 1134 | 29.2 | 23284 | 1297 | 15.2 | 38355 | 1.65 | - | Passed |
+| 41-53 | no gear, 1 enhancement | 597 | 14.9 | 23989 | 1096 | 19.0 | 25968 | 1.08 | - | Passed |
+| 41-53 | no gear, 2 enhancements | 555 | 15.2 | 21993 | 1062 | 19.4 | 24597 | 1.12 | - | Passed |
+| 41-53 | no gear, 3 enhancements | 502 | 15.3 | 19685 | 987 | 19.9 | 22299 | 1.13 | - | Passed |
+| 41-53 | mid gear | 810 | 23.1 | 21016 | 1254 | 17.8 | 31693 | 1.51 | - | Passed |
+| 41-53 | mid gear, 1 enhancement | 745 | 21.5 | 20764 | 1188 | 17.9 | 29825 | 1.44 | - | Passed |
+| 41-53 | mid gear, 2 enhancements | 688 | 19.6 | 21074 | 1161 | 18.7 | 27880 | 1.32 | - | Passed |
+| 41-53 | mid gear, 3 enhancements | 607 | 17.8 | 20439 | 1099 | 18.9 | 26222 | 1.28 | - | Passed |
+| 41-53 | best gear | 1008 | 27.8 | 21759 | 1304 | 15.8 | 37086 | 1.70 | - | Passed |
+| 41-53 | best gear, 1 enhancement | 974 | 28.2 | 20741 | 1251 | 16.8 | 33460 | 1.61 | - | Passed |
+| 41-53 | best gear, 2 enhancements | 857 | 25.4 | 20238 | 1261 | 17.2 | 32972 | 1.63 | - | Passed |
+| 41-53 | best gear, 3 enhancements | 765 | 22.6 | 20327 | 1198 | 18.0 | 29932 | 1.47 | - | Passed |
+| 41-53 | fully modded gear | 1167 | 27.8 | 25181 | 1335 | 12.0 | 50126 | 1.99 | - | Passed |
+| 41-53 | fully modded gear, 1 enhancement | 1133 | 27.4 | 24831 | 1331 | 13.2 | 45334 | 1.83 | - | Passed |
+| 41-53 | fully modded gear, 2 enhancements | 1174 | 29.0 | 24296 | 1324 | 13.6 | 43695 | 1.80 | - | Passed |
+| 41-53 | fully modded gear, 3 enhancements | 1134 | 29.2 | 23284 | 1325 | 13.4 | 44423 | 1.91 | - | Passed |
 
 ## Enhancement parity
 
@@ -192,37 +192,37 @@
 | Band | Slots filled | Recipes | Penalty each | Extra progress | Today: items made | Today: avg quality | Today: enhancements transferred | New: items made | New: avg quality | New: enhancements transferred | New / today | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 41-45 | 1 | 4 | 60 | 32% | 99% | 100% | 0.98 | 100% | 100.0% | 1.00 (+/- 0.00) | 1.02 | >= 0.95 | Passed |
-| 41-45 | 2 | 4 | 60 | 63% | 98% | 99% | 1.93 | 100% | 99.6% | 1.99 (+/- 0.01) | 1.03 | >= 0.95 | Passed |
-| 41-45 | 3 | 4 | 60 | 95% | 99% | 99% | 2.94 | 100% | 100.0% | 2.97 (+/- 0.01) | 1.01 | >= 0.90 | Passed |
-| 46-50 | 1 | 4 | 60 | 32% | 98% | 100% | 0.97 | 100% | 99.3% | 0.99 (+/- 0.01) | 1.02 | >= 0.95 | Passed |
-| 46-50 | 2 | 4 | 60 | 63% | 99% | 100% | 1.97 | 100% | 99.6% | 1.99 (+/- 0.01) | 1.01 | >= 0.95 | Passed |
-| 46-50 | 3 | 4 | 60 | 95% | 99% | 99% | 2.97 | 100% | 99.4% | 2.92 (+/- 0.03) | 0.98 | >= 0.90 | Passed |
-| 51-53 | 1 | 4 | 60 | 8% | 100% | 40% | 0.40 | 100% | 98.7% | 0.99 (+/- 0.01) | 2.47 | >= 0.95 | Passed |
-| 51-53 | 2 | 4 | 60 | 16% | 100% | 49% | 0.97 | 100% | 98.7% | 1.97 (+/- 0.02) | 2.04 | >= 0.95 | Passed |
-| 51-53 | 3 | 4 | 60 | 24% | 98% | 37% | 1.08 | 100% | 99.1% | 2.89 (+/- 0.03) | 2.68 | >= 0.90 | Passed |
+| 41-45 | 2 | 4 | 60 | 63% | 98% | 99% | 1.93 | 100% | 99.7% | 1.99 (+/- 0.01) | 1.03 | >= 0.95 | Passed |
+| 41-45 | 3 | 4 | 60 | 95% | 99% | 99% | 2.94 | 100% | 99.9% | 2.98 (+/- 0.01) | 1.01 | >= 0.90 | Passed |
+| 46-50 | 1 | 4 | 60 | 32% | 98% | 100% | 0.97 | 100% | 99.5% | 1.00 (+/- 0.00) | 1.03 | >= 0.95 | Passed |
+| 46-50 | 2 | 4 | 60 | 63% | 99% | 100% | 1.97 | 100% | 99.3% | 1.98 (+/- 0.01) | 1.01 | >= 0.95 | Passed |
+| 46-50 | 3 | 4 | 60 | 95% | 99% | 99% | 2.97 | 100% | 99.9% | 2.98 (+/- 0.01) | 1.01 | >= 0.90 | Passed |
+| 51-53 | 1 | 4 | 60 | 8% | 100% | 40% | 0.40 | 100% | 99.6% | 1.00 (+/- 0.00) | 2.50 | >= 0.95 | Passed |
+| 51-53 | 2 | 4 | 60 | 16% | 100% | 49% | 0.97 | 100% | 99.7% | 1.99 (+/- 0.01) | 2.07 | >= 0.95 | Passed |
+| 51-53 | 3 | 4 | 60 | 24% | 98% | 37% | 1.08 | 100% | 99.4% | 2.93 (+/- 0.03) | 2.72 | >= 0.90 | Passed |
 
 ### Thresholds, first / second / third slot, that would meet parity for the quality measured (the strictest set that keeps every case at least at today's, never falling from one slot to the next)
 
 | Scope | Thresholds that meet parity | In steps of 5 | Thresholds in force |
 | --- | --- | --- | --- |
-| Every band together (the shared thresholds) | 76% / 99% / 99% | 75% / 95% / 95% | 50% / 85% / 100% |
+| Every band together (the shared thresholds) | 85% / 98% / 100% | 85% / 95% / 100% | 50% / 85% / 100% |
 | Band 41-45 alone | 99% / 99% / 100% | 95% / 95% / 100% | 50% / 85% / 100% |
-| Band 46-50 alone | 76% / 99% / 99% | 75% / 95% / 95% | 50% / 85% / 100% |
+| Band 46-50 alone | 85% / 98% / 100% | 85% / 95% / 100% | 50% / 85% / 100% |
 | Band 51-53 alone | 100% / 100% / 100% | 100% / 100% / 100% | 50% / 85% / 100% |
 
 ### Rank 50, fully modded gear: quality of the items the new minigame made, in whole percent, by band and slots filled
 
 | Band | Slots filled | Items made | 10th percentile | 25th percentile | Median | 75th percentile | 90th percentile | Made at 100% |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 99% |
-| 41-45 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
-| 41-45 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
+| 41-45 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
+| 41-45 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 96% |
+| 41-45 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 | 46-50 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
 | 46-50 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
-| 46-50 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
-| 51-53 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
-| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
-| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 91% |
+| 46-50 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
+| 51-53 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 92% |
+| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 93% |
+| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 95% |
 
 ### Representative enhancements: for each recipe kind the real item at the best level the recipe accepts (the old window refuses one more than 5 levels above the recipe) whose penalty is the lower median of that level
 

@@ -17,7 +17,7 @@
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 40 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.15x, 11-20 1.15x, 21-30 1.10x, 31-40 1.20x, 41-53 1.05x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.15x, 11-20 1.15x, 21-30 1.12x, 31-40 1.20x, 41-53 1.05x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -71,17 +71,17 @@
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Slow Cooking vs Flash Cooking | no gear | 18 | 50% | 50% | 87.2 | 86.7 | +0.6 | Passed |
-| Slow Cooking vs Flash Cooking | mid gear | 18 | 64% | 36% | 91.5 | 90.8 | +0.6 | Passed |
-| Slow Cooking vs Flash Cooking | best gear | 18 | 33% | 67% | 94.4 | 95.4 | -1.0 | Passed |
-| Slow Cooking vs Flash Cooking | fully modded gear | 18 | 53% | 47% | 98.3 | 98.2 | +0.1 | Passed |
+| Slow Cooking vs Flash Cooking | mid gear | 18 | 50% | 50% | 91.9 | 92.2 | -0.3 | Passed |
+| Slow Cooking vs Flash Cooking | best gear | 18 | 33% | 67% | 95.4 | 95.9 | -0.4 | Passed |
+| Slow Cooking vs Flash Cooking | fully modded gear | 18 | 58% | 42% | 99.0 | 98.2 | +0.9 | Passed |
 | Slow Cooking (full line) vs Flash Cooking (full line) | no gear | 18 | 47% | 53% | 90.6 | 89.4 | +1.2 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | mid gear | 18 | 61% | 39% | 94.4 | 92.4 | +2.1 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | best gear | 18 | 47% | 53% | 96.1 | 95.9 | +0.3 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | fully modded gear | 18 | 47% | 53% | 99.0 | 99.1 | -0.1 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | mid gear | 18 | 56% | 44% | 95.3 | 93.9 | +1.4 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | best gear | 18 | 50% | 50% | 97.2 | 97.0 | +0.2 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | fully modded gear | 18 | 50% | 50% | 99.2 | 99.2 | -0.0 | Passed |
 | Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | no gear | 18 | 44% | 56% | 83.7 | 84.3 | -0.6 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | mid gear | 18 | 58% | 42% | 88.6 | 88.3 | +0.2 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | best gear | 18 | 42% | 58% | 92.3 | 93.3 | -0.9 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | fully modded gear | 18 | 53% | 47% | 97.7 | 98.1 | -0.3 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | mid gear | 18 | 50% | 50% | 91.2 | 91.6 | -0.4 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | best gear | 18 | 44% | 56% | 93.7 | 94.2 | -0.6 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | fully modded gear | 18 | 47% | 53% | 98.8 | 99.1 | -0.3 | Passed |
 
 ## Perks optional
 
@@ -89,8 +89,8 @@
 
 | Band | Recipes played | Attempts | Reach maximum quality | Make the item | Avg quality of items made | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 6 | 240 | 88% | 100% | 98% | >= 50% | Passed |
-| 46-50 | 6 | 240 | 82% | 100% | 95% | >= 50% | Passed |
+| 41-45 | 6 | 240 | 86% | 100% | 97% | >= 50% | Passed |
+| 46-50 | 6 | 240 | 85% | 100% | 96% | >= 50% | Passed |
 | 51-53 | 6 | 240 | 82% | 99% | 95% | >= 35% | Passed |
 
 ## Limitations

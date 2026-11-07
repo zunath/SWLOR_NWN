@@ -35,6 +35,8 @@ namespace SWLOR.CraftSim.Scenario.Circuit
 
         public string Title => _title;
 
+        public bool TunedAgainstFullMods => true;
+
         public SkillType Skill => SkillType.Engineering;
 
         public CraftMinigameType Minigame => CraftMinigameType.Circuit;

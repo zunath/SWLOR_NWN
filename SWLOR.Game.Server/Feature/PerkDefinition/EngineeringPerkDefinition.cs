@@ -50,16 +50,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank1} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoostRank1)} of output to Wire, Tune and Discharge.")
+                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoost} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoost)} of output to Wire, Tune and Discharge.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 5)
-                .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoostRank1)
+                .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoost)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank2} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoostRank2)} of output to Wire, Tune and Discharge.")
+                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoost} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoost)} of output to Wire, Tune and Discharge, and Discharge bursts are {CircuitPerkRules.ConductiveWiringDischargePercent}% larger.")
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 45)
-                .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoostRank2);
+                .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoost)
+                .IncreasesStat(StatType.CircuitDischargePowerPercent, CircuitPerkRules.ConductiveWiringDischargePercent);
         }
 
         private void CapacitorBank()
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, an overload costs a third less Integrity ({CircuitRules.OverloadIntegrityPercent}% of the piece's maximum becomes {CircuitRules.OverloadIntegrityPercent * (100 - CircuitPerkRules.ShockAbsorbersReductionPercent) / 100}%).")
+                .Description($"In the Circuit, an overload costs {CircuitPerkRules.ShockAbsorbersReductionPercent}% less Integrity ({CircuitRules.OverloadIntegrityPercent}% of the piece's maximum becomes {CircuitRules.OverloadIntegrityPercent * (100 - CircuitPerkRules.ShockAbsorbersReductionPercent) / 100}%).")
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 40)
                 .IncreasesStat(StatType.CircuitOverloadIntegrityReductionPercent, CircuitPerkRules.ShockAbsorbersReductionPercent);
@@ -167,16 +168,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, Wire, Tune, Boost and Discharge cost {CircuitPerkRules.InsulatedTracesReductionRank1} less Integrity, to a minimum of {CircuitRules.MinimumActionIntegrity}. Ground and Patch are unchanged.")
+                .Description($"In the Circuit, Wire and Boost cost {CircuitPerkRules.InsulatedTracesIntegrityReduction} less Integrity, to a minimum of {CircuitRules.MinimumActionIntegrity}. Other actions are unchanged.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 5)
-                .IncreasesStat(StatType.CircuitActionIntegrityReduction, CircuitPerkRules.InsulatedTracesReductionRank1)
+                .IncreasesStat(StatType.CircuitActionIntegrityReduction, CircuitPerkRules.InsulatedTracesIntegrityReduction)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, Wire, Tune, Boost and Discharge cost {CircuitPerkRules.InsulatedTracesReductionRank2} less Integrity, to a minimum of {CircuitRules.MinimumActionIntegrity}. Ground and Patch are unchanged.")
+                .Description($"In the Circuit, Wire and Boost cost {CircuitPerkRules.InsulatedTracesIntegrityReduction} less Integrity, to a minimum of {CircuitRules.MinimumActionIntegrity}. Patch restores {CircuitPerkRules.InsulatedTracesPatchRestore} more Integrity.")
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 40)
-                .IncreasesStat(StatType.CircuitActionIntegrityReduction, CircuitPerkRules.InsulatedTracesReductionRank2);
+                .IncreasesStat(StatType.CircuitActionIntegrityReduction, CircuitPerkRules.InsulatedTracesIntegrityReduction)
+                .IncreasesStat(StatType.CircuitPatchRestore, CircuitPerkRules.InsulatedTracesPatchRestore);
         }
 
         private void FineCalibration()
@@ -231,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
-                .Description($"Adds the Micro-Tune action to the Circuit. It builds {CircuitRules.MicroTuneSharePercent}% of a Tune's Calibration, adds no Load and costs {CircuitRules.MicroTuneCp} CP and {CircuitRules.MicroTuneIntegrity} Integrity. It can overload only when Load is already over the line.")
+                .Description($"Adds the Micro-Tune action to the Circuit. It builds {CircuitRules.MicroTuneSharePercent}% of a Tune's Calibration, adds no Load and costs {CircuitRules.MicroTuneCp} CP and {CircuitRules.MicroTuneIntegrity} Integrity, more on recipes above level {CircuitRules.DifficultyStartLevel}. It can overload only when Load is already over the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 25)
                 .IncreasesStat(StatType.CircuitMicroTuneUnlocked, 1);

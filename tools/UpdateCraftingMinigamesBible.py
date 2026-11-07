@@ -268,7 +268,10 @@ def fabricator_entry(src: dict[str, Source]) -> str:
         f" the weakest sub-assembly plus {number(rules.const('AssembleCapPoints'))} points. The piece breaks if Machine Condition"
         " reaches 0. Enhancements make the piece bigger: it needs more Runs and Precision Passes and starts with more Machine"
         " Condition. Every craft's base XP, for a finished item and a failure alike, is multiplied by"
-        f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}.")
+        f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}."
+        f" Above recipe level {number(rules.const('DifficultyStartLevel'))} each level adds {number(rules.const('QualityDifficultyPerLevel') * 100)}% to the quality a"
+        f" recipe needs, {number(rules.const('WearDifficultyPerLevel') * 100)}% to wear and {number(rules.const('ServiceCpPerLevel'))} CP to Service, so a full set of"
+        " top-tier gear with both slots of the best mods is the target for the top recipes.")
 
 
 def kitchen_entry(src: dict[str, Source]) -> str:

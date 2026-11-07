@@ -48,6 +48,13 @@ def format_number(value: float) -> str:
     return f"{value:.2f}".rstrip("0").rstrip(".") if value != int(value) else str(int(value))
 
 
+def constant(source: str, name: str) -> float:
+    match = re.search(rf"public const (?:int|double) {name} = ([0-9.]+);", source)
+    if not match:
+        raise ValueError(f"CircuitRules.cs has no '{name}'")
+    return float(match.group(1))
+
+
 def entry_text(source: str) -> str:
     multipliers = [(label, read_constant(source, name)) for name, label in XP_BANDS]
     paid = ", ".join(f"{format_number(value)} at recipe levels {label}" for label, value in multipliers if value > 1.0)
@@ -59,7 +66,10 @@ def entry_text(source: str) -> str:
         f"{ENTRY_OPENING} Every craft's base XP, for a finished item and a failure alike, is multiplied by {paid}{tail}, so XP"
         " per hour is at least the old crafting window's in every recipe band, gear tier and enhancement count. Enhancements"
         " add their progress penalty to the Assembly an item needs, at most"
-        f" {format_number(cap * 100)}% of the Assembly the recipe itself needs.")
+        f" {format_number(cap * 100)}% of the Assembly the recipe itself needs."
+        f" Above recipe level {format_number(constant(source, 'DifficultyStartLevel'))} each level adds {format_number(constant(source, 'CalibrationDifficultyPerLevel') * 100)}% to the Calibration a recipe needs and"
+        f" {format_number(constant(source, 'IntegrityDifficultyPerLevel') * 100)}% to the Integrity actions cost, and {format_number(constant(source, 'PatchCpPerLevel'))} CP to Patch and {format_number(constant(source, 'TuneCpPerLevel'))} CP to Tune and Micro-Tune,"
+        " so a full set of top-tier gear with both slots of the best mods is the target for the top recipes.")
 
 
 def entry_row(sheet: Bible.Sheet) -> tuple[int, int]:

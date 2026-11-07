@@ -59,14 +59,30 @@ def read_multipliers() -> list[tuple[str, str]]:
     return bands
 
 
+def read_constant(name: str) -> float:
+    match = re.search(rf"public const (?:int|double) {name} = ([0-9.]+);", RULES.read_text(encoding="utf-8"))
+    if not match:
+        raise SystemExit(f"{name} was not found in {RULES}.")
+    return float(match.group(1))
+
+
+def percent_per_level(name: str) -> str:
+    return f"{read_constant(name) * 100:.2f}".rstrip("0").rstrip(".")
+
+
 def entry_text(bands: list[tuple[str, str]]) -> str:
     listed = ", ".join(f"{multiplier} at {label}" for label, multiplier in bands)
+    start = int(read_constant("DifficultyStartLevel"))
     return (
         f"{MARKER}, and the base XP of a Smithery craft is multiplied by a factor for the recipe's level band, a failed craft's"
         f" included: {listed}. The Forge's crafts take 10 to 20 actions where the old window's early crafts took about 6, so"
         " without the multiplier Smithery would pay less XP per hour at low levels than today. Each factor is the smallest that"
         " keeps every gear tier and enhancement count at or above today's XP per hour. The factors are the"
-        " ForgeRules.XpMultiplier constants and apply to Smithery only.")
+        " ForgeRules.XpMultiplier constants and apply to Smithery only."
+        f" Above recipe level {start} each level adds {percent_per_level('FinishDifficultyPerLevel')}% to the Finish a recipe needs and"
+        f" {percent_per_level('ShapeDifficultyPerLevel')}% to its Shape, and a recipe's Finish before that factor rises to at least"
+        f" {int(read_constant('FinishFloor'))} by level {int(read_constant('FinishFloorFullLevel'))}, so Shape-heavy armor needs gear as"
+        " much as weapons do. A full set of top-tier gear with both slots of the best mods is the target for the top recipes.")
 
 
 def update_sheet(sheet: Sheet, bands: list[tuple[str, str]]) -> None:

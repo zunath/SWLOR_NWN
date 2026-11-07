@@ -113,7 +113,7 @@ public sealed class FabricatorSetup
     public int MaxMachineCondition { get; }
 
     /// <summary>The Machine Condition a Run or Precision Pass wears: the recipe's wear rate less the crafter's perks, never below 1.</summary>
-    public int WearRate => Math.Max(1, Parameters.WearRate - Math.Max(0, PerkStats.WearReduction));
+    public int WearRate => Math.Max(1, (int)Math.Round(Parameters.WearRate * FabricatorRules.WearDifficulty(RecipeLevel), MidpointRounding.AwayFromZero) - Math.Max(0, PerkStats.WearReduction));
 
     /// <summary>The progress that finishes all three sub-assemblies.</summary>
     public int MaxProgress => FrameSize + ShellSize + FittingsSize;
@@ -166,7 +166,7 @@ public sealed class FabricatorSetup
 
     /// <summary>The factor on every Precision Pass: the crafter's Control and rank against the recipe's level.</summary>
     public double QualityFactor =>
-        (1.0 + Control * FabricatorRules.GearPercentPerPoint / 100.0) * RankFactor(0);
+        (1.0 + Control * FabricatorRules.GearPercentPerPoint / 100.0) * RankFactor(0) / FabricatorRules.QualityDifficulty(RecipeLevel);
 
     /// <summary>The progress a Run adds before the sub-assembly's size limits it.</summary>
     /// <param name="onHead">True when the active head serves the sub-assembly; otherwise the Run has half effect.</param>

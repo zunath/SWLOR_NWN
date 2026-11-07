@@ -14,5 +14,15 @@ namespace SWLOR.CraftSim.Data
         };
 
         public bool Contains(int level) => level >= First && level <= Last;
+
+        /// <summary>Reads a range such as "46-50", named as written.</summary>
+        public static RecipeBand Parse(string text)
+        {
+            var parts = text.Split('-');
+            if (parts.Length == 2 && int.TryParse(parts[0], out var first) && int.TryParse(parts[1], out var last) && first >= 1 && last >= first)
+                return new RecipeBand(text, first, last);
+
+            throw new ArgumentException($"'{text}' is not a recipe level range such as 46-50.");
+        }
     }
 }

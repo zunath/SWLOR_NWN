@@ -151,6 +151,7 @@ The three existing per-skill gear stats stay. No new item properties are added, 
   - Nothing else is gated by rank; rank changes power and CP only. Gathering, fishing and the Experiment have no rank-gated actions.
   - The Forge, Circuit and Reaction merged with other unlock ranks before this rule. Their phase-2 tuning PRs align them.
 - **Espionage** has no crafting gear today and gets none. Its minigame scales from Espionage rank only.
+- **Fully modded gear is the target at the top** (owner decision after tester feedback, November 2026). A full set of top-tier gear with both slots of the best mods gives about +90 Control and +90 Craftsmanship on top of the set's 29 and 30. Mods add no CP, so the CP budget stays about 105 at rank 50 in any gear. The Forge, the Circuit and the Fabricator are tuned against that crafter, not unmodded best gear. On the top recipes (levels 51-53, rank 50, 2 enhancements, no perks) the fully modded crafter reaches 85% on most crafts and 100% on many, not all; unmodded gear makes the item at a much lower quality; researched gear only makes it safer. The difficulty curves are under each minigame, and `design/testing/crafting-revamp/gear-difficulty-curve.md` has the results. The Kitchen was not retuned: it already had a gear ladder (57 / 58.5 / 70 / 86 at levels 51-53).
 
 ### Per-recipe parameters
 
@@ -216,6 +217,12 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - **Legacy timing input:** Foundation 1d (PR #2803) commits today's actions per craft in `design/testing/crafting-revamp/legacy-crafting-baseline.md` (5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear) and the gathering baseline beside it. Re-run them with the committed seeds when the inputs change.
 7. **Enhancement parity** (owner decision after player feedback, October 2026). With enhancement difficulty modeled for both the legacy model and each minigame, the expected number of transferred enhancements per enhanced craft at rank 50, best gear and at level is at least today's, for items with one, two and three enhancement slots. The gate reports the threshold values that meet it; the thresholds are shared by every minigame.
 
+**Minigames tuned against fully modded gear** (owner decision after tester feedback, November 2026; the Forge, the Circuit and the Fabricator, `ICraftScenario.TunedAgainstFullMods`). They play a fourth gear tier, fully modded, and:
+- **Gear ladder gate** (`gates --gates ladder`). At levels 46-50 and 51-53, rank 50, 2 enhancements and no perks, each gear step adds at least 5 quality points unless the step below already averages 97; at 51-53 fully modded gear reaches 85% on at least 60% of crafts, reaches 100% on at most 90%, and stays in the length target. No full perk line in no gear beats unmodded best gear by more than 5 points.
+- **Under-geared cells are only reported.** The length, economy and XP gates report no gear from level 31 and mid gear from level 41, and fully modded length except the ladder's own top-band check. A poor, slow craft there is what makes gear worth having.
+- **Gate 1** only reports a cell where adaptive play already averages 97 or more: nothing is left to earn there.
+- **Gates 3 and 7 play fully modded gear.** Gate 3 asks for 50%, or 35% at the band above rank 50 (51-53). Gate 7 asks for 0.95 of today's for one and two slots and 0.90 for three, not 1.00: the third slot needs a full-quality craft, which is meant not to be guaranteed, and a top recipe is meant to be hard.
+
 **Perked builds** (owner decision, October 2026; these apply to every minigame).
 - (a) A perked build, a crafter who bought perk-line purchases (a style included), has an 8-action floor in every band and gear tier; the ceiling stays 20 (`LengthTarget.PerkedItemCraft`). Unperked builds keep the 10-action floor. Tune the perks to fit; do not slow the base minigame.
 **Baselines.**
@@ -247,6 +254,7 @@ You keep the piece within its metal's thermal working range while shaping and fi
   - Working range center and width, cooling rate, starting Thermal.
   - Shape/Finish split: armor needs more Shape, weapons more Finish.
   - Leather and synthweave goods use a low, wide range ("heat-sealing").
+- **Difficulty with recipe level** (`ForgeRules`, November 2026). Above level 25, each level adds 1.75% to the Finish a recipe needs and 0.25% to its Shape. A recipe's Finish before that factor also rises to at least 1300 by level 50, so Shape-heavy armor needs gear as much as weapons do. Levels 1-25 are unchanged.
 - **The decision:** press while it's hot or ramp first, and spend heat on shaping or let it cool into finishing range.
 
 ### Engineering: the Circuit
@@ -270,6 +278,7 @@ You build circuit load to amplify your work, then discharge it before it overloa
   - Component grade sets the overload line.
   - Category sets the per-Load multiplier: droid parts, enhancements and modules amplify differently.
   - The Assembly/Calibration split.
+- **Difficulty with recipe level** (`CircuitRules`, November 2026). Above level 30, each level adds 6% to the Calibration a recipe needs and 3.3% to the Integrity actions cost, 1.1 CP to Patch and 0.12 CP to Tune and Micro-Tune. Levels 1-30 are unchanged.
 - **The decision:** push your luck for a bigger discharge, or bank it now.
 
 ### Fabrication: the Fabricator
@@ -290,6 +299,7 @@ You run an industrial fabricator with three tool heads to build the item's three
 - **Per-recipe parameters:**
   - Sub-assembly sizes and quality shares: a bed is mostly Frame, a terminal mostly Fittings.
   - Wear rate from the materials.
+- **Difficulty with recipe level** (`FabricatorRules`, November 2026). Above level 30, each level adds 3% to the quality a recipe needs, 6% to wear and 0.2 CP to Service. Levels 1-30 are unchanged.
 - **The decision:** when to retool and when to work off-head, and which sub-assembly to lift.
 
 ### Agriculture cooking: the Kitchen

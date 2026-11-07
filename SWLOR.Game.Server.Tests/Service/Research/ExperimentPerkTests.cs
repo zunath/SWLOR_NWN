@@ -525,7 +525,7 @@ public class ExperimentPerkTests
         var view = ExperimentDisplay.DescribeAction(Engine(Breakthrough).Preview(ExperimentActionIds.Breakthrough));
 
         view.Summary.Should().Be("your next Test succeeds");
-        view.Tooltip.Should().Contain("Cost: nothing.");
+        view.Tooltip.Should().Contain("Free: no CP and no trial.");
     }
 
     [Test]
@@ -539,7 +539,7 @@ public class ExperimentPerkTests
         var view = ExperimentDisplay.DescribeAction(engine.Preview(ExperimentActionIds.PeerReviewCreditToTime));
 
         view.Summary.Should().Be("Credit Reduction evidence -2, Time Reduction evidence +2");
-        view.Tooltip.Should().Contain("Cost: 25 CP.");
+        view.Tooltip.Should().Contain("Costs 25 CP and no trial.");
     }
 
     [Test]

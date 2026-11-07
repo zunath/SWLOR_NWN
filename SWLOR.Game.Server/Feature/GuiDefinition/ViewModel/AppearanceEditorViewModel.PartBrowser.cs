@@ -393,8 +393,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SyncSelectedPartSwatches();
                 var (options, _) = GetArmorPartBinding(part);
                 var slot = _selectedSlot;
-                // A retained style 2 shows as 1, which it looks like; the item keeps 2 until the player picks a part.
-                var current = ArmorAppearanceCatalog.DisplayedStyle(part,
+                // A retained bare style shows as the list's bare option; the item keeps it until the player picks a part.
+                var current = DisplayedArmorStyle(part,
                     GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)part));
                 SetBrowserSource(options?.Select(option => option.Value) ?? Array.Empty<int>(), current,
                     id => AppearancePreview.ArmorPartKey(body, slot, id),
@@ -523,6 +523,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Geometry = fitted;
         }
 
+        private int DisplayedArmorStyle(AppearanceArmor part, int style) =>
+            _armorAppearances.TryGetValue(GetAppearanceType(_target), out var definition)
+                ? ArmorAppearanceCatalog.DisplayedStyle(definition, part, style)
+                : style;
+
         // ---------------- body map ----------------
         private void RefreshBodyMap()
         {
@@ -560,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var part = AppearancePreview.ToArmorPart(slot);
                     key = GetIsObjectValid(chest)
-                        ? AppearancePreview.ArmorPartKey(body, slot, ArmorAppearanceCatalog.DisplayedStyle(part,
+                        ? AppearancePreview.ArmorPartKey(body, slot, DisplayedArmorStyle(part,
                             GetItemAppearance(chest, ItemAppearanceType.ArmorModel, (int)part)))
                         : string.Empty;
                 }

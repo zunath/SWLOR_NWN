@@ -54,28 +54,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         };
 
         /// <summary>
-        /// No list offers style 2: it draws the same bare body part as 1 while its preview pictured another
-        /// model. Armor already on 2 keeps it and stays editable, because moving it would change how the part
-        /// takes dyes (SWLOR dyes the material named by the part number, which at 2 is never drawn). Shoulders,
-        /// belts and robes show nothing at 2 and are repaired to 0 instead.
+        /// Styles 1 and 2 draw the wearer's own body part, exactly like 0, so they add no armor part. A list
+        /// that offers 0 ("None") offers neither; a list without 0 keeps 1 as its bare option and drops 2. Armor
+        /// already on 1 or 2 keeps it and stays editable, because moving it would change how the part takes dyes
+        /// (SWLOR dyes the material named by the part number). Shoulders, belts and robes show nothing at 1 or 2
+        /// and are repaired to 0 instead.
         /// </summary>
-        public const int RetainedBareStyle = 2;
+        public static IReadOnlyList<int> RetainedBareStyles { get; } = new[] { 1, 2 };
 
         /// <summary>True when armor saved with this style on this slot may be edited.</summary>
         public static bool AcceptsSavedStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>
-            (part == AppearanceArmor.Neck && style == 0) ||
-            GetStyles(definition, part).Contains(style) ||
-            IsRetainedBareStyle(part, style);
+            Offers(definition, part, style) || IsRetainedBareStyle(part, style);
 
         /// <summary>
-        /// The style whose picture and name the editor shows. A retained 2 looks exactly like 1, and its own
+        /// The style whose picture and name the editor shows: a retained bare style shows as the list's own
+        /// bare option ("None" where the list offers 0, otherwise 1), since it looks exactly like it and its own
         /// picture shows a model the armor never draws.
         /// </summary>
-        public static int DisplayedStyle(AppearanceArmor part, int style) =>
-            IsRetainedBareStyle(part, style) ? 1 : style;
+        public static int DisplayedStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>
+            IsRetainedBareStyle(part, style) && !Offers(definition, part, style)
+                ? Offers(definition, part, 0) ? 0 : 1
+                : style;
+
+        /// <summary>The editor offers 0 ("None") on every neck list.</summary>
+        private static bool Offers(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>
+            (part == AppearanceArmor.Neck && style == 0) || GetStyles(definition, part).Contains(style);
 
         private static bool IsRetainedBareStyle(AppearanceArmor part, int style) =>
-            style == RetainedBareStyle && part is not (AppearanceArmor.Belt or AppearanceArmor.LeftShoulder or
+            RetainedBareStyles.Contains(style) && part is not (AppearanceArmor.Belt or AppearanceArmor.LeftShoulder or
                 AppearanceArmor.RightShoulder or AppearanceArmor.Robe or AppearanceArmor.Invalid);
     }
 }

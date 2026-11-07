@@ -41,15 +41,16 @@ clipping checks and dependent robe/part-skin regeneration.
   a creature's body part (armor 1 on body part 2 shows model 002). Players have no shoulder or belt
   body part, so those slots show nothing at 1 or 2: the catalog omits both styles there, and
   `ArmorPartAppearance` repairs saved armor to 0 when it is worn. Other slots show the bare body.
-- No armor part list offers style 2 (neck and every other slot, general and droid catalogs): it shows
-  the same bare body part as 0 and 1 while its picture shows another model. Style 1 stays on every
-  list (Xisifer's rule: keep 1 where it is a list's first ID). Saved armor and blueprints keep 2 and
-  are not moved: SWLOR binds dyes to the material named by the armor part number, so 2 sends them to
-  a model the engine never draws. Moving 2 to 1 or 0 would recolor the pelvis (cloth dye on the
-  underwear), the female human chest and droid parts (metal dye on chrome); moving to 1 would also
-  undye body part 2 on human necks, hands and feet. The editor accepts a saved 2 on these slots
-  (`ArmorAppearanceCatalog.AcceptsSavedStyle`) and shows it as style 1, which it looks like; the item
-  keeps 2 until the player picks a part. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
+- Styles 1 and 2 add no armor part on any body (human, elf, half-orc, dwarf and droid models), so per
+  Xisifer's rule no list that offers 0 ("None", which every neck list offers) offers 1 or 2, and no
+  list offers 2 at all. A list without 0 (general shin; droid chest, pelvis, bicep, forearm, hand,
+  thigh, shin, foot) keeps 1 as its bare option. Saved armor and blueprints keep 1 and 2 and are not
+  moved: SWLOR binds dyes to the material named by the armor part number, so moving them would recolor
+  the pelvis (cloth dye on the underwear), the female human chest and droid parts (metal dye on
+  chrome), and body part 2 on human necks, hands and feet. The editor accepts a saved 1 or 2 on these
+  slots (`ArmorAppearanceCatalog.AcceptsSavedStyle`) and shows it as the list's bare option ("None", or
+  1 where the list has no 0), which it looks like; the item keeps its value until the player picks a
+  part. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

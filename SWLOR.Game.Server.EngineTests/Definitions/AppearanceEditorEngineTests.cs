@@ -1679,27 +1679,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return Enumerable.Range(0, (int)AppearanceArmor.Num)
                 .Select(index => (Part: (AppearanceArmor)index,
                     Model: GetItemAppearance(item, ItemAppearanceType.ArmorModel, index)))
-                .Where(entry => !FixturePartOptions(definition, entry.Part).Contains(entry.Model))
+                .Where(entry => !ArmorAppearanceCatalog.AcceptsSavedStyle(definition, entry.Part, entry.Model))
                 .Select(entry => $"{entry.Part}={entry.Model}")
                 .ToArray();
         }
-
-        private static int[] FixturePartOptions(GeneralArmorAppearanceDefinition definition, AppearanceArmor part) => part switch
-        {
-            AppearanceArmor.LeftFoot or AppearanceArmor.RightFoot => definition.Foot,
-            AppearanceArmor.LeftShin or AppearanceArmor.RightShin => definition.Shin,
-            AppearanceArmor.LeftThigh or AppearanceArmor.RightThigh => definition.Thigh,
-            AppearanceArmor.LeftHand or AppearanceArmor.RightHand => definition.Hand,
-            AppearanceArmor.LeftForearm or AppearanceArmor.RightForearm => definition.Forearm,
-            AppearanceArmor.LeftBicep or AppearanceArmor.RightBicep => definition.Bicep,
-            AppearanceArmor.LeftShoulder or AppearanceArmor.RightShoulder => definition.Shoulder,
-            AppearanceArmor.Pelvis => definition.Pelvis,
-            AppearanceArmor.Torso => definition.Torso,
-            AppearanceArmor.Belt => definition.Belt,
-            AppearanceArmor.Neck => definition.Neck,
-            AppearanceArmor.Robe => definition.Robe,
-            _ => Array.Empty<int>()
-        };
 
         private static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {

@@ -46,7 +46,7 @@ ROMAN = ["I", "II", "III", "IV", "V", "VI"]
 
 # Perks that add an action to the window (a window action, not a combat ability), and the CP each rank of them costs.
 ACTION_PERKS = {"KitchenReduce", "SignatureDish"}
-ACTION_CP = {"KitchenReduce": ["12", "9"]}
+ACTION_CP = {"KitchenReduce": ["12", "11"]}
 # A perk the player switches on or off for each dish.
 TOGGLE_PERKS = {"SeasonedPalate"}
 

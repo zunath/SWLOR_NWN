@@ -131,13 +131,16 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        /// <summary>A living enemy ship in the same area, which a role may pick as its target.</summary>
+        /// <summary>
+        /// A living enemy ship in the same area, which a role may pick as its target. A ship cloaked beyond reveal
+        /// range keeps its enmity but is no target, so a role never swaps a visible target for it.
+        /// </summary>
         private static bool IsRoleTarget(uint creature, uint target)
         {
             return GetIsObjectValid(target) &&
                    !GetIsDead(target) &&
                    GetArea(target) == GetArea(creature) &&
-                   GetIsEnemy(target, creature) &&
+                   IsShipEnemy(creature, target) &&
                    IsShipInSpace(target);
         }
 

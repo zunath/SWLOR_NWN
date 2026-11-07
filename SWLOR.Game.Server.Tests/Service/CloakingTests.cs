@@ -527,6 +527,9 @@ public class CloakingTests
 
         var space = ReadSource("Service", "Space.cs");
         ExtractMethod(space, "private static void ProcessSpaceNPCAI(").Should().Contain("Enmity.GetHighestEnmityAttackTarget(creature)");
+        // Role targeting (Tank, Interceptor, Bomber, carrier fighters) may not swap a visible target for a hidden one.
+        ExtractMethod(ReadSource("Service", "SpaceNpcRoles.cs"), "private static bool IsRoleTarget(")
+            .Should().Contain("IsShipEnemy(creature, target)").And.NotContain("GetIsEnemy(");
         ExtractMethod(ReadSource("Service", "SpacePvp.cs"), "public static bool IsShipEnemy(").Should().Contain("!IsShipHiddenFrom(source, target)");
         ExtractMethod(ReadSource("Service", "SpaceToggles.cs"), "private static void RunToggleCycle(").Should().Contain("!IsShipHiddenFrom(creature, target)");
         ExtractMethod(space, "public static (uint, ShipStatus) GetCurrentTarget(").Should().Contain("IsShipHiddenFrom(player, target)");

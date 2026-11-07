@@ -55,14 +55,5 @@ namespace SWLOR.Game.Server.Service
         public const float RangedWeaponEngagementRange = CombatRules.RangedWeaponEngagementRange;
         public const int MaxAttacksPerSwing = CombatRules.MaxAttacksPerSwing;
         public const int MinimumAttackDelayMilliseconds = CombatRules.MinimumAttackDelayMilliseconds;
-
-        // The area ability hit sequences of AbilityImpact use this; CombatActivityService has its own copy for the First
-        // Strike stacks it moved with.
-        private sealed class TargetHitSequenceState
-        {
-            public int Count { get; init; }
-            public DateTime LastHit { get; init; }
-            public DateTime? RechargeAvailableAt { get; init; }
-        }
     }
 }

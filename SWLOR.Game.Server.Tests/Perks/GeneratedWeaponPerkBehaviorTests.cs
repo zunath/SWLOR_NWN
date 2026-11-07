@@ -1752,13 +1752,13 @@ public class GeneratedWeaponPerkBehaviorTests
         staminaDrainMethodEnd.Should().BeGreaterThan(staminaDrainMethodStart);
         var staminaDrainMethod = combatSource[staminaDrainMethodStart..staminaDrainMethodEnd];
         var staminaBeforeIndex = staminaDrainMethod.IndexOf(
-            "var staminaBefore = Stat.GetCurrentStamina(target)",
+            "var staminaBefore = _stat.GetCurrentStamina(target)",
             StringComparison.Ordinal);
         var reduceStaminaIndex = staminaDrainMethod.IndexOf(
-            "Stat.ReduceStamina(target, staminaDrain)",
+            "_stat.ReduceStamina(target, staminaDrain)",
             StringComparison.Ordinal);
         var staminaDrainedIndex = staminaDrainMethod.IndexOf(
-            "var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target))",
+            "var staminaDrained = Math.Max(0, staminaBefore - _stat.GetCurrentStamina(target))",
             StringComparison.Ordinal);
         var feedbackIndex = staminaDrainMethod.IndexOf(
             "ColorToken.Combat($\"-{staminaDrained} STM\")",

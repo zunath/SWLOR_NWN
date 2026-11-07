@@ -221,8 +221,7 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 8), (StatType.AreaAbilityPulseRadiusMeters, 5)));
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 3), (StatType.AreaAbilityPulseRadiusMeters, 2)));
         var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true };
-        var pulses = (IReadOnlyList<StatAdjustmentSource>)CombatMembers.FindMethod("GetAreaAbilityPulseSources")!
-            .Invoke(null, new object[] { Creature, ability, true })!;
+        var pulses = (IReadOnlyList<StatAdjustmentSource>)CombatMembers.Invoke("GetAreaAbilityPulseSources", Creature, ability, true);
         pulses.Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .Should().BeEquivalentTo(new[] { (8, 5), (3, 2) });
     }
@@ -233,8 +232,7 @@ public class StatAdjustmentSourceTests
     [TestCase(true, true, true)]
     public void IneligibleOrMissingPulses_DoNotAllocatePerTarget(bool hostile, bool area, bool firstTarget)
     {
-        var apply = CombatMembers.FindMethod("ApplyAreaAbilityPulse")!
-            .CreateDelegate<Action<uint, uint, AbilityDetail, bool>>();
+        var apply = CombatMembers.CreateDelegate<Action<uint, uint, AbilityDetail, bool>>("ApplyAreaAbilityPulse");
         var ability = new AbilityDetail { IsHostileAbility = hostile, IsAreaAbility = area };
         for (var index = 0; index < 100; index++)
             apply(Creature, Creature, ability, firstTarget);

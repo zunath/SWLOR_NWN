@@ -231,6 +231,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Indicates this ship module falls back to the user's own ship on an enemy target,
+        /// so its maximum distance only applies to the other targets it can act on.
+        /// </summary>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder FallsBackToSelfOnEnemyTarget()
+        {
+            _activeShipModule.RangeRule = ShipModuleRangeRule.NonEnemyTarget;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ship module is centered on the user's own ship and never reads the selected target,
+        /// so its maximum distance does not apply to that target.
+        /// </summary>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder IgnoresSelectedTarget()
+        {
+            _activeShipModule.RangeRule = ShipModuleRangeRule.NoTarget;
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a valid object type which this ship module can be used upon.
         /// </summary>
         /// <param name="type">The type of object to allow.</param>

@@ -6,7 +6,7 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "ArmorPart_LBicep": {
     "type": "byte",
@@ -332,7 +332,7 @@
   },
   "xArmorPart_Belt": {
     "type": "word",
-    "value": 2
+    "value": 0
   },
   "xArmorPart_LBice": {
     "type": "word",

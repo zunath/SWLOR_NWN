@@ -2,7 +2,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
 /// Names of the creature locals behind the craft file sequence. The sequence counts the item transfers between the player record and
-/// the character file; <c>PlayerFileCheckpoint</c> writes it into the character file and restores it when the file loads.
+/// the character file, and checkpoints restoring a Performance hot bar. <c>PlayerFileCheckpoint</c> writes it into the character file
+/// and restores it when the file loads.
 /// </summary>
 public static class CraftSessionFileSequence
 {

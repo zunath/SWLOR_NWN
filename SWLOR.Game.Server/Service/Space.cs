@@ -1625,6 +1625,17 @@ namespace SWLOR.Game.Server.Service
             // A crew member fires at the target they picked; a droid at the pilot's.
             var (target, targetShipStatus) = GetCurrentTarget(isDroid ? activator : user);
 
+            // Modules that act on their user's own ship treat a target they cannot act on (an asteroid, a creature
+            // without a ship) as no target.
+            if (shipModuleDetails.FallsBackToOwnShip &&
+                GetIsObjectValid(target) &&
+                (targetShipStatus == null ||
+                 shipModuleDetails.ValidTargetTypes.Count > 0 && !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target))))
+            {
+                target = OBJECT_INVALID;
+                targetShipStatus = null;
+            }
+
             // A droid's repairers work on its own ship.
             if (isDroid && ShipToggleRules.GetTargetMode(_shipModules[shipModule.ItemTag].Type) == ShipToggleTargetMode.Locked)
                 target = activator;
@@ -1684,7 +1695,10 @@ namespace SWLOR.Game.Server.Service
 
             // Check to ensure activator is within maximum distance.
             var maxDistance = shipModuleDetails.ModuleMaxDistanceAction == null ? 10f : shipModuleDetails.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
-            if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
+            var targetIsEnemy = GetIsObjectValid(target) && GetIsEnemy(target, activator);
+            if (GetIsPC(activator) &&
+                shipModuleDetails.RequiresTargetInRange(targetIsEnemy) &&
+                GetDistanceBetween(activator, target) > maxDistance)
             {
                 SendActivationMessage(user, $"Target is too far away. Maximum distance: {maxDistance} meters.");
                 return;

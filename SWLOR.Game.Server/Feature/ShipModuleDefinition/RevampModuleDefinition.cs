@@ -280,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .FallsBackToSelfOnEnemyTarget()
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
@@ -291,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, status, _, _, _) =>
                 {
@@ -305,6 +307,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ValidTargetType(ObjectType.Creature)
                 .ValidationAction((activator, _, _, _, _) =>
@@ -319,6 +322,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
@@ -346,6 +350,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
@@ -374,6 +379,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ValidationAction((activator, _, _, _, _) => Space.ProbeLauncherError(activator))
                 .ActivatedAction((activator, status, _, _, _) => Space.RunProbeCycle(activator, status, Effective(step)));
@@ -392,6 +398,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ValidationAction((activator, status, _, _, _) => Space.CloakError(activator, status))
                 .ActivatedAction((activator, status, _, _, _) => Space.RunCloakCycle(activator, status, Effective(step)));
@@ -457,6 +464,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ValidationAction((_, status, _, _, _) => Space.AfterburnerError(status))
                 .ActivatedAction((activator, status, _, _, _) => Space.RunAfterburnerCycle(activator, status));
@@ -466,6 +474,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {

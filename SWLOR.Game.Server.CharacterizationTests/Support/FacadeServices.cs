@@ -22,5 +22,9 @@ public sealed class FacadeServices : IDisposable
     /// <summary>Makes this container the one the facades resolve from until the returned scope is disposed.</summary>
     public IDisposable Install() => CompositionRoot.InstallForTests(_provider);
 
+    /// <summary>The container's instance of a service, for a test that reaches its state.</summary>
+    public TService Get<TService>()
+        where TService : notnull => _provider.GetRequiredService<TService>();
+
     public void Dispose() => _provider.Dispose();
 }

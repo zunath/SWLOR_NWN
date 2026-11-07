@@ -7,10 +7,11 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class RareLootBalanceTests
+public class RareLootBalanceTests : SkillFacadeFixture
 {
     private static readonly Dictionary<string, Blueprint> BlueprintCache = new(StringComparer.OrdinalIgnoreCase);
     private sealed record Blueprint(int BaseItem, Dictionary<(ItemPropertyType Type, int Subtype), int> Properties)

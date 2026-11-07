@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,8 +9,8 @@ public class DeadPlayerXPTests
     [Test]
     public void SkillXP_GuardsDeadPlayersAtAwardBoundary()
     {
-        var source = ReadServerSource("Service", "Skill.cs");
-        var method = ExtractMethod(source, "public static int GiveSkillXP(");
+        var source = ReadServerSource("Domain", "Character", "SkillService.cs");
+        var method = ExtractMethod(source, "public int GiveSkillXP(");
 
         AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var modifiedSkills");
     }

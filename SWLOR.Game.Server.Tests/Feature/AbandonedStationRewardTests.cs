@@ -10,10 +10,11 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class AbandonedStationRewardTests
+public class AbandonedStationRewardTests : SkillFacadeFixture
 {
     private const int ItemPropertyRequiresSkill = 131;
 

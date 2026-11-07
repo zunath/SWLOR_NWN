@@ -5705,6 +5705,69 @@
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 59,
+    "Member": "",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {GetSkillDetails(skill).Name} skill experience. ({xp})\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 308,
+    "Member": "GiveSkillXP",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 310,
+    "Member": "GiveSkillXP",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 334,
+    "Member": "GiveSkillXP",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 357,
+    "Member": "GiveSkillXP",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 362,
+    "Member": "GiveSkillXP",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 386,
+    "Member": "GiveSkillXP",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 421,
+    "Member": "GiveSkillXP",
+    "Delivery": "Rate limited in Production",
+    "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+    "Line": 486,
+    "Member": "ApplyAbilityPoint",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",
     "Line": 78,
     "Member": "ConsumePoisonCoating",
@@ -5927,69 +5990,6 @@
     "Member": "EnterServer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {_planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 263,
-    "Member": "GiveSkillXP",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 265,
-    "Member": "GiveSkillXP",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 289,
-    "Member": "GiveSkillXP",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 312,
-    "Member": "GiveSkillXP",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 317,
-    "Member": "GiveSkillXP",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 341,
-    "Member": "GiveSkillXP",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 376,
-    "Member": "GiveSkillXP",
-    "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 441,
-    "Member": "ApplyAbilityPoint",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Skill.XPFeedback.cs",
-    "Line": 13,
-    "Member": "",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You earned {GetSkillDetails(skill).Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Crafting/SlicingSessionService.cs",

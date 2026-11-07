@@ -18,7 +18,12 @@ public class TwinPistolEquipmentTests
     private IDisposable _itemFacadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+    public void BuildItemFacades()
+    {
+        _itemFacades = new FacadeContainer();
+        using (_itemFacades.Install())
+            Skill.LoadMappings();
+    }
 
     [OneTimeTearDown]
     public void DisposeItemFacades() => _itemFacades.Dispose();
@@ -28,9 +33,6 @@ public class TwinPistolEquipmentTests
 
     [TearDown]
     public void RemoveItemFacades() => _itemFacadeScope.Dispose();
-
-    [OneTimeSetUp]
-    public void LoadMappings() => Skill.LoadMappings();
 
     [TestCase(BaseItem.Pistol, true, true)]
     [TestCase(BaseItem.Sling, true, true)]

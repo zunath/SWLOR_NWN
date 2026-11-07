@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// records which of them a definition sets. Stat bonuses are evaluated once for no creature, because most are
 /// constants written as a lambda; descriptions are locked by length and fingerprint, not by text.
 /// </summary>
-public class PerkDefinitionCharacterizationTests
+public class PerkDefinitionCharacterizationTests : FacadeFixture
 {
     private const string EngineValue = "engine";
 

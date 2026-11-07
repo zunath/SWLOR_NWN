@@ -13,10 +13,11 @@ using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerGuideContentTests
+public class PlayerGuideContentTests : SkillFacadeFixture
 {
     private static readonly string[] RequiredTopics =
     {

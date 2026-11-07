@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// engine (Tier B).
 /// </summary>
 [NonParallelizable]
-public class CraftCalculationCharacterizationTests
+public class CraftCalculationCharacterizationTests : FacadeFixture
 {
-    [OneTimeSetUp]
+    [SetUp]
     public void BuildChart()
     {
         // GetBaseRecipeXP reads the rank-difference table, which the module load builds with this call.

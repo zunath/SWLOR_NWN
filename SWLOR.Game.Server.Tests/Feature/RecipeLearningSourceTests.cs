@@ -7,10 +7,11 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class RecipeLearningSourceTests
+public class RecipeLearningSourceTests : SkillFacadeFixture
 {
     [TestCase("recipe_trnsabers", "TrainingSaber")]
     [TestCase("recipe_trnsabstf", "TrainingSaberstaff")]

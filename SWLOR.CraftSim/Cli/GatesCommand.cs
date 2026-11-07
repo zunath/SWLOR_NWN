@@ -18,7 +18,7 @@ namespace SWLOR.CraftSim.Cli
 
         private static readonly string[] ValueOptions =
         {
-            "--scenario", "--runs", "--seed", "--recipes-per-band", "--gates", "--legacy-seconds-per-action", "--out", "--json", "--repo"
+            "--scenario", "--runs", "--seed", "--recipes-per-band", "--gates", "--legacy-seconds-per-action", "--out", "--json", "--repo", "--bands"
         };
 
         private static readonly string[] Flags = { "--all-recipes", "--list", "--strict", "--thorough" };
@@ -60,8 +60,14 @@ namespace SWLOR.CraftSim.Cli
                     : CommandLineOptions.GetInt(options, "--recipes-per-band", GateThresholds.Default.RecipesPerBand ?? 1, 1, 10_000),
                 LegacySecondsPerAction = CommandLineOptions.GetPositiveNumber(
                     options, "--legacy-seconds-per-action", GateThresholds.Default.LegacySecondsPerAction),
-                SolverOptions = options.ContainsKey("--thorough") ? FixedRotationSolverOptions.Thorough : null
+                SolverOptions = options.ContainsKey("--thorough") ? FixedRotationSolverOptions.Thorough : null,
+                OnlyBands = options.TryGetValue("--bands", out var onlyBands)
+                    ? onlyBands[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(RecipeBand.Parse).ToList()
+                    : null
             };
+
+            if (thresholds.OnlyBands is { Count: 0 })
+                throw new ArgumentException("--bands needs at least one recipe level range.");
 
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
             var outPath = options.TryGetValue("--out", out var outValues) ? outValues[0] : DefaultReportPath(root, scenario);
@@ -81,8 +87,8 @@ namespace SWLOR.CraftSim.Cli
 
             recipes ??= RecipeCatalog.Load();
             gear ??= CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes);
-            // Gates 6 and 7 play enhanced crafts, so they need the module's enhancement items; the others never look at them.
-            enhancements ??= gates.Any(gate => gate.Name is GateNames.XpRate or GateNames.EnhancementParity) ? EnhancementCatalog.Load(root) : null;
+            // Gates 6 and 7 and the gear ladder play enhanced crafts, so they need the module's enhancement items; the others never look at them.
+            enhancements ??= gates.Any(gate => gate.Name is GateNames.XpRate or GateNames.EnhancementParity or GateNames.GearLadder) ? EnhancementCatalog.Load(root) : null;
             var context = new GateContext(recipes, gear, runs, seed, AttributeSweep.Default, enhancements: enhancements);
 
             var results = new List<GateResult>();

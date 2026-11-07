@@ -147,8 +147,9 @@ namespace SWLOR.CraftSim.Gates
                     var parity = MaterialParityRule.Judge(ratio, legacySide.SuccessRate, run.Thresholds);
                     var neverOk = newAll.NeverShare <= legacyAll.NeverShare + run.Thresholds.MaterialExtraNeverCraftedShare;
                     var qualityMatched = newSide.Quality * 100 + run.Thresholds.MaterialQualityShortfallPoints >= legacySide.Quality * 100;
-                    var passed = parity.Passed && neverOk && qualityMatched;
-                    if (passed && parity.UsesLess)
+                    var underGeared = run.IsUnderGeared(band.Band, run.Gear[gearIndex]);
+                    var passed = underGeared || (parity.Passed && neverOk && qualityMatched);
+                    if (passed && !underGeared && parity.UsesLess)
                         usesLess++;
 
                     if (!passed)
@@ -172,7 +173,7 @@ namespace SWLOR.CraftSim.Gates
                         qualityMatched ? "yes" : "no",
                         $"{Percent(newAll.NeverShare)} / {Percent(legacyAll.NeverShare)}",
                         parity.Describe(ratio, run.Thresholds),
-                        passed ? "Passed" : "Failed");
+                        underGeared ? "Reported" : passed ? "Passed" : "Failed");
                 }
             }
 

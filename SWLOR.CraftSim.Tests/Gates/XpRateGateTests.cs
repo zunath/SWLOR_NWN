@@ -333,6 +333,18 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void TheBandsOptionKeepsTheEnhancedCasesOfTheBandsItPlays()
+        {
+            var thresholds = GateThresholds.Default with { OnlyBands = new[] { RecipeBand.Parse("51-53") } };
+            var suite = Suite(new BenchScenario { SecondsPerAction = 2 }, thresholds: thresholds);
+
+            var cases = suite.XpCohort.Cases(Context(new[] { 48, 52 }, runs: 12));
+
+            cases.Should().Contain(c => c.Label.Contains("enhancement"));
+            cases.Select(c => c.Group).Distinct().Should().Equal("51-53");
+        }
+
+        [Test]
         public void TheItemCraftGateComparesTheOldAndNewLoopsOverTheSameRuns()
         {
             var fast = Evaluate("xp", new BenchScenario { SecondsPerAction = 2 }, Context(Levels, runs: 24));

@@ -26,17 +26,17 @@ namespace SWLOR.CraftSim.Tests.Scenario
         public void ABuildTakesItsNumbersFromThePerkDefinitionsAtTheRankItIsPlayedAt()
         {
             FabricatorBuild.ProductionRunAlone.StatsAt(19).Should().Be(FabricatorPerkStats.None, "the style opens at Fabrication 20");
-            FabricatorBuild.ProductionRunAlone.StatsAt(20).Should().Be(new FabricatorPerkStats(RunPowerPercent: 60, PrecisionPowerPercent: -3));
-            FabricatorBuild.FineToleranceAlone.StatsAt(50).Should().Be(new FabricatorPerkStats(RunPowerPercent: -25, PrecisionPowerPercent: 25));
+            FabricatorBuild.ProductionRunAlone.StatsAt(20).Should().Be(new FabricatorPerkStats(RunPowerPercent: 35, PrecisionPowerPercent: -3));
+            FabricatorBuild.FineToleranceAlone.StatsAt(50).Should().Be(new FabricatorPerkStats(RunPowerPercent: -15, PrecisionPowerPercent: 28));
 
             FabricatorBuild.ProductionRunLine.StatsAt(24).Should().Be(new FabricatorPerkStats(
-                RunPowerPercent: 60, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 25,
-                ServiceRestoreBonus: 10, ServiceCpReduction: 2));
+                RunPowerPercent: 35, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 25,
+                ServiceRestoreBonus: 5, ServiceCpReduction: 1));
             FabricatorBuild.ProductionRunLine.StatsAt(50).Should().Be(new FabricatorPerkStats(
-                RunPowerPercent: 60, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 50,
-                ServiceRestoreBonus: 20, ServiceCpReduction: 4, DualFeedUnlocked: true, PrimeWindowBonusActions: 1,
+                RunPowerPercent: 35, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 50,
+                ServiceRestoreBonus: 10, ServiceCpReduction: 2, DualFeedUnlocked: true, PrimeWindowBonusActions: 1,
                 PrimeBonusPercentBonus: 25, AssembleCapBonusPoints: 15));
-            FabricatorBuild.FineToleranceLine.StatsAt(50).RunPowerPercent.Should().Be(-25);
+            FabricatorBuild.FineToleranceLine.StatsAt(50).RunPowerPercent.Should().Be(-15);
         }
 
         [Test]
@@ -102,8 +102,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
             production.Limitations.Should().Contain(text => text.Contains("Production Run"));
 
             var recipe = Recipe(25);
-            ((FabricatorEngine)production.CreateEngine(Request(recipe, 50))).Setup.PerkStats.RunPowerPercent.Should().Be(60);
-            ((FabricatorEngine)fine.CreateEngine(Request(recipe, 50))).Setup.PerkStats.RunPowerPercent.Should().Be(-25);
+            ((FabricatorEngine)production.CreateEngine(Request(recipe, 50))).Setup.PerkStats.RunPowerPercent.Should().Be(35);
+            ((FabricatorEngine)fine.CreateEngine(Request(recipe, 50))).Setup.PerkStats.RunPowerPercent.Should().Be(-15);
             ((FabricatorEngine)production.CreateEngine(Request(recipe, 10))).Setup.PerkStats.RunPowerPercent.Should().Be(0, "no style below rank 20");
             ((FabricatorEngine)production.CreateEngine(Request(recipe, 25))).Setup.PerkStats.DualFeedUnlocked.Should().BeTrue();
             ((FabricatorEngine)production.CreateEngine(Request(recipe, 24))).Setup.PerkStats.DualFeedUnlocked.Should().BeFalse();

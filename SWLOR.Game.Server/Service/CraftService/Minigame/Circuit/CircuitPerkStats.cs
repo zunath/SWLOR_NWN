@@ -32,7 +32,7 @@ public sealed record CircuitPerkStats
 
     public bool Surge { get; init; }
 
-    /// <summary>Integrity that Wire, Tune, Boost, Discharge and their variants cost less, to a minimum of 1.</summary>
+    /// <summary>Integrity that Wire and Boost cost less, to a minimum of 1.</summary>
     public int ActionIntegrityReduction { get; init; }
 
     public int TunePowerPercent { get; init; }

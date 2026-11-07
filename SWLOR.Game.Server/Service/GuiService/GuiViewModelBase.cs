@@ -37,6 +37,13 @@ namespace SWLOR.Game.Server.Service.GuiService
         private readonly HashSet<string> _watchedProperties = new();
         private string _rootPartial;
 
+        // Seconds a layout waits for the release of the press that triggered it. The release normally
+        // arrives within a fraction of a second; this only covers a release the window never reports.
+        private const float HeldLayoutFallbackSeconds = 3f;
+        private readonly GuiPressLayoutHold _pressHold = new();
+        // Binds sent while a layout was held, re-sent once their controls exist.
+        private readonly HashSet<string> _bindsSentWhileHeld = new();
+
         protected abstract void Initialize(TPayload initialPayload);
 
         /// <summary>
@@ -190,6 +197,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (Player == 0 || WindowToken <= 0)
                 return;
 
+            if (_pressHold.HasHeldLayout)
+                _bindsSentWhileHeld.Add(propertyName);
+
             FrameProfiler.Count(FrameMetric.GuiBindSend);
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
@@ -257,6 +267,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             _rootPartial = null;
             _groupLayouts.Clear();
             _watchedProperties.Clear();
+            _pressHold.Reset();
+            _bindsSentWhileHeld.Clear();
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
@@ -484,6 +496,19 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (changedGroupId != null && !placedGroupIds.Contains(changedGroupId))
                 return;
 
+            // A layout sent while the player still holds the control that triggered it locks the window
+            // (see GuiPressLayoutHold). Send it when the press ends instead.
+            if (_pressHold.Hold())
+            {
+                var pressId = _pressHold.PressId;
+                DelayCommand(HeldLayoutFallbackSeconds, () =>
+                {
+                    if (_pressHold.Expire(pressId))
+                        SendHeldLayout();
+                });
+                return;
+            }
+
             NuiSetGroupLayout(Player, WindowToken, WindowElementId, JsonParse(rootLayout));
             ApplyRefreshBugFix();
 
@@ -493,6 +518,38 @@ namespace SWLOR.Game.Server.Service.GuiService
                 if (_propertyValues.TryGetValue(bindName, out var property) &&
                     property.Value != null &&
                     !_watchedProperties.Contains(bindName))
+                    OnPropertyChanged(bindName);
+            }
+        }
+
+        /// <summary>
+        /// Records that the player pressed a control in this window. Called for the press's "click" and
+        /// "mousedown" events, before their handlers run.
+        /// </summary>
+        public void OnPointerPressed()
+        {
+            _pressHold.Press();
+        }
+
+        /// <summary>
+        /// Records that the player released the press, and sends any layout change held during it.
+        /// </summary>
+        public void OnPointerReleased()
+        {
+            if (_pressHold.Release())
+                SendHeldLayout();
+        }
+
+        private void SendHeldLayout()
+        {
+            ApplyRootLayout(null);
+
+            // Values sent while their controls did not exist yet may have been dropped by the client.
+            var bindNames = _bindsSentWhileHeld.ToArray();
+            _bindsSentWhileHeld.Clear();
+            foreach (var bindName in bindNames)
+            {
+                if (_propertyValues.TryGetValue(bindName, out var property) && property.Value != null)
                     OnPropertyChanged(bindName);
             }
         }

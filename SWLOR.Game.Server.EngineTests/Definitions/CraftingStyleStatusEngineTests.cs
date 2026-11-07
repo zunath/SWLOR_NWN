@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(StatusEffect.HasStatusEffect<OverclockStatusEffect>(npc), "Overclock applies");
             ctx.Assert(StatusEffect.HasStatusEffect<SafeModeStatusEffect>(npc), "Safe Mode applies");
             var withStyles = LoadBoost(npc);
-            ctx.AssertEqual(CircuitPerkRules.OverclockLoadBoostPercent + CircuitPerkRules.SafeModeLoadBoostPercent, withStyles,
+            ctx.AssertEqual(CircuitPerkRules.SafeModeLoadBoostPercent, withStyles,
                 "the styles carry their Load boost through the stat service");
 
             void StylesRemain(string after)

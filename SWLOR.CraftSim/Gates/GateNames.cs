@@ -10,6 +10,7 @@ namespace SWLOR.CraftSim.Gates
         public const string EconomyParity = "Economy parity";
         public const string XpRate = "XP rate";
         public const string EnhancementParity = "Enhancement parity";
+        public const string GearLadder = "Gear ladder";
 
         public static readonly IReadOnlyList<string> All = new[] { NoFixedRotation, StyleBalance, PerksOptional, Length, EconomyParity, XpRate, EnhancementParity };
     }

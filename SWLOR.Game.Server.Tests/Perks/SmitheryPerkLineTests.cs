@@ -107,13 +107,18 @@ public class SmitheryPerkLineTests
     [Test]
     public void ARankedPerkRestatesTheBenefitItsLowerRankGave_SoThePurchasedRankAloneIsComplete()
     {
-        foreach (var type in new[] { PerkType.SmitheryHeatRetention, PerkType.SmitheryCleanContainment })
-        {
-            var levels = Perks()[type].PerkLevels.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToList();
-            levels.Should().HaveCount(2, type.ToString());
-            levels[0].StatBonuses.Single().Stat.Should().Be(levels[1].StatBonuses.Single().Stat, type.ToString());
-            levels[1].StatBonuses.Single().Calculate(0).Should().BeGreaterThan(levels[0].StatBonuses.Single().Calculate(0), type.ToString());
-        }
+        var containment = Perks()[PerkType.SmitheryCleanContainment].PerkLevels.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToList();
+        containment.Should().HaveCount(2);
+        containment[0].StatBonuses.Single().Stat.Should().Be(containment[1].StatBonuses.Single().Stat);
+        containment[1].StatBonuses.Single().Calculate(0).Should().BeGreaterThan(containment[0].StatBonuses.Single().Calculate(0));
+
+        // Heat Retention's second rank keeps the first's cooling and adds a Ramp Plasma discount.
+        var retention = Perks()[PerkType.SmitheryHeatRetention].PerkLevels.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToList();
+        retention.Should().HaveCount(2);
+        var cooling = retention[0].StatBonuses.Single();
+        cooling.Stat.Should().Be(StatType.ForgeCoolingReduction);
+        retention[1].StatBonuses.Single(bonus => bonus.Stat == StatType.ForgeCoolingReduction).Calculate(0).Should().Be(cooling.Calculate(0));
+        retention[1].StatBonuses.Single(bonus => bonus.Stat == StatType.ForgeRampCpReduction).Calculate(0).Should().Be(ForgePerkRules.HeatRetentionRampCpReduction);
     }
 
     [Test]
@@ -164,7 +169,7 @@ public class SmitheryPerkLineTests
         {
             RampCpReduction = ForgePerkRules.PlasmaEfficiencyCpReduction,
             HoneIntegrityReduction = ForgePerkRules.SteadyHandsIntegrityReduction,
-            CoolingReduction = ForgePerkRules.HeatRetentionRank1,
+            CoolingReduction = ForgePerkRules.HeatRetentionCoolingReduction,
             ContainmentChancePercent = ForgePerkRules.CleanContainmentRank1
         });
     }
@@ -176,8 +181,8 @@ public class SmitheryPerkLineTests
 
         stats.Should().BeEquivalentTo(new ForgePerkStats
         {
-            RampCpReduction = ForgePerkRules.PlasmaEfficiencyCpReduction,
-            CoolingReduction = ForgePerkRules.HeatRetentionRank2,
+            RampCpReduction = ForgePerkRules.PlasmaEfficiencyCpReduction + ForgePerkRules.HeatRetentionRampCpReduction,
+            CoolingReduction = ForgePerkRules.HeatRetentionCoolingReduction,
             OverdrivePressPercent = ForgePerkRules.OverdrivePressPercent,
             PressStreakPercent = ForgePerkRules.HammerRhythmPercent,
             PressOverheatIntegrityReductionPercent = ForgePerkRules.ScorchGuardReductionPercent,
@@ -206,9 +211,10 @@ public class SmitheryPerkLineTests
     [Test]
     public void TheForgemasterLineBuildsUpByRank()
     {
-        StatsAt(10, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionRank1);
-        StatsAt(29, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionRank1);
-        StatsAt(30, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionRank2);
+        StatsAt(10, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionCoolingReduction);
+        StatsAt(29, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionCoolingReduction);
+        StatsAt(30, Forgemaster).RampCpReduction.Should().Be(ForgePerkRules.PlasmaEfficiencyCpReduction + ForgePerkRules.HeatRetentionRampCpReduction);
+        StatsAt(30, Forgemaster).CoolingReduction.Should().Be(ForgePerkRules.HeatRetentionCoolingReduction);
         StatsAt(24, Forgemaster).PressStreakPercent.Should().Be(0);
         StatsAt(25, Forgemaster).PressStreakPercent.Should().Be(ForgePerkRules.HammerRhythmPercent);
         StatsAt(34, Forgemaster).PressOverheatIntegrityReductionPercent.Should().Be(0);
@@ -261,15 +267,15 @@ public class SmitheryPerkLineTests
         // Neither style costs anything, and a zero is not granted at all.
         hot.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
-            [StatType.ForgePressOutputPercent] = 20
+            [StatType.ForgePressOutputPercent] = ForgePerkRules.HotForgingPressPercent
         });
         cold.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
             [StatType.ForgeRangeShift] = -5,
-            [StatType.ForgeHoneOutputPercent] = 4
+            [StatType.ForgeHoneOutputPercent] = ForgePerkRules.ColdWorkingHonePercent
         });
-        ForgeStyles.Description(ForgeStyle.HotForging).Should().Be("Hydro-Press gains 20% more Shape.");
-        ForgeStyles.Description(ForgeStyle.ColdWorking).Should().Be("The working range moves down 5 Thermal. Vibro-Hone gains 4% more Finish.");
+        ForgeStyles.Description(ForgeStyle.HotForging).Should().Be($"Hydro-Press gains {ForgePerkRules.HotForgingPressPercent}% more Shape.");
+        ForgeStyles.Description(ForgeStyle.ColdWorking).Should().Be($"The working range moves down 5 Thermal. Vibro-Hone gains {ForgePerkRules.ColdWorkingHonePercent}% more Finish.");
         ForgeStyles.Describe(5, 25, -5).Should().Be("The working range moves up 5 Thermal. Hydro-Press gains 25% more Shape and Vibro-Hone gains 5% less Finish.");
         ForgeStyles.Describe(0, 0, 0).Should().BeEmpty();
         new HotForgingStatusEffect().Name.Should().Be(ForgeStyles.Name(ForgeStyle.HotForging));
@@ -311,11 +317,11 @@ public class SmitheryPerkLineTests
         ForgePerkLines.StatsAt(Perks(), both, 19, ForgeStyle.HotForging).RangeShift.Should().Be(0, "a style opens at rank 20");
 
         hot.RangeShift.Should().Be(0);
-        hot.PressOutputPercent.Should().Be(20);
+        hot.PressOutputPercent.Should().Be(ForgePerkRules.HotForgingPressPercent);
         hot.HoneOutputPercent.Should().Be(0);
         cold.RangeShift.Should().Be(-5);
         cold.PressOutputPercent.Should().Be(0);
-        cold.HoneOutputPercent.Should().Be(4);
+        cold.HoneOutputPercent.Should().Be(ForgePerkRules.ColdWorkingHonePercent);
         hot.OverdrivePressPercent.Should().Be(cold.OverdrivePressPercent, "the lines' perks do not depend on the style");
     }
 
@@ -369,14 +375,14 @@ public class SmitheryPerkLineTests
     {
         var perks = Perks();
 
-        perks[PerkType.SmitheryPlasmaEfficiency].PerkLevels[1].Description.Should().Be("In the Plasma Forge, Ramp Plasma costs 2 less CP, to a minimum of 1.");
+        perks[PerkType.SmitheryPlasmaEfficiency].PerkLevels[1].Description.Should().Be($"In the Plasma Forge, Ramp Plasma costs {ForgePerkRules.PlasmaEfficiencyCpReduction} less CP, to a minimum of 1.");
         perks[PerkType.SmitheryHeatRetention].PerkLevels[2].Description.Should().Be(
-            "In the Plasma Forge, the piece loses 2 less Thermal after every action, to a minimum of 1 lost.");
-        perks[PerkType.SmitheryHammerRhythm].PerkLevels[1].Description.Should().Contain("4% more Shape, 8% after two in a row and 12% after three or more");
-        perks[PerkType.SmitheryCleanContainment].PerkLevels[2].Description.Should().Contain("20 percentage points more actions (35% becomes 55%)");
-        perks[PerkType.SmitherySteadyQuench].PerkLevels[1].Description.Should().Contain("40% of its center bonus at the edge of the working range instead of 30%");
-        perks[PerkType.SmitheryCoolHand].PerkLevels[1].Description.Should().Contain("falls to 70% of its best result at the hot edge instead of 60%");
-        perks[PerkType.SmitheryContainmentFocus].PerkLevels[1].Description.Should().Contain("+60% instead of +50%");
+            $"In the Plasma Forge, the piece loses {ForgePerkRules.HeatRetentionCoolingReduction} less Thermal after every action, to a minimum of 1 lost, and Ramp Plasma costs {ForgePerkRules.HeatRetentionRampCpReduction} less CP, to a minimum of 1.");
+        perks[PerkType.SmitheryHammerRhythm].PerkLevels[1].Description.Should().Contain($"{ForgePerkRules.HammerRhythmPercent}% more Shape, {ForgePerkRules.HammerRhythmPercent * 2}% after two in a row and {ForgePerkRules.HammerRhythmPercent * 3}% after three or more");
+        perks[PerkType.SmitheryCleanContainment].PerkLevels[2].Description.Should().Contain("8 percentage points more actions (35% becomes 43%)");
+        perks[PerkType.SmitherySteadyQuench].PerkLevels[1].Description.Should().Contain("35% of its center bonus at the edge of the working range instead of 30%");
+        perks[PerkType.SmitheryCoolHand].PerkLevels[1].Description.Should().Contain("falls to 65% of its best result at the hot edge instead of 60%");
+        perks[PerkType.SmitheryContainmentFocus].PerkLevels[1].Description.Should().Contain("+55% instead of +50%");
         perks[PerkType.SmitherySurgePlasma].PerkLevels[1].Description.Should().Contain("1.5 times a Ramp Plasma's CP");
     }
 }

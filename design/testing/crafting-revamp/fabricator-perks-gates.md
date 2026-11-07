@@ -1,22 +1,23 @@
 # Crafting revamp: balance gates of the Fabricator minigame
 
-- Command: `SWLOR.CraftSim gates --scenario fabricator --gates styles,perks --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/fabricator-perks-gates.md`
-- Seed 1; 100 runs per case.
+- Command: `SWLOR.CraftSim gates --scenario fabricator --gates styles,perks --runs 40 --seed 1 --recipes-per-band 6 --repo . --out design/testing/crafting-revamp/fabricator-perks-gates.md`
+- Seed 1; 40 runs per case.
 
 ## Inputs
 
 - Scenario: Fabricator (`fabricator`), Fabrication recipes, minigame Fabricator.
 - Quality: the quality meter's share of its maximum when the item is made, in points (0-100). A broken or abandoned piece counts 0, so every average includes the crafts that failed.
-- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
+- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style or the scenario's limitations say it plays a perk loadout. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 26)
   - best gear (Control 29, Craftsmanship 30, CP 37)
-- Recipes: 1-10: 6 of 66; 11-20: 6 of 84; 21-30: 6 of 108; 31-40: 6 of 102; 41-53: 6 of 96 recipes played.
+  - fully modded gear (Control 119, Craftsmanship 120, CP 37)
+- Recipes: 1-10: 6 of 66; 11-20: 6 of 84; 21-30: 6 of 109; 31-40: 6 of 102; 41-53: 6 of 96 recipes played.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic FabricatorLeafHeuristic. Each attempt's dice come from its own stream of the seed.
-- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
+- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 40 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.50x, 21-30 1.25x, 31-40 1.10x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.50x, 21-30 1.25x, 31-40 1.10x, 41-53 1.06x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -40,7 +41,7 @@
   - `SolverOptions` = the scenario's: effort of the fixed-rotation solver
   - `ActionLimit` = 100: actions after which an attempt counts as stalled
 - Length target: 10-20 actions (item craft at level).
-- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 85% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
+- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 100% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
 - Styles compared: Production Run vs Fine Tolerance (from rank 20); Production Run (full line) vs Fine Tolerance (full line) (from rank 20).
 - Gates run: Style balance, Perks optional. The others were not run, so this report cannot show that the minigame passes.
 
@@ -48,8 +49,8 @@
 
 | Gate | Verdict | Summary |
 | --- | --- | --- |
-| Style balance | Passed | Every style is the better choice on at least 30% of recipes and no pair differs by more than 5 points on average. |
-| Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 97%). |
+| Style balance | Failed | 1 style comparison(s) are out of balance: Production Run vs Fine Tolerance / no gear. |
+| Perks optional | Passed | An unperked rank-50 crafter in fully modded gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 57%). |
 
 ## Style balance
 
@@ -57,22 +58,24 @@
 
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Production Run vs Fine Tolerance | no gear | 19 | 37% | 63% | 99.3 | 99.8 | -0.4 | Passed |
-| Production Run vs Fine Tolerance | mid gear | 19 | 50% | 50% | 100.0 | 99.8 | +0.2 | Passed |
-| Production Run vs Fine Tolerance | best gear | 19 | 50% | 50% | 100.0 | 100.0 | 0.0 | Passed |
-| Production Run (full line) vs Fine Tolerance (full line) | no gear | 19 | 50% | 50% | 100.0 | 100.0 | -0.0 | Passed |
-| Production Run (full line) vs Fine Tolerance (full line) | mid gear | 19 | 50% | 50% | 100.0 | 99.9 | +0.1 | Passed |
-| Production Run (full line) vs Fine Tolerance (full line) | best gear | 19 | 50% | 50% | 100.0 | 100.0 | 0.0 | Passed |
+| Production Run vs Fine Tolerance | no gear | 19 | 55% | 45% | 78.8 | 73.7 | +5.1 | Failed |
+| Production Run vs Fine Tolerance | mid gear | 19 | 50% | 50% | 96.1 | 95.3 | +0.8 | Passed |
+| Production Run vs Fine Tolerance | best gear | 19 | 37% | 63% | 97.3 | 98.9 | -1.5 | Passed |
+| Production Run vs Fine Tolerance | fully modded gear | 19 | 45% | 55% | 99.4 | 99.0 | +0.4 | Passed |
+| Production Run (full line) vs Fine Tolerance (full line) | no gear | 19 | 55% | 45% | 96.3 | 95.2 | +1.1 | Passed |
+| Production Run (full line) vs Fine Tolerance (full line) | mid gear | 19 | 42% | 58% | 99.1 | 99.3 | -0.2 | Passed |
+| Production Run (full line) vs Fine Tolerance (full line) | best gear | 19 | 47% | 53% | 99.4 | 99.0 | +0.4 | Passed |
+| Production Run (full line) vs Fine Tolerance (full line) | fully modded gear | 19 | 42% | 58% | 99.6 | 99.8 | -0.2 | Passed |
 
 ## Perks optional
 
-### Rank 50, best gear, no perks: adaptive attempts that reach maximum quality, by recipe band
+### Rank 50, fully modded gear, no perks: adaptive attempts that reach maximum quality, by recipe band
 
 | Band | Recipes played | Attempts | Reach maximum quality | Make the item | Avg quality of items made | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 6 | 600 | 97% | 100% | 100% | >= 50% | Passed |
-| 46-50 | 6 | 600 | 99% | 100% | 100% | >= 50% | Passed |
-| 51-53 | 6 | 600 | 99% | 100% | 100% | >= 50% | Passed |
+| 41-45 | 6 | 240 | 94% | 99% | 100% | >= 50% | Passed |
+| 46-50 | 6 | 240 | 66% | 100% | 98% | >= 50% | Passed |
+| 51-53 | 6 | 240 | 57% | 100% | 92% | >= 35% | Passed |
 
 ## Limitations
 

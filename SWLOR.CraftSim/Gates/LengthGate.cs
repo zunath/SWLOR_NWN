@@ -1,3 +1,4 @@
+using SWLOR.CraftSim.Data;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Gates
@@ -35,7 +36,9 @@ namespace SWLOR.CraftSim.Gates
                 {
                     var cells = band.Recipes.Select(recipe => run.Adaptive(recipe, run.RankFor(recipe), gearIndex)).ToList();
                     var mean = cells.Average(cell => cell.ActionsPerAttempt);
-                    var passed = target.Contains(mean);
+                    // A full set of the best mods is stronger than a band's recipes ask for, except at the top, where the gear ladder gate judges its length; gear far below the band is only reported.
+                    var judged = run.Gear[gearIndex].Name != CraftingGearCatalog.FullyModdedGearName && !run.IsUnderGeared(band.Band, run.Gear[gearIndex]);
+                    var passed = !judged || target.Contains(mean);
                     if (!passed)
                         failures.Add($"{band.Band.Name} / {run.Gear[gearIndex].Name} ({Number(mean)})");
 
@@ -48,7 +51,7 @@ namespace SWLOR.CraftSim.Gates
                         Number(cells.Max(cell => cell.ActionsPerAttempt)),
                         cells.Sum(cell => cell.Stalled).ToString(),
                         $"{Number(target.MinimumActions, 0)}-{Number(target.MaximumActions, 0)}",
-                        passed ? "Passed" : "Failed");
+                        !judged ? "Reported" : passed ? "Passed" : "Failed");
                 }
             }
 

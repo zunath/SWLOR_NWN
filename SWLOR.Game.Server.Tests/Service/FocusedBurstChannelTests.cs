@@ -5,11 +5,27 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class FocusedBurstChannelTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]

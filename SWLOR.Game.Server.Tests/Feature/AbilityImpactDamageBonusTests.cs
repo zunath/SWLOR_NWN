@@ -1,4 +1,3 @@
-using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
@@ -7,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -19,20 +19,18 @@ public class AbilityImpactDamageBonusTests
     public void DamageCalculation_RecognizesCapturedDamageOnZeroBaseImpacts(
         int baseDamage, int capturedBonus, bool weapon, bool expected)
     {
-        var hasDamage = typeof(Ability).GetMethod("HasCombatImpactDamage", BindingFlags.NonPublic | BindingFlags.Static)!
-            .CreateDelegate<Func<int, int, bool, bool>>();
+        var hasDamage = AbilityInternals.Delegate<Func<int, int, bool, bool>>(AbilityInternals.NoNeighbours(), "HasCombatImpactDamage");
         hasDamage(baseDamage, capturedBonus, weapon).Should().Be(expected);
     }
 
     [Test]
     public void RepeatedPulseSnapshot_AppliesOnceAfterATargetIsImpacted()
     {
-        var type = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
-        object Create(int damage = 0, int statusDamage = 0) => type.GetConstructors().Single().Invoke(new object[]
-        {
-            new AbilityDetail(), damage, 11, 13, 17, statusDamage, false, 19,
-            Array.Empty<TelegraphGeometry>(), null
-        });
+        var type = AbilityInternals.TrackedImpactType;
+        var service = AbilityInternals.NoNeighbours();
+        object Create(int damage = 0, int statusDamage = 0) => AbilityInternals.NewTrackedImpact(
+            service, new AbilityDetail(), damage, 11, 13, 17, statusDamage, false, 19,
+            Array.Empty<TelegraphGeometry>(), null);
         var source = Create(82, 7);
         var copy = type.GetMethod("CopyRepeatedDamageBonusesFrom")!;
         var complete = type.GetMethod("CompleteRepeatedDamageBonusImpact")!;
@@ -53,13 +51,12 @@ public class AbilityImpactDamageBonusTests
     [Test]
     public void PartitionedSnapshot_RetainsArmedBonusesForEveryPortion_AfterTheOriginHasConsumedThem()
     {
-        var type = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        var type = AbilityInternals.TrackedImpactType;
+        var service = AbilityInternals.NoNeighbours();
         object Create(int damage = 0, int criticalRate = 0, int defenseIgnore = 0, int enmity = 0,
-            int statusDamage = 0, int criticalDamage = 0) => type.GetConstructors().Single().Invoke(new object[]
-        {
-            new AbilityDetail(), damage, criticalRate, defenseIgnore, enmity, statusDamage, false,
-            criticalDamage, Array.Empty<TelegraphGeometry>(), null
-        });
+            int statusDamage = 0, int criticalDamage = 0) => AbilityInternals.NewTrackedImpact(
+            service, new AbilityDetail(), damage, criticalRate, defenseIgnore, enmity, statusDamage, false,
+            criticalDamage, Array.Empty<TelegraphGeometry>(), null);
         var source = Create(82, 11, 13, 17, 7, 19);
         var copy = (Delegate)type.GetMethod("CapturePartitionedDamageBonuses")!.Invoke(source, null)!;
         type.GetMethod("AddDamageBonuses")!.Invoke(source, new object[] { -7, 0, 0, 0, 0, 0 });
@@ -79,9 +76,9 @@ public class AbilityImpactDamageBonusTests
         }
     }
 
-    private static readonly Func<int, AbilityDetail, Func<int>, (int BaseDamage, bool DealsDamage)> Apply = typeof(Ability)
-        .GetMethod("ResolveCombatImpactBaseDamage", BindingFlags.NonPublic | BindingFlags.Static)!
-        .CreateDelegate<Func<int, AbilityDetail, Func<int>, (int, bool)>>();
+    private static readonly Func<int, AbilityDetail, Func<int>, (int BaseDamage, bool DealsDamage)> Apply =
+        AbilityInternals.Delegate<Func<int, AbilityDetail, Func<int>, (int, bool)>>(
+            AbilityInternals.NoNeighbours(), "ResolveCombatImpactBaseDamage");
 
     [TestCase(20)]
     [TestCase(75)]
@@ -153,18 +150,15 @@ public class AbilityImpactDamageBonusTests
     [TestCase(2)]
     public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage(int delivery)
     {
-        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        var impactType = AbilityInternals.TrackedImpactType;
         var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
-        var impact = impactType.GetConstructors().Single().Invoke(new object[]
-        {
-            flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null
-        });
+        var service = AbilityInternals.NoNeighbours();
+        var impact = AbilityInternals.NewTrackedImpact(
+            service, flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
         var calls = 0;
         impactType.GetProperty("ResolveDamageBonuses")!.SetValue(impact, (Action)(() => calls++));
-        var impacts = (System.Collections.IDictionary)typeof(Ability)
-            .GetField("_trackedAbilityImpacts", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        var prepare = typeof(Ability).GetMethod("PrepareCombatImpactDamageBonuses", BindingFlags.NonPublic | BindingFlags.Static)!
-            .CreateDelegate<Action<uint, int>>();
+        var impacts = AbilityInternals.TrackedImpacts(service);
+        var prepare = AbilityInternals.Delegate<Action<uint, int>>(service, "PrepareCombatImpactDamageBonuses");
         const uint caster = 0xFFFFFFFE;
         impacts.Add(caster, impact);
         try
@@ -172,9 +166,9 @@ public class AbilityImpactDamageBonusTests
             void DeclareDamage(int damage)
             {
                 if (delivery == 2)
-                    Ability.CaptureRepeatedAbilityImpact<uint>(caster, _ => { }, baseDamage: damage);
+                    service.CaptureRepeatedAbilityImpact<uint>(caster, _ => { }, baseDamage: damage);
                 else if (delivery == 1)
-                    Ability.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
+                    service.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
                 else
                     prepare(caster, damage);
             }

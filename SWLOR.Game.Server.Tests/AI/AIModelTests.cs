@@ -1172,11 +1172,12 @@ public class AIModelTests
     {
         var abilitySource = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs");
-        var abilityValidation = ExtractMethodBody(abilitySource, "public static bool CanUseAbility");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs");
+        var abilityValidation = ExtractMethodBody(abilitySource, "public bool CanUseAbility");
 
-        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);");
+        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(activator, ability.RecastGroup);");
         abilityValidation.Should().Contain("if (isOnRecast)");
 
         Ability.CacheData();

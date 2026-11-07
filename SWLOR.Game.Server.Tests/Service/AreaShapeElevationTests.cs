@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -236,11 +237,10 @@ public class AreaShapeElevationTests
         float lengthOrRadius,
         float width)
     {
-        var method = typeof(Ability)
-            .GetMethod("IsPositionInCombatImpactShape", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = AbilityInternals.Method("IsPositionInCombatImpactShape");
 
         return (bool)method.Invoke(
-            null,
+            AbilityInternals.NoNeighbours(),
             new object[]
             {
                 position,

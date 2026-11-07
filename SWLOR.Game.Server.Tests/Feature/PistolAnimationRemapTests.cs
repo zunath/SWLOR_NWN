@@ -229,8 +229,9 @@ public class PistolAnimationRemapTests
         var impactSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
 
         activationSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",

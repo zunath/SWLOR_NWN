@@ -23,6 +23,11 @@
       "replace": "ConvertedService.ServerNamespace + \".Domain\" + parent"
     },
     {
+      "file": "SWLOR.Game.Server.Tests/Composition/ConvertedServiceFixtures.cs",
+      "find": "assembly.GetType($\"{ServerNamespace}.Service.{facade}\", throwOnError: true)!",
+      "replace": "assembly.GetType($\"{ServerNamespace}.Domain.{facade}\", throwOnError: true)!"
+    },
+    {
       "file": "SWLOR.Architecture.Tests/ConvertedServiceRulesTests.cs",
       "find": "TrackerFacade = \"AchievementService.AchievementTracker\"",
       "replace": "TrackerFacade = \"Character.AchievementTracker\""

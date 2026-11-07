@@ -28,8 +28,8 @@
         generators build ("Service", "AIService"); the files themselves move (a filesystem move, then git add);
       * the handler order manifest (names are rewritten in place) and HandlerRenames.txt (a renamed handler is added with
         its old name, or its branch name is updated);
-      * ClockSeamFiles.txt (a moved folder glob becomes the moved files), the facade names of ConvertedServices.json and
-        the exact textEdits of the data file.
+      * the facade names of ConvertedServices.json (kept sorted) and the exact textEdits of the data file. Lists of paths
+        (ClockSeamFiles.txt, CoverageFloors.json, PlayerMessageAudit.json) follow the folder-path rewrite.
 
     A using line that becomes a duplicate of one above it is dropped. Files are read and written byte for byte (Latin-1),
     so BOMs, encodings and line endings stay.
@@ -82,7 +82,6 @@ $serverRoot = 'SWLOR.Game.Server.'
 $domainMapPath = 'SWLOR.Architecture.Tests/DomainMap.json'
 $manifestPath = 'SWLOR.Game.Server/Core/ScriptHandlerOrder.txt'
 $handlerRenamesPath = 'tools/Refactor/HandlerRenames.txt'
-$clockSeamPath = 'tools/Refactor/ClockSeamFiles.txt'
 $textExtensions = @('.cs', '.razor', '.cshtml', '.csx', '.ps1', '.py', '.sh', '.cmd', '.csproj', '.props', '.targets',
     '.txt', '.json', '.md', '.yml', '.yaml', '.runsettings', '.xml')
 $skippedRoots = @('Module/', 'SWLOR_Haks/', 'design/', '.git/', '.claude/', 'node_modules/')
@@ -569,24 +568,6 @@ foreach ($path in $allFiles) {
     if ($info.Length -gt 8MB -or $info.Length -eq 0) { continue }
     $text = Read-Latin1 $path
     $new = $text
-    if ($path -eq $clockSeamPath) {
-        $builder = New-Object System.Text.StringBuilder
-        foreach ($line in [regex]::Split($new, '(?<=\n)')) {
-            if ($line -match '^(Service/[A-Za-z0-9_]+Service(?:/[A-Za-z0-9_]+)*)/\*\*(\r?\n?)$') {
-                $glob = $Matches[1]
-                $eol = if ($Matches[2]) { $Matches[2] } else { "`n" }
-                $folder = "$serverFolder/$glob/"
-                if ((Get-MappedServerPath "$glob/x") -ne "$glob/x") {
-                    $files = @($moveMap.Keys | Where-Object { $_.StartsWith($folder, [System.StringComparison]::Ordinal) -and $_.EndsWith('.cs', [System.StringComparison]::Ordinal) } |
-                            ForEach-Object { $moveMap[$_].Substring($serverFolder.Length + 1) } | Sort-Object { $_ } -CaseSensitive)
-                    foreach ($file in $files) { [void]$builder.Append($file + $eol) }
-                    continue
-                }
-            }
-            [void]$builder.Append($line)
-        }
-        $new = $builder.ToString()
-    }
     $target = if ($moveMap.ContainsKey($path)) { $moveMap[$path] } else { $path }
     $isCs = $path.EndsWith(".cs", [System.StringComparison]::Ordinal)
     $new = Update-Text $path $new ($isCs -and $moveMap.ContainsKey($path) -and $path.StartsWith("$serverFolder/Service/", [System.StringComparison]::Ordinal)) ($isCs -and $target.StartsWith("$serverFolder/Domain/", [System.StringComparison]::Ordinal))

@@ -30,7 +30,7 @@ public class BlazingSpikesStatusEffectTests
 
         statusEffectSource.Should().Contain("CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct");
         statusEffectSource.Should().Contain("effect.OnDamageTakenEffect(defender, attacker, damage, damageType, deliveryType)");
-        combatSource.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
+        combatSource.Should().Contain("_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
         forceDotSource.Should().Contain("StatusEffect.NotifyDamageStatusEffects(Source, creature, damage, CombatDamageType.Force, CombatDamageDeliveryType.DamageOverTime);");
     }
 

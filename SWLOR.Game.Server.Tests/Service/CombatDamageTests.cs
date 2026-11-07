@@ -724,7 +724,7 @@ public class CombatDamageTests
         var preparedAutoAttackCleanupBody = combatSource.Substring(
             preparedAutoAttackCleanupIndex,
             nextCombatMethodIndex - preparedAutoAttackCleanupIndex);
-        preparedAutoAttackCleanupBody.Should().Contain("TemporaryStatModifier.Consume(");
+        preparedAutoAttackCleanupBody.Should().Contain("_temporaryStatModifier.Consume(");
         preparedAutoAttackCleanupBody.Should().Contain("StatType.CurrentAutoAttackDamageBonus");
         preparedAutoAttackCleanupBody.Should().Contain("ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);");
         preparedAutoAttackCleanupBody.Should().Contain("StatType.NextAutoAttackDamageBonus");

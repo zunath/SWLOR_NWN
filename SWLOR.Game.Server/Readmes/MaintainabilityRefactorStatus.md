@@ -111,8 +111,8 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-D18 | Wave D hot core 4: `Stat`, with `EquipmentStatTotals` and `Feature/EquipmentStats` | P2-D1 | Opus | in progress | | Branch `claude/mr-p2-d18`. Reads run per attack and per stat rebuild: no new per-call allocation. Runs beside `Skill`, `Perk` and `Ability` since the owner raised the usage stop: each calls the others through its facade, so only the list files can conflict. |
 | P2-D19 | Wave D hot core 5: `Ability`, with `QuickCastFeatMap`, `QuickCastPolicy` and `Feature/UsePerkFeat` | P2-D1 | Opus | in progress | | Branch `claude/mr-p2-d19`. Reads run per attack: no new per-call allocation. |
 | P2-D20 | `Combat` split plan: read-only, a spec dividing `Service/Combat.cs` (13,179 lines) and its helpers into conversion items | P2-D1 | Opus | done | | Plan in [MaintainabilityRefactorCombatSplit.md](MaintainabilityRefactorCombatSplit.md), 2026-11-07. Coordinator checked the guard claims against the tests. |
-| P2-CB0 | `Combat` tests only: `CombatSource` and reflection helpers, `FacadeServices` and `FacadeContainer` in the fixtures, the `inProgress` guard list | P2-D20 | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-cb0`. |
-| P2-CB1 | `Combat` mechanical split into partial-class files, no logic change | P2-CB0, master sync | Sonnet build, Opus review | open | | Scripted; sorted lines match. |
+| P2-CB0 | `Combat` tests only: `CombatSource` and reflection helpers, `FacadeServices` and `FacadeContainer` in the fixtures, the `inProgress` guard list | P2-D20 | Sonnet build, Opus review | done | [#3267](https://github.com/zunath/SWLOR_NWN/pull/3267) | Merged 2026-11-07 at head `088912d0a` (`1c7f79e0c`), Codex clean, no threads, no production file changed. Full suite on the head: Game.Server 15847, Characterization 148, Architecture 196, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076; on the merge with the sync: build, Architecture, Characterization, integration 141, targeted Game.Server 2677 (one failure outside the sparse checkout: `FightClubArena_HasAContinuousCombatFloorThroughTheFormerPit`, hak data). 87 of 89 source-reading sites go through `CombatSource`, whose own tests show a changed condition, a removed call, another receiver and another argument still fail a needle. `inProgress` may hold only `Combat`. |
+| P2-CB1 | `Combat` mechanical split into partial-class files, no logic change | P2-CB0, master sync | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-cb1`. Scripted; sorted lines match. |
 | P2-CB2 | `TemporaryStatModifier` behind its own service | P2-CB1 | Sonnet build, Opus review | open | |  |
 | P2-CB3 | `CombatRules` (static), `CombatDamageCatalog` | P2-CB1 | Opus | open | |  |
 | P2-CB4 | `CombatFeedback`, `CombatQueries`, `CombatResources`; `WeaponImpactProfile`, `CombatDamageType` | P2-CB3 | Opus | open | |  |
@@ -183,7 +183,8 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
 - P2-D18 (`Stat`, hot core): branch `claude/mr-p2-d18`.
 - P2-D19 (`Ability`, hot core): branch `claude/mr-p2-d19`.
 - P2-D20 done (2026-11-07): `Combat` split plan, [MaintainabilityRefactorCombatSplit.md](MaintainabilityRefactorCombatSplit.md).
-- P2-CB0 (`Combat` test preparation): branch `claude/mr-p2-cb0`.
+- P2-CB0 merged (#3267, `1c7f79e0c`, 2026-11-07): `Combat` tests ready for the split.
+- P2-CB1 (`Combat` mechanical split): branch `claude/mr-p2-cb1`.
 - P3-1 merged (#3264, `e8ff48cdf`, 2026-11-07): integration tier.
 - P3-2 (coverage ratchet): branch `claude/mr-p3-2`.
 - P2-D16 merged (#3257, `ed2f91b81`, 2026-11-06): cleanup follow-ups from P2-C8 and the 2026-11-06 sync.
@@ -216,7 +217,7 @@ on another machine needs none of them (both PR descriptions are on GitHub; cover
 
 ## Next actions
 
-1. **Review and merge** P2-D18, P2-D19, P2-CB0 and P3-2 as they report; `bash scripts/ci/run-integration-tests.sh` is part of every landing gate. Then the rest of the `Combat` items (P2-CB1 on).
+1. **Review and merge** P2-D18, P2-D19, P2-CB1 and P3-2 as they report; `bash scripts/ci/run-integration-tests.sh` is part of every landing gate. Then the rest of the `Combat` items (P2-CB2 on).
 2. **Daily sync** when master moves (last 2026-11-07, `27781fac1`). Check whether `feature/space-revamp` reached master
    (unblocks P2-A9 `Space`, `Droid`, and the ~77-line `Item` port).
 3. **Follow-ups** from P2-C8 and the 2026-11-06 sync are in P2-D16.

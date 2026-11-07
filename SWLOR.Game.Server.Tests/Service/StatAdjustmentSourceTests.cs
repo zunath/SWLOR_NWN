@@ -37,7 +37,7 @@ public class StatAdjustmentSourceTests
     public void Cleanup()
     {
         Effects.Remove(Creature);
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
         _facadeScope.Dispose();
     }
 
@@ -175,15 +175,14 @@ public class StatAdjustmentSourceTests
         AddTemporary("expired", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 40);
         AddTemporary("live", StatType.HighFPAndStaminaAbilityDamageBonus, 2);
         AddTemporary("live", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 20);
-        var modifiers = (IEnumerable)((IDictionary)typeof(TemporaryStatModifier)
-            .GetField("_modifiers", PrivateStatic)!.GetValue(null)!)[Creature]!;
+        var modifiers = (IEnumerable)TemporaryStatModifierInternals.Modifiers[Creature]!;
         foreach (var modifier in modifiers)
         {
             if ((string)modifier.GetType().GetProperty("Group")!.GetValue(modifier)! == "expired")
                 modifier.GetType().GetProperty("Expiration")!.SetValue(modifier, DateTime.UtcNow.AddSeconds(-1));
         }
         // The heartbeat uses this same purge; the native UI notification is covered in engine tests.
-        typeof(TemporaryStatModifier).GetMethod("PurgeExpired", PrivateStatic)!.Invoke(null, new object[] { Creature });
+        TemporaryStatModifierInternals.Invoke("PurgeExpired", Creature);
         ReadDamageSources().Should().Equal((2, 20));
     }
 
@@ -312,8 +311,7 @@ public class StatAdjustmentSourceTests
     }
 
     private static void AddTemporary(string group, StatType stat, int amount) =>
-        typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, stat, amount, 30f, group, false });
+        TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, amount, 30f, group, false);
 
     private sealed class PayloadEffect : StatusEffectBase
     {

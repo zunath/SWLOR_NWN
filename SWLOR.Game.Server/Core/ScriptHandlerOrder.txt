@@ -827,7 +827,7 @@ mod_exit
   action      SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnExit
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.ForgetExitingPlayer
   action      SWLOR.Game.Server.Service.FishingService.FishingFights.AbandonOnExit
-  action      SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject
+  action      SWLOR.Game.Server.Service.TemporaryStatModifier.ClearExitingObject
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.StopQuickCraftOnLogout
@@ -851,7 +851,7 @@ mod_gui_event
 mod_heartbeat
   action      SWLOR.Game.Server.Service.Combat.PurgeInvalidOffensiveActivity
   action      SWLOR.Game.Server.Service.MeleeTechnique.RefreshAll
-  action      SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired
+  action      SWLOR.Game.Server.Service.TemporaryStatModifier.PurgeAllExpired
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.RemoveAbandonedAnchors
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.ClearInactive
 

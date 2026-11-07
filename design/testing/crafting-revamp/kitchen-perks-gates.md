@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Kitchen minigame
 
-- Command: `SWLOR.CraftSim gates --scenario kitchen --gates styles,perks --runs 40 --seed 1 --repo . --out design/testing/crafting-revamp/kitchen-perks-gates.md
+- Command: `SWLOR.CraftSim gates --scenario kitchen --gates styles,perks --runs 40 --seed 1 --repo . --out design/testing/crafting-revamp/kitchen-perks-gates.md`
 - Seed 1; 40 runs per case.
 
 ## Inputs

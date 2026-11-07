@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Kitchen (Flash Cooking Chef) minigame
 
-- Command: `SWLOR.CraftSim gates --scenario kitchen-flash-cooking --gates materials,xp,enhancements --runs 40 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/kitchen-flash-cooking-gates.md
+- Command: `SWLOR.CraftSim gates --scenario kitchen-flash-cooking --gates materials,xp,enhancements --runs 40 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/kitchen-flash-cooking-gates.md`
 - Seed 1; 40 runs per case.
 
 ## Inputs

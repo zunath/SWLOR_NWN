@@ -1,6 +1,6 @@
 # Crafting revamp: the Agriculture Chef line
 
-Command: `SWLOR.CraftSim chef-perks --runs 20 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/agriculture-chef-perks.md
+Command: `SWLOR.CraftSim chef-perks --runs 20 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/agriculture-chef-perks.md`
 
 ## Inputs
 

@@ -171,7 +171,7 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 | Kitchen ladder | 46-50, Flash and Slow full lines, single seeds | over +5 on some seeds | Seed 1 passes at +3.3 and +3.4; the three-seed averages are +5.0 and +4.9 |
 | Kitchen enhancement | 41-45, 3 slots, no perks, fully modded | 0.894 (2.62 against 2.93), shown as 0.90, limit 0.90 | The Kitchen's rules did not change in this pass; the gate now plays fully modded gear |
 | Kitchen XP | 21-30, no gear, 1 enhancement, perked builds | Flash 0.99x, Slow just under 1.00x | 4 recipes per band; unperked passes (lowest 1.03x) |
-| Research style | Methodical alone against Intuitive alone: fixed levels in every gear level, and evidence-decides levels in best and fully modded gear | Methodical better on 75-100% of cases; mean gaps +2.7 to +7.4 | Owner decision: styles stay "trials against chance", so poor gear favors Intuitive and good gear favors Methodical. With the whole line, all 8 comparisons pass |
+| Research style | Methodical alone against Intuitive alone: fixed levels in every gear level, and evidence-decides levels in best and fully modded gear | Methodical better on 75-100% of cases; mean gaps +2.7 to +7.4 | Owner decision: styles stay "trials against chance". Alone, Methodical leads at fixed levels in every gear level and where evidence decides in best and fully modded gear; Intuitive leads only where evidence decides in no gear (67% of cases, -0.4), and the two split mid gear. With the whole line, all 8 comparisons pass |
 
 ## Research
 

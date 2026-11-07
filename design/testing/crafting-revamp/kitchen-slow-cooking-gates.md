@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Kitchen (Slow Cooking Chef) minigame
 
-- Command: `SWLOR.CraftSim gates --scenario kitchen-slow-cooking --gates materials,xp,enhancements --runs 40 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/kitchen-slow-cooking-gates.md
+- Command: `SWLOR.CraftSim gates --scenario kitchen-slow-cooking --gates materials,xp,enhancements --runs 40 --seed 1 --recipes-per-band 4 --repo . --out design/testing/crafting-revamp/kitchen-slow-cooking-gates.md`
 - Seed 1; 40 runs per case.
 
 ## Inputs

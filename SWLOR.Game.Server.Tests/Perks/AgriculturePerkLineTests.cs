@@ -226,16 +226,16 @@ public class AgriculturePerkLineTests
         KitchenPerkStats.FromStatTotals(Totals(line, 4)).Should().Be(KitchenPerkStats.None);
         KitchenPerkStats.FromStatTotals(Totals(line, 5)).Should().Be(new KitchenPerkStats(PantryPushBonus: 1));
         KitchenPerkStats.FromStatTotals(Totals(line, 19)).Should().Be(new KitchenPerkStats(
-            PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true));
+            PantryPushBonus: 1, PushSpreadReduction: 3, SeasonedPalateOwned: true));
 
         KitchenPerkStats.FromStatTotals(Totals(line, 25, PerkType.FlashCooking), seasonedPalateOn: true).Should().Be(new KitchenPerkStats(
-            PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateOn: true,
-            LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25, ReducePercent: 15));
+            PantryPushBonus: 1, PushSpreadReduction: 3, SeasonedPalateOwned: true, SeasonedPalateOn: true,
+            LowHeatDonenessPercent: 60, MediumDriftReductionPercent: 25, ReducePercent: 15));
 
         KitchenPerkStats.FromStatTotals(Totals(line, 50, PerkType.SlowCooking), seasonedPalateOn: true).Should().Be(new KitchenPerkStats(
-            PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateOn: true, SeasonedPalateSpreadPercent: 15,
+            PantryPushBonus: 1, PushSpreadReduction: 3, SeasonedPalateOwned: true, SeasonedPalateOn: true, SeasonedPalateSpreadPercent: 15,
             HighDriftReductionPercent: 15, ReducePercent: 20, ReduceCpReduction: 1,
-            PeakAromaChancePoints: 10, StirCpReduction: 2, StirDonenessPercent: 50, SignatureDish: true));
+            PeakAromaChancePoints: 5, StirCpReduction: 2, StirDonenessPercent: 50, SignatureDish: true));
     }
 
     [Test]

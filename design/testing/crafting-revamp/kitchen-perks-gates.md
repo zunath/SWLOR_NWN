@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Kitchen minigame
 
-- Command: `SWLOR.CraftSim gates --scenario kitchen --gates styles,perks --runs 40 --seed 1 --repo . --out design/testing/crafting-revamp/kitchen-perks-gates.md`
+- Command: `SWLOR.CraftSim gates --scenario kitchen --gates styles,perks --runs 40 --seed 1 --repo . --out design/testing/crafting-revamp/kitchen-perks-gates.md
 - Seed 1; 40 runs per case.
 
 ## Inputs
@@ -11,7 +11,8 @@
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 20)
   - best gear (Control 29, Craftsmanship 30, CP 37)
-- Recipes: 1-10: 6 of 58; 11-20: 6 of 59; 21-30: 6 of 65; 31-40: 6 of 61; 41-53: 6 of 76 recipes played.
+  - fully modded gear (Control 119, Craftsmanship 120, CP 37)
+- Recipes: 1-10: 6 of 58; 11-20: 6 of 59; 21-30: 6 of 65; 31-40: 6 of 61; 41-53: 6 of 88 recipes played.
 - Adaptive player: depth 3, forecast samples per result 1, budget 1500 engine copies per decision, 0.5% of value lost per extra action, heuristic KitchenLeafHeuristic. Each attempt's dice come from its own stream of the seed.
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 40 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
@@ -36,11 +37,23 @@
   - `EnhancementParityBands` = 41-45, 46-50, 51-53: gate 7: the at-level recipe bands
   - `EnhancementSlotCounts` = 1, 2, 3: gates 6 and 7: numbers of filled enhancement slots played
   - `EnhancementParityMinimumRatio` = 1: gate 7: expected transferred enhancements per enhanced craft divided by today's
+  - `EnhancementParityFullModsRatio` = 0.95: gate 7, minigames tuned against full mods: the same ratio for one and two slots in fully modded gear
+  - `EnhancementParityThreeSlotFullModsRatio` = 0.9: gate 7, minigames tuned against full mods: the same ratio for three slots in fully modded gear
+  - `PerksOptionalAboveRankFullModsShare` = 35%: gate 3, minigames tuned against full mods: the share in the band above the crafter's rank
+  - `GearLadderBands` = 46-50, 51-53: gear ladder: the at-level recipe bands
+  - `GearLadderEnhancements` = 2: gear ladder: enhancement kits played
+  - `GearLadderMinimumStep` = 5: gear ladder: the least each gear step adds to average quality
+  - `GearLadderSaturatedQuality` = 97: gear ladder and gate 1: an average at or above this has nothing left to earn
+  - `GearLadderFullModsReach85Share` = 60%: gear ladder: share of top-band crafts in fully modded gear that reach 85%
+  - `GearLadderFullModsMaxFullQualityShare` = 90%: gear ladder: most top-band crafts in fully modded gear that reach 100%
+  - `GearLadderPerkAllowance` = 5: gear ladder: how far a full perk line in no gear may beat unmodded best gear
+  - `UnderGearedNoGearFromLevel` = 31: gates 4, 5 and 6: no gear is only reported from this recipe level
+  - `UnderGearedMidGearFromLevel` = 41: gates 4, 5 and 6: mid gear is only reported from this recipe level
   - `RecipesPerBand` = 6: recipes played per band
   - `SolverOptions` = the scenario's: effort of the fixed-rotation solver
   - `ActionLimit` = 100: actions after which an attempt counts as stalled
 - Length target: 10-20 actions (item craft at level).
-- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 85% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
+- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 100% for slots 1, 2 and 3. The scenario applies enhancements to its engine's progress meter.
 - Styles compared: Slow Cooking vs Flash Cooking (from rank 20); Slow Cooking (full line) vs Flash Cooking (full line) (from rank 20); Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) (from rank 20).
 - Gates run: Style balance, Perks optional. The others were not run, so this report cannot show that the minigame passes.
 
@@ -49,7 +62,7 @@
 | Gate | Verdict | Summary |
 | --- | --- | --- |
 | Style balance | Passed | Every style is the better choice on at least 30% of recipes and no pair differs by more than 5 points on average. |
-| Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 58%). |
+| Perks optional | Passed | An unperked rank-50 crafter in fully modded gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 82%). |
 
 ## Style balance
 
@@ -57,25 +70,28 @@
 
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Slow Cooking vs Flash Cooking | no gear | 18 | 50% | 50% | 89.3 | 89.8 | -0.5 | Passed |
-| Slow Cooking vs Flash Cooking | mid gear | 18 | 47% | 53% | 91.3 | 91.3 | -0.0 | Passed |
-| Slow Cooking vs Flash Cooking | best gear | 18 | 33% | 67% | 95.0 | 95.5 | -0.4 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | no gear | 18 | 56% | 44% | 92.9 | 92.3 | +0.6 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | mid gear | 18 | 50% | 50% | 95.1 | 94.7 | +0.4 | Passed |
-| Slow Cooking (full line) vs Flash Cooking (full line) | best gear | 18 | 53% | 47% | 97.4 | 97.0 | +0.5 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | no gear | 18 | 39% | 61% | 87.6 | 89.2 | -1.6 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | mid gear | 18 | 42% | 58% | 93.2 | 94.4 | -1.2 | Passed |
-| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | best gear | 18 | 64% | 36% | 96.7 | 96.5 | +0.2 | Passed |
+| Slow Cooking vs Flash Cooking | no gear | 18 | 50% | 50% | 87.2 | 86.7 | +0.6 | Passed |
+| Slow Cooking vs Flash Cooking | mid gear | 18 | 64% | 36% | 91.5 | 90.8 | +0.6 | Passed |
+| Slow Cooking vs Flash Cooking | best gear | 18 | 33% | 67% | 94.4 | 95.4 | -1.0 | Passed |
+| Slow Cooking vs Flash Cooking | fully modded gear | 18 | 53% | 47% | 98.3 | 98.2 | +0.1 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | no gear | 18 | 47% | 53% | 90.6 | 89.4 | +1.2 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | mid gear | 18 | 61% | 39% | 94.4 | 92.4 | +2.1 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | best gear | 18 | 47% | 53% | 96.1 | 95.9 | +0.3 | Passed |
+| Slow Cooking (full line) vs Flash Cooking (full line) | fully modded gear | 18 | 47% | 53% | 99.0 | 99.1 | -0.1 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | no gear | 18 | 44% | 56% | 83.7 | 84.3 | -0.6 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | mid gear | 18 | 58% | 42% | 88.6 | 88.3 | +0.2 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | best gear | 18 | 42% | 58% | 92.3 | 93.3 | -0.9 | Passed |
+| Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on) | fully modded gear | 18 | 53% | 47% | 97.7 | 98.1 | -0.3 | Passed |
 
 ## Perks optional
 
-### Rank 50, best gear, no perks: adaptive attempts that reach maximum quality, by recipe band
+### Rank 50, fully modded gear, no perks: adaptive attempts that reach maximum quality, by recipe band
 
 | Band | Recipes played | Attempts | Reach maximum quality | Make the item | Avg quality of items made | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 6 | 240 | 88% | 99% | 97% | >= 50% | Passed |
-| 46-50 | 6 | 240 | 79% | 98% | 94% | >= 50% | Passed |
-| 51-53 | 6 | 240 | 58% | 93% | 85% | >= 50% | Passed |
+| 41-45 | 6 | 240 | 88% | 100% | 98% | >= 50% | Passed |
+| 46-50 | 6 | 240 | 82% | 100% | 95% | >= 50% | Passed |
+| 51-53 | 6 | 240 | 82% | 99% | 95% | >= 35% | Passed |
 
 ## Limitations
 
@@ -92,23 +108,3 @@
 - Seasoned Palate is a switch the cook makes for each dish. The Chef scenarios play it off; the Seasoned Palate scenarios play it on for every dish. A real cook would choose per dish.
 - Seconds per action is an estimate (8 s) until the client evidence measures it.
 - Ingredient names are the resrefs here; the window shows item names.
-
-## The other gates for a perked Chef
-
-Gates 2 and 3 above are the style and perks-optional gates at the gate's own sample (6 recipes per band, 40 runs, seed 1). The other gates are played by the Chef scenarios (`kitchen-slow-cooking`, `kitchen-flash-cooking`: the style from rank 20 and every other purchase the rank allows, Seasoned Palate off), and their reports are `kitchen-slow-cooking-gates.md` and `kitchen-flash-cooking-gates.md`. Gates 1, 5, 6 and 7 are sampled (4 recipes per band, 40 runs, seed 1); gate 4 is the full sample (6 recipes per band, 100 runs).
-
-| Gate | Slow Cooking line | Flash Cooking line |
-| --- | --- | --- |
-| 1: no fixed rotation | Open (see below) | Open (see below) |
-| 4: length (perked floor 8 actions, ceiling 20) | Passed: every cell 10.1 to 16.1 actions | Passed: every cell 10.1 to 15.8 actions |
-| 5: economy and material parity | Passed | Passed |
-| 6: XP rate (every cell at least 1.0x) | Passed: lowest 1.04x (21-30, no gear, 1 enhancement) | Passed: lowest 1.06x (21-30, no gear, 1 enhancement) |
-| 7: enhancement parity | Passed: lowest 1.07x | Passed: lowest 1.07x |
-
-Gates 4 and 6 hold without changing the Kitchen's base tuning or its XP multipliers (`KitchenTuning` is unchanged).
-
-### Gate 1
-
-Gate 1 is open for perked Chef builds, as for the Circuit, Fabricator and perked Forge (owner, October 2026; see the plan's gate 1 note). Not retuned here; judged from player feedback.
-
-For the record, the Slow Cooking line at the sample above (the Flash Cooking line was not run for this gate): adaptive play beats the best single fixed rotation by 11.0 to 26.8 points in bands 1-10 and 11-20 (the perks hardly apply below rank 20), and by -9.3 to +2.3 points in bands 21-30, 31-40 and 41-53, where Reduce (rank 25 and up) and a Low heat dish that no longer drifts let one rotation of "add, simmer at Low heat, Reduce" match adaptive play. No cell reaches the saturation mark (adaptive mean quality of 98 or more). The unperked Kitchen passes gate 1 in every cell (`kitchen-gates.md`).

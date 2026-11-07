@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_infusion")
 
                 .AddPerkLevel()
-                .Description("In the Kitchen, every push lands closer to its listed strength: the base spread is 45% instead of 50%, before Control narrows it.")
+                .Description("In the Kitchen, every push lands closer to its listed strength: the base spread is 47% instead of 50%, before Control narrows it.")
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 10)
-                .IncreasesStat(StatType.KitchenPushSpreadReduction, 5);
+                .IncreasesStat(StatType.KitchenPushSpreadReduction, 3);
         }
 
         private void SeasonedPalate()
@@ -83,11 +83,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_coolfire")
 
                 .AddPerkLevel()
-                .Description("Your Kitchen style, always active: Simmer at Low heat gives 80% more Doneness (9 instead of 5), and the flavor drifts 25% less at Medium heat. Cannot be purchased with Flash Cooking.")
+                .Description("Your Kitchen style, always active: Simmer at Low heat gives 60% more Doneness (8 instead of 5), and the flavor drifts 25% less at Medium heat. Cannot be purchased with Flash Cooking.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 20)
                 .RequirementCannotHavePerk(PerkType.FlashCooking)
-                .IncreasesStat(StatType.KitchenLowHeatDonenessPercent, 80)
+                .IncreasesStat(StatType.KitchenLowHeatDonenessPercent, 60)
                 .IncreasesStat(StatType.KitchenMediumDriftReductionPercent, 25);
         }
 
@@ -132,10 +132,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_smoke_screen")
 
                 .AddPerkLevel()
-                .Description("In the Kitchen, each turn has a 35% chance of announcing Peak Aroma instead of 25%.")
+                .Description("In the Kitchen, each turn has a 30% chance of announcing Peak Aroma instead of 25%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 35)
-                .IncreasesStat(StatType.KitchenPeakAromaChancePoints, 10);
+                .IncreasesStat(StatType.KitchenPeakAromaChancePoints, 5);
         }
 
         private void SteadyWrist()

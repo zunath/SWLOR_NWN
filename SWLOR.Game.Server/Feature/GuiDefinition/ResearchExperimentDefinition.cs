@@ -13,8 +13,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class ResearchExperimentDefinition : IGuiWindowDefinition
     {
         private const float PanelWidth = 580f;
-        private const float ActionButtonWidth = 190f;
+        private const float ActionButtonWidth = 230f;
         private const float ActionButtonHeight = 32f;
+
+        // Two lines of wrapped text at the panel's (or the action column's) width.
+        private const float TwoLineTextHeight = 44f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
 
@@ -119,18 +122,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
             content.AddRow(row =>
             {
-                row.AddLabel()
-                    .BindText(model => model.LevelText)
-                    .SetHeight(20f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                AddWrappedText(row, model => model.LevelText);
             });
             content.AddRow(row =>
             {
-                row.AddLabel()
-                    .BindText(model => model.StatusText)
-                    .BindColor(model => model.StatusColor)
-                    .SetHeight(24f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                AddWrappedText(row, model => model.StatusText)
+                    .BindColor(model => model.StatusColor);
             });
             content.AddRow(row =>
             {
@@ -171,7 +168,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AddMeter(content, model => model.TimeCutText, model => model.TimeCutPercent, 255, 165, 0);
 
             // Refine Method, Analyze and Conclude. The actions a researcher learns come after the CP meter, so a researcher without them
-            // has the blank rows at the foot of the window and not between the buttons.
+            // has the blank rows at the foot of the window and not between the buttons. The window closes from its title bar, as the
+            // other craft windows do, so no Close button sits below those blank rows.
             for (var action = ResearchExperimentViewModel.EvidenceSlotCount; action < ResearchExperimentViewModel.EvidenceSlotCount + 3; action++)
             {
                 var index = action;
@@ -191,18 +189,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     AddActionRow(row, index);
                 });
             }
-
-            content.AddRow(row =>
-            {
-                row.AddSpacer();
-                row.AddButton()
-                    .SetText("Close")
-                    .SetTooltip("Close the experiment. If it is still going, it ends with the evidence so far.")
-                    .SetWidth(140f)
-                    .SetHeight(34f)
-                    .BindOnClicked(model => model.OnClickClose());
-                row.AddSpacer();
-            });
         }
 
         private static void AddEvidence(GuiColumn<ResearchExperimentViewModel> content, int slot)
@@ -243,14 +229,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClicked(model => model.OnClickAction(index))
                 .SetWidth(ActionButtonWidth)
                 .SetHeight(ActionButtonHeight);
-            row.AddLabel()
-                .BindText(Binding<string>(ResearchExperimentViewModel.ActionSummaryProperty(index)))
+            AddWrappedText(row, Binding<string>(ResearchExperimentViewModel.ActionSummaryProperty(index)))
                 .BindColor(Binding<GuiColor>(ResearchExperimentViewModel.ActionColorProperty(index)))
-                .BindIsVisible(Binding<bool>(ResearchExperimentViewModel.ActionVisibleProperty(index)))
-                .SetHeight(ActionButtonHeight)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                .BindIsVisible(Binding<bool>(ResearchExperimentViewModel.ActionVisibleProperty(index)));
         }
+
+        /// <summary>A borderless, unscrolled text that wraps a sentence onto a second line instead of running past the window's edge.</summary>
+        private static GuiText<ResearchExperimentViewModel> AddWrappedText(
+            GuiRow<ResearchExperimentViewModel> row,
+            Expression<Func<ResearchExperimentViewModel, string>> text) =>
+            row.AddText()
+                .BindText(text)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None)
+                .SetHeight(TwoLineTextHeight);
 
         private static void AddMeter(
             GuiColumn<ResearchExperimentViewModel> content,

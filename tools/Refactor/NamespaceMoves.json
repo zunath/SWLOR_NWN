@@ -21,6 +21,26 @@
   ],
   "textEdits": [
     {
+      "file": "SWLOR.Game.Server.Tests/Feature/QuestLifecycleTests.cs",
+      "find": "Path.Combine(service, \"QuestService\", \"QuestDetail.cs\")",
+      "replace": "Path.Combine(root!.FullName, \"SWLOR.Game.Server\", \"Domain\", \"Quests\", \"QuestDetail.cs\")"
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Combat/**\",",
+      "replace": "\"Domain/Combat/BossCreature.cs\","
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Character/**\",",
+      "replace": "\"Domain/Character/CreatureStatusEffect.cs\","
+    },
+    {
+      "file": "SWLOR.Game.Server.Tests/Core/ClockSeamSourceGuardTests.cs",
+      "find": "\"Domain/Abilities/**\",",
+      "replace": "\"Domain/Abilities/AbilityBuilder.cs\","
+    },
+    {
       "file": "SWLOR.Architecture.Tests/Domains/ConvertedPieces.cs",
       "find": "ConvertedService.ServerNamespace + \".Service\" + parent",
       "replace": "ConvertedService.ServerNamespace + \".Domain\" + parent"

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string Texture { get; set; }
         public string Description { get; set; }
         public bool CanTargetSelf { get; set; }
+        public ShipModuleRangeRule RangeRule { get; set; }
         public bool CapitalClassModule { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
@@ -40,5 +41,26 @@ namespace SWLOR.Game.Server.Service.SpaceService
             RequiredPerks = new Dictionary<PerkType, int>();
             ValidTargetTypes = new HashSet<ObjectType>();
         }
+
+        /// <summary>
+        /// Whether the module's maximum distance applies to the player's selected target.
+        /// </summary>
+        /// <param name="targetIsEnemy">Whether the selected target is an enemy of the module's user.</param>
+        /// <returns>True if the selected target must be within the module's maximum distance.</returns>
+        public bool RequiresTargetInRange(bool targetIsEnemy)
+        {
+            return RangeRule switch
+            {
+                ShipModuleRangeRule.NoTarget => false,
+                ShipModuleRangeRule.NonEnemyTarget => !targetIsEnemy,
+                _ => true,
+            };
+        }
+
+        /// <summary>
+        /// Whether a selected target the module cannot act on, such as an asteroid or a creature without a ship,
+        /// is treated as no target so the module acts on or around the user's own ship instead of being refused.
+        /// </summary>
+        public bool FallsBackToOwnShip => RangeRule != ShipModuleRangeRule.AnyTarget;
     }
 }

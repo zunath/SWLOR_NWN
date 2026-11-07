@@ -50,7 +50,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
     /// <summary>True once Peer Review has moved evidence this experiment.</summary>
     public bool PeerReviewUsed => State.PeerReviewUsed;
 
-    /// <summary>True once Breakthrough was spent: each piece of spare evidence cuts more of the job's time from now on.</summary>
+    /// <summary>True once Breakthrough was spent; it can be used once per experiment.</summary>
     public bool BreakthroughUsed => State.BreakthroughUsed;
 
     /// <summary>True while Breakthrough waits for the Test it makes succeed.</summary>
@@ -253,13 +253,9 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         {
             Evidence = evidence,
             SpentEvidence = state.SpentEvidence + spare,
-            TimeCutPercent = Math.Min(_setup.TimeCutCap, state.TimeCutPercent + spare * TimeCutPerEvidence(state))
+            TimeCutPercent = Math.Min(_setup.TimeCutCap, state.TimeCutPercent + spare * _setup.TimeCutTenthsPerEvidence / 10)
         });
     }
-
-    /// <summary>The share of the job's time one piece of spare evidence cuts: its usual share, multiplied once Breakthrough was spent.</summary>
-    private int TimeCutPerEvidence(ExperimentState state) =>
-        _setup.TimeCutPerEvidence * (state.BreakthroughUsed ? ExperimentRules.BreakthroughTimeCutMultiplier : 1);
 
     /// <summary>One trial gone: progress moves, any waiting Refine Method is used up whether or not it helped, and Findings follows.</summary>
     private static ExperimentState UseTrial(ExperimentState state)
@@ -344,7 +340,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
             actions.Add(new MinigameActionInfo(
                 ExperimentActionIds.Breakthrough,
                 "Breakthrough",
-                $"Your next Test succeeds automatically, and for the rest of the experiment each piece of spare evidence you Analyze cuts {ExperimentRules.BreakthroughTimeCutMultiplier} times its usual share of the job's time, within the cap. Free: no CP and no trial. Once per experiment."));
+                "Your next Test succeeds automatically. Free: no CP and no trial. Once per experiment."));
         }
 
         actions.Add(new MinigameActionInfo(

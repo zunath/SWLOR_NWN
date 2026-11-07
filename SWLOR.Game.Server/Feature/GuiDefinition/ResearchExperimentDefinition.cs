@@ -24,15 +24,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "real time as before. The experiment can shorten the job, pick and size the blueprint bonus at levels 3, 5 and 8, and " +
             "earns Fabrication XP.\n\n" +
             "TRIALS\n" +
-            $"You have {ExperimentRules.Trials} trials (Researcher perks can change that). A Test or an Analyze uses one. Refine Method and Conclude use none. The experiment " +
+            $"You have {ExperimentRules.Trials} trials (Researcher perks and Craftsmanship can change that). A Test or an Analyze uses one. Refine Method and Conclude use none. The experiment " +
             "ends when the trials run out or you Conclude.\n\n" +
+            "GEAR\n" +
+            "Your Fabrication gear counts as it does at a crafting station. " +
+            $"Control raises every Test's chance: 1 point for each {ExperimentRules.ControlPerTestChancePoint} Control up to {ExperimentRules.ControlChanceSoftCap}, " +
+            $"then 1 point for each {ExperimentRules.ControlPerTestChancePointAboveSoftCap} more. " +
+            $"Each {ExperimentRules.CraftsmanshipPerTrial} Craftsmanship adds a trial, counted when the job starts. " +
+            $"Tests are harder at the top research tiers: each tier above tier {ExperimentRules.TestChanceCurveStartTier} takes {ExperimentRules.TestChanceDropPerTier} points of chance, " +
+            "so the top tiers are built for good gear.\n\n" +
             "ACTIONS\n" +
             "The numbers below are the base values. Researcher perks change them, and the window shows yours.\n" +
             "- Test: gather evidence. Each button shows its chance of finding evidence. A Test that finds some adds 1 to its candidate.\n" +
             $"- Refine Method: costs {ExperimentRules.RefineCp} Fabrication CP at base and raises the chance of your next Test by " +
             $"{ExperimentRules.RefineChanceBonusPercent} points. That Test uses it up whether or not it finds evidence, and you cannot " +
             "stack it.\n" +
-            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentRules.TimeCutPercentPerEvidence}% for each piece at base, " +
+            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentDisplay.Tenths(ExperimentRules.TimeCutTenthsPerEvidence)}% for each piece at base, " +
             $"up to {ExperimentRules.TimeCutCapPercent}% in all. It uses one trial, so keep one back for it.\n" +
             "- Conclude: end the experiment now with the evidence so far.\n\n" +
             "LEVELS 3, 5 AND 8\n" +
@@ -56,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Methodical gives more trials but lowers every Test's chance, so a long, careful experiment; Intuitive gives fewer trials but raises " +
             "every Test's chance, so a short, sure one. " +
             $"Peer Review, where evidence decides between a credit and a time reduction, moves half of one candidate's evidence (rounded up) to the other for {ExperimentRules.PeerReviewCp} CP and no trial, once. " +
-            "Breakthrough is free and used once: your next Test succeeds, and from then on each piece of spare evidence you Analyze cuts twice as much of the job's time, within the same cap. " +
+            "Breakthrough is free and used once: your next Test succeeds. " +
             "None of them changes the extra guaranteed bonus or the largest reduction a level can grant.\n\n" +
             "XP\n" +
             "The experiment and the finished job give Fabrication XP, based on the recipe's level against your Fabrication rank. Research " +

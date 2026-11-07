@@ -56,6 +56,12 @@ namespace SWLOR.CraftSim.Scenario
         /// <summary>True when the gates also play the best gear tier fully modded, and judge "best gear" by it.</summary>
         bool TunedAgainstFullMods => false;
 
+        /// <summary>
+        /// The fully perked styles the gear ladder gate plays with no gear against unmodded best gear. By default the last style pair, which
+        /// holds the scenario's fullest builds; a scenario with a per-craft switch names both settings.
+        /// </summary>
+        IReadOnlyList<CraftStyle> GearLadderPerkStyles => StylePairs.LastOrDefault() is { } pair ? new[] { pair.First, pair.Second } : Array.Empty<CraftStyle>();
+
         /// <summary>The kind of recipe the gear ladder gate judges on its own, such as Shape-heavy against Finish-heavy.</summary>
         string GearLadderKind(RecipeEntry recipe) => "all";
 

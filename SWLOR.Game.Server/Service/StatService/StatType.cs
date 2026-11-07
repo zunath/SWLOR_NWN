@@ -6670,9 +6670,9 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ExperimentRefineChancePercent = 1201,
 
-        /// <summary>Percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
+        /// <summary>Tenths of a percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ExperimentTimeCutPerEvidencePercent = 1202,
+        ExperimentTimeCutPerEvidenceTenths = 1202,
 
         /// <summary>Non-zero when the research Experiment offers Peer Review.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]

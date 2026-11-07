@@ -172,9 +172,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(job.Recipe);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
             var gearCp = dbPlayer != null && dbPlayer.CPBonus != null && dbPlayer.CPBonus.TryGetValue(SkillType.Fabrication, out var cp) ? cp : 0;
+            // The saved trials hold the perks' and the ones Craftsmanship added when the job started. The setup adds Craftsmanship's
+            // again, so the tuning keeps the rest: the total stays the saved one, and the window lists only the perks' share as perks.
+            var craftsmanship = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
             var tuning = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)) with
             {
-                Trials = Math.Max(ExperimentRules.MinimumTrials, job.Experiment.TrialsTotal)
+                Trials = Math.Max(
+                    ExperimentRules.MinimumTrials,
+                    job.Experiment.TrialsTotal - ExperimentSetup.TrialsFromCraftsmanship(craftsmanship))
             };
             var setup = ExperimentSetup.ForRecipe(
                 recipe,
@@ -183,7 +188,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 gearCp,
                 job.Experiment.ExtraBonus,
                 tuning,
-                job.Experiment.LicensedRunsGrant);
+                job.Experiment.LicensedRunsGrant,
+                Stat.CalculateControl(Player, SkillType.Fabrication),
+                craftsmanship);
 
             _engine = new ExperimentEngine(ServiceMinigameRandom.Instance, setup);
             MapActions();

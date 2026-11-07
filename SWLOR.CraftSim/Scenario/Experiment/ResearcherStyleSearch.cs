@@ -165,10 +165,10 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             return text.ToString();
         }
 
-        /// <summary>The numbers in force when the search was written: Methodical +2 trials and -15 points, Intuitive -1 trial and +20 points.</summary>
-        public static readonly StyleNumbers ImplementedMethodical = new(2, -15);
+        /// <summary>The numbers in force: Methodical +1 trial and -15 points, Intuitive -1 trial and +4 points.</summary>
+        public static readonly StyleNumbers ImplementedMethodical = new(1, -15);
 
-        public static readonly StyleNumbers ImplementedIntuitive = new(-1, 20);
+        public static readonly StyleNumbers ImplementedIntuitive = new(-1, 4);
 
         private static void AppendDetail(StringBuilder text, ResearcherPerkStudyOptions options, string heading, StyleNumbers methodical, StyleNumbers intuitive)
         {

@@ -618,8 +618,8 @@ public class CombatFacadeAllocationTests
     public void TheAbilityBonusAndDamageModifierMembersThatAllocateKeepTheirBytesThroughTheCombatForwarders()
     {
         // Bytes per call in this setup, each the same as the base assembly's in the same sequence: the temporary modifier
-        // reads build their closures and LINQ iterators, the perk groups their strings, the NPC level read its NPCStats and
-        // the low FP read the stat service's FP lookups, as before the move. No closure of a moved method captures the part.
+        // reads build their closures and LINQ iterators, the NPC level read its NPCStats and the low FP read the stat
+        // service's FP lookups, as before the move. No closure of a moved method captures the part.
         var scopes = new List<IDisposable>();
         try
         {
@@ -650,9 +650,6 @@ public class CombatFacadeAllocationTests
                 ("ConsumeNextAttackGuardedHitCriticalRateBonus", 56, () => sink += bonus.ConsumeNextAttackGuardedHitCriticalRateBonus(Attacker), () => sink += CombatFacade.ConsumeNextAttackGuardedHitCriticalRateBonus(Attacker)),
                 ("ConsumeStatusAppliedNextAttackDamageBonus", 56, () => sink += bonus.ConsumeStatusAppliedNextAttackDamageBonus(Attacker), () => sink += CombatFacade.ConsumeStatusAppliedNextAttackDamageBonus(Attacker)),
                 ("GetStatusAppliedNextAttackDamageBonus", 56, () => sink += bonus.GetStatusAppliedNextAttackDamageBonus(Attacker), () => sink += CombatFacade.GetStatusAppliedNextAttackDamageBonus(Attacker)),
-                ("ConsumeNextAbilityDamageBonus", 80, () => sink += bonus.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot)),
-                ("GetNextAbilityStaminaCostAdjustment", 80, () => sink += bonus.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
-                ("ConsumeNextAbilityStaminaCostAdjustment", 80, () => sink += bonus.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityDamageFlatAdjustment", 64, () => sink += bonus.GetAbilityDamageFlatAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle), () => sink += CombatFacade.GetAbilityDamageFlatAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle)),
                 ("GetAbilityStaminaCostFlatAdjustment(perk)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityStaminaCostFlatAdjustment(ability)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile)),
@@ -685,9 +682,10 @@ public class CombatFacadeAllocationTests
     public void WhereAnAbilityBonusOrDamageModifierMemberAllocatesMoreItsForwarderAddsNothing()
     {
         // These read the skill's attribute by reflection (IsWeaponSkillType), a status table the status service builds for
-        // an unknown creature, write temporary modifiers or format the damage range's log lines, as before the move, so what
-        // they allocate per call moves between rounds and runs on the base assembly too (by up to about 70 bytes). A forwarder is one call with the same parameter
-        // types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or more).
+        // an unknown creature, write temporary modifiers, or format the damage range's log lines or a perk's group name, as
+        // before the move, so what they allocate per call moves between rounds and runs on the base assembly too (by up to
+        // about 70 bytes). A forwarder is one call with the same parameter types (CombatPartForwardingTests), so it could only
+        // add a closure and its delegate (88 bytes or more).
         // StoreQueuedWeaponAbilityCriticalRateBonus with a bonus is left out: its temporary modifier writes vary by up to 70
         // bytes between part and forwarder rounds (2399 to 2466 on the base and here alike).
         // Named to run last in the fixture: its million damage rolls let the JIT finish optimizing the status reads, which
@@ -716,6 +714,9 @@ public class CombatFacadeAllocationTests
                 ("PrepareQueuedWeaponAbilityOpeningAttackAtActivation", () => bonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle), () => CombatFacade.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle)),
                 ("StoreQueuedWeaponAbilityActivationCriticalRateBonus", () => bonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5), () => CombatFacade.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5)),
                 ("StoreWeaponAbilityActivationIdleBonuses", () => bonus.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3), () => CombatFacade.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3)),
+                ("ConsumeNextAbilityDamageBonus", () => sink += bonus.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot)),
+                ("GetNextAbilityStaminaCostAdjustment", () => sink += bonus.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
+                ("ConsumeNextAbilityStaminaCostAdjustment", () => sink += bonus.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GrantNextAbilityDamageBonus", () => bonus.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6), () => CombatFacade.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6)),
                 ("GrantNextSkillAbilityBonuses", () => bonus.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6), () => CombatFacade.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6)),
             };

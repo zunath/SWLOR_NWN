@@ -617,11 +617,7 @@ public class LeadershipCombatUpgradeTests
 
     private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect tracker)
     {
-        var method = typeof(StatusEffect).GetMethod(
-            "ReconcileLeadershipDamageReduction",
-            BindingFlags.Static | BindingFlags.NonPublic);
-        method.Should().NotBeNull();
-        method!.Invoke(null, new object[] { tracker });
+        StatusEffectInternals.Invoke<object?>("ReconcileLeadershipDamageReduction", tracker);
     }
 
     private static int ApplyDamageTakenPercentageModifiers(

@@ -273,10 +273,10 @@ public class ForceSensitiveEspionageTests
         // Covers buffs a hidden caster's FP spend triggers (Danger Sense, Force Convergence) and
         // any status applied by or to a creature in stealth.
         StatusEffect.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(nearby);
-        var source = ReadSource("Service", "StatusEffect.cs");
-        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))",
+        var source = ReadSource("Domain", "Character", "StatusEffectService.cs");
+        source.Should().Contain("if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), sourceIsOther && _stealth.IsConcealed(source)))",
             "application messages");
-        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))", "worn-off messages");
+        source.Should().Contain("if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), false))", "worn-off messages");
     }
 
     [TestCase(false, false, true)]

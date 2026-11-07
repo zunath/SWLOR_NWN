@@ -143,7 +143,7 @@ public sealed partial class Simulation
         if (conditional.RequiredStatus != null && !HasWeaponStatus(target, conditional.RequiredStatus)) return;
         if (conditional.RequiredCategory != StatusEffectCategory.None && !WeaponCombatState.HasCategory(target, conditional.RequiredCategory, _now)) return;
         var status = (IStatusEffect)Activator.CreateInstance(conditional.Status);
-        var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+        var outgoing = StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
         var pvp = IsPlayerVersusPlayer(caster, target);
         if (!conditional.ConvertsRequiredStatus)
         {
@@ -216,7 +216,7 @@ public sealed partial class Simulation
         {
             var status = ability.WeaponStatusFactory?.Invoke() is { } configured && configured.GetType() == type
                 ? configured : (IStatusEffect)Activator.CreateInstance(type);
-            var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+            var outgoing = StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
             var pvp = IsPlayerVersusPlayer(caster, target);
             if (status is HamstringStatusEffect)
             {

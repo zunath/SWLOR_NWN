@@ -223,12 +223,13 @@ public class PerkRefundStatusEffectCleanupTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Character",
+            "StatusEffectService.cs")).Replace("\r\n", "\n");
         var cleanupBody = source.Substring(
-            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
-            source.IndexOf("private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
-            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
+            source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
+            source.IndexOf("private void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
+            source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
 
         cleanupBody.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
         cleanupBody.Should().Contain("statusEffectType.IsAssignableFrom(effect.GetType())");

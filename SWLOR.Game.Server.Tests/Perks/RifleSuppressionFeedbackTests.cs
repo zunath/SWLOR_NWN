@@ -100,7 +100,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
-        var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsBySource(");
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);");
         statusEffectService.Should().Contain("effect is IRemoveWhenSourceExits");

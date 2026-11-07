@@ -1220,7 +1220,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatService", "StatType.cs"));
         var holdTheLineSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "HoldTheLine1StatusEffect.cs"));
         var statusEffectDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
@@ -1233,7 +1233,7 @@ public class CombatDamageTests
         resistanceSource.Should().Contain("effect.DurationTicks > 0");
         resistanceSource.Should().Contain("effect.StatGroup.Resists.TryGetValue(type");
         resistanceSource.Should().Contain("effect.StatGroup.Stats.TryGetValue(statType");
-        statusEffectSource.Should().Contain("Resistance.HasImmunity(creature, resistanceType)");
+        statusEffectSource.Should().Contain("_resistance.HasImmunity(creature, resistanceType)");
         statTypeSource.Should().NotContain("StatusImmunity");
         holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance");
         holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance");

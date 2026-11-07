@@ -1168,9 +1168,7 @@ public class CombatAttackDelayTests
 
     private static Dictionary<uint, CreatureStatusEffect> GetCreatureEffects()
     {
-        return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        return StatusEffectInternals.CreatureEffects;
     }
 
     private static readonly IReadOnlyDictionary<int, ItemPropertyAttackDelay> WeaponDelayByBaseItem = BuildWeaponDelayByBaseItem();

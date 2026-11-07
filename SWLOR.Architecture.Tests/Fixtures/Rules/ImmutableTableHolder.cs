@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Architecture.Tests.Fixtures.Rules;
 
@@ -25,4 +26,6 @@ public static class ImmutableTableHolder
     public static readonly ImmutableArray<(int Rank, int Value)> Steps = ImmutableArray.Create((0, 6), (10, 8));
     public static readonly TimeSpan Interval = TimeSpan.FromHours(1);
     public static readonly Guid Id = Guid.Empty;
+    public static readonly FrozenDictionary<EffectIconType, AbilityType> EngineEnums =
+        new Dictionary<EffectIconType, AbilityType> { [EffectIconType.Stunned] = AbilityType.Might }.ToFrozenDictionary();
 }

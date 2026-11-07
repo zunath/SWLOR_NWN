@@ -192,7 +192,7 @@ public class StoreInventoryTests
         GetWrappedString(store, "ResRef").Should().Be("night_accessory");
         var stock = ReadStoreItemData(store).ToArray();
         var resrefs = stock.Select(item => GetWrappedString(item, "TemplateResRef")).ToArray();
-        resrefs.Should().HaveCount(74).And.OnlyHaveUniqueItems()
+        resrefs.Should().HaveCount(83).And.OnlyHaveUniqueItems()
             .And.BeEquivalentTo(ReadStoreBlueprintItems(root, "night_accessory"));
         resrefs.Should().Contain(new[] { "night_cigar", "night_cigarette" });
         foreach (var item in stock)

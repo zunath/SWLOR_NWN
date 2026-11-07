@@ -171,46 +171,34 @@ public class DMObjectSearchServiceTests
     }
 
     [Test]
-    public void GetAreaJumpLocation_PrefersAWaypoint()
+    public void GetAreaJumpLocations_ListsEveryWaypointFirst()
     {
-        var waypointLocation = EngineStructures.Create<Location>(11);
-        _world.Engine.SetReturnHandler("GetFirstObjectInArea", arguments =>
-            (ObjectType)arguments[1]! == ObjectType.Waypoint ? Guard : Invalid);
-        _world.Engine.SetReturn("GetLocation", waypointLocation);
-
-        var location = _service.GetAreaJumpLocation(Cantina);
-
-        location.Should().BeSameAs(waypointLocation);
-        _world.Engine.CallsTo("GetLocation").Should().ContainSingle().Which.Arguments[0].Should().Be(Guard);
-    }
-
-    [Test]
-    public void GetAreaJumpLocation_FallsBackToAnyPlacedObject()
-    {
-        var anchorLocation = EngineStructures.Create<Location>(12);
-        _world.Engine.SetReturnHandler("GetFirstObjectInArea", arguments =>
-            (ObjectType)arguments[1]! == (ObjectType.Door | ObjectType.Placeable | ObjectType.Creature) ? Thug : Invalid);
-        _world.Engine.SetReturn("GetLocation", anchorLocation);
-
-        var location = _service.GetAreaJumpLocation(Cantina);
-
-        location.Should().BeSameAs(anchorLocation);
-        _world.Engine.CallsTo("GetLocation").Should().ContainSingle().Which.Arguments[0].Should().Be(Thug);
-    }
-
-    [Test]
-    public void GetAreaJumpLocation_FallsBackToTheCenterOfTheArea()
-    {
-        var center = EngineStructures.Create<Location>(13);
+        Place(Cantina, ObjectType.Waypoint, Guard, Thug);
         _world.Engine.SetReturnHandler("GetAreaSize", arguments => (Dimension)arguments[0]! == Dimension.Width ? 4 : 3);
-        _world.Engine.SetReturn("Location", center);
+        var guardLocation = EngineStructures.Create<Location>(11);
+        var thugLocation = EngineStructures.Create<Location>(12);
+        _world.Engine.SetReturnHandler("GetLocation", arguments => (uint)arguments[0]! == Guard ? guardLocation : thugLocation);
 
-        var location = _service.GetAreaJumpLocation(Cantina);
+        var locations = _service.GetAreaJumpLocations(Cantina).ToList();
 
-        location.Should().BeSameAs(center);
-        var call = _world.Engine.CallsTo("Location").Should().ContainSingle().Subject;
-        call.Arguments[0].Should().Be(Cantina);
-        call.Arguments[1].Should().Be(new Vector3(20f, 15f, 0f), "the area is 4 by 3 tiles of 10 meters");
-        call.Arguments[2].Should().Be(0f);
+        locations.Take(2).Should().Equal(guardLocation, thugLocation);
+        locations.Should().HaveCount(2 + 5, "the waypoints, then the center and four floor points of a 4 by 3 tile area");
+    }
+
+    [Test]
+    public void GetAreaJumpLocations_LeavesOutPlacedObjectsAndStartsAtTheCenterWithoutWaypoints()
+    {
+        Place(Cantina, ObjectType.Creature, Guard);
+        Place(Cantina, ObjectType.Placeable, Thug);
+        _world.Engine.SetReturnHandler("GetAreaSize", arguments => (Dimension)arguments[0]! == Dimension.Width ? 4 : 3);
+
+        var locations = _service.GetAreaJumpLocations(Cantina).ToList();
+
+        locations.Should().HaveCount(5);
+        _world.Engine.CallsTo("GetLocation").Should().BeEmpty();
+        var first = _world.Engine.CallsTo("Location").First();
+        first.Arguments[0].Should().Be(Cantina);
+        first.Arguments[1].Should().Be(new Vector3(20f, 15f, 0f), "the area is 4 by 3 tiles of 10 meters");
+        first.Arguments[2].Should().Be(0f);
     }
 }

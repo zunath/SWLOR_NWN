@@ -18,6 +18,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Floats text over a creature for every player within range. A creature in stealth or invisible only shows it to itself.
+        /// </summary>
+        public static void FloatTextNearbyToPlayers(uint creature, string text, float range = 30f)
+        {
+            Instance.FloatTextNearbyToPlayers(creature, text, range);
+        }
+
+        /// <summary>
         /// Sends a message to all nearby players within a certain distance.
         /// </summary>
         /// <param name="sender">The sender of the message.</param>

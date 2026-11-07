@@ -1827,6 +1827,34 @@
     "Call": "SendMessageToPC(user, $\"{targetName} stats: \\n\" +\n                                $\"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \\n\" +\n                                $\"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \\n\" +\n                                $\"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \\n\" +\n                                $\"Shield Regen: {targetStatus.ShieldRechargeRate} \\n\" +\n                                $\"EM Damage Bonus: {targetStatus.EMDamage} \\n\" +\n                                $\"Thermal Damage Bonus: {targetStatus.ThermalDamage} \\n\" +\n                                $\"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \\n\" +\n                                $\"Accuracy: {targetStatus.Accuracy} \\n\" +\n                                $\"Evasion: {targetStatus.Evasion} \\n\" +\n                                $\"Thermal Defense: {targetStatus.ThermalDefense} \\n\" +\n                                $\"EM Defense: {targetStatus.EMDefense} \\n\" +\n                                $\"Explosive Defense: {targetStatus.ExplosiveDefense} \\n\" +\n                                $\"Skill Level: {level}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
+    "Line": 62,
+    "Member": "FinishStage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"You have no incubation stage running.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
+    "Line": 75,
+    "Member": "FinishStage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"Finished: {stages}. Use the incubator to start the next stage or complete the job.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
+    "Line": 100,
+    "Member": "SetDay",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"Incubation uses the server day again ({DateTime.UtcNow.DayOfWeek} UTC).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
+    "Line": 106,
+    "Member": "SetDay",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"Your incubation mutations now check {day}. This resets when the server restarts.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/RenameChatCommand.cs",
     "Line": 29,
     "Member": "BuildChatCommands",
@@ -5080,6 +5108,13 @@
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Combat.cs",
+    "Line": 12259,
+    "Member": "ShowReadyCue",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",

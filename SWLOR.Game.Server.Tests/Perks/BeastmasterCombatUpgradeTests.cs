@@ -276,7 +276,7 @@ public class BeastmasterCombatUpgradeTests
         pounce.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
         pounce.Should().Contain("JumpToLocation(destination)");
         pounce.Should().Contain("SetFacingPoint(GetPosition(target))");
-        pounce.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
+        pounce.Should().Contain("UsePerkFeat.InterruptAbilityActivationFromHit(target)");
         pounce.Should().Contain("PounceOpeningDistanceMeters");
         pounce.Should().Contain("private const float MaxRangeMeters = 15.0f;");
         pounce.Should().Contain("private const int Pounce1Damage = 14;");

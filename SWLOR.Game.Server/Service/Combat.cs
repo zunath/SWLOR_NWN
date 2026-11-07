@@ -2723,7 +2723,12 @@ namespace SWLOR.Game.Server.Service
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 defender,
                 StatType.DamageTakenNextSkillAbilityRequiredCategory));
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                defender,
+                StatType.NextSkillAbilityDamageBonus,
+                StatType.NextSkillAbilitySkillType) == damageBonus;
             GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window, requiredCategory: requiredCategory);
+            ShowReadyCue(defender, wasArmed, damageBonus, ReadyCue.Damage("Breaker Reversal", damageBonus));
         }
 
         public static void ApplyLowHPDamageTakenEffects(uint defender, int damage)
@@ -3786,7 +3791,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var source in Stat.GetStatSources(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment))
             {
-                GrantNextSkillAbilityStaminaCostAdjustment(
+                GrantCuedNextSkillAbilityStaminaCostAdjustment(
                     creature,
                     GetSkillTypeFromStat(source[StatType.AvoidedAttackNextSkillAbilitySkillType]),
                     source[StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment],
@@ -4367,6 +4372,12 @@ namespace SWLOR.Game.Server.Service
             var damageBonus = Stat.GetStatAdjustment(creature, StatType.GuardedHitNextSkillAbilityExposedDamageBonus);
             if (skillType == SkillType.Invalid || duration <= 0 && damageBonus <= 0)
                 return;
+
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextSkillAbilityExposedDamageBonus,
+                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds) != 0;
+            ShowReadyCue(creature, wasArmed, damageBonus, ReadyCue.Damage("Guard Reversal", damageBonus));
 
             var window = Math.Max(1, duration);
             TemporaryStatModifier.Replace(
@@ -7727,6 +7738,15 @@ namespace SWLOR.Game.Server.Service
             var nextAttackWindow = Stat.GetStatAdjustment(
                 activator,
                 StatType.StatusAppliedNextAttackWindowSeconds);
+            if (nextAttackWindow > 0)
+            {
+                var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                    activator,
+                    StatType.NextAttackStatusAppliedDMGBonus,
+                    StatType.NextAttackStatusAppliedDMGBonus) != 0;
+                ShowReadyCue(activator, wasArmed, nextAttackDamage, ReadyCue.Damage("Charged Blows", nextAttackDamage));
+            }
+
             GrantStatusAppliedNextAttackDamageBonus(activator, nextAttackDamage, nextAttackWindow);
 
             ApplyStatusAppliedSelfEffects(activator);
@@ -12207,6 +12227,38 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAttackStatusAppliedDMGBonus);
         }
 
+        private static void GrantCuedNextSkillAbilityStaminaCostAdjustment(
+            uint creature,
+            SkillType skillType,
+            int adjustment,
+            int durationSeconds,
+            string group = null,
+            bool rangedOnly = false,
+            bool hostileOnly = false)
+        {
+            if (durationSeconds <= 0)
+                return;
+
+            group ??= GetDefaultNextSkillAbilityStaminaCostGroup(skillType);
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextSkillAbilityStaminaCostAdjustment,
+                group) != 0;
+            GrantNextSkillAbilityStaminaCostAdjustment(creature, skillType, adjustment, durationSeconds, group, rangedOnly, hostileOnly);
+            ShowReadyCue(creature, wasArmed, adjustment, ReadyCue.StaminaDiscount(adjustment));
+        }
+
+        private static string GetDefaultNextSkillAbilityStaminaCostGroup(SkillType skillType)
+        {
+            return $"{StatType.NextSkillAbilityStaminaCostAdjustmentSkillType}:{(int)skillType}";
+        }
+
+        private static void ShowReadyCue(uint creature, bool wasArmed, int bonus, string text)
+        {
+            if (ReadyCue.ShouldShow(GetIsPC(creature), wasArmed, bonus))
+                FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false);
+        }
+
         public static void GrantNextSkillAbilityStaminaCostAdjustment(
             uint creature,
             SkillType skillType,
@@ -12221,7 +12273,7 @@ namespace SWLOR.Game.Server.Service
                 durationSeconds <= 0)
                 return;
 
-            group ??= $"{StatType.NextSkillAbilityStaminaCostAdjustmentSkillType}:{(int)skillType}";
+            group ??= GetDefaultNextSkillAbilityStaminaCostGroup(skillType);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.NextSkillAbilityStaminaCostAdjustmentSkillType,
@@ -12255,7 +12307,7 @@ namespace SWLOR.Game.Server.Service
                 source,
                 StatType.BleedingStatusExpiredNextSkillAbilityWindowSeconds);
 
-            GrantNextSkillAbilityStaminaCostAdjustment(source, skillType, adjustment, windowSeconds);
+            GrantCuedNextSkillAbilityStaminaCostAdjustment(source, skillType, adjustment, windowSeconds);
         }
 
         private static void GrantNextSkillAutoAttackDamageBonus(

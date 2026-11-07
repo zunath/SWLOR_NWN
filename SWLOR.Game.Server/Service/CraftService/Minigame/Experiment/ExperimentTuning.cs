@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 /// <param name="TestChanceBonusPercent">Points added to every Test's chance before the cap (negative lowers it).</param>
 /// <param name="RefineChanceBonus">What Refine Method adds to the next Test's chance, in points.</param>
 /// <param name="RefineCp">The CP Refine Method costs.</param>
-/// <param name="TimeCutPerEvidence">The percent of the job's time each piece of spare evidence cuts.</param>
+/// <param name="TimeCutTenthsPerEvidence">The share of the job's time each piece of spare evidence cuts, in tenths of a percent.</param>
 /// <param name="TimeCutCap">The most the experiment can cut from the job's time, in percent.</param>
 /// <param name="PeerReview">True when the experiment offers Peer Review.</param>
 /// <param name="Breakthrough">True when the experiment offers Breakthrough.</param>
@@ -19,7 +19,7 @@ public sealed record ExperimentTuning(
     int TestChanceBonusPercent = 0,
     int RefineChanceBonus = ExperimentRules.RefineChanceBonusPercent,
     int RefineCp = ExperimentRules.RefineCp,
-    int TimeCutPerEvidence = ExperimentRules.TimeCutPercentPerEvidence,
+    int TimeCutTenthsPerEvidence = ExperimentRules.TimeCutTenthsPerEvidence,
     int TimeCutCap = ExperimentRules.TimeCutCapPercent,
     bool PeerReview = false,
     bool Breakthrough = false)
@@ -41,7 +41,7 @@ public sealed record ExperimentTuning(
             total(StatType.ExperimentTestChancePercent),
             ExperimentRules.RefineChanceBonusPercent + total(StatType.ExperimentRefineChancePercent),
             Math.Max(ExperimentRules.MinimumRefineCp, ExperimentRules.RefineCp - total(StatType.ExperimentRefineCpReduction)),
-            ExperimentRules.TimeCutPercentPerEvidence + total(StatType.ExperimentTimeCutPerEvidencePercent),
+            ExperimentRules.TimeCutTenthsPerEvidence + total(StatType.ExperimentTimeCutPerEvidenceTenths),
             ExperimentRules.TimeCutCapPercent,
             total(StatType.ExperimentPeerReviewUnlocked) > 0,
             total(StatType.ExperimentBreakthroughUnlocked) > 0);

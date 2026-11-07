@@ -39,6 +39,7 @@ public class CraftWindowLayoutTests
         yield return Case<LineDefinition>(LineViewModel.FightPartial);
         yield return Case<ProspectingDefinition>(ProspectingViewModel.NodePartial);
         yield return Case<SearchDefinition>(SearchViewModel.BoardPartial);
+        yield return Case<ResearchExperimentDefinition>(ResearchExperimentViewModel.MainPartial);
     }
 
     [TestCaseSource(nameof(Windows))]

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -35,11 +36,7 @@ public class ShipCombatLogTests
     public void CombatLogBuilder_RequiresExplicitObserver()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var source = CombatSource.Read();
 
         source.Should().NotContain("return BuildCombatLogMessage(attacker, attacker, defender");
         source.Should().Contain("public static string BuildCombatLogMessage(");

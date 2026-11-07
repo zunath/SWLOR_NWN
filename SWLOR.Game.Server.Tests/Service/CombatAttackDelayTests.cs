@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -469,9 +470,7 @@ public class CombatAttackDelayTests
             baselineDelay,
             remainingCharges);
 
-        var debts = (Dictionary<uint, float>)typeof(Combat)
-            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
         try
         {
             attacks.Should().Be(2);
@@ -492,9 +491,7 @@ public class CombatAttackDelayTests
         const int baselineDelay = 1750;
         Combat.ClearAttackSwingDebt(attacker);
 
-        var debts = (Dictionary<uint, float>)typeof(Combat)
-            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
         try
         {
@@ -588,9 +585,7 @@ public class CombatAttackDelayTests
             baselineDelay,
             remainingCharges);
 
-        var debts = (Dictionary<uint, float>)typeof(Combat)
-            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
         Combat.CalculateAttacksPerSwing(acceleratedDelay, 0f, out var expectedAcceleratedDebt);
 
         try
@@ -613,9 +608,7 @@ public class CombatAttackDelayTests
         const int baselineDelay = 1750;
         Combat.ClearAttackSwingDebt(attacker);
 
-        var debts = (Dictionary<uint, float>)typeof(Combat)
-            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
         try
         {
@@ -655,9 +648,7 @@ public class CombatAttackDelayTests
         const int baselineDelay = 1400;
         Combat.ClearAttackSwingDebt(attacker);
 
-        var debts = (Dictionary<uint, float>)typeof(Combat)
-            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
         try
         {
@@ -853,9 +844,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ConsumeNextAbilityDelayReduction_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
     {
-        var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var source = CombatSource.Read();
         var method = source[source.IndexOf(
             "public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)",
             System.StringComparison.Ordinal)..];
@@ -877,11 +866,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ConsumeNextAutoAttackNoDelay_ChecksSuppressionBeforeReadingArmedState()
     {
-        var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var source = CombatSource.Read();
         var methodStart = source.IndexOf(
             "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
             System.StringComparison.Ordinal);
@@ -907,11 +892,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ConsumeNextAutoAttackNoDelay_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
     {
-        var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var source = CombatSource.Read();
         var methodStart = source.IndexOf(
             "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
             System.StringComparison.Ordinal);
@@ -1027,9 +1008,7 @@ public class CombatAttackDelayTests
         reloadTempo.Should().Contain(
             ".IncreasesStat(StatType.CriticalHitLimitedHasteStatusEffectIcon, (int)EffectIconType.ReloadTempoStatusEffect)");
 
-        var combat = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combat = CombatSource.Read();
         var grant = combat[combat.IndexOf(
             "private static void ApplyCriticalHitLimitedHaste(",
             StringComparison.Ordinal)..combat.IndexOf(
@@ -1042,9 +1021,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ReloadTempo_TriggersBeforeThePositiveCriticalDamageGuard()
     {
-        var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var source = CombatSource.Read();
         var method = source[source.IndexOf(
             "public static void ApplyCriticalHitEffects(",
             StringComparison.Ordinal)..];

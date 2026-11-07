@@ -16,6 +16,7 @@ internal static class ConvertedServiceRules
     public static IReadOnlyList<string> ListProblems(ConvertedServiceList list, DomainMap map)
     {
         var problems = new List<string>(list.Problems);
+        problems.AddRange(InProgressProblems(list, map));
         foreach (var service in list.Services)
         {
             var mapped = map.DomainOf(service.Unit);
@@ -35,6 +36,70 @@ internal static class ConvertedServiceRules
         }
 
         return problems;
+    }
+
+    /// <summary>
+    /// The <c>inProgress</c> list may hold only <see cref="ConvertedServiceList.OnlyInProgressService"/>, in the domain
+    /// the domain map puts it in. It is temporary: P2-CB10 removes the list when <c>Combat</c> is fully converted and
+    /// listed under <c>services</c>.
+    /// </summary>
+    public static IReadOnlyList<string> InProgressProblems(ConvertedServiceList list, DomainMap map)
+    {
+        var problems = new List<string>();
+        foreach (var service in list.InProgress)
+        {
+            if (service.Name != ConvertedServiceList.OnlyInProgressService)
+            {
+                problems.Add($"{service.Name} is listed in inProgress, but only {ConvertedServiceList.OnlyInProgressService} may be: " +
+                             "convert a service in one pull request and list it under services.");
+                continue;
+            }
+
+            var mapped = map.DomainOf(service.Unit);
+            if (mapped is null)
+                problems.Add($"{service.Name} (inProgress) is not a service in DomainMap.json.");
+            else if (mapped != service.Domain)
+                problems.Add($"{service.Name} is listed in inProgress in the {service.Domain} domain but DomainMap.json puts it in {mapped}.");
+        }
+
+        return problems;
+    }
+
+    /// <summary>
+    /// The static facades that may resolve their instance from the container: those of the converted services and
+    /// the facade of the service in progress.
+    /// </summary>
+    public static IReadOnlySet<TypeKey> FacadesMayLocate(ConvertedServiceList list)
+    {
+        return list.Services.SelectMany(service => service.Facades)
+            .Concat(list.InProgress.Select(service => service.Facade))
+            .ToHashSet();
+    }
+
+    /// <summary>
+    /// True for a part of a service in progress: a class or interface in its domain namespace named
+    /// <c>&lt;Service&gt;*Service</c> or <c>I&lt;Service&gt;*Service</c> (<c>CombatQueriesService</c>), that is not the
+    /// interface or instance class of a service already listed (<c>CombatPointService</c>). The rules for converted
+    /// services apply to such a part: it keeps no static state.
+    /// </summary>
+    public static bool IsInProgressPart(TypeKey type, ConvertedServiceList list)
+    {
+        foreach (var service in list.InProgress)
+        {
+            if (type.Namespace != service.DomainNamespace)
+                continue;
+
+            var name = type.Name.Length > 1 && type.Name[0] == 'I' && char.IsUpper(type.Name[1]) ? type.Name[1..] : type.Name;
+            if (!name.StartsWith(service.Name, StringComparison.Ordinal) || !name.EndsWith("Service", StringComparison.Ordinal))
+                continue;
+
+            var listed = list.Services.SelectMany(known => known.Pieces)
+                .Any(pieces => pieces.Interface == type || pieces.Instance == type);
+            if (!listed)
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ public class TriggeredResourceRestoreGateTests
     [TestCaseSource(nameof(DefensiveRestoreGates))]
     public void DefensiveResourceRestores_AreRateLimited((string Method, string Gate) usage)
     {
-        var combat = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         ExtractMethod(combat, usage.Method).Should().Contain(usage.Gate,
             $"{usage.Method} fires once per incoming hit and must not scale freely with attacker count");
     }
@@ -90,7 +91,7 @@ public class TriggeredResourceRestoreGateTests
     [Test]
     public void GuardStaminaRestore_IsGatedAtTheSameRateAsItsDefensiveSiblings()
     {
-        var combat = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var recovery = ExtractMethod(combat, "private static void ApplyGuardedHitRecovery(");
         recovery.Should().Contain("StatType.GuardStaminaRestoreCooldownSeconds");
         recovery.Should().Contain("TryUseStatTrigger(defender, StatType.GuardStaminaRestore, cooldown)");

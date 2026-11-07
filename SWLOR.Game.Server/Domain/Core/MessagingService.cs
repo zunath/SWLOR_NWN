@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.MessagingService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Domain.Core
@@ -18,6 +19,27 @@ namespace SWLOR.Game.Server.Domain.Core
         public bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed)
         {
             return !senderConcealed && !actorConcealed;
+        }
+
+        /// <summary>
+        /// Floats text over a creature for every player within range. A creature in stealth or invisible only shows it to itself.
+        /// </summary>
+        public void FloatTextNearbyToPlayers(uint creature, string text, float range = 30f)
+        {
+            if (GetIsPC(creature))
+                PlayerPlugin.FloatingTextStringOnCreature(creature, creature, text, false);
+
+            if (IsConcealed(creature))
+                return;
+
+            var nth = 1;
+            var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature, nth);
+            while (GetIsObjectValid(nearby) && GetDistanceBetween(creature, nearby) <= range)
+            {
+                PlayerPlugin.FloatingTextStringOnCreature(nearby, creature, text, false);
+                nth++;
+                nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature, nth);
+            }
         }
 
         public void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)

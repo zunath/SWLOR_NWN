@@ -288,17 +288,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("d_sensor3", 2)
                 .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 44);
 
-            // Droid Lightsaber Boost I
-            _builder.Create(RecipeType.DroidLightsaberBoost1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_lsab_b1")
-                .Level(27)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2)
-                .CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 40);
-
             // Droid Heavy Vibroblade Boost I
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
@@ -331,17 +320,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2)
                 .CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36);
-
-            // Droid Saberstaff Boost I
-            _builder.Create(RecipeType.DroidSaberstaffBoost1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_sabst_b1")
-                .Level(28)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .Component("dmotive_sys3", 3)
-                .Component("d_sensor3", 2)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35);
 
             // Droid Katar Boost I
             _builder.Create(RecipeType.DroidKatarBoost1, SkillType.Engineering)
@@ -442,17 +420,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("d_sensor5", 2)
                 .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 39);
 
-            // Droid Lightsaber Boost II
-            _builder.Create(RecipeType.DroidLightsaberBoost2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_lsab_b2")
-                .Level(47)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 42);
-
             // Droid Heavy Vibroblade Boost II
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
@@ -485,17 +452,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2)
                 .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 44);
-
-            // Droid Saberstaff Boost II
-            _builder.Create(RecipeType.DroidSaberstaffBoost2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_sabst_b2")
-                .Level(48)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .Component("dmotive_sys5", 3)
-                .Component("d_sensor5", 2)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38);
 
             // Droid Katar Boost II
             _builder.Create(RecipeType.DroidKatarBoost2, SkillType.Engineering)

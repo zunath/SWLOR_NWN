@@ -496,6 +496,10 @@ public class PlayerFeedbackServiceTests
 
         public bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed) => !senderConcealed && !actorConcealed;
 
+        public void FloatTextNearbyToPlayers(uint creature, string text, float range = 30f)
+        {
+        }
+
         public void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range, uint concealedActor) =>
             Broadcasts.Add((sender, buildMessage, range));
     }

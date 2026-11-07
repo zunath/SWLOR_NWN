@@ -136,7 +136,7 @@
       "featureFolders": []
     },
     "Gameplay": {
-      "services": ["ServerTask"],
+      "services": ["ServerRestart", "ServerTask"],
       "featureFolders": []
     }
   }

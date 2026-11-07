@@ -93,7 +93,7 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
         combatSource.Should().Contain("internal static bool IsHostileAttackSource(uint defender, uint attacker)");
         combatSource.Should().Contain("GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker)");
-        combatSource.Should().Contain("var requiredSource = Stat.GetStatTypeDeflectionSource(");
+        combatSource.Should().Contain("var requiredSource = _stat.GetStatTypeDeflectionSource(");
         combatSource.Should().Contain("StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);");
         combatSource.Should().Contain("!HasRecentDeflection(attacker, requiredSource, window)");
         combatSource.Should().NotContain("HasRecentDeflection(attacker, DeflectionSource.Ranged, window)");

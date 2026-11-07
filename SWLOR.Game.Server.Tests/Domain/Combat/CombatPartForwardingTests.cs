@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
 using CombatFacade = SWLOR.Game.Server.Service.Combat;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
@@ -23,8 +25,10 @@ public class CombatPartForwardingTests
 
     private static IEnumerable<Type> Parts() => new[]
     {
+        typeof(ICombatAbilityBonusService),
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
+        typeof(ICombatDamageModifiersService),
         typeof(ICombatFeedbackService),
         typeof(ICombatQueriesService),
         typeof(ICombatResourcesService),
@@ -99,6 +103,59 @@ public class CombatPartForwardingTests
             else
                 result.Should().BeSameAs(returned, $"Combat.{member.Name} returns what the instance returned");
         }
+    }
+
+    // The instance class keeps its interface's defaults, so a call made on the instance binds the values a call through
+    // Combat binds.
+    [TestCaseSource(nameof(Parts))]
+    public void ThePartServiceKeepsTheDefaultsOfItsInterface(Type part)
+    {
+        var service = part.Assembly.GetTypes().Single(type => type.IsClass && !type.IsAbstract && part.IsAssignableFrom(type));
+        var map = service.GetInterfaceMap(part);
+        for (var i = 0; i < map.InterfaceMethods.Length; i++)
+        {
+            var declared = map.InterfaceMethods[i].GetParameters();
+            var implemented = map.TargetMethods[i].GetParameters();
+            for (var p = 0; p < declared.Length; p++)
+            {
+                var label = $"{service.Name}.{map.TargetMethods[i].Name}({declared[p].Name})";
+                implemented[p].HasDefaultValue.Should().Be(declared[p].HasDefaultValue, label);
+                if (declared[p].HasDefaultValue)
+                    implemented[p].DefaultValue.Should().Be(declared[p].DefaultValue, label);
+            }
+        }
+    }
+
+    // The members of the ability bonus and damage modifier parts that have default arguments, with the defaults they had
+    // as static members of Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatAbilityBonusService), "GetNextSkillAbilityStaminaCostAdjustment(isHostileAbility=False)")]
+    [TestCase(typeof(ICombatAbilityBonusService), "ConsumeNextSkillAbilityStaminaCostAdjustment(isHostileAbility=False)")]
+    [TestCase(typeof(ICombatAbilityBonusService), "ConsumeNextSkillAbilityBonuses(abilityStatusCategories=None)")]
+    [TestCase(typeof(ICombatAbilityBonusService), "GetQueuedWeaponAbilityActivationHitChanceAdjustment(ability=null)")]
+    [TestCase(typeof(ICombatDamageModifiersService), "CalculateDamageWithCriticalMitigation(deltaCap=0)")]
+    [TestCase(typeof(ICombatDamageModifiersService), "ApplyCriticalDamageModifier(skillType=Invalid, defender=2130706432, criticalDamagePercentAdjustment=0)")]
+    [TestCase(typeof(ICombatDamageModifiersService), "ApplyDamageDealtModifiers(abilityDamagePercentAdjustment=0, lowHPAbilityDamagePercentAdjustment=0, isOrdinaryWeaponAttack=False)")]
+    [TestCase(typeof(ICombatDamageModifiersService), "ApplyDamageDealtModifiers(skillType=Invalid, damageType=Physical, isAbilityDamage=False, canApplyRandomFlatBonuses=True, isLandedAttack=True, ability=null)")]
+    public void TheMovedDefaultsKeepTheirValues(Type part, string expected)
+    {
+        static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
+            .Where(parameter => parameter.HasDefaultValue)
+            .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
+
+        var service = part.Assembly.GetTypes().Single(type => type.IsClass && !type.IsAbstract && part.IsAssignableFrom(type));
+        var members = part.GetMethods().Where(method => Defaults(method) == expected).ToArray();
+        members.Should().ContainSingle(expected);
+        var member = members[0];
+        Defaults(Forwarder(member)).Should().Be(expected, "Combat's forwarder");
+        var map = service.GetInterfaceMap(part);
+        Defaults(map.TargetMethods[Array.IndexOf(map.InterfaceMethods, member)]).Should().Be(expected, service.Name);
+        NWScript.OBJECT_INVALID.Should().Be(2130706432u);
+
+        var all = Parts().Where(type => type == typeof(ICombatAbilityBonusService) || type == typeof(ICombatDamageModifiersService))
+            .SelectMany(type => type.GetMethods())
+            .Where(method => method.GetParameters().Any(parameter => parameter.HasDefaultValue))
+            .Select(Defaults);
+        all.Should().HaveCount(8, "the PR lists these eight members");
     }
 
     [Test]
@@ -177,6 +234,15 @@ public class CombatPartForwardingTests
             return Activator.CreateInstance(type);
         if (type.IsAbstract || type.IsInterface)
             return null;
+        // A delegate (the status factory of GetAbilityStatusDurationPercentAdjustment) cannot be created uninitialized; a
+        // compiled lambda of its type is an instance the proxy can compare by reference.
+        if (typeof(Delegate).IsAssignableFrom(type))
+        {
+            var invoke = type.GetMethod("Invoke")!;
+            var parameters = invoke.GetParameters().Select(parameter => Expression.Parameter(parameter.ParameterType, parameter.Name)).ToArray();
+            return Expression.Lambda(type, Expression.Default(invoke.ReturnType), parameters).Compile();
+        }
+
         // A native wrapper (CNWSCreature) must never reach its finalizer in a process without the engine.
         var sample = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(type);
         GC.SuppressFinalize(sample);

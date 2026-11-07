@@ -4963,36 +4963,36 @@
     "Call": "_playerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{_playerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
-    "Line": 136,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 163,
     "Member": "GetHighHPTargetCriticalDamageAdjustment",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"High Noon +{adjustment}% critical damage\"),\n                    attacker,\n                    false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"High Noon +{adjustment}% critical damage\"),\n                    attacker,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
-    "Line": 550,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 577,
     "Member": "PrepareAutoAttackCycleCriticalRate",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
-    "Line": 1154,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 1181,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
-    "Line": 1262,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 1289,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageModifiers.cs",
-    "Line": 1294,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 1321,
     "Member": "ReadySameTargetPressure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"

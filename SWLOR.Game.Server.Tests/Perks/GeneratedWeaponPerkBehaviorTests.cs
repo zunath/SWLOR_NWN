@@ -315,7 +315,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = CombatSource.Read();
         combatSource.Should().Contain("QueuedWeaponAbilityActivationCriticalRatePercentAdjustment");
-        combatSource.Should().Contain("criticalRate += TemporaryStatModifier.Consume(");
+        combatSource.Should().Contain("criticalRate += _temporaryStatModifier.Consume(");
 
         var usePerkFeatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
@@ -403,7 +403,7 @@ public class GeneratedWeaponPerkBehaviorTests
         modifier = modifier.Substring(0, modifier.IndexOf("public static int ", 10, StringComparison.Ordinal));
         modifier.Should().Contain("skillType != SkillType.Throwing");
         modifier.Should().Contain("!isAbilityDamage ||");
-        modifier.Should().Contain("Ability.IsSingleTargetImpact(attacker, ability)");
+        modifier.Should().Contain("_ability.IsSingleTargetImpact(attacker, ability)");
 
         // Flurry Stance: the per-swing delay reads the swing's target, with and without limited Haste.
         Regex.IsMatch(attackSource,

@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -22,6 +23,21 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _installed = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _installed = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _installed.Dispose();
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -70,8 +86,7 @@ public class ForceLightConsularTests
         perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
             .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
 
-        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
-            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var cache = PerkInternals.AllPerks;
         var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
         cache[PerkType.ThrowRock] = perk;
         try

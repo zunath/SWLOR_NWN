@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDisguiseService, DisguiseService>();
             services.AddSingleton<IEspionageInfiltrationService, EspionageInfiltrationService>();
             services.AddSingleton<ILanguageService, LanguageService>();
+            services.AddSingleton<IPerkService, PerkService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();

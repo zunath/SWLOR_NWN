@@ -22,6 +22,7 @@ public class ClockSeamSourceGuardTests
         "Service/StatusEffectService/**",
         "Service/Stat.cs",
         "Service/Perk.cs",
+        "Domain/Character/PerkService.cs",
         "Service/AbilityService/**",
         "Service/Craft.cs",
         "Domain/Crafting/CraftService.cs",

@@ -257,7 +257,7 @@ public class DMPresenceServiceTests
         _service.JumpTo(DM, EngineStructures.Create<Location>(77), "the cantina");
 
         _world.Engine.CallsTo("AssignCommand").Should().BeEmpty();
-        _world.Engine.CallsTo("SendMessage").Should().ContainSingle().Which.Arguments[1].Should().Be("There is nowhere to land there.");
+        _world.Messages.Should().ContainSingle().Which.Message.Should().Be("There is nowhere to land there.");
     }
 
     [Test]

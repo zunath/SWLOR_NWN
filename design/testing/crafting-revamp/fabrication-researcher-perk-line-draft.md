@@ -17,7 +17,7 @@ The line is implemented on `claude/crafting-revamp-perks-fabrication`. This file
 
 ## Gear retune (November 2026)
 
-Research now reads Fabrication gear like the crafts: Control adds Test chance, Craftsmanship adds a trial at 120, and each research tier above tier 2 lowers the base chance by 5 points. The line was cut so a full line in no gear stays within 5 points of unperked best gear, and the table below has the new values. The owner kept the styles as trials against chance, so alone they favor Intuitive in poor gear and Methodical in good gear; with the whole line both styles balance at every gear level. Values, ladder and gaps: `gear-difficulty-curve.md` (Research) and `fabrication-researcher-gear-ladder.md`. The sections below keep the October history and evidence as it was; their numbers are the October values.
+Research now reads Fabrication gear like the crafts: Control adds Test chance, Craftsmanship adds a trial at 120, and each research tier above tier 2 lowers the base chance by 5 points. The line was cut so a full line in no gear stays within 5 points of unperked best gear, and the table below has the new values. The owner kept the styles as trials against chance, so alone Methodical leads at fixed levels and where evidence decides in good gear, and Intuitive only where evidence decides in no gear; with the whole line both styles balance at every gear level. Values, ladder and gaps: `gear-difficulty-curve.md` (Research) and `fabrication-researcher-gear-ladder.md`. The sections below keep the October history and evidence as it was; their numbers are the October values.
 
 ## Owner decisions applied (22 October 2026)
 

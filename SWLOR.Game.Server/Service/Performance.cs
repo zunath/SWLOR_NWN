@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -353,7 +354,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            RecoverInterruptedPerformance(player);
+            RecoverInterruptedPerformance(player, atLogin: true);
         }
 
         /// <summary>Talking or emoting keeps a Roleplay mode performance going. Chat commands do not count.</summary>
@@ -478,6 +479,7 @@ namespace SWLOR.Game.Server.Service
             var toggleFeat = toggleFeats[Math.Clamp(level, 1, toggleFeats.Length) - 1];
 
             dbPlayer.PerformanceSavedHotBar = CreaturePlugin.SerializeQuickbar(player) ?? string.Empty;
+            dbPlayer.PerformanceHotBarRestoreSequence = 0;
             DB.Set(dbPlayer);
 
             foreach (var feat in GetModeFeats(kind))
@@ -725,21 +727,39 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(saved) || !CreaturePlugin.DeserializeQuickbar(player, saved))
                 ClearFirstBar(player);
 
-            dbPlayer.PerformanceSavedHotBar = null;
+            // An export finishes after this script, so only a later login can acknowledge the restored bar.
+            dbPlayer.PerformanceHotBarRestoreSequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
             DB.Set(dbPlayer);
+            NwnCraftSessionWorld.Instance.PersistCharacter(player);
         }
 
         // Restores the hot bar and feats after a crash, a failed cleanup, or a stale mode button.
-        private static void RecoverInterruptedPerformance(uint player)
+        private static void RecoverInterruptedPerformance(uint player, bool atLogin = false)
         {
             if (_sessions.ContainsKey(player))
                 return;
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer?.PerformanceSavedHotBar == null)
+            if (dbPlayer == null)
                 return;
 
-            RestorePlayer(player);
+            var action = PerformanceHotbarRecovery.Decide(
+                dbPlayer.PerformanceSavedHotBar,
+                dbPlayer.PerformanceHotBarRestoreSequence,
+                NwnCraftSessionWorld.Instance.LoadedSequence(player),
+                atLogin);
+            if (action == PerformanceHotbarRecoveryAction.None)
+                return;
+
+            if (action == PerformanceHotbarRecoveryAction.Restore)
+                RestorePlayer(player);
+            else
+            {
+                dbPlayer.PerformanceSavedHotBar = null;
+                dbPlayer.PerformanceHotBarRestoreSequence = 0;
+                DB.Set(dbPlayer);
+            }
+
             if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
                 Activity.ClearBusy(player);
         }

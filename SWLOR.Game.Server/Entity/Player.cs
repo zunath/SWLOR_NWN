@@ -176,8 +176,9 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
-        // The hot bar saved while a performance mode replaces it; null when not performing.
+        // Kept until a login confirms the character file contains the restored hot bar.
         public string PerformanceSavedHotBar { get; set; }
+        public int PerformanceHotBarRestoreSequence { get; set; }
         public string ActiveShipId { get; set; }
         [Indexed]
         public string UnknownDisplayName { get; set; }

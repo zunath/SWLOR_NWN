@@ -18,6 +18,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     // Restores that fire off an incoming attack are limited by the attacker count, not by the
     // defender's own rotation, so each one is gated by a cooldown or by a proc chance. Guard was
     // the only member of this family with neither.
@@ -39,10 +55,10 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     [Test]
     public void DeflectionResourceRestores_AreRateLimited()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
-        var deflection = ExtractMethod(stat, "public static void ApplyDeflectionEffectsNative(");
-        deflection.Should().Contain("Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");
-        deflection.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
+        var stat = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(");
+        deflection.Should().Contain("TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");
+        deflection.Should().Contain("TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
         deflection.Should().Contain("recastReductionCooldown");
         deflection.Should().Contain("StatType.DeflectionRecastReductionCooldownSeconds");
         deflection.Should().MatchRegex(
@@ -53,21 +69,21 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     [Test]
     public void TheDeflectionGate_IsOnlySpentWhenThereIsACooldownToShorten()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
-        var deflection = ExtractMethod(stat, "public static void ApplyDeflectionEffectsNative(");
+        var stat = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(");
 
-        deflection.Should().Contain("Recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
+        deflection.Should().Contain("_recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
             "deflecting while the ability is ready must not burn the window the next cooldown needs");
 
         var readyCheck = deflection.IndexOf("isOnRecastDelay &&", StringComparison.Ordinal);
         var gate = deflection.IndexOf(
-            "Combat.TryUseStatTrigger(",
+            "TryUseStatTrigger(",
             readyCheck < 0 ? 0 : readyCheck,
             StringComparison.Ordinal);
         readyCheck.Should().BeGreaterThan(-1);
         gate.Should().BeGreaterThan(readyCheck,
             "the readiness check has to short-circuit before TryUseStatTrigger consumes the gate");
-        deflection.IndexOf("Recast.ReduceRecastDelay(", StringComparison.Ordinal)
+        deflection.IndexOf("_recast.ReduceRecastDelay(", StringComparison.Ordinal)
             .Should().BeGreaterThan(gate, "the reduction runs only after both the readiness check and the gate");
     }
 

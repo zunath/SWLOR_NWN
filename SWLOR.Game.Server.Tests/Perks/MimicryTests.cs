@@ -621,11 +621,11 @@ public class MimicryTests
     public void MimicryTraitBonuses_AreWiredIntoTheStatAndResistancePipelines()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
 
-        statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
+        statSource.Should().Contain("_mimicry.GetStatBonus(creature, stat)",
             "equipped trait stats reach the player only through the stat pipeline");
         resistanceSource.Should().Contain("_mimicry.GetResistanceBonus(creature, type)",
             "equipped trait resistances reach the player only through the resistance pipeline");

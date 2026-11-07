@@ -888,6 +888,10 @@ public class PerkServiceTests
     [Test]
     public void TheDefaultSeams_AreTheOriginalCalls()
     {
+        // The aggregate seam calls the Stat facade, which resolves its instance from a container.
+        using var container = NewContainerOverTheBenchDatabase();
+        using var installed = container.Install();
+
         _bench.Service.DefaultAggregateStatAdjustment(StatType.AttackPercentAdjustment, 4, 3).Should().Be(7);
         _bench.Service.DefaultIsDroid(PerkBench.Npc).Should().BeFalse();
         _bench.Service.DefaultDroidControllerItem(PerkBench.DroidCreature).Should().Be(PerkBench.ObjectInvalid);

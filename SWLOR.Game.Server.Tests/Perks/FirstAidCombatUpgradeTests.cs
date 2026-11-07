@@ -14,12 +14,29 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class FirstAidCombatUpgradeTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FirstAidBibleManifest_ContainsBatch()
     {
@@ -292,8 +309,8 @@ public class FirstAidCombatUpgradeTests
         }
 
         var statSource = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
-        statSource.Should().Contain("BeastMastery.IsPlayerBeast(source)");
+            (root / "SWLOR.Game.Server" / "Domain" / "Character" / "StatService.cs").FullName);
+        statSource.Should().Contain("_beastMastery.IsPlayerBeast(source)");
         statSource.Should().Contain("GetMaster(source)");
 
         var excludedSources = new[]

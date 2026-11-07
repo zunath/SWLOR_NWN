@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MeleeTechniqueTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 

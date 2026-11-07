@@ -50,10 +50,7 @@ public class MaxHitPointsReconciliationTests
             root = root.Parent;
         root.Should().NotBeNull();
         _root = root!.FullName;
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus");
+        var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus");
         var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -100,10 +97,7 @@ public class MaxHitPointsReconciliationTests
                 {
                     public static int GetCurrentHitPoints(uint creature) => CurrentHP;
                 }
-                public static class TemporaryHitPointEffects
-                {
-                    public static void ScheduleLimitCheck(uint creature) { }
-                }
+                private static void ScheduleTemporaryHitPointLimitCheck(uint creature) { }
                 public static class BiowareXP2
                 {
                     public static void IPSafeAddItemProperty(uint item, ItemProperty ip, float duration,

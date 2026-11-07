@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CrossSkillPerkInteractionSafetyTests
+public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 {
     [Test]
     public void IdleAbilityBonuses_KeepStaffAndRifleChannelsIndependent()
@@ -88,9 +89,9 @@ public class CrossSkillPerkInteractionSafetyTests
             .Should().Be((int)StatusEffectCategory.Control,
                 "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
 
-        var perkSource = Read(root, "SWLOR.Game.Server", "Service", "Perk.cs");
-        var getStatBonus = ExtractMethod(perkSource, "public static int GetStatBonus(uint creature, StatType stat)");
-        getStatBonus.Should().Contain("Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
+        var perkSource = Read(root, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs");
+        var getStatBonus = ExtractMethod(perkSource, "public int GetStatBonus(uint creature, StatType stat)");
+        getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");

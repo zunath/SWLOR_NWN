@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 /// the Fabrication XP a job pays. The rules are covered by the experiment lifecycle tests.
 /// </summary>
 [TestFixture]
-public class CraftResearchExperimentServiceTests
+public class CraftResearchExperimentServiceTests : SkillFacadeFixture
 {
     private const uint Handle = 1001;
 
@@ -46,10 +46,13 @@ public class CraftResearchExperimentServiceTests
     [OneTimeSetUp]
     public void LoadTheSkills()
     {
-        using var engine = new PlayerEngine();
-        using var events = EventsPluginRuntime.Override(new FakeEventsPlugin());
-        Skill.CacheData();
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            using var engine = new PlayerEngine();
+            using var events = EventsPluginRuntime.Override(new FakeEventsPlugin());
+            Skill.CacheData();
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]

@@ -9,6 +9,7 @@ Read only the sections the task needs:
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
 - Output locking for the maintainability refactor: "Characterization scenarios (output locking)". After every `master` sync: "Refreshing the snapshots after a `master` sync".
+- Persistence, event chains or migrations without the engine: "Integration tier (real Redis, fake engine)".
 - Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`. A run that
   crosses 10:00 UTC is killed by the server's daily restart ("CI", "The daily server restart").
 - The nightly and labelled-pull-request workflow: "CI".
@@ -35,6 +36,25 @@ real spawned creatures in an instanced arena and exercise the real systems direc
 
 This is the intended venue for integration-testing new combat-upgrade perks and abilities
 end-to-end, in addition to their NUnit coverage.
+
+## Integration tier (real Redis, fake engine)
+
+`SWLOR.Game.Server.IntegrationTests` runs the server's real container (`CompositionRoot.RegisterServerServices`) and the real
+`DBService` against a throwaway `redislabs/redismod:latest` container, with `FakeNWScript` and the plugin fakes standing in for
+the engine. It covers persistence round trips of every entity type, search queries, index rebuilds, event chains
+(first entry, skill XP, perk refund, bank, market, quests) and the server-migration runner. It is not part of
+`run-unit-tests.sh`; the `integration-tests` job of `maintainability-ci.yml` runs it.
+
+```bash
+dotnet build SWLOR.Game.Server.sln -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+bash scripts/ci/run-integration-tests.sh [--filter <expr>] [--out <dir>] [--dump <dump.rdb>]
+```
+
+The script starts its own container (tmpfs data, published on 127.0.0.1 only, removed on exit) and sets `NWNX_REDIS_HOST` and a
+throwaway marker key; the tests refuse a Redis that is not local and marked. It needs Docker and `SWLOR_Haks` with `sw_2da`,
+`sw_tlk` and `sw_ability`. Tests extend `IntegrationTestBase` (empty database, container and fake engine per test).
+`--dump` (or `SWLOR_INTEGRATION_DUMP`) enables the production-copy test: it copies that `dump.rdb` into a container of its own
+(the file is only read), runs the pending migrations and checks a second boot changes nothing. Never commit or print dump contents.
 
 ## Project Layout and Isolation
 

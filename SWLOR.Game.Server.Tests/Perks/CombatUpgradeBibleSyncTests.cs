@@ -26,7 +26,7 @@ using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatUpgradeBibleSyncTests
+public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
 {
     // Reading an ability's recast reads the creature's status effects through the facade.
     private FacadeContainer _facades = null!;

@@ -11,29 +11,19 @@ namespace SWLOR.Game.Server.Tests.AI;
 
 public class CompanionControlPolicyTests
 {
-
     private FacadeContainer _facades = null!;
-
     private IDisposable _facadeScope = null!;
 
-
     [OneTimeSetUp]
-
     public void BuildFacades() => _facades = new FacadeContainer();
 
-
     [OneTimeTearDown]
-
     public void DisposeFacades() => _facades.Dispose();
 
-
     [SetUp]
-
     public void InstallFacades() => _facadeScope = _facades.Install();
 
-
     [TearDown]
-
     public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]

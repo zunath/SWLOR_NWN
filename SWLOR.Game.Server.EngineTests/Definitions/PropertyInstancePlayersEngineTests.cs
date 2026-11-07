@@ -5,6 +5,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -39,6 +40,14 @@ public static class PropertyInstancePlayersEngineTests
 
             RunAreaEvent(instance, Property.ExitPropertyInstance, entered: departed.Creature, left: crew.Creature);
             ctx.AssertEqual(0, loaded.Players.Count, "the player who exits comes off the list");
+
+            // GetIsPC is false for a player logging out, as it is for this creature.
+            var loggingOut = CreateObject(ObjectType.Creature, "thune", GetLocation(crew.Creature));
+            ctx.Assert(!GetIsPC(loggingOut), "the stand-in does not read as a PC");
+            loaded.Players.Add(loggingOut);
+            RunAreaEvent(instance, Property.ExitPropertyInstance, entered: crew.Creature, left: loggingOut);
+            DestroyObject(loggingOut);
+            ctx.AssertEqual(0, loaded.Players.Count, "an exit that no longer reads as a PC still comes off the list");
         }
         finally
         {

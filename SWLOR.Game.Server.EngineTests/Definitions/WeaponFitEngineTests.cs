@@ -14,7 +14,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 public static class WeaponFitEngineTests
 {
     [EngineTest("A delayed old-wearer refresh cannot strip the new wearer's shared fit", Category = "WeaponFit", TimeoutSeconds = 60f)]
-    public static async Task DelayedTransferRefresh(EngineTestContext ctx)
+    public static Task DelayedTransferRefresh(EngineTestContext ctx) => WithFixtureCorrection(() => DelayedTransferRefreshCore(ctx));
+
+    private static async Task DelayedTransferRefreshCore(EngineTestContext ctx)
     {
         var previous = ctx.SpawnCreature("civilian");
         var current = ctx.SpawnCreature("civilian");
@@ -37,18 +39,20 @@ public static class WeaponFitEngineTests
         {
             SetAppearance(weapon, 310);
             WeaponFit.Apply(previous);
-            ctx.Assert(CreaturePlugin.RunUnequip(previous, weapon), "The previous wearer releases the pistol");
+            CreaturePlugin.RunUnequip(previous, weapon);
+            ctx.Assert(GetItemInSlot(InventorySlot.RightHand, previous) != weapon, "The previous wearer releases the pistol");
             ClearAllActions();
             ActionGiveItem(weapon, current);
         });
         await ctx.WaitUntilAsync(() => GetItemPossessor(weapon) == current, 10f, "the pistol transfer");
         await ctx.ExecuteInCreatureContextAsync(current, () =>
         {
-            ctx.Assert(CreaturePlugin.RunEquip(current, weapon, InventorySlot.RightHand), "The new wearer equips the pistol");
+            CreaturePlugin.RunEquip(current, weapon, InventorySlot.RightHand);
+            ctx.AssertEqual(weapon, GetItemInSlot(InventorySlot.RightHand, current), "The new wearer equips the pistol");
             WeaponFit.Apply(current);
         });
         var fitted = ReadTranslation(weapon);
-        ctx.Assert(fitted != FitVector.Zero, "The new wearer has a measured correction");
+        ctx.Assert(fitted != FitVector.Zero, "The new wearer has the fixture correction");
         await ctx.ExecuteInCreatureContextAsync(previous, () =>
         {
             SetLocalObject(previous, "WEAPON_GRIP_FIT_RIGHT", weapon);
@@ -58,7 +62,9 @@ public static class WeaponFitEngineTests
     }
 
     [EngineTest("Shared weapon fits preserve authored transforms across refresh, appearance changes and copies", Category = "WeaponFit", TimeoutSeconds = 60f)]
-    public static async Task SharedFitLifecycle(EngineTestContext ctx)
+    public static Task SharedFitLifecycle(EngineTestContext ctx) => WithFixtureCorrection(() => SharedFitLifecycleCore(ctx));
+
+    private static async Task SharedFitLifecycleCore(EngineTestContext ctx)
     {
         var wearer = ctx.SpawnCreature("civilian");
         await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, wearer)), 10f, "the fixture outfit");
@@ -87,7 +93,7 @@ public static class WeaponFitEngineTests
                 nScope: (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2);
             SetAppearance(weapon, 310);
             var fit = GetFit(BaseItem.Sling, 310, "pmh0_handr002");
-            ctx.Assert(fit != FitVector.Zero, "The fixture exercises a measured correction");
+            ctx.Assert(fit != FitVector.Zero, "The fixture exercises a nonzero test correction");
             for (var i = 0; i < 5; i++) TintMapService.ApplyCurrentColors(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored + fit, "Repeated refresh does not compound the correction");
             ctx.AssertEqual(1.03f, GetObjectVisualTransform(weapon, ObjectVisualTransform.Scale), "Scale remains authored");
@@ -97,9 +103,12 @@ public static class WeaponFitEngineTests
 
             SetGender(wearer, Gender.Female);
             TintMapService.ApplyCurrentColors(wearer);
-            AssertVector(ctx, ReadTranslation(weapon), authored + GetFit(BaseItem.Sling, 310, "pfh0_handr001"),
+            AssertVector(ctx, ReadTranslation(weapon), authored + GetFit(BaseItem.Sling, 310, "pfh0_handr002"),
                 "The current wearer selects the fit, not the item's previous wearer");
 
+            SetGender(wearer, Gender.Male);
+            TintMapService.ApplyCurrentColors(wearer);
+            AssertVector(ctx, ReadTranslation(weapon), authored + fit, "The hand-change source carries its correction");
             SetCreatureBodyPart(CreaturePart.RightHand, 263, wearer);
             TintMapService.ApplyCurrentColors(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored, "An unmeasured hand removes only the correction");
@@ -109,22 +118,28 @@ public static class WeaponFitEngineTests
             TintMapService.ApplyCurrentColors(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored, "An unmeasured weapon removes only the correction");
             SetAppearance(weapon, 310);
+            SetGender(wearer, Gender.Male);
             TintMapService.ApplyCurrentColors(wearer);
+            AssertVector(ctx, ReadTranslation(weapon), authored + fit, "The copy source carries its measured correction");
 
             var copy = CopyItem(weapon, wearer, true);
             ctx.Track(copy);
             ctx.Assert(GetIsObjectValid(copy), "The fitted item can be copied");
             var copyBefore = ReadTranslation(copy);
+            AssertVector(ctx, copyBefore, FitVector.Zero, "Native CopyItem resets visual transforms before fit normalization");
             Release(copy);
             AssertVector(ctx, ReadTranslation(copy), copyBefore, "Copied locals cannot subtract the source item's fit");
 
-            ctx.Assert(CreaturePlugin.RunUnequip(wearer, weapon), "The fitted item can be unequipped");
+            CreaturePlugin.RunUnequip(wearer, weapon);
+            ctx.Assert(GetItemInSlot(InventorySlot.RightHand, wearer) != weapon, "The fitted item can be unequipped");
             WeaponFit.RefreshInventory(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored, "Unequipping preserves authored translation");
             ctx.AssertEqual("", GetLocalString(weapon, "WEAPON_GRIP_FIT_ITEM"), "Released items carry no applied correction");
-            ctx.Assert(CreaturePlugin.RunEquip(wearer, weapon, InventorySlot.RightHand), "The item can be re-equipped");
+            CreaturePlugin.RunEquip(wearer, weapon, InventorySlot.RightHand);
+            ctx.AssertEqual(weapon, GetItemInSlot(InventorySlot.RightHand, wearer), "The item can be re-equipped");
             WeaponFit.Apply(wearer);
-            AssertVector(ctx, ReadTranslation(weapon), authored + GetFit(BaseItem.Sling, 310, "pfh0_handr001"), "Re-equipping recomputes the current fit");
+            AssertVector(ctx, ReadTranslation(weapon), authored + fit, "Re-equipping recomputes the current fit");
+            ctx.Assert(GetLocalFloat(weapon, "WEAPON_GRIP_FIT_X") != 0f, "The saved item carries an applied correction");
             identity = GetObjectUUID(weapon);
             archive = ObjectPlugin.Serialize(weapon);
             DestroyObject(weapon);
@@ -142,6 +157,24 @@ public static class WeaponFitEngineTests
             ctx.AssertEqual(1.03f, GetObjectVisualTransform(restored, ObjectVisualTransform.Scale), "Reload retains authored scale");
             ctx.AssertEqual(2f, GetObjectVisualTransform(restored, ObjectVisualTransform.RotateZ), "Reload retains authored rotation");
         });
+    }
+
+    private static async Task WithFixtureCorrection(Func<Task> test)
+    {
+        // Exercise a nonzero delta without shipping an unverified fit. The test assembly is
+        // loaded only by the isolated engine-test runner, and every exit restores the catalog.
+        var catalog = typeof(WeaponFit).Assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFits")!;
+        var fits = (System.Collections.Generic.Dictionary<(BaseItem, int, int, int, string, string), FitVector>)catalog
+            .GetField("Fits", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var key = (BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "");
+        var hadEntry = fits.TryGetValue(key, out var previous);
+        fits[key] = new FitVector(.01f, .02f, -.03f);
+        try { await test(); }
+        finally
+        {
+            if (hadEntry) fits[key] = previous;
+            else fits.Remove(key);
+        }
     }
 
     private static void SetAppearance(uint item, int middle)
@@ -175,4 +208,3 @@ public static class WeaponFitEngineTests
     private static void AssertVector(EngineTestContext ctx, FitVector actual, FitVector expected, string label) =>
         ctx.Assert(FitVector.Distance(actual, expected) < .000001f, $"{label}: expected {expected}, observed {actual}");
 }
-

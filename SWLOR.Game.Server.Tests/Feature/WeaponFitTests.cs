@@ -88,11 +88,9 @@ public class WeaponFitTests
     }
 
     [Test]
-    public void ASharedCorrectionRequiresTheExactMeasuredAssemblyAndHand()
+    public void TheInspectedBaselinesKeepTheirAuthoredAttachment()
     {
-        Fit(BaseItem.Sling, 310, 101, 101, "pmh0_handr002").Should().Be(new FitVector(.014f, -.022f, -.034f));
-        foreach (var part in new[] { 6, 7, 113, 150, 151, 152 })
-            Fit(BaseItem.Sling, 310, 101, 101, $"pmh0_handr{part:D3}").Should().Be(Fit(BaseItem.Sling, 310, 101, 101, "pmh0_handr002"));
+        Fit(BaseItem.Sling, 310, 101, 101, "pmh0_handr002").Should().Be(FitVector.Zero);
         foreach (var hand in new[] { "pmh0_handr001", "pfh0_handr002", "pme0_handr002", "pmh0_handl002", "pmh2_handr002" })
             Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
         Fit(BaseItem.Sling, 310, 102, 101, "pmh0_handr002").Should().Be(FitVector.Zero);

@@ -13,23 +13,28 @@ internal static class WeaponGripFits
     private static Dictionary<(BaseItem Type, int Top, int Middle, int Bottom, string Hand, string SupportHand), FitVector> BuildFits()
     {
         var fits = new Dictionary<(BaseItem, int, int, int, string, string), FitVector>();
-        // WBwSh 103 (catalog 310), actual Griff contact sections against pmh0_handr002.
-        // These normal male human resources have identical rendered hand geometry and the same hook.
-        foreach (var part in new[] { 2, 6, 7, 113, 150, 151, 152 })
-            fits[(BaseItem.Sling, 101, 310, 101, $"pmh0_handr{part:D3}", "")] = new FitVector(.014f, -.022f, -.034f);
+        // The inspected native baselines below retain their authored attachment. No candidate
+        // correction has passed the contact views yet; do not turn geometric overlap minima
+        // into gameplay corrections without checking the palm, fingers and reverse side.
+        foreach (var gender in new[] { 'm', 'f' })
+        foreach (var side in new[] { 'r', 'l' })
+            fits[(BaseItem.Sling, 101, 310, 101, $"p{gender}h0_hand{side}001", "")] = FitVector.Zero;
+        fits[(BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "")] = FitVector.Zero;
+        fits[(BaseItem.Rifle, 101, 213, 101, "pmh0_handr001", "pmh0_handl001")] = FitVector.Zero;
         return fits;
     }
 
     internal static FitVector GetFit(BaseItem type, int middle, int top, int bottom, string hand, string supportHand)
     {
-        if (string.IsNullOrWhiteSpace(hand)) return FitVector.Zero;
+        if (string.IsNullOrWhiteSpace(hand) || type is BaseItem.PowerGlove or BaseItem.CompanionPowerGlove)
+            return FitVector.Zero;
         if (type == BaseItem.CompanionPistol) type = BaseItem.Sling;
         return Fits.GetValueOrDefault((type, top, middle, bottom, hand.ToLowerInvariant(),
             RequiresSupportHand(type) ? (supportHand ?? string.Empty).ToLowerInvariant() : string.Empty));
     }
 
     private static bool RequiresSupportHand(BaseItem type) => type is BaseItem.Rifle or BaseItem.GreatSword or
-        BaseItem.QuarterStaff or BaseItem.TwoBladedSword or BaseItem.TwinElectroBlade or BaseItem.Saberstaff;
+        BaseItem.QuarterStaff or BaseItem.ShortSpear or BaseItem.TwoBladedSword or BaseItem.TwinElectroBlade or BaseItem.Saberstaff;
 
     internal static string ResolveHandModel(string race, Gender gender, string side, int natural, int armor, int robe)
     {

@@ -113,11 +113,17 @@ function Invoke-GitText {
 if (-not (Test-Path -LiteralPath $MovesFile)) { Write-Host "Data file not found: $MovesFile"; exit 2 }
 $moves = Get-Content -LiteralPath $MovesFile -Raw | ConvertFrom-Json
 $renames = @{}      # relative old namespace -> relative new namespace
-foreach ($entry in $moves.namespaceRenames) { $renames[[string]$entry.from] = [string]$entry.to }
-$textExcludes = @($moves.textExcludes)
-$facadeFiles = @($moves.facadeNameFiles)
-$globFiles = @($moves.expandGlobFiles)
-$textEdits = @($moves.textEdits)
+function Get-DataList {
+    param([string]$Name)
+    $property = $moves.PSObject.Properties[$Name]
+    if ($null -eq $property -or $null -eq $property.Value) { return @() }
+    return @($property.Value)
+}
+foreach ($entry in (Get-DataList 'namespaceRenames')) { $renames[[string]$entry.from] = [string]$entry.to }
+$textExcludes = Get-DataList 'textExcludes'
+$facadeFiles = Get-DataList 'facadeNameFiles'
+$globFiles = Get-DataList 'expandGlobFiles'
+$textEdits = Get-DataList 'textEdits'
 
 $domainMapFile = Join-Path $root $domainMapPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
 if (-not (Test-Path -LiteralPath $domainMapFile)) { Write-Host "Domain map not found: $domainMapPath"; exit 2 }

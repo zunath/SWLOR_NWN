@@ -249,6 +249,7 @@ public class CombatResourcesServiceTests
         {
             _service.ApplyDamageDerivedHealing(Creature, 0, 50).Should().Be(0);
             _service.ApplyDamageDerivedHealing(Creature, 50, 0).Should().Be(0);
+            _service.ApplyDamageDerivedHealing(Creature, 50, 50).Should().Be(0, "a target with no HP left gives no damage to heal from");
         }
 
         Heals().Should().BeEmpty();

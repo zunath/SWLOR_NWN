@@ -171,8 +171,12 @@ public class CombatFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // Bytes per call, the least of three runs, so a one-off allocation of the runtime cannot fail a comparison.
-    private static long PerCall(Action call) => Enumerable.Range(0, 3).Min(_ => Allocated(call)) / Calls;
+    // The least of three runs, so a one-off allocation of the runtime (tiering, a lazily built table) cannot fail a pin;
+    // an allocation per call shows in every run.
+    private static long LeastAllocated(Action call) => Enumerable.Range(0, 3).Min(_ => Allocated(call));
+
+    // Bytes per call, from the least of three runs.
+    private static long PerCall(Action call) => LeastAllocated(call) / Calls;
 
     private sealed record PartReads(ICombatQueriesService Queries, ICombatResourcesService Resources, ICombatFeedbackService Feedback,
         AbilityDetail Hostile, AbilityDetail Plain);
@@ -228,8 +232,8 @@ public class CombatFacadeAllocationTests
 
             foreach (var (name, part, forwarder) in reads)
             {
-                Allocated(part).Should().Be(0, $"{name} runs per attack or per hit");
-                Allocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+                LeastAllocated(part).Should().Be(0, $"{name} runs per attack or per hit");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
             }
 
             GC.KeepAlive(sink);
@@ -291,9 +295,9 @@ public class CombatFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += CombatDamageType.Fire.IsPhysicalDamageType() ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += (int)CombatDamageType.Fire.GetDefenseDamageType()).Should().Be(0);
-        Allocated(() => sink += (int)CombatDamageType.Force.GetDetails().NativeDamageType).Should().Be(0);
+        LeastAllocated(() => sink += CombatDamageType.Fire.IsPhysicalDamageType() ? 1 : 0).Should().Be(0);
+        LeastAllocated(() => sink += (int)CombatDamageType.Fire.GetDefenseDamageType()).Should().Be(0);
+        LeastAllocated(() => sink += (int)CombatDamageType.Force.GetDetails().NativeDamageType).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

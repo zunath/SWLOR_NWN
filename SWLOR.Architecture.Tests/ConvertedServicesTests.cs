@@ -55,6 +55,22 @@ public class ConvertedServicesTests
     }
 
     [Test]
+    public void The_combat_damage_type_table_is_deeply_immutable_before_Combat_is_listed()
+    {
+        // Temporary until P2-CB10 lists Combat (Service/CombatService/* is then checked by the rule above): P2-CB4 made the
+        // damage type details a frozen table of a sealed record, so listing Combat cannot fail on it.
+        var checkedTypes = new HashSet<TypeKey>
+        {
+            new("SWLOR.Game.Server.Service.CombatService", "CombatDamageTypeExtensions"),
+            new("SWLOR.Game.Server.Domain.Combat", "CombatDamageDetails"),
+        };
+        ArchitectureProject.Facts.Types.Select(type => type.Key).Should().Contain(checkedTypes);
+
+        Fail(ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, checkedTypes.Contains),
+            "The damage type details must stay a static readonly table of a deeply immutable type");
+    }
+
+    [Test]
     public void Event_handlers_of_converted_services_stay_on_the_facade()
     {
         var map = Map;

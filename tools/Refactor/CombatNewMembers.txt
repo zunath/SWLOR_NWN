@@ -1,0 +1,6 @@
+# Members added to Service/Combat.cs after the plan's line ranges (master #3250), placed with the part their callers use.
+# ShowReadyCue is called from DamageTaken, AbilityImpact and AttackTiming; AttackTiming is the lowest layer of those, and
+# the Grant* wrapper sits beside the GrantNextSkillAbilityStaminaCostAdjustment it wraps.
+GrantCuedNextSkillAbilityStaminaCostAdjustment=AttackTiming
+GetDefaultNextSkillAbilityStaminaCostGroup=AttackTiming
+ShowReadyCue=AttackTiming

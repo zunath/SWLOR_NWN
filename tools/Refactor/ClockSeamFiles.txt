@@ -3,6 +3,7 @@
 # Read by tools/Refactor/Apply-ClockSeam.ps1 and by ClockSeamSourceGuardTests (and by the daily sync as the list
 # of files this mechanical rewrite owns).
 Service/Combat.cs
+Service/CombatParts/**
 Service/CombatService/**
 Service/CombatPoint.cs
 Domain/Combat/OrdinaryAttackTraitsService.cs

@@ -536,7 +536,7 @@ public class CombatFacadeAllocationTests
     // for both creatures and the stat service that allocates nothing), with the ability bonus and damage modifier parts.
     private static BonusParts InstallBonusParts(List<IDisposable> scopes)
     {
-        var (_, _, _, _) = InstallTimingParts(scopes);
+        InstallTimingParts(scopes);
         var container = FacadeContainer.Current;
         var hostile = new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle, EffectiveLevelPerkType = PerkType.DoubleShot };
         hostile.Requirements.Add(new AbilityRequirementStamina(10));

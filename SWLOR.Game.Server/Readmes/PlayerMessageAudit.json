@@ -4747,49 +4747,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 226,
+    "Line": 205,
     "Member": "InterruptAbilityActivation",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 377,
+    "Line": 364,
     "Member": "UseFeat",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 442,
+    "Line": 435,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                            activator,\n                            receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 461,
+    "Line": 454,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 468,
+    "Line": 461,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1137,
+    "Line": 1135,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                    target,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1141,
+    "Line": 1139,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"
@@ -4844,39 +4844,39 @@
     "Call": "defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 758,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 871,
     "Member": "CanUseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, reason)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1198,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 1310,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1262,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 1374,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3012,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 3128,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f,\n                activator)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3031,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 3148,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Economy/CasinoSlotService.cs",

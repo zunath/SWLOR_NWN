@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
@@ -168,8 +169,7 @@ public static class SingleWeaponEngineTests
         Ability.BeginAbilityImpact(player.Creature, ability);
         try
         {
-            var getImpact = typeof(Ability).GetMethod("GetTrackedAbilityImpact", BindingFlags.NonPublic | BindingFlags.Static);
-            var impact = getImpact.Invoke(null, new object[] { player.Creature });
+            var impact = ServiceInternals.Call<IAbilityService>("GetTrackedAbilityImpact", player.Creature);
             var capturedDamage = (int?)impact.GetType().GetProperty("TriggeringWeaponDamage").GetValue(impact);
             ctx.AssertEqual(39, capturedDamage.Value, "Weapon ability captures combined rating at impact start");
             var getThrowDamage = typeof(ThrowLightsaberAbilityDefinition).GetMethod("GetEquippedWeaponDamageAdjustment",

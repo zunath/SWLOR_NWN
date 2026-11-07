@@ -26,6 +26,14 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 .Invoke(service, arguments);
         }
 
+        /// <summary>Calls a private instance method of the container's <typeparamref name="TService"/> and returns its result.</summary>
+        public static object Call<TService>(string methodName, params object[] arguments)
+        {
+            var service = Resolve<TService>();
+            return service.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)
+                .Invoke(service, arguments);
+        }
+
         private static object Resolve<TService>() =>
             CompositionRoot.ServerHost.Provider.GetService(typeof(TService));
     }

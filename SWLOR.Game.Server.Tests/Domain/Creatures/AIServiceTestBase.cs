@@ -23,6 +23,7 @@ public abstract class AIServiceTestBase
 
     // The AI asks the busy status of a creature (Activity facade), which resolves from a container.
     private FacadeContainer _baseFacades = null!;
+    protected FacadeContainer BaseFacades => _baseFacades;
     private IDisposable _baseFacadeScope = null!;
 
     [OneTimeSetUp]

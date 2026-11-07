@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class DestroyedOwnerCleanupTests
 {
     [TestCase("Feature/OrdinaryAttackCombatLifecycle.cs", "OrdinaryAttackTraits.ForgetDestroyed(OBJECT_SELF)")]
-    [TestCase("Feature/UsePerkFeat.cs", "_queuedWeaponTraits.Remove(creature);", "_queuedWeaponAttacks.Remove(creature);")]
+    [TestCase("Feature/UsePerkFeat.cs", "Ability.RemoveQueuedWeaponTraits(creature);", "Ability.RemoveQueuedWeaponAttack(creature);")]
     [TestCase("Feature/TwinPistolCombatLifecycle.cs", "TwinPistolAbility.ForgetDestroyed(actor);",
         "PairedRangedAttackCycle.ForgetDestroyed(actor);", "PairedRangedPresentation.Release(actor);")]
     public void OwnerKeyedStateIsDroppedWhenTheOwnerIsDestroyed(string file, params string[] expected)

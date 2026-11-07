@@ -250,13 +250,13 @@ public class LightsaberPerkBehaviorTests
             "the explicit typed stage must preserve the existing pre-resistance ordering");
 
         // Both ability damage paths do the same before their physical resistance stage.
-        var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         const string abilityConversionCall =
-            "Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment)";
+            "ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment)";
         const string abilityLeadershipCall =
-            "Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)";
+            "ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)";
         const string abilityResistanceCall =
-            "Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage)";
+            "_resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage)";
         var abilitySearchStart = 0;
         for (var path = 0; path < 2; path++)
         {

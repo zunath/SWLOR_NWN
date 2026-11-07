@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = Combat.CreateDefaultDefenseValues();
+            Defenses = CombatRules.CreateDefaultDefenseValues();
 
             Resistances = ResistanceRules.CreateDefaultResistanceValues();
 

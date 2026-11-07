@@ -1,5 +1,6 @@
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Effects;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -18,7 +19,7 @@ public sealed partial class Simulation
         actor.WeaponTraits.Paired.RecordAbilityHit(WeaponNow, WeaponTraitState.Configuration(actor), Guid.NewGuid(), charges);
 
     private static double WeaponInterval(WeaponLoadoutSpec weapon, int haste) =>
-        Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(
+        CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(
             weapon.MainDelay, weapon.OffhandDelay, haste, weapon.OffhandDelayReductionPercent)) / 1000.0;
 
     private bool CanUseTwin(Combatant actor, AbilityUseSpec use)
@@ -127,7 +128,7 @@ public sealed partial class Simulation
 
     private void RestoreWeaponHitStamina(Combatant actor, PendingCast cast, int requested)
     {
-        var amount = Combat.CalculateAbilityHitStaminaRestore(cast.StmCost, cast.HitStaminaRefunded, requested);
+        var amount = CombatRules.CalculateAbilityHitStaminaRestore(cast.StmCost, cast.HitStaminaRefunded, requested);
         cast.HitStaminaRefunded += amount;
         RestoreStamina(actor, amount, true);
     }
@@ -194,7 +195,7 @@ public sealed partial class Simulation
         bool resolveDamage = true)
     {
         var weapon = actor.Spec.WeaponLoadout;
-        var hitChance = Combat.CalculateHitRate(weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0);
+        var hitChance = CombatRules.CalculateHitRate(weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0);
         if (_random.Next(1, 101) > hitChance)
         {
             target.WeaponTraits.Paired.RecordAccuracyEvasionMiss(WeaponNow, WeaponTraitState.Configuration(target));
@@ -203,12 +204,12 @@ public sealed partial class Simulation
         if (ordinary && _random.Next(1, 101) <= target.Spec.WeaponAvoidancePercent) return (false, 0);
         if (!resolveDamage) return (true, 0);
         var criticalChance = ordinary
-            ? Combat.CalculateCriticalRate(weapon.Perception, target.Spec.Vitality, weapon.SkillRank, weapon.OrdinaryCriticalRateAdjustment)
-            : Combat.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment);
-        var critical = _random.Next(1, 101) <= criticalChance ? Combat.StandardCriticalRating : 0;
+            ? CombatRules.CalculateCriticalRate(weapon.Perception, target.Spec.Vitality, weapon.SkillRank, weapon.OrdinaryCriticalRateAdjustment)
+            : CombatRules.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment);
+        var critical = _random.Next(1, 101) <= criticalChance ? CombatRules.StandardCriticalRating : 0;
         // GetAbilityDamageBonus is engine-bound, but its only player calculation is floor(0.15 * rank).
         if (!ordinary) power += (int)(0.15f * weapon.SkillRank);
-        var (minimum, maximum) = Combat.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
+        var (minimum, maximum) = CombatRules.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
             target.Spec.Defense, target.Spec.Vitality, critical, ordinary ? weapon.WeaponRank : 0);
         // Both native and activated damage truncate a uniform float in [minimum, maximum),
         // rather than drawing an inclusive integer (which biases low-power weapons upward).
@@ -216,8 +217,8 @@ public sealed partial class Simulation
         if (ordinary)
         {
             var additive = damageBonus;
-            amount += (int)Math.Ceiling(amount * Math.Clamp(additive, -Combat.MaximumNormalDamageReductionPercent, Combat.MaximumDamageBonusPercent) / 100f);
-            amount = Combat.ApplyOrdinaryAttackDamageMultiplier(amount, actor.GetStat(StatType.OrdinaryAttackDamagePercentAdjustment));
+            amount += (int)Math.Ceiling(amount * Math.Clamp(additive, -CombatRules.MaximumNormalDamageReductionPercent, CombatRules.MaximumDamageBonusPercent) / 100f);
+            amount = CombatRules.ApplyOrdinaryAttackDamageMultiplier(amount, actor.GetStat(StatType.OrdinaryAttackDamagePercentAdjustment));
         }
         amount = WeaponImpactDamagePartition.Partition(amount, volleyIndex, volleyCount);
         var dealt = amount > 0 ? ApplyDamage(actor, target, amount, directHostile: true) : 0;
@@ -233,7 +234,7 @@ public sealed partial class Simulation
     {
         if (target.IsDead) return (false, 0);
         var weapon = actor.Spec.WeaponLoadout;
-        if (!alwaysHits && _random.Next(1, 101) > Combat.CalculateHitRate(
+        if (!alwaysHits && _random.Next(1, 101) > CombatRules.CalculateHitRate(
                 weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0))
         {
             if (actor.TeamIndex != target.TeamIndex)
@@ -244,9 +245,9 @@ public sealed partial class Simulation
         var rating = item == 1 ? EffectiveMainWeaponDamage(weapon) : weapon.OffhandDamage;
         var power = rating * profile.WeaponDamagePercent / 100 + profile.FlatDamage +
                     (takeCadenceBonus?.Invoke() ?? 0) + (int)(0.15f * weapon.SkillRank);
-        var critical = _random.Next(1, 101) <= Combat.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment)
-            ? Combat.StandardCriticalRating : 0;
-        var (minimum, maximum) = Combat.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
+        var critical = _random.Next(1, 101) <= CombatRules.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment)
+            ? CombatRules.StandardCriticalRating : 0;
+        var (minimum, maximum) = CombatRules.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
             target.Spec.Defense, target.Spec.Vitality, critical, 0);
         return (true, ApplyDamage(actor, target, SampleWeaponDamage(_random, minimum, maximum) * multiplier, directHostile: true));
     }

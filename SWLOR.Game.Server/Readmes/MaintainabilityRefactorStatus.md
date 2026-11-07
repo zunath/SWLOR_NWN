@@ -216,8 +216,8 @@ on another machine needs none of them (both PR descriptions are on GitHub; cover
 
 ## Next actions
 
-1. **Review and merge** P2-D18, P2-D19, P2-CB0, P3-2 and the master sync as they report; `bash scripts/ci/run-integration-tests.sh` is part of every landing gate. Then the rest of the `Combat` items (P2-CB1 on).
-2. **Daily sync** when master moves (last 2026-11-06, `2d18989fd`). Check whether `feature/space-revamp` reached master
+1. **Review and merge** P2-D18, P2-D19, P2-CB0 and P3-2 as they report; `bash scripts/ci/run-integration-tests.sh` is part of every landing gate. Then the rest of the `Combat` items (P2-CB1 on).
+2. **Daily sync** when master moves (last 2026-11-07, `27781fac1`). Check whether `feature/space-revamp` reached master
    (unblocks P2-A9 `Space`, `Droid`, and the ~77-line `Item` port).
 3. **Follow-ups** from P2-C8 and the 2026-11-06 sync are in P2-D16.
    Engine snapshots were not refreshed at that sync.
@@ -276,6 +276,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P2-D20 plan | `Combat.PurgeInvalidOffensiveActivity` says area despawns destroy creatures without firing death or exit events, but purges only `_lastAttackActivity` and `_lastCombatAbilityUse`, so the other creature-keyed tables `RemoveStatTriggerCooldowns` clears keep entries for despawned creatures. `Combat.ClearCombatState`'s comment says heartbeat; it runs on `OnIntervalPC6Seconds`. Same on master. |
 | P2-D17 review | `Perk.GetAllActivePerkCategories(group)` throws `KeyNotFoundException` for a group with no active category (a test pins it). Same on master. |
 | P3-1 run | A RediSearch query on a NUMERIC-indexed field by plain equality (`@Field:8`) matches nothing. No caller queries that way today; the integration tests check the stored value instead. |
+| 2026-11-07 sync | Master #3249 renamed the call to `UsePerkFeat.InterruptAbilityActivationFromHit` in the files that `BeastmasterCombatUpgradeTests.BeastmasterSources_IncludeBibleBehavior` and `GeneratedWeaponPerkBehaviorTests.GeneratedWeaponActiveProfiles_EmitConditionalAndTemporaryRiders` read, without updating the tests, so both fail on master (CI is billing-locked). The branch updated both needles in #3261; the master fix is a proposed card. |
 
 ## Sync log
 
@@ -289,6 +290,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | 2026-11-06 | de681bce2 (12 commits) | none; manifest: `StaleDriveAfterJump.RegisterHooks` placed (#3212) | identical to master de681bce2 (132 snapshot files, 709 handlers, 40 engine-test handlers) after regenerating `Stat/StatTypeMetadata.json` (+3 rows, #3208, #3210; clears the earlier drift). Tests on the sync head: Game.Server 14074 passed, 1 failed, Characterization 148, Architecture 164, NWN.API 341, CombatSim 894, CLI 35, Formats 95. The failure was `TintMapReviewTests.EveryPackedTintMaskDeclaresItsFullAti2MipChain`: master #3223 renamed that test, so the exclusion in `scripts/ci/run-unit-tests.sh` went stale (it needs the `sw_tint*` hak folders); the coordinator corrected the name on landing. On a trial merge with the base (P2-D4): Release build, Architecture 164, Characterization 148. Engine snapshots not refreshed. Codex clean on `1d520b063`. #3234, no ports. | Claude Sonnet 5.5 (sync-1105b) |
 | 2026-11-06 | 04b37fdbe (1 commit: #3228) | none; no C# (hak pin and `TintMapRendering.md`), so merged by hand: the script's steps had nothing to do | not re-run: no server code changed | Claude Opus 5.5 (coordinator) |
 | 2026-11-06 | 2d18989fd (2 commits: #3245, #3236) | 6: `Service/AI.cs`, `Stealth.cs`, `Performance.cs`, `PerformanceInstrumentCatalog.cs`, `PerformanceSongs.cs`, `PerformanceOptionsViewModel.cs` kept the branch's and were ported (Port log); manifest: 12 `SlitherhornFit` lines renamed `HornFit` and moved to master's place | identical to master 2d18989fd (132 snapshot files, 709 handlers, 40 engine-test handlers); no snapshot changed; 2 cross-domain edges added by hand (`Feature/AppearanceDefinition` <-> `Performance`, #3236); `tools/Refactor/MasterCopy.ps1` stubs `FacadeServices.cs` so parity builds its master reference again (broken since P2-D7). Tests: Game.Server 15339, Characterization 148, Architecture 180, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076, 0 failed. Engine snapshots not refreshed. Codex clean on `802e8935b`. PR #3252, merge `623353b20`. | Claude Sonnet 5.5 (sync-1106), merged by the coordinator |
+| 2026-11-07 | 27781fac1 (5 commits: #3249, #3253, #3250, #3246, submodule) | 6: `StatusEffect.cs` (script-owned, sync took master, facade restored), `Messaging`, `Property`, `DMObjectSearch`, `DMPresence` facades kept and ported; `PlayerMessageAudit.json` kept the branch's file plus master's 5 new rows; manifest: `Property.ShowPropertyDescription` placed in master's slot | identical to master 27781fac1 (132 snapshot files, 710 handlers, 40 engine-test handlers); 11 recipe snapshots regenerated, all from #3253; `ServerRestart` mapped to Gameplay; cross-domain baseline gained 4 edges. On the final head: Game.Server 15854, Characterization 148, Architecture 181, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076, integration 141; Codex clean. Engine snapshots not refreshed. | Claude Sonnet 5.5, merged by the coordinator (`5657f0e5c`, #3261) |
 
 ## Port log
 
@@ -311,6 +313,10 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | #3159 (retire migration 30) | `Service/Property.cs` | `PropertyService` (`d4d9658d8`) | #3215 |
 | #3245 (enemies notice a player leaving stealth) | `Service/AI.cs`, `Service/Stealth.cs` | `AIService.AcquireAggroFromNearbyEnemies` (with interface and facade); `StealthService.OnStealthExited` through a `protected virtual` wrapper | #3252 |
 | #3236 (kloo horn hold, Performance instruments and songs) | `Service/Performance.cs`, `PerformanceInstrumentCatalog.cs`, `PerformanceSongs.cs`, `PerformanceOptionsViewModel.cs` | `PerformanceService` (`ApplyHornFit` wrapper, `PlayThenLoop` overload); `Resrefs`, `PlaysWithoutCarryLayer`, `CanChooseSong` in the converted files | #3252 |
+| #3249 (restart saves toggles) | `Service/StatusEffect.cs` | `StatusEffectService.SaveTogglesForRestart`, `RestoreSavedToggles`, `FindKnownToggleAbility`, `OnPlayerEnter`; new dependencies `IDBService`, `IQuickCastService`; `GetAllAbilityDetails` behind a wrapper | #3261 |
+| #3249 | `Service/Messaging.cs` | `MessagingService.FloatTextNearbyToPlayers` | #3261 |
+| #3249 (property description, structure world name) | `Service/Property.cs` | `PropertyLoaderService.ShowPropertyDescription`, `ApplyStructureWorldName`, also called in `SpawnIntoWorld`; the `OnAreaEnter` handler stays on the facade | #3261 |
+| #3246 (DM jump) | `Service/DMPresence.cs`, `DMObjectSearch.cs` | `DMPresenceService.JumpTo`, `JumpToArea`, `CanLandAt`; `DMObjectSearchService.GetAreaJumpLocations`; the area-spot lookup is a wrapper over the facade, since `DMObjectSearchService` already takes `IDMPresenceService` | #3261 |
 
 ## Environment notes
 

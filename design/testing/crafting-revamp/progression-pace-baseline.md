@@ -70,7 +70,7 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Seconds per harvester use | `ProspectingRules.cs:71` |
 | Seconds of the scavenge animation | `SearchRules.cs:34` |
 | Seconds per refining operation | `RefineryViewModel.cs:58-64` |
-| Research job length and credits | `Craft.cs:1206-1238` |
+| Research job length and credits | `Craft.cs:1267-1314` |
 | A first research job creates the blueprint | `ResearchViewModel.cs:517-530` |
 | Components and enhancements lost on failure | `CraftViewModel.cs:1601-1641` |
 | Recipe rank requirement | `Craft.cs:327-331` |

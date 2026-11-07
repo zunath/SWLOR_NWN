@@ -258,7 +258,12 @@ done
 # Coverage ratchet: only after a complete default run, so a missing project cannot read as a drop.
 if [ "$COVERAGE" = 1 ] && [ "$FULL_RUN" = 1 ]; then
     echo "::group::coverage floors"
-    if python tools/Refactor/check_coverage.py "$OUT/coverage"; then
+    # python3 on a Windows machine can be the Store stub, so take the first interpreter that actually runs.
+    python_cmd=""
+    for candidate in python python3; do
+        if "$candidate" -c "" > /dev/null 2>&1; then python_cmd="$candidate"; break; fi
+    done
+    if [ -n "$python_cmd" ] && "$python_cmd" tools/Refactor/check_coverage.py "$OUT/coverage"; then
         coverage_check="passed"
     else
         coverage_check="failed"

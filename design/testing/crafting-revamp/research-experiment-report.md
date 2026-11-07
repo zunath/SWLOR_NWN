@@ -180,31 +180,31 @@ All of a fixed level's evidence is spare. The focused player Tests and Analyzes 
 | 1 | 10 | no gear | 60% | 2.99 | 15.0% | 8% |
 | 1 | 10 | mid gear | 66% | 3.50 | 17.5% | 16% |
 | 1 | 10 | best gear | 74% | 3.77 | 18.9% | 24% |
-| 1 | 10 | fully modded gear | 95% | 4.96 | 24.8% | 98% |
+| 1 | 10 | fully modded gear | 95% | 5.72 | 24.8% | 98% |
 | 2 | 20 | no gear | 60% | 3.01 | 15.1% | 8% |
 | 2 | 20 | mid gear | 66% | 3.34 | 16.7% | 14% |
 | 2 | 20 | best gear | 74% | 3.85 | 19.2% | 27% |
-| 2 | 20 | fully modded gear | 95% | 4.95 | 24.8% | 96% |
+| 2 | 20 | fully modded gear | 95% | 5.68 | 24.8% | 96% |
 | 3 | 30 | no gear | 55% | 2.79 | 14.0% | 7% |
 | 3 | 30 | mid gear | 61% | 3.19 | 15.9% | 10% |
 | 3 | 30 | best gear | 69% | 3.57 | 17.9% | 22% |
-| 3 | 30 | fully modded gear | 92% | 4.95 | 24.8% | 95% |
+| 3 | 30 | fully modded gear | 92% | 5.61 | 24.8% | 95% |
 | 4 | 40 | no gear | 50% | 2.66 | 13.3% | 4% |
 | 4 | 40 | mid gear | 56% | 2.89 | 14.4% | 7% |
 | 4 | 40 | best gear | 64% | 3.47 | 17.4% | 16% |
-| 4 | 40 | fully modded gear | 87% | 4.82 | 24.1% | 85% |
+| 4 | 40 | fully modded gear | 87% | 5.30 | 24.1% | 85% |
 | 5 | 50 | no gear | 45% | 2.43 | 12.2% | 3% |
 | 5 | 50 | mid gear | 51% | 2.81 | 14.1% | 6% |
 | 5 | 50 | best gear | 59% | 3.23 | 16.1% | 13% |
-| 5 | 50 | fully modded gear | 82% | 4.77 | 23.9% | 79% |
+| 5 | 50 | fully modded gear | 82% | 5.21 | 23.9% | 79% |
 | 1 | 50 | no gear | 75% | 3.93 | 19.6% | 32% |
 | 1 | 50 | mid gear | 81% | 4.33 | 21.6% | 45% |
 | 1 | 50 | best gear | 89% | 4.58 | 22.9% | 65% |
-| 1 | 50 | fully modded gear | 95% | 4.97 | 24.9% | 98% |
+| 1 | 50 | fully modded gear | 95% | 5.70 | 24.9% | 98% |
 | 3 | 50 | no gear | 70% | 3.63 | 18.1% | 17% |
 | 3 | 50 | mid gear | 76% | 4.08 | 20.4% | 36% |
 | 3 | 50 | best gear | 84% | 4.38 | 21.9% | 53% |
-| 3 | 50 | fully modded gear | 95% | 4.97 | 24.9% | 98% |
+| 3 | 50 | fully modded gear | 95% | 5.71 | 24.9% | 98% |
 
 ## Fabrication XP per real hour
 

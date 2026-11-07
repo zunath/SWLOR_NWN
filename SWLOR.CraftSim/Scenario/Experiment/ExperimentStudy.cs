@@ -34,6 +34,9 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// <summary>The mean share of the job's time cut, in percent.</summary>
         public double MeanTimeCutPercent { get; init; }
 
+        /// <summary>The mean evidence Analyze spent, counted even where the time cut's cap kept it from cutting more.</summary>
+        public double MeanSpentEvidence { get; init; }
+
         /// <summary>The mean evidence on the chosen candidate when the experiment ended.</summary>
         public double MeanTargetEvidence { get; init; }
 
@@ -101,7 +104,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             if (runs < 1)
                 throw new ArgumentOutOfRangeException(nameof(runs));
 
-            double actions = 0, trials = 0, refines = 0, cut = 0, evidence = 0, magnitude = 0, withEvidenceSum = 0;
+            double actions = 0, trials = 0, refines = 0, cut = 0, spent = 0, evidence = 0, magnitude = 0, withEvidenceSum = 0;
             var noEvidence = 0;
             var maximum = 0;
             var withEvidenceRuns = 0;
@@ -120,6 +123,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 trials += engine.TrialsUsed;
                 refines += result.CpSpent / (double)Math.Max(1, setup.RefineCp);
                 cut += engine.TimeCutPercent;
+                spent += engine.SpentEvidence;
 
                 var snapshot = engine.Snapshot();
                 var targetEvidence = snapshot.Evidence[tracked];
@@ -151,6 +155,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 MeanTrialsUsed = trials / runs,
                 MeanRefines = refines / runs,
                 MeanTimeCutPercent = cut / runs,
+                MeanSpentEvidence = spent / runs,
                 MeanTargetEvidence = evidence / runs,
                 NoEvidenceShare = noEvidence / (double)runs,
                 MeanTargetMagnitude = magnitude / runs,

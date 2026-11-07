@@ -189,6 +189,20 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void TheEvidenceAnalyzedCountsWhatTheCapKeptFromCuttingMore()
+        {
+            // Ten trials at a high chance bank more evidence than the 25% cap can turn into time cut.
+            var tuning = ExperimentTuning.Default with { Trials = 10, TestChanceBonusPercent = 40 };
+            var sample = ExperimentStudy.Play(
+                new ExperimentCase(1, 1, 50, Best), () => new ExperimentFocusedPolicy(ResearchCandidate.FixedGrant), ResearchCandidate.FixedGrant, 200, 3, tuning);
+
+            sample.MeanTimeCutPercent.Should().BeLessThanOrEqualTo(ExperimentRules.TimeCutCapPercent);
+            sample.MeanSpentEvidence.Should().BeGreaterThan(
+                sample.MeanTimeCutPercent * 10 / ExperimentRules.TimeCutTenthsPerEvidence,
+                "evidence past the cap is still analyzed, so it is counted and not worked back from the capped cut");
+        }
+
+        [Test]
         public void TheJobLengthIsTheGamesResearchFormula()
         {
             ExperimentStudy.JobSeconds(0, 1).Should().Be(200);

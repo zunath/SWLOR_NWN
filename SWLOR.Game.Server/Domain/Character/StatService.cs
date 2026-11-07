@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, the Attack,
     /// Accuracy, Defense and Evasion ratings, deflection and healing reactions, and NPC stat skins. The logic that used to
     /// be static in <c>Service.Stat</c> is moved here unchanged; the facade keeps the event handlers and forwards every
-    /// call to the container's instance. Calls into the unconverted <c>Combat</c>, <c>Skill</c>, <c>Perk</c>,
+    /// call to the container's instance. Calls into <c>Combat</c>, <c>Skill</c>, <c>Perk</c>,
     /// <c>TemporaryStatModifier</c>, <c>TemporaryHitPointEffects</c> and <c>Droid</c> sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls. The stat type metadata and the formulas the
     /// offline tools read live in <see cref="StatRules"/>, for code that has no container.
@@ -3263,9 +3263,8 @@ namespace SWLOR.Game.Server.Domain.Character
         // The native read of the deflection reactions: they need only the creature's id, so a test can run them.
         protected virtual uint GetNativeCreatureId(CNWSCreature creature) => creature.m_idSelf;
 
-        // The calls into code that is not converted yet, one line each, so a test can answer them. The bodies are the
-        // original calls. The hot reads among them (the perk and temporary stat reads) add one virtual dispatch and no
-        // allocation.
+        // The calls that are not injected, one line each, so a test can answer them. The bodies are the original calls. The
+        // hot reads among them (the perk and temporary stat reads) add one virtual dispatch and no allocation.
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetPerkStatSources(uint creature, StatType payloadStat) =>
             Perk.GetStatSources(creature, payloadStat);

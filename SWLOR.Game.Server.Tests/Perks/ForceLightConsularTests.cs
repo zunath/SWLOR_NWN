@@ -23,9 +23,8 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
-    // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;
-    private IDisposable _facadeScope = null!;
+    private IDisposable _installed = null!;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();
@@ -34,10 +33,10 @@ public class ForceLightConsularTests
     public void DisposeFacades() => _facades.Dispose();
 
     [SetUp]
-    public void InstallFacades() => _facadeScope = _facades.Install();
+    public void InstallFacades() => _installed = _facades.Install();
 
     [TearDown]
-    public void RemoveFacades() => _facadeScope.Dispose();
+    public void RemoveFacades() => _installed.Dispose();
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -87,8 +86,7 @@ public class ForceLightConsularTests
         perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
             .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
 
-        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
-            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var cache = PerkInternals.AllPerks;
         var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
         cache[PerkType.ThrowRock] = perk;
         try

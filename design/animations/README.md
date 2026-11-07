@@ -676,7 +676,8 @@ option for small libraries; it still obeys the 32-model chain limit and will usu
 rejected for large libraries. Neither option changes any motion keys or raises byte limits.
 
 Keep bank animation blocks sorted by name; the installer now sorts the complete bank before
-compilation. Offline pose sampling alone does not validate native animation lookup or equipment
+compilation. `CompileModels.py` rejects unsorted or duplicate authored names and verifies the
+compiled animation table against the source. Offline pose sampling alone does not validate native animation lookup or equipment
 overlays. Fishing rods use the standard wield setting in `baseitems.2da`: the polearm setting
 adds a shoulder-rest overlay that masks the right arm during the fishing clip. Validate fishing
 with the rod equipped after replacing the HAKs, restarting the server, and reopening the client.

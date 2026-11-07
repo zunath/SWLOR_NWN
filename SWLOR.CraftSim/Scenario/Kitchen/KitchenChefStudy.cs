@@ -186,7 +186,7 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         /// <summary>The styles the perk definitions give, then the alternatives the retune tries.</summary>
         public static IReadOnlyList<StyleCandidate> StyleCandidates { get; } = new[]
         {
-            Candidate(80, 25, 15),
+            Candidate(60, 25, 15),
         };
 
         public static StyleCandidate Candidate(int slowLow, int slowMedium, int flashHigh) =>

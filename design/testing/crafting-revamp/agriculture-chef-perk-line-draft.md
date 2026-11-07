@@ -25,15 +25,15 @@ The Kitchen (`Service/CraftService/Minigame/Kitchen/`; every value is a starting
 | Rank | SP | Perk | Type | Effect | StatTypes the engine reads |
 | --- | --- | --- | --- | --- | --- |
 | 5 | 1 | Pantry Staples | trait | Each free pantry pinch (Salt, Sugar, Spice) pushes 5 instead of 4. | `KitchenPantryPush` +1 |
-| 10 | 1 | Sharp Palate | trait | Every push lands closer to its listed strength: the base spread is 45% instead of 50%, before Control narrows it. | `KitchenPushSpreadReduction` +5 |
+| 10 | 1 | Sharp Palate | trait | Every push lands closer to its listed strength: the base spread is 47% instead of 50%, before Control narrows it. | `KitchenPushSpreadReduction` +3 |
 | 15 | 2 | Seasoned Palate I | toggle | A switch in the Kitchen's setup view. While it is on, every Add of a committed ingredient pushes half as far but still uses a whole portion. Pantry pinches are not changed. | `KitchenSeasonedPalate` (flag) |
-| 20 | 2 | Slow Cooking | style (exclusive with Flash Cooking) | A Simmer at Low heat gives 80% more Doneness (9 instead of 5), and the flavor drifts 25% less at Medium heat (4 becomes 3). | `KitchenLowHeatDonenessPercent` +80, `KitchenMediumDriftReductionPercent` +25 |
+| 20 | 2 | Slow Cooking | style (exclusive with Flash Cooking) | A Simmer at Low heat gives 60% more Doneness (8 instead of 5), and the flavor drifts 25% less at Medium heat (4 becomes 3). | `KitchenLowHeatDonenessPercent` +60, `KitchenMediumDriftReductionPercent` +25 |
 | 20 | 2 | Flash Cooking | style (exclusive with Slow Cooking) | The flavor drifts 15% less at High heat (8 becomes 7). | `KitchenHighHeatDriftReductionPercent` +15 |
-| 25 | 3 | Reduce I | active | A new action: takes a turn and 12 CP and pulls the flavor 20% of the way toward the target's center on every flavor. | `KitchenReducePercent` +20 |
-| 30 | 3 | Seasoned Palate II | trait | While Seasoned Palate is on, every push is also 25% less random, after Control narrows it. | `KitchenSeasonedPalate` (flag), `KitchenSeasonedPalateSpreadPercent` +25 |
-| 35 | 3 | Aromatic Kitchen | trait | Each turn has a 35% chance of announcing Peak Aroma instead of 25%. | `KitchenPeakAromaChancePoints` +10 |
-| 40 | 3 | Reduce II | active | Reduce pulls 35% of the way and costs 9 CP. | `KitchenReducePercent` +35, `KitchenReduceCpReduction` +3 |
-| 45 | 3 | Steady Wrist | trait | Stir costs 4 less CP (8 instead of 12) and, at Medium heat, also gives half of a Simmer's Doneness. There is no Simmer at High heat, so Stir adds nothing there. | `KitchenStirCpReduction` +4, `KitchenStirDonenessPercent` +50 |
+| 25 | 3 | Reduce I | active | A new action: takes a turn and 12 CP and pulls the flavor 15% of the way toward the target's center on every flavor. | `KitchenReducePercent` +15 |
+| 30 | 3 | Seasoned Palate II | trait | While Seasoned Palate is on, every push is also 15% less random, after Control narrows it. | `KitchenSeasonedPalate` (flag), `KitchenSeasonedPalateSpreadPercent` +15 |
+| 35 | 3 | Aromatic Kitchen | trait | Each turn has a 30% chance of announcing Peak Aroma instead of 25%. | `KitchenPeakAromaChancePoints` +5 |
+| 40 | 3 | Reduce II | active | Reduce pulls 20% of the way and costs 11 CP. | `KitchenReducePercent` +20, `KitchenReduceCpReduction` +1 |
+| 45 | 3 | Steady Wrist | trait | Stir costs 2 less CP (10 instead of 12) and, at Medium heat, also gives half of a Simmer's Doneness. There is no Simmer at High heat, so Stir adds nothing there. | `KitchenStirCpReduction` +2, `KitchenStirDonenessPercent` +50 |
 | 50 | 4 | Signature Dish | capstone, active | A new action, once per dish: takes a turn and no CP and sets one flavor of your choice exactly to the target's center. It is three actions (`Signature Dish: Savory`, `Sweet`, `Spice`). | `KitchenSignatureDish` (flag) |
 
 SP check: 1 + 1 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 4 = 25. Only one of the two rank-20 perks can be bought.
@@ -57,21 +57,27 @@ The drafted styles failed gate 2 (style balance). Slow Cooking as drafted (a Low
 
 ## Balance evidence
 
-`agriculture-chef-perks.md` (seed 1, 40 attempts per cell, 6 recipes per band; rank 50 plays recipes of levels 41-53) and the gate reports. The adaptive player is the model of skilled play throughout.
+The gear difficulty pass (November 2026) cut these values so a full Chef line does not replace gear. `gear-difficulty-curve.md` has the reasoning and the three-seed gear ladder.
 
-**Rank 50, per purchase** (`agriculture-chef-perks.md`, 20 attempts per recipe, 4 recipes per band; quality change against the unperked cook at the same gear, no gear / mid gear / best gear):
-- The whole line, either style, is worth +12 to +19 quality points and 3.4 to 4.8 fewer actions per craft, and 82% to 98% of its crafts reach full quality (the unperked cook: 54% to 72%).
-- The strongest single purchases are Reduce (+5.0 / +2.4 / +6.7 points, 1.3 to 2.5 fewer actions) and Signature Dish (+3.9 / +2.3 / +6.7 points, 1.4 to 3.1 fewer actions). Slow Cooking and Flash Cooking alone are worth +1.6 to +4.3 points.
-- Pantry Staples, Sharp Palate, Aromatic Kitchen and Steady Wrist are small on their own (-7.3 to +3.4 points; the smallest ones are within the sample's noise) and mainly make the other purchases work.
-- Seasoned Palate switched on, alone, costs quality (-3.7 / -7.2 / -13.6 points) because half-strength Adds need pantry pinches to finish; with the rest of the line it is within 2 points of leaving it off (best gear, Slow Cooking: 99.9 against 98.0 quality, 98% of crafts at full quality). That is the choice the switch offers.
+`agriculture-chef-perks.md` (seed 1, 20 attempts per recipe, 4 recipes per band; rank 50 plays recipes of levels 41-53) and the gate reports. The adaptive player is the model of skilled play throughout. Four recipes is a small sample, so a single purchase moves several points by chance; the ladder's three-seed averages are the numbers tuning was judged on.
 
-**Gate 2, style balance** (`kitchen-perks-gates.md`, the gate's own sample of 6 recipes per band, 40 runs): passed in all nine cells (the styles alone, with the full line, and with the full line and Seasoned Palate on, each at no, mid and best gear). The better-recipe shares run 33% to 67% and no mean gap passes 1.6 points. At a smaller sample of 4 recipes per band, three cells failed on the tie rule (for example 88% / 12% at no gear with the full line, mean gap 4.0 points); the verdict depends on the recipes sampled, so the gate's own sample is the one recorded.
+**Rank 50, per purchase** (quality change against the unperked cook at the same gear, no gear / mid gear / best gear):
+- The whole line is worth +16 to +20 points in no gear, +13 to +15 in mid gear and +11 to +15 in best gear, and 3.3 to 6.3 fewer actions. In fully modded gear it adds under 2 points and about 3 fewer actions, so it saves time there rather than quality.
+- The strongest single purchases are Signature Dish (+8.5 / +10.0 / +8.7) and the styles (Slow Cooking +12.5 / +8.8 / +8.0, Flash Cooking +6.1 / +9.9 / +10.5). Reduce (+1.7 / +8.1 / +9.7) and Steady Wrist (+5.2 / +8.5 / +10.0) follow.
+- Sharp Palate (+0.2 / +3.5 / +0.6) and Aromatic Kitchen (+0.5 / +1.3 / +3.4) are small on their own.
+- Seasoned Palate switched on, alone, is about even at these gear tiers (-1.7 / -1.8 / +2.9) and costs quality in fully modded gear (-8.7), because half-strength Adds need pantry pinches to finish. That is the choice the switch offers.
 
-**Gate 3, perks optional**: passed (lowest 58% of unperked rank-50 crafts reach full quality in best gear; the bands run 58% to 88%).
+**Gate 2, style balance** (`kitchen-perks-gates.md`, 6 recipes per band, 40 runs): passed in all twelve cells (the styles alone, with the full line, and with the full line and Seasoned Palate on, each at no, mid, best and fully modded gear). The better-recipe shares run 33% to 67%.
 
-**Gates 4, 5, 6 and 7 for a Chef** (`kitchen-slow-cooking-gates.md`, `kitchen-flash-cooking-gates.md`): passed for both styles. Length 10.1 to 16.1 actions per craft (the perked floor is 8), XP per hour at least 1.04x (Slow Cooking) and 1.06x (Flash Cooking) of the legacy rate, enhancement parity at least 1.07x, material parity within tolerance. Neither needed a change to the Kitchen's base tuning or XP multipliers.
+**Gate 3, perks optional**: passed against the fully modded target (lowest 82% of unperked rank-50 crafts in fully modded gear reach full quality).
 
-**Gate 1, no fixed rotation**: open for perked Chef builds, as for the Circuit, Fabricator and perked Forge (owner, October 2026; see the plan's gate 1 note). Not retuned here; judged from player feedback. Details in `kitchen-perks-gates.md`.
+**Gates 4 to 7** (`kitchen-gates.md` unperked, 6 recipes per band; `kitchen-slow-cooking-gates.md` and `kitchen-flash-cooking-gates.md`, 4 recipes per band; all 40 runs):
+- Length (unperked only): passed, 10-20 actions on average in every band and gear tier.
+- Economy parity: passed in all three.
+- XP rate: unperked passed (lowest 1.03x). Both styles miss one case at 21-30, no gear, 1 enhancement: Flash Cooking 0.99x, Slow Cooking just under 1.00x.
+- Enhancement parity (fully modded gear): Slow Cooking passed (lowest 0.98) and Flash Cooking passed (lowest 0.97). Unperked misses one case: 41-45 at 3 slots, 0.894 of today's against a limit of 0.90.
+
+**Gate 1, no fixed rotation**: open for perked Chef builds, as for the Circuit, Fabricator and perked Forge (owner, October 2026; see the plan's gate 1 note). Not retuned here; judged from player feedback. The reports for this pass leave it out, because the search takes many CPU hours (`gear-difficulty-curve.md`, Limits).
 
 ## Player descriptions
 

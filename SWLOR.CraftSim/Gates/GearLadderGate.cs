@@ -98,7 +98,7 @@ namespace SWLOR.CraftSim.Gates
             var thresholds = run.Thresholds;
             var table = new EvidenceTable("Band", "Style", "Fully perked, no gear", "No perks, unmodded best gear", "Allowance", "Verdict");
             var bestIndex = run.Gear.ToList().FindIndex(gear => gear.Name == CraftingGearCatalog.BestGearName);
-            var styles = run.Scenario.StylePairs.LastOrDefault() is { } pair ? new[] { pair.First, pair.Second } : Array.Empty<CraftStyle>();
+            var styles = run.Scenario.GearLadderPerkStyles;
             var bands = run.Cohort.Select(context.Recipes, thresholds.RecipesPerBand, thresholds.GearLadderBands);
             run.PrepareAdaptive(bands.SelectMany(band => band.Recipes).SelectMany(recipe =>
                 styles.Select(style => (recipe, rank, 0, style)).Append((recipe, rank, bestIndex, (CraftStyle)null))));

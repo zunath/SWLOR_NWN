@@ -523,7 +523,7 @@ public class ExperimentEngineTests
     [Test]
     public void TheTimeCutPerEvidenceAndTheCapComeFromTheTuning()
     {
-        var engine = Engine(Setup(tuning: new ExperimentTuning(TimeCutPerEvidence: 10, TimeCutCap: 30)), Hits(3));
+        var engine = Engine(Setup(tuning: new ExperimentTuning(TimeCutTenthsPerEvidence: 100, TimeCutCap: 30)), Hits(3));
         for (var trial = 0; trial < 3; trial++)
             engine.Perform(ExperimentActionIds.TestFixed);
 

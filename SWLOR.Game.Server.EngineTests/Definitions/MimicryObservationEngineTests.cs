@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
@@ -19,8 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task KillProducesOneMimicryXPMessage(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-            var queue = (SkillXPMessageQueue)typeof(Skill)
-                .GetField("_xpMessages", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var queue = ServiceInternals.Field<ISkillService, SkillXPMessageQueue>("_xpMessages");
             var sendField = typeof(SkillXPMessageQueue).GetField("_send", BindingFlags.NonPublic | BindingFlags.Instance);
             var originalSend = (Action<uint, SkillType, int>)sendField.GetValue(queue);
             var messages = new List<int>();

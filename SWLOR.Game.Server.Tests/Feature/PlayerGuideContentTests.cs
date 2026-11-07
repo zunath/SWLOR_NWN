@@ -17,7 +17,7 @@ using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerGuideContentTests
+public class PlayerGuideContentTests : SkillFacadeFixture
 {
     // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;

@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
-public class CraftTests
+public class CraftTests : SkillFacadeFixture
 {
     private readonly CraftService _craft = CraftServices.Create();
 

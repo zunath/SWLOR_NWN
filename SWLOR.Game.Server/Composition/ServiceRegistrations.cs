@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
+            services.AddSingleton<ISkillService, SkillService>();
             services.AddSingleton<IStatService, StatService>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();

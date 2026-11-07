@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// registers at runtime (every <see cref="IRecipeListDefinition"/> in
 /// SWLOR.Game.Server.Feature.RecipeDefinition).
 /// </summary>
-public class CombatUpgradeBibleRecipeParityTests
+public class CombatUpgradeBibleRecipeParityTests : SkillFacadeFixture
 {
     private static readonly string[] RecipeWorksheetNames =
     {

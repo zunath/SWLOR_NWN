@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// a cooldown stat and consumes it through <c>TryUseStatTrigger</c>. Guard rolls on every landed
 /// physical hit from every attacker, which makes the gate load-bearing rather than cosmetic.
 /// </summary>
-public class TriggeredResourceRestoreGateTests
+public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
 {
     // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;

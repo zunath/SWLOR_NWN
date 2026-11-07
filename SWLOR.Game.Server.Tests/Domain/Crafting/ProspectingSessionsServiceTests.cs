@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 /// sessions it opens stay known to it. The rules are covered by <c>ProspectingLifecycleTests</c>.
 /// </summary>
 [TestFixture]
-public class ProspectingSessionsServiceTests
+public class ProspectingSessionsServiceTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Harvester = 22;

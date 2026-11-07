@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// restated by every rank above it. Omitting it turns the next rank into a partial downgrade that
 /// the player pays SP for.
 /// </summary>
-public class PerkRankProgressionTests
+public class PerkRankProgressionTests : SkillFacadeFixture
 {
     // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;

@@ -17,10 +17,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SlicingService;
 using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class SlicingContentTests
+public class SlicingContentTests : SkillFacadeFixture
 {
     private static readonly Dictionary<string, int> TerminalAreas = new()
     {

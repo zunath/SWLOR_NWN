@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>Covers quick craft: who may use it, how large a batch is, and how a batch runs, cancels and stops.</summary>
-public class QuickCraftTests
+public class QuickCraftTests : SkillFacadeFixture
 {
     private const uint Player = 1;
 

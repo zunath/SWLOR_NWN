@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatReleaseBalanceAuditTests
+public class CombatReleaseBalanceAuditTests : SkillFacadeFixture
 {
     // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;

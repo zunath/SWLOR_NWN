@@ -43,10 +43,13 @@ public class CraftServiceTests
     {
         // The resistance encoding is reached through the Resistance facade, which needs a container.
         _facades = new FacadeContainer();
-        using var engine = new PlayerEngine();
-        using var events = EventsPluginRuntime.Override(new FakeEventsPlugin());
-        Skill.CacheData();
-        Skill.CacheXPChartData();
+        using (_facades.Install())
+        using (new PlayerEngine())
+        using (EventsPluginRuntime.Override(new FakeEventsPlugin()))
+        {
+            Skill.CacheData();
+            Skill.CacheXPChartData();
+        }
     }
 
     [OneTimeTearDown]

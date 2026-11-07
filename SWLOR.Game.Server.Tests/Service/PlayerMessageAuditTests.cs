@@ -49,7 +49,7 @@ public class PlayerMessageAuditTests
     {
         var root = FindRepositoryRoot();
         var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Domain/Character/StatusEffectService.cs",
-            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Service/Skill.cs", "Domain/Companions/BeastMasteryService.cs",
+            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Service/QuestService/QuestObjectives.cs", "Service/QuestService/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
@@ -173,7 +173,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void SkillCapWarnings_ShareOneProductionLimitAcrossSkillsAndOutcomes()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Skill.cs");
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs");
         var keys = ReadCalls(file).Where(call => MethodName(call) == "SendWarningToPlayer")
             .Select(call => call.ArgumentList.Arguments[1].Expression.ToString()).ToArray();
         keys.Where(key => key != "\"SKILL_LIMIT\"").Should().HaveCount(2).And.OnlyContain(key => key == "\"SKILL_CAP\"",

@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class RareLootBalanceTests
+public class RareLootBalanceTests : SkillFacadeFixture
 {
     // The code under test reaches the Stat facade, which resolves its instance from a container.
     private FacadeContainer _facades = null!;

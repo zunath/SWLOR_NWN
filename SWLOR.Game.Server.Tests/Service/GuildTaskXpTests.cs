@@ -26,8 +26,9 @@ public class GuildTaskXpTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
         _container = new FacadeContainer();
+        using (_container.Install())
+            Skill.CacheXPChartData();
     }
 
     [OneTimeTearDown]

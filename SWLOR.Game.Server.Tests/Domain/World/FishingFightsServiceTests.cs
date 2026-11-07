@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Tests.Service;
 using SWLOR.Game.Server.Tests.Service.Line;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// logout handlers.
 /// </summary>
 [TestFixture]
-public class FishingFightsServiceTests
+public class FishingFightsServiceTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Rod = 22;
@@ -38,7 +39,11 @@ public class FishingFightsServiceTests
     }
 
     [OneTimeSetUp]
-    public void LoadTheXpChart() => Skill.CacheXPChartData();
+    public void LoadTheXpChart()
+    {
+        using (SkillFacades.Install())
+            Skill.CacheXPChartData();
+    }
 
     [SetUp]
     public void SetUp()

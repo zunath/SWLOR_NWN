@@ -3,10 +3,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class RecipeCategoryBaseItemTests
+public class RecipeCategoryBaseItemTests : SkillFacadeFixture
 {
     private static readonly Dictionary<RecipeCategoryType, BaseItem[]> AllowedBaseItems = new()
     {

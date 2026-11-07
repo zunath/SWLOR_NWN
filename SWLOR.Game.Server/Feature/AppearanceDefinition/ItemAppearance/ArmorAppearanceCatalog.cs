@@ -65,7 +65,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         public static bool AcceptsSavedStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>
             (part == AppearanceArmor.Neck && style == 0) ||
             GetStyles(definition, part).Contains(style) ||
-            (style == RetainedBareStyle && part is not (AppearanceArmor.Belt or AppearanceArmor.LeftShoulder or
-                AppearanceArmor.RightShoulder or AppearanceArmor.Robe));
+            IsRetainedBareStyle(part, style);
+
+        /// <summary>
+        /// The style whose picture and name the editor shows. A retained 2 looks exactly like 1, and its own
+        /// picture shows a model the armor never draws.
+        /// </summary>
+        public static int DisplayedStyle(AppearanceArmor part, int style) =>
+            IsRetainedBareStyle(part, style) ? 1 : style;
+
+        private static bool IsRetainedBareStyle(AppearanceArmor part, int style) =>
+            style == RetainedBareStyle && part is not (AppearanceArmor.Belt or AppearanceArmor.LeftShoulder or
+                AppearanceArmor.RightShoulder or AppearanceArmor.Robe or AppearanceArmor.Invalid);
     }
 }

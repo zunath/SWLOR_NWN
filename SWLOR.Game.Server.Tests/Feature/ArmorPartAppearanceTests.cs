@@ -174,6 +174,19 @@ public class ArmorPartAppearanceTests
             "the editor offers None for the neck");
     }
 
+    [Test]
+    public void RetainedStyleTwoShowsAsStyleOne()
+    {
+        // Style 2's own picture shows a model the armor never draws; it looks exactly like 1.
+        var kept = new[] { AppearanceArmor.Belt, AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.Robe };
+        foreach (var part in ArmorParts)
+        {
+            Assert.That(ArmorAppearanceCatalog.DisplayedStyle(part, 2), Is.EqualTo(kept.Contains(part) ? 2 : 1), part.ToString());
+            foreach (var style in new[] { 0, 1, 3, 200 })
+                Assert.That(ArmorAppearanceCatalog.DisplayedStyle(part, style), Is.EqualTo(style), $"{part} {style}");
+        }
+    }
+
     private static readonly AppearanceArmor[] ArmorParts =
     {
         AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,

@@ -2521,7 +2521,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketBuyViewModel.cs",
-    "Line": 392,
+    "Line": 385,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"This ship has changed since you opened the listing. Please check it and try again.\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketBuyViewModel.cs",
+    "Line": 404,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"

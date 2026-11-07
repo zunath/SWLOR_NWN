@@ -165,6 +165,22 @@ public class SpaceStaleMenuTests
         return index;
     }
 
+    [Test]
+    public void AListedShip_KeepsTheStoredItemsItsBuyerWasShown()
+    {
+        var storage = ReadServer("Feature", "GuiDefinition", "ViewModel", "PropertyItemStorageViewModel.cs");
+        var store = Between(storage, "public Action OnStoreItem()", "private bool RefuseWhileShipListed(");
+        Index(store, "if (RefuseWhileShipListed(propertyId))").Should().BeLessThan(Index(store, "category.Items.Add(itemId, dbItem);"));
+        var retrieve = Between(storage, "public Action OnRetrieveItem()", "public Action OnExamineItem()");
+        Index(retrieve, "if (RefuseWhileShipListed(propertyId))").Should().BeLessThan(Index(retrieve, "Item.TryAcquireItem(Player, item)"));
+        Between(storage, "private bool RefuseWhileShipListed(", "public Action OnRetrieveItem()")
+            .Should().Contain("ShipTransfer.IsPropertyListedForSale(propertyId)");
+
+        // Anything else that changes the ship while the buyer's prompt is open sends them back to look again.
+        var buy = Between(ReadServer("Feature", "GuiDefinition", "ViewModel", "MarketBuyViewModel.cs"), "private void Buy(int index)", "Give the item to the buyer");
+        Index(buy, "if (currentSummary != shipSummary)").Should().BeLessThan(Index(buy, "ShipTransfer.Buy(Player, dbItem,"));
+    }
+
     private static string Between(string source, string start, string end)
     {
         var from = Index(source, start);

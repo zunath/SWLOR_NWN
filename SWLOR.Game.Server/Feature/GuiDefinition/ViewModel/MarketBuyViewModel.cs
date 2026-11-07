@@ -375,6 +375,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // item. It is checked again first; a ship that can't change owner now keeps its listing.
                 if (!string.IsNullOrWhiteSpace(dbItem.ShipId))
                 {
+                    // The buyer agreed to the ship this prompt described. If its design, modules, furniture or stored
+                    // items changed while the prompt was open, they look again instead.
+                    var currentSummary = DB.Get<PlayerShip>(dbItem.ShipId) is { } currentShip
+                        ? "\n\n" + ShipTransfer.BuildSummary(currentShip)
+                        : string.Empty;
+                    if (currentSummary != shipSummary)
+                    {
+                        FloatingTextStringOnCreature("This ship has changed since you opened the listing. Please check it and try again.", Player, false);
+                        Search();
+                        return;
+                    }
+
                     if (!ShipTransfer.Buy(Player, dbItem, PlayerMarket.GetMarketRegion(_regionType).TaxRate))
                         return;
 

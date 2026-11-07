@@ -84,9 +84,11 @@ namespace SWLOR.Game.Server.Composition
 
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
+            services.AddSingleton<ICombatAbilityBonusService, CombatAbilityBonusService>();
             services.AddSingleton<ICombatActivityService, CombatActivityService>();
             services.AddSingleton<ICombatAttackTimingService, CombatAttackTimingService>();
             services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
+            services.AddSingleton<ICombatDamageModifiersService, CombatDamageModifiersService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();

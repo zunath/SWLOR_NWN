@@ -300,7 +300,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         share[(share.IndexOf('{') + 1)..].Should().NotContain("ApplyDamageTakenShareToStatusSource(");
 
         var consumeIndex = redirect.IndexOf(
-            "StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
+            "_statusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
             StringComparison.Ordinal);
         var damageIndex = redirect.IndexOf("EffectDamage(finalRedirectedDamage", StringComparison.Ordinal);
         damageIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -413,7 +413,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         hostileRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
 
         var deflectionRestore = ExtractMethod(combat, "public static void ApplyAbilityGrantedAttackDeflectionEffects(");
-        deflectionRestore.Should().Contain("if (Stat.RestoreFP(activator, fpRestore) > 0)");
+        deflectionRestore.Should().Contain("if (_stat.RestoreFP(activator, fpRestore) > 0)");
 
         var areaRestore = ExtractMethod(combat, "private static void ApplyAreaAbilityImpactEffects(");
         areaRestore.Should().Contain("var restoredFP =");
@@ -431,10 +431,10 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             combat,
             "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
 
-        refresh.Should().Contain("if (StatusEffect.ApplyStatusEffect(",
+        refresh.Should().Contain("if (_statusEffect.ApplyStatusEffect(",
             "deflection riders must run only when the refreshed status was actually applied");
         refresh.Should().Contain(
-            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
+            "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
             "the refreshed deflection must retain the stat-declared ranged source");
         refresh.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(creature, source)",
             "Last Word refreshes must trigger Force Gyre and any future stat-driven deflection riders");

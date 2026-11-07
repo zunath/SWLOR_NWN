@@ -390,7 +390,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         characterSheet.Should().Contain("Assault Gadget Crit");
         ability.Split("                SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
             "player and NPC-scaled ability criticals both need visible combat feedback");
-        combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
+        combat.Should().Contain("_playerName.GetColoredDisplayName(observer, attacker)");
         combat.Should().Contain("critically hits");
     }
 

@@ -30,6 +30,7 @@ public class CombatPartForwardingTests
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
         typeof(ICombatDamageModifiersService),
+        typeof(ICombatDamageTakenService),
         typeof(ICombatFeedbackService),
         typeof(ICombatHitEffectsService),
         typeof(ICombatQueriesService),
@@ -154,6 +155,14 @@ public class CombatPartForwardingTests
     public void TheMovedHitDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 8, typeof(ICombatAbilityHitService), typeof(ICombatHitEffectsService));
 
+    // The members of the damage taken part that have default arguments, with the defaults they had as static members of
+    // Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatDamageTakenService), "ApplyDamageTakenModifiers(attacker=2130706432, damageType=Physical, deliveryType=Direct, targetStatusDamagePercentAdjustment=0, isLandedAttack=True, typedLeadershipReductionAlreadyApplied=False)")]
+    [TestCase(typeof(ICombatDamageTakenService), "ApplyIncomingPhysicalToForceConversion(targetStatusDamagePercentAdjustment=0, convertedDamageScheduler=null)")]
+    [TestCase(typeof(ICombatDamageTakenService), "ApplyAbilityUsedAttackDeflection(deflectionFPRestoreStatType=Invalid)")]
+    public void TheMovedDamageTakenDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 3, typeof(ICombatDamageTakenService));
+
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)
         .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
@@ -179,21 +188,31 @@ public class CombatPartForwardingTests
     }
 
     [Test]
-    public void TheRecentDamageTargetsTheUnmovedPartsReadAreTheActivityPartsOwnTable()
+    public void TheRecentDamageTargetsTheHitEffectsAndDamageTakenPartsReadAreTheActivityPartsOwnTable()
     {
+        // Both readers of the table have moved and take the activity part, so Combat keeps no property for them.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
         var activity = facades.Get<ICombatActivityService>();
-        var forwarder = typeof(CombatFacade).GetProperty("_recentDamageTargets", Statics)
-                        ?? throw new AssertionException("Combat has no _recentDamageTargets forwarder.");
+        const BindingFlags Instance = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        forwarder.GetMethod!.IsPrivate.Should().BeTrue();
-        forwarder.SetMethod.Should().BeNull("the hit effects and damage taken parts only read and prune the table");
-        var table = forwarder.GetValue(null);
-        table.Should().BeSameAs(activity.RecentDamageTargets);
-        table.Should().BeSameAs(typeof(CombatActivityService)
-            .GetField("_recentDamageTargets", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(activity));
-        forwarder.GetValue(null).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
+        typeof(CombatFacade).GetProperty("_recentDamageTargets", Statics).Should().BeNull("no unmoved part reads the table any more");
+        object table = activity.RecentDamageTargets;
+        table.Should().BeSameAs(typeof(CombatActivityService).GetField("_recentDamageTargets", Instance)!.GetValue(activity));
+        ((object)activity.RecentDamageTargets).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
+        typeof(CombatHitEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatHitEffectsService>())
+            .Should().BeSameAs(activity);
+        typeof(CombatDamageTakenService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDamageTakenService>())
+            .Should().BeSameAs(activity);
+    }
+
+    [Test]
+    public void TheDamageTakenHandlerStaysOnCombatUnderItsName()
+    {
+        var handler = typeof(CombatFacade).GetMethod("ApplyDamageTakenEffects", BindingFlags.Public | BindingFlags.Static, Type.EmptyTypes)!;
+        handler.GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCreatureDamagedAfter);
+        typeof(CombatDamageTakenService).GetMethods().Where(method => method.Name == "ApplyDamageTakenEffects")
+            .SelectMany(method => method.GetCustomAttributes<NWNEventHandler>()).Should().BeEmpty("handlers stay on the facade");
     }
 
     [TestCase("PurgeInvalidOffensiveActivity", ScriptName.OnModuleHeartbeat)]
@@ -216,6 +235,8 @@ public class CombatPartForwardingTests
         CombatFacade.MaximumPassiveDamageHealingMaxHPPercentPerWindow.Should().Be(CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow).And.Be(24);
         CombatFacade.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow.Should().Be(CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow).And.Be(12);
         CombatFacade.CombatHealingWindowSeconds.Should().Be(CombatResourcesService.CombatHealingWindowSeconds).And.Be(6);
+        CombatFacade.BaseGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.BaseGuardDamageReductionPercent).And.Be(20);
+        CombatFacade.MaximumGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.MaximumGuardDamageReductionPercent).And.Be(55);
     }
 
     // A value per parameter type that differs from the default where it can, so a forwarder that drops or swaps an

@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _playerFeedback = playerFeedback;
         }
 
-        // The damage taken part has not moved yet; the area ability bonus after a deflection reads its record through Combat.
+        // The damage taken part takes this part, so the area ability bonus after a deflection reads its record through Combat.
         protected virtual bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds) =>
             Service.Combat.HasRecentDeflection(creature, source, windowSeconds);
 

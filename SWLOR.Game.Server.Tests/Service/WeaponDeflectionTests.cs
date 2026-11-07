@@ -91,7 +91,11 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("DeflectionSource.Melee => \"melee deflect\"");
         combatSource.Should().Contain("DeflectionSource.Ranged => \"ranged deflect\"");
         combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
-        combatSource.Should().Contain("internal static bool IsHostileAttackSource(uint defender, uint attacker)");
+        // The body lives in the damage taken part; Combat keeps the internal forwarder the native attack roll calls.
+        combatSource.Should().Contain("public static bool IsHostileAttackSource(uint defender, uint attacker)");
+        typeof(SWLOR.Game.Server.Service.Combat)
+            .GetMethod("IsHostileAttackSource", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, new[] { typeof(uint), typeof(uint) })!
+            .IsAssembly.Should().BeTrue("Native/ResolveAttackRoll.cs calls Combat.IsHostileAttackSource");
         combatSource.Should().Contain("GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker)");
         combatSource.Should().Contain("var requiredSource = _stat.GetStatTypeDeflectionSource(");
         combatSource.Should().Contain("StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);");
@@ -132,20 +136,20 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         combatSource.Should().Contain(
-            "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
+            "_stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
         combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
-        combatSource.Should().Contain("var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);");
+        combatSource.Should().Contain("var source = _stat.GetStatTypeDeflectionSource(attackDeflectionStatType);");
         statRulesSource.Should().Contain("public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)");
         statRulesSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
         statRulesSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
         statRulesSource.Should().Contain("DeflectionSource.Shield => StatType.ShieldDeflection");
-        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(attackDeflectionStatType)");
+        combatSource.Should().Contain("_stat.GetGrantedDeflectionStatType(attackDeflectionStatType)");
         combatSource.Should().MatchRegex(
-            @"TemporaryStatModifier\.Replace\(\s*activator,\s*targetStatType,\s*attackDeflection,\s*duration,\s*attackDeflectionStatType\);");
+            @"_temporaryStatModifier\.Replace\(\s*activator,\s*targetStatType,\s*attackDeflection,\s*duration,\s*attackDeflectionStatType\);");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection)");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection)");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
-        combatSource.Should().Contain("var fpRestoreSource = Stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);");
+        combatSource.Should().Contain("var fpRestoreSource = _stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);");
         combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
         combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         abilitySource.Should().Contain(

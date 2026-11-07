@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Combat
     {
-        public const int BaseGuardDamageReductionPercent = 20;
-        public const int MaximumGuardDamageReductionPercent = 55;
+        public const int BaseGuardDamageReductionPercent = CombatDamageTakenService.BaseGuardDamageReductionPercent;
+        public const int MaximumGuardDamageReductionPercent = CombatDamageTakenService.MaximumGuardDamageReductionPercent;
         public const int MaximumNormalDamageReductionPercent = CombatRules.MaximumNormalDamageReductionPercent;
         public const int MaximumDamageBonusPercent = CombatRules.MaximumDamageBonusPercent;
         public const int MaximumCombinedDamageReductionPercent = CombatRules.MaximumCombinedDamageReductionPercent;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
@@ -12,9 +11,6 @@ namespace SWLOR.Game.Server.Service
     public static partial class Combat
     {
         private static ICombatActivityService CombatActivity => FacadeAccessor.Resolve<ICombatActivityService>();
-
-        // The hit effects and damage taken parts read and prune the activity part's own table until they move.
-        private static Dictionary<(uint, uint), DateTime> _recentDamageTargets => CombatActivity.RecentDamageTargets;
 
         private static void ApplyFirstCombatAttackStaminaRestore(uint attacker) => CombatActivity.ApplyFirstCombatAttackStaminaRestore(attacker);
 

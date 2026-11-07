@@ -1,0 +1,53 @@
+{
+  "name": "Small fighter with two laser cannons vs a passive small fighter",
+  "description": "PLACEHOLDER NUMBERS ONLY: every stat below is made up to show the file format and is not a balance proposal. The defender does not fight back, so this measures how long the attacker needs to strip shield and hull.",
+  "durationSeconds": 120,
+  "timeStepSeconds": 0.1,
+  "sizeHitPenaltyPerStep": 10,
+  "sizeDamagePenaltyPerStep": 0.15,
+  "attackers": {
+    "name": "Attacker",
+    "ships": [
+      {
+        "name": "Fighter",
+        "size": "Small",
+        "maxHull": 400,
+        "maxShield": 200,
+        "maxCapacitor": 100,
+        "shieldRegenPerSecond": 2,
+        "capacitorRegenPerSecond": 5,
+        "attack": 100,
+        "accuracy": 100,
+        "defense": 100,
+        "evasion": 100,
+        "resistances": { "em": 0, "thermal": 0, "explosive": 0 },
+        "pilot": { "agi": 14, "per": 14, "vit": 12, "wil": 12, "mgt": 10 },
+        "weapons": [
+          { "name": "Laser Cannon 1", "family": "Energy", "damageType": "Thermal", "dmg": 20, "rank": 10, "cycleSeconds": 2, "capacitorPerCycle": 5, "attack": 10, "accuracy": 10 },
+          { "name": "Laser Cannon 2", "family": "Energy", "damageType": "Thermal", "dmg": 20, "rank": 10, "cycleSeconds": 2, "capacitorPerCycle": 5, "attack": 10, "accuracy": 10 }
+        ]
+      }
+    ]
+  },
+  "defenders": {
+    "name": "Defender",
+    "passive": true,
+    "ships": [
+      {
+        "name": "Dummy fighter",
+        "size": "Small",
+        "maxHull": 400,
+        "maxShield": 200,
+        "maxCapacitor": 100,
+        "shieldRegenPerSecond": 2,
+        "capacitorRegenPerSecond": 5,
+        "attack": 100,
+        "accuracy": 100,
+        "defense": 100,
+        "evasion": 100,
+        "resistances": { "em": 0, "thermal": 10, "explosive": 0 },
+        "pilot": { "agi": 14, "per": 14, "vit": 12, "wil": 12, "mgt": 10 }
+      }
+    ]
+  }
+}

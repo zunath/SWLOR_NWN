@@ -19,6 +19,8 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         ResistancePoison = 22,
         ResistanceElectrical = 23,
         ResistanceIce = 24,
+        // Industrial droid parts (plan section 27): a droid's Industry is the sum of its parts'.
+        Industry = 25,
         ResistanceMind = 16,
         ResistanceMobility = 17,
         ResistanceTrauma = 18,

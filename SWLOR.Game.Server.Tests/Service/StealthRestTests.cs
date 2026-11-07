@@ -37,7 +37,6 @@ public class StealthRestTests
                 public enum ActionMode { Stealth }
                 public static bool Player, DM, NativeStealth, Combat, CombatWindow, OwnsPerk, ActionsCleared, EnemiesReevaluated;
                 public static bool CanUseStealth(uint creature) => OwnsPerk;
-                public static void DeleteLocalInt(uint creature, string name) { }
                 public static void ClearGrantedStealth(uint creature) { }
                 public static bool GetIsPC(uint creature) => Player;
                 public static bool GetIsDM(uint creature) => DM;

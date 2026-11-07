@@ -1,0 +1,539 @@
+using FluentAssertions;
+using System.Text.RegularExpressions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+/// <summary>
+/// Value moving between the character file (saved on export) and the database (saved at once): shuttle tickets, ship
+/// repairs, freight deposits, drill ore, space lockbox grants and design schematics. Each step is ordered and marked so a
+/// restart after any line neither keeps both sides nor loses either, and every debit runs on the payer's queue.
+/// </summary>
+public class SpaceTransferCrashSafetyTests
+{
+    // Shuttle tickets
+
+    [Test]
+    public void ShuttleTickets_ArePaidOnThePlayersQueueAndSavedWithThePaymentsId()
+    {
+        var dialog = Source("Feature", "DialogDefinition", "StarportFlightsDialog.cs");
+        dialog.Should().NotContain("TakeGoldFromCreature(");
+
+        var shuttle = Source("Service", "Shuttle.cs");
+        var purchase = Method(shuttle, "public static bool TryPurchaseTicket(uint player, ShuttleRoute route, string cityPropertyId, float taxRate)");
+        purchase.Should().NotContain("TakeGoldFromCreature(").And.NotContain("DB.Set(", "the dialog handler only checks and queues");
+        purchase.Should().Contain("AssignCommand(player, () => CompleteTicketPurchase(player, route, cityPropertyId, taxRate));");
+
+        InOrder(Method(shuttle, "private static void CompleteTicketPurchase("),
+            "if (!CanPurchaseTicket(player, route, taxRate, out var fare, out var tax))",
+            "CreditPayments.NewMark(CreditPaymentKind.ShuttleTicket, ride.Id, fare + tax);",
+            "if (!CreditPayments.TryTakeSaved(player, mark))",
+            "return;",
+            "ride.PaymentId = mark.Id;",
+            "DB.Set(ride);",
+            "CreditPayments.Retire(player);",
+            "dbCity.Treasury += income;");
+        InOrder(Method(shuttle, "private static bool CanPurchaseTicket("),
+            "if (GetRide(GetObjectUUID(player)) != null)", "if (GetGold(player) < fare + tax)");
+
+        var settle = Method(Source("Service", "CreditPayments.cs"), "private static string GetRecordPaymentId(");
+        settle.Should().Contain("CreditPaymentKind.ShuttleTicket => DB.Get<ShuttleRide>(mark.RecordId)?.PaymentId");
+        new ShuttleRide().PaymentId.Should().BeEmpty("older tickets name no payment");
+
+        var ticket = new CreditPaymentMark { Id = "t1", Kind = CreditPaymentKind.ShuttleTicket, RecordId = "ride", Credits = 120 };
+        ticket.KeepsPayment(null).Should().BeFalse("the ticket was never saved, so the price comes back");
+        ticket.KeepsPayment("t1").Should().BeTrue();
+        CreditPaymentMark.TryParse(ticket.Serialize(), out var parsed).Should().BeTrue();
+        parsed.Should().BeEquivalentTo(ticket);
+    }
+
+    [Test]
+    public void AShuttleRefund_IsSavedBeforeTheTicketIsDeleted()
+    {
+        var shuttle = Source("Service", "Shuttle.cs");
+        InOrder(Method(shuttle, "public static bool RefundTicket("),
+            "var fare = ride.FarePaid;",
+            "GiveGoldToCreature(player, fare);",
+            "ObjectPlugin.SetString(player, RefundedRideVariable, ride.Id, true);",
+            "() => CharacterCheckpoint.Save(player),",
+            "AssignCommand(player, () => TakeGoldFromCreature(fare, player, true));",
+            "if (!refunded)",
+            "return false;",
+            "DB.Delete<ShuttleRide>(ride.Id);");
+        shuttle.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleRefundedTicket()");
+        InOrder(Method(shuttle, "public static void SettleRefundedTicket("),
+            "ride.PlayerId != playerId || ride.Status != ShuttleRideStatus.Ticketed", "DB.Delete<ShuttleRide>(ride.Id);");
+    }
+
+    // Ship repairs
+
+    [Test]
+    public void ShipRepairs_AreSavedWithThePaymentsIdOnThePlayersQueue()
+    {
+        var viewModel = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        var click = Method(viewModel, "public Action OnClickRepair()");
+        click.Should().NotContain("TakeGoldFromCreature").And.NotContain("DB.Set(", "the modal never saves the ship it read earlier");
+        click.Should().Contain("AssignCommand(player, () => CompleteRepair(player, shipId, price));");
+
+        InOrder(Method(viewModel, "private void CompleteRepair("),
+            "var dbShip = GetShipDockedHere(shipId);",
+            "if (CalculateRepairBill(dbShip) != price)",
+            "if (GetGold(player) < price)",
+            "CreditPayments.NewMark(CreditPaymentKind.ShipRepair, dbShip.Id, price);",
+            "if (!CreditPayments.TryTakeSaved(player, mark))",
+            "nothing was paid.",
+            "return;",
+            "dbShip.Status.Hull = dbShip.Status.MaxHull;",
+            "CreditPayments.RecordOn(dbShip, player, mark);",
+            "DB.Set(dbShip);",
+            "CreditPayments.Retire(player);");
+
+        Method(Source("Service", "CreditPayments.cs"), "private static string GetRecordPaymentId(")
+            .Should().Contain("CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair\n                    => DB.Get<PlayerShip>(mark.RecordId)?.PaymentIds?.GetValueOrDefault(GetObjectUUID(player)),");
+        var repair = new CreditPaymentMark { Id = "r1", Kind = CreditPaymentKind.ShipRepair, RecordId = "ship", Credits = 800 };
+        repair.KeepsPayment("an older refit").Should().BeFalse();
+        repair.KeepsPayment("r1").Should().BeTrue();
+    }
+
+    // Freight deposits
+
+    [Test]
+    public void AFreightDeposit_IsCheckedAgainOnTheQueue_AndAnUnpaidContractIsCancelled()
+    {
+        var freight = Source("Service", "TradeFreight.cs");
+        InOrder(Method(freight, "private static void PayFreightDeposit("),
+            "if (contract == null || !contract.DepositPending)",
+            "if (GetGold(player) < deposit)",
+            "CancelUnpaidContract(dbPlayer, contract);",
+            "return;",
+            "TakeGoldFromCreature(deposit, player, true);",
+            "ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);",
+            "() => CharacterCheckpoint.Save(player),",
+            "GiveGoldToCreature(player, deposit);",
+            "if (!paid)",
+            "CancelUnpaidContract(dbPlayer, contract);",
+            "return;",
+            "contract.DepositPending = false;");
+        InOrder(Method(freight, "private static void CancelUnpaidContract("),
+            "ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id)", "DB.Set(ship);", "dbPlayer.FreightContracts.Remove(contract);");
+        Method(freight, "public static void ReconcileFreightDeposits(").Should().Contain("CancelUnpaidContract(dbPlayer, contract);");
+    }
+
+    // Asteroid Drill ore
+
+    [Test]
+    public void ADrillCollection_RoundTripsAndLeavesAndReturnsToTheStock()
+    {
+        var collection = new DrillCollection { Id = "c1", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 3, ["ore_b"] = 2 } };
+        DrillCollection.TryParse(collection.Serialize(), out var parsed).Should().BeTrue();
+        parsed.Should().BeEquivalentTo(collection);
+        DrillCollection.TryParse(null, out _).Should().BeFalse();
+        DrillCollection.TryParse("c1|b1", out _).Should().BeFalse();
+        DrillCollection.TryParse("|b1|ore_a=1", out _).Should().BeFalse();
+        DrillCollection.TryParse("c1|b1|ore_a=0", out _).Should().BeFalse();
+        DrillCollection.TryParse("c1|b1|ore_a", out _).Should().BeFalse();
+
+        var storage = new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 };
+        collection.TakeFrom(storage);
+        storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 2 }, "a resref collected out is removed");
+        collection.ReturnTo(storage);
+        storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 });
+
+        // Collection c1's save failed; c2 is then collected from another drill and saved. c1 stays marked, so the login keeps
+        // the ore the character holds instead of returning it to c1's drill as well.
+        var mark = DrillCollection.AddMark(string.Empty, "c1");
+        mark = DrillCollection.AddMark(mark, "c2");
+        DrillCollection.IsMarked(mark, "c1").Should().BeTrue();
+        mark = DrillCollection.RemoveMark(mark, "c2");
+        DrillCollection.IsMarked(mark, "c1").Should().BeTrue("a later collection never hides an earlier one whose save failed");
+        DrillCollection.IsMarked(mark, "c2").Should().BeFalse();
+        DrillCollection.AddMark(mark, "c1").Should().Be(mark);
+        DrillCollection.RemoveMark(mark, "c1").Should().BeEmpty();
+        DrillCollection.IsMarked(string.Empty, "c1").Should().BeFalse();
+        new StationBuildingState().PendingDrillCollections.Should().BeEmpty("older drills have no pending collection");
+    }
+
+    [TestCase(false, false, 5, Description = "Restart before the character file saved the ore: the ore goes back to the stock")]
+    [TestCase(true, false, 2, Description = "Restart after the character file saved the ore: the stock stays without it")]
+    [TestCase(true, true, 2, Description = "Restart after the drill cleared the collection: nothing to settle")]
+    public void ADrillCollectionARestartInterrupted_LeavesTheOreInExactlyOnePlace(bool characterSaved, bool drillCleared, int stockAfterLogin)
+    {
+        var collection = new DrillCollection { Id = "c1", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 3 } };
+        var state = new StationBuildingState { DrillStorage = new Dictionary<string, int> { ["ore_a"] = 5 } };
+        collection.TakeFrom(state.DrillStorage);
+        state.PendingDrillCollections[collection.Id] = collection.Serialize();
+        var mark = characterSaved ? DrillCollection.AddMark(string.Empty, collection.Id) : string.Empty;
+        if (drillCleared)
+            state.PendingDrillCollections.Remove(collection.Id);
+
+        // Another collector reads the stock before the first collector logs in: the reserved ore is not there.
+        state.DrillStorage.GetValueOrDefault("ore_a").Should().Be(2);
+
+        // SettleDrillCollections, for the first collector's login.
+        if (state.PendingDrillCollections.TryGetValue(collection.Id, out var pending) &&
+            DrillCollection.TryParse(pending, out var settled) && !DrillCollection.IsMarked(mark, settled.Id))
+        {
+            settled.ReturnTo(state.DrillStorage);
+        }
+        state.PendingDrillCollections.Remove(collection.Id);
+
+        state.DrillStorage.GetValueOrDefault("ore_a").Should().Be(stockAfterLogin);
+        (state.DrillStorage.GetValueOrDefault("ore_a") + (characterSaved ? 3 : 0)).Should().Be(5, "the ore is never in both places or neither");
+    }
+
+    [Test]
+    public void DrillOre_LeavesTheStockBeforeTheCharacterFileSavesIt_AndALoginSettlesThePendingCollection()
+    {
+        var service = Source("Service", "StationBuildings.cs");
+        var collect = Method(service, "public static void CollectDrill(");
+        collect.Should().NotContain("state.DrillStorage.Remove(").And.NotContain("state.DrillStorage[resref] =",
+            "the stock changes only through the collection");
+        InOrder(collect,
+            "var given = FarmItems.GiveToInventory(player, resref, units);",
+            "DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });",
+            "collection.TakeFrom(state.DrillStorage);",
+            "state.PendingDrillCollections[collection.Id] = collection.Serialize();",
+            "DB.Set(state);",
+            "DrillCollection.AddMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);",
+            "if (CharacterCheckpoint.Save(player))",
+            "state.PendingDrillCollections.Remove(collection.Id);",
+            "DB.Set(state);",
+            "DB.Delete<DrillCollectionReservation>(collection.Id);",
+            "DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);");
+        collect.Should().NotContain("ExportSingleCharacter(", "a save that fails leaves the collection pending, so the pending entry goes only after a saved file");
+        service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollections()");
+        InOrder(Method(service, "public static void SettleDrillCollections("),
+            ".AddFieldSearch(nameof(DrillCollectionReservation.OwnerPlayerId), GetObjectUUID(player), false);",
+            "var mark = ObjectPlugin.GetString(player, DrillCollectionVariable);",
+            "state.PendingDrillCollections.TryGetValue(reservation.Id, out var pending)",
+            "!DrillCollection.IsMarked(mark, collection.Id)",
+            "collection.ReturnTo(state.DrillStorage);",
+            "state.PendingDrillCollections.Remove(reservation.Id);",
+            "DB.Set(state);",
+            "DB.Delete<DrillCollectionReservation>(reservation.Id);");
+        typeof(DrillCollectionReservation).GetProperty(nameof(DrillCollectionReservation.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
+    }
+
+    // Space lockboxes
+
+    [Test]
+    public void ALockboxGrant_RoundTripsThroughTheCharacterFileLocal()
+    {
+        var grant = new SpaceLockboxGrant
+        {
+            Id = "g1",
+            Intel = 2,
+            Unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>
+            {
+                ("ship_missile_ion", null),
+                ("sc_emitter_1", ShipComponentTraitType.Overcharged),
+            },
+        };
+        SpaceLockboxGrant.TryParse(grant.Serialize(), out var parsed).Should().BeTrue();
+        parsed.Should().BeEquivalentTo(grant);
+        parsed.IsEmpty.Should().BeFalse();
+
+        SpaceLockboxGrant.TryParse("g2|0|", out var empty).Should().BeTrue();
+        empty.IsEmpty.Should().BeTrue("a lockbox whose rewards all fit and hold no intel keeps nothing in the database");
+        SpaceLockboxGrant.TryParse(null, out _).Should().BeFalse();
+        SpaceLockboxGrant.TryParse("g1|-1|", out _).Should().BeFalse();
+        SpaceLockboxGrant.TryParse("g1|1", out _).Should().BeFalse();
+        SpaceLockboxGrant.TryParse("g1|1|res~x", out _).Should().BeFalse();
+        new Player().KeptLockboxGrantIds.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ALockboxMark_KeepsEveryGrantStillWaitingForASave()
+    {
+        var first = new SpaceLockboxGrant { Id = "g1", Intel = 1 };
+        var second = new SpaceLockboxGrant
+        {
+            Id = "g2",
+            Intel = 0,
+            Unplaced = new List<(string Resref, ShipComponentTraitType? Trait)> { ("sc_emitter_1", ShipComponentTraitType.Overcharged) },
+        };
+
+        var mark = SpaceLockboxGrant.Append(SpaceLockboxGrant.Append(string.Empty, first), second);
+        SpaceLockboxGrant.ParseAll(mark).Should().BeEquivalentTo(new[] { first, second }, options => options.WithStrictOrdering(),
+            "a second lockbox opened before the first one's save succeeds joins the mark instead of replacing it");
+        SpaceLockboxGrant.Append(null, first).Should().Be(first.Serialize());
+        SpaceLockboxGrant.ParseAll(null).Should().BeEmpty();
+        SpaceLockboxGrant.ParseAll(first.Serialize() + "#bad").Should().BeEquivalentTo(new[] { first });
+    }
+
+    [Test]
+    public void ALockboxsDatabaseRewards_WaitForASaveWithoutTheLockbox()
+    {
+        var slicing = Source("Service", "SpaceSlicing.cs");
+        var give = Method(slicing, "private static void GiveRewardsToPlayer(");
+        InOrder(give,
+            "case SpaceSlicingRewardKind.AgentIntel:\n                        intel++;",
+            "if (fromLockbox)",
+            "KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced });",
+            "return;",
+            "GrantAgentIntel(player);",
+            "ShipHold.KeepUnplacedYield(player, unplaced);");
+
+        InOrder(Method(slicing, "private static void KeepLockboxGrantAfterSave("),
+            "SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);",
+            "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
+            "if (!GetIsObjectValid(player))",
+            "if (!CharacterCheckpoint.Save(player))",
+            "return;",
+            "KeepLockboxGrants(player);");
+        InOrder(Method(slicing, "private static void KeepLockboxGrants("),
+            "SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));",
+            "FactionAgents.GrantLockboxIntel(player, grants);",
+            "ShipHold.KeepUnplacedYield(player, grant.Unplaced, grant.Id);",
+            "ObjectPlugin.DeleteString(player, LockboxGrantVariable);",
+            "ExportSingleCharacter(player);");
+        InOrder(Method(slicing, "public static void SettleLockboxGrant("),
+            "SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));",
+            "KeepLockboxGrants(player);");
+        slicing.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleLockboxGrant()");
+
+        // Keeping a grant again changes nothing: its intel is saved with its id, and its hold entries are named from it.
+        InOrder(Method(Source("Service", "FactionAgents.cs"), "public static void GrantLockboxIntel("),
+            "!dbPlayer.KeptLockboxGrantIds.Contains(grant.Id)", "dbPlayer.AgentIntel += count;",
+            "dbPlayer.KeptLockboxGrantIds = grants.Select(grant => grant.Id).ToList();", "DB.Set(dbPlayer);");
+        var hold = Source("Service", "ShipHold.cs");
+        Method(hold, "public static void KeepUnplacedYield(").Should()
+            .Contain("string NextKey() => entryPrefix == null ? null : $\"{entryPrefix}:{entry++}\";")
+            .And.Contain("StoreComponent(hold, (resref, trait.Value), NextKey());");
+        Method(hold, "private static int AddNewStack(").Should().Contain("hold.Items[key ?? Guid.NewGuid().ToString()]");
+        Method(hold, "private static string StoreComponent(").Should().Contain("hold.Items[key ?? Guid.NewGuid().ToString()]");
+    }
+
+    // Design schematics
+
+    [Test]
+    public void ADesignSchematic_IsSpentAndSavedBeforeTheDesignIsSavedAsLearned()
+    {
+        var item = Source("Feature", "ItemDefinition", "DesignSchematicItemDefinition.cs");
+        item.Should().Contain(".ApplyAction((user, item, _, _, _) => Space.LearnHullDesign(user, item));")
+            .And.NotContain("DB.Set(", "the design is saved only after a save without the schematic");
+
+        var designs = Source("Service", "SpaceHullDesigns.cs");
+        InOrder(Method(designs, "public static void LearnHullDesign("),
+            "dbPlayer.UnlockedHullDesigns.ContainsKey(HullDesignRules.Key(design))",
+            "if (pending.Contains(resref))",
+            "Item.ReduceItemStack(schematic, 1);",
+            "pending.Add(resref);",
+            "SetPendingDesigns(user, pending);",
+            "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
+            "if (!GetIsObjectValid(user))",
+            "if (!CharacterCheckpoint.Save(user))",
+            "return;",
+            "foreach (var spent in GetPendingDesigns(user))",
+            "SaveLearnedDesign(user, spent);");
+        Method(designs, "public static void LearnHullDesign(").Should().NotContain("DB.Set(")
+            .And.NotContain("ObjectPlugin.SetString(user, LearnedDesignVariable, resref",
+                "a second schematic keeps the mark of a design whose own save failed instead of overwriting it");
+        InOrder(Method(designs, "private static void SaveLearnedDesign("),
+            "HullDesignRules.Unlock(dbPlayer.UnlockedHullDesigns, design, DateTime.UtcNow)", "DB.Set(dbPlayer);",
+            "if (pending.Remove(resref))", "SetPendingDesigns(player, pending);");
+        designs.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleLearnedHullDesign()");
+        InOrder(Method(designs, "public static void SettleLearnedHullDesign("),
+            "foreach (var resref in GetPendingDesigns(player))", "SaveLearnedDesign(player, resref);");
+    }
+
+    // Ship modules and deeds
+
+    [Test]
+    public void AFittingAcknowledgement_IsSavedWithTheFittedModule_AndOutlivesItsRemoval()
+    {
+        var moves = Source("Service", "SpaceShipItemMoves.cs");
+        Method(moves, "public static void AcknowledgeFitting(").Should().Contain("ship.FittingAcknowledgements[instanceId] = GetObjectUUID(player);");
+        InOrder(Method(moves, "public static void SaveModuleReceipt("),
+            "DB.Set(new ShipModuleReceipt", "ship.FittingAcknowledgements?.Remove(instanceId) == true", "DB.Set(ship);");
+
+        // A crew member removed the module after the fitter's ship save, before the receipt: the acknowledgement still says it
+        // was fitted, so the fitter's login drops the marked copy instead of keeping a second module.
+        var settle = Method(moves, "public static void SettleShipItemMoves(");
+        InOrder(settle, "var fittedShip = DB.Get<PlayerShip>(shipId);",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))", "DestroyObject(item);");
+        moves.Should().Contain("FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true");
+        InOrder(settle, "if (!CharacterCheckpoint.Save(player))", "ackShip?.FittingAcknowledgements?.Remove(ackInstanceId) == true", "DB.Set(ackShip);");
+
+        var removal = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        removal.Should().NotContain("FittingAcknowledgements", "only the fitting and the fitter's login change the acknowledgements");
+        new PlayerShip().FittingAcknowledgements.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ModulesAndDeeds_AreMarkedAndSavedWithTheCharacterBeforeTheShipChanges()
+    {
+        var viewModel = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        var power = Method(viewModel, "private void ProcessPower(");
+        InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "Space.RetireModuleRemoval(item);", "DestroyObject(item);");
+        InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
+            "currentModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
+        var config = Method(viewModel, "private void ProcessConfiguration(");
+        InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "Space.RetireModuleRemoval(item);", "DestroyObject(item);");
+        InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
+            "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
+
+        InOrder(Method(viewModel, "public Action OnClickRegisterShip()"),
+            "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkDeedRegistering(Player, item, ship.Id))", "return;", "DB.Set(ship);",
+            "Space.SaveRegistrationReceipt(Player, ship.Id);", "DestroyObject(item);");
+        var unregister = Method(viewModel, "public Action OnClickUnregisterShip()");
+        InOrder(unregister, "if (!Item.TryAcquireItem(Player, deed))", "if (!Space.MarkDeedUnregistered(Player, deed, shipId))", "return;",
+            "Space.RemoveUnregisteredShip(shipId);", "Space.ClearDeedUnregistered(deed);");
+        unregister.Should().Contain("dbShip.Status.ConfigurationModules.Count > 0", "fitted configuration modules would be deleted with the ship");
+        unregister.Should().NotContain("DB.Delete<PlayerShip>(", "the ship goes only through RemoveUnregisteredShip");
+        InOrder(unregister, "if (ShipTransfer.IsListedForSale(shipId))", "if (!Space.MarkDeedUnregistered(Player, deed, shipId))");
+
+        var moves = Source("Service", "SpaceShipItemMoves.cs");
+        InOrder(Member(moves, "public static bool MarkModuleFitting("), "SetLocalString(item, ModuleFittingVariable,", "() => CharacterCheckpoint.Save(player),",
+            "() => DeleteLocalString(item, ModuleFittingVariable)");
+        var beginRemoval = Method(moves, "public static void BeginModuleRemoval(");
+        InOrder(beginRemoval, "DB.Set(new ShipModuleRemoval", "SetLocalString(item, ModuleRemovedVariable,");
+        beginRemoval.Should().NotContain("ExportSingleCharacter").And.NotContain("CharacterCheckpoint.Save", "the character is saved only after the ship drops the module");
+        InOrder(Method(moves, "public static void FinishModuleRemoval("), "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleRemoval>(instanceId);");
+        // A removed module whose remover's save failed is refitted, traded or dropped: its record goes, so the next login
+        // does not give it again while the module also sits on another ship or with another player.
+        InOrder(Method(moves, "public static void RetireModuleRemoval("),
+            "if (!TryReadShipMark(item, ModuleRemovedVariable, out var shipId, out var instanceId))", "DB.Delete<ShipModuleRemoval>(instanceId);");
+        moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleUnacquire)]\n        public static void RetireRemovalOfLostModule()");
+        Method(moves, "public static void RetireRemovalOfLostModule(").Should().Contain("RetireModuleRemoval(item);");
+        InOrder(Member(moves, "public static bool MarkDeedRegistering("), "SetLocalString(deed, DeedRegisteringVariable, shipId);", "() => CharacterCheckpoint.Save(player),",
+            "() => DeleteLocalString(deed, DeedRegisteringVariable)");
+        InOrder(Member(moves, "public static bool MarkDeedUnregistered("), "SetLocalString(deed, DeedUnregisteredVariable, shipId);", "() => CharacterCheckpoint.Save(player),",
+            "DeleteLocalString(deed, DeedUnregisteredVariable);", "DestroyObject(deed);");
+        InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
+            "dbPlayer.ActiveShipId = Guid.Empty.ToString();", "UndockAllToStarport(dbShip, \"was unregistered\");",
+            "ReturnShipDroidCrew(dbShip, \"was unregistered\");", "ShipTransfer.RemoveListings(shipId);",
+            "dbProperty.IsQueuedForDeletion = true;", "DB.Delete<PlayerShip>(shipId);");
+        // The ship's payment acknowledgements become receipts before it goes, so a completed repair or refit whose payer's
+        // mark a restart left behind is not refunded once the ship is unregistered.
+        InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
+            "foreach (var (payerId, paymentId) in dbShip.PaymentIds ?? new Dictionary<string, string>())",
+            "CreditPayments.SaveReceipt(paymentId, payerId);",
+            "foreach (var (instanceId, fitterId) in dbShip.FittingAcknowledgements ?? new Dictionary<string, string>())",
+            "DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = fitterId, ShipId = shipId });",
+            "DB.Delete<PlayerShip>(shipId);");
+
+        moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleShipItemMoves()");
+        var settle = Method(moves, "public static void SettleShipItemMoves(");
+        InOrder(settle, "TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId)",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))",
+            "DestroyObject(item);");
+        InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleReceipt>(receiptId);");
+        new ShipModuleReceipt().OwnerPlayerId.Should().BeEmpty();
+        InOrder(settle, "TryReadShipMark(item, ModuleRemovedVariable, out _, out instanceId)", "removedHeld.Add(instanceId);",
+            "SettleModuleRemovals(player, playerId, removedHeld)", "DB.Delete<ShipModuleRemoval>(removalId);");
+        settle.Should().NotContain("fitted.Value.Modules.Remove(", "a login never takes a module off a ship another refitter may already hold");
+        InOrder(Method(moves, "private static List<string> SettleModuleRemovals("),
+            "ShipModuleRemovalRules.Settle(removedHeld.Contains(removal.Id), stillFitted)",
+            "case ShipModuleRemovalOutcome.NeverHappened:", "DB.Delete<ShipModuleRemoval>(removal.Id);",
+            "case ShipModuleRemovalOutcome.GiveAgain:", "Item.TryAcquireItem(player, item)",
+            "SetLocalString(item, ModuleRemovedVariable,", "givenAgain.Add(removal.Id);");
+        new ShipModuleRemoval().OwnerPlayerId.Should().BeEmpty();
+        typeof(ShipModuleRemoval).GetProperty(nameof(ShipModuleRemoval.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
+        // A ship sold and unregistered by its buyer before the registering player's login leaves the receipt, so the marked
+        // deed still goes and the hull is not duplicated.
+        InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)",
+            "if (DB.Get<ShipRegistrationReceipt>(registering) != null || DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
+        InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipRegistrationReceipt>(registrationId);");
+        new ShipRegistrationReceipt().OwnerPlayerId.Should().BeEmpty();
+        typeof(ShipRegistrationReceipt).GetProperty(nameof(ShipRegistrationReceipt.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
+        Method(Source("Service", "SpaceShipItemMoves.cs"), "public static void RemoveUnregisteredShip(")
+            .Should().NotContain("ShipRegistrationReceipt", "unregistering keeps the receipt for the registering player's login");
+        InOrder(settle, "GetLocalString(item, DeedUnregisteredVariable)", "ship.OwnerPlayerId == playerId",
+            "RemoveUnregisteredShip(unregistered);");
+    }
+
+    // Character saves
+
+    [Test]
+    public void SpaceServices_SaveTheCharacterNowWhereADatabaseWriteDependsOnIt()
+    {
+        // ExportSingleCharacter only queues a save (the file is written a few milliseconds after the script returns), so a step
+        // that must reach the file before a database write saves through CharacterCheckpoint.Save and stops when that fails.
+        foreach (var file in new[]
+                 {
+                     "PlanetaryHoldings.cs", "Shuttle.cs", "StationBuildings.cs", "Trade.cs", "TradeFreight.cs", "ShipTransfer.cs",
+                     "SpaceShipItemMoves.cs", "FactionAgents.cs", "SpaceDroidCrew.cs", "SpaceHullDesigns.cs", "SpaceIncursions.cs",
+                 })
+        {
+            Source("Service", file).Should().NotContain("ExportSingleCharacter(", file);
+        }
+
+        // The two exports left follow the database write they retire and nothing depends on them.
+        var payments = Source("Service", "CreditPayments.cs");
+        Regex.Matches(payments, Regex.Escape("ExportSingleCharacter(")).Count.Should().Be(1);
+        Method(payments, "public static void Retire(").Should().Contain("ExportSingleCharacter(player);");
+
+        var slicing = Source("Service", "SpaceSlicing.cs");
+        Regex.Matches(slicing, Regex.Escape("ExportSingleCharacter(")).Count.Should().Be(1);
+        Method(slicing, "private static void KeepLockboxGrants(").Should().Contain("ExportSingleCharacter(player);");
+    }
+
+    [TestCase(true, true, ShipModuleRemovalOutcome.Finished)]
+    [TestCase(true, false, ShipModuleRemovalOutcome.Finished)]
+    [TestCase(false, true, ShipModuleRemovalOutcome.NeverHappened)]
+    [TestCase(false, false, ShipModuleRemovalOutcome.GiveAgain)]
+    public void AModuleRemovalARestartInterrupted_LeavesExactlyOneCopy(bool characterHolds, bool shipStillHas, ShipModuleRemovalOutcome expected)
+    {
+        // The record is saved before the ship drops the module and the character after it, so: the character holding it
+        // means done; the ship still having it means it never left (another refitter may now take it, replacing the
+        // record); neither means the ship dropped it before the character was saved, so it is given again.
+        ShipModuleRemovalRules.Settle(characterHolds, shipStillHas).Should().Be(expected);
+    }
+
+    private static void InOrder(string source, params string[] parts)
+    {
+        var at = -1;
+        foreach (var part in parts)
+        {
+            var next = source.IndexOf(part, at + 1, StringComparison.Ordinal);
+            next.Should().BeGreaterThan(at, $"'{part}' comes next");
+            at = next;
+        }
+    }
+
+    private static string Method(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, signature);
+        var depth = 0;
+        for (var i = source.IndexOf('{', start); i < source.Length; i++)
+        {
+            if (source[i] == '{') depth++;
+            else if (source[i] == '}' && --depth == 0)
+                return source.Substring(start, i - start + 1);
+        }
+
+        return source[start..];
+    }
+
+    /// <summary>An expression-bodied member (its lambdas hold the braces): from its signature to the next blank line.</summary>
+    private static string Member(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, signature);
+        var end = source.IndexOf("\n\n", start, StringComparison.Ordinal);
+        return source[start..(end < 0 ? source.Length : end)];
+    }
+
+    private static string Source(params string[] path)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        var full = Path.Combine(new[] { directory!.FullName, "SWLOR.Game.Server" }.Concat(path).ToArray());
+        return File.ReadAllText(full).Replace("\r\n", "\n");
+    }
+}

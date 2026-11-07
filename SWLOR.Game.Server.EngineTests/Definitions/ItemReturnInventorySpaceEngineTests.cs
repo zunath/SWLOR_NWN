@@ -249,11 +249,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    withModule.Ship.SerializedItem = SerializeNewItem(ctx, "sdeed_freighter");
-                    plain.Ship.SerializedItem = SerializeNewItem(ctx, "sdeed_freighter");
+                    withModule.Ship.SerializedItem = SerializeNewItem(ctx, "sd_striker");
+                    plain.Ship.SerializedItem = SerializeNewItem(ctx, "sd_striker");
                     withModule.Ship.Status.HighPowerModules[1] = new ShipStatus.ShipStatusModule
                     {
-                        ItemTag = "cap_thrust1", SerializedItem = SerializeNewItem(ctx, "cap_thrust1"), RecastTime = DateTime.MinValue
+                        ItemTag = "sm_laser_00", SerializedItem = SerializeNewItem(ctx, "sm_laser_00"), RecastTime = DateTime.MinValue
                     };
                     foreach (var (property, ship) in new[] { withModule, plain })
                     {
@@ -290,14 +290,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Call(model, "ProcessHighPower", 1);
                     model.OnModalConfirmClick()();
                     ctx.Assert(!DB.Get<PlayerShip>(withModule.Ship.Id).Status.HighPowerModules.ContainsKey(1), "The module leaves the ship");
-                    ctx.AssertEqual(1, CountCarried(player, "cap_thrust1"), "The module reaches the inventory");
+                    ctx.AssertEqual(1, CountCarried(player, "sm_laser_00"), "The module reaches the inventory");
 
                     SelectShip(ctx, model, plain.Ship.Id);
                     model.OnClickUnregisterShip()();
                     model.OnModalConfirmClick()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(DB.Get<PlayerShip>(plain.Ship.Id) == null, "The ship is unregistered");
-                    ctx.AssertEqual(1, CountCarried(player, "sdeed_freighter"), "The deed reaches the inventory");
+                    ctx.AssertEqual(1, CountCarried(player, "sd_striker"), "The deed reaches the inventory");
                 });
             }
             finally
@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 OwnerPlayerId = fixture.Id, PropertyId = property.Id,
                 Status = new ShipStatus
                 {
-                    ItemTag = "ShipDeedLightFreighter", Hull = 50, MaxHull = 50, Shield = 50, MaxShield = 50,
+                    ItemTag = "sd_striker", Hull = 50, MaxHull = 50, Shield = 50, MaxShield = 50,
                     Capacitor = 50, MaxCapacitor = 50
                 }
             };

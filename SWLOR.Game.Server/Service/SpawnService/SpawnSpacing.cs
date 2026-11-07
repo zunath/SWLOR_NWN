@@ -57,6 +57,20 @@ namespace SWLOR.Game.Server.Service.SpawnService
             return best;
         }
 
+        /// <summary>
+        /// Returns true when the candidate is at least <paramref name="minimumDistance"/> from every occupied position.
+        /// </summary>
+        /// <param name="candidate">The candidate position.</param>
+        /// <param name="occupiedPositions">Positions of spawns already present in the area.</param>
+        /// <param name="minimumDistance">Minimum horizontal distance required from every occupied position.</param>
+        public static bool HasRoom(
+            Vector3 candidate,
+            IReadOnlyCollection<Vector3> occupiedPositions,
+            float minimumDistance = MinimumPlaceableDistance)
+        {
+            return GetNearestHorizontalDistance(candidate, occupiedPositions) >= minimumDistance;
+        }
+
         private static float GetNearestHorizontalDistance(Vector3 position, IReadOnlyCollection<Vector3> occupiedPositions)
         {
             var nearest = float.MaxValue;

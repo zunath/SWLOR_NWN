@@ -20,7 +20,10 @@ public class GatheringPerkBibleTests
     public void EveryPerkLevelHasItsBibleRowWithTheCodesPriceRankTypeAndDescription()
     {
         var rows = ReadGatheringRows().Where(row => Lines.Contains(row.GetValueOrDefault("A"))).ToList();
-        var perks = new GatheringPerkDefinition().BuildPerks();
+        // The space revamp's Space Industry perks share the Gathering definition; their rows are another line's.
+        var perks = new GatheringPerkDefinition().BuildPerks()
+            .Where(pair => GatheringPerkLines.Prospector.Concat(GatheringPerkLines.TreasureSeeker).Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
         var failures = new List<string>();
         var expectedRows = 0;
 

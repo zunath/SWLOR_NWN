@@ -635,6 +635,10 @@ namespace SWLOR.Game.Server.Service
             else if (isLandedAttack)
                 PvpCombat.RecordHit(attacker, defender);
 
+            // Before the damage lands, so a blow that kills a duelist already finds the duel voided and protected.
+            if (isLandedAttack)
+                Duels.RecordDamage(defender, attacker);
+
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
                 ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
@@ -11766,7 +11770,8 @@ namespace SWLOR.Game.Server.Service
 
         private static ResistanceType GetResistanceTypeFromStat(int value)
         {
-            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value)
+            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value) &&
+                   Resistance.IsValidResistanceType((ResistanceType)value)
                 ? (ResistanceType)value
                 : ResistanceType.Invalid;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -13,6 +14,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const string SpaceTarget = "SPACE_TARGET";
         private const int StartingPoints = 10;
         private const int StartingCapacitor = 100;
+        private const string Injector = "sm_hyper_00";
+        private const string ShieldRepairer = "sm_shrep_00";
+        private const string HullRepairer = "sm_hrep_00";
+        private const string RepairField = "sm_rfield_40";
+        private const string Bulwark = "sm_bulw_40";
+        private const string EWarArray = "sm_ewar_40";
+        private const string Turbolaser = "sm_turbo_40";
 
         [EngineTest("Far enemy target does not block a module that acts on the player's own ship", Category = "SpaceModuleRange", TimeoutSeconds = 60f)]
         public static async Task FarEnemyTarget_AllowsSelfModules(EngineTestContext ctx)
@@ -22,24 +30,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             try
             {
-                // The reported case: an enemy capital ship is selected beyond the injector's range.
+                // The reported case: an enemy capital ship is selected far away.
                 var capsule = await GiveFuelCapsuleAsync(ctx, player);
-                var status = await ActivateAsync(ctx, player, "cap_inject1", enemy);
+                var status = await ActivateAsync(ctx, player, Injector, enemy);
                 ctx.Assert(status.Capacitor > StartingCapacitor, $"the injector restores the player's capacitor ({status.Capacitor})");
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(capsule), 5f, "the injector to consume its fuel capsule");
                 ctx.Assert(RecastStarted(status), "the injector starts its recast");
 
-                status = await ActivateAsync(ctx, player, "shld_rep_1", enemy);
+                status = await ActivateAsync(ctx, player, ShieldRepairer, enemy);
                 ctx.Assert(status.Shield > StartingPoints, $"the shield repairer restores the player's shield ({status.Shield})");
 
-                status = await ActivateAsync(ctx, player, "hull_rep_1", enemy);
+                status = await ActivateAsync(ctx, player, HullRepairer, enemy);
                 ctx.Assert(status.Hull > StartingPoints, $"the hull repairer restores the player's hull ({status.Hull})");
 
-                // Pulses and the laser battery act around the player's ship and never read the selected target.
-                foreach (var pulse in new[] { "repairfield", "bulwarkgen", "cap_ewar", "lasbattery1" })
+                // Pulses act around the player's ship and never read the selected target.
+                foreach (var pulse in new[] { RepairField, Bulwark, EWarArray })
                 {
                     status = await ActivateAsync(ctx, player, pulse, enemy);
-                    ctx.Assert(RecastStarted(status), $"{pulse} starts its recast");
+                    ctx.Assert(Used(status), $"{pulse} switches on");
                 }
             }
             finally
@@ -59,21 +67,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 var capsule = await GiveFuelCapsuleAsync(ctx, player);
-                var status = await ActivateAsync(ctx, player, "cap_inject1", asteroid);
+                var status = await ActivateAsync(ctx, player, Injector, asteroid);
                 ctx.Assert(status.Capacitor > StartingCapacitor, $"the injector restores the player's capacitor ({status.Capacitor})");
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(capsule), 5f, "the injector to consume its fuel capsule");
 
-                status = await ActivateAsync(ctx, player, "shld_rep_1", asteroid);
+                status = await ActivateAsync(ctx, player, ShieldRepairer, asteroid);
                 ctx.Assert(status.Shield > StartingPoints, $"the shield repairer restores the player's shield ({status.Shield})");
 
-                status = await ActivateAsync(ctx, player, "hull_rep_1", asteroid);
+                status = await ActivateAsync(ctx, player, HullRepairer, asteroid);
                 ctx.Assert(status.Hull > StartingPoints, $"the hull repairer restores the player's hull ({status.Hull})");
 
-                status = await ActivateAsync(ctx, player, "lasbattery1", asteroid);
-                ctx.Assert(RecastStarted(status), "the laser battery starts its recast");
-
                 // Targeted weapons still need a ship to fire at.
-                status = await ActivateAsync(ctx, player, "turbolas1", asteroid);
+                status = await ActivateAsync(ctx, player, Turbolaser, asteroid);
                 AssertRefused(ctx, status, "the turbolaser on an asteroid");
             }
             finally
@@ -89,7 +94,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             try
             {
-                var status = await ActivateAsync(ctx, player, "turbolas1", OBJECT_INVALID);
+                var status = await ActivateAsync(ctx, player, Turbolaser, OBJECT_INVALID);
                 AssertRefused(ctx, status, "the turbolaser with no target");
             }
             finally
@@ -107,24 +112,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             try
             {
-                // A friendly ship beyond range receives nothing, and nothing is spent.
-                var friendStatus = Space.GetShipStatus(friend);
-                friendStatus.Capacitor = 1;
-                var capsule = await GiveFuelCapsuleAsync(ctx, player);
-                var status = await ActivateAsync(ctx, player, "cap_inject1", friend);
-                ctx.AssertEqual(1, friendStatus.Capacitor, "out of range friend's capacitor");
-                ctx.AssertEqual(StartingCapacitor, status.Capacitor, "player's capacitor after the refused injector");
-                ctx.AssertEqual(player.Creature, GetItemPossessor(capsule), "fuel capsule holder after the refused injector");
-                ctx.Assert(!RecastStarted(status), "the refused injector starts no recast");
-
-                status = await ActivateAsync(ctx, player, "shld_rep_1", friend);
+                // A friendly ship beyond range receives no repair, and nothing is spent.
+                var status = await ActivateAsync(ctx, player, ShieldRepairer, friend);
                 AssertRefused(ctx, status, "the shield repairer on a far friend");
 
-                status = await ActivateAsync(ctx, player, "hull_rep_1", friend);
+                status = await ActivateAsync(ctx, player, HullRepairer, friend);
                 AssertRefused(ctx, status, "the hull repairer on a far friend");
 
                 // Targeted weapons still need their selected target in range.
-                status = await ActivateAsync(ctx, player, "turbolas1", enemy);
+                status = await ActivateAsync(ctx, player, Turbolaser, enemy);
                 AssertRefused(ctx, status, "the turbolaser on a far enemy");
             }
             finally
@@ -135,7 +131,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task<uint> SpawnFarShipAsync(EngineTestContext ctx, PlayerAbilityFixture player, string resref, float yOffset, bool hostile)
         {
-            var ship = ctx.SpawnCreature(resref, 35f, yOffset);
+            var ship = ctx.SpawnCreature(resref, 70f, yOffset);
             ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), ship);
             await ctx.WaitUntilAsync(() => Space.GetShipStatus(ship) != null, 5f, $"{resref} to register as an NPC ship");
 
@@ -143,7 +139,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(ship);
 
             ctx.AssertEqual(hostile, GetIsEnemy(ship, player.Creature), $"{resref} is an enemy of the player");
-            ctx.Assert(GetDistanceBetween(player.Creature, ship) > 30f,
+            ctx.Assert(GetDistanceBetween(player.Creature, ship) > 60f,
                 $"{resref} is beyond every tested module's range ({GetDistanceBetween(player.Creature, ship):0.0}m)");
             return ship;
         }
@@ -169,7 +165,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 OwnerPlayerId = player.Id,
                 Status = new ShipStatus
                 {
-                    ItemTag = "ShipDeedLightFreighter",
                     Hull = StartingPoints,
                     MaxHull = 500,
                     Shield = StartingPoints,
@@ -189,14 +184,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetLocalObject(player.Creature, SpaceTarget, target);
             await ctx.ExecuteInCreatureContextAsync(player.Creature,
                 () => Space.ActivateShipModule(player.Creature, Space.HighSlotToFeat(1)));
-            return Space.GetShipStatus(player.Creature);
+            var status = Space.GetShipStatus(player.Creature);
+            // Repairers and pulses are toggles: note whether this one switched on, then keep it to its first cycle.
+            _toggledOn = Space.IsShipToggleOn(status, 1);
+            Space.TurnOffShipToggles(player.Creature);
+            return status;
         }
+
+        private static bool _toggledOn;
 
         private static void AssertRefused(EngineTestContext ctx, ShipStatus status, string use)
         {
-            ctx.Assert(!RecastStarted(status), $"{use} starts no recast");
+            ctx.Assert(!Used(status), $"{use} neither fires nor switches on");
             ctx.AssertEqual(StartingCapacitor, status.Capacitor, $"capacitor after {use}");
         }
+
+        private static bool Used(ShipStatus status) => RecastStarted(status) || _toggledOn;
 
         private static bool RecastStarted(ShipStatus status)
         {
@@ -209,6 +212,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             if (string.IsNullOrEmpty(shipId) || shipId == Guid.Empty.ToString())
                 return;
 
+            Space.TurnOffShipToggles(player.Creature);
+            AbilityCooldownVisual.ClearAllRecastDelays(player.Creature);
             player.Update(record => record.ActiveShipId = Guid.Empty.ToString());
             DB.Delete<PlayerShip>(shipId);
         }

@@ -14,16 +14,20 @@ public class ShipModuleRangeRuleTests
 {
     private static readonly Dictionary<ShipModuleType, ShipModuleRangeRule> SelfCapableModules = new()
     {
-        // Enemy targets redirect the effect to the user's ship, but friendly targets are still acted on.
-        [ShipModuleType.HypermatterInjector] = ShipModuleRangeRule.NonEnemyTarget,
+        // Enemy targets redirect the repair to the user's ship, but friendly targets are still acted on.
         [ShipModuleType.ShieldRepairer] = ShipModuleRangeRule.NonEnemyTarget,
         [ShipModuleType.HullRepairer] = ShipModuleRangeRule.NonEnemyTarget,
 
-        // Pulses around the user's ship never read the selected target.
+        // Modules that act on or around the user's ship never read the selected target. The Hypermatter Injector only
+        // refills its own ship's capacitor, and the Laser Battery fires at its target, so it is no self module here.
+        [ShipModuleType.HypermatterInjector] = ShipModuleRangeRule.NoTarget,
         [ShipModuleType.RepairFieldGenerator] = ShipModuleRangeRule.NoTarget,
         [ShipModuleType.BulwarkShieldGenerator] = ShipModuleRangeRule.NoTarget,
         [ShipModuleType.CapitalEwar] = ShipModuleRangeRule.NoTarget,
-        [ShipModuleType.LaserBattery] = ShipModuleRangeRule.NoTarget,
+        [ShipModuleType.ShieldHardener] = ShipModuleRangeRule.NoTarget,
+        [ShipModuleType.ProbeLauncher] = ShipModuleRangeRule.NoTarget,
+        [ShipModuleType.CloakingDevice] = ShipModuleRangeRule.NoTarget,
+        [ShipModuleType.Afterburner] = ShipModuleRangeRule.NoTarget,
     };
 
     private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(Space).Assembly.GetTypes()

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public const string ToolTypeVariable = "SLICING_TOOL_TYPE";
         public const string ToolTierVariable = "SLICING_TOOL_TIER";
 
-        private const int ClaimTimeoutSeconds = 180;
+        private const string ClaimBusyMessage = "Another slicer currently has control of this target.";
         private static readonly Dictionary<string, ActiveSlicingSession> _sessions = new();
 
         public sealed class ActiveSlicingSession
@@ -132,19 +132,40 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 return "The slicing target is no longer available.";
             if (tier < 1 || tier > 5)
                 return "This slicing target has an invalid security profile.";
-            if (GetIsInCombat(player))
+            if (IsInCombat(player, source))
                 return "You cannot begin slicing while in combat.";
             if (Perk.GetPerkLevel(player, PerkType.Slicing) < tier)
                 return GetRankRequirementError(tier);
-            if (source == SlicingSourceType.Lockbox && GetItemPossessor(target) != player)
-                return "The lockbox must remain in your inventory.";
-            if (source == SlicingSourceType.Terminal && GetDistanceBetween(player, target) > 5f)
-                return "You are too far away from the crate.";
 
-            return string.Empty;
+            return GetTargetError(player, target, source);
         }
 
-        private static string GetRankRequirementError(int tier) =>
+        /// <summary>
+        /// Whether the slicer is in combat. For a space target the ship counts too, so a Sensors crew member cannot
+        /// slice while the ship fights.
+        /// </summary>
+        private static bool IsInCombat(uint player, SlicingSourceType source) =>
+            GetIsInCombat(player) || SpaceSlicingRules.IsSpaceSource(source) && Space.IsSlicingShipInCombat(player);
+
+        /// <summary>Why the slicer cannot reach the target right now, or empty.</summary>
+        private static string GetTargetError(uint player, uint target, SlicingSourceType source)
+        {
+            switch (source)
+            {
+                case SlicingSourceType.Lockbox:
+                case SlicingSourceType.SpaceLockbox:
+                    return GetItemPossessor(target) != player ? "The lockbox must remain in your inventory." : string.Empty;
+                case SlicingSourceType.Terminal:
+                    return GetDistanceBetween(player, target) > 5f ? "You are too far away from the crate." : string.Empty;
+                default:
+                    return Space.GetSlicingTargetError(player, target, source);
+            }
+        }
+
+        /// <summary>A player's Slicing rank: what every target's tier is checked against.</summary>
+        public static int GetSlicingRank(uint player) => Perk.GetPerkLevel(player, PerkType.Slicing);
+
+        internal static string GetRankRequirementError(int tier) =>
             ColorToken.Red($"Slicing rank {tier} is required for this target.");
 
         public static bool SelectTile(uint player, int index, out string error)
@@ -381,7 +402,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (session == null)
                 return;
 
-            if (session.HasCommitted)
+            // Giving up on a customs spoof plays out as being caught, committed or not.
+            if (session.HasCommitted || session.Source == SlicingSourceType.CustomsScan)
                 Fail(session, true);
             else
                 Release(session);
@@ -431,7 +453,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Release(session);
                 return "The slicing target is no longer available.";
             }
-            if (GetIsInCombat(player))
+            if (IsInCombat(player, session.Source))
                 return "You cannot continue slicing while in combat.";
 
             var playerId = GetObjectUUID(player);
@@ -441,10 +463,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 RemoveSession(session);
                 return "Your slicing claim is no longer active.";
             }
-            if (session.Source == SlicingSourceType.Lockbox && GetItemPossessor(session.Target) != player)
-                return "The lockbox must remain in your inventory.";
-            if (session.Source == SlicingSourceType.Terminal && GetDistanceBetween(player, session.Target) > 5f)
-                return "You are too far away from the crate.";
+            var targetError = GetTargetError(player, session.Target, session.Source);
+            if (!string.IsNullOrWhiteSpace(targetError))
+                return targetError;
             if (session.PrimedToolItem != OBJECT_INVALID &&
                 (!GetIsObjectValid(session.PrimedToolItem) || GetItemPossessor(session.PrimedToolItem) != player))
             {
@@ -462,19 +483,30 @@ namespace SWLOR.Game.Server.Service.SlicingService
             uint target,
             SlicingSourceType source,
             int tier,
+            out string error) =>
+            TryClaim(GetObjectUUID(player), target, source, tier, out error);
+
+        /// <summary>
+        /// Takes the exclusive claim on a target under <paramref name="playerId"/>: a player's id, or the id a slicer with
+        /// no session (a ship's slicing droid) works under. A second slicer is refused while the claim is live.
+        /// </summary>
+        private static bool TryClaim(
+            string playerId,
+            uint target,
+            SlicingSourceType source,
+            int tier,
             out string error)
         {
             error = string.Empty;
             var now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            var playerId = GetObjectUUID(player);
             var owner = GetLocalString(target, OwnerVariable);
             var ownerAt = GetLocalInt(target, OwnerTimestampVariable);
 
             if (!string.IsNullOrWhiteSpace(owner) && owner != playerId)
             {
-                if (now - ownerAt < ClaimTimeoutSeconds)
+                if (Slicing.IsClaimHeldByOther(owner, ownerAt, playerId, now))
                 {
-                    error = "Another slicer currently has control of this target.";
+                    error = ClaimBusyMessage;
                     return false;
                 }
 
@@ -580,6 +612,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
         {
             GrantXP(session.Player, session.Tier);
 
+            if (SpaceSlicingRules.IsSpaceSource(session.Source))
+            {
+                Log.Write(LogGroup.Crafting,
+                    $"Player '{GetName(session.Player)}' ({GetObjectUUID(session.Player)}) completed {session.Source} slicing board {session.Board.BoardId}.");
+                Release(session);
+                Space.CompleteSlicing(session.Player, session.Target, session.Source, session.Tier);
+                return;
+            }
+
             var rewards = SlicingReward.RollSuccess(
                 session.Source,
                 session.Tier,
@@ -606,6 +647,16 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
         private static void Fail(ActiveSlicingSession session, bool notifyPlayer)
         {
+            // A failed customs spoof counts as being caught; the patrol ship is never destroyed by it.
+            if (session.Source == SlicingSourceType.CustomsScan)
+            {
+                Log.Write(LogGroup.Crafting,
+                    $"Player '{GetName(session.Player)}' ({GetObjectUUID(session.Player)}) failed {session.Source} slicing board {session.Board.BoardId}.");
+                Release(session);
+                Space.FailCustomsSlicing(session.Player);
+                return;
+            }
+
             var destroyed = ResolveFailure(session.Target, session.Source, session.Tier);
             var failures = GetLocalInt(session.Target, FailuresVariable);
             var nextChance = Slicing.GetDestructionChance(failures + 1);
@@ -644,8 +695,10 @@ namespace SWLOR.Game.Server.Service.SlicingService
             SetLocalInt(target, IntegrityVariable, 0);
             if (source == SlicingSourceType.Lockbox)
                 DestroyObject(target);
-            else
+            else if (source == SlicingSourceType.Terminal)
                 Spawn.DespawnAndQueueRespawn(target);
+            else
+                Space.OnSlicingTargetDestroyed(target, source);
             return true;
         }
 
@@ -665,13 +718,40 @@ namespace SWLOR.Game.Server.Service.SlicingService
         {
             var playerId = GetObjectUUID(session.Player);
             RemoveSession(session);
+            ReleaseClaim(playerId, session.Target);
+        }
 
-            if (GetIsObjectValid(session.Target) &&
-                IsClaimOwner(playerId, GetLocalString(session.Target, OwnerVariable)))
+        // Claims for a slicer with no session (a ship's slicing droid): the same exclusive claim a player's attempt takes.
+
+        /// <summary>Why another slicer holds the target, or empty (<see cref="Slicing.IsClaimHeldByOther"/>).</summary>
+        public static string GetClaimError(string claimant, uint target) =>
+            Slicing.IsClaimHeldByOther(
+                GetLocalString(target, OwnerVariable),
+                GetLocalInt(target, OwnerTimestampVariable),
+                claimant,
+                (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                ? ClaimBusyMessage
+                : string.Empty;
+
+        /// <summary>Takes the exclusive claim on a target for <paramref name="claimant"/>, or says why not.</summary>
+        public static bool TryClaimTarget(string claimant, uint target, SlicingSourceType source, int tier, out string error) =>
+            TryClaim(claimant, target, source, tier, out error);
+
+        /// <summary>Keeps a claim the claimant still holds from lapsing.</summary>
+        public static void TouchClaim(string claimant, uint target)
+        {
+            if (GetIsObjectValid(target) && IsClaimOwner(claimant, GetLocalString(target, OwnerVariable)))
+                SetLocalInt(target, OwnerTimestampVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        }
+
+        /// <summary>Gives up a claim the claimant still holds, so another slicer can start at once.</summary>
+        public static void ReleaseClaim(string claimant, uint target)
+        {
+            if (GetIsObjectValid(target) && IsClaimOwner(claimant, GetLocalString(target, OwnerVariable)))
             {
-                DeleteLocalString(session.Target, OwnerVariable);
-                DeleteLocalInt(session.Target, OwnerTimestampVariable);
-                DeleteLocalInt(session.Target, CommittedVariable);
+                DeleteLocalString(target, OwnerVariable);
+                DeleteLocalInt(target, OwnerTimestampVariable);
+                DeleteLocalInt(target, CommittedVariable);
             }
         }
 

@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (session == null)
                 return;
 
-            ThemeBackground = session.Source == SlicingSourceType.Lockbox ? "slc_goal_l" : "slc_goal_t";
+            ThemeBackground = SpaceSlicingRules.IsPortable(session.Source) ? "slc_goal_l" : "slc_goal_t";
             TraceText = $"Trace: {session.TraceRemaining}";
             var integrity = SlicingSession.GetIntegrity(session.Target);
             IntegrityText = $"Integrity: {integrity}%";
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int integrity)
         {
             var tile = session.Board.Tiles[index];
-            var theme = session.Source == SlicingSourceType.Lockbox ? 'l' : 't';
+            var theme = SpaceSlicingRules.IsPortable(session.Source) ? 'l' : 't';
             var type = tile.Type switch
             {
                 SlicingTileType.Straight => 's',

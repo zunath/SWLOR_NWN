@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -51,6 +52,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool CanHandleCityAffairs
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
@@ -73,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {mayorName}");
+            cityDetails.Add($"Mayor's record: {ElectionPlatformRules.BuildRecordText(dbCity.MayorRecord)}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
             cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");
@@ -90,18 +98,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Election has started and we're in the registration process.
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
-                var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays);
                 cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
-                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"    {dbElection.RegistrationClosesUtc:yyyy-MM-dd hh:mm:ss}");
             }
             // Election has started and we're in the voting process.
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
-                var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
                 cityDetails.Add($"Election voting is currently OPEN to citizens until:");
-                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"    {dbElection.VotingClosesUtc:yyyy-MM-dd hh:mm:ss}");
             }
 
 
@@ -109,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _cityPropertyId = dbCity.Id;
             _electionId = dbElection == null ? string.Empty : dbElection.Id;
             IsElectionActive = !string.IsNullOrWhiteSpace(_electionId);
+            CanHandleCityAffairs = CityOfficers.CanHandle(dbCity, playerId);
 
             // Player is already a citizen. Provide the "Revoke Citizenship" option.
             if (dbPlayer.CitizenPropertyId == dbCity.Id)
@@ -154,27 +159,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
+                        // The Industrial Charter ends with the citizenship, so the holdings settle under it first.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         // Remove the player's citizenship property Id.
                         dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = string.Empty;
+                        dbPlayer.CitizenSinceUtc = null;
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // The 7 days after which the mayor can send this player's animals away start now.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.RecordDeparture(dbPlayer.CityDepartures, _cityPropertyId, DateTime.UtcNow);
                         DB.Set(dbPlayer);
 
                         // If there's an active election going, remove this player from the running.
+                        // Votes for them are dropped, so those voters can vote again. This player's own vote
+                        // is dropped at the count, because they are no longer a citizen.
                         if (!string.IsNullOrWhiteSpace(_electionId))
                         {
-                            var dbElection = DB.Get<Election>(_electionId);
-                            dbElection.CandidatePlayerIds.Remove(playerId);
-
-                            var toRemove = dbElection.VoterSelections.Where(x => x.Value.CandidatePlayerId == playerId);
-                            foreach (var vote in toRemove)
-                            {
-                                dbElection.VoterSelections.Remove(vote.Key);
-                                Log.Write(LogGroup.Property, $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
-                            }
-
-                            DB.Set(dbElection);
+                            ElectionBallot.RemoveDepartedCandidate(_cityPropertyId, playerId);
                         }
+
+                        // Leaving the city ends the office of an officer.
+                        CityOfficers.OnCitizenLeft(_cityPropertyId, playerId);
 
                         // Retrieve all structure Ids
                         var structureIds = dbCity.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
@@ -237,10 +243,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         AssignCommand(Player, () => TakeGoldFromCreature(5000, Player, true));
 
+                        // A new citizenship starts its 7 days without Edict benefits, so the holdings settle before it changes.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
+                        // Joining again resets the citizen-since time, which decides who may vote in an election.
+                        dbPlayer.CitizenSinceUtc = DateTime.UtcNow;
                         // Clear any stale debt left by a previously deleted city.
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // Back in the city, so the absence ends.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.ClearDeparture(dbPlayer.CityDepartures, _cityPropertyId);
 
                         DB.Set(dbPlayer);
 
@@ -259,7 +273,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"You owe {dbPlayer.PropertyOwedTaxes} credits. Will you pay this now?", () =>
             {
                 var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
-                dbPlayer = DB.Get<Player>(playerId);
                 var gold = GetGold(Player);
 
                 if (gold <= 0)
@@ -267,6 +280,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature("You do not have any credits.", Player, false);
                     return;
                 }
+
+                // Clearing the debt returns the citizen to good standing, so the holdings settle under the debt first.
+                IndustrialCharter.SettleOwner(playerId);
+                dbPlayer = DB.Get<Player>(playerId);
 
                 // Not enough to cover everything, but take what they have.
                 if (gold < dbPlayer.PropertyOwedTaxes)
@@ -297,6 +314,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OpenElectionMenu() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Election, null, TetherObject);
+        };
+
+        public Action OpenGazette() => () =>
+        {
+            CityGazette.OpenWindow(Player, _cityPropertyId, TetherObject);
+        };
+
+        public Action OpenCityAffairs() => () =>
+        {
+            CityAffairs.TryOpenWindow(Player, _cityPropertyId, TetherObject);
         };
     }
 }

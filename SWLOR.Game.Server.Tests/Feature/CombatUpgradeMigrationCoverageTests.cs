@@ -196,6 +196,8 @@ public class CombatUpgradeMigrationCoverageTests
         var root = FindRepositoryRoot();
         var cpuFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "d_*cpu*.uti.json")
+            // Logistics CPUs (d_in_cpu*) come from tools/SpaceRevampBalance/droids.py and carry no combat skills (DroidIndustryTests).
+            .Where(x => !Path.GetFileName(x).StartsWith("d_in_cpu", StringComparison.Ordinal))
             .OrderBy(x => x)
             .ToArray();
         var legacyWeaponGroups = new[]

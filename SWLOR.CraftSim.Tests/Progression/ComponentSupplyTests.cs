@@ -40,15 +40,15 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void AHarvestedUnitCostsTheUseOfTheNodeWithTheBestChanceOfIt()
         {
-            // HARVESTING_TREE holds wood 50, fine_wood 5 and jade 5, so a use gives wood on 50 of 60 rolls.
+            // HARVESTING_TREE holds wood 50, fine_wood 5, jade 5 and the wood sapling 1 (the woodlot's rare drop), so a use gives wood on 50 of 61 rolls.
             var node = Supply.NodeFor("wood");
             node.Should().NotBeNull();
             node.Value.Table.Should().Be("HARVESTING_TREE");
-            node.Value.Share.Should().BeApproximately(50 / 60.0, 1e-12);
+            node.Value.Share.Should().BeApproximately(50 / 61.0, 1e-12);
 
             var useSeconds = Assumptions.SecondsPerHarvest + Assumptions.NodeTravelSeconds / HarvestModel.ExpectedHarvestsPerNode;
             ComponentSupply.SecondsPerHarvestUse(Assumptions).Should().BeApproximately(useSeconds, 1e-12);
-            Supply.SecondsPerUnit("wood", Assumptions).Should().BeApproximately(useSeconds / (50 / 60.0), 1e-9);
+            Supply.SecondsPerUnit("wood", Assumptions).Should().BeApproximately(useSeconds / (50 / 61.0), 1e-9);
         }
 
         [TestCase("HARVESTING_TREE", GatheringMechanism.Harvest, 0)]

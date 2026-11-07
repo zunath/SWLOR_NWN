@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
@@ -168,12 +169,8 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(cityId))
                 return "This bank terminal is not configured for a city.";
 
-            if (dbPlayer.CitizenPropertyId != cityId)
-                return "Only citizens may use this terminal.";
-
-            return dbPlayer.PropertyOwedTaxes > 0
-                ? $"You owe {dbPlayer.PropertyOwedTaxes} credits in taxes to this city. You cannot use its facilities until these are paid. Use the Citizenship Terminal in City Hall to pay these."
-                : string.Empty;
+            // Embargo, citizenship, Alliance and Open Gates decide, in that order. The departure pass does not reach the Bank.
+            return EdictEffects.GetFacilityFailure(dbPlayer, cityId, FacilityAccessRules.BankNotWelcomeMessage);
         }
 
         private static DBQuery<InventoryItem> BuildPlayerItemQuery(string playerId)

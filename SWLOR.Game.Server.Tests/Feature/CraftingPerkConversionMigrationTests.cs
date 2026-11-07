@@ -51,6 +51,27 @@ public class CraftingPerkConversionMigrationTests
         return player;
     }
 
+    /// <summary>
+    /// A plain record upgraded by the character migrations after this one only (the space revamp's 26 follows it). Every upgrade below
+    /// runs them too, so their SP, tokens and notices are the baseline this migration's effects are measured against.
+    /// </summary>
+    private static Player LaterOnly()
+    {
+        var record = Record(PreviousVersion + 1);
+        return CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion + 1), record)?.Record ?? record;
+    }
+
+    private static int LaterSP => LaterOnly().UnallocatedSP - StartingSP;
+
+    private static int LaterTokens => LaterOnly().Currencies[CurrencyType.RebuildToken] - StartingTokens;
+
+    /// <summary>The notices this migration added: the record's notices without the later migrations' own.</summary>
+    private static List<string> OwnNotices(Player player)
+    {
+        var later = LaterOnly().UpgradeNotices;
+        return player.UpgradeNotices.Where(notice => !later.Contains(notice)).ToList();
+    }
+
     [Test]
     public void TheFullRefundTotalsMatchThePlan()
     {
@@ -83,16 +104,16 @@ public class CraftingPerkConversionMigrationTests
 
         upgraded.Should().NotBeNull();
         var result = upgraded!.Record;
-        result.Version.Should().Be(PreviousVersion + 1);
-        result.UnallocatedSP.Should().Be(StartingSP + expectedRefund);
+        result.Version.Should().Be(CharacterMigrations.LatestVersion);
+        result.UnallocatedSP.Should().Be(StartingSP + expectedRefund + LaterSP);
         result.Perks.Should().NotContainKey(perk);
         result.UnlockedPerks.Should().NotContainKey(perk);
-        result.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1);
+        result.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1 + LaterTokens);
         result.RebuildComplete.Should().BeFalse("rebuilding stays optional");
-        result.UpgradeNotices.Should().HaveCount(2);
-        result.UpgradeNotices.Should().ContainSingle(notice =>
+        OwnNotices(result).Should().HaveCount(2);
+        OwnNotices(result).Should().ContainSingle(notice =>
             notice.Contains($"'{name}'") && notice.Contains($"You reclaimed {expectedRefund} SP."));
-        result.UpgradeNotices.Should().ContainSingle(notice =>
+        OwnNotices(result).Should().ContainSingle(notice =>
             notice.Contains("1 Rebuild Token") && notice.Contains("optional"));
     }
 
@@ -108,11 +129,11 @@ public class CraftingPerkConversionMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion), record)!.Record;
 
-        upgraded.UnallocatedSP.Should().Be(StartingSP + 113);
+        upgraded.UnallocatedSP.Should().Be(StartingSP + 113 + LaterSP);
         upgraded.Perks.Should().BeEmpty();
         upgraded.UnlockedPerks.Should().BeEmpty();
-        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1);
-        upgraded.UpgradeNotices.Should().HaveCount(Table.Length + 1, "one notice per refunded perk and one for the token");
+        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1 + LaterTokens);
+        OwnNotices(upgraded).Should().HaveCount(Table.Length + 1, "one notice per refunded perk and one for the token");
     }
 
     [Test]
@@ -122,9 +143,9 @@ public class CraftingPerkConversionMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion), record)!.Record;
 
-        upgraded.UnallocatedSP.Should().Be(StartingSP);
-        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1);
-        upgraded.UpgradeNotices.Should().ContainSingle().Which.Should().Contain("1 Rebuild Token");
+        upgraded.UnallocatedSP.Should().Be(StartingSP + LaterSP);
+        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1 + LaterTokens);
+        OwnNotices(upgraded).Should().ContainSingle().Which.Should().Contain("1 Rebuild Token");
     }
 
     [Test]
@@ -135,7 +156,7 @@ public class CraftingPerkConversionMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion), record)!.Record;
 
-        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(1);
+        upgraded.Currencies[CurrencyType.RebuildToken].Should().Be(1 + LaterTokens);
     }
 
     [Test]
@@ -161,8 +182,8 @@ public class CraftingPerkConversionMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion), record)!.Record;
 
         upgraded.Perks.Should().NotContainKey(PerkType.Research);
-        upgraded.UnallocatedSP.Should().Be(StartingSP);
-        upgraded.UpgradeNotices.Should().ContainSingle().Which.Should().Contain("Rebuild Token");
+        upgraded.UnallocatedSP.Should().Be(StartingSP + LaterSP);
+        OwnNotices(upgraded).Should().ContainSingle().Which.Should().Contain("Rebuild Token");
     }
 
     [Test]
@@ -173,7 +194,7 @@ public class CraftingPerkConversionMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(PreviousVersion), record)!.Record;
 
-        upgraded.UnallocatedSP.Should().Be(StartingSP + 5);
+        upgraded.UnallocatedSP.Should().Be(StartingSP + 5 + LaterSP);
     }
 
     [Test]
@@ -201,9 +222,9 @@ public class CraftingPerkConversionMigrationTests
         var retried = CharacterMigrations.Upgrade(original, first.Record);
 
         retried.Should().NotBeNull("the unchanged file is still behind");
-        retried!.Record.UnallocatedSP.Should().Be(StartingSP + 11, "the record was already refunded");
-        retried.Record.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1);
-        retried.Record.UpgradeNotices.Should().HaveCount(2);
+        retried!.Record.UnallocatedSP.Should().Be(StartingSP + 11 + LaterSP, "the record was already refunded");
+        retried.Record.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1 + LaterTokens);
+        OwnNotices(retried.Record).Should().HaveCount(2);
     }
 
     [Test]
@@ -229,10 +250,10 @@ public class CraftingPerkConversionMigrationTests
         var upgraded = CharacterMigrations.Upgrade(file, record)!;
 
         FeatsOf(upgraded.File).Should().BeEmpty();
-        upgraded.Record.UnallocatedSP.Should().Be(StartingSP);
+        upgraded.Record.UnallocatedSP.Should().Be(StartingSP + LaterSP);
         upgraded.Record.Perks.Should().ContainKey(PerkType.Alertness);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens);
-        upgraded.Record.UpgradeNotices.Should().BeEmpty();
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + LaterTokens, "only the later migrations' tokens");
+        OwnNotices(upgraded.Record).Should().BeEmpty();
     }
 
     [Test]

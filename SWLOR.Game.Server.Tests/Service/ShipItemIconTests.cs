@@ -18,11 +18,22 @@ public class ShipItemIconTests
         {
             var resref = row["ResRef"];
             var baseItem = int.Parse(row["BaseItem"]);
-            var oldModel = int.Parse(row["OldModel"]);
             var newModel = int.Parse(row["NewModel"]);
             using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "uti", resref + ".uti.json")).TrimStart('\uFEFF'));
             blueprint.RootElement.GetProperty("ModelPart1").GetProperty("value").GetInt32().Should().Be(newModel, resref);
             blueprint.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(baseItem, resref);
+            if (IsNewBlueprint(row))
+            {
+                // Created with the reviewed artwork, so there is no old appearance and the migration must leave it alone.
+                row["OldModel"].Should().BeEmpty(resref);
+                row["OldIcon"].Should().BeEmpty(resref);
+                newModel.Should().BeInRange(1, 254);
+                ItemIconMigration.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel, resref);
+                AssertTga(Path.Combine(Root(), "SWLOR_Haks", "sw_item", row["InventoryIcon"] + ".tga"), 64);
+                continue;
+            }
+
+            var oldModel = int.Parse(row["OldModel"]);
             newModel.Should().BeInRange(1, 254).And.NotBe(oldModel);
             ItemIconMigration.GetUpdatedModel(resref.ToUpperInvariant(), baseItem, oldModel).Should().Be(newModel);
             ItemIconMigration.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel, "updates are idempotent");
@@ -97,6 +108,9 @@ public class ShipItemIconTests
             File.Exists(Path.Combine(Root(), icon["SourcePath"])).Should().BeTrue("original source artwork must be checked in");
         }
     }
+
+    /// <summary>A blueprint created already using its reviewed artwork (the space revamp items), so it has no old appearance.</summary>
+    private static bool IsNewBlueprint(Dictionary<string, string> row) => row.GetValueOrDefault("NewBlueprint") == "true";
 
     private static void AssertTga(string path, int size)
     {

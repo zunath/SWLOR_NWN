@@ -24,7 +24,7 @@ All in `CircuitRules`, `CircuitSetup` and `CircuitParameterProfile`. Phase 2 lef
 | --- | --- | --- | --- |
 | Unlock ranks | Wire, Discharge (Assembly) 0; Tune, Discharge (Calibration) 5; Patch 10; Ground 15; Boost 20 | Patch 10, every other action 0 | Owner decision: every action that plays the loop is open from rank 0 and only the repair is gated. A Clean Signal is announced from rank 0 because Tune is open. |
 | Enhancement Assembly | the whole progress penalty added to Assembly | the penalty, capped at 30% of the Assembly the recipe itself needs (`EnhancementAssemblyPerPenalty` 1.0, `MaxEnhancementAssemblyShare` 0.3) | Gate 6 with enhancements. See "Enhancements". |
-| XP multiplier | none | 2.29 for recipe levels 1-10, 1.54 for 11-20, 1.15 for 21-30, none (1.00) from 31 up, on a craft's base XP for an item and a failure alike (`CircuitRules.XpMultiplierFor`, read through `CraftMinigameXp`) | Gate 6. See "XP multipliers". |
+| XP multiplier | none | 2.29 for recipe levels 1-10, 1.72 for 11-20, 1.19 for 21-30 (1.54 and 1.15 before the space revamp merge), none (1.00) from 31 up, on a craft's base XP for an item and a failure alike (`CircuitRules.XpMultiplierFor`, read through `CraftMinigameXp`) | Gate 6. See "XP multipliers". |
 
 Everything else is as phase 1: Wire 8.5% and Tune 5.5% of the meter at Load 0, Discharge 2.5% per Load, Load boost per recipe (8, 10 or 12% per point), overload 8% per point above the line costing 30% of maximum Integrity, Clean Signal 25% a turn and doubling Tune, CP = gear + 0.75 x rank (+31 from rank 25), costs 3, 4, 3 and 8 CP for Tune, Boost, Ground and Patch, and 3, 3, 3, 4 and 2 Integrity for Wire, Tune, Boost, Discharge and Ground. A crafter below the recipe's level loses 5% of output per rank (to 3 ranks below). The help text now reads the slot thresholds from `CraftOutcomeRules.GetEnhancementThresholds` (a test checks it), so a change to the shared thresholds reaches the window.
 
@@ -67,6 +67,8 @@ A Circuit craft takes 14 to 18 actions where the old window takes 5.6 to 10 at l
 | 41-53 | 0.771 | below 1 | 1.00 | 1.30x / 1.33x |
 
 The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others, read through the shared `CraftMinigameXp`). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.54 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible records it as System Changes & Migrations entry 13, written from `CircuitRules.cs` by `tools/UpdateCircuitBible.py`; rerun the script after a change to the multipliers or the cap. The first shipped values (1.52 and 1.13) left two cases of the second sample at 0.99x, so they were raised to 1.54 and 1.15; another sample, or the client timing that replaces the 8 s per action estimate, can still move a band by a point or two.
+
+**Space revamp merge (2026-10-31).** The space revamp's Engineering recipes (ship modules, deeds, capital parts and ammo) joined the cohort and changed the committed sample. At 1.54 and 1.15 the no-gear plain cases fell to 0.90x (11-20; legacy 48,420 XP an hour against 43,551) and 0.97x (21-30; 33,221 against 32,170), so the two bands were raised to the smallest two-decimal values that bring both back to 1.00x on the committed sample: 1.72 (1.54 x 48,420 / 43,551 = 1.712) and 1.19 (1.15 x 33,221 / 32,170 = 1.188). `circuit-gates.md` is regenerated with the merged cohort; the second sample was not re-run.
 
 ## Gate 1
 

@@ -12,6 +12,9 @@ Changes:
     for Treasure Hunter and Creditfinder) and a note naming the rank milestone that replaced them.
   - Total SP on those tabs counts only the purchasable rows, and SP Price cells stored as text become numbers on the
     Engineering, Fabrication, Agriculture and Gathering tabs.
+  - Agriculture: while the tab still has the old Farming rows (row 9 reads Farming), their total and Total SP are written
+    too. Once UpdateAgriculturePerkBible.py has replaced them with the Farmer line and the crop table, it owns the tab and
+    this tool leaves the rows, totals and Total SP alone. AgriculturePerkBibleTests runs both tools to check they agree.
   - General: Treasure Hunter I-III and Creditfinder I-III with their Armor requirements.
   - System Changes & Migrations: the refund and rebuild token entry.
 """

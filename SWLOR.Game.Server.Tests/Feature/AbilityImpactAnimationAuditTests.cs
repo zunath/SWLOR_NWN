@@ -136,7 +136,9 @@ public class AbilityImpactAnimationAuditTests
 
     private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)
     {
+        // A space ability is the ship firing its weapons, so the pilot plays no animation.
         return ability.ActivationType == AbilityActivationType.Casted &&
+               !ability.CanBeUsedInSpace &&
                (ability.ActivationAction != null || ability.ImpactAction != null) &&
                ability.AnimationType == Animation.Invalid &&
                ability.ImpactAnimationType == Animation.Invalid &&

@@ -18,23 +18,25 @@ public class SupportCombatPointTests
             .Where(module => module.Source.Contains("Space.RestoreHull(") ||
                              module.Source.Contains("Space.RestoreShield(") ||
                              module.Source.Contains("Space.RestoreCapacitor(") ||
+                             module.Source.Contains("ShipModuleActions.RepairHull(") ||
+                             module.Source.Contains("ShipModuleActions.RepairShield(") ||
+                             module.Source.Contains("ShipModuleActions.InjectCapacitor(") ||
                              module.Name == "CapitalEwarModuleDefinition.cs")
             .ToList();
 
-        supportModules.Select(module => module.Name).Should().Contain(new[]
-        {
-            "HullRepairerModuleDefinition.cs",
-            "ShieldRepairerModuleDefinition.cs",
-            "RepairFieldGeneratorModuleDefinition.cs",
-            "BulwarkShieldGeneratorModuleDefinition.cs",
-            "HypermatterInjectorModuleDefinition.cs",
-            "CapitalEwarModuleDefinition.cs",
-        });
+        // Every module, the repairers, injector and capital arrays included, is built by RevampModuleDefinition.
+        supportModules.Select(module => module.Name).Should().Contain("RevampModuleDefinition.cs");
+
+        // The repairers and the injector share ShipModuleActions, which holds their combat point credit.
+        var sharedSupport = shipModules.Single(module => module.Name == "ShipModuleActions.cs").Source;
+        sharedSupport.Should().Contain("AddSupportCombatPoint(activator,");
+        sharedSupport.Should().Contain("SpaceCrew.GetCreditedPlayer(activator)", "a crew member earns the credit for their station's support");
 
         foreach (var (name, source) in supportModules)
         {
-            source.Should().Contain(
-                "CombatPoint.AddSupportCombatPoint(activator,",
+            var credits = source.Contains("AddSupportCombatPoint(activator,") ||
+                          (source.Contains("ShipModuleActions.") && sharedSupport.Contains("AddSupportCombatPoint(activator,"));
+            credits.Should().BeTrue(
                 $"{name} supports ships in a fight, so the enemies in that fight must award the pilot Piloting XP");
         }
     }

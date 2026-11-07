@@ -94,6 +94,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>Whether the property is a house in a city, which has a specialization anyone inside can read and its owner can change.</summary>
+        public bool IsHouseSpecializationVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsRetrieveStructureEnabled
         {
             get => Get<bool>();
@@ -237,6 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
+            IsHouseSpecializationVisible = property.PropertyType == PropertyType.House && HouseSpecializations.IsInCity(property);
             StructureName = string.Empty;
             SelectedPageIndex = 0;
             LoadPropertyPermissions(property);
@@ -336,6 +344,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPaginationSearch = false;
         };
 
+        public Action OnOpenHouseSpecialization() => () =>
+        {
+            var propertyId = Property.GetPropertyId(GetArea(Player));
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.HouseSpecialization, new HouseSpecializationPayload(propertyId));
+        };
+
         public Action OnManageProperty() => () =>
         {
             var area = GetArea(Player);
@@ -399,9 +416,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
+                // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+                if (ShipTransfer.IsPropertyListedForSale(structure.ParentPropertyId))
+                {
+                    Instructions = "This ship is listed for sale.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
                 if (!structureDetail.CanBeRetrieved)
                 {
                     Instructions = "This structure cannot be retrieved.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                var corralError = structure.StructureType == StructureType.Corral
+                    ? Corrals.GetRetrieveError(structure, GetObjectUUID(Player))
+                    : string.Empty;
+                if (!string.IsNullOrEmpty(corralError))
+                {
+                    Instructions = corralError;
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                if (structure.StructureType == StructureType.Starport &&
+                    Station.IsStation(parentProperty) &&
+                    Station.CountStarports(parentProperty.Id) <= 1)
+                {
+                    Instructions = "A station must keep a Starport.";
                     InstructionColor = GuiColor.Red;
                     return;
                 }
@@ -421,6 +465,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
+
+                // A Fermentation Vat takes the colors it has copied with it, on the item, and gives them back when it is placed again.
+                if (structure.StructureType == StructureType.FermentationVat)
+                    FermentationVats.WriteStarters(structure.Id, item);
+
                 if (!Item.TryAcquireItem(Player, item))
                 {
                     Instructions = Item.InventoryFullShortMessage;

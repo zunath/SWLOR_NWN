@@ -161,6 +161,21 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Start_RefusesInTheRequirementsOwnWords_WhenARequirementSaysWhatIsMissing()
+    {
+        _world.MeetsRequirements = false;
+        _world.RequirementProblem = "This can only be crafted at a crafting station in a city on Tatooine. You are not in a player city.";
+
+        var result = Lifecycle().Start(FakeCraftSessionWorld.PlayerHandle, _player, Request());
+
+        result.Succeeded.Should().BeFalse();
+        result.Message.Should().Be(_world.RequirementProblem, "a planet identity recipe tells the crafter where it can be made");
+        _player.ActiveCraftSession.Should().BeNull();
+        _world.Inventory["ore"].Should().Be(5, "a refused craft takes nothing");
+        _world.Events.Should().NotContain("begin-work");
+    }
+
+    [Test]
     public void Start_RefusesAnInvalidBlueprint_BeforeTakingAnything()
     {
         _world.BlueprintProblem = "No licensed runs remaining!";

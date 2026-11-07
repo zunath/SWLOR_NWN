@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
@@ -1024,11 +1025,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return string.Empty;
         }
 
-        private int GetStageTotal(IncubationStatType stat)
+        /// <summary>The stat after this stage: the enzymes' gain up to the stage cap, then <paramref name="bonus"/>, then the 100% cap.</summary>
+        private int GetStageTotal(IncubationStatType stat, int bonus = 0)
         {
             _baseStats.TryGetValue(stat, out var baseValue);
             _stageStats.TryGetValue(stat, out var stageValue);
-            return Math.Min(baseValue + Math.Clamp(stageValue, 0, MaxStageIncrease), MaxStat);
+            return Math.Min(baseValue + Math.Clamp(stageValue, 0, MaxStageIncrease) + bonus, MaxStat);
         }
 
         private void StartJob(IncubationJob job)
@@ -1036,6 +1038,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var incubationSeconds = CalculateIncubationSeconds();
             var now = DateTime.UtcNow;
             var hasPendingStage = true;
+
+            // Breeders' Charter: a tenth of what each purity stat's enzymes added, after the stage cap and before the 100% cap.
+            // Mutation chance and the XP penalty never get it.
+            var breedersCharter = EdictEffects.HasBreedersCharter(DB.Get<Player>(GetObjectUUID(Player)), Property.GetCityIdForArea(GetArea(Player)));
+            int BreedersBonus(int stageGain) => breedersCharter ? EdictBonusRules.GetBreedersCharterBonus(stageGain, MaxStageIncrease) : 0;
+            int PurityTotal(IncubationStatType stat)
+            {
+                _stageStats.TryGetValue(stat, out var stageGain);
+                return GetStageTotal(stat, BreedersBonus(stageGain));
+            }
 
             var validationError = ValidateCreateJob();
             if (string.IsNullOrWhiteSpace(validationError))
@@ -1046,18 +1058,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 job.CurrentStage++;
                 job.IsMutationSuppressed = !IsMutationAllowed;
 
-                job.AttackPurity = GetStageTotal(IncubationStatType.AttackPurity);
-                job.AccuracyPurity = GetStageTotal(IncubationStatType.AccuracyPurity);
-                job.EvasionPurity = GetStageTotal(IncubationStatType.EvasionPurity);
-                job.LearningPurity = GetStageTotal(IncubationStatType.LearningPurity);
+                job.AttackPurity = PurityTotal(IncubationStatType.AttackPurity);
+                job.AccuracyPurity = PurityTotal(IncubationStatType.AccuracyPurity);
+                job.EvasionPurity = PurityTotal(IncubationStatType.EvasionPurity);
+                job.LearningPurity = PurityTotal(IncubationStatType.LearningPurity);
                 job.XPPenalty = GetStageTotal(IncubationStatType.XPPenalty);
 
-                job.DefensePurities[CombatDamageType.Physical] = GetStageTotal(IncubationStatType.PhysicalDefensePurity);
-                job.DefensePurities[CombatDamageType.Force] = GetStageTotal(IncubationStatType.ForceDefensePurity);
+                job.DefensePurities[CombatDamageType.Physical] = PurityTotal(IncubationStatType.PhysicalDefensePurity);
+                job.DefensePurities[CombatDamageType.Force] = PurityTotal(IncubationStatType.ForceDefensePurity);
 
                 foreach (var stat in IncubationProjection.ResistancePurityStats)
                 {
-                    job.ResistancePurities[IncubationProjection.GetResistanceType(stat)] = GetStageTotal(stat);
+                    job.ResistancePurities[IncubationProjection.GetResistanceType(stat)] = PurityTotal(stat);
                 }
 
                 job.ResistancePurities = BeastResistanceCalculator.CreateResistancePurities(job.ResistancePurities);

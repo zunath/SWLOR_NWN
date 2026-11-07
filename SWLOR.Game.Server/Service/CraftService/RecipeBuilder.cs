@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PlanetIdentityService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -88,6 +90,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the name the recipe lists show, for recipes that make the same item in different ways.
+        /// Without it the lists show the crafted item's name.
+        /// </summary>
+        /// <param name="name">The recipe name to display.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder Name(string name)
+        {
+            _activeRecipe.Name = name;
+            return this;
+        }
+
+        /// <summary>
         /// Adds short lines describing what the crafted item does, shown in the recipe details.
         /// Use this for items whose effect is not visible from their item properties.
         /// </summary>
@@ -145,6 +159,34 @@ namespace SWLOR.Game.Server.Service.CraftService
         {
             var requirement = new RecipeUnlockRequirement(_activeType);
             _activeRecipe.Requirements.Add(requirement);
+            return this;
+        }
+
+        /// <summary>
+        /// Requires the recipe to be crafted at a player station's Shipyard that admits the crafter (Capital hulls).
+        /// </summary>
+        public RecipeBuilder RequirementShipyard()
+        {
+            _activeRecipe.Requirements.Add(new RecipeShipyardRequirement());
+            return this;
+        }
+
+        /// <summary>
+        /// Requires the recipe to be crafted at a crafting station inside a city on the planet (a planet's signature dishes and decor).
+        /// </summary>
+        /// <param name="planet">The planet the city must be on.</param>
+        public RecipeBuilder RequirementPlanet(PlanetType planet)
+        {
+            _activeRecipe.Requirements.Add(new RecipeIdentityRequirement(IdentityPlace.ForPlanet(planet)));
+            return this;
+        }
+
+        /// <summary>
+        /// Requires the recipe to be crafted at a crafting station on a player station (the stations' signature food and decor).
+        /// </summary>
+        public RecipeBuilder RequirementStation()
+        {
+            _activeRecipe.Requirements.Add(new RecipeIdentityRequirement(IdentityPlace.ForStation()));
             return this;
         }
 

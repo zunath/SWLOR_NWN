@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int SOC { get; set; }
         public int VIT { get; set; }
         public int WIL { get; set; }
+
+        /// <summary>The sum of the droid's industrial parts' Industry (plan section 27).</summary>
+        public int Industry { get; set; }
         public DroidPersonalityType PersonalityType { get; set; }
 
         public Dictionary<SkillType, int> Skills { get; set; }

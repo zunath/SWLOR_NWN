@@ -65,6 +65,10 @@ internal sealed class RecipeSourceRewriter
 
     private void ProcessCreate(InvocationExpressionSyntax create)
     {
+        // A loop over a generated catalog reads its parameters from RecipeParameterTable; the updater writes the table instead.
+        if (IsTableDriven(create))
+            return;
+
         var first = create.ArgumentList.Arguments[0].Expression;
         var recipeName = RecipeNameOf(first);
         if (recipeName != null)
@@ -85,6 +89,21 @@ internal sealed class RecipeSourceRewriter
             default:
                 throw Unsupported(create, $"Create({first}) is not a RecipeType literal, a helper parameter or a record loop");
         }
+    }
+
+    /// <summary>True when the recipe's chain sets its parameters from <see cref="RecipeParameterTableFile.ClassName"/>.</summary>
+    private static bool IsTableDriven(InvocationExpressionSyntax create)
+    {
+        return FindCalls(GetChain(create), HookMethod).Any(call =>
+            call.ArgumentList.Arguments.Count == 1 &&
+            call.ArgumentList.Arguments[0].Expression is InvocationExpressionSyntax
+            {
+                Expression: MemberAccessExpressionSyntax
+                {
+                    Expression: IdentifierNameSyntax { Identifier.ValueText: RecipeParameterTableFile.ClassName },
+                    Name.Identifier.ValueText: "For",
+                },
+            });
     }
 
     private void ProcessHelper(InvocationExpressionSyntax create, string parameterName)

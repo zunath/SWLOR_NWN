@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (damageAmount <= 0)
                 return;
 
-            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount, DamageType.Acid), creature));
+            StatusEffect.ApplyDamageOverTime(source, creature, damageAmount, DamageType.Acid);
         }
 
         /// <summary>

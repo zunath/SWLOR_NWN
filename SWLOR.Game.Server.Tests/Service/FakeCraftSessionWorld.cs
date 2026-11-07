@@ -58,12 +58,82 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;
 
+    /// <summary>What the fake says a failing requirement of the recipe is, in its own words. Empty for a plain refusal.</summary>
+    public string RequirementProblem { get; set; } = string.Empty;
+
+    public string GetRequirementProblem(uint player, RecipeType recipe) => RequirementProblem;
+
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe) => BlueprintProblem;
 
     public BlueprintDetail ChargeBlueprint(uint player, uint blueprintItem)
     {
         Events.Add("charge-blueprint");
         return BlueprintAfterCharge;
+    }
+
+    /// <summary>The station fee a craft owes (a Shipyard's, space revamp); 0 for none.</summary>
+    public int StationFee { get; set; }
+
+    /// <summary>The player's credits, read by the station fee check. They are in the character file, so a crash restores the file's.</summary>
+    public int Gold { get; set; } = int.MaxValue;
+
+    /// <summary>The station whose Shipyard takes the fee.</summary>
+    public const string StationId = "station-1";
+
+    /// <summary>The station fees taken from the player, in order.</summary>
+    public List<int> StationFeesPaid { get; } = new();
+
+    /// <summary>The station's treasury, in the database: a crash does not roll it back.</summary>
+    public long Treasury { get; private set; }
+
+    /// <summary>The fee ids the treasury has credited (the station's ledger).</summary>
+    public HashSet<string> CreditedFees { get; } = new();
+
+    /// <summary>Every credit request, including ones the ledger refused as already credited.</summary>
+    public int CreditRequests { get; private set; }
+
+    /// <summary>True to stop the server right after the treasury's save, before the player's save forgets the fee.</summary>
+    public bool StopAfterTreasuryCredit { get; set; }
+
+    /// <summary>Each call that passed the committed components on to a finished item: the recipe and the components.</summary>
+    public List<(uint Item, RecipeType Recipe, List<string> Components)> ComponentTraitCalls { get; } = new();
+
+    /// <summary>The finishing steps that stamp the item, in order: "component-traits" and "blueprint-bonuses".</summary>
+    public List<string> StampOrder { get; } = new();
+
+    public string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem) =>
+        StationFee > 0 && Gold < StationFee ? $"The Shipyard fee is {StationFee} credits!" : string.Empty;
+
+    public StationFeeCharge ChargeStationFee(uint player, RecipeDetail recipe)
+    {
+        if (StationFee <= 0)
+            return null;
+
+        Gold -= StationFee;
+        StationFeesPaid.Add(StationFee);
+        Events.Add("station-fee");
+        return new StationFeeCharge(StationId, StationFee);
+    }
+
+    public void CreditStationFee(uint player, PendingStationFee fee)
+    {
+        CreditRequests++;
+        if (!CreditedFees.Add(fee.Id))
+            return;
+
+        Treasury += fee.Fee;
+        Events.Add("treasury-credit");
+        if (StopAfterTreasuryCredit)
+        {
+            StopAfterTreasuryCredit = false;
+            throw new ServerStoppedException();
+        }
+    }
+
+    public void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components)
+    {
+        ComponentTraitCalls.Add((item, recipeType, components.ToList()));
+        StampOrder.Add("component-traits");
     }
 
     public bool TryTakeComponents(uint player, RecipeDetail recipe, List<string> taken)
@@ -184,14 +254,36 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges) =>
         FoodBonuses.Add((durationSeconds, bonusCharges));
 
-    public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint) =>
+    public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint)
+    {
         BlueprintBonusCalls++;
+        StampOrder.Add("blueprint-bonuses");
+    }
 
     /// <summary>False while the player is dead: no skill XP can be given.</summary>
     public bool PlayerAlive { get; set; } = true;
 
     /// <summary>True stops the server at the moment the lifecycle asks whether XP can be given: the record is saved, the award never runs.</summary>
     public bool StopBeforeXpGrant { get; set; }
+
+    /// <summary>The city the player's station stands in, which a craft records when it starts.</summary>
+    public string StationCityId { get; set; } = string.Empty;
+
+    /// <summary>The points Artisans' Charter adds at settlement, for a craft made in <see cref="CharterCityId"/>.</summary>
+    public int CharterPoints { get; set; }
+
+    /// <summary>The city whose citizens the charter pays; a craft made anywhere else gets nothing.</summary>
+    public string CharterCityId { get; set; } = string.Empty;
+
+    public string GetStationCityId(uint player) => StationCityId;
+
+    /// <summary>The Workshop bonus the house the player stands in gives a craft that starts now.</summary>
+    public int WorkshopBonus { get; set; }
+
+    public int GetWorkshopBonus(uint player, SkillType skill) => WorkshopBonus;
+
+    public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
+        !string.IsNullOrEmpty(craftCityId) && craftCityId == CharterCityId ? CharterPoints : 0;
 
     public bool CanReceiveXp(uint player)
     {
@@ -271,6 +363,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     }
 
     private Dictionary<string, int> _fileInventory = new();
+    private int _fileGold = int.MaxValue;
     private List<string> _fileReturned = new();
     private List<string> _fileCrafted = new();
 
@@ -280,6 +373,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         FileSequenceOnDisk = Sequence;
         _exported = Sequence;
         _fileInventory = new Dictionary<string, int>(Inventory);
+        _fileGold = Gold;
         _fileReturned = new List<string>(Returned);
         _fileCrafted = new List<string>(Crafted);
     }
@@ -294,6 +388,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         Inventory.Clear();
         foreach (var (resref, quantity) in _fileInventory)
             Inventory[resref] = quantity;
+        Gold = _fileGold;
         Returned.Clear();
         Returned.AddRange(_fileReturned);
         Crafted.Clear();

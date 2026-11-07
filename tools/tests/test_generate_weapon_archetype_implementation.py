@@ -82,7 +82,8 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             "Spotter's Rhythm": "SameTargetPressureBuildSkillType",
         }
         with GENERATOR.MANIFEST.open(encoding="utf-8-sig", newline="") as source:
-            rows = {row["PerkName"]: row for row in csv.DictReader(source)}
+            # Only weapon skill tabs: a Piloting perk can share a ground perk's name.
+            rows = {row["PerkName"]: row for row in csv.DictReader(source) if row["Tab"] in GENERATOR.SKILL_BY_TAB}
         for name, stat in expected.items():
             with self.subTest(perk=name):
                 stats = dict(GENERATOR.description_stat_entries(rows[name], name))
@@ -215,7 +216,9 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                           "DefensePercentAdjustment": "-10"}, flurry)
         for name, stats in (("Ordnance", ordnance), ("Flurry", flurry)):
             generated = (ROOT / f"SWLOR.Game.Server/Feature/StatusEffectDefinition/{name}StanceStatusEffect.cs").read_text()
-            self.assertEqual(len(stats), generated.count("StatGroup.Stats["))
+            # The space launcher stats a pilot's ship reads are hand-kept beside the generated ground stats.
+            ground_lines = generated.count("StatGroup.Stats[") - generated.count("StatGroup.Stats[StatType.SpaceLauncher")
+            self.assertEqual(len(stats), ground_lines)
             for stat, value in stats.items():
                 self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
 

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Tier3();
             Tier4();
             Tier5();
+            IndustrialProtocols();
 
             return _builder.Build();
         }
@@ -352,6 +353,22 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 new DroidInstructionRecipe(RecipeType.InstructionVeiledStrike4, "id_veiledstrike4", Parameters: new CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 39)),
                 new DroidInstructionRecipe(RecipeType.InstructionVigorThrust4, "id_vigorthrust4", Parameters: new CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 38)),
                 new DroidInstructionRecipe(RecipeType.InstructionWristRocket3, "id_wristrck3", Parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 38)));
+        }
+
+        /// <summary>The industrial droid protocols (plan section 27): rank I at the tier 1 bill, rank II at the tier 3 bill.</summary>
+        private void IndustrialProtocols()
+        {
+            CreateTier(10, "jade", "elec_ruined", "quadrenium",
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol1, "id_efficiency1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 43)),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol1, "id_dmgcontrol1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol1, "id_survey1", Parameters: new CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 35)),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol1, "id_prospect1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 43)));
+
+            CreateTier(30, "citrine", "elec_good", "ionite",
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol2, "id_efficiency2", Parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 44)),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol2, "id_dmgcontrol2", Parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 37)),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol2, "id_survey2", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 40)),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol2, "id_prospect2", Parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 35)));
         }
 
         private void CreateTier(

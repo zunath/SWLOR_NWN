@@ -61,6 +61,9 @@ public static class RecipeFolderUpdater
             pending.Add((path, hasBom, rewrite.Text));
         }
 
+        // A covered recipe with no Create chain of its own is built in a loop over a generated catalog, which reads its values from the
+        // parameter table; without the table it is a problem as before.
+        var tableRecipes = new List<string>();
         foreach (var (type, detail) in recipes.OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal))
         {
             if (detail.Skill == profile.Skill &&
@@ -68,8 +71,33 @@ public static class RecipeFolderUpdater
                 profile.AppliesTo(RecipeParameterContext.From(type, detail)) &&
                 !visited.Contains(type.ToString()))
             {
-                problems.Add($"{type} is registered but its Create call is not under {folder}");
+                tableRecipes.Add(type.ToString());
             }
+        }
+
+        var tablePath = Path.Combine(folder, RecipeParameterTableFile.FileName);
+        if (File.Exists(tablePath))
+        {
+            var bytes = File.ReadAllBytes(tablePath);
+            var hasBom = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;
+            var text = new UTF8Encoding(false, true).GetString(bytes, hasBom ? 3 : 0, bytes.Length - (hasBom ? 3 : 0));
+            var updated = RecipeParameterTableFile.Update(
+                text,
+                profile.ParametersType.Name,
+                tableRecipes.Select(name => (name, PlanFor(name))).Where(entry => entry.Item2.Action == RecipeParameterAction.Write)
+                    .Select(entry => (entry.name, entry.Item2.Arguments)),
+                name => !Enum.TryParse(name, false, out RecipeType type) || !recipes.TryGetValue(type, out var detail) || detail.Skill == profile.Skill,
+                out var tableEdits);
+            rowEdits += tableEdits;
+            if (updated != text)
+            {
+                changed.Add(RecipeParameterTableFile.FileName);
+                pending.Add((tablePath, hasBom, updated));
+            }
+        }
+        else
+        {
+            problems.AddRange(tableRecipes.Select(name => $"{name} is registered but its Create call is not under {folder}"));
         }
 
         problems.AddRange(unknown.Select(name => $"RecipeType.{name} appears in the source but not in the built game server; rebuild before running"));

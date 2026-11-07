@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public PlanetType Planet { get; set; }
             public Location SpaceLocation { get; set; }
             public ShipDockPoint LandingPoint { get; set; }
+            public string StationId { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -39,6 +41,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var planetType = (PlanetType)GetLocalInt(self, "PLANET_TYPE_ID");
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
             var player = Player;
+
+            // An Interdictor's hold keeps a ship from docking (W11k).
+            if (Space.RefuseWhileInterdicted(player))
+            {
+                Close();
+                return;
+            }
+
+            // An incursion's blockade holding at this dock takes its docking services offline.
+            var blockade = Space.GetIncursionDockRefusal(self);
+            if (!string.IsNullOrEmpty(blockade))
+            {
+                SendMessageToPC(player, ColorToken.Red(blockade));
+                Close();
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
@@ -69,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
+            model.StationId = GetLocalString(self, Station.StationCityVariable);
 
             var landingWaypointTag = GetLocalString(self, "STARPORT_LANDING_WAYPOINT_TAG");
             if (!string.IsNullOrWhiteSpace(landingWaypointTag))
@@ -96,12 +115,17 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = Player;
             var playerId = GetObjectUUID(player);
+            var dock = Owner;
             var model = Data<Model>();
-            var dockPoints = model.LandingPoint == null
-                ? Space.GetDockPointsByPlanet(model.Planet)
-                : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
+            var dockPoints = !string.IsNullOrWhiteSpace(model.StationId)
+                ? Station.GetDockPoints(model.StationId)
+                : model.LandingPoint == null
+                    ? Space.GetDockPointsByPlanet(model.Planet)
+                    : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
 
-            page.Header = "Please select a location.";
+            page.Header = !string.IsNullOrWhiteSpace(model.StationId) && dockPoints.Count <= 0
+                ? "This station has no Starport to dock at."
+                : "Please select a location.";
 
             foreach (var (_, dockPoint) in dockPoints)
             {
@@ -117,6 +141,43 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         return;
                     }
 
+                    // Enmity leaves out player-versus-player fights, so a pilot a hostile player just hit cannot dock
+                    // away from the controls and log out without risking the ship.
+                    if (Space.RefuseLeavingControlsInPvp(player))
+                    {
+                        Close();
+                        return;
+                    }
+
+                    // A hold that started while the menu was open still stops the docking, before anything is saved.
+                    if (Space.RefuseWhileInterdicted(player))
+                    {
+                        Close();
+                        return;
+                    }
+
+                    // So does a blockade that took this dock while the menu was open.
+                    var blockade = Space.GetIncursionDockRefusal(dock);
+                    if (!string.IsNullOrEmpty(blockade))
+                    {
+                        SendMessageToPC(player, ColorToken.Red(blockade));
+                        Close();
+                        return;
+                    }
+
+                    // Capital hulls dock only at the major ports and level 2 player starports, and a ship-only
+                    // location such as the Abandoned Station admits only the hulls its area allows.
+                    var activeShip = DB.Get<PlayerShip>(DB.Get<Player>(playerId).ActiveShipId);
+                    var landingAreaForSize = GetAreaFromLocation(dockPoint.Location);
+                    if (activeShip != null &&
+                        Space.TryRefuseStarport(
+                            player,
+                            Space.GetStarportRefusal(activeShip, landingAreaForSize, dockPoint.IsNPC ? string.Empty : dockPoint.PropertyId),
+                            landingAreaForSize))
+                    {
+                        return;
+                    }
+
                     // There's a chance the starport has been picked up since the menu was loaded.
                     // If we can't locate the starport anymore, give an error message to the player.
                     var dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
@@ -126,6 +187,24 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         {
                             SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
                             return;
+                        }
+
+                        // Docking follows the Starport's access order (Embargo, citizens, allies, Open Gates). A departure pass is
+                        // a way out for ships already docked, never a way to dock another.
+                        var starportCity = Station.GetCityOfInterior(dockPoint.PropertyId);
+                        if (starportCity != null)
+                        {
+                            var dockerRecord = DB.Get<Player>(playerId);
+                            var access = EdictEffects.GetFacilityAccess(dockerRecord, starportCity);
+                            if (!FacilityAccessRules.CanDock(access))
+                            {
+                                SendMessageToPC(player, ColorToken.Red(FacilityAccessRules.DescribeRefusal(
+                                    access,
+                                    dockerRecord?.PropertyOwedTaxes ?? 0,
+                                    dockerRecord?.CitizenPropertyId == starportCity.Id,
+                                    FacilityAccessRules.StarportDockingNotWelcomeMessage)));
+                                return;
+                            }
                         }
 
                         var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);
@@ -272,6 +351,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     };
 
                     DB.Set(dbProperty);
+
+                    // A ship docked at a player Starport starts its pilot's and owner's departure pass there, when they may use it.
+                    if (!dockPoint.IsNPC)
+                        StarportDeparture.OnArrived(playerId, dbProperty.OwnerPlayerId, dbStarport.Id);
 
                     Close();
                     Space.WarpPlayerInsideShip(player);

@@ -20,7 +20,9 @@ internal sealed class ParallelStoredItemPass
 
     public ParallelStoredItemPass(ServerMigrationProgress progress) => _progress = progress;
 
-    public int Process<T>(Func<T, bool> migrate) where T : EntityBase
+    /// <param name="beforeSave">Runs on the calling thread once per batch, after the batch is converted and before any of
+    /// its records are saved. The space item rule uses it to persist refunds first (<see cref="LegacySpaceItemSweep.Flush"/>).</param>
+    public int Process<T>(Func<T, bool> migrate, Action beforeSave = null) where T : EntityBase
     {
         var count = _progress.BeginSection<T>();
         var changed = 0;
@@ -28,6 +30,7 @@ internal sealed class ParallelStoredItemPass
         {
             var results = new bool[batch.Length];
             Parallel.For(0, batch.Length, index => results[index] = Migrate(batch[index], migrate));
+            beforeSave?.Invoke();
             for (var index = 0; index < batch.Length; index++)
             {
                 if (results[index])

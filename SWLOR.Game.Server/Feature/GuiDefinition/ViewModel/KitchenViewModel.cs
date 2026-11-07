@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var rank = dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill) ? skill.Rank : 0;
             var stats = BuildStats(dbPlayer, recipe);
 
-            RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+            RecipeName = $"Recipe: {recipe.Quantity}x {Craft.GetRecipeName(recipe)}";
             RecipeLevel = _parameters == null
                 ? $"Recipe level: {recipe.Level}"
                 : $"Recipe level: {recipe.Level}. Dish: {_parameters.Dish}";

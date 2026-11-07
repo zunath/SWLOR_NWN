@@ -291,8 +291,13 @@ public class StanceStatusEffectTests
             // A Bible "Stance" row maps to the toggle ability that cleans its stance status on refund.
             // Mimicry stances deliberately share their display name with the NPC ability they mimic, so
             // match on the toggle (exactly one refund-cleaned status effect) rather than the name alone.
+            // A space style stance shares its name with its ground source (Ordnance Stance), so the row's tab
+            // also decides whether the ability is the space one.
+            var isSpaceRow = row.Tab == "Piloting";
             var matches = abilities
-                .Where(ability => ability.Name == row.PerkName && ability.StatusEffectTypesRemovedOnPerkRefund.Count == 1)
+                .Where(ability => ability.Name == row.PerkName &&
+                                  ability.StatusEffectTypesRemovedOnPerkRefund.Count == 1 &&
+                                  ability.CanBeUsedInSpace == isSpaceRow)
                 .ToArray();
 
             if (matches.Length != 1)

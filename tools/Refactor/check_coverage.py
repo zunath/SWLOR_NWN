@@ -207,7 +207,10 @@ def evaluate(areas, overall, floors):
         judge(name, areas[name], floors["areas"].get(name))
     for name in floors["areas"]:
         if name not in areas:
-            rows.append((name, 0, 0, 0.0, floors["areas"][name], "not measured"))
+            # A missing coverage file or a moved or deleted folder must not pass silently.
+            failures.append(f"{name}: no lines were measured, but it has a floor of {floors['areas'][name]}% "
+                            "(a coverage file is missing, or the area was emptied: remove its floor from the JSON by hand)")
+            rows.append((name, 0, 0, 0.0, floors["areas"][name], "NOT MEASURED"))
     return rows, failures, raises
 
 

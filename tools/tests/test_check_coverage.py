@@ -133,6 +133,13 @@ class CheckCoverageTests(unittest.TestCase):
         code, _, _ = self.run_tool(self.sample())
         self.assertEqual(code, 0)
 
+    def test_an_area_with_a_floor_that_was_not_measured_fails(self):
+        self.write_floors(0, {"Service": 10, "Domain/Gone": 50})
+        code, out, err = self.run_tool(self.sample())
+        self.assertEqual(code, 1)
+        self.assertIn("Domain/Gone: no lines were measured", err)
+        self.assertIn("NOT MEASURED", out)
+
     def test_missing_files_are_an_error(self):
         self.write_floors(0, {})
         code, _, err = self.run_tool(str(self.dir / "none.cobertura.xml"))

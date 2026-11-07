@@ -6,12 +6,29 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PlayerAttributeRestorationTests
 {
+    // The internal overload this test calls is a forwarder on the facade.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void OlderCharacterFileRecoversEverySavedAttributeIncludingCappedInvestments()
     {

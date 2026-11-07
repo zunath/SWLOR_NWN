@@ -3,11 +3,28 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class WeaponDeflectionTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void WeaponDeflectionStats_HaveIndependentCapsAndSourceSpecificRiders()
     {
@@ -87,7 +104,8 @@ public class WeaponDeflectionTests
     [Test]
     public void DeflectionRiders_PreserveGenericStaminaRestoreAndFilterForceGyreToRanged()
     {
-        var statSource = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
+        var statSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var statRulesSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatRules.cs");
         var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
         var abilitySource = ReadSource(
             "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
@@ -107,7 +125,7 @@ public class WeaponDeflectionTests
         statSource.Should().Contain("var fpRestoreCooldown = fpRestoreCooldownStat != StatType.Invalid");
         statSource.Should().NotContain(
             "var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds)");
-        statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
+        statSource.Should().Contain("TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
         combatSource.Should().NotContain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         combatSource.Should().Contain(
@@ -116,10 +134,10 @@ public class WeaponDeflectionTests
             "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
         combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
         combatSource.Should().Contain("var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);");
-        statSource.Should().Contain("public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)");
-        statSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
-        statSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
-        statSource.Should().Contain("DeflectionSource.Shield => StatType.ShieldDeflection");
+        statRulesSource.Should().Contain("public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)");
+        statRulesSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
+        statRulesSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
+        statRulesSource.Should().Contain("DeflectionSource.Shield => StatType.ShieldDeflection");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(attackDeflectionStatType)");
         combatSource.Should().MatchRegex(
             @"TemporaryStatModifier\.Replace\(\s*activator,\s*targetStatType,\s*attackDeflection,\s*duration,\s*attackDeflectionStatType\);");

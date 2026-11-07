@@ -7,12 +7,29 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class StaminaSustainTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void OrdinaryRotations_PreserveUsefulActionsAcrossShortAndLongEncounters()
     {

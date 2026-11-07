@@ -1,5 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
@@ -36,7 +37,7 @@ namespace SWLOR.CraftSim.Harvesting
                 foreach (var bonus in perks[perk].PerkLevels[level].StatBonuses)
                 {
                     totals.TryGetValue(bonus.Stat, out var current);
-                    totals[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
+                    totals[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
                 }
             }
 

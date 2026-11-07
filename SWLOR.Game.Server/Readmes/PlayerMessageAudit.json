@@ -6104,18 +6104,18 @@
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stat.cs",
-    "Line": 389,
+    "File": "SWLOR.Game.Server/Domain/Character/StatService.cs",
+    "Line": 412,
     "Member": "RestoreFP",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"FP\")"
+    "Call": "_playerFeedback.SendResourceRestored(creature, restored, \"FP\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Stat.cs",
-    "Line": 498,
+    "File": "SWLOR.Game.Server/Domain/Character/StatService.cs",
+    "Line": 521,
     "Member": "RestoreStamina",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"STM\")"
+    "Call": "_playerFeedback.SendResourceRestored(creature, restored, \"STM\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",

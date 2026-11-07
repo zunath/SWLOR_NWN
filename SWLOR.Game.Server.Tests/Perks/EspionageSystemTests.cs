@@ -81,8 +81,9 @@ public class EspionageSystemTests
         var statSource = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "Stat.cs"));
+            "Domain",
+            "Character",
+            "StatService.cs"));
         statSource.Should().Contain("!GetIsDMPossessed(creature)",
             "DM-possessed creatures must retain uncapped staff Detection");
     }
@@ -391,9 +392,9 @@ public class EspionageSystemTests
     public void StealthStaminaDrain_CannotBeOutpacedOrLost()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var restoreStart = statSource.IndexOf("public static int RestoreStamina(", StringComparison.Ordinal);
-        var dbLookup = statSource.IndexOf("dbPlayer ??= DB.Get<Player>", restoreStart, StringComparison.Ordinal);
+        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var restoreStart = statSource.IndexOf("public int RestoreStamina(", StringComparison.Ordinal);
+        var dbLookup = statSource.IndexOf("dbPlayer ??= _db.Get<Player>", restoreStart, StringComparison.Ordinal);
         var gate = statSource.IndexOf(
             "IsStaminaRestorationBlocked(isPlayer, isPlayer && GetActionMode(creature, ActionMode.Stealth))",
             restoreStart,

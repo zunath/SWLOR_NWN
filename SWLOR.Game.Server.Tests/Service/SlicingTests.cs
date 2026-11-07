@@ -285,8 +285,8 @@ public class SlicingTests
     {
         var session = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Crafting", "SlicingSessionService.cs"));
-        var stat = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var getLockpicking = Between(stat, "public static int GetLockpicking", "public static int GetStealth");
+        var stat = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var getLockpicking = Between(stat, "public int GetLockpicking", "public int GetStealth");
 
         session.Should().Contain("Stat.GetLockpicking(player)",
             "gear writes Lockpicking to the player record, which GetStatAdjustment never reads");

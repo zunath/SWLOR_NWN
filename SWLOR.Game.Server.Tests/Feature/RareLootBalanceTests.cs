@@ -6,12 +6,29 @@ using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class RareLootBalanceTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly Dictionary<string, Blueprint> BlueprintCache = new(StringComparer.OrdinalIgnoreCase);
     private sealed record Blueprint(int BaseItem, Dictionary<(ItemPropertyType Type, int Subtype), int> Properties)
     {

@@ -1,6 +1,8 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -44,8 +46,8 @@ public class CharacterSheetCombatUpgradeTests
         restore.Should().Contain("SendMessageToPC(receiver");
         restore.Should().Contain("GetDisplayName(receiver, creature)");
 
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var regeneration = ExtractMethod(stats, "private static void RestoreNPCStats(");
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var regeneration = ExtractMethod(stats, "private void RestoreNPCStats(");
         regeneration.Should().Contain("if (fp != previousFP)");
         regeneration.Should().Contain("ExecuteScript(\"pc_fp_adjusted\", self)");
         regeneration.Should().Contain("if (stm != previousSTM)");
@@ -59,8 +61,8 @@ public class CharacterSheetCombatUpgradeTests
         var root = FindRepositoryRoot().FullName;
         var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
         viewModel.Should().Contain("Stat.GetAttackPercentAdjustment(_target, SkillType.Force)");
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        ExtractMethod(stats, "private static int ApplyPostAttackStatusModifiers(")
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        ExtractMethod(stats, "private int ApplyPostAttackStatusModifiers(")
             .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
     }
 
@@ -220,24 +222,25 @@ public class CharacterSheetCombatUpgradeTests
     [Test]
     public void ForceAccuracy_IgnoresWeaponStatOverrideButRetainsWeaponAccuracyBonus()
     {
-        var applyItemProperty = typeof(Stat).GetMethod(
+        var applyItemProperty = typeof(StatService).GetMethod(
             "ApplyAccuracyItemProperty",
-            BindingFlags.NonPublic | BindingFlags.Static);
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var service = RuntimeHelpers.GetUninitializedObject(typeof(StatService));
 
         applyItemProperty.Should().NotBeNull();
 
         var weaponStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty!.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, false })!;
         weaponStatOverride.Should().Be((AbilityType.Agility, 7));
 
         var forceStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, true })!;
         forceStatOverride.Should().Be((AbilityType.Willpower, 7));
 
         var forceAccuracyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.Accuracy, 4, true })!;
         forceAccuracyBonus.Should().Be((AbilityType.Willpower, 11));
 
@@ -245,7 +248,7 @@ public class CharacterSheetCombatUpgradeTests
         foreach (var legacyType in new[] { ItemPropertyType.AccuracyBonus, ItemPropertyType.EnhancementBonus })
         {
             var legacyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-                null,
+                service,
                 new object[] { AbilityType.Willpower, 7, legacyType, 5, true })!;
             legacyBonus.Should().Be((AbilityType.Willpower, 7));
         }

@@ -13,11 +13,28 @@ using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerGuideContentTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly string[] RequiredTopics =
     {
         "Common Questions",

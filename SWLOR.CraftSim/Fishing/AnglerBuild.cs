@@ -1,4 +1,5 @@
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
@@ -84,7 +85,7 @@ namespace SWLOR.CraftSim.Fishing
                 foreach (var bonus in owned.StatBonuses)
                 {
                     totals.TryGetValue(bonus.Stat, out var current);
-                    totals[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
+                    totals[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
                 }
             }
 

@@ -129,7 +129,7 @@ public class PerformanceAudienceCostTests
         {
             SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Service", "Fishing.cs"),
-            SourcePath("Service", "Stat.cs"),
+            SourcePath("Domain", "Character", "StatService.cs"),
             SourcePath("Domain", "Character", "StatusEffectService.cs"),
             SourcePath("Service", "Combat.cs")
         };
@@ -144,7 +144,7 @@ public class PerformanceAudienceCostTests
             source.Should().NotContain("PerkType.AnglersLullaby");
         }
 
-        File.ReadAllText(SourcePath("Service", "Stat.cs"))
+        File.ReadAllText(SourcePath("Domain", "Character", "StatService.cs"))
             .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
         File.ReadAllText(SourcePath("Service", "CraftService", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");

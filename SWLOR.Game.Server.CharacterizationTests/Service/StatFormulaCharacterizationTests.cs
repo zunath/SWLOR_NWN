@@ -13,6 +13,22 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 /// </summary>
 public class StatFormulaCharacterizationTests
 {
+    // The facade forwards to the instance, which the container holds.
+    private FacadeServices _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeServices();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void PublicConstants()
     {

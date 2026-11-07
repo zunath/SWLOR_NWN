@@ -5,11 +5,28 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryPotencyTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     /// <summary>Checks stack replacement, the three-stack cap, and independent expiry of Momentum and Overload.</summary>
     [Test]
     public void MomentumReplacementAndExpiry_PreserveOtherPotencySources()

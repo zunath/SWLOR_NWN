@@ -187,6 +187,15 @@ internal sealed class DMPossessionHarness
             .ToFullString();
 
     /// <summary>
+    /// Returns the sources of the methods of a converted service's instance class that <paramref name="select"/> accepts,
+    /// as static methods, for a name with overloads.
+    /// </summary>
+    public static IEnumerable<string> InstanceMethods(string relativePath, Func<MethodDeclarationSyntax, bool> select) =>
+        ParseServerFile(relativePath).DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(select)
+            .Select(method => MakeStatic(method.WithAttributeLists(default)).ToFullString());
+
+    /// <summary>
     /// Returns the source of a field declaration of a converted service's instance class as a static field.
     /// </summary>
     public static string InstanceField(string relativePath, string name) =>

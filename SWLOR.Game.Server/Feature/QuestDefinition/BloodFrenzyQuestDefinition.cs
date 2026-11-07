@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void GlassInTheBlood()
         {
             _builder.Create("blood_frenzy_glass", "Glass in the Blood")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest("blood_frenzy_beat")
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.BloodFrenzyAdrenalGlass)
@@ -117,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void TheBloodFrenzyKing()
         {
             _builder.Create(FinalQuestId, "The Blood Frenzy King")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest("blood_frenzy_restraint")
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
 

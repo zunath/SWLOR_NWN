@@ -123,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ThermalDetonatorBreach()
         {
             _builder.Create(ThermalDetonatorBreachQuestId, "Full-Yield Breach")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ThermalDetonatorMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneThermalDetonatorFrostburnedTestCrest)
@@ -165,6 +166,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ThermalDetonatorMastery()
         {
             _builder.Create(ThermalDetonatorMasteryQuestId, "Zero-Margin Incident")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ThermalDetonatorCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
@@ -236,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void OverloadBarrageBreach()
         {
             _builder.Create(OverloadBarrageBreachQuestId, "Full Dump, No Slag")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(OverloadBarrageMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOverloadBarrageFrostburnedTestCrest)
@@ -278,6 +281,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void OverloadBarrageMastery()
         {
             _builder.Create(OverloadBarrageMasteryQuestId, "One Fighter Down, Three Don't")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(OverloadBarrageCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
@@ -349,6 +353,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void KillzoneBeaconBreach()
         {
             _builder.Create(KillzoneBeaconBreachQuestId, "Operation Cracked Command")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(KillzoneBeaconMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
@@ -391,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void KillzoneBeaconMastery()
         {
             _builder.Create(KillzoneBeaconMasteryQuestId, "Operation Last Painted Target")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(KillzoneBeaconCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
@@ -462,6 +468,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EmergencyBunkerBreach()
         {
             _builder.Create(EmergencyBunkerBreachQuestId, "Certify: Breach Protocol")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EmergencyBunkerMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
@@ -504,6 +511,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EmergencyBunkerMastery()
         {
             _builder.Create(EmergencyBunkerMasteryQuestId, "Certify: The Patient Wall")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EmergencyBunkerCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 

@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AbsoluteDefenseBreach()
         {
             _builder.Create(AbsoluteDefenseBreachQuestId, "The Quench Test")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AbsoluteDefenseMeasureQuestId)
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneAbsoluteDefenseCrackedAnvilSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AbsoluteDefenseMastery()
         {
             _builder.Create(AbsoluteDefenseMasteryQuestId, "The Final Temper")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AbsoluteDefenseCircleQuestId)
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SoulAscensionBreach()
         {
             _builder.Create(SoulAscensionBreachQuestId, "The Vessel Breaks")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SoulAscensionMeasureQuestId)
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSoulAscensionCrackedAnvilSigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SoulAscensionMastery()
         {
             _builder.Create(SoulAscensionMasteryQuestId, "So the Soul Ascends")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(SoulAscensionCircleQuestId)
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
 

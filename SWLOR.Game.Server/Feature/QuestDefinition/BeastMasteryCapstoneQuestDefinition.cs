@@ -149,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void PrimalOverrunBreach()
         {
             _builder.Create(PrimalOverrunBreachQuestId, "Where the Warden Waits")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(PrimalOverrunMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstonePrimalOverrunCrackedApexTotem)
@@ -191,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void PrimalOverrunMastery()
         {
             _builder.Create(PrimalOverrunMasteryQuestId, "The Overrun Answers")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(PrimalOverrunCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 
@@ -262,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UntouchableInstinctBreach()
         {
             _builder.Create(UntouchableInstinctBreachQuestId, "Smoke and Distance")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UntouchableInstinctMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUntouchableInstinctCrackedApexTotem)
@@ -304,6 +307,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UntouchableInstinctMastery()
         {
             _builder.Create(UntouchableInstinctMasteryQuestId, "Where the Wind Turns")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UntouchableInstinctCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 
@@ -375,6 +379,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ForceBondedBeastBreach()
         {
             _builder.Create(ForceBondedBeastBreachQuestId, "Rite of the Broken Weave")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ForceBondedBeastMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForceBondedBeastCrackedApexTotem)
@@ -417,6 +422,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ForceBondedBeastMastery()
         {
             _builder.Create(ForceBondedBeastMasteryQuestId, "Rite of the Last Thread")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ForceBondedBeastCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 
@@ -488,6 +494,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ApexBiteBreach()
         {
             _builder.Create(ApexBiteBreachQuestId, "Warden's Notice: Pen Sealed")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ApexBiteMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneApexBiteClawedAlphaTotem)
@@ -530,6 +537,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void ApexBiteMastery()
         {
             _builder.Create(ApexBiteMasteryQuestId, "Final Entry: Preserve Reclaimed")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(ApexBiteCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 
@@ -601,6 +609,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UnbreakableBeastBreach()
         {
             _builder.Create(UnbreakableBeastBreachQuestId, "The Hide That Doesn't Break")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UnbreakableBeastMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnbreakableBeastClawedAlphaTotem)
@@ -643,6 +652,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UnbreakableBeastMastery()
         {
             _builder.Create(UnbreakableBeastMasteryQuestId, "What Doesn't Break, Holds")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(UnbreakableBeastCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 
@@ -714,6 +724,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AlphaRhythmBreach()
         {
             _builder.Create(AlphaRhythmBreachQuestId, "Broken Time Signature")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AlphaRhythmMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneAlphaRhythmClawedAlphaTotem)
@@ -756,6 +767,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void AlphaRhythmMastery()
         {
             _builder.Create(AlphaRhythmMasteryQuestId, "The Rhythm Returns")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(AlphaRhythmCircleQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
 

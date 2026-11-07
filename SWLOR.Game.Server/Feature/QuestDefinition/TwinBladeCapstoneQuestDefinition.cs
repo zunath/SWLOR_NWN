@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void TempestBloomBreach()
         {
             _builder.Create(TempestBloomBreachQuestId, "The Warden Takes All Comers")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(TempestBloomMeasureQuestId)
                 .PrerequisiteSkill(SkillType.TwinBlade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneTempestBloomCrackedPitSigil)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void TempestBloomMastery()
         {
             _builder.Create(TempestBloomMasteryQuestId, "The Final Bloom")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(TempestBloomCircleQuestId)
                 .PrerequisiteSkill(SkillType.TwinBlade, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void RedBloomBreach()
         {
             _builder.Create(RedBloomBreachQuestId, "The Doorman")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(RedBloomMeasureQuestId)
                 .PrerequisiteSkill(SkillType.TwinBlade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneRedBloomCrackedPitSigil)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void RedBloomMastery()
         {
             _builder.Create(RedBloomMasteryQuestId, "Title Bout")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(RedBloomCircleQuestId)
                 .PrerequisiteSkill(SkillType.TwinBlade, 50)
 

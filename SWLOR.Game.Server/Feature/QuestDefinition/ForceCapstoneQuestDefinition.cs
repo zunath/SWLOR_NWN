@@ -110,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void LastStandOfTheLightBreach()
         {
             _builder.Create(LastStandOfTheLightBreachQuestId, "Three Blades at the Breach")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(LastStandOfTheLightMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
@@ -152,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void LastStandOfTheLightMastery()
         {
             _builder.Create(LastStandOfTheLightMasteryQuestId, "The Light's Last Stand")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(LastStandOfTheLightCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 
@@ -223,6 +225,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void HungerOfTheDarkBreach()
         {
             _builder.Create(HungerOfTheDarkBreachQuestId, "A Full Table")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(HungerOfTheDarkMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
@@ -265,6 +268,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void HungerOfTheDarkMastery()
         {
             _builder.Create(HungerOfTheDarkMasteryQuestId, "Too Much")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(HungerOfTheDarkCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 
@@ -336,6 +340,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EclipseOfResolveBreach()
         {
             _builder.Create(EclipseOfResolveBreachQuestId, "Adequate Work")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EclipseOfResolveMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
@@ -378,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void EclipseOfResolveMastery()
         {
             _builder.Create(EclipseOfResolveMasteryQuestId, "What Eclipsed His Resolve")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(EclipseOfResolveCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 

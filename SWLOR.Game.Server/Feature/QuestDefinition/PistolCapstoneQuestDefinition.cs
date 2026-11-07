@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void LastWordBreach()
         {
             _builder.Create(LastWordBreachQuestId, "Dead to Rights")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(LastWordMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastWordShatteredRangeCrest)
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void LastWordMastery()
         {
             _builder.Create(LastWordMasteryQuestId, "The Quiet After")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(LastWordCircleQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
 
@@ -210,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DeadMansHandBreach()
         {
             _builder.Create(DeadMansHandBreachQuestId, "Calling the Bluff")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(DeadMansHandMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDeadMansHandShatteredRangeCrest)
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DeadMansHandMastery()
         {
             _builder.Create(DeadMansHandMasteryQuestId, "Aces and Eights")
+                .AllowEncounterReplay()
                 .PrerequisiteQuest(DeadMansHandCircleQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
 

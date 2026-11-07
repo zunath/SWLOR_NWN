@@ -1,0 +1,61 @@
+{
+  "comment": "Data for tools/Refactor/Move-SupportNamespaces.ps1 (P2-Z2). namespaceRenames: names relative to SWLOR.Game.Server; the namespace, its folder and the same names written as paths move together, children included. The three Feature names are proposals the coordinator has to approve. textExcludes: PowerShell -like patterns on repository paths the script must not rewrite. facadeNameFiles: files whose \"facade\" values name a type relative to Service (<N>Service.Topic.Type) and become <Domain>.Topic.Type. textEdits: exact text replaced in one file; each is idempotent (the old or the new text must be present).",
+  "namespaceRenames": [
+    { "from": "Domain.Core", "to": "Domain.Foundation" },
+    { "from": "Feature.PerkDefinition.Beast", "to": "Feature.PerkDefinition.BeastPerks" },
+    { "from": "Feature.AppearanceDefinition.AppearancePreview", "to": "Feature.AppearanceDefinition.Preview" },
+    { "from": "Feature.AppearanceDefinition.RacialAppearance", "to": "Feature.AppearanceDefinition.Species" }
+  ],
+  "textExcludes": [
+    "SWLOR.Game.Server/Readmes/Maintainability*",
+    "SWLOR.Toolset/WORKLOG.md",
+    "tools/Refactor/Move-SupportNamespaces.ps1",
+    "tools/Refactor/NamespaceMoves.json",
+    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs"
+  ],
+  "facadeNameFiles": [
+    "SWLOR.Architecture.Tests/ConvertedServices.json"
+  ],
+  "textEdits": [
+    {
+      "file": "SWLOR.Architecture.Tests/Domains/ConvertedPieces.cs",
+      "find": "ConvertedService.ServerNamespace + \".Service\" + parent",
+      "replace": "ConvertedService.ServerNamespace + \".Domain\" + parent"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServiceRulesTests.cs",
+      "find": "TrackerFacade = \"AchievementService.AchievementTracker\"",
+      "replace": "TrackerFacade = \"Character.AchievementTracker\""
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
+      "find": "named relative to SWLOR.Game.Server.Service:",
+      "replace": "named relative to SWLOR.Game.Server.Domain:"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
+      "find": "\"domain\": \"Core\"",
+      "replace": "\"domain\": \"Foundation\""
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/DomainMap.json",
+      "find": "\"unrestrictedTargetDomains\": [\"Core\", \"Platform\"]",
+      "replace": "\"unrestrictedTargetDomains\": [\"Foundation\", \"Platform\"]"
+    },
+    {
+      "file": "SWLOR.Architecture.Tests/DomainMap.json",
+      "find": "\"Core\": {",
+      "replace": "\"Foundation\": {"
+    },
+    {
+      "file": "tools/UpdateProgressionPaceBible.py",
+      "find": "SERVICE / \"CraftService\" / \"Minigame\" / \"CraftMinigameXp.cs\"",
+      "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Minigame\" / \"CraftMinigameXp.cs\""
+    },
+    {
+      "file": "tools/UpdateProgressionPaceBible.py",
+      "find": "SERVICE / \"CraftService\" / \"Research\" / \"ResearchXpRules.cs\"",
+      "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Research\" / \"ResearchXpRules.cs\""
+    }
+  ]
+}

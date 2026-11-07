@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -19,6 +20,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private static readonly string[] RankConstants = { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" };
 
     // Assault Gadgets add Gadget DMG the way weapon abilities add weapon DMG, so each ability's
@@ -368,8 +385,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
         var ability = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
-        var combat = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
 
         characterSheet.Should().Contain("Assault Gadget Crit");
         ability.Split("                SendAbilityCriticalHitFeedback(").Should().HaveCount(3,

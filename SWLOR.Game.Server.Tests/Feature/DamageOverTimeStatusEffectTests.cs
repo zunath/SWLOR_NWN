@@ -239,10 +239,7 @@ public class DamageOverTimeStatusEffectTests
     [Test]
     public void AutoAttackSplash_DefersDamageEventsUntilTheNativeAttackReturns()
     {
-        var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
+        var method = CombatSource.Method("ApplyAutoAttackSplashEffects");
         var damageCalls = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Where(call => call.Expression.ToString() == "ApplyTriggeredDamage").ToArray();
         damageCalls.Should().NotBeEmpty();

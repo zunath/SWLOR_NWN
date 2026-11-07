@@ -313,7 +313,7 @@ public class BeastmasterCombatUpgradeTests
         var evasiveChallenge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "EvasiveChallengeAbilityDefinition.cs").FullName);
         evasiveChallenge.Should().Contain("RemoveStatusEffectsWithNegativeStat");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
         combat.Should().Contain("ApplyPredatorsMarkEffects");

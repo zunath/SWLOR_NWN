@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -13,6 +14,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class WeaponIndependentPerkTests : SkillFacadeFixture
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void EveryPerk_DeclaresWeaponIndependentAutoAttackAndCriticalTriggers()
     {
@@ -55,11 +72,7 @@ public class WeaponIndependentPerkTests : SkillFacadeFixture
     [Test]
     public void BackAttack_UsesWeaponEligibilityAndPreservesPositioning()
     {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server", "Service", "Combat.cs")))
-            directory = directory.Parent;
-        directory.Should().NotBeNull();
-        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var source = CombatSource.Read();
         var start = source.IndexOf("private static bool IsMatchingBackAttack(", StringComparison.Ordinal);
         var end = source.IndexOf("public static int ApplyBackAttackDamageModifier(", start, StringComparison.Ordinal);
         var eligibility = source[start..end];

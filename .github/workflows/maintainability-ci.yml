@@ -80,8 +80,8 @@ jobs:
           dotnet --info | head -n 12
           dotnet build SWLOR.Game.Server.sln -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
 
-      - name: Test the coverage summary tool
-        run: python -B -m unittest tools.tests.test_coverage_summary -v
+      - name: Test the coverage summary and coverage floor tools
+        run: python -B -m unittest tools.tests.test_coverage_summary tools.tests.test_check_coverage -v
 
       - name: Unit tests with coverage
         id: tests
@@ -102,7 +102,7 @@ jobs:
           {
             echo "## Coverage"
             echo
-            echo "Generated and test code is excluded (coverlet.runsettings). Report only; no threshold yet."
+            echo "Generated and test code is excluded (coverlet.runsettings). Floors per area: tools/Refactor/CoverageFloors.json, checked by the test step above."
             echo
             python tools/CoverageSummary.py "$CI_OUT/report/Cobertura.xml" --assembly SWLOR.Game.Server
             echo

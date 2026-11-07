@@ -16,10 +16,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Despawned combat creatures release retained offensive activity", Category = "RifleIdleReadiness", TimeoutSeconds = 35f)]
         public static async Task DespawnedCreaturesReleaseActivity(EngineTestContext ctx)
         {
-            var attacks = (Dictionary<uint, DateTime>)typeof(Combat)
-                .GetField("_lastAttackActivity", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            var abilities = (Dictionary<uint, DateTime>)typeof(Combat)
-                .GetField("_lastCombatAbilityUse", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var attacks = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastAttackActivity");
+            var abilities = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastCombatAbilityUse");
             for (var cycle = 1; cycle <= 2; cycle++)
             {
                 var creature = ctx.SpawnCreature("nw_bandit001");

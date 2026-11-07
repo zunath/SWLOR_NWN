@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -411,11 +412,7 @@ public class AbilityDamageQueueTests
             "Domain",
             "Abilities",
             "AbilityService.cs")).Replace("\r\n", "\n");
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs")).Replace("\r\n", "\n");
+        var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var queueMethod = abilitySource.Substring(
             abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
             abilitySource.IndexOf("private TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
@@ -497,11 +494,7 @@ public class AbilityDamageQueueTests
             "Domain",
             "Abilities",
             "AbilityService.cs")).Replace("\r\n", "\n");
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs")).Replace("\r\n", "\n");
+        var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var telegraphMethod = abilitySource.Substring(
             abilitySource.IndexOf("public int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
             abilitySource.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal) -

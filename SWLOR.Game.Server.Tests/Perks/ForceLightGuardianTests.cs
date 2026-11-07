@@ -167,7 +167,7 @@ public class ForceLightGuardianTests
         var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs").FullName);
         scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
         combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
         combat.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
@@ -269,7 +269,7 @@ public class ForceLightGuardianTests
     public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "DeathService.cs").FullName);
 
         combat.Should().Contain("public static bool TryPreventFatalDamageAndGrantTemporaryHP(");

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -254,11 +255,7 @@ public class CharacterSheetCombatUpgradeTests
     [Test]
     public void ForceHitChecks_UseTheSameWillpowerAccuracyModeAsTheCharacterSheet()
     {
-        var combat = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var combat = CombatSource.Read();
         var method = ExtractMethod(combat, "private static int GetAbilityAccuracy(");
 
         method.Should().Contain("var usesForceAccuracy = skillType == SkillType.Force;");

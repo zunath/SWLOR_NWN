@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
@@ -78,8 +79,7 @@ public class PlayerMessageAuditTests
     [TestCase("ApplyStatusAppliedTargetStaminaDrain", 1)]
     public void CombatOutcomesAndReadiness_RetainTheirProductionMessages(string member, int expectedMessages)
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Combat.cs");
-        var messages = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+        var messages = CombatSource.Nodes<InvocationExpressionSyntax>().Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
                 .First().Identifier.ValueText == member &&
             MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
             .ToArray();
@@ -258,7 +258,7 @@ public class PlayerMessageAuditTests
     public void ParalysisWarnings_ReachNearbyObserversForPcAndNpcAttackers()
     {
         var root = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service");
-        var warning = ReadCalls(Path.Combine(root, "Combat.cs"))
+        var warning = CombatSource.Nodes<InvocationExpressionSyntax>()
             .Single(call => MethodName(call) == "SendWarningNearby" &&
                 call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "HandleParalyze");
         warning.ArgumentList.Arguments[0].ToString().Should().Be("attacker");

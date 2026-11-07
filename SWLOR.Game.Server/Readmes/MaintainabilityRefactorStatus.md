@@ -40,7 +40,7 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: 2026-11-06, `2d18989fd` (see Sync log).
+- Last sync with `master`: 2026-11-07, `341cedaa6` (see Sync log).
 - **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
@@ -189,7 +189,8 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
 - P2-CB2 merged (#3275, `97bcab745`, 2026-11-07): `TemporaryStatModifier` behind its own service.
 - P2-CB3 merged (#3271, `3fc3a1a48`, 2026-11-07): `CombatRules` and `CombatDamageCatalogService`.
 - P2-CB4 (`CombatFeedback`, `CombatQueries`, `CombatResources`): branch `claude/mr-p2-cb4`.
-- Master sync to `341cedaa6`: branch `claude/mr-sync-341cedaa` (ports to `Performance` and `Property`).
+- Master sync merged (#3278, `a6877354c`, 2026-11-07): master `341cedaa6`, `Performance` and `Property` ported (see Sync log and Port log).
+- Parity tool fix (master build of `SkillCacheScope.cs` since P2-D15): branch `claude/mr-parity-shim`.
 - P2-Z2 prep (namespace move script, not applied): branch `claude/mr-p2-z2-script`.
 - P3-1 merged (#3264, `e8ff48cdf`, 2026-11-07): integration tier.
 - P3-2 merged (#3268, `84d654d6c`, 2026-11-07): coverage ratchet and floors.
@@ -224,7 +225,7 @@ on another machine needs none of them (both PR descriptions are on GitHub; cover
 ## Next actions
 
 1. **Review and merge** P2-CB4 as it reports; `bash scripts/ci/run-integration-tests.sh` is part of every landing gate. Then the rest of the `Combat` items (P2-CB5 on).
-2. **Daily sync** when master moves (last 2026-11-07, `27781fac1`). Check whether `feature/space-revamp` reached master
+2. **Daily sync** when master moves (last 2026-11-07, `341cedaa6`). Check whether `feature/space-revamp` reached master
    (unblocks P2-A9 `Space`, `Droid`, and the ~77-line `Item` port).
 3. **Follow-ups** from P2-C8 and the 2026-11-06 sync are in P2-D16.
    Engine snapshots were not refreshed at that sync.
@@ -285,6 +286,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P3-1 run | A RediSearch query on a NUMERIC-indexed field by plain equality (`@Field:8`) matches nothing. No caller queries that way today; the integration tests check the stored value instead. |
 | 2026-11-07 sync | Master #3249 renamed the call to `UsePerkFeat.InterruptAbilityActivationFromHit` in the files that `BeastmasterCombatUpgradeTests.BeastmasterSources_IncludeBibleBehavior` and `GeneratedWeaponPerkBehaviorTests.GeneratedWeaponActiveProfiles_EmitConditionalAndTemporaryRiders` read, without updating the tests, so both fail on master (CI is billing-locked). The branch updated both needles in #3261; the master fix is a proposed card. |
 | P2-D18 review | `TemporaryStatModifier.GetStatAdjustment` allocates a 32-byte closure on every `Stat.GetStatAdjustment`; same on master, goes with `Combat` (P2-CB2). `ResourceRestorationTests` passes in a targeted run but stays excluded in CI with a stale reason. |
+| Sync 341cedaa6 (CodeRabbit on #3278) | `tools/RenderTileMinimaps.py` `array()` (master #3260/#3273) raises `Malformed` for a block whose count is 0 (`tverts 0`, `faces 0`): `np.array([])` has shape `(0,)`, not `(0, columns)`. Offline tool only; the thread stays open on #3278. |
 
 ## Sync log
 
@@ -299,6 +301,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | 2026-11-06 | 04b37fdbe (1 commit: #3228) | none; no C# (hak pin and `TintMapRendering.md`), so merged by hand: the script's steps had nothing to do | not re-run: no server code changed | Claude Opus 5.5 (coordinator) |
 | 2026-11-06 | 2d18989fd (2 commits: #3245, #3236) | 6: `Service/AI.cs`, `Stealth.cs`, `Performance.cs`, `PerformanceInstrumentCatalog.cs`, `PerformanceSongs.cs`, `PerformanceOptionsViewModel.cs` kept the branch's and were ported (Port log); manifest: 12 `SlitherhornFit` lines renamed `HornFit` and moved to master's place | identical to master 2d18989fd (132 snapshot files, 709 handlers, 40 engine-test handlers); no snapshot changed; 2 cross-domain edges added by hand (`Feature/AppearanceDefinition` <-> `Performance`, #3236); `tools/Refactor/MasterCopy.ps1` stubs `FacadeServices.cs` so parity builds its master reference again (broken since P2-D7). Tests: Game.Server 15339, Characterization 148, Architecture 180, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076, 0 failed. Engine snapshots not refreshed. Codex clean on `802e8935b`. PR #3252, merge `623353b20`. | Claude Sonnet 5.5 (sync-1106), merged by the coordinator |
 | 2026-11-07 | 27781fac1 (5 commits: #3249, #3253, #3250, #3246, submodule) | 6: `StatusEffect.cs` (script-owned, sync took master, facade restored), `Messaging`, `Property`, `DMObjectSearch`, `DMPresence` facades kept and ported; `PlayerMessageAudit.json` kept the branch's file plus master's 5 new rows; manifest: `Property.ShowPropertyDescription` placed in master's slot | identical to master 27781fac1 (132 snapshot files, 710 handlers, 40 engine-test handlers); 11 recipe snapshots regenerated, all from #3253; `ServerRestart` mapped to Gameplay; cross-domain baseline gained 4 edges. On the final head: Game.Server 15854, Characterization 148, Architecture 181, NWN.API 341, CombatSim 894, CLI 35, Formats 95, CraftSim 1076, integration 141; Codex clean. Engine snapshots not refreshed. | Claude Sonnet 5.5, merged by the coordinator (`5657f0e5c`, #3261) |
+| 2026-11-07 | 341cedaa6 (5 commits: #3258, #3256, #3260, #3273, submodule) | 2: `Performance.cs`, `Property.cs` facades kept and ported (Port log); no manifest change | identical to master 341cedaa6 (132 snapshot files, 710 handlers, 40 engine-test handlers); no snapshot changed. The parity master build failed to compile because `CharacterizationTests/Definitions/SkillCacheScope.cs` uses `Domain.Character` since P2-D15 (#3266); the run used that file's static-`Skill` version for the master copy only (tool fix: In flight). Edge `Performance -> Craft` added by hand (#3258 calls the craft session world). Tests: Game.Server 16627, Characterization 148, Architecture 196, NWN.API 341, CombatSim 892, CLI 35, Formats 95, CraftSim 1076, integration 141, 0 failed; coverage floors met; clock seam 0. Engine snapshots not refreshed. Codex clean on `851bd05e1`. PR #3278, merge `a6877354c`. | Claude Sonnet 5.5 (sync-341cedaa), merged by the coordinator |
 
 ## Port log
 
@@ -325,6 +328,8 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | #3249 | `Service/Messaging.cs` | `MessagingService.FloatTextNearbyToPlayers` | #3261 |
 | #3249 (property description, structure world name) | `Service/Property.cs` | `PropertyLoaderService.ShowPropertyDescription`, `ApplyStructureWorldName`, also called in `SpawnIntoWorld`; the `OnAreaEnter` handler stays on the facade | #3261 |
 | #3246 (DM jump) | `Service/DMPresence.cs`, `DMObjectSearch.cs` | `DMPresenceService.JumpTo`, `JumpToArea`, `CanLandAt`; `DMObjectSearchService.GetAreaJumpLocations`; the area-spot lookup is a wrapper over the facade, since `DMObjectSearchService` already takes `IDMPresenceService` | #3261 |
+| #3258 (performance hot bar recovery) | `Service/Performance.cs` | `PerformanceService`: login recovery decided by `PerformanceHotbarRecovery.Decide`; `RestorePlayer` keeps the saved bar, records the restore sequence and persists the character; starting a mode zeroes the sequence; the craft session world calls go through `protected virtual` wrappers over the injected `ICraftService` (master's `PerformanceHotbarRecovery` files keep master's namespace) | #3278 |
+| #3256 (property instance players) | `Service/Property.cs` | `PropertyLoaderService`: `EnterPropertyInstance` reads `GetEnteringObject`; `ExitPropertyInstance` drops the PC/DM check and removes directly; master's engine test reads `PropertyCaches.Instances` | #3278 |
 
 ## Environment notes
 

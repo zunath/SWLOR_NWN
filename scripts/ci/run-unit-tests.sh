@@ -8,6 +8,10 @@
 #   scripts/ci/run-unit-tests.sh --out <directory outside the repository> [--no-coverage] [--configuration Release]
 #                                [project name ...]
 #
+# With coverage, a run of the default project list ends with tools/Refactor/check_coverage.py, which fails the run when
+# overall or per-area line coverage drops below tools/Refactor/CoverageFloors.json (Readmes/EngineTesting.md, "Coverage
+# floors"). --no-coverage skips the check, and so does naming projects (a partial run cannot meet whole-solution floors).
+#
 # It does not build (build the solution once first). It needs SWLOR_Haks checked out with at least sw_2da, sw_tlk
 # and sw_ability (Readmes/AgentEnvironment.md). Every project runs even when an earlier one fails; the exit code is
 # 0 only when all of them pass. Results go to <out>/<project>/ (TRX), <out>/<project>.log and, with coverage,
@@ -38,7 +42,9 @@ if [ -z "$OUT" ]; then
     echo "--out <directory> is required (keep it outside the repository)." >&2
     exit 2
 fi
+FULL_RUN=0
 if [ ${#PROJECTS[@]} -eq 0 ]; then
+    FULL_RUN=1
     PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
               SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests
               SWLOR.CraftSim.Tests)
@@ -47,6 +53,14 @@ fi
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
+
+# Coverage files left by an earlier run must not leak into this one (the floors check reads the whole folder): a full
+# run starts with an empty folder, a run of named projects replaces only those projects' files.
+if [ "$FULL_RUN" = 1 ]; then
+    rm -f "$OUT"/coverage/*.cobertura.xml
+else
+    for project in "${PROJECTS[@]}"; do rm -f "$OUT/coverage/$project.cobertura.xml"; done
+fi
 
 # Each project is its own dotnet test process, one after the other. The characterization tests seed the global
 # game Random, so they must never share a process (or run in parallel) with other projects that use it.
@@ -248,6 +262,24 @@ for project in "${PROJECTS[@]}"; do
         run_pass "$project" "$project" "$(build_filter exclude <<< "$exclusions")" 0 "$(count_terms "$exclusions")"
     fi
 done
+
+# Coverage ratchet: only after a complete default run, so a missing project cannot read as a drop.
+if [ "$COVERAGE" = 1 ] && [ "$FULL_RUN" = 1 ]; then
+    echo "::group::coverage floors"
+    # python3 on a Windows machine can be the Store stub, so take the first interpreter that actually runs.
+    python_cmd=""
+    for candidate in python python3; do
+        if "$candidate" -c "" > /dev/null 2>&1; then python_cmd="$candidate"; break; fi
+    done
+    if [ -n "$python_cmd" ] && "$python_cmd" tools/Refactor/check_coverage.py "$OUT/coverage"; then
+        coverage_check="passed"
+    else
+        coverage_check="failed"
+        failed+=("coverage floors")
+    fi
+    echo "::endgroup::"
+    summary_rows+=("| coverage floors (tools/Refactor/CoverageFloors.json) | - | $coverage_check | - |")
+fi
 
 if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     {

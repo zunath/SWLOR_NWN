@@ -42,10 +42,11 @@ clipping checks and dependent robe/part-skin regeneration.
   body part, so those slots show nothing at 1 or 2: the catalog omits both styles there, and
   `ArmorPartAppearance` repairs saved armor to 0 when it is worn. Other slots show the bare body.
 - No armor part list offers style 2 (neck and every other slot, general and droid catalogs): it shows
-  the same bare body part as 0 and 1 while its picture shows another model. When worn, saved armor
-  on 2 moves to 0 where that list offers it (the editor always offers 0 for the neck), otherwise 1;
-  player blueprints and their placed copies follow the same rule. Style 1 stays on every list until
-  the parts owner decides. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
+  the same bare body part as 0 and 1 while its picture shows another model. Style 1 stays on every
+  list (Xisifer's rule: keep 1 where it is a list's first ID). Saved armor moved from 2 to 1 once, in
+  player migration 26 and server migration 31 (`RetiredArmorStyleMigration`); player blueprints and
+  their placed copies use 0 where the general list offers it, otherwise 1. Body-part lists
+  (Appearance tab) still offer 1 and 2, so their names stay.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

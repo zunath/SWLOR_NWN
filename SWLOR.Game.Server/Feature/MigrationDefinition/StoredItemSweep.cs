@@ -26,16 +26,19 @@ internal static class StoredItemSweep
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
     }
 
-    /// <summary>Moves incubation enzymes in every stored item record, including overflow storage, to the 1x1 enzyme item.</summary>
-    internal static void MigrateEnzymes(int version)
+    /// <summary>
+    /// Moves incubation enzymes to the 1x1 enzyme item and armor parts off retired style 2 in every stored item record,
+    /// including overflow storage.
+    /// </summary>
+    internal static void MigrateEnzymesAndArmorStyles(int version)
     {
         var sections = CountSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
         var progress = new ServerMigrationProgress(version, sections);
         var pass = new ParallelStoredItemPass(progress);
-        var converter = EnzymeStoredItemConverter.Instance;
+        var converter = EnzymeAndArmorStyleConverter.Instance;
         var changed = Sweep(pass, converter);
         changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Moved incubation enzymes to the 1x1 enzyme item in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Moved incubation enzymes to the 1x1 enzyme item and armor parts off style 2 in {changed} stored records.", true);
     }
 
 
@@ -105,7 +108,7 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
-        if (converter is EnzymeStoredItemConverter)
+        if (converter is EnzymeAndArmorStyleConverter)
             return changed | EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)

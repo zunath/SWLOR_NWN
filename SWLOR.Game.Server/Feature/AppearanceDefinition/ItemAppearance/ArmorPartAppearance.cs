@@ -140,26 +140,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 repairs[part] = GetRepairStyle(ArmorAppearanceCatalog.GetStyles(definition, part),
                     candidate => IsRenderable(body, part, candidate, fallback, exists));
             }
-            foreach (var part in ModelParts.Keys)
-            {
-                if (style(part) == RemovedBareStyle)
-                    repairs[part] = GetBareStyle(definition, part);
-            }
             return repairs;
         }
-
-        /// <summary>
-        /// Style 2 displays the wearer's own body part, exactly like 0 and 1, while its preview
-        /// pictured a different model ("Tattooed Arm", "Carved Chest"), so no list offers it.
-        /// </summary>
-        public const int RemovedBareStyle = 2;
-
-        /// <summary>
-        /// The listed style that looks the same as <see cref="RemovedBareStyle"/>: 0 where the list
-        /// offers it (the editor always offers 0 for the neck), otherwise 1.
-        /// </summary>
-        public static int GetBareStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part) =>
-            part == AppearanceArmor.Neck || ArmorAppearanceCatalog.GetStyles(definition, part).Contains(0) ? 0 : 1;
 
         /// <summary>
         /// Zero shows the wearer's own body part where the wearer's catalog offers it. Otherwise

@@ -147,66 +147,13 @@ public class ArmorPartAppearanceTests
     [Test]
     public void NoCatalogOffersStyleTwo()
     {
+        // Style 2 shows the wearer's own body part like 0 and 1, while its preview pictured another model.
+        // Saved armor moved off it in one release (RetiredArmorStyleMigration).
         foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
         foreach (var part in ArmorParts)
         {
-            Assert.That(ArmorAppearanceCatalog.GetStyles(definition, part),
-                Does.Not.Contain(ArmorPartAppearance.RemovedBareStyle), $"{type} {part}");
+            Assert.That(ArmorAppearanceCatalog.GetStyles(definition, part), Does.Not.Contain(2), $"{type} {part}");
         }
-    }
-
-    [Test]
-    public void StyleTwoRepairsToAStyleTheListOffers()
-    {
-        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
-        foreach (var part in ArmorParts)
-        {
-            // The editor always offers 0 (None) for the neck.
-            var offered = ArmorAppearanceCatalog.GetStyles(definition, part).AsEnumerable();
-            if (part == AppearanceArmor.Neck)
-                offered = offered.Prepend(0);
-            Assert.That(offered, Does.Contain(ArmorPartAppearance.GetBareStyle(definition, part)), $"{type} {part}");
-        }
-    }
-
-    [TestCase(AppearanceType.Human, AppearanceArmor.Neck, "neck", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.Torso, "chest", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.Pelvis, "pelvis", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.RightBicep, "bicepr", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.LeftForearm, "forel", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.RightHand, "handr", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.LeftThigh, "legl", 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.RightShin, "shinr", 1)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.LeftFoot, "footl", 0)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.Neck, "neck", 0)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, "chest", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.Pelvis, "pelvis", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftBicep, "bicepl", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.RightForearm, "forer", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftHand, "handl", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.RightThigh, "legr", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftShin, "shinl", 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.RightFoot, "footr", 1)]
-    public void SavedStyleTwoRepairsToZeroWhereListedOtherwiseOne(AppearanceType type, AppearanceArmor part, string model, int expected)
-    {
-        // Style 2 shows the wearer's own body part like 0 and 1. Its models exist, so only the
-        // retirement moves it; every other saved part is kept.
-        var body = type == AppearanceType.Droid ? "pmz0" : "pfh0";
-        var models = new HashSet<string> { $"{body}_{model}001", $"{body}_{model}002", $"{body}_chest004" };
-        var saved = new Dictionary<AppearanceArmor, int> { [AppearanceArmor.Torso] = 4, [part] = 2 };
-
-        var repairs = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[type], 0, body,
-            slot => saved.TryGetValue(slot, out var style) ? style : 0, _ => 0, models.Contains);
-
-        Assert.That(repairs, Is.EquivalentTo(new Dictionary<AppearanceArmor, int> { [part] = expected }));
-    }
-
-    [Test]
-    public void StyleTwoOnUncataloguedCreaturesIsKept()
-    {
-        Assert.That(ArmorPartAppearance.PlanRepairs(null, 0, "pmh0", _ => 2, _ => 0, _ => true), Is.Empty);
-        Assert.That(ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], 3,
-            "pmh0", _ => 2, _ => 0, _ => true), Is.Empty);
     }
 
     private static readonly AppearanceArmor[] ArmorParts =

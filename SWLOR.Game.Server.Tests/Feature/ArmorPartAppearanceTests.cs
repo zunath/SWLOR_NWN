@@ -130,22 +130,72 @@ public class ArmorPartAppearanceTests
     [TestCase(AppearanceArmor.LeftThigh, "legl")]
     [TestCase(AppearanceArmor.LeftShin, "shinl")]
     [TestCase(AppearanceArmor.LeftFoot, "footl")]
-    public void BareBodyPartsAtStyleOneOrTwoAreKept(AppearanceArmor part, string model)
+    public void BareBodyPartsAtStyleOneAreKept(AppearanceArmor part, string model)
     {
-        // These slots do show something at 1 and 2: the wearer's own bare body part. Hundreds of
-        // blueprints wear style 1, and droid catalogs offer no 0 for most of them.
-        var models = new HashSet<string> { $"pfh0_{model}001", $"pfh0_{model}002" };
+        // Style 1 shows the wearer's own bare body part. Hundreds of blueprints wear it, and the
+        // general shin list and most droid lists offer no 0, so it stays until Xisifer decides.
+        var models = new HashSet<string> { $"pfh0_{model}001" };
         var human = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
         var droid = ArmorAppearanceCatalog.Definitions[AppearanceType.Droid];
 
-        foreach (var style in new[] { 1, 2 })
+        Assert.That(ArmorAppearanceCatalog.GetStyles(human, part), Does.Contain(1));
+        Assert.That(ArmorAppearanceCatalog.GetStyles(droid, part), Does.Contain(1));
+        Assert.That(ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
+            saved => saved == part ? 1 : 0, _ => 0, models.Contains), Is.Empty);
+    }
+
+    [Test]
+    public void NoCatalogOffersStyleTwo()
+    {
+        // Style 2 shows the wearer's own body part like 0 and 1, while its preview pictured another model.
+        // Existing armor keeps 2: moving it would change how the pelvis and droid parts take dyes.
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        foreach (var part in ArmorParts)
         {
-            Assert.That(ArmorAppearanceCatalog.GetStyles(human, part), Does.Contain(style));
-            Assert.That(ArmorAppearanceCatalog.GetStyles(droid, part), Does.Contain(style));
-            Assert.That(ArmorPartAppearance.PlanRepairs(human, 0, "pfh0",
-                saved => saved == part ? style : 0, _ => 0, models.Contains), Is.Empty);
+            Assert.That(ArmorAppearanceCatalog.GetStyles(definition, part), Does.Not.Contain(2), $"{type} {part}");
         }
     }
+
+    [Test]
+    public void SavedStyleTwoStaysEditableOnBareSlotsOnly()
+    {
+        // Moving saved style 2 would change how the pelvis and droid parts take dyes, so it stays and the
+        // editor still accepts it. Shoulders, belts and robes show nothing at 2 and are repaired instead.
+        var kept = new[] { AppearanceArmor.Belt, AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.Robe };
+        foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
+        foreach (var part in ArmorParts)
+        {
+            Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, 2), Is.EqualTo(!kept.Contains(part)), $"{type} {part}");
+            foreach (var style in ArmorAppearanceCatalog.GetStyles(definition, part))
+                Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, style), Is.True, $"{type} {part} {style}");
+            Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(definition, part, 9999), Is.False, $"{type} {part}");
+        }
+        Assert.That(ArmorAppearanceCatalog.AcceptsSavedStyle(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], AppearanceArmor.Neck, 0), Is.True,
+            "the editor offers None for the neck");
+    }
+
+    [Test]
+    public void RetainedStyleTwoShowsAsStyleOne()
+    {
+        // Style 2's own picture shows a model the armor never draws; it looks exactly like 1.
+        var kept = new[] { AppearanceArmor.Belt, AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.Robe };
+        foreach (var part in ArmorParts)
+        {
+            Assert.That(ArmorAppearanceCatalog.DisplayedStyle(part, 2), Is.EqualTo(kept.Contains(part) ? 2 : 1), part.ToString());
+            foreach (var style in new[] { 0, 1, 3, 200 })
+                Assert.That(ArmorAppearanceCatalog.DisplayedStyle(part, style), Is.EqualTo(style), $"{part} {style}");
+        }
+    }
+
+    private static readonly AppearanceArmor[] ArmorParts =
+    {
+        AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,
+        AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder, AppearanceArmor.LeftBicep,
+        AppearanceArmor.RightBicep, AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm,
+        AppearanceArmor.LeftHand, AppearanceArmor.RightHand, AppearanceArmor.LeftThigh, AppearanceArmor.RightThigh,
+        AppearanceArmor.LeftShin, AppearanceArmor.RightShin, AppearanceArmor.LeftFoot, AppearanceArmor.RightFoot,
+        AppearanceArmor.Robe,
+    };
 
     [Test]
     public void OnlyPlayableAppearancesAreRepaired()

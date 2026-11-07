@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -51,5 +52,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             AppearanceArmor.Robe => definition.Robe,
             _ => Array.Empty<int>(),
         };
+
+        /// <summary>
+        /// No list offers style 2: it draws the same bare body part as 1 while its preview pictured another
+        /// model. Armor already on 2 keeps it and stays editable, because moving it would change how the part
+        /// takes dyes (SWLOR dyes the material named by the part number, which at 2 is never drawn). Shoulders,
+        /// belts and robes show nothing at 2 and are repaired to 0 instead.
+        /// </summary>
+        public const int RetainedBareStyle = 2;
+
+        /// <summary>True when armor saved with this style on this slot may be edited.</summary>
+        public static bool AcceptsSavedStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>
+            (part == AppearanceArmor.Neck && style == 0) ||
+            GetStyles(definition, part).Contains(style) ||
+            IsRetainedBareStyle(part, style);
+
+        /// <summary>
+        /// The style whose picture and name the editor shows. A retained 2 looks exactly like 1, and its own
+        /// picture shows a model the armor never draws.
+        /// </summary>
+        public static int DisplayedStyle(AppearanceArmor part, int style) =>
+            IsRetainedBareStyle(part, style) ? 1 : style;
+
+        private static bool IsRetainedBareStyle(AppearanceArmor part, int style) =>
+            style == RetainedBareStyle && part is not (AppearanceArmor.Belt or AppearanceArmor.LeftShoulder or
+                AppearanceArmor.RightShoulder or AppearanceArmor.Robe or AppearanceArmor.Invalid);
     }
 }

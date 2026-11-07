@@ -209,7 +209,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                     var capShare = CapShare(experimentCase, options);
                     table.Add(
                         tier.ToString(), rank.ToString(), level.Name, $"{experimentCase.CreateSetup().BaseTestChancePercent}%",
-                        Number(sample.MeanTimeCutPercent * 10 / experimentCase.CreateSetup().TimeCutTenthsPerEvidence, 2), Number(sample.MeanTimeCutPercent) + "%", Percent(capShare));
+                        Number(sample.MeanSpentEvidence, 2), Number(sample.MeanTimeCutPercent) + "%", Percent(capShare));
                 }
             }
 

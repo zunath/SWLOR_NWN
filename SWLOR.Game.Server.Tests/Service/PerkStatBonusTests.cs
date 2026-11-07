@@ -9,13 +9,13 @@ public class PerkStatBonusTests
     public void StatBonusAggregation_DoesNotUseNpcAbilityRankFallback()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Perk.cs"));
-        var getStatBonus = ExtractMethod(source, "public static int GetStatBonus(uint creature, StatType stat)");
-        var getTargetedStatBonus = ExtractMethod(source, "public static int GetTargetedStatBonus(");
-        var cacheStatBonusPerk = ExtractMethod(source, "private static void CacheStatBonusPerk");
-        var calculateStatBonuses = ExtractMethod(source, "private static int CalculateStatBonuses");
-        var statBonusLevel = ExtractMethod(source, "private static int GetStatBonusPerkLevel");
-        var getPerkLevel = ExtractMethod(source, "public static int GetPerkLevel(uint creature, PerkType perkType)");
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"));
+        var getStatBonus = ExtractMethod(source, "public int GetStatBonus(uint creature, StatType stat)");
+        var getTargetedStatBonus = ExtractMethod(source, "public int GetTargetedStatBonus(");
+        var cacheStatBonusPerk = ExtractMethod(source, "private void CacheStatBonusPerk");
+        var calculateStatBonuses = ExtractMethod(source, "private int CalculateStatBonuses");
+        var statBonusLevel = ExtractMethod(source, "private int GetStatBonusPerkLevel");
+        var getPerkLevel = ExtractMethod(source, "public int GetPerkLevel(uint creature, PerkType perkType)");
 
         source.Should().Contain("_statBonusGroupsByStat");
         source.Should().Contain("_targetedStatBonusGroupsByAdjustmentStat");
@@ -45,8 +45,8 @@ public class PerkStatBonusTests
         calculateStatBonuses.Should().Contain("bonusesByStat.TryGetValue(stat, out var statBonuses)");
 
         statBonusLevel.Should().Contain("return GetPerkLevel(creature, perkType);");
-        statBonusLevel.Should().Contain("Droid.IsDroid(creature)");
-        statBonusLevel.Should().Contain("BeastMastery.IsPlayerBeast(creature)");
+        statBonusLevel.Should().Contain("IsDroid(creature)");
+        statBonusLevel.Should().Contain("_beastMastery.IsPlayerBeast(creature)");
         statBonusLevel.Should().Contain("return GetLocalInt(creature, $\"PERK_LEVEL_{(int)perkType}\");");
         statBonusLevel.Should().NotContain("perkMaxLevel");
 

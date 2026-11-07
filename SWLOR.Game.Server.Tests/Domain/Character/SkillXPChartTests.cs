@@ -44,8 +44,10 @@ public class SkillXPChartTests
     [TestCase(-4, 76)]
     [TestCase(-5, 0)]
     [TestCase(-30, 0)]
-    [TestCase(0, 450)]
-    [TestCase(30, 450)]
+    [TestCase(0, 600)]
+    [TestCase(3, 900)]
+    [TestCase(6, 1200)]
+    [TestCase(30, 1200)]
     public void GetDeltaXP_ReadsTheDifferenceTable_AndCapsAtTheHighestDelta(int delta, int expected)
     {
         SkillXPChart.GetDeltaXP(delta).Should().Be(expected);
@@ -56,6 +58,7 @@ public class SkillXPChartTests
     {
         SkillXPChart.GetPracticeXP(10, 25, 30).Should().Be(150, "a trivial activity still pays the floor");
         SkillXPChart.GetPracticeXP(10, 11, 20).Should().Be(450);
+        SkillXPChart.GetPracticeXP(10, 5, 20).Should().Be(1050);
         SkillXPChart.GetPracticeXP(10, 20, 20).Should().Be(0);
     }
 
@@ -90,7 +93,7 @@ public class SkillXPChartTests
     public void CalculateEspionageXP_IsZeroBelowTheTier_AndPracticeXPAbove()
     {
         SkillXPChart.CalculateEspionageXP(PerkType.Poisoncraft, 2, 10).Should().Be(0);
-        SkillXPChart.CalculateEspionageXP(PerkType.Poisoncraft, 2, 15).Should().Be(450);
+        SkillXPChart.CalculateEspionageXP(PerkType.Poisoncraft, 2, 15).Should().Be(600);
         SkillXPChart.CalculateEspionageXP(PerkType.Poisoncraft, 2, 28).Should().Be(0);
     }
 }

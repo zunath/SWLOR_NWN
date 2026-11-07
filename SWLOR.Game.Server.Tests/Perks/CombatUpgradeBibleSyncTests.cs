@@ -22,10 +22,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatUpgradeBibleSyncTests
+public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
 {
     private static readonly HashSet<string> ScopedTypes = new(StringComparer.OrdinalIgnoreCase)
     {

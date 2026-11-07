@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 /// Covers what the recipe definitions give the Kitchen: a flavor row for every component, a dish for every recipe, and targets
 /// a cook can actually reach.
 /// </summary>
-public class KitchenRecipeParameterTests
+public class KitchenRecipeParameterTests : SkillFacadeFixture
 {
     private static readonly Lazy<Dictionary<RecipeType, RecipeDetail>> Recipes = new(RecipeDefinitionLoader.LoadGame);
 

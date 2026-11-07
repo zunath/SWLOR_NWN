@@ -138,6 +138,13 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private static readonly FrozenDictionary<int, int> _skillDeltaXP = new Dictionary<int, int>
         {
+            { 6, 1200 },
+            { 5, 1050 },
+            { 4, 976 },
+            { 3, 900 },
+            { 2, 750 },
+            { 1, 676 },
+            { 0, 600 },
             { -1, 450 },
             { -2, 300 },
             { -3, 150 },

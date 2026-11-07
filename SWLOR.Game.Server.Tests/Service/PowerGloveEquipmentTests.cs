@@ -33,10 +33,12 @@ public class PowerGloveEquipmentTests
     {
         _facades = new FacadeContainer(services =>
             services.Replace(ServiceDescriptor.Singleton<IItemService, MappingOnlyItemService>()));
-        Skill.LoadMappings();
         using (_facades.Install())
         using (NWScriptRuntime.Override(new FakeNWScript()))
+        {
+            Skill.LoadMappings();
             Item.CacheData();
+        }
     }
 
     [OneTimeTearDown]

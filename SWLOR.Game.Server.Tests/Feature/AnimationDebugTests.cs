@@ -10,10 +10,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class AnimationDebugTests
+public class AnimationDebugTests : SkillFacadeFixture
 {
     private sealed class PreviewClock : TimeProvider
     {

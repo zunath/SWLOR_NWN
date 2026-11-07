@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// restated by every rank above it. Omitting it turns the next rank into a partial downgrade that
 /// the player pays SP for.
 /// </summary>
-public class PerkRankProgressionTests
+public class PerkRankProgressionTests : SkillFacadeFixture
 {
     [Test]
     public void NoPerkRank_SilentlyDropsABonusGrantedByTheRankBelowIt()

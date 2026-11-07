@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.MessagingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Support;

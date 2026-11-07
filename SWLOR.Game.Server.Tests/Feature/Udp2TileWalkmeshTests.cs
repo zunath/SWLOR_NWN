@@ -16,8 +16,11 @@ public class Udp2TileWalkmeshTests
     public void EveryTileModelShipsAWalkmesh()
     {
         var folder = Path.Combine(FindRoot(), "SWLOR_Haks", "sw_t_office");
+        Directory.Exists(folder).Should().BeTrue("the SWLOR_Haks submodule must be checked out with sw_t_office");
         var set = File.ReadAllText(Path.Combine(folder, "udp2.set"));
-        var models = Regex.Matches(set, @"(?m)^Model=(\S+)").Select(m => m.Groups[1].Value).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var tileModels = Regex.Matches(set, @"(?m)^\s*Model=(\S+)").Select(m => m.Groups[1].Value).ToArray();
+        tileModels.Should().HaveCount(Regex.Matches(set, @"(?m)^\s*\[TILE\d+\]").Count, "every [TILEn] section names one model");
+        var models = tileModels.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var walkmeshes = Directory.EnumerateFiles(folder, "*.wok").Select(Path.GetFileNameWithoutExtension).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         models.Should().Contain(m => string.Equals(m, FillerTile, StringComparison.OrdinalIgnoreCase));
@@ -37,6 +40,8 @@ public class Udp2TileWalkmeshTests
         fi.Should().BeGreaterThan(vi);
         var vertices = lines.Skip(vi + 1).Take(int.Parse(lines[vi][1])).Select(l => (X: Parse(l[0]), Y: Parse(l[1]), Z: Parse(l[2]))).ToArray();
         var faces = lines.Skip(fi + 1).Take(int.Parse(lines[fi][1])).ToArray();
+        vertices.Should().HaveCount(int.Parse(lines[vi][1]), "the vertex list must match its declared count");
+        faces.Should().HaveCount(int.Parse(lines[fi][1]), "the face list must match its declared count");
 
         faces.Should().NotBeEmpty();
         faces.Select(f => surfaces.GetValue(int.Parse(f[^1]), "Walk")).Should().OnlyContain(walk => walk == "0",

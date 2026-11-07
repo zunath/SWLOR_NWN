@@ -84,6 +84,8 @@ public class AppearanceEditorItemValidityTests
                     _ => 2
                 };
                 private uint GetItem() => Item;
+                // Armor part validity has its own tests (ArmorPartAppearanceTests).
+                private bool AllowsArmorParts(uint item) => true;
                 {{methods}}
                 public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType, string resref)
                 {

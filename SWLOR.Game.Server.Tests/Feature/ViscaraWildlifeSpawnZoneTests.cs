@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// plateau overlooking the entrance, and a street-level walkmesh tile in the middle of the
 /// open Veles Sewers Sewage Holding Area tank passed that check, so creatures spawned where
 /// players could see or shoot them but never reach them (Outlaws floated over the tank).
+/// In the same sewers, the small room behind the Defunct Machine (sealed by the machine and a half
+/// wall) and the Sewer Processing room (sealed by force fields) kept random spawn points too.
 /// No Spawn Zones keep those points out of the bake.
 /// </summary>
 public class ViscaraWildlifeSpawnZoneTests
@@ -27,6 +29,9 @@ public class ViscaraWildlifeSpawnZoneTests
     [TestCase("viscaradeepmount", 112f, 246f, TestName = "Deep Mountains isolated rock top")]
     [TestCase("veles_sewers", 140f, 50f, TestName = "Veles Sewers Holding Area tank (south-west corner)")]
     [TestCase("veles_sewers", 148f, 58f, TestName = "Veles Sewers Holding Area tank (north-east corner)")]
+    [TestCase("veles_sewers", 72f, 74f, TestName = "Veles Sewers room behind the Defunct Machine (west end)")]
+    [TestCase("veles_sewers", 76f, 76f, TestName = "Veles Sewers room behind the Defunct Machine (east end)")]
+    [TestCase("veles_sewers", 100f, 64f, TestName = "Veles Sewers Sewer Processing room inside the force fields")]
     public void UnreachableSpawnPoints_AreNoSpawnZones(string area, float x, float y)
     {
         LoadNoSpawnZones(area).Should().Contain(zone => IsInside(x, y, zone),
@@ -41,6 +46,10 @@ public class ViscaraWildlifeSpawnZoneTests
     [TestCase("viscaradeepmount", 170f, 200f, TestName = "Deep Mountains valley floor below the plateau")]
     [TestCase("veles_sewers", 144f, 70f, TestName = "Veles Sewers walkway north of the Holding Area")]
     [TestCase("veles_sewers", 158f, 60f, TestName = "Veles Sewers walkway east of the Holding Area")]
+    [TestCase("veles_sewers", 88f, 82f, TestName = "Veles Sewers corridor north of the Defunct Machine")]
+    [TestCase("veles_sewers", 84f, 68f, TestName = "Veles Sewers corridor south of the Defunct Machine")]
+    [TestCase("veles_sewers", 114f, 70f, TestName = "Veles Sewers walkway east of the Sewer Processing room")]
+    [TestCase("veles_sewers", 112f, 58f, TestName = "Veles Sewers walkway south-east of the Sewer Processing room")]
     public void ReachableSpawnPoints_StaySpawnable(string area, float x, float y)
     {
         LoadNoSpawnZones(area).Should().NotContain(zone => IsInside(x, y, zone),

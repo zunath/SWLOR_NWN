@@ -192,7 +192,11 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   (labels, lists, visibility). It does not re-send input values (`textedit`, `check`,
   `combo`, `slider`, `options`, toggles, `color_picker`) or watched binds, because
   that would overwrite what the player typed. Set those after the swap, for example
-  in `onAfterApply`.
+  in `onAfterApply`. A watched input built without its value reports the control's
+  default (a slider reports its minimum), and saving that report corrupts player data:
+  the Hotbars window saved every bar at one slot (Nov 2026). Such windows send the
+  values again and only then start watching, one tick after the swap
+  (`ExtraHotbarSetupViewModel.Listen`).
 - **A group that is not on screen keeps its layout until it is.** While a modal is
   showing, or when the group belongs to a partial that is not displayed, the layout
   is remembered and nothing is sent. A mistyped element id therefore shows nothing and

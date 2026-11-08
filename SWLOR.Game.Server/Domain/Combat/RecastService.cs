@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The recast groups' names and visibility, and the cooldown deadlines of players and NPCs. The logic that used to be
     /// static in <c>Service.Recast</c> is moved here unchanged; the name tables are this instance's own fields, filled
     /// by the module cache handler and read per ability use without being rebuilt. <c>RecastTimestamp</c> and
-    /// <c>Time</c> are pure utilities and stay static. The facade keeps the event handler and forwards every call to the
-    /// container's instance.
+    /// <c>Time</c> are pure utilities and stay static. The event handler runs on the container's instance; static callers
+    /// reach it through <c>GameServices.Recast</c>.
     /// </summary>
     public class RecastService : IRecastService
     {
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _cooldownVisual = cooldownVisual;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheRecastGroups()
         {
             CacheRecastGroupNames();

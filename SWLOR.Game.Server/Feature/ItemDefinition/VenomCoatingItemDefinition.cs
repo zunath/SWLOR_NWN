@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 lines.Add($"+{ConcentratedDamageBonusPercent}% Venom damage");
 
             lines.Add($"Venom lasts {PoisonsCoatingTiers.GetVenomDurationSeconds(tier):0}s");
-            lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {Poisons.InternalCooldownSeconds}s");
+            lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {PoisonsService.InternalCooldownSeconds}s");
 
             return lines;
         }

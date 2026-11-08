@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.AbilityService;
 using System.Linq;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.AIService
 {

@@ -17,7 +17,7 @@ Domain/Combat/CombatHitEffectsService.cs
 Domain/Combat/CombatDamageTakenService.cs
 Domain/Combat/CombatAbilityActivationService.cs
 Service/CombatService/**
-Service/CombatPoint.cs
+Service/CombatPoint.cs  # master-only (P2-ZG)
 Domain/Combat/OrdinaryAttackTraitsService.cs
 Domain/Combat/PairedRangedTraitsService.cs
 Domain/Combat/TemporaryStatModifierService.cs
@@ -36,10 +36,10 @@ Native/OnAIActionAttackObject.cs
 # Added by P0-4d3: other readers the engine characterization scenarios reach (recast timestamps, AI and attack delays,
 # melee techniques, the crafting window, entity creation times). Ambient server loops (Spawn, Space, Shuttle, Weather,
 # ServerTasks) are not listed: they are not part of a scenario and must keep reading the system clock.
-Service/Recast.cs
+Service/Recast.cs  # master-only (P2-ZG)
 Service/RecastTimestamp.cs
 Service/AbilityCooldownVisual.cs # master-only
-Service/Enmity.cs
+Service/Enmity.cs  # master-only (P2-ZG)
 Domain/Combat/CombatPointService.cs
 Domain/Combat/EnmityService.cs
 Domain/Combat/MeleeTechniqueService.cs

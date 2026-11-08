@@ -71,9 +71,9 @@ public class PoisonsServiceTests
 
     private void Coat(int charges, int tier = 3, int potency = 7)
     {
-        _engine.SetLocalInt(Weapon, Poisons.CoatingChargesVariable, charges);
-        _engine.SetLocalInt(Weapon, Poisons.CoatingTierVariable, tier);
-        _engine.SetLocalInt(Weapon, Poisons.CoatingPotencyVariable, potency);
+        _engine.SetLocalInt(Weapon, PoisonsService.CoatingChargesVariable, charges);
+        _engine.SetLocalInt(Weapon, PoisonsService.CoatingTierVariable, tier);
+        _engine.SetLocalInt(Weapon, PoisonsService.CoatingPotencyVariable, potency);
     }
 
     [Test]
@@ -88,7 +88,7 @@ public class PoisonsServiceTests
         _events.SetReturnHandler("GetEventData", _ => "nobody");
         _poisons.ConsumePoisonCoating();
         _poisons.Applied.Should().BeEmpty();
-        _locals.Int(Weapon, Poisons.CoatingChargesVariable).Should().Be(3);
+        _locals.Int(Weapon, PoisonsService.CoatingChargesVariable).Should().Be(3);
     }
 
     [Test]
@@ -113,7 +113,7 @@ public class PoisonsServiceTests
         _poisons.ConsumePoisonCoating();
 
         _poisons.Applied.Should().BeEmpty();
-        _locals.Int(Weapon, Poisons.CoatingChargesVariable).Should().Be(3);
+        _locals.Int(Weapon, PoisonsService.CoatingChargesVariable).Should().Be(3);
     }
 
     [Test]
@@ -129,8 +129,8 @@ public class PoisonsServiceTests
         applied.Effect.Should().BeOfType<VenomStatusEffect>();
         applied.Duration.Should().Be(30f);
         _poisons.CombatPoints.Should().Equal((Attacker, Defender));
-        _locals.Int(Weapon, Poisons.CoatingChargesVariable).Should().Be(2);
-        _locals.Int(Attacker, "POISON_COATING_NEXT_APPLY").Should().Be(100 + Poisons.InternalCooldownSeconds);
+        _locals.Int(Weapon, PoisonsService.CoatingChargesVariable).Should().Be(2);
+        _locals.Int(Attacker, "POISON_COATING_NEXT_APPLY").Should().Be(100 + PoisonsService.InternalCooldownSeconds);
         _engine.CountOf("SendMessageToPC").Should().Be(0);
     }
 
@@ -143,7 +143,7 @@ public class PoisonsServiceTests
         _poisons.ConsumePoisonCoating();
 
         _poisons.CombatPoints.Should().BeEmpty();
-        _locals.Int(Weapon, Poisons.CoatingChargesVariable).Should().Be(2);
+        _locals.Int(Weapon, PoisonsService.CoatingChargesVariable).Should().Be(2);
     }
 
     [Test]
@@ -182,9 +182,9 @@ public class PoisonsServiceTests
 
         _poisons.ConsumePoisonCoating();
 
-        _locals.Has(Weapon, Poisons.CoatingChargesVariable).Should().BeFalse();
-        _locals.Has(Weapon, Poisons.CoatingTierVariable).Should().BeFalse();
-        _locals.Has(Weapon, Poisons.CoatingPotencyVariable).Should().BeFalse();
+        _locals.Has(Weapon, PoisonsService.CoatingChargesVariable).Should().BeFalse();
+        _locals.Has(Weapon, PoisonsService.CoatingTierVariable).Should().BeFalse();
+        _locals.Has(Weapon, PoisonsService.CoatingPotencyVariable).Should().BeFalse();
         _engine.CallsTo("SendMessageToPC").Should().ContainSingle()
             .Which.Arguments[1].Should().Be("The venom coating on Vibroblade has worn off.");
     }

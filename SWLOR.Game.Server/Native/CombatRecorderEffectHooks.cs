@@ -9,13 +9,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.LogService;
 using ObjectType = NWN.Native.API.ObjectType;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
     /// <summary>
     /// Observes every damage and heal effect the engine applies, so the combat recorder sees
     /// exact HP and temporary-HP changes from all sources. Installed the first time a recording
-    /// starts; while no recording runs each hook only checks <see cref="CombatRecorder.IsRecording"/>
+    /// starts; while no recording runs each hook only checks <see cref="Domain.Combat.ICombatRecorderService.IsRecording"/>
     /// and calls the original function.
     /// </summary>
     public static unsafe class CombatRecorderEffectHooks

@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// Player death, respawn, the XP debt penalty and where a player respawns. The logic that used to be static in
-    /// <c>Service.Death</c> is moved here unchanged; the facade keeps the event handlers and forwards every call to the
-    /// container's instance. Calls into the unconverted <c>Combat</c>, <c>Ability</c>, <c>StatusEffect</c>,
+    /// <c>Service.Death</c> is moved here unchanged; the event handlers run on the container's instance, and static callers
+    /// reach it through <c>GameServices.Death</c>. Calls into the unconverted <c>Combat</c>, <c>Ability</c>, <c>StatusEffect</c>,
     /// <c>CombatRecorder</c>, <c>Log</c> and the feature code sit behind one-line <c>protected virtual</c> methods whose
     /// bodies are the original calls.
     /// </summary>
@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _ability = ability;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDying)]
         public void OnPlayerDying()
         {
             var player = GetLastPlayerDying();
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -150,6 +152,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public void OnPlayerRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -169,6 +172,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             WriteAudit(player, xpLost);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void InitializeRespawnPoint()
         {
             var player = GetEnteringObject();

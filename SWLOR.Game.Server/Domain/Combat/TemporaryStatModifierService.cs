@@ -21,11 +21,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             _gui = gui;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearExitingObject()
         {
             Clear(GetExitingObject());
         }
 
+        [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
         public void PurgeAllExpired()
         {
             foreach (var creature in _modifiers.Keys.ToList())

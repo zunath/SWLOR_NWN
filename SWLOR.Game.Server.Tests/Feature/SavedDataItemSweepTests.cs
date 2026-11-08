@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.TwoDA;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -325,7 +326,7 @@ public partial class SavedDataItemSweepTests
                 new(entry.Key, retired.Subtype, 0, 0, 0),
             };
             // Item Resistance caps at 100.
-            if (amount + 5 <= Resistance.MaximumResistance)
+            if (amount + 5 <= ResistanceRules.MaximumResistance)
                 cases.Add(new(entry.Key, retired.Subtype, 0, amount + 5, 0));
             return cases;
         });

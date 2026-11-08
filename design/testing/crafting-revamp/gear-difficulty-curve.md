@@ -167,7 +167,7 @@ Levels 51-53, fully modded gear, two enhancements, three-seed average (seeds 1-3
 | No perks, Control 119 / Craftsmanship 120 | Finish-heavy | 93.3 -> 89.9 | 79% -> 68% | 44% -> 30% |
 
 - The no-perk Shape-heavy row rises on a harder rule because the bot plays longer, 10 actions against 13. A fully modded crafter who was stopping early now keeps working.
-- The change is much harsher below fully modded gear. With two enhancements and no perks, Shape-heavy recipes at 51-53 average 19.9 in unmodded best gear (was 52.7) and 3.4 in mid gear (was 31.3). With the Artisan line, unmodded best gear averages 37.8 (was 84.1).
+- The change is much harsher below fully modded gear. With two enhancements and no perks, Shape-heavy recipes at 51-53 average 19.9 in unmodded best gear (was 52.7) and 3.4 in mid gear (was 31.3). With the Artisan line, unmodded best gear averages 37.8 (was 84.0).
 - Enhancement parity still passes at 51-53 in fully modded gear (seed 1).
 - Finish-heavy recipes stay easy for a Control-stacked crafter. At Control 189 one Cryo-Quench is about 80% of a level 52 Finish meter. Raising both meters 10% above level 50 left that crafter at 99% and dropped the no-perk crafter to 15%, so it was rejected. Changing what Control does would also move levels 45-50.
 - The gear ladder assumes mods split evenly between Control and Craftsmanship. The tester put nearly all of them in Control, which reaches 100% more often: on the old rule, the Artisan line went from 82% (119 / 120) to 98% (189 / 50) on Finish-heavy recipes.

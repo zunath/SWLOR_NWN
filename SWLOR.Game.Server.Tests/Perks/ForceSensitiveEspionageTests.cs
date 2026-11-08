@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -285,7 +286,7 @@ public class ForceSensitiveEspionageTests
     [TestCase(true, true, false)]
     public void NearbyMessages_GoOnlyToTheHiddenSenderOrActor(bool senderHidden, bool actorHidden, bool nearby)
     {
-        new MessagingService().ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
+        new MessagingService(AmbientServices.Of<IStealthService>()).ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
         var messaging = ReadSource("Domain", "Core", "MessagingService.cs");
         messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
         var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Tests.Support;
@@ -29,7 +30,7 @@ public class DMCreatureManagerFavoriteServiceTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _service = new DMCreatureManagerFavoriteService(_db, new DMPresenceService());
+        _service = new DMCreatureManagerFavoriteService(_db, new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()));
     }
 
     [TearDown]

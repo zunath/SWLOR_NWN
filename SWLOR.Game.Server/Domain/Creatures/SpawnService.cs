@@ -3,6 +3,8 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
@@ -21,6 +23,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// </summary>
     public class SpawnService : ISpawnService
     {
+        private readonly IAIService _ai;
+        private readonly IStatService _stat;
+        private readonly IWalkmeshService _walkmesh;
+
+        public SpawnService(IAIService ai, IStatService stat, IWalkmeshService walkmesh)
+        {
+            _ai = ai;
+            _stat = stat;
+            _walkmesh = walkmesh;
+        }
+
         public const int DespawnMinutes = 20;
 
         private class SpawnDetail
@@ -914,17 +927,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
             {
                 var deserialized = ObjectPlugin.Deserialize(detail.SerializedObject);
                 var position = detail.UseRandomSpawnLocation ?
-                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
+                    GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
                 ObjectPlugin.AddToArea(deserialized, detail.Area, position);
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                _ai.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
-                Stat.LoadNPCStats(deserialized);
+                _stat.LoadNPCStats(deserialized);
 
                 return new SpawnResult { SpawnObject = deserialized };
             }
@@ -952,12 +965,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 else if (spawnObject.Type == ObjectType.Placeable)
                 {
                     position = SpawnSpacing.PickSpacedPosition(
-                        () => GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)),
+                        () => GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)),
                         GetActivePlaceableSpawnPositions(detail.Area));
                 }
                 else
                 {
-                    position = GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area));
+                    position = GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area));
                 }
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
@@ -966,16 +979,16 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                AI.SetAIFlag(spawn, spawnObject.AIFlags);
+                _ai.SetAIFlag(spawn, spawnObject.AIFlags);
                 if (spawnObject.AIProfile != AIProfileType.Invalid)
                 {
-                    AI.SetAIProfile(spawn, spawnObject.AIProfile);
+                    _ai.SetAIProfile(spawn, spawnObject.AIProfile);
                 }
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
                 if (spawnObject.Type == ObjectType.Creature)
                 {
-                    Stat.LoadNPCStats(spawn);
+                    _stat.LoadNPCStats(spawn);
                 }
 
                 foreach (var animator in spawnObject.Animators)

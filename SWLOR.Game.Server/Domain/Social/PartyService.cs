@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using NWNXLib = NWN.Native.API.NWNXLib;
@@ -12,6 +14,15 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </summary>
     public class PartyService : IPartyService
     {
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<ITelegraphService> _telegraph;
+
+        public PartyService(Lazy<IAbilityService> ability, Lazy<ITelegraphService> telegraph)
+        {
+            _ability = ability;
+            _telegraph = telegraph;
+        }
+
         private readonly Dictionary<Guid, List<uint>> _parties = new();
         private readonly Dictionary<uint, Guid> _creatureToParty = new();
         private readonly Dictionary<Guid, uint> _partyLeaders = new();
@@ -56,9 +67,9 @@ namespace SWLOR.Game.Server.Domain.Social
             }
 
             // Party members already standing in each other's auras never re-fire the aura enter event.
-            Ability.EnrollPartyMemberInAuraRanges(creature);
+            _ability.Value.EnrollPartyMemberInAuraRanges(creature);
 
-            Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
+            _telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
 
         public void AssociateJoinParty()
@@ -147,13 +158,13 @@ namespace SWLOR.Game.Server.Domain.Social
             _creatureToParty.Remove(creature);
 
             // Ensure any active aura effects that this creature was receiving from former party members are removed.
-            Ability.RefreshPartyAuraEligibility(creature);
+            _ability.Value.RefreshPartyAuraEligibility(creature);
 
             // Party composition changed. Refresh aura recipients for remaining members too,
             // so effects from the departing member are not retained.
             foreach (var member in _parties[partyId])
             {
-                Ability.RefreshPartyAuraEligibility(member);
+                _ability.Value.RefreshPartyAuraEligibility(member);
             }
 
             // If there is now only one party member (or fewer)
@@ -175,7 +186,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 _partyLeaders[partyId] = _parties[partyId].First();
             }
 
-            Telegraph.UpdateShadersForPlayers(affectedPartyMembers);
+            _telegraph.Value.UpdateShadersForPlayers(affectedPartyMembers);
         }
 
         public List<uint> GetAllPartyMembers(uint creature)

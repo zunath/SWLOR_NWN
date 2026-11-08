@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Enumeration;
@@ -47,6 +48,9 @@ namespace SWLOR.Game.Server.Domain.Core
         private readonly IPlanetService _planet;
         private readonly IAreaService _area;
         private readonly IPropertyService _property;
+        private readonly IActivityService _activity;
+        private readonly ILanguageService _language;
+        private readonly IPlayerNameService _playerName;
 
         public CommunicationService(
             IDBService db,
@@ -56,7 +60,10 @@ namespace SWLOR.Game.Server.Domain.Core
             IHoloComService holoCom,
             IPlanetService planet,
             IAreaService area,
-            IPropertyService property)
+            IPropertyService property,
+            IActivityService activity,
+            ILanguageService language,
+            IPlayerNameService playerName)
         {
             _db = db;
             _dmPresence = dmPresence;
@@ -66,6 +73,9 @@ namespace SWLOR.Game.Server.Domain.Core
             _planet = planet;
             _area = area;
             _property = property;
+            _activity = activity;
+            _language = language;
+            _playerName = playerName;
         }
 
         private class CommunicationComponent
@@ -118,7 +128,7 @@ namespace SWLOR.Game.Server.Domain.Core
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
             if (GetIsObjectValid(target))
             {
-                Activity.ClearBusy(target);
+                _activity.ClearBusy(target);
             }
         }
 
@@ -332,13 +342,13 @@ namespace SWLOR.Game.Server.Domain.Core
             // per receiver.
             var speaker = GetEffectiveChatSpeaker(sender);
             var isHoloComRelay = sender != speaker;
-            var language = Language.GetActiveLanguage(speaker);
+            var language = _language.GetActiveLanguage(speaker);
 
             // Wookiees cannot speak any other language (but they can understand them).
             // Swap their language if they attempt to speak in any other language.
             if (GetRacialType(speaker) == RacialType.Wookiee && language != SkillType.Shyriiwook)
             {
-                Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
+                _language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
                 language = SkillType.Shyriiwook;
             }
 
@@ -398,7 +408,7 @@ namespace SWLOR.Game.Server.Domain.Core
                     finalMessage.Append(": ");
                 }
 
-                var (r, g, b) = Language.GetColor(language);
+                var (r, g, b) = _language.GetColor(language);
 
                 if (dbReceiver?.Settings?.LanguageChatColors != null &&
                     dbReceiver.Settings.LanguageChatColors.ContainsKey(language))
@@ -410,7 +420,7 @@ namespace SWLOR.Game.Server.Domain.Core
 
                 if (language != SkillType.Basic)
                 {
-                    var languageName = Language.GetName(language);
+                    var languageName = _language.GetName(language);
                     finalMessage.Append(ColorToken.Custom($"[{languageName}] ", r, g, b));
                 }
 
@@ -1005,19 +1015,19 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>The listener's version of a snippet: <c>Language.TranslateSnippetForListener</c>, whose rolls and skill reads are unchanged.</summary>
         protected virtual string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
         {
-            return Language.TranslateSnippetForListener(speaker, listener, language, snippet);
+            return _language.TranslateSnippetForListener(speaker, listener, language, snippet);
         }
 
         /// <summary>The colored chat name of <paramref name="target"/> as <paramref name="observer"/> sees it: <c>PlayerName.GetColoredChatDisplayName</c>.</summary>
         protected virtual string GetColoredChatDisplayName(uint observer, uint target)
         {
-            return PlayerName.GetColoredChatDisplayName(observer, target);
+            return _playerName.GetColoredChatDisplayName(observer, target);
         }
 
         /// <summary>Runs <paramref name="sendMessage"/> with the per-observer chat name override in place: <c>PlayerName.SendChatMessageWithChatNameOverride</c>.</summary>
         protected virtual void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
         {
-            PlayerName.SendChatMessageWithChatNameOverride(observer, target, sendMessage);
+            _playerName.SendChatMessageWithChatNameOverride(observer, target, sendMessage);
         }
 
         /// <summary>True when the player is flying their ship: <c>Space.IsPlayerInSpaceMode</c>, which reads the static database.</summary>

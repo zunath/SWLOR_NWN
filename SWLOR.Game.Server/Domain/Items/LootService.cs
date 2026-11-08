@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -28,10 +29,16 @@ namespace SWLOR.Game.Server.Domain.Items
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
         private readonly IBeastMasteryService _beastMastery;
+        private readonly IItemService _item;
+        private readonly IPerkService _perk;
+        private readonly IStatService _stat;
 
-        public LootService(IBeastMasteryService beastMastery)
+        public LootService(IBeastMasteryService beastMastery, IItemService item, IPerkService perk, IStatService stat)
         {
             _beastMastery = beastMastery;
+            _item = item;
+            _perk = perk;
+            _stat = stat;
         }
 
         public void RegisterLootTables()
@@ -265,7 +272,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType)
         {
-            return Perk.GetPerkLevel(creature, perkType);
+            return _perk.GetPerkLevel(creature, perkType);
         }
 
         /// <summary>
@@ -274,7 +281,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat)
         {
-            return Stat.GetStatAdjustment(creature, stat);
+            return _stat.GetStatAdjustment(creature, stat);
         }
 
         public void ProcessCorpse()
@@ -291,7 +298,7 @@ namespace SWLOR.Game.Server.Domain.Items
                 GetAreaSize(Dimension.Height, area) * 10f,
                 ground => GetGroundHeight(Location(area, ground, 0f)));
             var spawnLocation = Location(area, lootPosition, facing);
-            var npcStats = Stat.GetNPCStats(self);
+            var npcStats = _stat.GetNPCStats(self);
 
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
@@ -426,7 +433,7 @@ namespace SWLOR.Game.Server.Domain.Items
 
             if (type == DisturbType.Added)
             {
-                Item.ReturnItem(looter, item);
+                _item.ReturnItem(looter, item);
                 SendMessageToPC(looter, "You cannot place items inside of corpses.");
             }
             else if (type == DisturbType.Removed)

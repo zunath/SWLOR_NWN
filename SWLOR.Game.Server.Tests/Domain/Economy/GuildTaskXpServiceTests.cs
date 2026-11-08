@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -131,7 +133,7 @@ public class GuildTaskXpServiceTests
     private sealed class TestXp : GuildTaskXpService
     {
         public TestXp(IDBService db)
-            : base(db)
+            : base(db, AmbientServices.Of<ICraftService>(), AmbientServices.Of<ISkillService>())
         {
         }
 

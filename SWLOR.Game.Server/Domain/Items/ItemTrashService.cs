@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
@@ -17,10 +18,16 @@ namespace SWLOR.Game.Server.Domain.Items
         private const string AuditedVariable = "ITEM_TRASH_AUDITED";
 
         private readonly IDMPresenceService _dmPresence;
+        private readonly IDisguiseService _disguise;
+        private readonly IItemService _item;
+        private readonly IPlayerNameService _playerName;
 
-        public ItemTrashService(IDMPresenceService dmPresence)
+        public ItemTrashService(IDMPresenceService dmPresence, IDisguiseService disguise, IItemService item, IPlayerNameService playerName)
         {
             _dmPresence = dmPresence;
+            _disguise = disguise;
+            _item = item;
+            _playerName = playerName;
         }
 
         public void Audit(uint player, uint item, string source)
@@ -128,19 +135,19 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>The name the audit records for the player, with the disguise noted.</summary>
         protected virtual string GetAuditName(uint player)
         {
-            return PlayerName.GetAuditName(player);
+            return _playerName.GetAuditName(player);
         }
 
         /// <summary>The key the audit records to tell a player's identities apart.</summary>
         protected virtual string GetIdentityKey(uint player)
         {
-            return Disguise.GetIdentityKey(player);
+            return _disguise.GetIdentityKey(player);
         }
 
         /// <summary>The player-facing description of an item's properties.</summary>
         protected virtual string BuildItemPropertyString(uint item)
         {
-            return Item.BuildItemPropertyString(item);
+            return _item.BuildItemPropertyString(item);
         }
 
         protected virtual void WriteStructured(LogGroup group, string messageTemplate, params object[] propertyValues)

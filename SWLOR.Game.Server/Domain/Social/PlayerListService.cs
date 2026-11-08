@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -30,35 +34,52 @@ namespace SWLOR.Game.Server.Domain.Social
 
         private readonly IDBService _db;
         private readonly IPartyService _party;
+        private readonly IDMPresenceService _dmPresence;
+        private readonly Lazy<IDisguiseService> _disguise;
+        private readonly IGuiService _gui;
+        private readonly Lazy<IHoloComService> _holoCom;
+        private readonly Lazy<IPlayerNameService> _playerName;
         private readonly PlayerListFlagType[] _knownFlags = Enum.GetValues<PlayerListFlagType>();
         private readonly HashSet<uint> _exitingPlayers = new();
         private bool _isRefreshQueued;
 
-        public PlayerListService(IDBService db, IPartyService party)
+        public PlayerListService(
+            IDBService db,
+            IPartyService party,
+            IDMPresenceService dmPresence,
+            Lazy<IDisguiseService> disguise,
+            IGuiService gui,
+            Lazy<IHoloComService> holoCom,
+            Lazy<IPlayerNameService> playerName)
         {
             _db = db;
             _party = party;
+            _dmPresence = dmPresence;
+            _disguise = disguise;
+            _gui = gui;
+            _holoCom = holoCom;
+            _playerName = playerName;
         }
 
         public IReadOnlyCollection<PlayerListFlagType> GetFlags(uint player)
         {
-            if (!GetIsObjectValid(player) || DMPresence.IsControlledByDM(player))
+            if (!GetIsObjectValid(player) || _dmPresence.IsControlledByDM(player))
                 return Array.Empty<PlayerListFlagType>();
 
             var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
-            return GetFlags(dbPlayer, Disguise.GetActiveDisguise(dbPlayer));
+            return GetFlags(dbPlayer, _disguise.Value.GetActiveDisguise(dbPlayer));
         }
 
         public void SetFlag(uint player, PlayerListFlagType flag, bool isEnabled)
         {
-            if (!GetIsPC(player) || DMPresence.IsControlledByDM(player) || !_knownFlags.Contains(flag))
+            if (!GetIsPC(player) || _dmPresence.IsControlledByDM(player) || !_knownFlags.Contains(flag))
                 return;
 
             var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
                 return;
 
-            var disguise = Disguise.GetActiveDisguise(dbPlayer);
+            var disguise = _disguise.Value.GetActiveDisguise(dbPlayer);
             var flags = disguise != null
                 ? disguise.PlayerListFlags ??= new List<PlayerListFlagType>()
                 : dbPlayer.PlayerListFlags ??= new List<PlayerListFlagType>();
@@ -91,10 +112,10 @@ namespace SWLOR.Game.Server.Domain.Social
                 {
                     Player = player,
                     CanonicalName = GetName(player),
-                    IsAfk = PlayerName.IsAfk(player),
+                    IsAfk = _playerName.Value.IsAfk(player),
                 };
 
-                if (DMPresence.IsControlledByDM(player))
+                if (_dmPresence.IsControlledByDM(player))
                 {
                     subject.IsDM = true;
                     subject.Descriptor = DMDescriptor;
@@ -105,8 +126,8 @@ namespace SWLOR.Game.Server.Domain.Social
                 else
                 {
                     var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
-                    var disguise = Disguise.GetActiveDisguise(dbPlayer);
-                    subject.Descriptor = Disguise.GetDisplayDescriptor(player);
+                    var disguise = _disguise.Value.GetActiveDisguise(dbPlayer);
+                    subject.Descriptor = _disguise.Value.GetDisplayDescriptor(player);
                     subject.IsDisguised = disguise != null;
                     subject.Flags = GetFlags(dbPlayer, disguise);
                     subject.PartyLeader = partyLeaders[player];
@@ -122,11 +143,11 @@ namespace SWLOR.Game.Server.Domain.Social
         public List<PlayerListEntry> BuildEntries(uint viewer, IReadOnlyList<PlayerListSubject> subjects)
         {
             // A possessing DM's window belongs to the creature, but the roster lists their avatar.
-            viewer = DMPresence.GetDM(viewer);
-            var viewerIsDM = DMPresence.IsControlledByDM(viewer);
+            viewer = _dmPresence.GetDM(viewer);
+            var viewerIsDM = _dmPresence.IsControlledByDM(viewer);
             var viewerSubject = subjects.FirstOrDefault(subject => subject.Player == viewer);
-            var showOwnDescriptor = viewerIsDM || PlayerName.ShouldShowOwnDescriptor(viewer);
-            var showNamedDescriptors = viewerIsDM || PlayerName.ShouldShowDescriptorForNamedPlayers(viewer);
+            var showOwnDescriptor = viewerIsDM || _playerName.Value.ShouldShowOwnDescriptor(viewer);
+            var showNamedDescriptors = viewerIsDM || _playerName.Value.ShouldShowDescriptorForNamedPlayers(viewer);
             var entries = new List<PlayerListEntry>();
 
             foreach (var subject in subjects)
@@ -159,11 +180,11 @@ namespace SWLOR.Game.Server.Domain.Social
 
         public PlayerListRelation GetRelation(uint viewer, uint target)
         {
-            viewer = DMPresence.GetDM(viewer);
-            target = DMPresence.GetDM(target);
-            var viewerIsDM = DMPresence.IsControlledByDM(viewer);
+            viewer = _dmPresence.GetDM(viewer);
+            target = _dmPresence.GetDM(target);
+            var viewerIsDM = _dmPresence.IsControlledByDM(viewer);
             var online = GetOnlinePlayers();
-            if (!online.Contains(target) || !PlayerListRules.IsVisibleTo(viewerIsDM, DMPresence.IsControlledByDM(target)))
+            if (!online.Contains(target) || !PlayerListRules.IsVisibleTo(viewerIsDM, _dmPresence.IsControlledByDM(target)))
                 return new PlayerListRelation { ViewerIsDM = viewerIsDM };
 
             var partyLeaders = GetPartyLeaders();
@@ -206,19 +227,19 @@ namespace SWLOR.Game.Server.Domain.Social
             if (string.IsNullOrEmpty(message))
                 return "Enter a message to send.";
 
-            var senderIsDM = DMPresence.IsControlledByDM(sender);
+            var senderIsDM = _dmPresence.IsControlledByDM(sender);
             // A hidden DM gets the same answer as an absent player, so the reply reveals nothing.
             if (!GetOnlinePlayers().Contains(target) ||
-                !PlayerListRules.IsVisibleTo(senderIsDM, DMPresence.IsControlledByDM(target)))
+                !PlayerListRules.IsVisibleTo(senderIsDM, _dmPresence.IsControlledByDM(target)))
                 return "That player is no longer online.";
 
-            var speaker = senderIsDM ? DMPresence.GetDM(sender) : sender;
+            var speaker = senderIsDM ? _dmPresence.GetDM(sender) : sender;
             var channel = senderIsDM ? ChatChannel.DMTell : ChatChannel.PlayerTell;
 
             SetLocalBool(speaker, PlayerName.DirectTellVariable, true);
             try
             {
-                ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target));
+                ChatPlugin.SendMessage(channel, message, speaker, _dmPresence.GetControlledCreature(target));
             }
             finally
             {
@@ -227,14 +248,14 @@ namespace SWLOR.Game.Server.Domain.Social
 
             // Matches the DM log entry the Player Search window writes for its private messages.
             if (senderIsDM)
-                Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(sender)} messaged {GetName(target)} ({GetObjectUUID(target)}): {message}");
+                Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(sender)} messaged {GetName(target)} ({GetObjectUUID(target)}): {message}");
 
             return string.Empty;
         }
 
         public void JumpTo(uint dm, uint target)
         {
-            DMPresence.JumpTo(dm, GetLocation(DMPresence.GetControlledCreature(target)),
+            _dmPresence.JumpTo(dm, GetLocation(_dmPresence.GetControlledCreature(target)),
                 $"{GetName(target)} ({GetObjectUUID(target)})");
         }
 
@@ -284,15 +305,15 @@ namespace SWLOR.Game.Server.Domain.Social
             if (!GetIsDM(current) && !GetIsDMPossessed(current))
                 return;
 
-            if (!Gui.IsWindowOpen(current, GuiWindowType.PlayerList))
+            if (!_gui.IsWindowOpen(current, GuiWindowType.PlayerList))
                 return;
 
-            var dm = DMPresence.GetDM(current);
+            var dm = _dmPresence.GetDM(current);
             // Possession has not settled while the event runs, so follow it on the next tick.
             DelayCommand(0.1f, () =>
             {
-                DMPresence.CloseWindow(dm, GuiWindowType.PlayerList);
-                DMPresence.ShowWindow(dm, GuiWindowType.PlayerList);
+                _dmPresence.CloseWindow(dm, GuiWindowType.PlayerList);
+                _dmPresence.ShowWindow(dm, GuiWindowType.PlayerList);
             });
         }
 
@@ -311,16 +332,16 @@ namespace SWLOR.Game.Server.Domain.Social
                 if (_exitingPlayers.Contains(player))
                     continue;
 
-                if (DMPresence.IsControlledByDM(player))
+                if (_dmPresence.IsControlledByDM(player))
                 {
-                    var dm = DMPresence.GetDM(player);
-                    foreach (var target in DMPresence.GetShownOn(DMPresence.GetControlledCreature(dm), GuiWindowType.PlayerList))
+                    var dm = _dmPresence.GetDM(player);
+                    foreach (var target in _dmPresence.GetShownOn(_dmPresence.GetControlledCreature(dm), GuiWindowType.PlayerList))
                     {
-                        if (Gui.IsWindowOpen(target, GuiWindowType.PlayerList))
+                        if (_gui.IsWindowOpen(target, GuiWindowType.PlayerList))
                             windows.Add((dm, target));
                     }
                 }
-                else if (Gui.IsWindowOpen(player, GuiWindowType.PlayerList))
+                else if (_gui.IsWindowOpen(player, GuiWindowType.PlayerList))
                 {
                     windows.Add((player, player));
                 }
@@ -330,7 +351,7 @@ namespace SWLOR.Game.Server.Domain.Social
             {
                 var payload = new PlayerListRefreshEvent(BuildSubjects());
                 foreach (var (owner, target) in windows)
-                    Gui.PublishRefreshEvent(owner, payload, target);
+                    _gui.PublishRefreshEvent(owner, payload, target);
             }
 
             _exitingPlayers.Clear();
@@ -364,7 +385,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 .Select(player => new PlayerListPartyMembership
                 {
                     Player = player,
-                    IsDM = DMPresence.IsControlledByDM(player),
+                    IsDM = _dmPresence.IsControlledByDM(player),
                     PartyFactionId = GetPartyFactionId(player),
                     FactionLeader = GetFactionLeader(player),
                 })
@@ -429,7 +450,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 ViewerIsInParty = viewerIsInParty,
                 ViewerIsPartyLeader = viewerIsInParty && viewerSubject.PartyLeader == viewer,
                 ViewerIsInSpace = Service.Space.IsPlayerInSpaceMode(viewer),
-                ViewerCallState = viewerIsDM ? PlayerListCallState.None : HoloCom.GetCallState(viewer),
+                ViewerCallState = viewerIsDM ? PlayerListCallState.None : _holoCom.Value.GetCallState(viewer),
                 HasTarget = true,
                 TargetIsSelf = isSelf,
                 TargetIsDM = subject.IsDM,
@@ -438,18 +459,18 @@ namespace SWLOR.Game.Server.Domain.Social
                 TargetIsPartyLeader = !subject.IsDM && subject.PartyPlayerCount >= 2 && subject.PartyLeader == subject.Player,
                 ViewerDislikesTarget = !isSelf && !viewerIsDM && !subject.IsDM && IsHostileTo(viewer, subject.Player),
                 TargetIsInSpace = !subject.IsDM && Service.Space.IsPlayerInSpaceMode(subject.Player),
-                TargetIsInCall = !subject.IsDM && HoloCom.GetCallState(subject.Player) != PlayerListCallState.None,
+                TargetIsInCall = !subject.IsDM && _holoCom.Value.GetCallState(subject.Player) != PlayerListCallState.None,
             };
         }
 
         // Staff see canonical names. Players see their own name and the names they assigned, and nothing else.
-        private static string ResolveName(uint viewer, bool viewerIsDM, PlayerListSubject subject)
+        private string ResolveName(uint viewer, bool viewerIsDM, PlayerListSubject subject)
         {
             if (viewerIsDM || subject.Player == viewer)
                 return subject.CanonicalName;
 
-            return PlayerName.TryGetKnownName(viewer, subject.Player, out var knownName)
-                ? PlayerName.SanitizeKnownName(knownName)
+            return _playerName.Value.TryGetKnownName(viewer, subject.Player, out var knownName)
+                ? _playerName.Value.SanitizeKnownName(knownName)
                 : string.Empty;
         }
 

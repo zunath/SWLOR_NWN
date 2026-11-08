@@ -2,6 +2,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
@@ -62,8 +68,8 @@ public class DMObjectDetailsServiceTests
         _engine.SetReturnHandler("GetStringByStrRef", arguments => "text " + arguments[0]);
         _engine.SetReturnHandler("Get2DAString", arguments =>
             _twoDA.TryGetValue(((string)arguments[0]!, (string)arguments[1]!, (int)arguments[2]!), out var value) ? value : string.Empty);
-        _catalog = new DMBlueprintCatalogService(new DMPresenceService());
-        _service = new DMObjectDetailsService(_catalog);
+        _catalog = new DMBlueprintCatalogService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<ISpawnService>());
+        _service = new DMObjectDetailsService(_catalog, AmbientServices.Of<IAIService>(), AmbientServices.Of<IAreaService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IStatService>());
         // The service reads the players in an area through the Area facade, which resolves its instance from a container.
         _container = new FacadeContainer();
         _containerScope = _container.Install();
@@ -862,7 +868,7 @@ public class DMObjectDetailsServiceTests
         _service.GetBlueprintRow(blueprint);
         _engine.ClearCalls();
 
-        new DMObjectDetailsService(_catalog).GetBlueprintRow(blueprint);
+        new DMObjectDetailsService(_catalog, AmbientServices.Of<IAIService>(), AmbientServices.Of<IAreaService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IStatService>()).GetBlueprintRow(blueprint);
 
         _engine.CallsTo("TemplateToJson").Should().NotBeEmpty("state lives on the instance, not in static fields");
     }

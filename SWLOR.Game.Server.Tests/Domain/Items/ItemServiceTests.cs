@@ -3,9 +3,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -117,7 +122,7 @@ public class ItemServiceTests
 
         _world.Add(User);
         _players.Add(User);
-        _service = new TestItemService(new BeastMasteryService(_db, null!, null!), _db);
+        _service = new TestItemService(new BeastMasteryService(_db, null!, null!, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>()), _db);
         _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IItemService>(_service)));
         _scopes.Add(_container.Install());
     }
@@ -147,7 +152,7 @@ public class ItemServiceTests
         _service.TwoHandedMeleeItemTypes.Should().Contain(BaseItem.GreatSword);
         _service.OneHandedMeleeItemTypes.Should().Contain(BaseItem.Longsword);
 
-        var other = new TestItemService(new BeastMasteryService(_db, null!, null!), _db);
+        var other = new TestItemService(new BeastMasteryService(_db, null!, null!, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>()), _db);
         other.WeaponBaseItemTypes.Should().NotBeSameAs(_service.WeaponBaseItemTypes, "each instance owns its lists");
         _service.WeaponBaseItemTypes.Should().BeSameAs(_service.WeaponBaseItemTypes, "an instance hands out the same list every time");
     }
@@ -227,7 +232,7 @@ public class ItemServiceTests
     [Test]
     public void TheDefaultDefinitionSearchFindsTheServersItemLists()
     {
-        var types = new ProbingItemService(new BeastMasteryService(_db, null!, null!), _db).Search().ToList();
+        var types = new ProbingItemService(new BeastMasteryService(_db, null!, null!, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>()), _db).Search().ToList();
 
         types.Should().NotBeEmpty();
         types.Should().OnlyContain(type => typeof(IItemListDefinition).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);
@@ -1432,7 +1437,7 @@ public class ItemServiceTests
     private sealed class TestItemService : ItemService
     {
         public TestItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db)
+            : base(beastMastery, db, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<ICraftMinigameRoutingService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IRecastService>(), AmbientServices.LazyOf<ISkillService>(), AmbientServices.LazyOf<ITwinPistolEquipmentService>())
         {
         }
 
@@ -1461,7 +1466,7 @@ public class ItemServiceTests
     private sealed class ProbingItemService : ItemService
     {
         public ProbingItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db)
+            : base(beastMastery, db, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<ICraftMinigameRoutingService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IRecastService>(), AmbientServices.LazyOf<ISkillService>(), AmbientServices.LazyOf<ITwinPistolEquipmentService>())
         {
         }
 

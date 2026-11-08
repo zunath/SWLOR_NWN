@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CombatService;
@@ -237,7 +238,7 @@ public class LightsaberWorkbenchServiceTests
     private sealed class BenchService : LightsaberWorkbenchService
     {
         public BenchService(InMemoryDBService db)
-            : base(db, new CurrencyService(db))
+            : base(db, new CurrencyService(db, AmbientServices.Of<IGuiService>()), AmbientServices.Of<IGuiService>())
         {
         }
 

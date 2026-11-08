@@ -1,6 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -43,7 +47,7 @@ public class PlayerMarketServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new PlayerMarketService(_db);
+        _service = new PlayerMarketService(_db, AmbientServices.Of<IBeastMasteryService>(), AmbientServices.Of<ICraftService>(), AmbientServices.Of<IFishingService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IMusicService>(), AmbientServices.Of<IPropertyService>());
     }
 
     [TearDown]
@@ -80,7 +84,7 @@ public class PlayerMarketServiceTests
 
         _service.CacheData();
 
-        new PlayerMarketService(_db).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
+        new PlayerMarketService(_db, AmbientServices.Of<IBeastMasteryService>(), AmbientServices.Of<ICraftService>(), AmbientServices.Of<IFishingService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IMusicService>(), AmbientServices.Of<IPropertyService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
     }
 
     [Test]

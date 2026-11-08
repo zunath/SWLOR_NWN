@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
@@ -41,6 +42,9 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private readonly IGuiService _gui;
         private readonly ISpawnService _spawn;
         private readonly ICacheService _cache;
+        private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
+        private readonly IStatService _stat;
 
         public SlicingSessionService(
             IDBService db,
@@ -48,7 +52,10 @@ namespace SWLOR.Game.Server.Domain.Crafting
             IItemService item,
             IGuiService gui,
             ISpawnService spawn,
-            ICacheService cache)
+            ICacheService cache,
+            IPerkService perk,
+            ISkillService skill,
+            IStatService stat)
         {
             _db = db;
             _slicing = slicing;
@@ -56,6 +63,9 @@ namespace SWLOR.Game.Server.Domain.Crafting
             _gui = gui;
             _spawn = spawn;
             _cache = cache;
+            _perk = perk;
+            _skill = skill;
+            _stat = stat;
         }
 
         public ActiveSlicingSession Get(uint player)
@@ -769,18 +779,18 @@ namespace SWLOR.Game.Server.Domain.Crafting
         // The calls below reach services that are not converted yet, the log and the clock. Each is one line so a test answers it.
 
         /// <summary>The player's level in a perk.</summary>
-        protected virtual int GetPerkLevel(uint player, PerkType perk) => Service.Perk.GetPerkLevel(player, perk);
+        protected virtual int GetPerkLevel(uint player, PerkType perk) => _perk.GetPerkLevel(player, perk);
 
         /// <summary>The player's Lockpicking, gear included.</summary>
-        protected virtual int GetLockpicking(uint player) => Service.Stat.GetLockpicking(player);
+        protected virtual int GetLockpicking(uint player) => _stat.GetLockpicking(player);
 
         /// <summary>The Espionage XP a slicing success at a tier pays a player of the given Espionage rank.</summary>
         protected virtual int CalculateEspionageXp(PerkType perk, int tier, int rank) =>
-            Service.Skill.CalculateEspionageXP(perk, tier, rank);
+            _skill.CalculateEspionageXP(perk, tier, rank);
 
         /// <summary>Gives the player Espionage XP.</summary>
         protected virtual void GiveEspionageXp(uint player, int xp) =>
-            Service.Skill.GiveSkillXP(player, SkillType.Espionage, xp, false, false);
+            _skill.GiveSkillXP(player, SkillType.Espionage, xp, false, false);
 
         /// <summary>Writes a line to the crafting log.</summary>
         protected virtual void WriteLog(string message) =>

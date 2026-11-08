@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -31,10 +32,14 @@ namespace SWLOR.Game.Server.Domain.Items
         private readonly Dictionary<int, KeyItemType> _keyItemsByTypeId = new Dictionary<int, KeyItemType>();
 
         private readonly IDBService _db;
+        private readonly IGuiService _gui;
+        private readonly IObjectVisibilityService _objectVisibility;
 
-        public KeyItemService(IDBService db)
+        public KeyItemService(IDBService db, IGuiService gui, IObjectVisibilityService objectVisibility)
         {
             _db = db;
+            _gui = gui;
+            _objectVisibility = objectVisibility;
         }
 
         public void LoadData()
@@ -133,7 +138,7 @@ namespace SWLOR.Game.Server.Domain.Items
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
-            Gui.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
+            _gui.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
         }
 
         public void RemoveKeyItem(uint player, KeyItemType keyItem)
@@ -217,7 +222,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual void AdjustVisibility(uint player, uint placeable, VisibilityType type)
         {
-            ObjectVisibility.AdjustVisibility(player, placeable, type);
+            _objectVisibility.AdjustVisibility(player, placeable, type);
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Entity;
@@ -171,7 +172,7 @@ public class PerformanceServiceTests
         });
 
         _view = new FakeView { IsOpen = true };
-        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService()) { Now = T0, Perks = _perks };
+        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService(AmbientServices.Of<IPerkService>())) { Now = T0, Perks = _perks };
         _perks.Clear();
     }
 
@@ -299,7 +300,7 @@ public class PerformanceServiceTests
     public void AStartThatCannotReadThePlayerRecordIsRefused()
     {
         _db = new InMemoryDBService();
-        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService()) { Now = T0 };
+        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService(AmbientServices.Of<IPerkService>())) { Now = T0 };
 
         _performance.ToggleDance(Player, 1);
 
@@ -1163,7 +1164,7 @@ public class PerformanceServiceTests
             IPerformanceWindowsService windows,
             IPerformanceSongService songs,
             IPerformanceRiderService riders)
-            : base(db, animation, audience, windows, songs, riders, null!)
+            : base(db, animation, audience, windows, songs, riders, null!, AmbientServices.Of<IActivityService>(), AmbientServices.Of<IPerkService>())
         {
         }
 

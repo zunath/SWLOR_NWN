@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Entity;
@@ -54,12 +56,24 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IDBService _db;
         private readonly IPlanetService _planets;
         private readonly IDMPresenceService _presence;
+        private readonly IPropertyService _property;
+        private readonly IResistanceService _resistance;
+        private readonly IStatService _stat;
 
-        public WeatherService(IDBService db, IPlanetService planets, IDMPresenceService presence)
+        public WeatherService(
+            IDBService db,
+            IPlanetService planets,
+            IDMPresenceService presence,
+            IPropertyService property,
+            IResistanceService resistance,
+            IStatService stat)
         {
             _db = db;
             _planets = planets;
             _presence = presence;
+            _property = property;
+            _resistance = resistance;
+            _stat = stat;
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
             _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
         }
@@ -94,7 +108,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             // Authored settlements opt out independently of their natural/urban
             // setting. Player-founded cities are protected while the city exists.
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             return string.IsNullOrWhiteSpace(propertyId) ||
                    _db.Get<WorldProperty>(propertyId)?.PropertyType != PropertyType.City;
         }
@@ -322,9 +336,9 @@ namespace SWLOR.Game.Server.Domain.World
             // Doors/placeables hit by lightning do not have character stats.
             if (damage <= 0 || GetObjectType(target) != ObjectType.Creature) return Math.Max(0, damage);
             var typedAdjustment = damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment) : 0;
+                ? _stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment) : 0;
             var adjusted = Service.Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
-            damage = Resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage);
+            damage = _resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage);
             if (damage <= 0) return 0;
             return Service.Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
                 targetStatusDamagePercentAdjustment: adjusted.Adjustment);
@@ -369,14 +383,14 @@ namespace SWLOR.Game.Server.Domain.World
         // player or the native effect list; a test subclass answers this instead.
         protected virtual int GetKnockdownTicks(uint target, int baseTicks)
         {
-            return Resistance.CalculateResistedTicks(target, ResistanceType.Mobility, baseTicks);
+            return _resistance.CalculateResistedTicks(target, ResistanceType.Mobility, baseTicks);
         }
 
         // The knockdown immunity of a creature comes from the static Stat service, which reads the stored player or
         // the native effect list; a test subclass answers this instead.
         protected virtual int GetKnockdownImmunity(uint target)
         {
-            return Stat.GetStatAdjustment(target, StatType.KnockdownImmunity);
+            return _stat.GetStatAdjustment(target, StatType.KnockdownImmunity);
         }
 
         public void OnAreaEnter()

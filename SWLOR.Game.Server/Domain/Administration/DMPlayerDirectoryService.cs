@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -35,11 +37,22 @@ namespace SWLOR.Game.Server.Domain.Administration
 
         private readonly IDBService _db;
         private readonly IDMPresenceService _presence;
+        private readonly IAreaService _area;
+        private readonly IDisguiseService _disguise;
+        private readonly IPlayerDescriptorService _playerDescriptor;
 
-        public DMPlayerDirectoryService(IDBService db, IDMPresenceService presence)
+        public DMPlayerDirectoryService(
+            IDBService db,
+            IDMPresenceService presence,
+            IAreaService area,
+            IDisguiseService disguise,
+            IPlayerDescriptorService playerDescriptor)
         {
             _db = db;
             _presence = presence;
+            _area = area;
+            _disguise = disguise;
+            _playerDescriptor = playerDescriptor;
         }
 
         public List<DMPlayerSearchResult> Search(string search, DMPlayerSearchScope scope, out bool isTruncated)
@@ -61,7 +74,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 if (scope == DMPlayerSearchScope.Offline)
                     continue;
 
-                if (Matches(search, terms, result, PlayerDescriptor.GetUnknownDisplayName(player)))
+                if (Matches(search, terms, result, _playerDescriptor.GetUnknownDisplayName(player)))
                     results.Add(result);
             }
 
@@ -94,7 +107,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref))
                 return false;
 
-            var area = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var area = _area.GetAreaByResref(dbPlayer.LocationAreaResref);
             if (!GetIsObjectValid(area))
                 return false;
 
@@ -237,16 +250,16 @@ namespace SWLOR.Game.Server.Domain.Administration
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var activeDisguise = Disguise.GetActiveDisguise(dbPlayer);
+            var activeDisguise = _disguise.GetActiveDisguise(dbPlayer);
 
             return new DMPlayerSearchResult(
                 playerId,
                 true,
                 GetName(player),
-                Disguise.GetDisplayDescriptor(player),
+                _disguise.GetDisplayDescriptor(player),
                 activeDisguise != null,
                 DMDisguiseText.Describe(activeDisguise),
-                PlayerDescriptor.GetUnknownDisplayName(player),
+                _playerDescriptor.GetUnknownDisplayName(player),
                 GetPCPlayerName(player),
                 GetPCPublicCDKey(player),
                 GetName(GetArea(player)),
@@ -257,11 +270,11 @@ namespace SWLOR.Game.Server.Domain.Administration
         {
             var area = string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)
                 ? OBJECT_INVALID
-                : Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+                : _area.GetAreaByResref(dbPlayer.LocationAreaResref);
             var locationName = GetIsObjectValid(area)
                 ? GetName(area)
                 : dbPlayer.LocationAreaResref ?? string.Empty;
-            var activeDisguise = Disguise.GetActiveDisguise(dbPlayer);
+            var activeDisguise = _disguise.GetActiveDisguise(dbPlayer);
 
             return new DMPlayerSearchResult(
                 dbPlayer.Id,
@@ -270,7 +283,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 GetOfflineDescriptor(dbPlayer, activeDisguise),
                 activeDisguise != null,
                 DMDisguiseText.Describe(activeDisguise),
-                PlayerDescriptor.GetUnknownDisplayName(dbPlayer),
+                _playerDescriptor.GetUnknownDisplayName(dbPlayer),
                 dbPlayer.AccountName ?? string.Empty,
                 dbPlayer.CDKey ?? string.Empty,
                 locationName,
@@ -281,7 +294,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         {
             var disguiseDescriptor = activeDisguise?.Descriptor;
             return string.IsNullOrWhiteSpace(disguiseDescriptor)
-                ? PlayerDescriptor.GetUnknownDisplayName(dbPlayer)
+                ? _playerDescriptor.GetUnknownDisplayName(dbPlayer)
                 : disguiseDescriptor;
         }
     }

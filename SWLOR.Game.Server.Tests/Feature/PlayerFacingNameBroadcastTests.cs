@@ -44,7 +44,7 @@ public class PlayerFacingNameBroadcastTests
             "HoloComService.cs"));
 
         source.Should().NotContain("GetName(");
-        source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
+        source.Should().Contain("_playerName.GetDisplayName(sender, receiver)");
     }
 
     [Test]

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
@@ -48,7 +49,7 @@ public class CraftQuickCraftServiceTests
     private sealed class TestQuickCraft : CraftQuickCraftService
     {
         public TestQuickCraft(IDBService db, ICraftService craft, ICraftSessionsService sessions, ICraftMinigameRoutingService routing)
-            : base(db, craft, sessions, routing)
+            : base(db, craft, sessions, routing, AmbientServices.Of<ISkillService>())
         {
         }
 

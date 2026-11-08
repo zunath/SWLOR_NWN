@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
@@ -11,6 +12,13 @@ namespace SWLOR.Game.Server.Domain.Crafting;
 /// <inheritdoc cref="ICraftMinigameRoutingService" />
 public class CraftMinigameRoutingService : ICraftMinigameRoutingService
 {
+    private readonly IGuiService _gui;
+
+    public CraftMinigameRoutingService(IGuiService gui)
+    {
+        _gui = gui;
+    }
+
     /// <summary>
     /// The window of the research Experiment. It crafts no item, but it spends the Fabrication CP of the gear worn when it opened, so
     /// it commits that gear like a crafting window does.
@@ -64,7 +72,7 @@ public class CraftMinigameRoutingService : ICraftMinigameRoutingService
     }
 
     /// <summary>Whether the player has the window open. Gui is not converted yet.</summary>
-    protected virtual bool IsWindowOpen(uint player, GuiWindowType window) => Gui.IsWindowOpen(player, window);
+    protected virtual bool IsWindowOpen(uint player, GuiWindowType window) => _gui.IsWindowOpen(player, window);
 
     private static IEnumerable<ICraftMinigameRoute> DiscoverRoutes() =>
         typeof(ICraftMinigameRoute).Assembly.GetTypes()

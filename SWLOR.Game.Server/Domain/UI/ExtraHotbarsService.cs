@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Entity;
@@ -59,13 +63,35 @@ namespace SWLOR.Game.Server.Domain.UI
         private readonly IGuiService _gui;
         private readonly IChatCommandService _chatCommand;
         private readonly IItemService _item;
+        private readonly IAbilityService _ability;
+        private readonly ICraftMinigameRoutingService _craftMinigameRouting;
+        private readonly IPerkService _perk;
+        private readonly IQuickCastService _quickCast;
+        private readonly ITargetingService _targeting;
+        private readonly ITwinPistolEquipmentService _twinPistolEquipment;
 
-        public ExtraHotbarsService(IDBService db, IGuiService gui, IChatCommandService chatCommand, IItemService item)
+        public ExtraHotbarsService(
+            IDBService db,
+            IGuiService gui,
+            IChatCommandService chatCommand,
+            IItemService item,
+            IAbilityService ability,
+            ICraftMinigameRoutingService craftMinigameRouting,
+            IPerkService perk,
+            IQuickCastService quickCast,
+            ITargetingService targeting,
+            ITwinPistolEquipmentService twinPistolEquipment)
         {
             _db = db;
             _gui = gui;
             _chatCommand = chatCommand;
             _item = item;
+            _ability = ability;
+            _craftMinigameRouting = craftMinigameRouting;
+            _perk = perk;
+            _quickCast = quickCast;
+            _targeting = targeting;
+            _twinPistolEquipment = twinPistolEquipment;
         }
 
         public GuiWindowType GetWindowType(int barIndex) => _windowTypes[barIndex];
@@ -225,7 +251,7 @@ namespace SWLOR.Game.Server.Domain.UI
             SetSlot(player, barIndex, slotIndex, new ExtraHotbarSlot
             {
                 Type = ExtraHotbarSlotType.Ability,
-                Feat = QuickCast.GetOriginalFeat(feat)
+                Feat = _quickCast.GetOriginalFeat(feat)
             });
         }
 
@@ -336,7 +362,7 @@ namespace SWLOR.Game.Server.Domain.UI
         public List<FeatType> GetKnownAbilities(uint player)
         {
             return GetAllAbilityDetails()
-                .Where(pair => QuickCast.GetOriginalFeat(pair.Key) == pair.Key &&
+                .Where(pair => _quickCast.GetOriginalFeat(pair.Key) == pair.Key &&
                                pair.Value.ImpactAction != null &&
                                KnowsFeat(player, pair.Key))
                 .Select(pair => pair.Key)
@@ -609,7 +635,7 @@ namespace SWLOR.Game.Server.Domain.UI
                 return "Only Force Sensitive characters may equip that item.";
 
             var itemUseError = _item.GetCreatureItemUseError(player, item,
-                TwinPistolEquipment.IsPairItem(item) ? SkillType.TwinPistol : SkillType.Invalid);
+                _twinPistolEquipment.IsPairItem(item) ? SkillType.TwinPistol : SkillType.Invalid);
             return string.IsNullOrEmpty(itemUseError) ? _item.GetRacialEquipError(player, item) : itemUseError;
         }
 
@@ -750,7 +776,7 @@ namespace SWLOR.Game.Server.Domain.UI
             if (!GetIsObjectValid(mainHand) || !GetIsObjectValid(offHand) || IsHandCompanion(offHand))
                 return true;
 
-            if (TwinPistolEquipment.IsPairItem(mainHand))
+            if (_twinPistolEquipment.IsPairItem(mainHand))
                 return false;
 
             if (_item.PistolBaseItemTypes.Contains(GetBaseItemType(mainHand)))
@@ -924,27 +950,27 @@ namespace SWLOR.Game.Server.Domain.UI
 
         // The calls below reach static code that is not converted yet and reads the database, the static ability table
         // or the native engine for a real player. Each body is the original call; a test subclass answers them.
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.GetAllAbilityDetails();
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.GetAbilityDetail(feat);
 
-        protected virtual bool IsAnyCraftWindowOpen(uint player) => CraftMinigameRouting.IsAnyCraftWindowOpen(player);
+        protected virtual bool IsAnyCraftWindowOpen(uint player) => _craftMinigameRouting.IsAnyCraftWindowOpen(player);
 
-        protected virtual bool KnowsFeat(uint player, FeatType feat) => QuickCast.KnowsFeat(player, feat);
+        protected virtual bool KnowsFeat(uint player, FeatType feat) => _quickCast.KnowsFeat(player, feat);
 
-        protected virtual FeatType GetDisplayedFeat(uint player, FeatType feat) => QuickCast.GetDisplayedFeat(player, feat);
+        protected virtual FeatType GetDisplayedFeat(uint player, FeatType feat) => _quickCast.GetDisplayedFeat(player, feat);
 
-        protected virtual bool TryCast(uint player, FeatType alias, out string error) => QuickCast.TryCast(player, alias, out error);
+        protected virtual bool TryCast(uint player, FeatType alias, out string error) => _quickCast.TryCast(player, alias, out error);
 
-        protected virtual int GetStealthPerkLevel(uint player) => Perk.GetPerkLevel(player, PerkType.Stealth);
+        protected virtual int GetStealthPerkLevel(uint player) => _perk.GetPerkLevel(player, PerkType.Stealth);
 
         protected virtual bool TryUseAbility(uint activator, uint target, FeatType feat, Location targetLocation) =>
             UsePerkFeat.TryUseAbility(activator, target, feat, targetLocation);
 
         protected virtual void EnterTargetingMode(uint player, ObjectType objectType, string message, Action<uint> selectionAction, bool allowsLocationTarget = false) =>
-            Targeting.EnterTargetingMode(player, objectType, message, selectionAction, allowsLocationTarget);
+            _targeting.EnterTargetingMode(player, objectType, message, selectionAction, allowsLocationTarget);
 
         protected virtual bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag) =>
             PlayerEquipmentStorage.TryUnequip(player, item, slot, allowRecoveryBag: allowRecoveryBag);

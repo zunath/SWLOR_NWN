@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -50,7 +52,7 @@ public class IncubationFieldNoteServiceTests
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
         _db.With(new Player(PlayerId));
-        _keyItems = new KeyItemService(_db);
+        _keyItems = new KeyItemService(_db, AmbientServices.Of<IGuiService>(), AmbientServices.Of<IObjectVisibilityService>());
         _keyItems.LoadData();
         _service = new CatalogService(_keyItems);
     }
@@ -109,7 +111,7 @@ public class IncubationFieldNoteServiceTests
     [Test]
     public void TheConstructorDoesNoWork()
     {
-        var create = () => new IncubationFieldNoteService(null!);
+        var create = () => new IncubationFieldNoteService(null!, AmbientServices.LazyOf<IBeastMasteryService>());
 
         create.Should().NotThrow();
     }
@@ -275,7 +277,7 @@ public class IncubationFieldNoteServiceTests
     public void LoadDisplayText_BeforeTheKeyItemsAreCached_PopulatesNothing()
     {
         UseSmallCatalog();
-        var uncached = new CatalogService(new KeyItemService(_db));
+        var uncached = new CatalogService(new KeyItemService(_db, AmbientServices.Of<IGuiService>(), AmbientServices.Of<IObjectVisibilityService>()));
         foreach (var (type, detail) in _service.Beasts)
             uncached.Beasts[type] = detail;
         var registered = uncached.GetAllNotes().Count;
@@ -362,7 +364,7 @@ public class IncubationFieldNoteServiceTests
     private sealed class CatalogService : IncubationFieldNoteService
     {
         public CatalogService(IKeyItemService keyItem)
-            : base(keyItem)
+            : base(keyItem, AmbientServices.LazyOf<IBeastMasteryService>())
         {
         }
 

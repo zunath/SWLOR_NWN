@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
@@ -13,6 +15,15 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// </summary>
     public class DroidEquipmentDiagnosticsService : IDroidEquipmentDiagnosticsService
     {
+        private readonly IActivityService _activity;
+        private readonly IItemService _item;
+
+        public DroidEquipmentDiagnosticsService(IActivityService activity, IItemService item)
+        {
+            _activity = activity;
+            _item = item;
+        }
+
         private const int MaxStackFrames = 8;
         private readonly Dictionary<uint, string> _lastHands = new();
         private readonly Dictionary<uint, (uint Item, InventorySlot Slot)> _unequipSlots = new();
@@ -26,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = Item.GetItemSlot(droid, item);
+            var slot = _item.GetItemSlot(droid, item);
             if (slot != InventorySlot.Invalid)
                 Record("equipped", droid, item, slot);
         }
@@ -40,7 +51,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     return;
 
                 var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-                _unequipSlots[droid] = (item, Item.GetItemSlot(droid, item));
+                _unequipSlots[droid] = (item, _item.GetItemSlot(droid, item));
             }
             catch (Exception exception)
             {
@@ -56,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 ? pending.Slot
                 : InventorySlot.Invalid;
             // An item still in a slot was not unequipped.
-            if (Droid.IsDroid(droid) && Item.GetItemSlot(droid, item) == InventorySlot.Invalid)
+            if (Droid.IsDroid(droid) && _item.GetItemSlot(droid, item) == InventorySlot.Invalid)
                 Record("unequipped", droid, item, slot);
         }
 
@@ -133,7 +144,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             fields.Add(("inCombat", GetIsInCombat(droid).ToString()));
             fields.Add(("target", GetName(GetAttackTarget(droid))));
             fields.Add(("associateCommand", GetLastAssociateCommand(droid).ToString()));
-            fields.Add(("busy", Activity.GetBusyType(droid).ToString()));
+            fields.Add(("busy", _activity.GetBusyType(droid).ToString()));
             fields.Add(("area", GetTag(GetArea(droid))));
             fields.Add(("stack", SummarizeStack(GetStackTrace())));
 

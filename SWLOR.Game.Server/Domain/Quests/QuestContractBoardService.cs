@@ -4,6 +4,8 @@ using System.Text;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -40,11 +42,25 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         private readonly IDBService _db;
         private readonly IQuestService _quests;
+        private readonly IAuthorizationService _authorization;
+        private readonly ICacheService _cache;
+        private readonly IGuiService _gui;
+        private readonly IItemService _item;
 
-        public QuestContractBoardService(IDBService db, IQuestService quests)
+        public QuestContractBoardService(
+            IDBService db,
+            IQuestService quests,
+            IAuthorizationService authorization,
+            ICacheService cache,
+            IGuiService gui,
+            IItemService item)
         {
             _db = db;
             _quests = quests;
+            _authorization = authorization;
+            _cache = cache;
+            _gui = gui;
+            _item = item;
         }
 
         /// <summary>
@@ -207,7 +223,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             if (GetItemCursedFlag(item) || GetPlotFlag(item))
                 return "This item cannot be used as a contract reward.";
 
-            if (Item.IsLegacyItem(item))
+            if (_item.IsLegacyItem(item))
                 return "Legacy items cannot be used as a contract reward.";
 
             var rewardItem = new QuestContractItem
@@ -216,7 +232,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 Name = GetName(item),
                 Resref = GetResRef(item),
                 StackSize = GetItemStackSize(item),
-                IconResref = Item.GetIconResref(item)
+                IconResref = _item.GetIconResref(item)
             };
 
             draft.RewardItems.Add(rewardItem);
@@ -361,7 +377,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         public string ResolveContractItemIcon(QuestContractItem item)
         {
             if (string.IsNullOrWhiteSpace(item.IconResref) || item.IconResref.StartsWith("iinvalid"))
-                return Cache.GetItemIconByResref(item.Resref);
+                return _cache.GetItemIconByResref(item.Resref);
 
             return item.IconResref;
         }
@@ -379,7 +395,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             var title = SanitizeContractText(draft.Title, MaxTitleLength);
             var description = SanitizeContractText(draft.Description, MaxDescriptionLength);
 
-            var validationError = ValidateDraft(draft, title, description, Cache.GetItemNameByResref);
+            var validationError = ValidateDraft(draft, title, description, _cache.GetItemNameByResref);
             if (!string.IsNullOrEmpty(validationError))
                 return validationError;
 
@@ -511,7 +527,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                     TimeOfDay = GetTimeHour()
                 }, true);
 
-                Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(questId));
+                _gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(questId));
                 SendMessageToPC(player, ColorToken.Red($"The contract '{contract.Title}' has been {reason}. It has been removed from your journal."));
             }
         }
@@ -545,7 +561,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// </summary>
         protected virtual bool FitsInInventory(uint player, uint item)
         {
-            return Item.FitsInInventory(player, item);
+            return _item.FitsInInventory(player, item);
         }
 
         /// <summary>
@@ -554,7 +570,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// </summary>
         protected virtual AuthorizationLevel GetAuthorizationLevel(uint requester)
         {
-            return Authorization.GetAuthorizationLevel(requester);
+            return _authorization.GetAuthorizationLevel(requester);
         }
 
         /// <summary>

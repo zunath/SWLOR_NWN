@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
@@ -33,6 +34,8 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IPropertyCatalogService _catalog;
         private readonly IPropertyLoaderService _loader;
         private readonly IPropertyCityGovernanceService _city;
+        private readonly IConversationMenuService _conversationMenu;
+        private readonly IGuiService _gui;
 
         public PropertyService(
             IDBService db,
@@ -40,7 +43,9 @@ namespace SWLOR.Game.Server.Domain.World
             IPlanetService planet,
             IPropertyCatalogService catalog,
             IPropertyLoaderService loader,
-            IPropertyCityGovernanceService city)
+            IPropertyCityGovernanceService city,
+            IConversationMenuService conversationMenu,
+            IGuiService gui)
         {
             _db = db;
             _area = area;
@@ -48,6 +53,8 @@ namespace SWLOR.Game.Server.Domain.World
             _catalog = catalog;
             _loader = loader;
             _city = city;
+            _conversationMenu = conversationMenu;
+            _gui = gui;
         }
 
         /// <inheritdoc />
@@ -1216,7 +1223,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             var player = OBJECT_SELF;
 
-            if (Gui.IsWindowOpen(player, GuiWindowType.ManageStructures))
+            if (_gui.IsWindowOpen(player, GuiWindowType.ManageStructures))
             {
                 TogglePlayerWindow(player, GuiWindowType.ManageStructures);
                 return;
@@ -1321,7 +1328,7 @@ namespace SWLOR.Game.Server.Domain.World
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
-                ConversationMenu.Start(player, player, nameof(PlaceCityHallDialog));
+                _conversationMenu.Start(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
 
@@ -1599,7 +1606,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <param name="tetherObject">The object the window is tethered to.</param>
         protected virtual void TogglePlayerWindow(uint player, GuiWindowType type, GuiPayloadBase payload = null, uint tetherObject = OBJECT_INVALID)
         {
-            Gui.TogglePlayerWindow(player, type, payload, tetherObject);
+            _gui.TogglePlayerWindow(player, type, payload, tetherObject);
         }
     }
 }

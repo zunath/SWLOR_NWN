@@ -2,6 +2,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -83,5 +84,10 @@ public sealed class FacadeContainer : IDisposable
 /// </summary>
 internal sealed class UnconcealedMessagingService : MessagingService
 {
+    public UnconcealedMessagingService(IStealthService stealth)
+        : base(stealth)
+    {
+    }
+
     protected override bool IsConcealed(uint creature) => false;
 }

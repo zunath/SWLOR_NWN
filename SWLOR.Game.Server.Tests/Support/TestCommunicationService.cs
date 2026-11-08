@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
@@ -23,7 +24,7 @@ public sealed class TestCommunicationService : CommunicationService
         IPlanetService planet,
         IAreaService area,
         IPropertyService property)
-        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property)
+        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ILanguageService>(), AmbientServices.Of<IPlayerNameService>())
     {
     }
 

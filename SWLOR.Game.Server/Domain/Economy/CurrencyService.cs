@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -16,11 +17,13 @@ namespace SWLOR.Game.Server.Domain.Economy
     public class CurrencyService : ICurrencyService
     {
         private readonly IDBService _db;
+        private readonly IGuiService _gui;
         private readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new Dictionary<CurrencyType, CurrencyAttribute>();
 
-        public CurrencyService(IDBService db)
+        public CurrencyService(IDBService db, IGuiService gui)
         {
             _db = db;
+            _gui = gui;
         }
 
         public void CacheCurrencies()
@@ -72,7 +75,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             dbPlayer.Currencies[type] += amount;
 
             _db.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            _gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
 
         public void TakeCurrency(uint player, CurrencyType type, int amount)
@@ -96,7 +99,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             dbPlayer.Currencies[type] = newBalance;
 
             _db.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            _gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
     }
 }

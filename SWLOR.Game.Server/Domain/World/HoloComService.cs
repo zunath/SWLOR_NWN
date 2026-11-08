@@ -1,5 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PlayerListService;
@@ -34,15 +37,21 @@ namespace SWLOR.Game.Server.Domain.World
         public const int HologramFactionId = 6;
 
         private readonly IPlayerListService _playerList;
+        private readonly IDMPresenceService _dmPresence;
+        private readonly IPlayerNameService _playerName;
+        private readonly IStealthService _stealth;
         private int _nextCallToken;
 
         // Whether a creature is in stealth or invisible. Reads the creature's effects through the native library, so a unit
         // test subclass answers this instead.
-        protected virtual bool IsConcealed(uint creature) => Stealth.IsConcealed(creature);
+        protected virtual bool IsConcealed(uint creature) => _stealth.IsConcealed(creature);
 
-        public HoloComService(IPlayerListService playerList)
+        public HoloComService(IPlayerListService playerList, IDMPresenceService dmPresence, IPlayerNameService playerName, IStealthService stealth)
         {
             _playerList = playerList;
+            _dmPresence = dmPresence;
+            _playerName = playerName;
+            _stealth = stealth;
         }
 
         public void OnModuleDeath()
@@ -112,8 +121,8 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         private bool IsDMInvolved(uint first, uint second = OBJECT_INVALID)
         {
-            return DMPresence.IsControlledByDM(first) ||
-                   (GetIsObjectValid(second) && DMPresence.IsControlledByDM(second));
+            return _dmPresence.IsControlledByDM(first) ||
+                   (GetIsObjectValid(second) && _dmPresence.IsControlledByDM(second));
         }
 
         /// <summary>
@@ -159,7 +168,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         public void AnswerCall(uint player)
         {
-            if (!IsCallReceiver(player) || IsInCall(player) || DMPresence.IsControlledByDM(player))
+            if (!IsCallReceiver(player) || IsInCall(player) || _dmPresence.IsControlledByDM(player))
                 return;
 
             var callSender = GetCallSender(player);
@@ -187,7 +196,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         public void DeclineCall(uint player)
         {
-            if (!IsCallReceiver(player) || IsInCall(player) || DMPresence.IsControlledByDM(player))
+            if (!IsCallReceiver(player) || IsInCall(player) || _dmPresence.IsControlledByDM(player))
                 return;
 
             var callSender = GetCallSender(player);
@@ -260,7 +269,7 @@ namespace SWLOR.Game.Server.Domain.World
                 return;
             }
 
-            var receiverName = PlayerName.GetDisplayName(sender, receiver);
+            var receiverName = _playerName.GetDisplayName(sender, receiver);
             SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");
 
             SetIsCallSender(sender);

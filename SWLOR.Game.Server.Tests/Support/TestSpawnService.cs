@@ -1,4 +1,6 @@
 #nullable enable
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -11,6 +13,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class TestSpawnService : SpawnService
 {
     public TestSpawnService(DateTime now)
+        : base(AmbientServices.Of<IAIService>(), AmbientServices.Of<IStatService>(), AmbientServices.Of<IWalkmeshService>())
     {
         Now = now;
     }

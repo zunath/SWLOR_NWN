@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -57,13 +60,32 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private readonly IDBService _db;
         private readonly IItemService _item;
         private readonly IPropertyService _property;
+        private readonly Lazy<ICraftResearchExperimentService> _craftResearchExperiment;
+        private readonly ICraftStyleEffectsService _craftStyleEffects;
+        private readonly IGuiService _gui;
+        private readonly IResistanceService _resistance;
+        private readonly ISkillService _skill;
 
-        public CraftService(ICacheService cache, IDBService db, IItemService item, IPropertyService property)
+        public CraftService(
+            ICacheService cache,
+            IDBService db,
+            IItemService item,
+            IPropertyService property,
+            Lazy<ICraftResearchExperimentService> craftResearchExperiment,
+            ICraftStyleEffectsService craftStyleEffects,
+            IGuiService gui,
+            IResistanceService resistance,
+            ISkillService skill)
         {
             _cache = cache;
             _db = db;
             _item = item;
             _property = property;
+            _craftResearchExperiment = craftResearchExperiment;
+            _craftStyleEffects = craftStyleEffects;
+            _gui = gui;
+            _resistance = resistance;
+            _skill = skill;
         }
 
         /// <inheritdoc />
@@ -362,8 +384,8 @@ namespace SWLOR.Game.Server.Domain.Crafting
         public int GetBaseRecipeXP(RecipeDetail recipe, int skillRank)
         {
             return recipe.PracticeRankLimit.HasValue
-                ? Skill.GetPracticeXP(recipe.Level, skillRank, recipe.PracticeRankLimit.Value)
-                : Skill.GetDeltaXP(recipe.Level - skillRank);
+                ? _skill.GetPracticeXP(recipe.Level, skillRank, recipe.PracticeRankLimit.Value)
+                : _skill.GetDeltaXP(recipe.Level - skillRank);
         }
 
         private string CheckRecipeSkillRequirement(uint player, RecipeDetail recipe)
@@ -380,7 +402,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
             return skillRank >= requiredRank
                 ? string.Empty
-                : $"{Skill.GetSkillDetails(recipe.Skill).Name} must be level {requiredRank}.";
+                : $"{_skill.GetSkillDetails(recipe.Skill).Name} must be level {requiredRank}.";
         }
 
         /// <summary>
@@ -421,7 +443,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
             var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
-            Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+            _gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
         /// <summary>
@@ -452,14 +474,14 @@ namespace SWLOR.Game.Server.Domain.Crafting
             recipeDetailColors.Add(GuiColor.Cyan);
 
             var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
-            recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} rank {requiredSkillRank}");
+            recipeDetails.Add($"{_skill.GetSkillDetails(detail.Skill).Name} rank {requiredSkillRank}");
             recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
                 ? GuiColor.Green
                 : GuiColor.Red);
 
             if (detail.PracticeRankLimit.HasValue)
             {
-                recipeDetails.Add($"Trains {Skill.GetSkillDetails(detail.Skill).Name} up to rank {detail.PracticeRankLimit.Value}");
+                recipeDetails.Add($"Trains {_skill.GetSkillDetails(detail.Skill).Name} up to rank {detail.PracticeRankLimit.Value}");
                 recipeDetailColors.Add(GuiColor.White);
             }
 
@@ -872,7 +894,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
             return ItemPropertyCustom(
                 ItemPropertyType.Resistance,
                 (int)type,
-                Resistance.EncodeItemPropertyCostTableValue(amount));
+                _resistance.EncodeItemPropertyCostTableValue(amount));
         }
 
         public bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId)
@@ -1046,7 +1068,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         public void UseRefinery()
         {
             var player = GetLastUsedBy();
-            Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
+            _gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
         public void UseResearchTerminal()
         {
@@ -1076,7 +1098,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
             if (dbJob == null)
             {
                 var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-                Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+                _gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
             }
             else
             {
@@ -1097,7 +1119,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                 else
                 {
                     var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                    _gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
                 }
             }
         }
@@ -1286,10 +1308,10 @@ namespace SWLOR.Game.Server.Domain.Crafting
         }
 
         /// <summary>Deletes a research job. The research experiment service depends on this one, so it is reached through its facade.</summary>
-        protected virtual void DeleteResearchJob(ResearchJob job) => CraftResearchExperiment.DeleteJob(job);
+        protected virtual void DeleteResearchJob(ResearchJob job) => _craftResearchExperiment.Value.DeleteJob(job);
 
         /// <summary>Applies the creature's selected crafting styles. The style service is reached through its facade.</summary>
-        protected virtual void RestoreCraftingStyles(uint creature) => CraftStyleEffects.Restore(creature);
+        protected virtual void RestoreCraftingStyles(uint creature) => _craftStyleEffects.Restore(creature);
     }
 }
 

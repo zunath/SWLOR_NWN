@@ -41,7 +41,7 @@ public class EmotesWindowLifecycleTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _presence = new DMPresenceService();
+        _presence = new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>());
         _gui = new TestGuiService(_db, _presence, typeof(FakeEmotesDefinition));
         _facades = new FacadeContainer(services =>
         {

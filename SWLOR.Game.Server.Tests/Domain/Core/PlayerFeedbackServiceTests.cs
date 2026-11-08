@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -137,7 +138,7 @@ public class PlayerFeedbackServiceTests
     [Test]
     public void The_servers_own_settings_are_the_default()
     {
-        var plain = new PlayerFeedbackService(_db, _messaging);
+        var plain = new PlayerFeedbackService(_db, _messaging, AmbientServices.Of<IPlayerNameService>());
 
         var read = () => plain.DiagnosticsEnabled;
 
@@ -381,7 +382,7 @@ public class PlayerFeedbackServiceTests
     [Test]
     public void The_real_clock_is_the_default()
     {
-        var plain = new PlayerFeedbackService(_db, _messaging);
+        var plain = new PlayerFeedbackService(_db, _messaging, AmbientServices.Of<IPlayerNameService>());
         MakePlayer(Player);
         AllowCooldownText();
         var before = DateTime.UtcNow.Ticks;
@@ -507,7 +508,7 @@ public class PlayerFeedbackServiceTests
     private sealed class TestPlayerFeedbackService : PlayerFeedbackService
     {
         public TestPlayerFeedbackService(IDBService db, IMessagingService messaging)
-            : base(db, messaging)
+            : base(db, messaging, AmbientServices.Of<IPlayerNameService>())
         {
         }
 

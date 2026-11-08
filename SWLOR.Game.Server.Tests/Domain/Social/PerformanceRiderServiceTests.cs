@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Social;
 
@@ -45,7 +47,8 @@ public class PerformanceRiderServiceTests
     {
         private readonly Dictionary<PerkType, PerkDetail> _perks;
 
-        public TestRiders(Dictionary<PerkType, PerkDetail> perks) => _perks = perks;
+        public TestRiders(Dictionary<PerkType, PerkDetail> perks)
+            : base(AmbientServices.Of<IPerkService>()) => _perks = perks;
 
         protected override bool TryGetPerkDetails(PerkType perk, out PerkDetail detail) => _perks.TryGetValue(perk, out detail!);
     }

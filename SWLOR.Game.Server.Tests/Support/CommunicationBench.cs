@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -41,7 +42,7 @@ public sealed class CommunicationBench : IDisposable
         Chat = new FakeChatPlugin();
         Events = new FakeEventsPlugin();
         Db = new InMemoryDBService();
-        DMPresence = new DMPresenceService();
+        DMPresence = new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>());
         DMPreference = new DMPreferenceService(Db, DMPresence);
 
         Engine.SetReturnHandler("StringToObject", arguments => uint.TryParse((string)arguments[0]!, out var obj) ? obj : Invalid);

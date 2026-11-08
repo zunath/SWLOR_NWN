@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -17,11 +18,13 @@ namespace SWLOR.Game.Server.Domain.Core
     {
         private readonly IDBService _db;
         private readonly IMessagingService _messaging;
+        private readonly IPlayerNameService _playerName;
 
-        public PlayerFeedbackService(IDBService db, IMessagingService messaging)
+        public PlayerFeedbackService(IDBService db, IMessagingService messaging, IPlayerNameService playerName)
         {
             _db = db;
             _messaging = messaging;
+            _playerName = playerName;
         }
 
         public bool DiagnosticsEnabled => AreDiagnosticsEnabled(
@@ -148,7 +151,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>How <paramref name="viewer"/> sees <paramref name="target"/>. <c>PlayerName</c> reads the static database for a player.</summary>
         protected virtual string GetDisplayName(uint viewer, uint target)
         {
-            return PlayerName.GetDisplayName(viewer, target);
+            return _playerName.GetDisplayName(viewer, target);
         }
     }
 }

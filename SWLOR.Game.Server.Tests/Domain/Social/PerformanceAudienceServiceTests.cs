@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
@@ -133,7 +134,7 @@ public class PerformanceAudienceServiceTests
         });
 
         _audience = new TestAudience(
-            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(), new PerformanceInspiredService())
+            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()), new PerformanceInspiredService(AmbientServices.Of<IStatusEffectService>()))
         {
             Now = T0,
             PositionOf = creature => _positions.GetValueOrDefault(creature, Vector3.Zero)
@@ -777,7 +778,7 @@ public class PerformanceAudienceServiceTests
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
             IPerformanceInspiredService inspired)
-            : base(db, venue, windows, music, songs, snapshots, inspired)
+            : base(db, venue, windows, music, songs, snapshots, inspired, AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>())
         {
         }
 

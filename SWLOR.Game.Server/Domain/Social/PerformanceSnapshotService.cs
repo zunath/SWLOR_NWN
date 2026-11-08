@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -13,6 +14,17 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </summary>
     public class PerformanceSnapshotService : IPerformanceSnapshotService
     {
+        private readonly Lazy<IPerformanceService> _performance;
+        private readonly IPerkService _perk;
+        private readonly IStatService _stat;
+
+        public PerformanceSnapshotService(Lazy<IPerformanceService> performance, IPerkService perk, IStatService stat)
+        {
+            _performance = performance;
+            _perk = perk;
+            _stat = stat;
+        }
+
         public PerformerSnapshot Build(PerformanceSession session, int venue, int songTrackId)
         {
             var performer = session.Performer;
@@ -85,15 +97,15 @@ namespace SWLOR.Game.Server.Domain.Social
         }
 
         // The main service of the Performance service is reached through its facade: it takes the services that use this one by constructor.
-        protected virtual PerformancePreference GetPreference(uint player) => Performance.GetPreference(player);
+        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
-        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => Performance.IsRoutineUnlocked(player, routine);
+        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);
 
-        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => Performance.IsSetUnlocked(player, set);
+        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _performance.Value.IsSetUnlocked(player, set);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perk) => Perk.GetPerkLevel(creature, perk);
+        protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
 
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
         protected virtual int ScaleBySocial(uint performer, int baseValue, int maximum) =>
             AbilityEffectScaling.ScaleValueBySourceSocial(performer, baseValue, maximum);

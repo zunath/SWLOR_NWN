@@ -1,6 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -33,7 +35,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         World.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyService(db, World.Areas, World.Planets, World.Recorded, World.Loader, World.City);
+        _ = new PropertyService(db, World.Areas, World.Planets, World.Recorded, World.Loader, World.City, AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IGuiService>());
 
         World.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();

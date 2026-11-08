@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 /// The crafting calculations under test, called the way the server holds them. The parity run compiles these tests against
 /// master, where <c>Craft</c> is one static class, and against the refactor branch, where the static <c>Craft</c> forwards to
 /// a <c>CraftService</c> instance that needs the server's service container. Looking the instance class up by name lets one
-/// source file do both: the branch calls the instance (built without neighbours, which these calculations do not use) and
+/// source file do both: the branch calls the instance (built without neighbours (every constructor argument null), which these calculations do not use) and
 /// master calls the static class.
 /// </summary>
 internal static class CraftCalc
@@ -19,7 +19,7 @@ internal static class CraftCalc
 
     private static readonly object Instance = InstanceType == null
         ? null
-        : Activator.CreateInstance(InstanceType, new object[] { null, null, null, null });
+        : Activator.CreateInstance(InstanceType, new object[InstanceType.GetConstructors()[0].GetParameters().Length]);
 
     private static object Call(string name, params object[] arguments)
     {

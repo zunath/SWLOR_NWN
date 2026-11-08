@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.ChatPortraitTellService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
@@ -78,6 +80,11 @@ public class ChatPortraitTellsServiceTests
 
     private class TestableService : ChatPortraitTellsService
     {
+        public TestableService()
+            : base(AmbientServices.LazyOf<IPlayerNameService>())
+        {
+        }
+
         private readonly Dictionary<uint, ChatPortraitTellsClient> _byObject = new();
         private readonly Dictionary<uint, ChatPortraitTellsClient> _bySlot = new();
 

@@ -3,7 +3,9 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -125,7 +127,7 @@ public class QuestContractBoardServiceTests
     private sealed class TestBoard : QuestContractBoardService
     {
         public TestBoard(IDBService db, IQuestService quests)
-            : base(db, quests)
+            : base(db, quests, AmbientServices.Of<IAuthorizationService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IItemService>())
         {
         }
 

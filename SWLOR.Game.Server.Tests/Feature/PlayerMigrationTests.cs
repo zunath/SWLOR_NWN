@@ -4,6 +4,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
@@ -28,7 +29,7 @@ public class PlayerMigrationTests
     private static MigrationService NewMigrationService()
     {
         var db = new InMemoryDBService();
-        return new MigrationService(db, new OverflowStorageService(db));
+        return new MigrationService(db, new OverflowStorageService(db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>());
     }
 
     private static Player Record(int version, int tokens = RebuildTokens)

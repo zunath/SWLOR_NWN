@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -59,11 +61,28 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private readonly IAIService _ai;
         private readonly IBeastMasteryService _beastMastery;
+        private readonly IAbilityService _ability;
+        private readonly IActivityService _activity;
+        private readonly IPerkService _perk;
+        private readonly IPlayerNameService _playerName;
+        private readonly IStatusEffectService _statusEffect;
 
-        public CompanionControlService(IAIService ai, IBeastMasteryService beastMastery)
+        public CompanionControlService(
+            IAIService ai,
+            IBeastMasteryService beastMastery,
+            IAbilityService ability,
+            IActivityService activity,
+            IPerkService perk,
+            IPlayerNameService playerName,
+            IStatusEffectService statusEffect)
         {
             _ai = ai;
             _beastMastery = beastMastery;
+            _ability = ability;
+            _activity = activity;
+            _perk = perk;
+            _playerName = playerName;
+            _statusEffect = statusEffect;
         }
 
         public bool IsRegisteredCompanion(uint creature)
@@ -1012,17 +1031,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
 
-        protected virtual bool IsBusy(uint target) => Activity.IsBusy(target);
+        protected virtual bool IsBusy(uint target) => _activity.IsBusy(target);
 
-        protected virtual ActivityStatusType GetBusyType(uint target) => Activity.GetBusyType(target);
+        protected virtual ActivityStatusType GetBusyType(uint target) => _activity.GetBusyType(target);
 
-        protected virtual void ClearBusy(uint target) => Activity.ClearBusy(target);
+        protected virtual void ClearBusy(uint target) => _activity.ClearBusy(target);
 
         protected virtual bool HasRestStatusEffect(uint creature) =>
-            StatusEffect.HasStatusEffect(creature, typeof(RestStatusEffect));
+            _statusEffect.HasStatusEffect(creature, typeof(RestStatusEffect));
 
         protected virtual void RemoveRestStatusEffect(uint creature) =>
-            StatusEffect.RemoveStatusEffect(creature, typeof(RestStatusEffect), false);
+            _statusEffect.RemoveStatusEffect(creature, typeof(RestStatusEffect), false);
 
         protected virtual bool InterruptAbilityActivation(uint activator) =>
             UsePerkFeat.InterruptAbilityActivation(activator);
@@ -1031,7 +1050,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             UsePerkFeat.DequeueWeaponAbility(creature, false);
 
         protected virtual string GetDisplayName(uint observer, uint target) =>
-            PlayerName.GetDisplayName(observer, target);
+            _playerName.GetDisplayName(observer, target);
 
         protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
             Service.Combat.GetLastOffensiveActivityAt(creature);
@@ -1043,11 +1062,11 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Service.Combat.GetWeaponEngagementRange(skill);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
-            Perk.GetPerkLevel(creature, perkType);
+            _perk.GetPerkLevel(creature, perkType);
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.GetAbilityDetail(feat);
 
         protected virtual bool CanUseAbility(
             uint activator,
@@ -1055,6 +1074,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             FeatType feat,
             int effectiveLevel,
             Location targetLocation) =>
-            Ability.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _ability.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

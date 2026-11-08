@@ -3,6 +3,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -16,7 +17,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_UsesCanonicalStorageIdAndCap()
     {
-        var bank = new BankService(new InMemoryDBService());
+        var bank = new BankService(new InMemoryDBService(), AmbientServices.Of<IItemService>());
         bank.GetItemCountText(5).Should().Be("5 / 120 Items");
         bank.GetStoragePercentage(240).Should().Be(1f);
 
@@ -79,7 +80,7 @@ public class LinkedBankStorageTests
     public void BankService_ConstrainsItemQueriesToGlobalBankStorage()
     {
         var db = new InMemoryDBService();
-        var bank = new BankService(db);
+        var bank = new BankService(db, AmbientServices.Of<IItemService>());
 
         bank.GetItemCount("player-id");
         bank.SearchItems("player-id", string.Empty, 0);
@@ -97,7 +98,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
     {
-        var bank = new BankService(new InMemoryDBService());
+        var bank = new BankService(new InMemoryDBService(), AmbientServices.Of<IItemService>());
         var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
 
         var all = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", string.Empty })!)

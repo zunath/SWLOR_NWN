@@ -2,8 +2,13 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -259,7 +264,7 @@ public class BeastMasteryServiceTests
     private sealed class TestBeastMastery : BeastMasteryService
     {
         public TestBeastMastery(IDBService db, IIncubationFieldNoteService notes, IPropertyService property)
-            : base(db, notes, property)
+            : base(db, notes, property, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>())
         {
         }
 

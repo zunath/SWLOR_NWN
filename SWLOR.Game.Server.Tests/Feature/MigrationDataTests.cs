@@ -2,6 +2,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -129,7 +130,7 @@ public class MigrationDataTests
         var migration = ServerAssembly.GetType("SWLOR.Game.Server.Service.Migration")!;
         var baseline = (int)migration.GetField("RetiredServerMigrationVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
         var db = new Tests.Support.InMemoryDBService();
-        var service = new Game.Server.Domain.Core.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db));
+        var service = new Game.Server.Domain.Core.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>());
         ServerConfiguration Resolve(ServerConfiguration stored) => service.ResolveConfiguration(stored!);
 
         baseline.Should().Be(ReleasedServerVersion, "every server migration production has run is retired");

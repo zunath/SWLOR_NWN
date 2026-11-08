@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
@@ -162,7 +163,7 @@ public class PropertyCityGovernanceServiceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyCityGovernanceService(db, _world.Recorded);
+        _ = new PropertyCityGovernanceService(db, _world.Recorded, AmbientServices.Of<IBackgroundJobService>());
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();
@@ -628,7 +629,7 @@ public class PropertyCityGovernanceServiceTests
     [Test]
     public void The_governance_uses_the_webhook_of_the_environment_unless_a_test_names_one()
     {
-        var plain = new PropertyCityGovernanceService(Db, _world.Recorded);
+        var plain = new PropertyCityGovernanceService(Db, _world.Recorded, AmbientServices.Of<IBackgroundJobService>());
 
         var city = StoreCity();
         var broadcast = () => plain.BroadcastPropertyEvent(city, "Title", "Details");

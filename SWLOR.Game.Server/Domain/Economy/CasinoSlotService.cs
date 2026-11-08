@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.Economy
         public const int MaximumPayout = 10000;
 
         private readonly IDBService _db;
+        private readonly IGuiService _gui;
 
         private readonly Dictionary<string, string> _casinoMachineTags = new()
         {
@@ -31,9 +33,10 @@ namespace SWLOR.Game.Server.Domain.Economy
             { "swd_smach04", "SWTOR_SLOT4" },
         };
 
-        public CasinoSlotService(IDBService db)
+        public CasinoSlotService(IDBService db, IGuiService gui)
         {
             _db = db;
+            _gui = gui;
         }
 
         public bool IsCasinoMachine(string areaResref, string resref, string tag) =>
@@ -132,7 +135,7 @@ namespace SWLOR.Game.Server.Domain.Economy
         /// </summary>
         protected virtual void TogglePlayerWindow(uint player, GuiPayloadBase payload, uint machine)
         {
-            Gui.TogglePlayerWindow(player, GuiWindowType.CasinoSlot, payload, machine);
+            _gui.TogglePlayerWindow(player, GuiWindowType.CasinoSlot, payload, machine);
         }
     }
 }

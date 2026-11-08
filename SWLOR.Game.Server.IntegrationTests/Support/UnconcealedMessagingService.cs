@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 
 namespace SWLOR.Game.Server.IntegrationTests.Support;
@@ -8,5 +9,10 @@ namespace SWLOR.Game.Server.IntegrationTests.Support;
 /// </summary>
 internal sealed class UnconcealedMessagingService : MessagingService
 {
+    public UnconcealedMessagingService(IStealthService stealth)
+        : base(stealth)
+    {
+    }
+
     protected override bool IsConcealed(uint creature) => false;
 }

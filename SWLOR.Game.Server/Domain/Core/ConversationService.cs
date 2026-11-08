@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -29,13 +31,17 @@ namespace SWLOR.Game.Server.Domain.Core
     /// </remarks>
     public class ConversationService : IConversationService
     {
+        private readonly IGuiService _gui;
+        private readonly IPlayerNameService _playerName;
         private const string NuiConversationHandledLocal = "SWLOR_NUI_CONVO";
         private readonly Dictionary<string, ConversationGraph> _graphs = new();
 
         public ConversationRuntime Runtime { get; } = new();
 
-        public ConversationService()
+        public ConversationService(IGuiService gui, IPlayerNameService playerName)
         {
+            _gui = gui;
+            _playerName = playerName;
             Runtime.RegisterToken("player.name", context => ResolveObjectName(context.Player, context.Player));
             Runtime.RegisterToken("owner.name", context => ResolveObjectName(context.Player, context.Owner));
             Runtime.RegisterToken("player.gender.boy-girl", context => SelectGendered(context.Player, "boy", "girl"));
@@ -358,7 +364,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// </summary>
         protected virtual void TogglePlayerWindow(uint player, GuiPayloadBase payload, uint tetherObject, uint uiTarget)
         {
-            Gui.TogglePlayerWindow(player, GuiWindowType.Conversation, payload, tetherObject, uiTarget);
+            _gui.TogglePlayerWindow(player, GuiWindowType.Conversation, payload, tetherObject, uiTarget);
         }
 
         /// <summary>
@@ -366,7 +372,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// </summary>
         protected virtual void ClosePlayerWindow(uint player, uint uiTarget)
         {
-            Gui.ClosePlayerWindow(player, GuiWindowType.Conversation, uiTarget);
+            _gui.ClosePlayerWindow(player, GuiWindowType.Conversation, uiTarget);
         }
 
         /// <summary>
@@ -375,7 +381,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// </summary>
         protected virtual string GetDisplayName(uint observer, uint target)
         {
-            return PlayerName.GetDisplayName(observer, target);
+            return _playerName.GetDisplayName(observer, target);
         }
 
         /// <summary>

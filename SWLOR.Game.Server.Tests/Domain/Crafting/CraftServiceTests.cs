@@ -1,8 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -68,7 +71,7 @@ public class CraftServiceTests
         var cache = ScriptedProxy.Create<ICacheService>(out _cacheScript);
         var item = ScriptedProxy.Create<IItemService>(out _itemScript);
         var property = ScriptedProxy.Create<IPropertyService>(out _propertyScript);
-        _service = new CraftService(cache, _db, item, property);
+        _service = new CraftService(cache, _db, item, property, AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
     }
 
     [TearDown]
@@ -122,7 +125,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            ScriptedProxy.Create<IPropertyService>(out _));
+            ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
 
         other.RecipeExists(RecipeType.VenomCoating1).Should().BeFalse();
         _service.RecipeExists(RecipeType.VenomCoating1).Should().BeTrue();
@@ -135,7 +138,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            ScriptedProxy.Create<IPropertyService>(out _));
+            ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
 
         _service.SessionWorld.Should().NotBeNull().And.BeSameAs(_service.SessionWorld).And.NotBeSameAs(other.SessionWorld);
         _service.QuickCraftWorld.Should().NotBeNull().And.BeSameAs(_service.QuickCraftWorld).And.NotBeSameAs(other.QuickCraftWorld);

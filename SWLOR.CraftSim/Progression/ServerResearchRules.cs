@@ -18,7 +18,7 @@ namespace SWLOR.CraftSim.Progression
             // neighbours because the simulator has no service container.
             var method = typeof(CraftService).GetMethod("IsResearchableRecipe", BindingFlags.NonPublic | BindingFlags.Instance)
                 ?? throw new InvalidDataException("CraftService no longer has an IsResearchableRecipe method; update ServerResearchRules.");
-            var service = new CraftService(null, null, null, null);
+            var service = new CraftService(null, null, null, null, null!, null!, null!, null!, null!);
             return detail => (bool)method.Invoke(service, new object[] { detail })!;
         });
 

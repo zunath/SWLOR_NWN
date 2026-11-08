@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using NWN.Native.API;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -19,6 +20,15 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// </summary>
     public class DMPresenceService : IDMPresenceService
     {
+        private readonly Lazy<IDMObjectSearchService> _dmObjectSearch;
+        private readonly Lazy<IGuiService> _gui;
+
+        public DMPresenceService(Lazy<IDMObjectSearchService> dmObjectSearch, Lazy<IGuiService> gui)
+        {
+            _dmObjectSearch = dmObjectSearch;
+            _gui = gui;
+        }
+
         // How far from its target the engine's jump action looks for a safe point.
         private const float JumpSearchRadius = 20f;
 
@@ -110,7 +120,7 @@ namespace SWLOR.Game.Server.Domain.Administration
 
         // The area's jump spots come from the DM object search. That service takes this one, so the call stays on its static
         // facade and a unit test subclass answers it.
-        protected virtual IEnumerable<Location> GetAreaJumpLocations(uint area) => DMObjectSearch.GetAreaJumpLocations(area);
+        protected virtual IEnumerable<Location> GetAreaJumpLocations(uint area) => _dmObjectSearch.Value.GetAreaJumpLocations(area);
 
         // The engine cancels a jump to a spot it cannot land on and tells no one, so the spot is checked first.
         private void JumpToFirstLanding(uint dm, IEnumerable<Location> locations, string destination)
@@ -217,15 +227,15 @@ namespace SWLOR.Game.Server.Domain.Administration
             var moved = false;
             foreach (var target in GetWindowTargets(dm, type))
             {
-                if (target == controlled || !GetIsObjectValid(target) || !Gui.IsWindowOpen(target, type))
+                if (target == controlled || !GetIsObjectValid(target) || !_gui.Value.IsWindowOpen(target, type))
                     continue;
 
-                Gui.ClosePlayerWindow(dm, type, target);
+                _gui.Value.ClosePlayerWindow(dm, type, target);
                 moved = true;
             }
 
-            if (!moved || !Gui.IsWindowOpen(controlled, type))
-                Gui.TogglePlayerWindow(dm, type, payload, tetherObject, controlled);
+            if (!moved || !_gui.Value.IsWindowOpen(controlled, type))
+                _gui.Value.TogglePlayerWindow(dm, type, payload, tetherObject, controlled);
 
             _windowTargets[(GetObjectUUID(dm), type)] = controlled;
         }
@@ -236,12 +246,12 @@ namespace SWLOR.Game.Server.Domain.Administration
             var controlled = GetControlledCreature(dm);
             foreach (var target in GetWindowTargets(dm, type))
             {
-                if (target != controlled && GetIsObjectValid(target) && Gui.IsWindowOpen(target, type))
-                    Gui.ClosePlayerWindow(dm, type, target);
+                if (target != controlled && GetIsObjectValid(target) && _gui.Value.IsWindowOpen(target, type))
+                    _gui.Value.ClosePlayerWindow(dm, type, target);
             }
 
-            if (!Gui.IsWindowOpen(controlled, type))
-                Gui.TogglePlayerWindow(dm, type, uiTarget: controlled);
+            if (!_gui.Value.IsWindowOpen(controlled, type))
+                _gui.Value.TogglePlayerWindow(dm, type, uiTarget: controlled);
 
             _windowTargets[(GetObjectUUID(dm), type)] = controlled;
         }
@@ -271,11 +281,11 @@ namespace SWLOR.Game.Server.Domain.Administration
         public void CloseWindow(uint actor, GuiWindowType type)
         {
             var dm = GetDM(actor);
-            Gui.ClosePlayerWindow(dm, type, GetControlledCreature(dm));
+            _gui.Value.ClosePlayerWindow(dm, type, GetControlledCreature(dm));
             foreach (var target in GetWindowTargets(dm, type))
             {
                 if (GetIsObjectValid(target))
-                    Gui.ClosePlayerWindow(dm, type, target);
+                    _gui.Value.ClosePlayerWindow(dm, type, target);
             }
         }
     }

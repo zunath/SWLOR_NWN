@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
@@ -30,10 +31,12 @@ namespace SWLOR.Game.Server.Domain.Administration
         private readonly Dictionary<(DMBlueprintCategory, DMBlueprintSource), DMPalette> _palettes = new();
 
         private readonly IDMPresenceService _presence;
+        private readonly ISpawnService _spawn;
 
-        public DMBlueprintCatalogService(IDMPresenceService presence)
+        public DMBlueprintCatalogService(IDMPresenceService presence, ISpawnService spawn)
         {
             _presence = presence;
+            _spawn = spawn;
         }
 
         public void LoadCustomPalettes()
@@ -76,7 +79,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             if (blueprint.Category == DMBlueprintCategory.Creatures)
             {
                 // Preparation can add items, such as claws for an unarmed creature, so it runs first.
-                Spawn.PrepareDMSpawnedCreature(created);
+                _spawn.PrepareDMSpawnedCreature(created);
                 DMActions.MakeInventoryUndroppable(created);
             }
             else if (blueprint.Category == DMBlueprintCategory.Placeables)

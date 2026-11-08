@@ -2,6 +2,7 @@ using System.Numerics;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -405,7 +406,7 @@ public sealed class PropertyWorld : IDisposable
             IPropertyCatalogService catalog,
             IPropertyLoaderService loader,
             IPropertyCityGovernanceService city)
-            : base(db, area, planet, catalog, loader, city)
+            : base(db, area, planet, catalog, loader, city, AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IGuiService>())
         {
         }
 
@@ -422,7 +423,7 @@ public sealed class PropertyWorld : IDisposable
     public sealed class CityUnderTest : PropertyCityGovernanceService
     {
         public CityUnderTest(IDBService db, IPropertyCatalogService catalog)
-            : base(db, catalog)
+            : base(db, catalog, AmbientServices.Of<IBackgroundJobService>())
         {
         }
 

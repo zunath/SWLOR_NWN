@@ -1,6 +1,8 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -24,12 +26,16 @@ namespace SWLOR.Game.Server.Domain.Economy
         public const int XpPercent = 50;
 
         private readonly IDBService _db;
+        private readonly ICraftService _craft;
+        private readonly ISkillService _skill;
         private Dictionary<(SkillType Skill, string Resref), int> _recipeLevels;
         private Dictionary<string, int> _fishLevels;
 
-        public GuildTaskXpService(IDBService db)
+        public GuildTaskXpService(IDBService db, ICraftService craft, ISkillService skill)
         {
             _db = db;
+            _craft = craft;
+            _skill = skill;
         }
 
         public SkillType SkillOf(GuildType guild) => guild.GetAttribute<GuildType, GuildAttribute>().TaskXpSkill;
@@ -104,13 +110,13 @@ namespace SWLOR.Game.Server.Domain.Economy
         }
 
         /// <summary>The XP chart's pay for a level against a rank (the unconverted <c>Skill</c> service's table).</summary>
-        protected virtual int GetDeltaXP(int delta) => Skill.GetDeltaXP(delta);
+        protected virtual int GetDeltaXP(int delta) => _skill.GetDeltaXP(delta);
 
         /// <summary>Gives skill XP through the unconverted <c>Skill</c> service: bonuses apply, no henchman penalty.</summary>
         protected virtual void GiveSkillXP(uint player, SkillType skill, int xp) =>
-            Skill.GiveSkillXP(player, skill, xp, false, false);
+            _skill.GiveSkillXP(player, skill, xp, false, false);
 
         /// <summary>Every recipe the unconverted <c>Craft</c> service knows.</summary>
-        protected virtual IEnumerable<RecipeDetail> GetAllRecipes() => Craft.GetAllRecipes().Values;
+        protected virtual IEnumerable<RecipeDetail> GetAllRecipes() => _craft.GetAllRecipes().Values;
     }
 }

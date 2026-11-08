@@ -2,8 +2,12 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -111,7 +115,7 @@ public class AIServiceSeamTests
         var engine = new TimelineNWScript();
         using var scope = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
 
-        _ = new AIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence);
+        _ = new AIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence, AmbientServices.LazyOf<IAbilityService>(), AmbientServices.Of<IActivityService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IConversationService>(), AmbientServices.LazyOf<IEnmityService>(), AmbientServices.LazyOf<IEspionageInfiltrationService>(), AmbientServices.Of<IPerkService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.Of<IStatusEffectService>(), AmbientServices.Of<IStealthService>());
 
         engine.Calls.Should().BeEmpty();
         _bench.PartyScript.Calls.Should().BeEmpty();

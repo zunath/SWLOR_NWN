@@ -90,13 +90,13 @@ public class TelegraphTests
         var removePartyBody = ExtractBlockBody(source, removePartyStart);
 
         addPartyBody.Should().Contain(
-            "Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
+            "_telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
             "joining players and associates must see active party telegraphs change color immediately");
         removePartyBody.Should().Contain(
             "var affectedPartyMembers = _parties[partyId].ToList();",
             "the former party must be captured before its membership cache changes");
         removePartyBody.Should().Contain(
-            "Telegraph.UpdateShadersForPlayers(affectedPartyMembers);",
+            "_telegraph.Value.UpdateShadersForPlayers(affectedPartyMembers);",
             "departing and remaining players must immediately repack active telegraph colors");
     }
 

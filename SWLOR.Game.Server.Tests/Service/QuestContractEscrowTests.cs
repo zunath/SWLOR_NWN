@@ -1,7 +1,10 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Tests.Support;
@@ -12,7 +15,7 @@ public class QuestContractEscrowTests
 {
     // These rules touch neither the engine nor the database.
     private static readonly InMemoryDBService Db = new();
-    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db));
+    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db), AmbientServices.Of<IAuthorizationService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IItemService>());
 
     [Test]
     public void PartialSubmission_CannotBeClaimedByEitherPartyWhileContractIsActive()

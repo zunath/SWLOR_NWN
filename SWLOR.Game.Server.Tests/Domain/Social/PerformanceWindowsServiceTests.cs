@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -45,7 +47,7 @@ public class PerformanceWindowsServiceTests
         _music.On("GetTrackName", arguments => $"Track {(int)arguments[0]!}");
         var venue = ScriptedProxy.Create<IPerformanceVenueService>(out _venue);
         _venue.On("GetRating", _ => 2);
-        _windows = new TestWindows(venue, music, new PerformanceSongService(music), new PerformanceSnapshotService());
+        _windows = new TestWindows(venue, music, new PerformanceSongService(music), new PerformanceSnapshotService(AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()));
         _windows.ReserveGuiIds();
     }
 
@@ -377,7 +379,7 @@ public class PerformanceWindowsServiceTests
             IMusicService music,
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots)
-            : base(venue, music, songs, snapshots)
+            : base(venue, music, songs, snapshots, AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<IStatService>())
         {
         }
 

@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -128,7 +130,7 @@ public class MusicServiceTests
         private readonly InMemoryDBService _store;
 
         public MusicWithKeyItems(InMemoryDBService db)
-            : base(db)
+            : base(db, AmbientServices.Of<IKeyItemService>(), AmbientServices.LazyOf<IPerformanceAudienceService>(), AmbientServices.Of<IPropertyService>())
         {
             _store = db;
         }
@@ -174,7 +176,7 @@ public class MusicServiceTests
     [Test]
     public void The_constructor_builds_the_song_tables_without_touching_the_engine()
     {
-        var service = new MusicService(new InMemoryDBService());
+        var service = new MusicService(new InMemoryDBService(), AmbientServices.Of<IKeyItemService>(), AmbientServices.LazyOf<IPerformanceAudienceService>(), AmbientServices.Of<IPropertyService>());
 
         service.GetCollectibleSongs().Should().HaveCount(new MusicSongCatalog().Songs.Count);
         _engine.Calls.Should().BeEmpty();

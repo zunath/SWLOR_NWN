@@ -1,6 +1,9 @@
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -15,5 +18,5 @@ public static class CraftServices
         ScriptedProxy.Create<ICacheService>(out _),
         db ?? new InMemoryDBService(),
         ScriptedProxy.Create<IItemService>(out _),
-        ScriptedProxy.Create<IPropertyService>(out _));
+        ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
 }

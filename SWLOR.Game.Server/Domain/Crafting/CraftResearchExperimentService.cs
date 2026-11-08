@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -17,12 +18,14 @@ public class CraftResearchExperimentService : ICraftResearchExperimentService
     private readonly IDBService _db;
     private readonly ICraftService _craft;
     private readonly ICraftSessionsService _sessions;
+    private readonly ISkillService _skill;
 
-    public CraftResearchExperimentService(IDBService db, ICraftService craft, ICraftSessionsService sessions)
+    public CraftResearchExperimentService(IDBService db, ICraftService craft, ICraftSessionsService sessions, ISkillService skill)
     {
         _db = db;
         _craft = craft;
         _sessions = sessions;
+        _skill = skill;
     }
 
     /// <inheritdoc />
@@ -160,5 +163,5 @@ public class CraftResearchExperimentService : ICraftResearchExperimentService
     protected virtual void WriteLog(string message) => Log.Write(LogGroup.Crafting, message);
 
     /// <summary>The player's Fabrication rank. Skill is not converted yet.</summary>
-    protected virtual int GetFabricationRank(uint player) => Skill.GetCreatureSkillRank(player, SkillType.Fabrication);
+    protected virtual int GetFabricationRank(uint player) => _skill.GetCreatureSkillRank(player, SkillType.Fabrication);
 }

@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -91,7 +93,7 @@ public class ConversationServiceTests
     [Test]
     public void Each_service_has_a_runtime_of_its_own()
     {
-        new ConversationService().Runtime.Should().NotBeSameAs(new ConversationService().Runtime);
+        new ConversationService(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>()).Runtime.Should().NotBeSameAs(new ConversationService(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>()).Runtime);
     }
 
     [Test]
@@ -773,6 +775,7 @@ public class ConversationServiceTests
         private readonly ConversationBench _bench;
 
         public TestableConversationService(ConversationBench bench)
+            : base(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>())
         {
             _bench = bench;
         }

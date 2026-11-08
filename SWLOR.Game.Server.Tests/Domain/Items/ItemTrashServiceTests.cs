@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Tests.Support;
@@ -301,7 +303,7 @@ public class ItemTrashServiceTests
     {
         // The log sinks, the property text and the player lookups are the original static calls here. No logger is
         // registered in a unit test, so the writes are dropped; the audit itself still runs to the end.
-        var production = new ItemTrashService(new DMPresenceService());
+        var production = new ItemTrashService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IDisguiseService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IPlayerNameService>());
         _failSnapshotOfItem = true;
 
         production.Audit(ObjectInvalid, Item, "trash-added");
@@ -326,7 +328,7 @@ public class ItemTrashServiceTests
         private readonly List<string> _timeline;
 
         public AuditRecorder(List<string> timeline)
-            : base(new DMPresenceService())
+            : base(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IDisguiseService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IPlayerNameService>())
         {
             _timeline = timeline;
         }

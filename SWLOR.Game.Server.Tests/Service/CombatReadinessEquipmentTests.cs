@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -386,7 +387,7 @@ public class CombatReadinessEquipmentTests
         var registration = File.ReadAllText(Path.Combine(_root, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_EQUIP_AFTER\", ScriptName.OnItemEquipValidateAfter)");
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_UNEQUIP_AFTER\", ScriptName.OnItemUnequipAfter)");
-        typeof(Migration).GetMethod(nameof(Migration.AfterCharacterInitialization))!
+        typeof(MigrationService).GetMethod(nameof(MigrationService.AfterCharacterInitialization))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCharacterInitAfter);
         // MigrationServiceTests pins the login order: feats, then combat readiness (third from last), max HP, equipment stats.
     }

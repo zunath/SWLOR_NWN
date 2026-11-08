@@ -34,8 +34,6 @@ public class BackgroundJobServiceTests
     {
         BackgroundJobService.StreamName.Should().Be("swlor:background-jobs");
         BackgroundJobService.MaxStreamLength.Should().Be(10000);
-        BackgroundJob.StreamName.Should().Be(BackgroundJobService.StreamName);
-        BackgroundJob.MaxStreamLength.Should().Be(BackgroundJobService.MaxStreamLength);
     }
 
     [Test]

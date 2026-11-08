@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Scheduled passenger shuttle flights between planets: tickets, boarding, the shuttle interior instance and
-    /// arrival. The static facade <c>Service.Shuttle</c> forwards to the container's instance of this interface and
-    /// keeps the event handlers.
+    /// arrival. Static callers reach the container's instance through <c>GameServices.Shuttle</c>; the event handlers
+    /// are on <see cref="ShuttleService"/>.
     /// </summary>
     public interface IShuttleService
     {

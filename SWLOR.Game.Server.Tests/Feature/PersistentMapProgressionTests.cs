@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

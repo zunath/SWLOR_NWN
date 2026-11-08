@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Enumeration;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The planets of the module and which planet each area belongs to. The static facade <c>Service.Planet</c>
-    /// forwards to the container's instance of this interface and keeps the event handler.
+    /// The planets of the module and which planet each area belongs to. Static callers reach the container's instance
+    /// through <c>GameServices.Planet</c>; the event handler is on <see cref="PlanetService"/>.
     /// </summary>
     public interface IPlanetService
     {

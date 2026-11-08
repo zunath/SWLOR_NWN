@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// OnModuleCacheBefore) has already populated every AbilityDetail, including the
         /// Mimicry-specific fields set by AbilityBuilder.MimicryTechnique.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
             _techniques.Clear();
@@ -392,6 +393,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// Pays observation XP only after the normal kill payout has validated participation,
         /// survival, area, and distance. Consuming the credit prevents repeat event payouts.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
         public void CombatPointXPDistributed()
         {
             var player = OBJECT_SELF;
@@ -428,6 +430,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 GetDeltaXP(npcLevel - mimicryRank) * AnalysisXPPercent / 100);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void ClearAnalysisOnPlayerExit()
         {
             var player = GetExitingObject();
@@ -493,6 +497,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a creature dies, every player who witnessed one of its techniques gets a chance to
         /// learn it permanently. The witness cache entry for this creature is always cleared afterward.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public void OnCreatureDeath()
         {
             var npc = OBJECT_SELF;
@@ -938,6 +943,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// Mimicry loses a rank. This must run for every Mimicry decay, including rank losses that
         /// do not cross a perk requirement and therefore do not trigger a perk refund callback.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
         public void OnMimicrySkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
@@ -982,6 +988,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
         /// character load) and enforces rank and slot limits in case progression changed since logout.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnPlayerLogin()
         {
             var player = GetEnteringObject();

@@ -10,6 +10,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -361,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var purchase = $"{GetItemStackSize(item)}x {GetName(item)}";
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 

@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Service.LogService;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Background jobs: the logic that used to be static in <c>Service.BackgroundJob</c>, moved here unchanged. The
-    /// facade repeats the two constants and forwards every call to the container's instance.
+    /// Background jobs: the logic that used to be static in the <c>BackgroundJob</c> facade, moved here unchanged.
+    /// Static callers reach the container's instance through <c>GameServices.BackgroundJob</c>.
     /// </summary>
     public class BackgroundJobService : IBackgroundJobService
     {

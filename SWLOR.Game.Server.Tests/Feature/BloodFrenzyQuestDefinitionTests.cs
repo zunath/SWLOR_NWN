@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Reflection.Emit;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
@@ -9,6 +10,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -467,8 +469,9 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetKeyItemMethod(string methodName)
     {
-        return typeof(KeyItem)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+        // The quest delegates call the service through the interface (the facade was removed, P2-ZJ).
+        return typeof(IKeyItemService)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>
                 method.Name == methodName &&
                 method.GetParameters()

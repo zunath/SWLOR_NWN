@@ -20,7 +20,7 @@ public sealed class ConversationGraphCorpusTests
         var conversations = container.Get<IConversationService>();
         conversations.CacheData();
 
-        var assembly = typeof(Conversation).Assembly;
+        var assembly = typeof(IConversationService).Assembly;
         var resources = assembly.GetManifestResourceNames()
             .Where(name => name.Contains(".ConversationData.", StringComparison.Ordinal) &&
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))

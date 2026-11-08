@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -280,9 +281,9 @@ public class PlayerGuideContentTests : SkillFacadeFixture
 
         guideText.Should().Contain($"costs {HoloNetViewModel.BroadcastPrice} credits");
         guideText.Should().Contain($"limited to {HoloNetViewModel.MaxHoloNetTextLength} characters");
-        guideText.Should().Contain($"up to {Notes.MaxNumberOfNotes} notes");
-        guideText.Should().Contain($"up to {Notes.MaxNoteLength} characters");
-        guideText.Should().Contain($"up to {Notes.MaxNumberOfCategories} categories");
+        guideText.Should().Contain($"up to {NotesService.MaxNumberOfNotes} notes");
+        guideText.Should().Contain($"up to {NotesService.MaxNoteLength} characters");
+        guideText.Should().Contain($"up to {NotesService.MaxNumberOfCategories} categories");
         guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
 
         guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");
@@ -298,8 +299,8 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         guideText.Should().Contain($"{Disguise.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
         guideText.Should().Contain($"{Disguise.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
 
-        guideText.Should().Contain($"{Property.ElectionRegistrationDays}-day candidate-registration period");
-        guideText.Should().Contain($"{Property.ElectionVotingDays} days of voting");
+        guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionRegistrationDays}-day candidate-registration period");
+        guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionVotingDays} days of voting");
     }
 
     [Test]

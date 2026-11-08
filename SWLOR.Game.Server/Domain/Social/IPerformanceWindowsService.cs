@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// The engine side of the four Performance windows: opening and closing them, finding their view models, and reading
-    /// the names and numbers they show. The static facade <c>Service.PerformanceService.PerformanceWindows</c> forwards to
-    /// the container's instance of this interface and keeps the event handler.
+    /// the names and numbers they show. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.PerformanceWindows</c>; the event handler is on <see cref="PerformanceWindowsService"/>.
     /// </summary>
     public interface IPerformanceWindowsService
     {

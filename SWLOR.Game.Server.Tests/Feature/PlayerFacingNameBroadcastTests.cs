@@ -294,10 +294,9 @@ public class PlayerFacingNameBroadcastTests
         citizenshipSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
         citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
 
-        // The property system is the facade and the four classes behind it.
+        // The property system is the service and the three parts behind it.
         var propertySource = string.Concat(new[]
         {
-            Path.Combine("Service", "Property.cs"),
             Path.Combine("Domain", "World", "PropertyService.cs"),
             Path.Combine("Domain", "World", "PropertyLoaderService.cs"),
             Path.Combine("Domain", "World", "PropertyCatalogService.cs"),

@@ -14,7 +14,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// <summary>
     /// Shows elapsed recharge on ability icons through native texture overrides. The logic that used to be static in
     /// <c>Service.AbilityCooldownVisual</c> is moved here unchanged; the texture caches and the live recharges are this
-    /// instance's own. The facade keeps the event handlers and forwards every call to the container's instance.
+    /// instance's own. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.AbilityCooldownVisual</c>.
     /// </summary>
     public class AbilityCooldownVisualService : IAbilityCooldownVisualService
     {
@@ -42,11 +43,13 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _ability = ability;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
             CacheAbilityCooldownTextures();
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreCooldownVisuals()
         {
             var player = GetEnteringObject();
@@ -77,6 +80,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearCooldownVisualsOnExit()
         {
             ClearAllRecastDelays(GetExitingObject());

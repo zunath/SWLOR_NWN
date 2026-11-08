@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Validates a contract draft's fields ahead of publishing. Pure aside from the injected
         /// <paramref name="resolveItemName"/> delegate, which is used to confirm each objective's item
-        /// resref maps to a real item (normally <see cref="Cache.GetItemNameByResref"/>).
+        /// resref maps to a real item (normally <see cref="Domain.Core.ICacheService.GetItemNameByResref"/>).
         /// </summary>
         /// <param name="draft">The draft contract to validate.</param>
         /// <param name="title">The sanitized contract title.</param>

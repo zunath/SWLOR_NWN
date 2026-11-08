@@ -118,10 +118,10 @@ public class WardrobeServiceTests
     [Test]
     public void The_constants_are_the_ones_the_facade_repeats()
     {
-        Wardrobe.MaxNameLength.Should().Be(WardrobeService.MaxNameLength).And.Be(32);
-        Wardrobe.SlotsPerExpansion.Should().Be(WardrobeService.SlotsPerExpansion).And.Be(5);
-        Wardrobe.MaxSlotLimit.Should().Be(WardrobeService.MaxSlotLimit).And.Be(50);
-        Wardrobe.ExpansionHint.Should().Be("Vessa Thrane on the Nar Shaddaa Promenade can expand your wardrobe.");
+        WardrobeService.MaxNameLength.Should().Be(WardrobeService.MaxNameLength).And.Be(32);
+        WardrobeService.SlotsPerExpansion.Should().Be(WardrobeService.SlotsPerExpansion).And.Be(5);
+        WardrobeService.MaxSlotLimit.Should().Be(WardrobeService.MaxSlotLimit).And.Be(50);
+        WardrobeService.ExpansionHint.Should().Be("Vessa Thrane on the Nar Shaddaa Promenade can expand your wardrobe.");
     }
 
     // ---- listing

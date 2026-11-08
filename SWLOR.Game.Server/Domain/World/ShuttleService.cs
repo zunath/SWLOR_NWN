@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.World
     /// Handles scheduled passenger shuttle flights between planets.
     /// Players purchase a ticket at a starport flights terminal, wait for the scheduled
     /// departure, ride an instanced shuttle interior, and are delivered to the destination
-    /// planet's landing waypoint when the flight arrives. The logic and state that used to be static in
-    /// <c>Service.Shuttle</c>, moved here unchanged; the facade still carries the event handlers and forwards every
-    /// call to the container's instance.
+    /// planet's landing waypoint when the flight arrives. The logic and state that used to be a static class, moved
+    /// here unchanged; the event handlers run on the container's instance and static callers reach it through
+    /// <c>GameServices.Shuttle</c>.
     /// </summary>
     public class ShuttleService : IShuttleService
     {
@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// When the module loads, recover in-transit flights from the database and
         /// begin processing the flight schedule.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadShuttleFlights()
         {
             var now = UtcNow();
@@ -649,7 +650,7 @@ namespace SWLOR.Game.Server.Domain.World
             // Interiors without a console point (the legacy freighter) fall back to the boarding point.
             var console = CreateObject(ObjectType.Placeable, TerminalTag, consoleLocation ?? flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
-            SetLocalInt(console, Communication.SuppressChatAuditVariable, 1);
+            SetLocalInt(console, CommunicationService.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);
@@ -915,6 +916,7 @@ namespace SWLOR.Game.Server.Domain.World
                 _missedBoardings.RecordMiss(playerId);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ExitServer()
         {
             _boardingNotBeforeUtc.Remove(GetObjectUUID(GetExitingObject()));
@@ -925,6 +927,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// aboard their shuttle. This is a backstop for cases where the game placed them
         /// into a stale instance or an unexpected location.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnterServer()
         {
             var player = GetEnteringObject();
@@ -986,6 +989,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// destination while offline. A normal logout does not fire this event, so passengers who
         /// stay aboard and disconnect still resume or arrive as intended.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void HandleShuttleAreaExit()
         {
             var player = GetExitingObject();

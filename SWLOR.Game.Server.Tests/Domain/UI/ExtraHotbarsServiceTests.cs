@@ -267,8 +267,8 @@ public class ExtraHotbarsServiceTests
     {
         ExtraHotbarsService.BarCount.Should().Be(3);
         ExtraHotbarsService.MaxSlots.Should().Be(12);
-        SWLOR.Game.Server.Service.ExtraHotbars.BarCount.Should().Be(ExtraHotbarsService.BarCount);
-        SWLOR.Game.Server.Service.ExtraHotbars.MaxSlots.Should().Be(ExtraHotbarsService.MaxSlots);
+        ExtraHotbarsService.BarCount.Should().Be(ExtraHotbarsService.BarCount);
+        ExtraHotbarsService.MaxSlots.Should().Be(ExtraHotbarsService.MaxSlots);
     }
 
     [Test]
@@ -438,7 +438,7 @@ public class ExtraHotbarsServiceTests
 
         var slot = Stored().ExtraHotbars[0].Slots[2];
         slot.Type.Should().Be(ExtraHotbarSlotType.Ability);
-        slot.Feat.Should().Be(SWLOR.Game.Server.Service.QuickCast.GetOriginalFeat(FeatType.Alertness));
+        slot.Feat.Should().Be(QuickCast.GetOriginalFeat(FeatType.Alertness));
         Names(_guiCalls).Should().Equal("PublishRefreshEvent");
     }
 

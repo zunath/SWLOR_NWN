@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -91,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays);
+                    .AddDays(PropertyCityGovernanceService.ElectionRegistrationDays);
                 cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
@@ -99,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
+                    .AddDays(PropertyCityGovernanceService.ElectionRegistrationDays + PropertyCityGovernanceService.ElectionVotingDays);
                 cityDetails.Add($"Election voting is currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }

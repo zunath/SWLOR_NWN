@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
 
         private static void DanceImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Service.Performance.ToggleDance(activator, level);
+            GameServices.Performance.ToggleDance(activator, level);
         }
     }
 }

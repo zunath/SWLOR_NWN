@@ -8,6 +8,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.Game.Server.Domain.Core;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -264,7 +266,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(area))
                 return OOCMessageContext.Standard;
 
-            var context = GetLocalBool(area, Communication.EventCommsAreaVariable)
+            var context = GetLocalBool(area, CommunicationService.EventCommsAreaVariable)
                 ? OOCMessageContext.EventArea
                 : OOCMessageContext.Standard;
 

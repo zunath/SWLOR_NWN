@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -189,10 +190,10 @@ public static class AutomaticTargetingOwnershipEngineTests
         for (var cycle = 1; cycle <= 2; cycle++)
         {
             SetPreferences(player, false, true);
-            ctx.Assert(Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out var applyError), $"apply targeted build: {applyError}");
+            ctx.Assert(GameServices.Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out var applyError), $"apply targeted build: {applyError}");
             AssertOwnership(ctx, player, Technique, true, $"Mimicry cycle {cycle}");
             PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Alias(Technique)));
-            ctx.Assert(Mimicry.ApplyLoadout(player, empty, Array.Empty<FeatType>(), out var emptyError), $"apply empty build: {emptyError}");
+            ctx.Assert(GameServices.Mimicry.ApplyLoadout(player, empty, Array.Empty<FeatType>(), out var emptyError), $"apply empty build: {emptyError}");
             ctx.Assert(!QuickCast.KnowsFeat(player, Technique), "unequipped technique loses both native variants");
             ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(player, 17).ObjectType, "alias shortcut is removed on unequip");
             await ctx.WaitFrameAsync();
@@ -202,12 +203,12 @@ public static class AutomaticTargetingOwnershipEngineTests
             ctx.Assert(record.LearnedTechniques.ContainsKey(Technique) && !record.LearnedTechniques.Keys.Any(QuickCastFeatMap.IsAlias), "learned ownership remains canonical");
             ctx.Assert(record.MimicryLoadouts.SelectMany(loadout => loadout.Techniques).All(feat => !QuickCastFeatMap.IsAlias(feat)), "all saved builds use canonical IDs");
             DB.Set(record);
-            ctx.Assert(Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out applyError), $"restore targeted build: {applyError}");
+            ctx.Assert(GameServices.Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out applyError), $"restore targeted build: {applyError}");
             AssertSlot(ctx, player, 17, Alias(Technique));
             SetPreferences(player, false, false);
             AssertOwnership(ctx, player, Technique, false, "equipped technique follows disabled targeting");
             AssertSlot(ctx, player, 17, Technique);
-            ctx.Assert(Mimicry.UnequipTechnique(player, Technique), "production single-technique unequip succeeds");
+            ctx.Assert(GameServices.Mimicry.UnequipTechnique(player, Technique), "production single-technique unequip succeeds");
             ctx.Assert(!QuickCast.KnowsFeat(player, Technique), "single-technique unequip revokes canonical ownership");
             ctx.AssertEqual(0, DB.Get<Player>(fixture.Id).EquippedTechniques.Count, "unequip clears the canonical equipped list");
             ctx.AssertEqual(levelCount, CreaturePlugin.GetFeatCountByLevel(player, 1), "technique toggles and loadouts do not create level-history entries");

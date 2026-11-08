@@ -2,9 +2,11 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Tests.Composition;
 
@@ -56,6 +58,24 @@ public class GameServicesAllocationTests
 
         taxi.Should().BeSameAs(_host.Provider.GetRequiredService<ITaxiService>());
         serverTask.Should().BeSameAs(_host.Provider.GetRequiredService<IServerTaskService>());
+    }
+
+    [Test]
+    public void Reading_the_database_through_GameServices_allocates_nothing()
+    {
+        // DB is read on many request paths (P2-ZI): the property and a read that does not reach Redis cost nothing more
+        // than the instance.
+        var instance = _host.Provider.GetRequiredService<IDBService>();
+        IDBService db = null!;
+        long version = -1;
+
+        Allocated(() => db = GameServices.DB).Should().Be(0);
+        var throughAccessor = Allocated(() => version = GameServices.DB.GetWriteVersion<Player>());
+        var direct = Allocated(() => version = instance.GetWriteVersion<Player>());
+
+        db.Should().BeSameAs(instance);
+        throughAccessor.Should().Be(direct).And.Be(0);
+        version.Should().Be(instance.GetWriteVersion<Player>());
     }
 
     [Test]

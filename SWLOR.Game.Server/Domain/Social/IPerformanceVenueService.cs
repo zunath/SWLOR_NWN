@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// The venue rating of a performance, 0 to 5: the area's rating plus one for a Dance Floor within 3 meters. The
-    /// static facade <c>Service.PerformanceService.PerformanceVenue</c> forwards to the container's instance of this interface.
+    /// static callers reach the container's instance of this interface through <c>GameServices.PerformanceVenue</c>.
     /// </summary>
     public interface IPerformanceVenueService
     {

@@ -533,7 +533,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var title = QuestContractBoard.SanitizeContractText(draft.Title, QuestContractBoard.MaxTitleLength);
             var description = QuestContractBoard.SanitizeContractText(draft.Description, QuestContractBoard.MaxDescriptionLength);
-            var validationError = QuestContractBoard.ValidateDraft(draft, title, description, Cache.GetItemNameByResref);
+            var validationError = QuestContractBoard.ValidateDraft(draft, title, description, resref => Cache.GetItemNameByResref(resref));
 
             if (!string.IsNullOrWhiteSpace(validationError))
             {

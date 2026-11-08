@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The limits, usage figures and category storage behind the player notes window: the logic that used to be static
-    /// in <c>Service.Notes</c>, moved here unchanged. The facade repeats the constants and forwards every call to the
-    /// container's instance.
+    /// The limits, usage figures and category storage behind the player notes window: the logic that used to be a
+    /// static class, moved here unchanged. Static callers reach the container's instance through
+    /// <c>GameServices.Notes</c>.
     /// </summary>
     public class NotesService : INotesService
     {

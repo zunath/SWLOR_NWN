@@ -80,7 +80,7 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         while (placed && gained > 0 && gained < recipe.Quantity)
         {
             var extra = CreateItemOnObject(recipe.Resref, player, 1);
-            SetLocalBool(extra, Item.PlayerProducedItemVariable, true);
+            SetLocalBool(extra, Domain.Items.ItemService.PlayerProducedItemVariable, true);
             placed = KeepIfInInventory(player, extra);
             if (placed)
                 created.Add(extra);

@@ -53,7 +53,7 @@ public class HeadgearSlotMigrationTests
         HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
         CharacterMigrations.VersionOf("_22_ReviseLootStats").Should().Be(22);
         CharacterMigrations.FindNamed("_23_RepairHeadgearSlots").Should().BeNull();
-        typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
+        typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
     }
 
     [TestCase(0)]

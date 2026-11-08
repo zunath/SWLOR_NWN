@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.MusicService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.KeyItemService
 {

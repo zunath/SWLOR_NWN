@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The party caches: who is in whose party and who leads it. The static facade <c>Service.Party</c> forwards to the
-    /// container's instance of this interface and keeps the event handlers.
+    /// The party caches: who is in whose party and who leads it. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.Party</c>; the event handlers are on <see cref="PartyService"/>.
     /// </summary>
     public interface IPartyService
     {

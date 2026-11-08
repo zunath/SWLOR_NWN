@@ -3,8 +3,8 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// The baked walkable locations of every area. The static facade <c>Service.Walkmesh</c> forwards to the
-    /// container's instance of this interface.
+    /// The baked walkable locations of every area. Static callers reach the container's instance through
+    /// <c>GameServices.Walkmesh</c>; the event handlers are on <see cref="WalkmeshService"/>.
     /// </summary>
     public interface IWalkmeshService
     {

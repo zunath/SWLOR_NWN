@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// <summary>
     /// Which song a musician plays: the one they picked in the Perform window when it is a Cantina song they own,
     /// otherwise the first Cantina song in their collection, or the starter Cantina song every player owns. A part of the
-    /// Performance service; <c>Service.Performance</c> forwards to it.
+    /// Performance service; <c>GameServices.Performance</c> callers reach it through <see cref="IPerformanceService"/>.
     /// </summary>
     public interface IPerformanceSongService
     {

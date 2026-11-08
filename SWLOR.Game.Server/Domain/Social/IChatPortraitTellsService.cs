@@ -4,8 +4,8 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Keeps a tell started by clicking a chat-log portrait from reaching a player other than the one whose line
-    /// carried that portrait. The static facade <c>Service.ChatPortraitTells</c> forwards to the container's instance
-    /// of this interface and keeps the event handlers.
+    /// carried that portrait. Static callers reach the container's instance
+    /// of this interface through <c>GameServices.ChatPortraitTells</c>; the event handlers are on <see cref="ChatPortraitTellsService"/>.
     /// </summary>
     public interface IChatPortraitTellsService
     {

@@ -252,11 +252,9 @@ public class MigrationServiceTests
         Retired.Should().Be(30);
         MigrationService.PlayerFileVersionVariable.Should().Be("PLAYER_MIGRATION_VERSION");
 
-        // The facade repeats both constants (tests and native code reach them there).
-        var facade = typeof(SWLOR.Game.Server.Service.Migration);
-        const System.Reflection.BindingFlags members = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
-        facade.GetField("RetiredServerMigrationVersion", members)!.GetValue(null).Should().Be(30);
-        facade.GetField("PlayerFileVersionVariable", members)!.GetValue(null).Should().Be("PLAYER_MIGRATION_VERSION");
+        // Native code and tests read both constants here: the facade that repeated them was removed (P2-ZI).
+        typeof(MigrationService).GetField(nameof(MigrationService.RetiredServerMigrationVersion))!.IsLiteral.Should().BeTrue();
+        typeof(MigrationService).GetField(nameof(MigrationService.PlayerFileVersionVariable))!.IsLiteral.Should().BeTrue();
     }
 
     [Test]

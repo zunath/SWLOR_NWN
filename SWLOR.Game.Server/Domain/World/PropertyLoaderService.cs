@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// Instance loading: the registry of property area instances, their load states, failures and waiting players, the
     /// queue that loads them a few at a time, the startup load of the world properties, and spawning a property into
-    /// the game world. The logic and state that used to be static in <c>Service.Property</c>, moved here unchanged.
+    /// the game world. The logic and state that used to be part of the static property class, moved here unchanged.
     /// </summary>
     public class PropertyLoaderService : IPropertyLoaderService
     {

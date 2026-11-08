@@ -50,7 +50,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Service.Spawn.CacheData
   action      SWLOR.Game.Server.Service.Stat.CacheData
   action      SWLOR.Game.Server.Service.StatusEffect.CacheData
-  action      SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations
+  action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   action      SWLOR.Game.Server.Service.Weather.LoadData
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
   action      SWLOR.Game.Server.Feature.UnarmedMastery.Register

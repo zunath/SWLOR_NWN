@@ -11,13 +11,18 @@ internal sealed class AssemblyFacts
         IReadOnlyList<TypeFact> types,
         IReadOnlyList<StaticFieldFact> staticFields,
         IReadOnlyList<HandlerFact> handlers,
-        IReadOnlyList<ExternalReference> externalReferences)
+        IReadOnlyList<ExternalReference> externalReferences,
+        IReadOnlyList<StaticPropertyFact>? staticProperties = null)
     {
         Types = types;
         StaticFields = staticFields;
         Handlers = handlers;
         ExternalReferences = externalReferences;
+        StaticProperties = staticProperties ?? [];
     }
+
+    /// <summary>Every static property written in the source, with its type (the <c>GameServices</c> accessor's properties among them).</summary>
+    public IReadOnlyList<StaticPropertyFact> StaticProperties { get; }
 
     /// <summary>Every top-level type, compiler-generated ones included.</summary>
     public IReadOnlyList<TypeFact> Types { get; }

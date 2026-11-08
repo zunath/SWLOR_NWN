@@ -67,8 +67,33 @@ public class ConvertedServicesTests
         var map = Map;
         var services = List.Services;
 
-        Fail(ConvertedServiceRules.HandlersOffTheFacade(ArchitectureProject.Facts, type => ServiceOf(type, map, services)?.Facades),
+        // A service whose facades were removed is checked by the next rule: its handlers are on the instance class.
+        Fail(ConvertedServiceRules.HandlersOffTheFacade(ArchitectureProject.Facts, type => ServiceOf(type, map, services) is { FacadeRemoved: false } service ? service.Facades : null),
             "Event handlers of converted services stay on the static facade");
+    }
+
+    [Test]
+    public void Event_handlers_of_a_service_whose_facade_was_removed_are_on_its_instance_class()
+    {
+        var map = Map;
+        var services = List.Services;
+        IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServiceOf(type, map, services) is { FacadeRemoved: true } service
+            ? service.Pieces.Where(pieces => pieces.Facade is not null).Select(pieces => pieces.Instance).ToList()
+            : null;
+
+        services.Should().Contain(service => service.FacadeRemoved, "the pilot (ServerTask, Taxi) removed its facades, so the rule has something to check");
+        Fail(ConvertedServiceRules.HandlersOffTheInstance(ArchitectureProject.Facts, InstancesOf),
+            "Event handlers of a service whose facade was removed are on its instance class");
+    }
+
+    [Test]
+    public void No_class_the_container_builds_uses_GameServices()
+    {
+        ArchitectureProject.Facts.Types.Should().Contain(type => type.Key == ConvertedService.Accessor, "the rule names the real accessor");
+        var registered = List.Services.SelectMany(service => service.Pieces).SelectMany(pieces => new[] { pieces.Instance, pieces.Interface });
+
+        Fail(ConvertedServiceRules.RegisteredClassesUseTheAccessor(ArchitectureProject.Graph, registered, ConvertedService.Accessor),
+            "A class the container builds takes its dependencies through the constructor, never through GameServices");
     }
 
     [Test]

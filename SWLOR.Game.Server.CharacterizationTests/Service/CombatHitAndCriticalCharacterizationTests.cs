@@ -119,12 +119,40 @@ public class CombatHitAndCriticalCharacterizationTests
             new[] { "constant" },
             new[] { "type", "value" });
 
-        var constants = typeof(Combat)
-            .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.IsLiteral && !field.IsInitOnly)
-            .OrderBy(field => field.Name, StringComparer.Ordinal);
-        foreach (var field in constants)
-            table.Add(field.Name, field.FieldType.Name, field.GetRawConstantValue());
+        // An explicit list, sorted by name, not a reflection over Combat: when its facade is removed (P2-Z) the
+        // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
+        var constants = new (string Name, Type Type, object Value)[]
+        {
+            (nameof(Combat.BaseAttackDelayMilliseconds), typeof(int), Combat.BaseAttackDelayMilliseconds),
+            (nameof(Combat.BaseGuardDamageReductionPercent), typeof(int), Combat.BaseGuardDamageReductionPercent),
+            (nameof(Combat.BaseHitRate), typeof(int), Combat.BaseHitRate),
+            (nameof(Combat.BossMinimumHitRate), typeof(int), Combat.BossMinimumHitRate),
+            (nameof(Combat.CombatHealingWindowSeconds), typeof(int), Combat.CombatHealingWindowSeconds),
+            (nameof(Combat.MaxAttacksPerSwing), typeof(int), Combat.MaxAttacksPerSwing),
+            (nameof(Combat.MaximumActivatedDamageHealingMaxHPPercent), typeof(int), Combat.MaximumActivatedDamageHealingMaxHPPercent),
+            (nameof(Combat.MaximumAttackDelayAdjustmentPercent), typeof(int), Combat.MaximumAttackDelayAdjustmentPercent),
+            (nameof(Combat.MaximumCombinedDamageReductionPercent), typeof(int), Combat.MaximumCombinedDamageReductionPercent),
+            (nameof(Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit), typeof(int), Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit),
+            (nameof(Combat.MaximumCriticalDamagePercentAdjustment), typeof(int), Combat.MaximumCriticalDamagePercentAdjustment),
+            (nameof(Combat.MaximumCriticalRate), typeof(int), Combat.MaximumCriticalRate),
+            (nameof(Combat.MaximumDamageBonusPercent), typeof(int), Combat.MaximumDamageBonusPercent),
+            (nameof(Combat.MaximumDamageDerivedHealingPercentPerHit), typeof(int), Combat.MaximumDamageDerivedHealingPercentPerHit),
+            (nameof(Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow), typeof(int), Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow),
+            (nameof(Combat.MaximumGuardDamageReductionPercent), typeof(int), Combat.MaximumGuardDamageReductionPercent),
+            (nameof(Combat.MaximumHitRate), typeof(int), Combat.MaximumHitRate),
+            (nameof(Combat.MaximumNormalDamageReductionPercent), typeof(int), Combat.MaximumNormalDamageReductionPercent),
+            (nameof(Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit), typeof(int), Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit),
+            (nameof(Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow), typeof(int), Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow),
+            (nameof(Combat.MeleeWeaponEngagementRange), typeof(float), Combat.MeleeWeaponEngagementRange),
+            (nameof(Combat.MinimumAttackDelayMilliseconds), typeof(int), Combat.MinimumAttackDelayMilliseconds),
+            (nameof(Combat.MinimumCriticalRate), typeof(int), Combat.MinimumCriticalRate),
+            (nameof(Combat.MinimumHitRate), typeof(int), Combat.MinimumHitRate),
+            (nameof(Combat.RangedWeaponEngagementRange), typeof(float), Combat.RangedWeaponEngagementRange),
+            (nameof(Combat.StandardCriticalRating), typeof(int), Combat.StandardCriticalRating),
+        };
+        FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Combat", constants.Select(constant => constant.Name));
+        foreach (var (constantName, type, value) in constants)
+            table.Add(constantName, type.Name, value);
 
         Snapshot.Verify("Combat", "PublicConstants", table);
     }

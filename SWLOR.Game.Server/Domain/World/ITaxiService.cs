@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.TaxiService;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Taxi destinations and the ones a player has registered. The static facade <c>Service.Taxi</c> forwards to the
-    /// container's instance of this interface and keeps the event handler.
+    /// Taxi destinations and the ones a player has registered. Static callers reach the container's instance through
+    /// <c>GameServices.Taxi</c>; the event handler is on <see cref="TaxiService"/>.
     /// </summary>
     public interface ITaxiService
     {

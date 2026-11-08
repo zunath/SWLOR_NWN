@@ -9,7 +9,10 @@
     The copy is a detached git worktree of master in a folder outside the repository. It is never committed from and is
     always removed by Remove-MasterCopy (callers use try/finally). What is applied to it:
       * the seams listed in tools/Refactor/ParitySeams.txt (cherry-picks and new files),
-      * every mechanical script in tools/Refactor/MechanicalScripts.txt.
+      * every mechanical script in tools/Refactor/MechanicalScripts.txt (Apply-FacadeRemoval.ps1 changes nothing on a tree
+        without the GameServices accessor),
+      * on the copied characterization project only, Apply-FacadeRemoval.ps1 -Reverse, so the branch's tests compile
+        against master's facades (P2-Z).
     The SWLOR_Haks submodule is a sparse worktree (sw_2da, sw_tlk, sw_ability) at the commit master pins.
 #>
 
@@ -171,6 +174,18 @@ function Invoke-MechanicalScriptsOnCopy {
     }
 }
 
+# Runs the branch's Apply-FacadeRemoval.ps1 -Reverse on a folder of the copy: drops the GameServices imports, turns
+# GameServices.<Name>. back into <Name>. and moved constants back onto their facade, so branch code compiles on master.
+function Invoke-FacadeRemovalReverse {
+    param($Copy, [string]$Folder)
+    $script = Join-Path $Copy.Root 'tools/Refactor/Apply-FacadeRemoval.ps1'
+    $reverse = Invoke-Process -FilePath (Get-HostExecutable) -Arguments @('-NoProfile', '-NonInteractive', '-File', $script, '-Reverse', '-Path', $Folder)
+    if ($reverse.ExitCode -ne 0) {
+        throw (New-Failure "Apply-FacadeRemoval.ps1 -Reverse failed on $Folder (exit $($reverse.ExitCode)): $($reverse.Error.Trim()) $($reverse.Output.Trim())" 3)
+    }
+    Write-Host "Facade removal reversed on the copy: $(($reverse.Lines | Select-Object -Last 1))"
+}
+
 # Copies a folder without build output and without the named top-level folders.
 function Copy-ProjectTree {
     param([string]$Source, [string]$Destination, [string[]]$SkipFolders = @())
@@ -232,6 +247,9 @@ function Invoke-CharacterizationReference {
         $stub = "namespace SWLOR.Game.Server.CharacterizationTests.Support;`n`npublic sealed class FacadeServices : IDisposable`n{`n    public IDisposable Install() => this;`n`n    public void Dispose()`n    {`n    }`n}`n"
         [System.IO.File]::WriteAllText($facadeServices, $stub, (New-Object System.Text.UTF8Encoding($false)))
     }
+    # Facade removal (P2-Z): the branch's tests reach a removed facade through GameServices and read its moved constants
+    # from their owners. Master still has the facades, so the copy is respelled back (the tool's -Reverse mode).
+    Invoke-FacadeRemovalReverse -Copy $Copy -Folder (Join-Path $Copy.Path $name)
     $project = Join-Path (Join-Path $Copy.Path $name) "$name.csproj"
     Invoke-DotnetBuild -Project $project -Configuration $Configuration
     New-Item -ItemType Directory -Force -Path $ReferenceDirectory | Out-Null

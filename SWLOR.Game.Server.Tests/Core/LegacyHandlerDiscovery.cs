@@ -19,6 +19,9 @@ public static class LegacyHandlerDiscovery
             .SelectMany(a => a.GetTypes())
             .SelectMany(t => t.GetMethods())
             .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+            // The replaced discovery never met an instance handler (it bound static methods only). An instance handler is
+            // registered once, for the class that declares it, not again for each subclass that inherits it.
+            .Where(m => m.IsStatic || m.DeclaringType == m.ReflectedType)
             .ToArray();
 
         foreach (var mi in handlers)

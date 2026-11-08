@@ -42,23 +42,42 @@ public static class ClockSeamSources
     public static string ManifestPath(string repositoryRoot) =>
         Path.Combine(repositoryRoot, "tools", "Refactor", "ClockSeamFiles.txt");
 
-    /// <summary>The manifest entries, as written (relative to <c>SWLOR.Game.Server/</c>).</summary>
+    /// <summary>The manifest entries, as written (relative to <c>SWLOR.Game.Server/</c>), without their comments.</summary>
     public static IReadOnlyList<string> ReadEntries(string repositoryRoot) =>
+        ReadManifest(repositoryRoot).Select(entry => entry.Path).ToList();
+
+    /// <summary>
+    /// The manifest entries and whether each is marked <c># master-only</c>: a file the branch deleted (a removed facade,
+    /// P2-Z) that master still has, so the parity copy rewrites master's version but the branch need not have it.
+    /// </summary>
+    public static IReadOnlyList<(string Path, bool MasterOnly)> ReadManifest(string repositoryRoot) =>
         File.ReadAllLines(ManifestPath(repositoryRoot))
             .Select(line => line.Trim())
             .Where(line => line.Length > 0 && !line.StartsWith('#'))
+            .Select(line =>
+            {
+                var comment = line.IndexOf(" #", StringComparison.Ordinal);
+                return comment < 0
+                    ? (line, false)
+                    : (line[..comment].TrimEnd(), line[(comment + 2)..].Trim().StartsWith("master-only", StringComparison.Ordinal));
+            })
             .ToList();
 
-    /// <summary>Every file the manifest lists, expanding <c>folder/**</c> to the .cs files under it.</summary>
+    /// <summary>
+    /// Every file the manifest lists, expanding <c>folder/**</c> to the .cs files under it. Every entry must exist,
+    /// except a master-only one, which is listed only while the branch still has it.
+    /// </summary>
     public static IReadOnlyList<string> ListFiles(string repositoryRoot)
     {
         var serverRoot = Path.Combine(repositoryRoot, "SWLOR.Game.Server");
         var files = new SortedSet<string>(StringComparer.Ordinal);
-        foreach (var entry in ReadEntries(repositoryRoot))
+        foreach (var (entry, masterOnly) in ReadManifest(repositoryRoot))
         {
             if (entry.EndsWith("/**", StringComparison.Ordinal))
             {
                 var folder = Path.Combine(serverRoot, entry[..^3]);
+                if (masterOnly && !Directory.Exists(folder))
+                    continue;
                 Directory.Exists(folder).Should().BeTrue($"manifest folder {entry} must exist");
                 foreach (var file in Directory.EnumerateFiles(folder, "*.cs", SearchOption.AllDirectories))
                     files.Add(file);
@@ -66,6 +85,8 @@ public static class ClockSeamSources
             else
             {
                 var file = Path.Combine(serverRoot, entry);
+                if (masterOnly && !File.Exists(file))
+                    continue;
                 File.Exists(file).Should().BeTrue($"manifest file {entry} must exist");
                 files.Add(file);
             }

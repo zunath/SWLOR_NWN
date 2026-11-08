@@ -29,12 +29,17 @@ public static class ConvertedServiceFixtures
             var name = element.GetProperty("name").GetString()!;
             var domain = element.GetProperty("domain").GetString()!;
             var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
+            // A service whose facades the branch removed (P2-Z) has no static class left to load.
+            var removed = element.TryGetProperty("facadeRemoved", out var flag) && flag.ValueKind == JsonValueKind.True;
             var main = new ConvertedServiceTypes(
                 name,
                 domain,
-                assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
+                removed ? null : assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
                 assembly.GetType($"{domainNamespace}.I{name}Service", throwOnError: true)!,
-                assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!);
+                assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!)
+            {
+                RemovedFacade = removed ? $"{ServerNamespace}.Service.{name}" : null
+            };
             var extraTypes = new List<ConvertedServiceTypes>();
 
             if (element.TryGetProperty("extras", out var extras))
@@ -47,13 +52,17 @@ public static class ConvertedServiceFixtures
                     extraTypes.Add(new ConvertedServiceTypes(
                         extraName,
                         domain,
-                        facade is null ? null : assembly.GetType($"{ServerNamespace}.Service.{facade}", throwOnError: true)!,
+                        facade is null || removed ? null : assembly.GetType($"{ServerNamespace}.Service.{facade}", throwOnError: true)!,
                         assembly.GetType($"{domainNamespace}.I{typeName}Service", throwOnError: true)!,
-                        assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!));
+                        assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!)
+                    {
+                        RemovedFacade = facade is not null && removed ? $"{ServerNamespace}.Service.{facade}" : null
+                    });
                 }
             }
 
-            services.Add(main with { Parts = extraTypes.Where(extra => extra.Facade is null).Select(extra => extra.Contract).ToArray() });
+            // A removed further facade has no facade type either, but it is not a part.
+            services.Add(main with { Parts = extraTypes.Where(extra => extra.Facade is null && extra.RemovedFacade is null).Select(extra => extra.Contract).ToArray() });
             services.AddRange(extraTypes);
         }
 
@@ -67,6 +76,25 @@ public static class ConvertedServiceFixtures
     /// <summary>The classes that have a static facade (the main one of each service and its extra facades), not the parts.</summary>
     public static IEnumerable<TestCaseData> AsFacadeTestCases() =>
         Load().Where(service => service.Facade is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
+
+    /// <summary>The classes whose static facade the branch removed (P2-Z): static code reaches them through <c>GameServices</c>.</summary>
+    public static IEnumerable<TestCaseData> AsRemovedFacadeTestCases() =>
+        Load().Where(service => service.RemovedFacade is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
+
+    /// <summary>
+    /// <c>tools/Refactor/HandlerRenames.txt</c> as (master name, branch name) pairs: a handler the branch renamed, such as
+    /// one moved from a removed facade onto the instance method it forwarded to.
+    /// </summary>
+    public static IReadOnlyList<(string Master, string Branch)> HandlerRenames()
+    {
+        var path = Path.Combine(FindRepositoryRoot(), "tools", "Refactor", "HandlerRenames.txt");
+        return File.ReadAllLines(path)
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0 && !line.StartsWith('#'))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(names => (names[0], names[1]))
+            .ToList();
+    }
 
     private static string FindRepositoryRoot()
     {

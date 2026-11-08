@@ -115,6 +115,29 @@ public class ClockSeamScriptTests
     }
 
     [Test]
+    public void AMasterOnlyEntryTheBranchDeletedIsSkippedAndIsNotOwnedByTheSync()
+    {
+        // A removed facade (P2-Z): master still has the file, so the parity copy rewrites it; the branch deleted it.
+        File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "ClockSeamFiles.txt"),
+            "Service/WithUsings.cs  # a comment\nService/Gone.cs  # master-only (P2-Z: the facade is deleted on the branch)\nService/GoneFolder/**  # master-only\n");
+        Write("Service/WithUsings.cs", Utf8WithoutBom, Sample("\n", rewritten: false, coreUsing: false));
+
+        var run = RunScript();
+        var owned = RunScript("-ListOwnedFiles");
+
+        run.ExitCode.Should().Be(0, run.Output);
+        run.Output.Should().Contain("Skipped Service/Gone.cs (master-only: the branch deleted it)");
+        run.Output.Should().Contain("Skipped Service/GoneFolder/** (master-only: the branch deleted it)");
+        run.Output.Should().Contain("Changed 1 of 1 files");
+        owned.ExitCode.Should().Be(0, owned.Output);
+        owned.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Should().Equal(new[] { "SWLOR.Game.Server/Service/WithUsings.cs" }, "the sync must not take master's version of a file the branch deleted");
+
+        Write("Service/Gone.cs", Utf8WithoutBom, Sample("\n", rewritten: false, coreUsing: false));
+        RunScript().Output.Should().Contain("Changed 1 of 2 files", "a master-only file that exists is rewritten like any other");
+    }
+
+    [Test]
     public void OnAnotherRepositoryRootEntriesForBranchOnlyCodeAreSkippedAndTheRestIsRewritten()
     {
         File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "ClockSeamFiles.txt"),

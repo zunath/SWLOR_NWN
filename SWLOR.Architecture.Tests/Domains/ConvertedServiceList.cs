@@ -47,7 +47,7 @@ internal sealed class ConvertedServiceList
                 list._problems.Add($"{name} is out of order: keep the list sorted by name so pull requests that add services do not conflict.");
 
             previous = name;
-            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element) });
+            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element), FacadeRemoved = list.ReadFacadeRemoved(name, element) });
         }
 
         // Combat was split into part services one layer at a time behind a temporary inProgress list (P2-CB0 to P2-CB10).
@@ -90,6 +90,19 @@ internal sealed class ConvertedServiceList
         }
 
         return result;
+    }
+
+    /// <summary>The optional <c>facadeRemoved</c> flag of a service entry (P2-Z): true or false, absent meaning false.</summary>
+    private bool ReadFacadeRemoved(string service, JsonElement element)
+    {
+        if (!element.TryGetProperty("facadeRemoved", out var flag))
+            return false;
+
+        if (flag.ValueKind is JsonValueKind.True or JsonValueKind.False)
+            return flag.GetBoolean();
+
+        _problems.Add($"The \"facadeRemoved\" of {service} must be true or false.");
+        return false;
     }
 
     private ExtraPiece? ReadExtra(string service, JsonElement entry)

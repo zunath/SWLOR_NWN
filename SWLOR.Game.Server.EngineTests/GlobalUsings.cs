@@ -10,4 +10,5 @@ global using static SWLOR.NWN.API.NWScript.NWScript;
 // for the services (Ability, Perk, Combat, Stat, ...) and features (UsePerkFeat)
 // that virtually every test touches.
 global using SWLOR.Game.Server.Service;
+global using static SWLOR.Game.Server.Composition.GameServices;
 global using SWLOR.Game.Server.Feature;

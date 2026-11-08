@@ -19,6 +19,16 @@ internal sealed record ConvertedService(string Name, string Domain)
     /// </summary>
     public IReadOnlyList<ExtraPiece> Extras { get; init; } = Array.Empty<ExtraPiece>();
 
+    /// <summary>
+    /// True when the branch deleted the service's static facades (<c>"facadeRemoved": true</c>, P2-Z, decision D7): the
+    /// facade types must be gone, static code reaches each through the property of the same name on
+    /// <see cref="Accessor"/>, and the handlers are on the instance classes the facades forwarded to. P2-ZZ removes the flag.
+    /// </summary>
+    public bool FacadeRemoved { get; init; }
+
+    /// <summary>The static accessor that replaces removed facades: <c>SWLOR.Game.Server.Composition.GameServices</c>.</summary>
+    public static TypeKey Accessor => new(ServerNamespace + ".Composition", "GameServices");
+
     /// <summary>The names of the further static facades, relative to <c>SWLOR.Game.Server.Service</c> (<c>QuestService.QuestEncounter</c>).</summary>
     public IReadOnlyList<string> ExtraFacades => Extras.Where(extra => extra.HasFacade).Select(extra => extra.Name).ToList();
 

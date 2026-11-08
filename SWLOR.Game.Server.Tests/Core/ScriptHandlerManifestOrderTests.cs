@@ -27,7 +27,7 @@ public class ScriptHandlerManifestOrderTests
         foreach (var (label, methods) in GameDiscoveryOrders())
         {
             var registry = new ScriptRegistry();
-            registry.LoadHandlers(methods, manifest);
+            registry.LoadHandlers(methods, manifest, Owners);
 
             AssertRunsInManifestOrder(registry, manifest, label);
             registry.UnlistedHandlers.Should().BeEmpty(label);
@@ -50,7 +50,7 @@ public class ScriptHandlerManifestOrderTests
         foreach (var (label, methods) in GameDiscoveryOrders().Where(o => o.Label != "natural"))
         {
             var byDiscovery = new ScriptRegistry();
-            byDiscovery.LoadHandlers(methods, ScriptHandlerManifest.Empty);
+            byDiscovery.LoadHandlers(methods, ScriptHandlerManifest.Empty, Owners);
 
             var different = manifest.ScriptNames.Count(script =>
                 !Names(byDiscovery, script, false).SequenceEqual(manifest.GetHandlers(script, false)) ||
@@ -72,7 +72,7 @@ public class ScriptHandlerManifestOrderTests
         foreach (var (label, methods) in DiscoveryOrders(allHandlers))
         {
             var registry = new ScriptRegistry();
-            registry.LoadHandlers(methods, manifest);
+            registry.LoadHandlers(methods, manifest, Owners);
 
             // What the engine test handlers alone would give in this discovery order.
             var engineOnly = new ScriptRegistry();
@@ -101,7 +101,7 @@ public class ScriptHandlerManifestOrderTests
             SwapLines(ShippedManifestText(), "  action      " + DbLoad, "  action      " + OnModulePreload), "test");
 
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, swapped);
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, swapped, Owners);
 
         var preload = Names(registry, ScriptName.OnModulePreload, false).ToList();
         preload.IndexOf(OnModulePreload).Should().BeLessThan(preload.IndexOf(DbLoad));
@@ -121,10 +121,10 @@ public class ScriptHandlerManifestOrderTests
         foreach (var (label, methods) in new[] { ("natural", allHandlers), ("reversed", Enumerable.Reverse(allHandlers).ToArray()) })
         {
             var registry = new ScriptRegistry();
-            registry.LoadHandlers(methods, manifest);
+            registry.LoadHandlers(methods, manifest, Owners);
 
             var discoveryOrder = new ScriptRegistry();
-            discoveryOrder.LoadHandlers(methods, ScriptHandlerManifest.Empty);
+            discoveryOrder.LoadHandlers(methods, ScriptHandlerManifest.Empty, Owners);
             var unlistedInDiscoveryOrder = Names(discoveryOrder, ScriptName.OnModuleCacheBefore, false)
                 .Where(name => name == AbilityCacheData || name == AchievementLoad).ToArray();
             unlistedInDiscoveryOrder.Should().HaveCount(2, label);
@@ -141,9 +141,9 @@ public class ScriptHandlerManifestOrderTests
 
         // The reversed discovery order really does put them in the other order.
         var natural = new ScriptRegistry();
-        natural.LoadHandlers(allHandlers, manifest);
+        natural.LoadHandlers(allHandlers, manifest, Owners);
         var reversed = new ScriptRegistry();
-        reversed.LoadHandlers(Enumerable.Reverse(allHandlers).ToArray(), manifest);
+        reversed.LoadHandlers(Enumerable.Reverse(allHandlers).ToArray(), manifest, Owners);
         Names(natural, ScriptName.OnModuleCacheBefore, false).TakeLast(2)
             .Should().Equal(Names(reversed, ScriptName.OnModuleCacheBefore, false).TakeLast(2).Reverse());
     }
@@ -158,7 +158,7 @@ public class ScriptHandlerManifestOrderTests
         var manifest = ScriptHandlerManifest.Parse(text, "test");
 
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, manifest);
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, manifest, Owners);
 
         registry.StaleManifestEntries.Should().BeEquivalentTo(new[]
         {
@@ -213,7 +213,7 @@ public class ScriptHandlerManifestOrderTests
     public void TheDefaultRegistryReadsTheManifestEmbeddedInTheGameAssembly()
     {
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, Owners);
 
         AssertRunsInManifestOrder(registry, ScriptHandlerManifest.LoadEmbedded(GameAssembly), "default registry");
     }

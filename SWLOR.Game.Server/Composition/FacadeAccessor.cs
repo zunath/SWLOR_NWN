@@ -2,9 +2,10 @@ namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
     /// The one way a static facade reaches the instance behind it. A facade keeps the static API content code has always
-    /// called and forwards each member to the service resolved here. Internal on purpose, and the architecture tests
-    /// allow only the <c>Composition</c> namespace and the facades of converted services to use it: everything else
-    /// receives its dependencies through a constructor.
+    /// called and forwards each member to the service resolved here; once a facade is removed, the property of the same
+    /// name on <see cref="GameServices"/> reads it instead. Internal on purpose, and the architecture tests allow only the
+    /// <c>Composition</c> namespace and the facades of converted services to use it: everything else receives its
+    /// dependencies through a constructor.
     /// </summary>
     internal static class FacadeAccessor
     {

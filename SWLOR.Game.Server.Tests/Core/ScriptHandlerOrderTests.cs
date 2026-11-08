@@ -61,7 +61,7 @@ public class ScriptHandlerOrderTests
     public void ProductionHandlerOrderMatchesTheManifest()
     {
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, ScriptHandlerTestSupport.Owners);
 
         var text = ScriptHandlerOrderSnapshot.Render(
             "SWLOR script handler order manifest: SWLOR.Game.Server only (the order a production server runs handlers in; engine tests disabled)",
@@ -74,7 +74,7 @@ public class ScriptHandlerOrderTests
     public void ManifestListsEveryGameHandlerAndNothingElse()
     {
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, ScriptHandlerTestSupport.Owners);
 
         registry.UnlistedHandlers.Should().BeEmpty(
             "every [NWNEventHandler] method must be listed in SWLOR.Game.Server/Core/ScriptHandlerOrder.txt; regenerate it: " + RegenerateCommand);
@@ -87,7 +87,7 @@ public class ScriptHandlerOrderTests
     {
         var engineTests = EngineTestAssembly;
         var registry = new ScriptRegistry();
-        registry.LoadHandlersFromAssemblies(new[] { GameAssembly, engineTests });
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly, engineTests }, ScriptHandlerTestSupport.Owners);
 
         var snapshot = ScriptHandlerOrderSnapshot.Render(
             "SWLOR script handler order: handlers added by SWLOR.Game.Server.EngineTests (a server with engine tests enabled). " +
@@ -102,14 +102,14 @@ public class ScriptHandlerOrderTests
     public void EngineTestHandlersRunAfterEveryGameHandlerOfTheSameScript()
     {
         var gameOnly = new ScriptRegistry();
-        gameOnly.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        gameOnly.LoadHandlersFromAssemblies(new[] { GameAssembly }, ScriptHandlerTestSupport.Owners);
         var engineTests = EngineTestAssembly;
 
         // Both assembly orders: the manifest, not the order the assemblies are scanned in, keeps the game first.
         foreach (var assemblies in new[] { new[] { GameAssembly, engineTests }, new[] { engineTests, GameAssembly } })
         {
             var both = new ScriptRegistry();
-            both.LoadHandlersFromAssemblies(assemblies);
+            both.LoadHandlersFromAssemblies(assemblies, ScriptHandlerTestSupport.Owners);
 
             foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(both))
             {

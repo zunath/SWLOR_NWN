@@ -191,7 +191,8 @@ namespace SWLOR.Game.Server.Core
                 throw new ContainerNotBuiltException("The service container must be built before the script handlers are registered.");
 
             Console.WriteLine("Registering scripts...");
-            ServerManager.Scripts.LoadHandlersFromAssembly();
+            // A handler declared on a service's instance method runs on the container's singleton of that class.
+            ServerManager.Scripts.LoadHandlersFromAssembly(_container.ResolveHandlerOwner);
             Console.WriteLine("Scripts registered successfully.");
         }
 

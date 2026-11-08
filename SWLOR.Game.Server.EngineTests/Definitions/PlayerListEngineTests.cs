@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -419,7 +420,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var dmRow = PlayerList.BuildEntries(otherDM.Creature, subjects).SingleOrDefault(row => row.Player == dm.Creature);
                 ctx.Assert(dmRow != null, "another DM sees the DM");
                 ctx.AssertEqual(PlayerListStatus.DM, dmRow.Status, "the DM is marked DM for other DMs");
-                ctx.AssertEqual(PlayerList.DMDescriptor, dmRow.Descriptor, "the DM shows the DM descriptor");
+                ctx.AssertEqual(PlayerListService.DMDescriptor, dmRow.Descriptor, "the DM shows the DM descriptor");
                 ctx.AssertEqual(GetName(dm.Creature), dmRow.Name, "other DMs see the DM's real name");
                 ctx.Assert(PlayerList.BuildEntries(otherDM.Creature, subjects).Any(row => row.Player == player.Creature),
                     "DMs still see players");

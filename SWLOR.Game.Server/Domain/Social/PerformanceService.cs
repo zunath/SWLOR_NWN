@@ -23,9 +23,9 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Dance and Play Instrument performances: the hot bar cues, the beat loop, the session and the end triggers. The logic
-    /// that used to be static in <c>Service.Performance</c> is moved here unchanged, and the live sessions and the players'
-    /// preferences are this instance's own. The facade keeps the event handlers and forwards every call to the container's
-    /// instance.
+    /// that used to be static in <c>Performance</c> is moved here unchanged, and the live sessions and the players'
+    /// preferences are this instance's own. The event handlers run on the container's
+    /// instance; static callers reach it through <c>GameServices.Performance</c>.
     /// </summary>
     public class PerformanceService : IPerformanceService
     {
@@ -401,6 +401,7 @@ namespace SWLOR.Game.Server.Domain.Social
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RecoverOnLogin()
         {
             var player = GetEnteringObject();
@@ -411,6 +412,7 @@ namespace SWLOR.Game.Server.Domain.Social
         }
 
         /// <summary>Talking or emoting keeps a Roleplay mode performance going. Chat commands do not count.</summary>
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public void KeepRoleplayGoing()
         {
             if (_sessions.Count == 0)
@@ -432,31 +434,37 @@ namespace SWLOR.Game.Server.Domain.Social
             session.NoteActivity(UtcNow());
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void EndOnLogout()
         {
             EndPerformance(GetExitingObject(), PerformanceEndReason.LoggedOut);
         }
 
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void EndOnAreaExit()
         {
             EndPerformance(GetExitingObject(), PerformanceEndReason.AreaExit);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void EndOnDeath()
         {
             EndPerformance(GetLastPlayerDied(), PerformanceEndReason.Died);
         }
 
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public void EndOnDamage()
         {
             EndPerformance(OBJECT_SELF, PerformanceEndReason.Combat);
         }
 
+        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
         public void EndOnAttack()
         {
             EndPerformance(OBJECT_SELF, PerformanceEndReason.Combat);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public void EndOnInstrumentUnequipped()
         {
             var player = GetPCItemLastUnequippedBy();

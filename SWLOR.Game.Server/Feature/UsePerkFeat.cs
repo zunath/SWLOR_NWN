@@ -366,10 +366,10 @@ namespace SWLOR.Game.Server.Feature
                     SendMessageToPC(activator, error);
                 return;
             }
-            if (Performance.IsModeFeat(activator, feat))
+            if (GameServices.Performance.IsModeFeat(activator, feat))
             {
                 EventsPlugin.SkipEvent();
-                Performance.HandleInput(activator, feat);
+                GameServices.Performance.HandleInput(activator, feat);
                 return;
             }
             TryUseAbility(activator, target, feat, targetLocation, true);

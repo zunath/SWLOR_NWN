@@ -320,8 +320,8 @@ public static class ForceEspionageEngineTests
     private static async Task JoinPartyAsync(EngineTestContext ctx, uint leader, uint member)
     {
         await ctx.ExecuteInCreatureContextAsync(member, () =>
-            typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static)!
-                .Invoke(null, new object[] { leader, member }));
+            typeof(Domain.Social.PartyService).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .Invoke(Party, new object[] { leader, member }));
         ctx.Assert(Party.IsInParty(leader, member), "the member joins the caster's party");
     }
 

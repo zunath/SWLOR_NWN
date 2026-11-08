@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -196,17 +197,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 foreach (var (routine, _) in Routines)
-                    ctx.Assert(!Performance.IsRoutineUnlocked(player, routine), $"{routine} is locked with no perks");
+                    ctx.Assert(!GameServices.Performance.IsRoutineUnlocked(player, routine), $"{routine} is locked with no perks");
                 foreach (var (set, _) in Sets)
-                    ctx.Assert(!Performance.IsSetUnlocked(player, set), $"{set} is locked with no perks");
+                    ctx.Assert(!GameServices.Performance.IsSetUnlocked(player, set), $"{set} is locked with no perks");
 
                 foreach (var unlockPerk in Routines.Select(entry => entry.Perk).Concat(Sets.Select(entry => entry.Perk)))
                 {
                     fixture.Update(record => record.Perks[unlockPerk] = 1);
                     foreach (var (routine, perk) in Routines)
-                        ctx.AssertEqual(perk == unlockPerk, Performance.IsRoutineUnlocked(player, routine), $"{unlockPerk} unlocks {routine}");
+                        ctx.AssertEqual(perk == unlockPerk, GameServices.Performance.IsRoutineUnlocked(player, routine), $"{unlockPerk} unlocks {routine}");
                     foreach (var (set, perk) in Sets)
-                        ctx.AssertEqual(perk == unlockPerk, Performance.IsSetUnlocked(player, set), $"{unlockPerk} unlocks {set}");
+                        ctx.AssertEqual(perk == unlockPerk, GameServices.Performance.IsSetUnlocked(player, set), $"{unlockPerk} unlocks {set}");
 
                     fixture.Update(record => record.Perks.Remove(unlockPerk));
                 }
@@ -224,11 +225,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var player = fixture.Creature;
             try
             {
-                var preference = Performance.GetPreference(player);
+                var preference = GameServices.Performance.GetPreference(player);
 
                 // A locked routine or set cannot be chosen; buying its perk allows it.
-                ctx.Assert(!Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step cannot be chosen before its perk");
-                ctx.Assert(!Performance.SetSet(player, PerformanceSetType.KeenEar), "Keen Ear cannot be chosen before its perk");
+                ctx.Assert(!GameServices.Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step cannot be chosen before its perk");
+                ctx.Assert(!GameServices.Performance.SetSet(player, PerformanceSetType.KeenEar), "Keen Ear cannot be chosen before its perk");
                 fixture.Update(record =>
                 {
                     record.Perks[PerkType.PowerStep] = 1;
@@ -236,25 +237,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     record.Perks[PerkType.KeenEar] = 1;
                     record.Perks[PerkType.PerformanceSteadyHands] = 1;
                 });
-                ctx.Assert(Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step can be chosen after its perk");
+                ctx.Assert(GameServices.Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step can be chosen after its perk");
                 ctx.AssertEqual(PerformanceRoutineType.PowerStep, preference.Routine, "the chosen routine is remembered");
-                ctx.Assert(Performance.SetSet(player, PerformanceSetType.KeenEar), "Keen Ear can be chosen after its perk");
+                ctx.Assert(GameServices.Performance.SetSet(player, PerformanceSetType.KeenEar), "Keen Ear can be chosen after its perk");
                 ctx.AssertEqual(PerformanceSetType.KeenEar, preference.Set, "the chosen set is remembered");
 
                 // Blending a second routine or weaving a second set needs the capstone as well as the unlock.
-                ctx.Assert(!Performance.SetSecondRoutine(player, PerformanceRoutineType.LightFeet), "a second routine needs Showstopper");
-                ctx.Assert(!Performance.SetSecondSet(player, PerformanceSetType.SteadyHands), "a second set needs Virtuoso");
+                ctx.Assert(!GameServices.Performance.SetSecondRoutine(player, PerformanceRoutineType.LightFeet), "a second routine needs Showstopper");
+                ctx.Assert(!GameServices.Performance.SetSecondSet(player, PerformanceSetType.SteadyHands), "a second set needs Virtuoso");
                 fixture.Update(record =>
                 {
                     record.Perks[PerkType.Showstopper] = 1;
                     record.Perks[PerkType.Virtuoso] = 1;
                 });
-                ctx.Assert(Performance.SetSecondRoutine(player, PerformanceRoutineType.LightFeet), "Showstopper allows a second unlocked routine");
+                ctx.Assert(GameServices.Performance.SetSecondRoutine(player, PerformanceRoutineType.LightFeet), "Showstopper allows a second unlocked routine");
                 ctx.AssertEqual(PerformanceRoutineType.LightFeet, preference.SecondRoutine, "the second routine is remembered");
-                ctx.Assert(Performance.SetSecondSet(player, PerformanceSetType.SteadyHands), "Virtuoso allows a second unlocked set");
+                ctx.Assert(GameServices.Performance.SetSecondSet(player, PerformanceSetType.SteadyHands), "Virtuoso allows a second unlocked set");
                 ctx.AssertEqual(PerformanceSetType.SteadyHands, preference.SecondSet, "the second set is remembered");
-                ctx.Assert(!Performance.SetSecondRoutine(player, PerformanceRoutineType.Quickstep), "a second routine must be unlocked");
-                ctx.Assert(!Performance.SetSecondSet(player, PerformanceSetType.StillWaters), "a second set must be unlocked");
+                ctx.Assert(!GameServices.Performance.SetSecondRoutine(player, PerformanceRoutineType.Quickstep), "a second routine must be unlocked");
+                ctx.Assert(!GameServices.Performance.SetSecondSet(player, PerformanceSetType.StillWaters), "a second set must be unlocked");
             }
             finally
             {

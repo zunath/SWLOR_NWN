@@ -100,6 +100,7 @@ Prerequisites: Docker Desktop, Python 3.12+, a Release build from your worktree 
 ```powershell
 python tools/NwnLiveClient.py up --name my-check --character <test character>.bic --play
 python tools/NwnLiveClient.py capture <run dir> in-area
+python tools/NwnLiveClient.py record <run dir> instrument-loop --seconds 30 --fps 60
 python tools/NwnLiveClient.py ui <run dir> click 742 591   # also rightclick, doubleclick, drag, move, key, type
 python tools/NwnLiveClient.py console <run dir> status      # one nwserver console line
 python tools/NwnLiveClient.py down <run dir>
@@ -113,6 +114,7 @@ python tools/NwnLiveClient.py down <run dir>
 - **Test conditions:** live areas spawn hostiles. Clear creatures from the test areas and wait until the character is out of combat before acting; log combat state with each step. The server's automated restart at 10:00 UTC boots everyone; do not span it.
 - **Lifetime and teardown:** the server and client stop themselves after `--max-minutes` (default 120), and a failed `up` tears itself down unless `--keep-on-failure`. `down` boots the character through the server console first (a killed client holds its CD key until the server's `net.udp.window.timeout`, which this stack raises from 60 seconds to 5 minutes on both server and client so a client stalled loading haks on a busy machine is not dropped), stops the client, runs `docker compose -p <project> down --volumes --remove-orphans` on its own project only, deletes the copied key, profile, and server home, and writes `evidence/cleanup.json`. It exits non-zero if any container, volume, network, key, or character copy remains.
 - **Evidence:** `<run dir>/evidence` (default run directory `%TEMP%\swlor-live\<project>`) keeps the captures, `captures.jsonl`, `ui-actions.log`, client and server logs, the containers' stdout (NWNX logs there), and `cleanup.json`. If the stack cannot start or a capture is incomplete, report the affected items as unverified with the error.
+- **Video:** `record` captures only the private NWN window, silently, for 1 to 120 seconds. It writes H.264 MP4, an FFprobe report, the encoder log, and a hashed `videos.jsonl` entry. The default is 60 fps; 15 and 30 are also supported. Inspect playback and encoder statistics: a file's frame rate alone does not establish the game's render rate. Do not interpolate frames to disguise low game performance.
 
 ## Client traps
 

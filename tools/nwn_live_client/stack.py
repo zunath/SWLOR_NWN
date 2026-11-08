@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import csv
 import datetime
+from fractions import Fraction
 import hashlib
 import io
 import json
@@ -1152,6 +1153,46 @@ def capture(stack: Stack, label: str) -> Path:
     with (stack.evidence / 'captures.jsonl').open('a', encoding='utf-8') as manifest:
         manifest.write(json.dumps({'label': label, 'file': path.name, 'utc': utc_now(), 'sha256': digest}) + '\n')
     log(f'{path} sha256={digest}')
+    return path
+
+
+def record_video(stack: Stack, label: str, seconds: int = 30, fps: int = 60) -> Path:
+    """Record a bounded, silent video of this run's private NWN client window."""
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,79}', label):
+        raise LiveStackError('Video labels use letters, digits, dots, underscores and hyphens.')
+    if type(seconds) is not int or not 1 <= seconds <= 120 or type(fps) is not int or fps not in (15, 30, 60):
+        raise LiveStackError('Video duration must be 1..120 seconds and frame rate 15, 30 or 60.')
+    path = stack.evidence / f'{label}.mp4'
+    probe = stack.evidence / f'{label}.video.json'
+    if path.exists() or probe.exists():
+        raise LiveStackError('Video label already exists; use a new label.')
+    stack.ensure_owner()
+    require_running(stack, 'before the video')
+    started = utc_now()
+    try:
+        stack.ui('record', label, str(seconds), str(fps), timeout=seconds + 60)
+        stack.ensure_owner()
+        require_running(stack, 'during the video')
+        data = json.loads(probe.read_text('utf-8'))
+        stream, = data['streams']
+        duration = float(stream['duration'])
+        if (stream['codec_name'] != 'h264' or (stream['width'], stream['height']) != WINDOW_SIZE or
+                Fraction(stream['avg_frame_rate']) != fps or Fraction(stream['r_frame_rate']) != fps or
+                abs(int(stream['nb_read_frames']) - seconds * fps) > 2 or not math.isfinite(duration) or
+                abs(duration - seconds) > 0.1 or not path.is_file()):
+            raise ValueError('The video did not meet its requested size, duration or frame rate.')
+        digest = sha256(path)
+    except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError, LiveStackError) as error:
+        path.unlink(missing_ok=True)
+        probe.unlink(missing_ok=True)
+        (stack.evidence / f'.{label}.recording.mp4').unlink(missing_ok=True)
+        raise LiveStackError(f'Video recording failed: {error}') from error
+    record = {'label': label, 'file': path.name, 'started_utc': started, 'finished_utc': utc_now(),
+              'sha256': digest, 'fps': fps, 'seconds': seconds, 'stream': stream,
+              'source': 'private NWN client window; no audio or frame interpolation'}
+    with (stack.evidence / 'videos.jsonl').open('a', encoding='utf-8') as manifest:
+        manifest.write(json.dumps(record) + '\n')
+    log(f'{path} fps={fps} frames={stream["nb_read_frames"]} sha256={digest}')
     return path
 
 

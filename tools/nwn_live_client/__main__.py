@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from .stack import LiveStackError, Stack, capture, create, destroy, log, play, project_resources, start
+from .stack import LiveStackError, Stack, capture, create, destroy, log, play, project_resources, record_video, start
 
 
 def parser() -> argparse.ArgumentParser:
@@ -63,6 +63,11 @@ def parser() -> argparse.ArgumentParser:
     shot = commands.add_parser('capture', parents=[run_dir], help='Save <run>/evidence/<label>.png.')
     shot.add_argument('label')
 
+    video = commands.add_parser('record', parents=[run_dir], help='Record the private client window to <label>.mp4.')
+    video.add_argument('label')
+    video.add_argument('--seconds', type=int, default=30, help='Recording duration, 1 to 120 seconds.')
+    video.add_argument('--fps', type=int, choices=(15, 30, 60), default=60, help='Capture frame rate (default: 60).')
+
     console = commands.add_parser('console', parents=[run_dir], help='Send one nwserver console command.')
     console.add_argument('text', nargs='+')
 
@@ -113,6 +118,8 @@ def main(argv: list[str] | None = None) -> int:
             stack.ui(options.action, *options.arguments)
         elif options.command == 'capture':
             capture(stack, options.label)
+        elif options.command == 'record':
+            record_video(stack, options.label, options.seconds, options.fps)
         elif options.command == 'console':
             stack.console(' '.join(options.text))
         elif options.command == 'status':

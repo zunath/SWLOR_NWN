@@ -762,6 +762,27 @@ clips removed: the skeleton, part IDs, binds, every other animation and its even
 remain byte-identical. An ambiguous prior family or any unrelated difference fails
 before installation. Structural changes still require the normal versioned workflow.
 
+For new clips with an unchanged rig, `ExtendRobeAnimations.py` can add a thin layer ahead
+of the installed banks. Generate a candidate stage with `GenerateRobeRgbModels.py`
+**without `--apply`**, then pass that stage, the pinned pre-change asset revision,
+and each new internal clip name to the extension tool. It includes `_in` and `_out`.
+The tool requires an identical compiled skeleton and native part IDs, verifies every
+existing body clip, and copies only the selected additions. Existing robe banks stay
+byte-identical. Each playable normal-body wearer's only change is its fixed-width
+parent name; no phenotypes, meshes, materials, dyes or tables are regenerated.
+
+```powershell
+python -B tools/ExtendRobeAnimations.py --candidate-stage <stage> --baseline <pre-change-sha> --game-data <game-data> --clip sw_voc_loop --output <new-output> --apply
+python -B tools/ExtendRobeAnimations.py --check --game-data <game-data>
+python -B tools/GenerateRobeRgbModels.py --check --game-data <game-data>
+```
+
+Repeat `--clip` for every addition. The baseline must match the current robe manifest.
+The manifest records the extension's baseline, clip list, old and new parents, wearer
+coverage and pose checks. `--check` revalidates the installed layers against those Git
+blobs, including the unchanged parent banks and every byte outside the wearer parent
+name. Package `sw_anim_m`, `sw_anim_f` and `sw_pt_root` with the changed body bank HAK.
+
 Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
 pruned deletions, wearable models, tables, and the generated catalog. Package and deploy
 `sw_anim_m.hak`, `sw_anim_f.hak`, `sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak`

@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, the Attack,
     /// Accuracy, Defense and Evasion ratings, deflection and healing reactions, and NPC stat skins. The logic that used to
-    /// be static in <c>Service.Stat</c> is moved here unchanged; the facade keeps the event handlers and forwards every
-    /// call to the container's instance. Calls into <c>Combat</c>, <c>Skill</c>, <c>Perk</c>,
+    /// be static in the facade <c>Stat</c> is moved here unchanged; the event handlers run on the container's instance,
+    /// and static callers reach it through <c>GameServices.Stat</c>. Calls into <c>Combat</c>, <c>Skill</c>, <c>Perk</c>,
     /// <c>TemporaryStatModifier</c>, <c>TemporaryHitPointEffects</c> and <c>Droid</c> sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls. The stat type metadata and the formulas the
     /// offline tools read live in <see cref="StatRules"/>, for code that has no container.
@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// Builds the stat type metadata, which announces itself on the console the first time it is read. At boot this
         /// is the first read; recorded boots print the line once, here.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             StatRules.LoadStatTypeMetadata();
@@ -190,6 +191,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();
@@ -588,6 +590,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAssociateStateEffect)]
         public void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;
@@ -955,6 +958,8 @@ namespace SWLOR.Game.Server.Domain.Character
             GetLocalInt(creature, WalkToggleVariable) == 1 &&
             (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature));
 
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public void ClearWalkModeBeforeDMPossessionChange()
         {
             var creature = OBJECT_SELF;
@@ -1025,6 +1030,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// Out-of-combat movement speed depends on the combat state, which has no event of its own, so a player
         /// holding that stat has their movement rate re-applied on the heartbeat that sees the state change.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public void RefreshOutOfCombatMovementRate()
         {
             var player = OBJECT_SELF;
@@ -1045,6 +1051,7 @@ namespace SWLOR.Game.Server.Domain.Character
             ApplyCreatureMovementRate(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetOutOfCombatMovementState()
         {
             _outOfCombatMovementCombatState.Remove(GetExitingObject());

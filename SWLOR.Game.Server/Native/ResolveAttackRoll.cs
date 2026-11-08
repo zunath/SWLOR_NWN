@@ -18,6 +18,7 @@ using ObjectType = NWN.Native.API.ObjectType;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Native
                 UsePerkFeat.BeginWeaponAttackRoll(attacker.m_idSelf);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
+                    : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
                 GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
@@ -663,7 +664,7 @@ namespace SWLOR.Game.Server.Native
         {
             var skillType = weapon == null
                 ? SkillType.Invalid
-                : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
+                : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
 
             if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
             {

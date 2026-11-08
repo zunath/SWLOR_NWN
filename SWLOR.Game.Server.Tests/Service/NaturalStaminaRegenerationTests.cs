@@ -3,6 +3,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -81,7 +83,7 @@ public class NaturalStaminaRegenerationTests
     public void BeastNaturalStaminaRegeneration_WaitsSixSecondsAfterStaminaSpend()
     {
         var spentAt = new DateTime(2026, 8, 25, 12, 0, 0, DateTimeKind.Utc);
-        var availableAt = spentAt.AddSeconds(Stat.BeastNaturalStaminaRegenDelaySeconds);
+        var availableAt = spentAt.AddSeconds(StatService.BeastNaturalStaminaRegenDelaySeconds);
 
         Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
             .Should().BeFalse();

@@ -1,4 +1,3 @@
-using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,12 +7,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PlayerAttributeRestorationTests
 {
-    // The internal overload this test calls is a forwarder on the facade.
+    // The overload this test calls is a member of the stat service, reached through GameServices.Stat.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 
@@ -95,8 +95,7 @@ public class PlayerAttributeRestorationTests
 
     private static void Restore(Player player, Action<AbilityType, int> setScore)
     {
-        typeof(Stat).GetMethod("RestorePlayerAttributes", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { player, setScore });
+        Stat.RestorePlayerAttributes(player, setScore);
     }
 
     private static string ReadSource(params string[] path)

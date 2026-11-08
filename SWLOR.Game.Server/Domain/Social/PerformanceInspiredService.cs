@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Domain.Social
         }
 
         protected virtual InspiredStatusEffect GetInspiredEffect(uint creature) =>
-            StatusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
+            _statusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
 
         protected virtual void RefreshDuration(uint creature, float seconds) =>
             _statusEffect.RefreshStatusEffectDuration(creature, typeof(InspiredStatusEffect), creature, seconds);

@@ -14,7 +14,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
-using Skill = SWLOR.Game.Server.Service.Skill;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -436,7 +436,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsInMyPerksMode)
             {
                 AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
-                TotalSP = $"Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}";
+                TotalSP = $"Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}";
                 WindowTitle = $"Perks - {dbPlayer.UnallocatedSP} SP available";
             }
             else if (IsInBeastPerksMode)

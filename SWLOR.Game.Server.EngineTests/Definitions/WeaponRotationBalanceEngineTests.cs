@@ -24,6 +24,7 @@ using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NumericsVector3 = System.Numerics.Vector3;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -314,7 +315,7 @@ public static class WeaponRotationBalanceEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 SetEventScript(actor, EventScript.Creature_OnHeartbeat, "");
-                SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1);
+                SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1);
                 SetLocalInt(actor, "NATURAL_REGENERATION_TICK", 0);
                 SetLocalInt(actor, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
@@ -332,9 +333,9 @@ public static class WeaponRotationBalanceEngineTests
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
                         var before = Stat.GetCurrentStamina(actor);
-                        SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 0);
+                        SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 0);
                         try { NaturalRegeneration.ProcessRegeneration(); }
-                        finally { SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1); }
+                        finally { SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1); }
                         naturalRestored += Math.Max(0, Stat.GetCurrentStamina(actor) - before);
                         naturalTicks++;
                     });
@@ -465,7 +466,7 @@ public static class WeaponRotationBalanceEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             TwinPistolAbility.Cancel(actor);
             UsePerkFeat.ClearQueuedAbility(actor);
-            SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1);
             if (GetIsObjectValid(target))
             {
                 TemporaryStatModifier.Clear(target);

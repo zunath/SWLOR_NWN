@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.ProspectingService;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 

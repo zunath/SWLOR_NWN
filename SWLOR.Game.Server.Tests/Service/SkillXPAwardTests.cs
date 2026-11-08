@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -50,7 +51,7 @@ public class SkillXPAwardTests
             using SWLOR.Game.Server.Service.SkillService;
             using SWLOR.Game.Server.Service.StatService;
             using SWLOR.NWN.API.NWScript.Enum;
-            using RuntimeSkill = SWLOR.Game.Server.Service.Skill;
+            using RuntimeSkill = SWLOR.Game.Server.Domain.Character.SkillService;
 
             public static class SkillXPHarness
             {
@@ -116,7 +117,7 @@ public class SkillXPAwardTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Skill).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(ISkillService).Assembly.Location)
             .Append(typeof(AbilityType).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("SkillXPAwardHarness",

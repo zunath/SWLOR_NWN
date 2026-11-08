@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The skill XP chart and the Espionage practice ranks: constant tables and the pure functions over them.
-    /// These moved unchanged from <c>Service.Skill</c>; the tables are built when the type loads, so offline
+    /// These moved unchanged from the static class <c>Skill</c>; the tables are built when the type loads, so offline
     /// tools (<c>SWLOR.CraftSim</c>) read the chart without a container.
     /// </summary>
     public static class SkillXPChart

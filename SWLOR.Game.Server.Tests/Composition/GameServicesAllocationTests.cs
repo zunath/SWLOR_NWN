@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
@@ -58,6 +59,26 @@ public class GameServicesAllocationTests
 
         taxi.Should().BeSameAs(_host.Provider.GetRequiredService<ITaxiService>());
         serverTask.Should().BeSameAs(_host.Provider.GetRequiredService<IServerTaskService>());
+    }
+
+    /// <summary>The hot character services (P2-ZD): read on every swing and effect tick through the accessor.</summary>
+    [Test]
+    public void Reading_a_character_GameServices_property_allocates_nothing()
+    {
+        IStatService stat = null!;
+        IStatusEffectService statusEffect = null!;
+        ISkillService skill = null!;
+        IPerkService perk = null!;
+
+        Allocated(() => stat = GameServices.Stat).Should().Be(0);
+        Allocated(() => statusEffect = GameServices.StatusEffect).Should().Be(0);
+        Allocated(() => skill = GameServices.Skill).Should().Be(0);
+        Allocated(() => perk = GameServices.Perk).Should().Be(0);
+
+        stat.Should().BeSameAs(_host.Provider.GetRequiredService<IStatService>());
+        statusEffect.Should().BeSameAs(_host.Provider.GetRequiredService<IStatusEffectService>());
+        skill.Should().BeSameAs(_host.Provider.GetRequiredService<ISkillService>());
+        perk.Should().BeSameAs(_host.Provider.GetRequiredService<IPerkService>());
     }
 
     [Test]

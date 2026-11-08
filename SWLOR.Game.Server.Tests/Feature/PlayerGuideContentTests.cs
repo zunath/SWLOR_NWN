@@ -17,6 +17,8 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.ResistanceService;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -275,8 +277,8 @@ public class PlayerGuideContentTests : SkillFacadeFixture
     {
         var guideText = string.Join("\n", GetTopics().SelectMany(GetAllText));
 
-        guideText.Should().Contain($"up to {Skill.SkillCap} total ranks");
-        guideText.Should().Contain($"{Skill.StartingSkillPoints} starting SP");
+        guideText.Should().Contain($"up to {SkillService.SkillCap} total ranks");
+        guideText.Should().Contain($"{SkillService.StartingSkillPoints} starting SP");
         guideText.Should().Contain($"up to {Skill.APCap} AP");
 
         guideText.Should().Contain($"costs {HoloNetViewModel.BroadcastPrice} credits");
@@ -344,11 +346,11 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
         text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
         text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
-        text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
-        text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");
+        text.Should().Contain($"up to {StatService.MaximumDeflectionChanceCap} percent");
+        text.Should().Contain($"Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent");
         text.Should().Contain($"stop at {ResistanceRules.MaximumResistance - 1} percent for players");
         text.Should().Contain("Movement speed stops at 150 percent of normal");
-        text.Should().Contain($"lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds");
+        text.Should().Contain($"lasts at most {StatusEffectRules.MaximumHardCrowdControlDurationSeconds} seconds");
     }
 
     [Test]

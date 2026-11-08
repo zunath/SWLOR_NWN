@@ -9,8 +9,8 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using Skill = SWLOR.Game.Server.Service.Skill;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
@@ -72,10 +72,10 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                     CharacterType = Enumeration.CharacterType.ForceSensitive,
                     MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
                     // HP gear rebuilds the record from its sources, so the HP above the base comes from one.
-                    TemporaryFoodHP = 1000 - Stat.BaseHP,
+                    TemporaryFoodHP = 1000 - StatService.BaseHP,
                     MaxStamina = 10000, Stamina = 9999,
                     Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
-                    TotalSPAcquired = Skill.TotalSkillPointCap - Skill.StartingSkillPoints,
+                    TotalSPAcquired = SkillService.TotalSkillPointCap - SkillService.StartingSkillPoints,
                 };
                 foreach (var skill in Enum.GetValues<SkillType>())
                     record.Skills[skill] = new PlayerSkill();

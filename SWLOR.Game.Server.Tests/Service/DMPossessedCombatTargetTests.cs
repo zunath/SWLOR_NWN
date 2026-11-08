@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -142,7 +143,7 @@ public class DMPossessedCombatTargetTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(AbilityType).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("DMPossessedCombatTargetHarness",

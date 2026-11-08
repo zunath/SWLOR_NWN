@@ -78,12 +78,10 @@ public class FactionServiceTests
     }
 
     [Test]
-    public void The_limits_are_plus_and_minus_five_thousand_on_the_instance_and_the_facade()
+    public void The_limits_are_plus_and_minus_five_thousand()
     {
         FactionService.MinimumFaction.Should().Be(-5000);
         FactionService.MaximumFaction.Should().Be(5000);
-        FactionService.MinimumFaction.Should().Be(FactionService.MinimumFaction);
-        FactionService.MaximumFaction.Should().Be(FactionService.MaximumFaction);
     }
 
     // ---- standing

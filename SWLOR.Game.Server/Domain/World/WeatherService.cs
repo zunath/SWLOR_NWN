@@ -23,8 +23,8 @@ using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The weather of the outdoor areas: the logic and state that used to be static in <c>Service.Weather</c>, moved
-    /// here unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// The weather of the outdoor areas: the logic and state that used to be a static class, moved here unchanged. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.Weather</c>.
     /// </summary>
     public class WeatherService : IWeatherService
     {
@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.World
             _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
@@ -113,6 +114,7 @@ namespace SWLOR.Game.Server.Domain.World
                    _db.Get<WorldProperty>(propertyId)?.PropertyType != PropertyType.City;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void InitializeWeather()
         {
             AdjustWeather();
@@ -393,6 +395,7 @@ namespace SWLOR.Game.Server.Domain.World
             return _stat.GetStatAdjustment(target, StatType.KnockdownImmunity);
         }
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void OnAreaEnter()
         {
             var area = OBJECT_SELF;
@@ -402,6 +405,7 @@ namespace SWLOR.Game.Server.Domain.World
             DoWeatherEffects(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public void OnModuleHeartbeat()
         {
             var changed = AdjustWeather();

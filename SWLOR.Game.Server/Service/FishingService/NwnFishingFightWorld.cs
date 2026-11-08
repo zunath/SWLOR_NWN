@@ -13,12 +13,12 @@ namespace SWLOR.Game.Server.Service.FishingService
     {
         public void SetRemainingBait(uint rod, int remaining)
         {
-            SetLocalInt(rod, Fishing.RemainingBaitVariable, remaining);
+            SetLocalInt(rod, Domain.World.FishingService.RemainingBaitVariable, remaining);
         }
 
         public void SetFishingPointAttempts(uint fishingPoint, int remaining)
         {
-            SetLocalInt(fishingPoint, Fishing.FishingPointRemainingAttemptsVariable, remaining);
+            SetLocalInt(fishingPoint, Domain.World.FishingService.FishingPointRemainingAttemptsVariable, remaining);
         }
 
         public void ExhaustFishingPoint(uint fishingPoint)

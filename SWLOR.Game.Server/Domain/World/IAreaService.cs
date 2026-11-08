@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The area cache: areas by resref, the players in each area, and the DM-written area notes shown on entry. The
-    /// static facade <c>Service.Area</c> forwards to the container's instance of this interface and keeps the event
-    /// handlers.
+    /// The area cache: areas by resref, the players in each area, and the DM-written area notes shown on entry. Static
+    /// callers reach the container's instance through <c>GameServices.Area</c>; the event handlers are on
+    /// <see cref="AreaService"/>.
     /// </summary>
     public interface IAreaService
     {

@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
-using WeatherRuntime = SWLOR.Game.Server.Service.Weather;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -43,8 +42,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var city = ctx.CreateInstancedArea("tat_tocheemain");
             ctx.Assert(GetLocalBool(city, "WEATHER_HAZARD_SAFE"), "City instances inherit the authored marker");
-            WeatherRuntime.SetWeather(city);
-            ctx.Assert(WeatherRuntime.GetWeather(city) != Precipitation.Invalid, "The protected city retains weather visuals");
+            GameServices.Weather.SetWeather(city);
+            ctx.Assert(GameServices.Weather.GetWeather(city) != Precipitation.Invalid, "The protected city retains weather visuals");
             ctx.Assert(!(bool)predicate.Invoke(weather, new object[] { city })!, "The new city instance is hazard safe");
 
             var target = ctx.SpawnCreature("nw_bandit001");
@@ -84,7 +83,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             // Use a warm, wet, windy front so independently rolled storms would
             // split the planet's maps between ordinary rain and thunderstorms.
-            WeatherRuntime.LoadData();
+            GameServices.Weather.LoadData();
             try
             {
                 var weather = CompositionRoot.ServerHost.Provider.GetService(typeof(IWeatherService))!;
@@ -108,14 +107,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 int? storm = null;
                 foreach (var area in areas)
                 {
-                    WeatherRuntime.SetWeather(area);
-                    ctx.AssertEqual(10, WeatherRuntime.GetHeatIndex(area), $"Heat in {GetResRef(area)}");
-                    ctx.AssertEqual(10, WeatherRuntime.GetHumidity(area), $"Humidity in {GetResRef(area)}");
-                    ctx.AssertEqual(10, WeatherRuntime.GetWindStrength(area), $"Wind in {GetResRef(area)}");
-                    ctx.AssertEqual(Precipitation.Rain, WeatherRuntime.GetWeather(area), $"Rain in {GetResRef(area)}");
+                    GameServices.Weather.SetWeather(area);
+                    ctx.AssertEqual(10, GameServices.Weather.GetHeatIndex(area), $"Heat in {GetResRef(area)}");
+                    ctx.AssertEqual(10, GameServices.Weather.GetHumidity(area), $"Humidity in {GetResRef(area)}");
+                    ctx.AssertEqual(10, GameServices.Weather.GetWindStrength(area), $"Wind in {GetResRef(area)}");
+                    ctx.AssertEqual(Precipitation.Rain, GameServices.Weather.GetWeather(area), $"Rain in {GetResRef(area)}");
                     storm ??= GetLocalInt(area, "GS_AM_SKY_OVERRIDE");
                     ctx.AssertEqual(storm.Value, GetLocalInt(area, "GS_AM_SKY_OVERRIDE"), $"Storm in {GetResRef(area)}");
-                    WeatherRuntime.SetWeather(area);
+                    GameServices.Weather.SetWeather(area);
                     ctx.AssertEqual(storm.Value, GetLocalInt(area, "GS_AM_SKY_OVERRIDE"), "Repeated entry retains the shared storm");
                 }
                 ctx.SetResultDetail($"Verified equal heat, humidity, wind, native rain and storm sky flags across {areas.Count - 1} outdoor maps plus a fresh instance. Repeated requests retained the same storm.");
@@ -123,8 +122,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                WeatherRuntime.LoadData();
-                WeatherRuntime.InitializeWeather();
+                GameServices.Weather.LoadData();
+                GameServices.Weather.InitializeWeather();
             }
         }
     }

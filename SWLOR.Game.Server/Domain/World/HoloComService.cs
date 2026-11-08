@@ -13,8 +13,8 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// HoloCom calls between players: the logic and state that used to be static in <c>Service.HoloCom</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// HoloCom calls between players: the logic and state that used to be a static class, moved here unchanged. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.HoloCom</c>.
     /// </summary>
     public class HoloComService : IHoloComService
     {
@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Domain.World
             _stealth = stealth;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
@@ -62,12 +63,14 @@ namespace SWLOR.Game.Server.Domain.World
 
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnModuleEnter()
         {
             var player = GetEnteringObject();
             RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnModuleLeave()
         {
             var player = GetExitingObject();
@@ -75,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.World
             CleanupAllHoloComState(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleChat)]
         public void OnModuleChat()
         {
             var sender = GetPCChatSpeaker();

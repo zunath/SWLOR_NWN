@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The planets of the module and which planet each area belongs to: the logic and state that used to be static in
-    /// <c>Service.Planet</c>, moved here unchanged. The facade still carries the event handler and forwards every call
-    /// to the container's instance.
+    /// The planets of the module and which planet each area belongs to: the logic and state that used to be a static
+    /// class, moved here unchanged. The event handler runs on the container's instance; static callers reach it
+    /// through <c>GameServices.Planet</c>.
     /// </summary>
     public class PlanetService : IPlanetService
     {
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Domain.World
             ["ziyhut"] = PlanetType.Hutlar
         };
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CachePlanets();

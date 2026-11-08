@@ -1,11 +1,12 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.FishingService;
 
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The fights a bite opens: the logic that used to be static in <c>Service.FishingService.FishingFights</c>, moved here
-    /// unchanged. The facade keeps the death and logout handlers and forwards every call to the container instance. The
+    /// The fights a bite opens: the logic that used to be a static class, moved here unchanged. The death and logout
+    /// handlers run on the container instance; static callers reach it through <c>GameServices.FishingFights</c>. The
     /// lifecycle (and the active fights it keeps) is the own state of this instance, running against the game engine.
     /// </summary>
     public class FishingFightsService : IFishingFightsService
@@ -43,12 +44,14 @@ namespace SWLOR.Game.Server.Domain.World
 
         public void PlayAction(FishingFight fight, string actionId) => _lifecycle.PlayAction(fight, actionId);
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void AbandonOnDeath()
         {
             var player = GetLastPlayerDied();
             _lifecycle.Abandon(_lifecycle.GetActive(player), FishingFightEnd.Died);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void AbandonOnExit()
         {
             var player = GetExitingObject();

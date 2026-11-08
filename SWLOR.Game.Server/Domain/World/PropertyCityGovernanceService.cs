@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// City governance: the boot-time processing of every city (citizen requirement, elections, level, upkeep and
     /// citizenship fees), the Discord broadcasts about it, and the city level rules. The logic and state that used to
-    /// be static in <c>Service.Property</c>, moved here unchanged.
+    /// be part of the static property class, moved here unchanged.
     /// </summary>
     public class PropertyCityGovernanceService : IPropertyCityGovernanceService
     {

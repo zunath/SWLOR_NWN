@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Service.FishingService;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The fights a bite opens. The static facade <c>Service.FishingService.FishingFights</c> forwards to the container
-    /// instance of this interface and keeps the death and logout handlers.
+    /// The fights a bite opens. Static callers reach the container instance through <c>GameServices.FishingFights</c>;
+    /// the death and logout handlers are on <see cref="FishingFightsService"/>.
     /// </summary>
     public interface IFishingFightsService
     {

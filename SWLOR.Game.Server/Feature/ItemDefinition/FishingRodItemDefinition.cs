@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void FishingRod()
         {
-            _builder.Create(Fishing.FishingRodTag)
+            _builder.Create(FishingService.FishingRodTag)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (item != target &&
@@ -34,8 +35,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var existingBait = GetLocalString(item, Fishing.ActiveBaitVariable);
-                    var remainingBait = GetLocalInt(item, Fishing.RemainingBaitVariable);
+                    var existingBait = GetLocalString(item, FishingService.ActiveBaitVariable);
+                    var remainingBait = GetLocalInt(item, FishingService.RemainingBaitVariable);
 
                     if (!string.IsNullOrWhiteSpace(existingBait))
                     {
@@ -53,8 +54,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             SendMessageToPC(user, $"Unloaded bait.");
                         }
 
-                        DeleteLocalString(item, Fishing.ActiveBaitVariable);
-                        DeleteLocalInt(item, Fishing.RemainingBaitVariable);
+                        DeleteLocalString(item, FishingService.ActiveBaitVariable);
+                        DeleteLocalInt(item, FishingService.RemainingBaitVariable);
                     }
 
                     if (Fishing.IsItemBait(target))
@@ -63,9 +64,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var baitType = Fishing.GetBaitByResref(resref);
                         var stackSize = GetItemStackSize(target);
                         var serialized = ObjectPlugin.Serialize(target);
-                        SetLocalString(item, Fishing.ActiveBaitVariable, serialized);
-                        SetLocalInt(item, Fishing.RemainingBaitVariable, stackSize);
-                        SetLocalInt(item, Fishing.LoadedBaitTypeVariable, (int)baitType);
+                        SetLocalString(item, FishingService.ActiveBaitVariable, serialized);
+                        SetLocalInt(item, FishingService.RemainingBaitVariable, stackSize);
+                        SetLocalInt(item, FishingService.LoadedBaitTypeVariable, (int)baitType);
 
                         DestroyObject(target);
 

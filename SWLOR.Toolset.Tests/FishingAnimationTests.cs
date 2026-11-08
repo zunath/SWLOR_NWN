@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.AnimationService;
 using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Toolset.Tests;
 

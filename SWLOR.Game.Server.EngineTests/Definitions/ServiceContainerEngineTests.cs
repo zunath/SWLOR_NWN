@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("3 / 25 Categories", Notes.GetCategoryUsageText(3), "Notes answer through the container");
             ctx.Assert(!HoloCom.IsHologram(OBJECT_INVALID), "HoloCom answers through the container");
             ctx.Assert(Music.GetAllSongs().Count > 0, "Songs cached by the module-cache handler");
-            ctx.Assert(SWLOR.Game.Server.Service.Weather.GetWeather(OBJECT_INVALID) == SWLOR.NWN.API.NWScript.Enum.Weather.Invalid,
+            ctx.Assert(Weather.GetWeather(OBJECT_INVALID) == SWLOR.NWN.API.NWScript.Enum.Weather.Invalid,
                 "Weather answers through the container");
             ctx.AssertEqual("Apartment", Property.GetPropertyDetail(SWLOR.Game.Server.Service.PropertyService.PropertyType.Apartment).Name,
                 "Property definitions cached by the module-cache handler");

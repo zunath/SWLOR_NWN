@@ -5,6 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     ctx.Assert(HoloCom.IsHologram(hologram), "the copy is marked as a hologram");
                     ctx.Assert(!HoloCom.IsHologram(HoloCom.GetHoloGramOwner(hologram)), "the calling player is not marked as a hologram");
-                    ctx.AssertEqual(HoloCom.HologramFactionId, CreaturePlugin.GetFaction(hologram), "hologram faction");
+                    ctx.AssertEqual(HoloComService.HologramFactionId, CreaturePlugin.GetFaction(hologram), "hologram faction");
                     ctx.Assert(!GetIsReactionTypeHostile(hologram, enemy), "the enemy does not treat the hologram as hostile");
                     ctx.Assert(!GetIsReactionTypeHostile(enemy, hologram), "the hologram does not treat the enemy as hostile");
                     ctx.Assert(!GetIsEnemy(hologram, enemy), "the enemy does not consider the hologram an enemy");

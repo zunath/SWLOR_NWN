@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                         description += itemName + "\n";
                     }
 
-                    SetLocalInt(spawn, Fishing.FishingPointLocationVariable, (int)location);
+                    SetLocalInt(spawn, FishingService.FishingPointLocationVariable, (int)location);
                     SetDescription(spawn, description);
                 });
         }

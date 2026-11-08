@@ -17,8 +17,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The music of the module: the logic and state that used to be static in <c>Service.Music</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// The music of the module: the logic and state that used to be a static class, moved here unchanged. The event
+    /// handlers run on the container's instance; static callers reach it through <c>GameServices.Music</c>.
     /// </summary>
     public class MusicService : IMusicService
     {
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Domain.World
             _collectibleSongsByTrackId = _collectibleSongs.ToDictionary(song => song.TrackId);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadSongList()
         {
             const string File = "ambientmusic";
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
         }
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void ApplyPlayerMusic()
         {
             var player = GetEnteringObject();
@@ -107,12 +109,16 @@ namespace SWLOR.Game.Server.Domain.World
             }
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerAttacked)]
         public void StartBattleThemeOnAttack()
         {
             var defender = OBJECT_SELF;
             StartBattleTheme(defender, GetLastAttacker(defender));
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public void StartBattleThemeOnDamage()
         {
             var defender = OBJECT_SELF;
@@ -145,6 +151,7 @@ namespace SWLOR.Game.Server.Domain.World
             PlayerPlugin.MusicBattleToggle(player, true);
         }
 
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         public void StopBattleThemeAfterCombat()
         {
             var player = OBJECT_SELF;
@@ -155,6 +162,7 @@ namespace SWLOR.Game.Server.Domain.World
                 StopBattleTheme(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetBattleThemeCombat()
         {
             _lastBattleThemeCombat.Remove(GetExitingObject());

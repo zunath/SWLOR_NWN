@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// The definitions of the property system: the property types, layouts, entrances, permissions, structures and
     /// instance templates the module cache builds, and the lookups over them. The logic and state that used to be
-    /// static in <c>Service.Property</c>, moved here unchanged. It depends on no other part of the property system.
+    /// part of the static property class, moved here unchanged. It depends on no other part of the property system.
     /// </summary>
     public class PropertyCatalogService : IPropertyCatalogService
     {

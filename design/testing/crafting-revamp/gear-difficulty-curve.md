@@ -41,7 +41,7 @@ Rank 50, 2 enhancements, no perks. "Reach" is the share of crafts at or above th
 | Kitchen 46-50 | 71.6 | 81.6 | 89.7 | 97.3 | 95% | 86% |
 | Kitchen 51-53 | 51.1 | 64.5 | 69.6 | 93.4 | 88% | 79% |
 
-The Kitchen rows are seed 1. See "The Kitchen retune" for the other seeds.
+The Kitchen rows are seed 1. See "The Kitchen retune" for the other seeds. The Forge 51-53 rows predate "The Forge's enhancement cost above level 50".
 
 Fully perked with no gear against no perks in unmodded best gear (plain crafts, average quality):
 
@@ -151,6 +151,29 @@ Three Kitchen rules changed after the first review, each to close a gate the fir
 
 Two other candidates were played on the 51-53 ladder and rejected: 20% enhancements alone (the best gear step stayed under +5 on seeds 1 and 2) and that plus a larger Control spread step (the mid-to-best step fell to +1.0 on seed 2).
 
+## The Forge's enhancement cost above level 50
+
+Tester feedback on the first test server build: levels 45-50 are in a good place, but the level 52 Chaos Breastplate was comfortable at 100% Shape and Finish in double-modded gear, at Control 189 / Craftsmanship 50 and at 215 / 66. The owner approved one change for levels above 50.
+
+An enhancement's penalty adds Shape as a share of the old window's progress for the recipe's level. That chart jumps from 186 at level 50 to 339, 503 and 586 at levels 51-53, so the same two penalty 80 mods added 86% Shape at level 50 and only 32% at level 52. Recipes above level 50 now use level 50's progress (`ForgeRules.EnhancementProgressMaxLevel`). Levels 50 and below, plain crafts and the other minigames do not change.
+
+Levels 51-53, fully modded gear, two enhancements, three-seed average (seeds 1-3, 40 runs, 3 recipes per kind):
+
+| Crafter | Recipe kind | Average quality | Reach 85% | Reach 100% |
+| --- | --- | --- | --- | --- |
+| Artisan line, Cold Working, Control 189 / Craftsmanship 50 | Shape-heavy | 97.0 -> 86.0 | 97% -> 82% | 95% -> 79% |
+| Artisan line, Cold Working, Control 189 / Craftsmanship 50 | Finish-heavy | 100.0 -> 98.5 | 100% -> 98% | 98% -> 94% |
+| No perks, Control 119 / Craftsmanship 120 | Shape-heavy | 93.6 -> 94.6 | 82% -> 88% | 50% -> 63% |
+| No perks, Control 119 / Craftsmanship 120 | Finish-heavy | 93.3 -> 89.9 | 79% -> 68% | 44% -> 30% |
+
+- The no-perk Shape-heavy row rises on a harder rule because the bot plays longer, 10 actions against 13. A fully modded crafter who was stopping early now keeps working.
+- The change is much harsher below fully modded gear. With two enhancements and no perks, Shape-heavy recipes at 51-53 average 19.9 in unmodded best gear (was 52.7) and 3.4 in mid gear (was 31.3). With the Artisan line, unmodded best gear averages 37.8 (was 84.1).
+- Enhancement parity still passes at 51-53 in fully modded gear (seed 1).
+- Finish-heavy recipes stay easy for a Control-stacked crafter. At Control 189 one Cryo-Quench is about 80% of a level 52 Finish meter. Raising both meters 10% above level 50 left that crafter at 99% and dropped the no-perk crafter to 15%, so it was rejected. Changing what Control does would also move levels 45-50.
+- The gear ladder assumes mods split evenly between Control and Craftsmanship. The tester put nearly all of them in Control, which reaches 100% more often: on the old rule, the Artisan line went from 82% (119 / 120) to 98% (189 / 50) on Finish-heavy recipes.
+
+The `forge-*-gates.md` reports and the 51-53 Forge rows in "What each step of gear buys" are from before this change and were not rerun.
+
 ## Gate changes
 
 A top recipe that is meant to be hard cannot pass gates written for a flat minigame, so these four scenarios (`ICraftScenario.TunedAgainstFullMods`) are judged differently. Each loosening is a decision for the owner to check.
@@ -170,7 +193,9 @@ Tuning stopped after seven rounds; further rounds traded one miss for another.
 | Circuit rotation | 10 cases (6 to 7 in each perked build) | smallest margin -19.7 | Open by owner decision before this pass; master already failed 15 |
 | Fabricator rotation | 5 cases (2 in each perked build) | smallest margin -34.0 | Open by owner decision before this pass |
 | Circuit style | Overclock vs Safe Mode, no lines, mid gear | Overclock wins 25/75, -5.3 | Win share under 30% and the average gap just over the limit of 5 |
-| Forge ladder | 51-53, Finish-heavy, fully modded | just under 10 actions (rounds to 10.0), target 10-20 | The fully modded crafter finishes at the floor, not below it in any meaningful way |
+| Forge ladder | 51-53, Finish-heavy, fully modded | 9.5-9.6 actions, target 10-20 (was just under 10) | The fully modded crafter finishes at the floor |
+| Forge ladder | 51-53, Shape-heavy, mid gear, two enhancements | adds +2.1 to +4.4 over no gear, target +5 | No gear scores 0, so the step has no floor to climb from; these crafts are not viable either way |
+| Forge ladder | 51-53, Finish-heavy, Artisan line, Control 189 / Craftsmanship 50 | reaches 100% on 93-95%, limit 90% | Was 98-99%; see "The Forge's enhancement cost above level 50" |
 | Circuit ladder | 46-50, both lines, no gear, seed 2 only | Overclock 87.5 and Safe Mode 83.7 vs 78.6, limit +5 | Seed 1, the reported run, passes |
 | Fabricator style | Production Run vs Fine Tolerance, no gear | +5.1, limit 5 | Over by 0.1 |
 | Forge economy | 21-30, no gear (also Hot Forging) | ratio 1.01 | Level 24 recipe; rules below level 25 are unchanged, and master's sample differed |

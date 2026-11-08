@@ -296,10 +296,10 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         guideText.Should().Contain($"minimum fee of {QuestContractBoard.MinimumPostingFee} credits");
 
         guideText.Should().Contain($"begin with {Player.DefaultDisguiseSlotLimit} identity slot");
-        guideText.Should().Contain($"base wait between disguise activations is {Disguise.ActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"minimum wait of {Disguise.MinimumActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"{Disguise.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
-        guideText.Should().Contain($"{Disguise.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
+        guideText.Should().Contain($"base wait between disguise activations is {DisguiseService.ActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"minimum wait of {DisguiseService.MinimumActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"{DisguiseService.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
+        guideText.Should().Contain($"{DisguiseService.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
 
         guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionRegistrationDays}-day candidate-registration period");
         guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionVotingDays} days of voting");

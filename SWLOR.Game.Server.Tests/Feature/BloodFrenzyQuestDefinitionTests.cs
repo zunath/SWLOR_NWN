@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Reflection.Emit;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
@@ -107,7 +108,7 @@ public class BloodFrenzyQuestDefinitionTests
     {
         var quests = new BloodFrenzyQuestDefinition().BuildQuests();
         var finalQuest = quests[FinalQuestId];
-        var giveAchievement = GetAchievementMethod(nameof(Achievement.GiveAchievement));
+        var giveAchievement = GetAchievementMethod(nameof(IAchievementService.GiveAchievement));
 
         finalQuest.OnCompleteActions.Should()
             .ContainSingle(action => DelegateCallsMethodWithIntArgument(
@@ -481,8 +482,9 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetAchievementMethod(string methodName)
     {
-        return typeof(Achievement)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+        // The quest delegates call the service through the interface (the facade was removed, P2-ZE).
+        return typeof(IAchievementService)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>
                 method.Name == methodName &&
                 method.GetParameters()

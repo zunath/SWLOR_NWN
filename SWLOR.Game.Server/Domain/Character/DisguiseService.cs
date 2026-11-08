@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Disguise identities: the logic that used to be static in <c>Service.Disguise</c>, moved here unchanged. The
-    /// facade keeps the login handler and the constants and forwards every call.
+    /// login handler and the constants are here.
     /// </summary>
     /// <remarks>
     /// <c>PlayerName</c>, <c>PlayerDescriptor</c> and <c>PlayerIntroduction</c> reach this service through the
@@ -63,6 +64,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _stat = stat;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyActiveDisguiseOnEnter()
         {
             var player = GetEnteringObject();

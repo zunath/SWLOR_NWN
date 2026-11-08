@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
@@ -92,7 +93,7 @@ public class EspionageInfiltrationServiceTests
         _scopes.Add(NWScriptRuntime.Override(_engine));
 
         _creature = new FakeCreaturePlugin();
-        _creature.SetReturnHandler("GetFaction", _ => EspionageInfiltration.HostileFactionId);
+        _creature.SetReturnHandler("GetFaction", _ => EspionageInfiltrationService.HostileFactionId);
         _scopes.Add(CreaturePluginRuntime.Override(_creature));
 
         var ai = ScriptedProxy.Create<IAIService>(out _aiScript);
@@ -236,7 +237,7 @@ public class EspionageInfiltrationServiceTests
 
         _creature.SetReturnHandler("GetFaction", _ => 2);
         _service.TryBegin(Player, Npc).Should().BeFalse();
-        _creature.SetReturnHandler("GetFaction", _ => EspionageInfiltration.HostileFactionId);
+        _creature.SetReturnHandler("GetFaction", _ => EspionageInfiltrationService.HostileFactionId);
 
         _inAggroRange = false;
         _service.TryBegin(Player, Npc).Should().BeFalse();
@@ -650,9 +651,9 @@ public class EspionageInfiltrationServiceTests
                 Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton<IEspionageInfiltrationService>(_service)));
         using var scope = container.Install();
 
-        EspionageInfiltration.RequiredTravelDistanceMeters.Should().Be(EspionageInfiltrationService.RequiredTravelDistanceMeters);
-        EspionageInfiltration.DetectionFailureXpPercent.Should().Be(EspionageInfiltrationService.DetectionFailureXpPercent);
-        EspionageInfiltration.HostileFactionId.Should().Be(EspionageInfiltrationService.HostileFactionId);
+        EspionageInfiltrationService.RequiredTravelDistanceMeters.Should().Be(EspionageInfiltrationService.RequiredTravelDistanceMeters);
+        EspionageInfiltrationService.DetectionFailureXpPercent.Should().Be(EspionageInfiltrationService.DetectionFailureXpPercent);
+        EspionageInfiltrationService.HostileFactionId.Should().Be(EspionageInfiltrationService.HostileFactionId);
 
         EspionageInfiltration.TryBegin(Player, Npc).Should().BeTrue();
         EspionageInfiltration.RecordPlayerCombatInitiation(Player);

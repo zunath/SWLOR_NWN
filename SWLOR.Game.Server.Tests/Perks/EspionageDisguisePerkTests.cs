@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -93,15 +95,15 @@ public class EspionageDisguisePerkTests
     public void ActivationDelay_IsFlooredSoStackedReductionsCannotRemoveIt()
     {
         Disguise.CalculateActivationDelay(100).TotalMinutes
-            .Should().Be(Disguise.MinimumActivationDelayMinutes);
+            .Should().Be(DisguiseService.MinimumActivationDelayMinutes);
         Disguise.CalculateActivationDelay(500).TotalMinutes
-            .Should().Be(Disguise.MinimumActivationDelayMinutes);
+            .Should().Be(DisguiseService.MinimumActivationDelayMinutes);
     }
 
     [Test]
     public void ActivationDelay_IgnoresNegativeReductions()
     {
-        Disguise.CalculateActivationDelay(-40).TotalMinutes.Should().Be(Disguise.ActivationDelayMinutes);
+        Disguise.CalculateActivationDelay(-40).TotalMinutes.Should().Be(DisguiseService.ActivationDelayMinutes);
     }
 
     [Test]

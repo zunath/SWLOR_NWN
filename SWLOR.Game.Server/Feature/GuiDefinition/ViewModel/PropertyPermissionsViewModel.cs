@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -7,7 +8,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
-using PlayerNameService = SWLOR.Game.Server.Service.PlayerName;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissionEnabled = new GuiBindingList<bool>();
             var grantPermissionEnabled = new GuiBindingList<bool>();
 
-            PlayerName = PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, targetPlayerId, dbPlayer.Name);
+            PlayerName = GameServices.PlayerName.GetKnownNameOrFallbackByPlayerId(Player, targetPlayerId, dbPlayer.Name);
 
             string ownerPlayerId;
             if (_isCategory)
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var player in dbPlayers)
             {
                 _playerIds.Add(player.Id);
-                playerNames.Add(PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name));
+                playerNames.Add(GameServices.PlayerName.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name));
                 playerToggles.Add(false);
             }
 
@@ -412,12 +412,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<Player> SearchPlayersByPermissionName()
         {
-            var sanitizedSearch = PlayerNameService.SanitizeKnownName(SearchText);
+            var sanitizedSearch = GameServices.PlayerName.SanitizeKnownName(SearchText);
             if (string.IsNullOrWhiteSpace(sanitizedSearch))
                 return new List<Player>();
 
             var playersById = new Dictionary<string, Player>();
-            var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
+            var knownPlayerIds = GameServices.PlayerName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
             foreach (var player in SearchPlayersByIds(knownPlayerIds))
             {
                 playersById[player.Id] = player;
@@ -432,7 +432,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return playersById.Values
-                .OrderBy(player => PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name))
+                .OrderBy(player => GameServices.PlayerName.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name))
                 .Take(25)
                 .ToList();
         }

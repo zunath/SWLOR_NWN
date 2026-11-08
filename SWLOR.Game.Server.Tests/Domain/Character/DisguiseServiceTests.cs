@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.DisguiseService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
@@ -710,13 +711,13 @@ public class DisguiseServiceTests
                 Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton<IDisguiseService>(Disguises)));
         using var scope = container.Install();
 
-        Disguise.IdentityKeyPrefix.Should().Be("disguise:");
-        Disguise.WipeCreditCost.Should().Be(100000);
-        Disguise.WipeRoleplayXPCost.Should().Be(25000);
-        Disguise.ActivationDelayMinutes.Should().Be(30);
-        Disguise.MinimumActivationDelayMinutes.Should().Be(5);
-        Disguise.MaxPrivateNameLength.Should().Be(32);
-        Disguise.MaxBiographyLength.Should().Be(5000);
+        DisguiseService.IdentityKeyPrefix.Should().Be("disguise:");
+        DisguiseService.WipeCreditCost.Should().Be(100000);
+        DisguiseService.WipeRoleplayXPCost.Should().Be(25000);
+        DisguiseService.ActivationDelayMinutes.Should().Be(30);
+        DisguiseService.MinimumActivationDelayMinutes.Should().Be(5);
+        DisguiseService.MaxPrivateNameLength.Should().Be(32);
+        DisguiseService.MaxBiographyLength.Should().Be(5000);
 
         var disguise = Disguise.CreateDisguise(Owner)!;
         Disguise.CountUsedSlots(DisguiseWorld.OwnerId).Should().Be(1);

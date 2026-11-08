@@ -670,7 +670,6 @@ public class CombatFacadeAllocationTests
                 ("GetAbilityStaminaCostFlatAdjustment(perk)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityStaminaCostFlatAdjustment(ability)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile)),
                 ("GetAbilityStatusDurationPercentAdjustment", 64, () => sink += bonus.GetAbilityStatusDurationPercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, typeof(StunnedStatusEffect), Array.Empty<Type>(), null!), () => sink += CombatFacade.GetAbilityStatusDurationPercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, typeof(StunnedStatusEffect), Array.Empty<Type>(), null!)),
-                ("GetAbilityDefenseIgnorePercentAdjustment", 504, () => sink += bonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender), () => sink += CombatFacade.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender)),
                 ("GetAbilityRecastDelayFlatAdjustment", 64, () => fsink += bonus.GetAbilityRecastDelayFlatAdjustment(Attacker, PerkType.DoubleShot), () => fsink += CombatFacade.GetAbilityRecastDelayFlatAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityDamageBonus", 312, () => sink += bonus.GetAbilityDamageBonus(Attacker, SkillType.Rifle), () => sink += CombatFacade.GetAbilityDamageBonus(Attacker, SkillType.Rifle)),
                 ("ApplyTargetStatusAttackModifiers", 152, () => sink += modifiers.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade), () => sink += CombatFacade.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade)),
@@ -704,6 +703,9 @@ public class CombatFacadeAllocationTests
         // add a closure and its delegate (88 bytes or more).
         // StoreQueuedWeaponAbilityCriticalRateBonus with a bonus is left out: its temporary modifier writes vary by up to 70
         // bytes between part and forwarder rounds (2399 to 2466 on the base and here alike).
+        // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of P2-CB9b the
+        // part measured 504 and the forwarder, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
+        // in between), so it is compared here.
         // Named to run last in the fixture: its million damage rolls let the JIT finish optimizing the status reads, which
         // changes what the pinned reads above allocate when they run after it.
         var scopes = new List<IDisposable>();
@@ -713,6 +715,7 @@ public class CombatFacadeAllocationTests
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
+                ("GetAbilityDefenseIgnorePercentAdjustment", () => sink += bonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender), () => sink += CombatFacade.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender)),
                 ("PrepareOpeningAutoAttack", () => sink += bonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle), () => sink += CombatFacade.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle)),
                 ("GetQueuedWeaponAbilityActivationHitChanceAdjustment", () => sink += bonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile), () => sink += CombatFacade.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile)),
                 ("ApplyCriticalDamageModifier", () => sink += modifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender), () => sink += CombatFacade.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender)),

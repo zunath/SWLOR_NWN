@@ -18,6 +18,7 @@ using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {

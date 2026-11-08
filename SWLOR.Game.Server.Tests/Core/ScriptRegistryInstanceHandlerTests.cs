@@ -145,18 +145,24 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
+        var instanceHandlers = MethodsOf(GameAssembly)
+            .Where(method => !method.IsStatic && IsHandler(method))
+            .Select(ScriptHandlerManifest.HandlerName)
+            .ToHashSet();
+
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => name != TaxiHandler);
+                var expected = Names(all, script, conditional).Where(name => !instanceHandlers.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Should().Equal(new[] { $"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}" });
+        staticOnly.StaleManifestEntries.Select(entry => entry[(entry.LastIndexOf(' ') + 1)..]).Distinct()
+            .Should().BeEquivalentTo(instanceHandlers, "the manifest lines the static-only load left unbound are exactly the instance handlers");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

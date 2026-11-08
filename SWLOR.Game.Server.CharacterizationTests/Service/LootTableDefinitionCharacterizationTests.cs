@@ -44,15 +44,16 @@ public class LootTableDefinitionCharacterizationTests
             AllowConstantOutputs = true
         };
 
-        foreach (var type in new[] { typeof(Loot), typeof(LootTable) }.OrderBy(type => type.Name, StringComparer.Ordinal))
+        // An explicit list, sorted by class then name, not a reflection over Loot: its facade was removed (P2-ZJ), so the
+        // constant lives on LootService and the facade removal tool respells the read, both ways (the parity copy).
+        var constants = new (string Class, string Name, Type Type, object Value)[]
         {
-            var constants = type
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Where(field => field.IsLiteral && !field.IsInitOnly)
-                .OrderBy(field => field.Name, StringComparer.Ordinal);
-            foreach (var field in constants)
-                table.Add(type.Name, field.Name, field.FieldType.Name, field.GetRawConstantValue());
-        }
+            ("Loot", nameof(Domain.Items.LootService.CorpseBodyVariable), typeof(string), Domain.Items.LootService.CorpseBodyVariable),
+            ("LootTable", nameof(LootTable.FullRareChanceBonus), typeof(int), LootTable.FullRareChanceBonus),
+        };
+        FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Loot", constants.Where(constant => constant.Class == "Loot").Select(constant => constant.Name));
+        foreach (var (className, constantName, type, value) in constants)
+            table.Add(className, constantName, type.Name, value);
 
         Snapshot.Verify("Loot", "PublicConstants", table);
     }

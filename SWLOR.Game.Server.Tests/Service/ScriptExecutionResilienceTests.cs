@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -35,7 +37,7 @@ public sealed class ScriptExecutionResilienceTests
     [Test]
     public void GuiCache_RunsInTheMainAfterCachePhase()
     {
-        var cacheMethod = typeof(Gui).GetMethod(nameof(Gui.CacheData));
+        var cacheMethod = typeof(SWLOR.Game.Server.Domain.UI.GuiService).GetMethod(nameof(IGuiService.CacheData));
 
         cacheMethod.Should().NotBeNull();
         cacheMethod!.GetCustomAttributes(typeof(NWNEventHandler), false)

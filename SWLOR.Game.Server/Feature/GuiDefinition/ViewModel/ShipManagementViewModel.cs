@@ -13,6 +13,8 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -1485,7 +1487,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbShip.SerializedItem)))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 
@@ -1655,7 +1657,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -1730,7 +1732,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -1804,7 +1806,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 

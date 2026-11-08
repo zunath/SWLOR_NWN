@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>The most outfit slots a player can have. <c>Service.Wardrobe.MaxSlotLimit</c> repeats it.</summary>
         public const int MaxSlotLimit = 50;
 
+        public const string ExpansionHint = "Vessa Thrane on the Nar Shaddaa Promenade can expand your wardrobe.";
+
         private readonly IDBService _db;
         private readonly Regex _numberPattern = new(@"\d+", RegexOptions.Compiled);
 

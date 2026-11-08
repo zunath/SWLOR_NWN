@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
@@ -24,6 +25,23 @@ namespace SWLOR.Game.Server.Domain.Items
     public class LightsaberWorkbenchService : ILightsaberWorkbenchService
     {
         public const string KyberTokenTag = "kyber_token";
+        public const string WeaponSubmissionTokenTag = "wpn_sub_token";
+        public const string LightsaberResref = "ls_custom";
+        public const string SaberstaffResref = "ss_custom";
+
+        /// <summary>
+        /// Enhancements socketed at the workbench are validated against this
+        /// crafting level, matching the tier 5 saber upgrade kit recipes. This
+        /// only bounds which enhancements may be socketed; the saber itself is
+        /// built at tier 1 and is raised a tier at a time by the upgrade kits.
+        /// </summary>
+        public const int EnhancementRecipeLevel = 48;
+
+        /// <summary>
+        /// The haks ship a single middle grip model per weapon type, so the middle
+        /// slot is not player-selectable and always uses this value.
+        /// </summary>
+        public const int MiddlePartValue = 11;
 
         /// <summary>
         /// Light Color selector value meaning the light follows the selected blade's catalog
@@ -251,6 +269,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return string.Empty;
         }
 
+        [NWNEventHandler(ScriptName.OnLightsaberWorkbenchUsed)]
         public void UseLightsaberWorkbench()
         {
             var player = GetLastUsedBy();

@@ -264,6 +264,46 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
+    public void AreaImpact_StopsEmittingAtTheRecipientCap()
+    {
+        var impact = new AbilityImpactVisualEffects(VisualEffect.Vfx_Imp_Shield_Bash);
+
+        Enumerable.Range(1, AbilityImpactVisualEffects.MaxRecipients)
+            .Select(recipient => impact.TryRecordRecipient((uint)recipient))
+            .Should().OnlyContain(emitted => emitted);
+
+        impact.TryRecordRecipient(100).Should().BeFalse();
+    }
+
+    [Test]
+    public void KoltoMist_SharesOneReceiptStateAcrossEveryTick()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(),
+            "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/KoltoMistAbilityDefinition.cs"));
+
+        source.IndexOf("Ability.CaptureSuccessfulImpactVisualEffect(activator)", StringComparison.Ordinal)
+            .Should().BeLessThan(source.IndexOf("for (var elapsed = TickIntervalSeconds", StringComparison.Ordinal),
+                "a capture inside the tick loop replays the burst on every ally every tick");
+    }
+
+    [Test]
+    public void VisualEffectTable_NeverShakesTheCamera()
+    {
+        var table = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
+        var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
+        var shakeColumns = new[] { "ShakeType", "ShakeDelay", "ShakeDuration" }
+            .Select(name => Array.IndexOf(header, name) + 1)
+            .ToArray();
+
+        var shaking = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .Where(row => shakeColumns.Any(column => row.Length > column && row[column] != "****"))
+            .Select(row => row[1]);
+
+        shaking.Should().BeEmpty("players asked for combat without camera shake");
+    }
+
+    [Test]
     public void SubsequentPulse_HasItsOwnReceiptState()
     {
         var first = new AbilityImpactVisualEffects(VisualEffect.Vfx_Imp_Shield_Bash);

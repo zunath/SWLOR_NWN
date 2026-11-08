@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -186,28 +187,81 @@ public class TelegraphTests
     [Test]
     public void PersistentAreaIndicators_DoNotDisplaceActivationWarnings()
     {
-        var persistentIndicator = new ActiveTelegraph(
-            1,
-            0,
-            100,
-            new TelegraphData { IsPersistentAreaIndicator = true });
+        var persistentIndicator = Candidate(new TelegraphData { IsPersistentAreaIndicator = true });
         var activationWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
-            .Select(start => new ActiveTelegraph(
-                1,
-                start,
-                100,
-                new TelegraphData { IsPersistentAreaIndicator = false }))
-            .ToArray();
-        var candidates = new[] { persistentIndicator }
-            .Concat(activationWarnings)
-            .ToArray();
+            .Select(_ => Candidate(new TelegraphData()));
+
+        var selected = SelectForRendering(new[] { persistentIndicator }.Concat(activationWarnings));
+
+        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().OnlyContain(candidate => !candidate.Telegraph.Data.IsPersistentAreaIndicator);
+    }
+
+    [Test]
+    public void EnemyThreats_ClaimRenderSlotsBeforeAlliedShapes()
+    {
+        var alliedWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+            .Select(_ => Candidate(new TelegraphData { IsHostile = true }, TelegraphColorType.PartyMember));
+        var enemyWarning = Candidate(new TelegraphData { IsHostile = true }, TelegraphColorType.Hostile, creatorIsEnemy: true);
+        var enemyZone = Candidate(
+            new TelegraphData { IsHostile = true, IsPersistentAreaIndicator = true },
+            TelegraphColorType.Hostile,
+            creatorIsEnemy: true);
+
+        var selected = SelectForRendering(alliedWarnings.Concat(new[] { enemyZone, enemyWarning }));
+
+        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected[0].Should().Be(enemyWarning, "an enemy warning is the most urgent shape on screen");
+        selected[1].Should().Be(enemyZone, "a lingering enemy area still outranks every allied shape");
+    }
+
+    [TestCase(TelegraphColorType.Self, false, true)]
+    [TestCase(TelegraphColorType.Hostile, true, true)]
+    [TestCase(TelegraphColorType.PartyMember, false, false)]
+    [TestCase(TelegraphColorType.Beneficial, false, false)]
+    [TestCase(TelegraphColorType.Hostile, false, false)]
+    public void ImpactFlashes_RenderOnlyForTheirOwnerAndFromEnemies(
+        TelegraphColorType colorType,
+        bool creatorIsEnemy,
+        bool expectedVisible)
+    {
+        var flash = Candidate(new TelegraphData { IsHostile = true, IsImpactFlash = true }, colorType, creatorIsEnemy);
+
+        SelectForRendering(new[] { flash }).Should().HaveCount(expectedVisible ? 1 : 0);
+    }
+
+    [Test]
+    public void AlliedWarningsAndLingeringAreas_StayVisible()
+    {
+        var warning = Candidate(new TelegraphData { IsHostile = true }, TelegraphColorType.PartyMember);
+        var koltoZone = Candidate(new TelegraphData { IsPersistentAreaIndicator = true }, TelegraphColorType.Beneficial);
+
+        SelectForRendering(new[] { warning, koltoZone }).Should().Equal(warning, koltoZone);
+    }
+
+    [Test]
+    public void AreaImpactFlash_IsMarkedSoAlliedViewersCanSkipIt()
+    {
+        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        var flashStart = source.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal);
+
+        ExtractBlockBody(source, flashStart).Should().Contain("isImpactFlash: true");
+    }
+
+    private static TelegraphRenderCandidate Candidate(
+        TelegraphData data,
+        TelegraphColorType colorType = TelegraphColorType.Beneficial,
+        bool creatorIsEnemy = false)
+    {
+        return new TelegraphRenderCandidate(new ActiveTelegraph(1, 0, 100, data), colorType, creatorIsEnemy);
+    }
+
+    private static TelegraphRenderCandidate[] SelectForRendering(IEnumerable<TelegraphRenderCandidate> candidates)
+    {
         var selector = typeof(Telegraph)
             .GetMethod("SelectTelegraphsForRendering", BindingFlags.Static | BindingFlags.NonPublic)!;
 
-        var selected = (ActiveTelegraph[])selector.Invoke(null, new object[] { candidates })!;
-
-        selected.Should().HaveCount(Telegraph.MaxRenderCount);
-        selected.Should().OnlyContain(telegraph => !telegraph.Data.IsPersistentAreaIndicator);
+        return (TelegraphRenderCandidate[])selector.Invoke(null, new object[] { candidates })!;
     }
 
     /// <summary>

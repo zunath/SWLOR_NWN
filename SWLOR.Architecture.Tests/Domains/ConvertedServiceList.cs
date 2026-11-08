@@ -9,7 +9,6 @@ namespace SWLOR.Architecture.Tests.Domains;
 internal sealed class ConvertedServiceList
 {
     private readonly List<ConvertedService> _services = new();
-    private readonly List<ConvertedService> _inProgress = new();
     private readonly List<string> _problems = new();
 
     private ConvertedServiceList()
@@ -19,24 +18,10 @@ internal sealed class ConvertedServiceList
     public IReadOnlyList<ConvertedService> Services => _services;
 
     /// <summary>
-    /// The services being converted piece by piece, from the optional top-level <c>inProgress</c> list. Only
-    /// <see cref="OnlyInProgressService"/> may be listed (see <c>ConvertedServiceRules.InProgressProblems</c>). Such a
-    /// service is not yet one of <see cref="Services"/>: its facade may resolve from the container and the parts it
-    /// has so far are checked, but it has no interface or instance class of its own to look for.
-    /// </summary>
-    public IReadOnlyList<ConvertedService> InProgress => _inProgress;
-
-    /// <summary>
     /// Mistakes in the file itself: a name that is not a plain identifier, a service or extra facade listed twice, an
-    /// unsorted list.
+    /// unsorted list, or a top-level <c>inProgress</c> list.
     /// </summary>
     public IReadOnlyList<string> Problems => _problems;
-
-    /// <summary>
-    /// The one service that may be listed as in progress: <c>Combat</c> while it is split into parts
-    /// (Readmes/MaintainabilityRefactorCombatSplit.md). P2-CB10 removes the <c>inProgress</c> list and this constant.
-    /// </summary>
-    public const string OnlyInProgressService = "Combat";
 
     public static ConvertedServiceList Load(string path) => Parse(File.ReadAllText(path));
 
@@ -65,25 +50,10 @@ internal sealed class ConvertedServiceList
             list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element), FacadeRemoved = list.ReadFacadeRemoved(name, element) });
         }
 
-        if (document.RootElement.TryGetProperty("inProgress", out var inProgress))
-        {
-            foreach (var element in inProgress.EnumerateArray())
-            {
-                var name = element.GetProperty("name").GetString() ?? string.Empty;
-                var domain = element.GetProperty("domain").GetString() ?? string.Empty;
-
-                if (!IsPlainName(name))
-                    list._problems.Add($"'{name}' is not a plain service name (inProgress).");
-                if (!IsPlainName(domain))
-                    list._problems.Add($"The domain '{domain}' of {name} is not a plain domain name (inProgress).");
-                if (list._inProgress.Any(known => known.Name == name))
-                    list._problems.Add($"{name} is listed twice in inProgress.");
-                if (list._services.Any(known => known.Name == name))
-                    list._problems.Add($"{name} is listed both in services and in inProgress.");
-
-                list._inProgress.Add(new ConvertedService(name, domain));
-            }
-        }
+        // Combat was split into part services one layer at a time behind a temporary inProgress list (P2-CB0 to P2-CB10).
+        // It is listed under services now; a service is listed only when it is fully converted.
+        if (document.RootElement.TryGetProperty("inProgress", out _))
+            list._problems.Add("The inProgress list is gone (P2-CB10): convert a service in one pull request and list it under services.");
 
         return list;
     }

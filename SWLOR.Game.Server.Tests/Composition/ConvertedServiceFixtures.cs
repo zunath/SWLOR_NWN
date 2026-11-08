@@ -9,13 +9,8 @@ namespace SWLOR.Game.Server.Tests.Composition;
 /// rules use, so the tests that prove the facade and registration of every converted service pick up a new conversion
 /// without being edited. A service that lists extras (<c>"extras": [ { "facade": "QuestService.QuestEncounter" } ]</c>, or a
 /// <c>{ "part": "PropertyCatalog" }</c> of a split service) yields one more entry per extra, with its interface and its
-/// instance class, and its facade type when it has one.
-/// <para>
-/// A service in the top-level <c>inProgress</c> list (only <c>Combat</c>, while it is split; P2-CB10 removes the list)
-/// is not loaded itself, but its parts are: every interface <c>I&lt;Service&gt;*Service</c> in its domain namespace that
-/// is not the interface of a service already listed, with the class that implements it. They are tested like the parts
-/// of a listed service, so the rules stay strict for them.
-/// </para>
+/// instance class, and its facade type when it has one. The main entry of a service with parts names their interfaces
+/// (<see cref="ConvertedServiceTypes.Parts"/>).
 /// </summary>
 public static class ConvertedServiceFixtures
 {
@@ -36,7 +31,7 @@ public static class ConvertedServiceFixtures
             var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
             // A service whose facades the branch removed (P2-Z) has no static class left to load.
             var removed = element.TryGetProperty("facadeRemoved", out var flag) && flag.ValueKind == JsonValueKind.True;
-            services.Add(new ConvertedServiceTypes(
+            var main = new ConvertedServiceTypes(
                 name,
                 domain,
                 removed ? null : assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
@@ -44,73 +39,34 @@ public static class ConvertedServiceFixtures
                 assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!)
             {
                 RemovedFacade = removed ? $"{ServerNamespace}.Service.{name}" : null
-            });
+            };
+            var extraTypes = new List<ConvertedServiceTypes>();
 
-            if (!element.TryGetProperty("extras", out var extras))
-                continue;
-
-            foreach (var entry in extras.EnumerateArray())
+            if (element.TryGetProperty("extras", out var extras))
             {
-                var facade = entry.TryGetProperty("facade", out var facadeName) ? facadeName.GetString() : null;
-                var extraName = facade ?? entry.GetProperty("part").GetString()!;
-                var typeName = extraName[(extraName.LastIndexOf('.') + 1)..];
-                services.Add(new ConvertedServiceTypes(
-                    extraName,
-                    domain,
-                    facade is null || removed ? null : assembly.GetType($"{ServerNamespace}.Service.{facade}", throwOnError: true)!,
-                    assembly.GetType($"{domainNamespace}.I{typeName}Service", throwOnError: true)!,
-                    assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!)
+                foreach (var entry in extras.EnumerateArray())
                 {
-                    RemovedFacade = facade is not null && removed ? $"{ServerNamespace}.Service.{facade}" : null
-                });
-            }
-        }
-
-        if (document.RootElement.TryGetProperty("inProgress", out var inProgress))
-        {
-            var listed = services.Select(service => service.Contract.Name).ToHashSet(StringComparer.Ordinal);
-            foreach (var element in inProgress.EnumerateArray())
-            {
-                var name = element.GetProperty("name").GetString()!;
-                var domain = element.GetProperty("domain").GetString()!;
-                var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
-                foreach (var contract in assembly.GetTypes().Where(type =>
-                             type.IsInterface && type.Namespace == domainNamespace && IsInProgressPartContract(name, type.Name, listed))
-                             .OrderBy(type => type.Name, StringComparer.Ordinal))
-                {
-                    var typeName = contract.Name[1..];
-                    services.Add(new ConvertedServiceTypes(
-                        typeName,
+                    var facade = entry.TryGetProperty("facade", out var facadeName) ? facadeName.GetString() : null;
+                    var extraName = facade ?? entry.GetProperty("part").GetString()!;
+                    var typeName = extraName[(extraName.LastIndexOf('.') + 1)..];
+                    extraTypes.Add(new ConvertedServiceTypes(
+                        extraName,
                         domain,
-                        null,
-                        contract,
-                        assembly.GetType($"{domainNamespace}.{typeName}", throwOnError: true)!));
+                        facade is null || removed ? null : assembly.GetType($"{ServerNamespace}.Service.{facade}", throwOnError: true)!,
+                        assembly.GetType($"{domainNamespace}.I{typeName}Service", throwOnError: true)!,
+                        assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!)
+                    {
+                        RemovedFacade = facade is not null && removed ? $"{ServerNamespace}.Service.{facade}" : null
+                    });
                 }
             }
+
+            // A removed further facade has no facade type either, but it is not a part.
+            services.Add(main with { Parts = extraTypes.Where(extra => extra.Facade is null && extra.RemovedFacade is null).Select(extra => extra.Contract).ToArray() });
+            services.AddRange(extraTypes);
         }
 
         return services;
-    }
-
-    /// <summary>
-    /// Whether an interface name is the interface of a part of a service in progress: <c>I&lt;Service&gt;*Service</c>
-    /// (<c>ICombatQueriesService</c> for <c>Combat</c>) that no service already listed owns (<c>ICombatPointService</c>).
-    /// </summary>
-    public static bool IsInProgressPartContract(string service, string interfaceName, ISet<string> listedContracts) =>
-        interfaceName.Length > 1 &&
-        interfaceName[0] == 'I' &&
-        interfaceName[1..].StartsWith(service, StringComparison.Ordinal) &&
-        interfaceName.EndsWith("Service", StringComparison.Ordinal) &&
-        !listedContracts.Contains(interfaceName);
-
-    /// <summary>The services in the top-level <c>inProgress</c> list of <c>ConvertedServices.json</c>.</summary>
-    public static IReadOnlyList<string> InProgressServices()
-    {
-        var path = Path.Combine(FindRepositoryRoot(), "SWLOR.Architecture.Tests", "ConvertedServices.json");
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        return document.RootElement.TryGetProperty("inProgress", out var inProgress)
-            ? inProgress.EnumerateArray().Select(element => element.GetProperty("name").GetString()!).ToArray()
-            : Array.Empty<string>();
     }
 
     /// <summary>Every class of every converted service, parts included.</summary>

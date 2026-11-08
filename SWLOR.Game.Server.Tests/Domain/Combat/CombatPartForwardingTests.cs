@@ -13,10 +13,10 @@ using CombatFacade = SWLOR.Game.Server.Service.Combat;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// While <c>Combat</c> is split, every member of a converted part stays on the <c>Combat</c> class as a static forwarder
-/// of the same name, parameters and defaults, so no caller changes. These tests prove, for each member of each part's
-/// interface, that the forwarder exists with that signature and makes exactly one call on the container's instance with
-/// the same arguments, returning its result.
+/// Every member of a part of <c>Combat</c> (and of <c>ICombatService</c>, what is left of it) stays on the <c>Combat</c>
+/// facade as a static forwarder of the same name, parameters and defaults, so no caller changes; a member only other parts
+/// called keeps a private forwarder. These tests prove, for each member of each part's interface, that the forwarder exists
+/// with that signature and makes exactly one call on the container's instance with the same arguments, returning its result.
 /// </summary>
 [TestFixture]
 public class CombatPartForwardingTests
@@ -37,6 +37,7 @@ public class CombatPartForwardingTests
         typeof(ICombatHitEffectsService),
         typeof(ICombatQueriesService),
         typeof(ICombatResourcesService),
+        typeof(ICombatService),
         typeof(ICombatSuppressionService),
     };
 
@@ -178,6 +179,12 @@ public class CombatPartForwardingTests
     public void TheMovedImpactDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 2, typeof(ICombatAbilityImpactService));
 
+    // The one member of what is left of Combat (CombatService) that has a default argument, with the default it had as a static
+    // member of Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatService), "CalculateDamage(deltaCap=0)")]
+    public void TheMovedServiceDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 1, typeof(ICombatService));
+
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)
         .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
@@ -228,6 +235,28 @@ public class CombatPartForwardingTests
         handler.GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCreatureDamagedAfter);
         typeof(CombatDamageTakenService).GetMethods().Where(method => method.Name == "ApplyDamageTakenEffects")
             .SelectMany(method => method.GetCustomAttributes<NWNEventHandler>()).Should().BeEmpty("handlers stay on the facade");
+    }
+
+    [TestCase("ApplyDefeatedEnemyEffects", ScriptName.OnCreatureDeathBefore)]
+    [TestCase("ClearStatTriggerState", ScriptName.OnModuleExit)]
+    [TestCase("ClearCombatState", ScriptName.OnIntervalPC6Seconds)]
+    public void TheServiceHandlersStayOnCombatUnderTheirNames(string name, string script)
+    {
+        var handler = typeof(CombatFacade).GetMethod(name, BindingFlags.Public | BindingFlags.Static, Type.EmptyTypes)!;
+        handler.GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(script);
+        typeof(CombatService).GetMethod(name, Type.EmptyTypes)!.GetCustomAttributes<NWNEventHandler>().Should()
+            .BeEmpty("handlers stay on the facade");
+    }
+
+    [Test]
+    public void CombatIsOneStaticClassWithNoPartialFiles()
+    {
+        typeof(CombatFacade).IsAbstract.Should().BeTrue();
+        typeof(CombatFacade).IsSealed.Should().BeTrue("Combat is a static class");
+        var server = Path.GetDirectoryName(CombatSource.Paths()[0])!;
+        Directory.Exists(Path.Combine(server, "CombatParts")).Should().BeFalse("P2-CB10 merged the partial class files into Service/Combat.cs");
+        CombatSource.Paths().Where(path => path.StartsWith(server + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            .Select(Path.GetFileName).Should().Equal("Combat.cs");
     }
 
     [TestCase("PurgeInvalidOffensiveActivity", ScriptName.OnModuleHeartbeat)]

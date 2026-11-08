@@ -28,11 +28,20 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void The_in_progress_list_holds_only_Combat()
+    public void Combat_is_listed_with_its_parts_and_there_is_no_list_of_services_in_progress()
     {
-        // Temporary: P2-CB10 removes the inProgress list when Combat is listed under services.
-        List.InProgress.Select(service => service.Name).Should().Equal(new[] { ConvertedServiceList.OnlyInProgressService });
-        Fail(ConvertedServiceRules.InProgressProblems(List, Map), $"{ListName} lists a service in progress it should not");
+        // P2-CB10 listed Combat, the last service converted in pieces, and removed the temporary inProgress list.
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(ArchitectureProject.ConvertedServicesPath));
+        document.RootElement.TryGetProperty("inProgress", out _).Should().BeFalse($"{ListName} has no inProgress list any more");
+        ConvertedServiceList.Parse("""{ "services": [], "inProgress": [] }""").Problems
+            .Should().ContainSingle(problem => problem.Contains("The inProgress list is gone"));
+
+        var combat = List.Services.Should().ContainSingle(service => service.Name == "Combat").Subject;
+        combat.Domain.Should().Be("Combat");
+        combat.Extras.Select(extra => extra.Name).Should().Equal(
+            "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityHit", "CombatAbilityImpact", "CombatActivity",
+            "CombatAttackTiming", "CombatDamageCatalog", "CombatDamageModifiers", "CombatDamageTaken", "CombatFeedback",
+            "CombatHitEffects", "CombatQueries", "CombatResources", "CombatSuppression");
     }
 
     [Test]
@@ -46,28 +55,10 @@ public class ConvertedServicesTests
     {
         var map = Map;
         var services = List.Services;
-        // A part of the service in progress (CombatQueriesService) keeps the rules of a converted service.
-        bool IsServiceType(TypeKey type) =>
-            ServiceOf(type, map, services) is not null || ConvertedServiceRules.IsInProgressPart(type, List);
+        bool IsServiceType(TypeKey type) => ServiceOf(type, map, services) is not null;
 
         Fail(ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, IsServiceType),
             "Converted services must keep their state on the instance");
-    }
-
-    [Test]
-    public void The_combat_damage_type_table_is_deeply_immutable_before_Combat_is_listed()
-    {
-        // Temporary until P2-CB10 lists Combat (Service/CombatService/* is then checked by the rule above): P2-CB4 made the
-        // damage type details a frozen table of a sealed record, so listing Combat cannot fail on it.
-        var checkedTypes = new HashSet<TypeKey>
-        {
-            new("SWLOR.Game.Server.Service.CombatService", "CombatDamageTypeExtensions"),
-            new("SWLOR.Game.Server.Domain.Combat", "CombatDamageDetails"),
-        };
-        ArchitectureProject.Facts.Types.Select(type => type.Key).Should().Contain(checkedTypes);
-
-        Fail(ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, checkedTypes.Contains),
-            "The damage type details must stay a static readonly table of a deeply immutable type");
     }
 
     [Test]

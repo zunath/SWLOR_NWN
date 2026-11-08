@@ -6,7 +6,7 @@
 # parity copy still rewrites master's version, the branch need not have it, and the sync does not own it (a master
 # change to it is ported by hand).
 Service/Combat.cs
-Service/CombatParts/**
+Domain/Combat/CombatService.cs
 Domain/Combat/CombatResourcesService.cs
 Domain/Combat/CombatSuppressionService.cs
 Domain/Combat/CombatActivityService.cs

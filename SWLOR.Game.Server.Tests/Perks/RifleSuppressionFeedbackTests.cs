@@ -97,7 +97,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("continue;");
         combat.Should().NotContain("new ContainmentNetStatusEffect(adjustment)");
         combat.Should().Contain("int evasionPenaltyAdjustment = 0");
-        combat.Should().Contain("Stat.GetStatAdjustment(");
+        combat.Should().Contain("_stat.GetStatAdjustment(", "the parts read stats through the injected stat service");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));

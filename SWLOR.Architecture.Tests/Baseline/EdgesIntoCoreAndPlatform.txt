@@ -205,7 +205,7 @@ TwinPistolMastery -> DB | 3
 
 # Combat -> Platform (54 edges)
 BattleGrid -> Platform/Composition | 1
-Combat -> Platform/Composition | 14
+Combat -> Platform/Composition | 15
 Combat -> Platform/Core | 53
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3

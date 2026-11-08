@@ -19,7 +19,15 @@ internal static class CraftCalc
 
     private static readonly object Instance = InstanceType == null
         ? null
-        : Activator.CreateInstance(InstanceType, new object[InstanceType.GetConstructors()[0].GetParameters().Length]);
+        : Build(InstanceType);
+
+    // Every constructor argument is null except the skill service, whose experience tables the calculations read.
+    private static object Build(Type type) =>
+        Activator.CreateInstance(type, type.GetConstructors()[0].GetParameters()
+            .Select(parameter => parameter.ParameterType.Name == "ISkillService"
+                ? Build(typeof(Craft).Assembly.GetType("SWLOR.Game.Server.Domain.Character.SkillService"))
+                : null)
+            .ToArray());
 
     private static object Call(string name, params object[] arguments)
     {

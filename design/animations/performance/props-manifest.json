@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "8112c73f801f4e5f93bd6779c32707506b19954f42b8e83b6c374998647a8d9b",
+  "RecipeSha256": "bd00a96320e4494b82af3ca4a8a9a72b427d62dbf8992a0fc10726d0cdd8325c",
   "Notes": "Authored prop clips retain their recipe timing. Installation and client verification are separate steps.",
   "Animations": [
     {
@@ -20,7 +20,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5288108E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5288108e-07,
       "Beats": [
         {
           "Time": 0,
@@ -458,7 +458,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.1793994E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.1793994e-07,
       "Beats": [
         {
           "Time": 0,
@@ -520,7 +520,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2644054E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2644054e-07,
       "Beats": [
         {
           "Time": 0,
@@ -582,7 +582,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4600097E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4600097e-07,
       "Beats": [
         {
           "Time": 0,
@@ -644,7 +644,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6987152E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6987152e-07,
       "Beats": [
         {
           "Time": 0,
@@ -786,7 +786,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5156055E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5156055e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1224,7 +1224,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4751397E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4751397e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1286,7 +1286,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2818464E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2818464e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1348,7 +1348,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4978897E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4978897e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1410,7 +1410,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3899995E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.3899995e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1552,7 +1552,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6656008E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1975,7 +1975,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "ee9e2451a354d933cc07b6bb3c7d8f4ba1aa480aaf86bcf45df0e4629aedc616"
+      "ProjectSha256": "8eaad2bc7c5dcbfcacc4e6ebe019f44e6e361c6381dff041c0953b0af9bd7a7c"
     },
     {
       "Id": "ViolinLow",
@@ -1990,7 +1990,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2037,7 +2037,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "82f38cdf2b78b5a7c07e6759f4e5403b5fc52b1657dbf7717117543faf7ab0b8"
+      "ProjectSha256": "bc8e6b6f827a5267d99d939e83b2902d298f3c1b2fe913af5845dbede1698cdf"
     },
     {
       "Id": "ViolinMid",
@@ -2052,7 +2052,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4901161E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2099,7 +2099,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "a7732f8475790ef017a9c63a12d70c1da34a12b605da89d8d74dc522c6ecf502"
+      "ProjectSha256": "d4dde84b3f4846fc06c88b9c74c15b2233fb8ddba839e3eaedaefa7dda993feb"
     },
     {
       "Id": "ViolinHigh",
@@ -2114,7 +2114,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2161,7 +2161,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "7314971838f00f807fb2ba96130c8f1e5d6a85febc19b188eba34f29dfdc4761"
+      "ProjectSha256": "acf40db205958c71d712819dbe0132b3f068b2d8bb6901d0d4200eb94afcf296"
     },
     {
       "Id": "ViolinFlourish",
@@ -2176,7 +2176,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.1696418e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2303,7 +2303,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "77ec708b31d2609c683baadb87e8ea95c3937a7a5952064185f4c970ce8f5e5c"
+      "ProjectSha256": "917810a682eec2a132007713fed271622bc28f7d134da8029e68badafdb37408"
     },
     {
       "Id": "TambourineLoop",
@@ -2318,7 +2318,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9556887E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.9556887e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2756,7 +2756,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2644054E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2644054e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2818,7 +2818,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2128666E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2128666e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2880,7 +2880,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4439723E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4439723e-07,
       "Beats": [
         {
           "Time": 0,
@@ -2942,7 +2942,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9314112E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.9314112e-07,
       "Beats": [
         {
           "Time": 0,

@@ -3520,56 +3520,6 @@
     "ProjectPath": "design/animations/performance/PipesFlourish.swlanim"
   },
   {
-    "Name": "ViolinLoop",
-    "AnimationName": "sw_vio_loop",
-    "Duration": 5.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinLoop.swlanim"
-  },
-  {
-    "Name": "ViolinLow",
-    "AnimationName": "sw_vio_low",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinLow.swlanim"
-  },
-  {
-    "Name": "ViolinMid",
-    "AnimationName": "sw_vio_mid",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinMid.swlanim"
-  },
-  {
-    "Name": "ViolinHigh",
-    "AnimationName": "sw_vio_high",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinHigh.swlanim"
-  },
-  {
-    "Name": "ViolinFlourish",
-    "AnimationName": "sw_vio_flour",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinFlourish.swlanim"
-  },
-  {
     "Name": "TambourineLoop",
     "AnimationName": "sw_tam_loop",
     "Duration": 5.2,
@@ -3668,5 +3618,55 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/VocalsFlourish.swlanim"
+  },
+  {
+    "Name": "ViolinLoop",
+    "AnimationName": "sw_vio_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinLoop.swlanim"
+  },
+  {
+    "Name": "ViolinLow",
+    "AnimationName": "sw_vio_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinLow.swlanim"
+  },
+  {
+    "Name": "ViolinMid",
+    "AnimationName": "sw_vio_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinMid.swlanim"
+  },
+  {
+    "Name": "ViolinHigh",
+    "AnimationName": "sw_vio_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinHigh.swlanim"
+  },
+  {
+    "Name": "ViolinFlourish",
+    "AnimationName": "sw_vio_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinFlourish.swlanim"
   }
 ]

@@ -367,6 +367,10 @@ is in `props-manifest.json`. Generate that recipe into a temporary directory wit
 `props-manifest.json`. Install with Category `Performance` and the internal names above.
 `leftGrip` optionally aims a held left-hand prop along a world-space direction, just as `blade`
 aims the right-hand prop. Recipes without it retain their native left wrist orientation.
+`rightGripAxis` optionally identifies the prop's long axis in item-local coordinates instead
+of assuming the sword's +Y axis. The tool accounts for the native `rhand` attachment when
+aiming it along `blade`. The violin bow uses its measured diagonal axis; other recipes keep
+their prior grip and output bytes.
 Microphones and violins occupy the left hand; a violin also requires its bow in the right.
 Singing clears the microphone's native `torchl` arm layer once at the opening, then suppresses
 its refresh on the looping carrier. The mapping is owned by the playback and restored on exit
@@ -782,6 +786,13 @@ The manifest records the extension's baseline, clip list, old and new parents, w
 coverage and pose checks. `--check` revalidates the installed layers against those Git
 blobs, including the unchanged parent banks and every byte outside the wearer parent
 name. Package `sw_anim_m`, `sw_anim_f` and `sw_pt_root` with the changed body bank HAK.
+
+For a rotation-only correction to clips already in an extension, use
+`--revise-rotations --baseline <pre-correction-sha> --clip <internal-name> --output <new-output> --apply`
+with `--game-data`. It requires identical body nodes, channel layouts, key times, clip
+headers and rig data. Only selected quaternion values may change. The old layer's values
+must match the pinned body bank, and every unselected native component stays byte-identical.
+All extension body poses are checked again before installation. Then rerun `--check`.
 
 Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
 pruned deletions, wearable models, tables, and the generated catalog. Package and deploy

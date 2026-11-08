@@ -31,6 +31,8 @@ internal static class MotionAuthor
         var poses = beats.Select(beat => Read(ready, beat.Pose)).ToArray();
         if (poses.Any(p => p.LeftGrip.HasValue) && poses.Any(p => !p.LeftGrip.HasValue))
             throw new InvalidDataException($"{motion.Id}: leftGrip must be present on every pose or none.");
+        if (poses.Any(p => p.RightGripAxis.HasValue) && poses.Any(p => !p.RightGripAxis.HasValue))
+            throw new InvalidDataException($"{motion.Id}: rightGripAxis must be present on every pose or none.");
         var result = rig.Clone(); result.Keys.Clear(); result.Events.Clear(); result.Name = motion.Id;
         result.Duration = beats[^1].Time; result.Transition = .15f;
         var times = new SortedSet<float>(beats.Select(b => b.Time));
@@ -103,12 +105,16 @@ internal static class MotionAuthor
         Vector3? grip = leftGrip == null ? null : V("leftGrip");
         if (grip.HasValue && grip.Value.LengthSquared() < .01f)
             throw new InvalidDataException("Left grip direction is zero.");
+        var rightAxisNode = patch["rightGripAxis"] ?? ready["rightGripAxis"];
+        Vector3? rightAxis = rightAxisNode == null ? null : V("rightGripAxis");
+        if (rightAxis.HasValue && rightAxis.Value.LengthSquared() < .01f)
+            throw new InvalidDataException("Right grip axis is zero.");
         // Optional whole-body turn about the vertical axis through the root, in degrees. Existing recipes omit it.
         var yawNode = patch["rootYaw"] ?? ready["rootYaw"];
         var yaw = yawNode == null ? 0f : yawNode.GetValue<float>();
         if (!float.IsFinite(yaw) || Math.Abs(yaw) > 720) throw new InvalidDataException("rootYaw must be within 720 degrees.");
         return new(V("root"), V("chest"), V("hips"), V("leftHand"), V("rightHand"), blade,
-            V("leftFoot"), V("rightFoot"), V("shield"), yaw, grip);
+            V("leftFoot"), V("rightFoot"), V("shield"), yaw, grip, rightAxis);
     }
 
     private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time, bool naturalGrip)
@@ -137,6 +143,15 @@ internal static class MotionAuthor
         // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
         var world = AnimationRig.World(rig.Joints, pose);
         var blade = Vector3.Normalize(p.RootYaw == 0 ? p.Blade : Vector3.Transform(p.Blade, turn));
+        var handAxis = Vector3.UnitY;
+        if (p.RightGripAxis.HasValue)
+        {
+            // Props need not be modeled along the sword axis. Convert their local
+            // long axis through the actual rhand attachment before aiming the hand.
+            Matrix4x4.Invert(world[Index(rig, "rhand_g")], out var inverseHand);
+            var attachment = world[Index(rig, "rhand")] * inverseHand;
+            handAxis = Vector3.Normalize(Vector3.TransformNormal(p.RightGripAxis.Value, attachment));
+        }
         if (naturalGrip)
         {
             // Let forearm roll carry the grip, then use the smallest wrist swing to aim.
@@ -146,7 +161,7 @@ internal static class MotionAuthor
             Matrix4x4.Decompose(world[rightForearm], out _, out var parentRotation, out _);
             var grip = Quaternion.Normalize(parentRotation * rig.Joints[rightHand].Rest.Orientation);
             var armAxis = Vector3.Normalize(world[rightHand].Translation - world[rightForearm].Translation);
-            var gripForward = Vector3.Transform(Vector3.UnitY, grip);
+            var gripForward = Vector3.Transform(handAxis, grip);
             gripForward -= armAxis * Vector3.Dot(gripForward, armAxis);
             var aim = blade - armAxis * Vector3.Dot(blade, armAxis);
             if (gripForward.LengthSquared() < .01f || aim.LengthSquared() < .01f)
@@ -154,7 +169,7 @@ internal static class MotionAuthor
             parentRotation = AnimationRig.Between(Vector3.Normalize(gripForward), Vector3.Normalize(aim)) * parentRotation;
             SetWorld("rforearm_g", parentRotation);
             grip = Quaternion.Normalize(parentRotation * rig.Joints[rightHand].Rest.Orientation);
-            SetWorld("rhand_g", AnimationRig.Between(Vector3.Transform(Vector3.UnitY, grip), blade) * grip);
+            SetWorld("rhand_g", AnimationRig.Between(Vector3.Transform(handAxis, grip), blade) * grip);
         }
         else
         {
@@ -164,9 +179,11 @@ internal static class MotionAuthor
             if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitX - blade * blade.X;
             wrist = Vector3.Normalize(wrist);
             var across = Vector3.Normalize(Vector3.Cross(blade, wrist));
-            SetWorld("rhand_g", Quaternion.CreateFromRotationMatrix(new Matrix4x4(
+            var orientation = Quaternion.CreateFromRotationMatrix(new Matrix4x4(
                 across.X, across.Y, across.Z, 0, blade.X, blade.Y, blade.Z, 0,
-                wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1)));
+                wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1));
+            if (p.RightGripAxis.HasValue) orientation *= AnimationRig.Between(handAxis, Vector3.UnitY);
+            SetWorld("rhand_g", orientation);
         }
         // NWN straps shields to lforearm, not lhand_g. Roll the forearm about its
         // elbow-to-wrist axis to turn the shield toward the target without moving the
@@ -233,7 +250,8 @@ internal static class MotionAuthor
         Quaternion.CreateFromAxisAngle(Vector3.UnitX, Radians(-degrees.X));
 
     private sealed record Pose(Vector3 Root, Vector3 Chest, Vector3 Hips, Vector3 LeftHand, Vector3 RightHand,
-        Vector3 Blade, Vector3 LeftFoot, Vector3 RightFoot, Vector3 Shield, float RootYaw = 0, Vector3? LeftGrip = null)
+        Vector3 Blade, Vector3 LeftFoot, Vector3 RightFoot, Vector3 Shield, float RootYaw = 0, Vector3? LeftGrip = null,
+        Vector3? RightGripAxis = null)
     {
         // A strike passes through contact poses without stopping. Shape-preserving
         // Hermite tangents keep that velocity continuous without overshooting limb
@@ -267,7 +285,8 @@ internal static class MotionAuthor
             }
             return new(V(p => p.Root), V(p => p.Chest), V(p => p.Hips), V(p => p.LeftHand), V(p => p.RightHand),
                 V(p => p.Blade), V(p => p.LeftFoot), V(p => p.RightFoot), V(p => p.Shield), V(p => new Vector3(p.RootYaw, 0, 0)).X,
-                poses[segment].LeftGrip.HasValue ? V(p => p.LeftGrip.GetValueOrDefault()) : null);
+                poses[segment].LeftGrip.HasValue ? V(p => p.LeftGrip.GetValueOrDefault()) : null,
+                poses[segment].RightGripAxis.HasValue ? V(p => p.RightGripAxis.GetValueOrDefault()) : null);
         }
     }
 }

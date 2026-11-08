@@ -403,6 +403,7 @@ them is not an option before facade removal (P2-Z).
   parity check and the sync match master's name to the new one. P2-Z facade removal uses the same file.
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in
   content code with injection where the caller is itself converted, delete facades area by area.
+  The plan (item "P2-Z plan", 2026-11-08) is in [MaintainabilityRefactorFacadeRemoval.md](MaintainabilityRefactorFacadeRemoval.md): items P2-ZA to P2-ZZ and the open decisions.
 - **P2-Z2 namespace consolidation (owner decision, 2026-11-06), right after P2-Z, one scripted pull request in a quiet
   window (no open item branches, master just synced).** Today `Service.<Name>Service` is a namespace and `<Name>Service`
   a class (42 namespace-versus-type clashes on 2026-11-06), Combat alone has `Domain.Combat`, `Service.CombatService`,

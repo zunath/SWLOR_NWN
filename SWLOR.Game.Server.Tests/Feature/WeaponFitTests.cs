@@ -88,6 +88,17 @@ public class WeaponFitTests
     }
 
     [Test]
+    public void WookieePistolCorrectionIsSpecificToTheMeasuredHandAndAssembly()
+    {
+        Fit(BaseItem.Sling, 310, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
+        foreach (var hand in new[] { "pfe0_handr214", "pme0_handl214", "pme0_handr208", "pmh0_handr214" })
+            Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 309, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 310, 102, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+        Fit(BaseItem.Rifle, 310, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+    }
+
+    [Test]
     public void TheInspectedBaselinesKeepTheirAuthoredAttachment()
     {
         Fit(BaseItem.Sling, 310, 101, 101, "pmh0_handr002").Should().Be(FitVector.Zero);

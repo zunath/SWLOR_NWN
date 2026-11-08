@@ -13,14 +13,15 @@ internal static class WeaponGripFits
     private static Dictionary<(BaseItem Type, int Top, int Middle, int Bottom, string Hand, string SupportHand), FitVector> BuildFits()
     {
         var fits = new Dictionary<(BaseItem, int, int, int, string, string), FitVector>();
-        // The inspected native baselines below retain their authored attachment. No candidate
-        // correction has passed the contact views yet; do not turn geometric overlap minima
-        // into gameplay corrections without checking the palm, fingers and reverse side.
+        // The inspected native baselines below retain their authored attachment.
         foreach (var gender in new[] { 'm', 'f' })
         foreach (var side in new[] { 'r', 'l' })
             fits[(BaseItem.Sling, 101, 310, 101, $"p{gender}h0_hand{side}001", "")] = FitVector.Zero;
         fits[(BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "")] = FitVector.Zero;
         fits[(BaseItem.Rifle, 101, 213, 101, "pmh0_handr001", "pmh0_handl001")] = FitVector.Zero;
+        // Pistol #310, male Wookiee hand #214: seat the handle behind the fingertips.
+        // Measured against the actual grip neck and checked from both sides, idle and attack.
+        fits[(BaseItem.Sling, 101, 310, 101, "pme0_handr214", "")] = new FitVector(0f, 0f, .035f);
         return fits;
     }
 

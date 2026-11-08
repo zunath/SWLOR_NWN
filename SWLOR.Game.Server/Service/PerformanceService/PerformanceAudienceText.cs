@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
@@ -22,6 +23,37 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 return $"Inspiring {followers} {(followers == 1 ? "follower" : "followers")}";
 
             return watchersInRange > 0 ? "Nobody is following you yet" : "Practice: nobody in range";
+        }
+
+        /// <summary>
+        /// What a watcher who follows only this performer leaves with, and how fast it banks at the performer's current quality
+        /// and venue. A partner's riders and Harmony count as the last audience tick found them; the troupe bonus and a second
+        /// performer the watcher also follows depend on the watcher, so they are left out.
+        /// </summary>
+        public static string AudienceGets(PerformerSnapshot performer)
+        {
+            var isDancer = performer.Kind == PerformanceKind.Dance;
+            var inspired = PerformanceInspiredComposer.Compose(
+                isDancer ? performer : null,
+                isDancer ? null : performer,
+                performer.Venue);
+
+            var harmony = !isDancer && performer.HarmonyActive ? performer.BankingBonusPercent : 0;
+            var rate = PerformanceMath.BankingMinutes(
+                performer.Quality.GetBankingMultiplier(),
+                performer.Venue,
+                1,
+                isDancer ? performer.BankingBonusPercent : 0,
+                harmony);
+            var cap = PerformanceMath.InspiredCapMinutes(performer.Venue, isDancer ? performer.CapBonusMinutes : 0);
+
+            var banking = $"Banks {rate.ToString("0.#", CultureInfo.InvariantCulture)} min per minute watched " +
+                          $"after {PerformanceMath.WarmupMinutes} min, up to {cap} min.";
+            var debt = Math.Max(0, performer.DebtClearPercent);
+            if (debt > 0)
+                banking += $" Clears {debt}% XP debt per minute.";
+
+            return $"Your audience gets {PerformanceWatchText.LeaveWith(inspired)}\n{banking}";
         }
 
         public static string Hears(string songName)

@@ -58,7 +58,7 @@ namespace SWLOR.CraftSim.Fishing
             _mixes = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<FishingMixEntry>>>(BuildMixes);
         }
 
-        public string Name => (_options.FreeOpeningTurn ? "Fishing at the fastest allowed pace" : "Fishing") +
+        public string Name => (_options.FreeOpeningTurn ? "Fishing with the first action at once" : "Fishing") +
                               (ReferenceEquals(_build, AnglerBuild.Unperked) ? string.Empty : $" ({_build.Name})");
 
         public string RunName => "bite";
@@ -106,9 +106,10 @@ namespace SWLOR.CraftSim.Fishing
                 var baseXp = FishingCatchModel.XpPerBite(entry.Rank, entry.Level);
                 var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, _xpMultiplierFor(entry.Level));
                 var atBite = Math.Min(baseXp, fightXp);
-                // The fastest pace the game allows takes the first action at once, so a fight of n actions lasts n - 1 turns.
+                // A player who takes the first action at once plays a fight of n actions in n - 1 turns' time, and the game pays a
+                // fight played faster than the tuned pace in proportion to the time it took (LineRules.FightXpShare).
                 var free = _options.FreeOpeningTurn ? 1 : 0;
-                var share = sample.Mean(turns => LineRules.XpShare(Math.Max(0, turns - free) * _options.SecondsPerTurn));
+                var share = sample.Mean(turns => LineRules.FightXpShare(Math.Max(0, turns - free) * _options.SecondsPerTurn, turns));
                 xp += (atBite + (fightXp - atBite) * share) * bites;
                 actions += sample.Mean(turns => Math.Max(0, turns - free)) * bites;
             }

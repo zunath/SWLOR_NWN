@@ -103,12 +103,22 @@ public class EngineeringPerkLineTests
     [Test]
     public void ARankedPerkRestatesTheBenefitItsLowerRankGave_SoThePurchasedRankAloneIsComplete()
     {
-        foreach (var type in new[] { PerkType.ConductiveWiring, PerkType.HeatSinks, PerkType.InsulatedTraces, PerkType.FineCalibration })
+        foreach (var type in new[] { PerkType.HeatSinks, PerkType.FineCalibration })
         {
             var levels = Perks()[type].PerkLevels.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToList();
             levels.Should().HaveCount(2, type.ToString());
             levels[0].StatBonuses.Single().Stat.Should().Be(levels[1].StatBonuses.Single().Stat, type.ToString());
             levels[1].StatBonuses.Single().Calculate(0).Should().BeGreaterThan(levels[0].StatBonuses.Single().Calculate(0), type.ToString());
+        }
+
+        // These two keep the first rank's number at the second and add a smaller benefit, so a rank never doubles the Load or Integrity they give.
+        foreach (var type in new[] { PerkType.ConductiveWiring, PerkType.InsulatedTraces })
+        {
+            var levels = Perks()[type].PerkLevels.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToList();
+            levels.Should().HaveCount(2, type.ToString());
+            var first = levels[0].StatBonuses.Single();
+            levels[1].StatBonuses.Should().HaveCount(2, type.ToString());
+            levels[1].StatBonuses.Single(bonus => bonus.Stat == first.Stat).Calculate(0).Should().Be(first.Calculate(0), type.ToString());
         }
     }
 
@@ -143,20 +153,20 @@ public class EngineeringPerkLineTests
 
         stats.Should().BeEquivalentTo(new CircuitPerkStats
         {
-            LoadBoostPercent = CircuitPerkRules.ConductiveWiringLoadBoostRank2,
-            DischargePowerPercent = CircuitPerkRules.CapacitorBankDischargePercent,
+            LoadBoostPercent = CircuitPerkRules.ConductiveWiringLoadBoost,
+            DischargePowerPercent = CircuitPerkRules.CapacitorBankDischargePercent + CircuitPerkRules.ConductiveWiringDischargePercent,
             OverloadLine = CircuitPerkRules.HeatSinksLineRank2,
             CascadeDischarge = true,
             BoostLoad = CircuitPerkRules.OverdriveBoostExtraLoad,
             BoostCpReduction = CircuitPerkRules.OverdriveBoostCpReduction,
             OverloadIntegrityReductionPercent = CircuitPerkRules.ShockAbsorbersReductionPercent,
             Surge = true,
-            ActionIntegrityReduction = CircuitPerkRules.InsulatedTracesReductionRank2,
+            ActionIntegrityReduction = CircuitPerkRules.InsulatedTracesIntegrityReduction,
             TunePowerPercent = CircuitPerkRules.FineCalibrationPercentRank2,
             ForecastTurns = CircuitPerkRules.DiagnosticsExtraForecastTurns,
             MicroTune = true,
             SignalChancePercent = CircuitPerkRules.SignalLockChancePercent,
-            PatchRestore = CircuitPerkRules.PrecisionPatchExtraRestore,
+            PatchRestore = CircuitPerkRules.PrecisionPatchExtraRestore + CircuitPerkRules.InsulatedTracesPatchRestore,
             PatchCpReduction = CircuitPerkRules.PrecisionPatchCpReduction,
             Failsafe = true
         });
@@ -182,7 +192,8 @@ public class EngineeringPerkLineTests
         StatsAt(15, Technician).ForecastTurns.Should().Be(1);
         StatsAt(25, Technician).MicroTune.Should().BeTrue();
         StatsAt(24, Technician).MicroTune.Should().BeFalse();
-        StatsAt(40, Technician).ActionIntegrityReduction.Should().Be(CircuitPerkRules.InsulatedTracesReductionRank2);
+        StatsAt(40, Technician).ActionIntegrityReduction.Should().Be(CircuitPerkRules.InsulatedTracesIntegrityReduction);
+        StatsAt(40, Technician).PatchRestore.Should().Be(CircuitPerkRules.PrecisionPatchExtraRestore + CircuitPerkRules.InsulatedTracesPatchRestore);
         StatsAt(45, Technician).TunePowerPercent.Should().Be(CircuitPerkRules.FineCalibrationPercentRank2);
         StatsAt(49, Technician).Failsafe.Should().BeFalse();
         StatsAt(50, Technician).Failsafe.Should().BeTrue();
@@ -206,18 +217,17 @@ public class EngineeringPerkLineTests
 
         overclock.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
-            [StatType.CircuitExtraLoadPerBuildAction] = 1,
-            [StatType.CircuitLoadBoostPercent] = 1
+            [StatType.CircuitExtraLoadPerBuildAction] = 1
         });
         safeMode.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
-            [StatType.CircuitOverloadGrace] = 2,
-            [StatType.CircuitLoadBoostPercent] = -3
+            [StatType.CircuitOverloadGrace] = CircuitPerkRules.SafeModeOverloadGrace,
+            [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.SafeModeLoadBoostPercent
         });
         CircuitStyles.Description(CircuitStyle.Overclock).Should().Be(
-            "Wire and Tune add 1 extra Load, and each Load point adds 1 more percentage point of output.");
+            "Wire and Tune add 1 extra Load.");
         CircuitStyles.Description(CircuitStyle.SafeMode).Should().Be(
-            "Actions cannot overload while Load is no more than 2 over the line, and each Load point adds 3 fewer percentage points of output.");
+            "Actions cannot overload while Load is no more than 3 over the line, and each Load point adds 1 fewer percentage point of output.");
         new OverclockStatusEffect().Name.Should().Be(CircuitStyles.Name(CircuitStyle.Overclock));
         new SafeModeStatusEffect().Name.Should().Be(CircuitStyles.Name(CircuitStyle.SafeMode));
         new OverclockStatusEffect().Icon.Should().NotBe(new SafeModeStatusEffect().Icon);
@@ -231,11 +241,11 @@ public class EngineeringPerkLineTests
         var safeMode = CircuitPerkLines.StatsAt(Perks(), both, 50, CircuitStyle.SafeMode);
         CircuitPerkLines.StatsAt(Perks(), both, 19, CircuitStyle.Overclock).ExtraLoadPerBuildAction.Should().Be(0, "a style opens at rank 20");
 
-        overclock.LoadBoostPercent.Should().Be(3, "2 from Conductive Wiring and 1 from Overclock");
+        overclock.LoadBoostPercent.Should().Be(CircuitPerkRules.ConductiveWiringLoadBoost, "only Conductive Wiring: Overclock adds Load, not Load boost");
         overclock.ExtraLoadPerBuildAction.Should().Be(1);
         overclock.OverloadGrace.Should().Be(0);
-        safeMode.LoadBoostPercent.Should().Be(-1, "2 from Conductive Wiring less 3 from Safe Mode");
-        safeMode.OverloadGrace.Should().Be(2);
+        safeMode.LoadBoostPercent.Should().Be(CircuitPerkRules.ConductiveWiringLoadBoost + CircuitPerkRules.SafeModeLoadBoostPercent);
+        safeMode.OverloadGrace.Should().Be(CircuitPerkRules.SafeModeOverloadGrace);
         safeMode.ExtraLoadPerBuildAction.Should().Be(0);
     }
 

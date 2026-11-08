@@ -48,10 +48,11 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Worktrees, haks submodule, git network, disk hygiene, builds, local deploy, cloud sessions: `Readmes/AgentEnvironment.md`
 - Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
 - Engine tests: `Readmes/EngineTesting.md`
-- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
+- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (check every new or changed icon upright in the client; key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
 - Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
+- Tint maps, the palette atlas, tint shaders, and dyed parts that glitter, fizz, or turn magenta: `Readmes/TintMapRendering.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`

@@ -40310,7 +40310,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40322,7 +40322,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -40334,7 +40334,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -40374,7 +40374,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -40985,7 +40985,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40997,7 +40997,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -41009,7 +41009,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -41049,7 +41049,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -41435,7 +41435,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -41447,7 +41447,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -41459,7 +41459,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -41499,7 +41499,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -41660,7 +41660,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -41672,7 +41672,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -41684,7 +41684,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -41724,7 +41724,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -42335,7 +42335,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -42347,7 +42347,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -42359,7 +42359,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -42399,7 +42399,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -42560,7 +42560,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -42572,7 +42572,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -42584,7 +42584,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -42624,7 +42624,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -43010,7 +43010,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -43022,7 +43022,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -43034,7 +43034,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -43074,7 +43074,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -43460,7 +43460,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -43472,7 +43472,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -43484,7 +43484,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -43524,7 +43524,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -44585,7 +44585,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -44597,7 +44597,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -44609,7 +44609,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -44649,7 +44649,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -45035,7 +45035,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -45047,7 +45047,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -45059,7 +45059,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -45099,7 +45099,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -45260,7 +45260,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -45272,7 +45272,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -45284,7 +45284,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -45324,7 +45324,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -45935,7 +45935,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -45947,7 +45947,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -45959,7 +45959,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -45999,7 +45999,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -46160,7 +46160,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -46172,7 +46172,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -46184,7 +46184,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -46224,7 +46224,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -46835,7 +46835,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -46847,7 +46847,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -46859,7 +46859,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -46899,7 +46899,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -47060,7 +47060,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -47072,7 +47072,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -47084,7 +47084,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -47124,7 +47124,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -47735,7 +47735,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -47747,7 +47747,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -47759,7 +47759,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -47799,7 +47799,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -47960,7 +47960,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -47972,7 +47972,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -47984,7 +47984,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -48024,7 +48024,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -48635,7 +48635,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48647,7 +48647,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -48659,7 +48659,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -48699,7 +48699,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -48860,7 +48860,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48872,7 +48872,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -48884,7 +48884,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -48924,7 +48924,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -49310,7 +49310,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -49322,7 +49322,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -49334,7 +49334,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -49374,7 +49374,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -49985,7 +49985,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -49997,7 +49997,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -50009,7 +50009,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -50049,7 +50049,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -50435,7 +50435,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -50447,7 +50447,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -50459,7 +50459,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -50499,7 +50499,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -50660,7 +50660,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -50672,7 +50672,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -50684,7 +50684,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -50724,7 +50724,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -51110,7 +51110,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -51122,7 +51122,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -51134,7 +51134,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -51174,7 +51174,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -51785,7 +51785,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -51797,7 +51797,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -51809,7 +51809,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -51849,7 +51849,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -52235,7 +52235,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -52247,7 +52247,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -52259,7 +52259,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -52299,7 +52299,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -52460,7 +52460,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -52472,7 +52472,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -52484,7 +52484,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -52524,7 +52524,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -52910,7 +52910,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -52922,7 +52922,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -52934,7 +52934,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -52974,7 +52974,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -53360,7 +53360,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -53372,7 +53372,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -53384,7 +53384,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -53424,7 +53424,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -53810,7 +53810,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -53822,7 +53822,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -53834,7 +53834,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -53874,7 +53874,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -54485,7 +54485,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "casino_slot_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -54497,7 +54497,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -54509,7 +54509,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -54549,7 +54549,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -97923,7 +97923,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[To Promnade]"
+            "0": "[To Promenade]"
           }
         },
         "OnClick": {

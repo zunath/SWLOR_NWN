@@ -35,11 +35,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _social;
         private int _vibroblade;
         private int _vibroknife;
-        private int _lightsaber;
         private int _heavyVibroblade;
         private int _spear;
         private int _twinBlade;
-        private int _saberstaff;
         private int _katar;
         private int _staff;
         private int _pistol;
@@ -171,12 +169,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string Lightsaber
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public string HeavyVibroblade
         {
             get => Get<string>();
@@ -190,12 +182,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string TwinBlade
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string Saberstaff
         {
             get => Get<string>();
             set => Set(value);
@@ -367,11 +353,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _social = 0;
             _vibroblade = 0;
             _vibroknife = 0;
-            _lightsaber = 0;
             _heavyVibroblade = 0;
             _spear = 0;
             _twinBlade = 0;
-            _saberstaff = 0;
             _katar = 0;
             _staff = 0;
             _pistol = 0;
@@ -456,11 +440,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Social = $"SOC: {_social}";
             Vibroblade = $"Vibroblade: {_vibroblade}";
             Vibroknife = $"Vibroknife: {_vibroknife}";
-            Lightsaber = $"Lightsaber: {_lightsaber}";
             HeavyVibroblade = $"Heavy Vibroblade: {_heavyVibroblade}";
             Spear = $"Spear: {_spear}";
             TwinBlade = $"Twin Blade: {_twinBlade}";
-            Saberstaff = $"Saberstaff: {_saberstaff}";
             Katar = $"Katar: {_katar}";
             Staff = $"Staff: {_staff}";
             Pistol = $"Pistol: {_pistol}";
@@ -586,11 +568,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _social += part.SOC;
             _vibroblade += part.Vibroblade;
             _vibroknife += part.Vibroknife;
-            _lightsaber += part.Lightsaber;
             _heavyVibroblade += part.HeavyVibroblade;
             _spear += part.Spear;
             _twinBlade += part.TwinBlade;
-            _saberstaff += part.Saberstaff;
             _katar += part.Katar;
             _staff += part.Staff;
             _pistol += part.Pistol;
@@ -644,11 +624,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _social -= part.SOC;
             _vibroblade -= part.Vibroblade;
             _vibroknife -= part.Vibroknife;
-            _lightsaber -= part.Lightsaber;
             _heavyVibroblade -= part.HeavyVibroblade;
             _spear -= part.Spear;
             _twinBlade -= part.TwinBlade;
-            _saberstaff -= part.Saberstaff;
             _katar -= part.Katar;
             _staff -= part.Staff;
             _pistol -= part.Pistol;
@@ -968,11 +946,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var ipVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, _vibroblade);
                 var ipVibroknife = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, _vibroknife);
-                var ipLightsaber = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, _lightsaber);
                 var ipHeavyVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, _heavyVibroblade);
                 var ipSpear = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, _spear);
                 var ipTwinBlade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, _twinBlade);
-                var ipSaberstaff = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, _saberstaff);
                 var ipKatar = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, _katar);
                 var ipStaff = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, _staff);
                 var ipPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, _pistol);
@@ -1003,11 +979,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(controller, ipSocial, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipVibroknife, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipLightsaber, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipHeavyVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipSpear, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTwinBlade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipSaberstaff, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipKatar, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipStaff, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

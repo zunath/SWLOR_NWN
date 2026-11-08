@@ -22,11 +22,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float NoteWidth = 240f;
         private const float ApplyWidth = 100f;
         private const float PairWidth = (ContentPanelWidth - 28f) / 2f;
+        private const float InlineCaptionWidth = 60f;
+        private const float OptionsWidth = ContentPanelWidth - InlineCaptionWidth - 28f;
+
+        private static readonly string ModeTooltip =
+            "Active: follow the cues for faster banking and Flourishes. Roleplay: no cues; your audience banks at the " +
+            $"Rough rate; talk or emote every {(int)(PerformanceMath.RoleplayIdleTimeoutSeconds / 60)} minutes to keep going.";
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceOptions)
-                .SetInitialGeometry(620f, 20f, 510f, 666f)
+                .SetInitialGeometry(620f, 20f, 510f, 696f)
                 .SetTitle("Perform")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -83,14 +89,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 content.AddRow(row =>
                 {
                     AddPairCaption(row, "SECOND SET");
-                    AddPairCaption(row, "SONG");
+                    AddPairCaption(row, "CANTINA SONG");
                 });
                 content.AddRow(row =>
                 {
                     AddPick(row, model => model.SecondSetOptions, model => model.SecondSetIndex,
                         model => model.SecondSetEnabled, "A second set needs the Virtuoso perk.").SetWidth(PairWidth);
                     AddPick(row, model => model.SongOptions, model => model.SongIndex,
-                        model => model.SongEnabled, "Collect a Cantina song to choose one.").SetWidth(PairWidth);
+                        model => model.SongEnabled, "Collect another Cantina song to choose one. Other music cannot be performed.").SetWidth(PairWidth);
                 });
 
                 AddSharedSections(content);
@@ -116,6 +122,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetWidth(PairWidth)
                 .SetHeight(22f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left);
+        }
+
+        private static void AddInlineCaption(GuiRow<PerformanceOptionsViewModel> row, string text)
+        {
+            row.AddLabel()
+                .SetText(text)
+                .SetColor(PerformanceWindowColors.Dim)
+                .SetWidth(InlineCaptionWidth)
+                .SetHeight(30f)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                .SetVerticalAlign(NuiVerticalAlign.Middle);
         }
 
         private static void AddCaption(GuiColumn<PerformanceOptionsViewModel> content, string text)
@@ -192,7 +209,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddSharedSections(GuiColumn<PerformanceOptionsViewModel> content)
         {
-            // The note is a tooltip rather than a row, so the Instrument tab fits a 720 px screen.
+            // The notes are tooltips rather than rows, so the Instrument tab fits a 720 px screen. The tempo labels need the
+            // full width; the two mode labels fit beside their caption.
             AddCaption(content, "TEMPO");
             content.AddRow(row => row.AddOptions()
                 .SetDirection(NuiDirection.Horizontal)
@@ -203,6 +221,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTooltip("More XP for you; same for your audience.")
                 .SetWidth(ContentPanelWidth - 20f)
                 .SetHeight(30f));
+            content.AddRow(row =>
+            {
+                AddInlineCaption(row, "MODE");
+                row.AddOptions()
+                    .SetDirection(NuiDirection.Horizontal)
+                    .AddOption("Active")
+                    .AddOption("Roleplay")
+                    .BindSelectedValue(model => model.ModeValue)
+                    .SetTooltip(ModeTooltip)
+                    .SetWidth(OptionsWidth)
+                    .SetHeight(30f);
+            });
 
             content.AddRow(row => row.AddLabel()
                 .BindText(model => model.VenueHeaderText)

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Type(ShipModuleType.HullRepairer)
                 .ValidTargetType(ObjectType.Creature)
                 .CanTargetSelf()
+                .FallsBackToSelfOnEnemyTarget()
                 .MaxDistance(20f)
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)

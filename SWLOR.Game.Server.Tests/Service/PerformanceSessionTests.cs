@@ -150,4 +150,63 @@ public class PerformanceSessionTests
 
         session.IsIdle(Start.AddSeconds(60)).Should().BeTrue();
     }
+
+    [Test]
+    public void RoleplayMode_ScoresRoughIgnoresCuesAndNeverFlourishes()
+    {
+        var session = CreateDance();
+        session.SetRoleplay(true, Start);
+
+        session.Quality.Should().Be(PerformanceQuality.Rough);
+        session.RegisterCue(session.Current.Primary, Start).Should().Be(PerformanceInputResult.Ignored);
+        session.TryConsumeFlourish(Start).Should().BeFalse();
+    }
+
+    [Test]
+    public void RoleplayMode_TalkingKeepsItGoingUntilTenQuietMinutes()
+    {
+        var session = CreateDance();
+        session.SetRoleplay(true, Start);
+
+        session.IsIdle(Start.AddMinutes(9)).Should().BeFalse("a quiet scene gets ten minutes, not one");
+        session.NoteActivity(Start.AddMinutes(9));
+        session.IsIdle(Start.AddMinutes(18)).Should().BeFalse();
+        session.IsIdle(Start.AddMinutes(19)).Should().BeTrue();
+    }
+
+    [Test]
+    public void ActivePlay_IgnoresTalkingForTheIdleTimer()
+    {
+        var session = CreateDance();
+
+        session.NoteActivity(Start.AddSeconds(50));
+
+        session.IsIdle(Start.AddSeconds(60)).Should().BeTrue("active play is kept going by cue presses");
+    }
+
+    [Test]
+    public void SwitchingModes_RestartsTheIdleTimerAndKeepsTheActiveRecord()
+    {
+        var session = CreateDance();
+        for (var beat = 0; beat < PerformanceMath.QualityMinimumRecorded; beat++)
+        {
+            if (!session.Current.IsRest)
+                session.RegisterCue(session.Current.Primary, Start);
+            if (session.Current.IsChord)
+                session.RegisterCue(session.Current.Second!.Value, Start);
+            session.AdvanceBeat();
+        }
+
+        var activeQuality = session.Quality;
+        activeQuality.Should().Be(PerformanceQuality.Dazzling);
+
+        session.SetRoleplay(true, Start.AddSeconds(55));
+        session.Quality.Should().Be(PerformanceQuality.Rough);
+        session.IsIdle(Start.AddSeconds(70)).Should().BeFalse();
+
+        session.SetRoleplay(false, Start.AddMinutes(30));
+        session.Quality.Should().Be(activeQuality);
+        session.IsIdle(Start.AddMinutes(30).AddSeconds(59)).Should().BeFalse();
+        session.IsIdle(Start.AddMinutes(31)).Should().BeTrue();
+    }
 }

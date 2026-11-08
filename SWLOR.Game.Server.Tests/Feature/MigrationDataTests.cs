@@ -10,8 +10,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 25 and server migration 30. The crafting revamp's release adds player
-    // migration NextPlayerVersion (the crafting perk conversion); update these at each post-release cleanup.
+    // Production has run player migration 25 and server migration 30. The next release adds player migration
+    // NextPlayerVersion (crafting perk conversion and enzyme resize) and server
+    // migration NextServerVersion (enzyme resize); update these at each post-release cleanup.
     private const int ReleasedPlayerVersion = 25;
     private const int ReleasedServerVersion = 30;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
@@ -124,8 +125,9 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Should().BeEmpty($"the next release adds one combined stored-item pass as server migration {NextServerVersion}; " +
-            "when you add it, expect exactly that class here");
+        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_31_ShrinkEnzymes" },
+            $"the next release adds one combined stored-item pass as server migration {NextServerVersion}");
+        remaining.Single().Version.Should().Be(NextServerVersion);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

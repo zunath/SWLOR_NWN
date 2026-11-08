@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string ContentElement = "performance_footwork_content";
         public const string MainContentPartial = "PERFORMANCE_FOOTWORK_MAIN";
+        public const string RoleplayContentPartial = "PERFORMANCE_FOOTWORK_ROLEPLAY";
+        public const float MainWindowHeight = 700f;
+        public const float RoleplayModeWindowHeight = 400f;
         public const int CueCount = PerformanceSession.VisibleBeatCount;
 
         private readonly PerformanceBeat[] _upcoming = new PerformanceBeat[CueCount - 1];
@@ -38,6 +41,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override PerformanceKind Kind => PerformanceKind.Dance;
         protected override string ContentElementId => ContentElement;
         protected override string MainPartialName => MainContentPartial;
+        protected override string RoleplayPartialName => RoleplayContentPartial;
+        protected override float ActiveWindowHeight => MainWindowHeight;
+        protected override float RoleplayWindowHeight => RoleplayModeWindowHeight;
         protected override string CueNoun => "cue";
 
         protected override void ResetCueCache()

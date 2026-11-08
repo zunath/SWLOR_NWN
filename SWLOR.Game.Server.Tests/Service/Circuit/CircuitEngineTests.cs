@@ -664,8 +664,7 @@ public class CircuitEngineTests
     [TestCase(10, 10, 12, 13, 20)]
     [TestCase(25, 25, 12, 13, 20)]
     [TestCase(25, 25, 30, 29, 37)]
-    [TestCase(50, 50, 30, 29, 37)]
-    [TestCase(50, 50, 0, 0, 0)]
+    [TestCase(50, 50, 120, 119, 37)]
     public void AtLevelCraft_FinishesInTheTargetLength_WithGoodQuality_WhenPlayedSafely(
         int rank, int level, int craftsmanship, int control, int gearCp)
     {

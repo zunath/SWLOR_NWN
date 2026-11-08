@@ -61,7 +61,8 @@ edits must account for specialized owners and their derived robe aliases too.
 | Change | Owning tools and focused guards |
 | --- | --- |
 | Canonical human pelvis 034 | `PelvisSkirtBindings.py` / `.json`, `TestPelvisSkirtBindings.py` |
-| Modular skirts/capes listed in the chest manifest | `ChestSkirtBindings.py` / `.json`, `TestChestSkirtBindings.py` |
+| Modular skirts/capes listed in the chest manifest (capes hang like the coats, not from the cloak bones; belt 19's male taper) | `ChestSkirtBindings.py` / `.json`, `TestChestSkirtBindings.py` |
+| Neck and shoulder parts hanging below the hips on rigid or upper-body-only binding | `HangingPartAudit.py` / `.json` (inventory of parts found when the audit was added), `TestHangingPartAudit.py` |
 | Robe 236's native models (pinned Combat Upgrade release) | `RestoreRobe236Release.py`, `TestRobe236Release.py` |
 | Robe 236's generated skirt bindings | `RobeSkirtBindings.py`, `TestRobeSkirtBindings.py` |
 | Body-bound robe panels, hoods and belts (all robes except 236) | `BindRobePanels.py`, `MakeRobePanelsRigid.py`; `TestBoundRobePanels.py`, `TestRigidRobePanels.py` |

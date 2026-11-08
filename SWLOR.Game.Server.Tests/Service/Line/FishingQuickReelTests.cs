@@ -209,15 +209,14 @@ public class FishingQuickReelTests
     }
 
     [Test]
-    public void QuickReel_NeedsNoTurnClock_AndTakesNoTime()
+    public void QuickReel_TakesNoTime()
     {
         var lifecycle = Lifecycle();
         var fight = lifecycle.Bite(Bite(level: 20, rank: 20));
         _random.Roll = 1;
 
-        lifecycle.QuickReel(fight).Should().NotBeNull("the first choice of a bite is free of the turn clock");
+        lifecycle.QuickReel(fight).Should().NotBeNull("Quick Reel resolves the bite at once");
 
-        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0);
         _world.ScheduledCount.Should().BeLessThanOrEqualTo(1, "the only check is the one the bite scheduled");
     }
 

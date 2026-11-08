@@ -31,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 
 				.CanMutateInto(BeastType.OchreMaw)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
                 ;
 

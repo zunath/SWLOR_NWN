@@ -46,23 +46,27 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Picks where a DM lands when jumping to an area: a waypoint, then any placed object, then the area's center.
+        /// Lists where a DM can land when jumping to an area, best first: its waypoints, then its center and the
+        /// rest of its floor. Placeables and creatures are left out, because they come and go, and a decoration
+        /// outside the walkable floor would send the jump nowhere.
         /// </summary>
         /// <param name="area">The area to jump to.</param>
-        public static Location GetAreaJumpLocation(uint area)
+        public static IEnumerable<Location> GetAreaJumpLocations(uint area)
         {
-            var waypoint = GetFirstObjectInArea(area, ObjectType.Waypoint);
-            if (GetIsObjectValid(waypoint))
-                return GetLocation(waypoint);
+            var locations = new List<Location>();
+            for (var waypoint = GetFirstObjectInArea(area, ObjectType.Waypoint);
+                 GetIsObjectValid(waypoint);
+                 waypoint = GetNextObjectInArea(area, ObjectType.Waypoint))
+            {
+                locations.Add(GetLocation(waypoint));
+            }
 
-            const ObjectType anchorTypes = ObjectType.Door | ObjectType.Placeable | ObjectType.Creature;
-            var anchor = GetFirstObjectInArea(area, anchorTypes);
-            if (GetIsObjectValid(anchor))
-                return GetLocation(anchor);
+            foreach (var spot in DMJumpSpots.GetAreaSpots(GetAreaSize(Dimension.Width, area), GetAreaSize(Dimension.Height, area)))
+            {
+                locations.Add(Location(area, new Vector3(spot.X, spot.Y, 0f), 0f));
+            }
 
-            var width = GetAreaSize(Dimension.Width, area) * 10f;
-            var height = GetAreaSize(Dimension.Height, area) * 10f;
-            return Location(area, new Vector3(width / 2f, height / 2f, 0f), 0f);
+            return locations;
         }
 
         private static List<uint> GetAllAreas()

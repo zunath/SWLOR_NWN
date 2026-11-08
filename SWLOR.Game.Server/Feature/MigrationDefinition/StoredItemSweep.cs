@@ -26,6 +26,18 @@ internal static class StoredItemSweep
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
     }
 
+    /// <summary>Updates enzyme sizes and building icons in every stored item record, including overflow storage.</summary>
+    internal static void MigrateEnzymes(int version)
+    {
+        var sections = CountSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
+        var progress = new ServerMigrationProgress(version, sections);
+        var pass = new ParallelStoredItemPass(progress);
+        var converter = EnzymeStoredItemConverter.Instance;
+        var changed = Sweep(pass, converter);
+        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes and building icons in {changed} stored records.", true);
+    }
+
 
     private static (string Name, int Count)[] CountSections() => new[]
     {
@@ -93,6 +105,17 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
+        if (converter is EnzymeStoredItemConverter)
+        {
+            changed |= EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
+            var buildingIcon = BuildingIconMigration.GetUpdatedIcon(resref, icon);
+            if (buildingIcon != icon)
+            {
+                setIcon(buildingIcon);
+                changed = true;
+            }
+            return changed;
+        }
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;

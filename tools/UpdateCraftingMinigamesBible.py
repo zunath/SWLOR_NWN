@@ -268,7 +268,10 @@ def fabricator_entry(src: dict[str, Source]) -> str:
         f" the weakest sub-assembly plus {number(rules.const('AssembleCapPoints'))} points. The piece breaks if Machine Condition"
         " reaches 0. Enhancements make the piece bigger: it needs more Runs and Precision Passes and starts with more Machine"
         " Condition. Every craft's base XP, for a finished item and a failure alike, is multiplied by"
-        f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}.")
+        f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}."
+        f" Above recipe level {number(rules.const('DifficultyStartLevel'))} each level adds {number(rules.const('QualityDifficultyPerLevel') * 100)}% to the quality a"
+        f" recipe needs, {number(rules.const('WearDifficultyPerLevel') * 100)}% to wear and {number(rules.const('ServiceCpPerLevel'))} CP to Service, so a full set of"
+        " top-tier gear with both slots of the best mods is the target for the top recipes.")
 
 
 def kitchen_entry(src: dict[str, Source]) -> str:
@@ -308,9 +311,10 @@ def fishing_entry(src: dict[str, Source]) -> str:
         f" {number(reel.const('MaximumChance'))}%. It pays no XP beyond the bite's. The Line fight lands the fish only if the angler"
         " reels it in (Distance to 0) before the line snaps (Tension at its maximum) or the fish escapes (Distance at its maximum):"
         " each turn the fish announces a move and the angler answers with Set Hook (first turn only), Reel, Give Line or Hold."
-        f" The first move is free and each later one waits {number(turn_seconds)} seconds. When the fight ends on its own"
-        " (landed, line snapped or fish escaped) it pays the rest of the XP, in proportion to how long it lasted up to"
-        f" {number(turn_seconds * full_turns)} seconds ({number(full_turns)} turns), so a full fight pays the bite's XP times"
+        " There is no wait between moves. When the fight ends on its own (landed, line snapped or fish escaped) it pays the rest"
+        f" of the XP, in proportion to how long it lasted up to {number(turn_seconds * full_turns)} seconds ({number(full_turns)}"
+        f" turns of {number(turn_seconds)} seconds), and a fight played faster than {number(turn_seconds)} seconds a move is paid"
+        " for the time it took, so a full fight pays the bite's XP times"
         f" {multiplier_text(bands, 'fish levels')}. A fight the angler leaves (closing the window, moving, putting the rod away,"
         " entering combat or dying) loses the fish and the rest of that XP.")
 
@@ -422,8 +426,14 @@ def research_entry(src: dict[str, Source]) -> str:
         f"{number(rules.const('RankChanceBonusMaximum'))}, kept between {number(rules.const('MinimumTestChancePercent'))}% and"
         f" {number(rules.const('MaximumTestChancePercent'))}%; Refine Method costs {number(rules.const('RefineCp'))} Fabrication CP"
         f" and adds {number(rules.const('RefineChanceBonusPercent'))} points to the next Test; Analyze spends spare evidence to cut"
-        f" the job's time, {number(rules.const('TimeCutPercentPerEvidence'))}% for each piece up to"
-        f" {number(rules.const('TimeCutCapPercent'))}%; Conclude ends the experiment. A Test or an Analyze uses one trial. At"
+        f" the job's time, {number(rules.const('TimeCutTenthsPerEvidence') / 10)}% for each piece up to"
+        f" {number(rules.const('TimeCutCapPercent'))}%; Conclude ends the experiment. A Test or an Analyze uses one trial."
+        " Fabrication gear counts as at a crafting station: Control adds a point of Test chance for each"
+        f" {number(rules.const('ControlPerTestChancePoint'))} up to {number(rules.const('ControlChanceSoftCap'))}, then one for each"
+        f" {number(rules.const('ControlPerTestChancePointAboveSoftCap'))} more, and each"
+        f" {number(rules.const('CraftsmanshipPerTrial'))} Craftsmanship adds a trial, counted when the job starts. Each research tier"
+        f" above tier {number(rules.const('TestChanceCurveStartTier'))} takes {number(rules.const('TestChanceDropPerTier'))} points"
+        " of Test chance, so the top tiers are built for good gear. At"
         f" research levels {join_and([number(level) for level in random_levels])} the blueprint bonus is rolled when the"
         f" experiment opens: licensed runs about {licensed.numerator} times in {licensed.denominator} (up to"
         f" +{number(grants.const('LicensedRunsMaximum'))}), as before, and then the grant is fixed; otherwise it is a credit"

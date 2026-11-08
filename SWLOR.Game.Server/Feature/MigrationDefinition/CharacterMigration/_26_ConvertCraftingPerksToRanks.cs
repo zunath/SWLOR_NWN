@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// <summary>
 /// Retires the perks whose tiers now unlock with skill rank, and refunds the perks whose category and requirements
 /// changed, including Ghost Protocol's new Stealth I prerequisite. Every owned rank returns its SP, the perk leaves
-/// the record and the character's feats, and the record gains one optional rebuild token.
+/// the record and the character's feats, and the record gains one optional rebuild token. The same release also
+/// moves carried incubation enzymes to the 1x1 enzyme item (<see cref="EnzymeBaseItemMigration"/>).
 /// </summary>
 internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
 {
@@ -70,6 +71,8 @@ internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
     {
         foreach (var feat in RefundedPerks.SelectMany(perk => perk.GrantedFeats))
             character.RemoveFeat(feat);
+
+        EnzymeBaseItemMigration.MigrateCharacter(character);
     }
 
     public void MigratePlayerData(Player player)

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 Kind = session.Kind,
                 StartedUtc = session.StartedUtc,
                 Quality = session.Quality,
+                IsRoleplay = session.IsRoleplay,
                 Tempo = session.Tempo,
                 Position = GetPosition(performer),
                 RangeMeters = PerformanceAudienceRules.GetRange(

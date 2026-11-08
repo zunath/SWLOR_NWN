@@ -2161,6 +2161,18 @@ namespace SWLOR.Game.Server.Service.StatService
         ThrowingAreaAbilityDamagePercentAdjustment = 388,
 
         /// <summary>
+        /// Percent damage adjustment applied to Throwing auto-attacks and single-target hostile Throwing abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingSingleTargetDamagePercentAdjustment = 1331,
+
+        /// <summary>
+        /// Attack delay reduction percent for Throwing auto-attacks against targets affected by Bleed or Hemorrhage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingAttackDelayReductionToBleedingTargetPercent = 1332,
+
+        /// <summary>
         /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -4376,6 +4388,13 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedMovementSpeedDurationSeconds = 769,
 
         /// <summary>
+        /// Lets AbilityUsedMovementSpeedPercentAdjustment trigger from any hostile ranged weapon ability
+        /// instead of only the AbilityUsedMovementSpeedPercentAdjustmentSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityUsedMovementSpeedRangedOnly = 1327,
+
+        /// <summary>
         /// Damage dealt percent applied to close targets hit by a ranged ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -5463,6 +5482,13 @@ namespace SWLOR.Game.Server.Service.StatService
         SecondaryAbilityUsedEvasionDurationSeconds = 957,
 
         /// <summary>
+        /// Lets the second footwork Evasion channel trigger from any hostile ranged weapon ability
+        /// instead of only the SecondaryAbilityUsedEvasionPercentAdjustmentSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SecondaryAbilityUsedEvasionRangedOnly = 1328,
+
+        /// <summary>
         /// Flat Stamina cost adjustment applied to every hostile combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
@@ -5775,6 +5801,13 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
 
         /// <summary>
+        /// Lets AbilityUsedRangedDeflection trigger from any hostile ranged weapon ability
+        /// instead of only the AbilityUsedRangedDeflectionSkillType skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityUsedRangedDeflectionRangedOnly = 1329,
+
+        /// <summary>
         /// When enabled, weapon auto-attacks and hostile weapon abilities use no
         /// activation delay. Limited status effects that grant this stat account for attempts.
         /// </summary>
@@ -5921,6 +5954,10 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Critical Rate adjustment for ranged abilities at or beyond the long-range threshold.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
+
+        /// <summary>Percent damage adjustment for ranged weapon abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeDamagePercentAdjustment = 1330,
 
         /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -6633,9 +6670,9 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ExperimentRefineChancePercent = 1201,
 
-        /// <summary>Percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
+        /// <summary>Tenths of a percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ExperimentTimeCutPerEvidencePercent = 1202,
+        ExperimentTimeCutPerEvidenceTenths = 1202,
 
         /// <summary>Non-zero when the research Experiment offers Peer Review.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]

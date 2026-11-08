@@ -95,11 +95,25 @@ public static class WeaponFitEngineTests
             var fit = GetFit(BaseItem.Sling, 310, "pmh0_handr002");
             ctx.Assert(fit != FitVector.Zero, "The fixture exercises a nonzero test correction");
             for (var i = 0; i < 5; i++) TintMapService.ApplyCurrentColors(wearer);
+            EquippedItemAppearance.Refresh(wearer, weapon);
+            TintMapService.ApplyCurrentColors(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored + fit, "Repeated refresh does not compound the correction");
             ctx.AssertEqual(1.03f, GetObjectVisualTransform(weapon, ObjectVisualTransform.Scale), "Scale remains authored");
             ctx.AssertEqual(2f, GetObjectVisualTransform(weapon, ObjectVisualTransform.RotateZ), "Rotation remains authored");
             ctx.AssertEqual(.017f, GetObjectVisualTransform(weapon, ObjectVisualTransform.TranslateZ,
                 nScope: (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2), "Other transform scopes remain authored");
+
+            var outfit = GetItemInSlot(InventorySlot.Chest, wearer);
+            foreach (var (robe, hidden) in new[] { (3, false), (186, true), (0, false) })
+            {
+                EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robe);
+                EquippedItemAppearance.Refresh(wearer, outfit);
+                TintMapService.ApplyCurrentColors(wearer);
+                ctx.AssertEqual(robe, GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The robe fixture is available on the current body");
+                AssertVector(ctx, ReadTranslation(weapon), authored + (hidden ? FitVector.Zero : fit),
+                    "Robes retain visible-hand fits but never borrow a hidden hand's fit");
+            }
 
             SetGender(wearer, Gender.Female);
             TintMapService.ApplyCurrentColors(wearer);

@@ -36,18 +36,18 @@ public class WeaponFitTests
         Invoke<FitVector>(typeof(WeaponFit), "ResolveOwnedOffset", "", "item-a", saved).Should().Be(FitVector.Zero);
     }
 
-    [TestCase("h", Gender.Male, "r", 1, 0, 0, "pmh0_handr001")]
-    [TestCase("H", Gender.Female, "l", 2, 2, 0, "pfh0_handl002")]
-    [TestCase("e", Gender.Male, "r", 201, 110, 0, "pme0_handr110")]
-    [TestCase("d", Gender.Female, "l", 1, 151, 0, "pfd0_handl151")]
-    [TestCase("h", Gender.Male, "r", 1, 0, 186, "")]
-    [TestCase("h", Gender.None, "r", 1, 0, 0, "")]
-    [TestCase("", Gender.Male, "r", 1, 0, 0, "")]
-    [TestCase("h", Gender.Male, "x", 1, 0, 0, "")]
-    [TestCase("h", Gender.Male, "r", 0, 0, 0, "")]
+    [TestCase("h", Gender.Male, "r", 1, 0, false, "pmh0_handr001")]
+    [TestCase("H", Gender.Female, "l", 2, 2, false, "pfh0_handl002")]
+    [TestCase("e", Gender.Male, "r", 201, 110, false, "pme0_handr110")]
+    [TestCase("d", Gender.Female, "l", 1, 151, false, "pfd0_handl151")]
+    [TestCase("h", Gender.Male, "r", 1, 0, true, "")]
+    [TestCase("h", Gender.None, "r", 1, 0, false, "")]
+    [TestCase("", Gender.Male, "r", 1, 0, false, "")]
+    [TestCase("h", Gender.Male, "x", 1, 0, false, "")]
+    [TestCase("h", Gender.Male, "r", 0, 0, false, "")]
     public void FitSelectionUsesTheRenderedHandAndDoesNotBorrowAHiddenCostumeHand(string race, Gender gender,
-        string side, int natural, int armor, int robe, string expected) =>
-        Invoke<string>(Catalog, "ResolveHandModel", race, gender, side, natural, armor, robe).Should().Be(expected);
+        string side, int natural, int armor, bool handHiddenByRobe, string expected) =>
+        Invoke<string>(Catalog, "ResolveHandModel", race, gender, side, natural, armor, handHiddenByRobe).Should().Be(expected);
 
     [TestCase(BaseItem.Rifle, 999, 101, 101, "pmh0_handr001")]
     [TestCase(BaseItem.PowerGlove, 310, 101, 101, "pmh0_handr001")]
@@ -91,11 +91,24 @@ public class WeaponFitTests
     public void WookieePistolCorrectionIsSpecificToTheMeasuredHandAndAssembly()
     {
         Fit(BaseItem.Sling, 310, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
+        Fit(BaseItem.Sling, 101, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
+        Fit(BaseItem.Sling, 404, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
         foreach (var hand in new[] { "pfe0_handr214", "pme0_handl214", "pme0_handr208", "pmh0_handr214" })
             Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 309, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 999, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 701, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
         Fit(BaseItem.Sling, 310, 102, 101, "pme0_handr214").Should().Be(FitVector.Zero);
         Fit(BaseItem.Rifle, 310, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+    }
+
+    [Test]
+    public void MonCalamariCorrectionDoesNotTransferToOtherHandsOrAssemblies()
+    {
+        Fit(BaseItem.Sling, 310, 101, 101, "pfh0_handr204").Should().Be(new FitVector(0f, 0f, .035f));
+        foreach (var hand in new[] { "pmh0_handr204", "pfh0_handl204", "pfh0_handr001", "pfe0_handr204" })
+            Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 310, 102, 101, "pfh0_handr204").Should().Be(FitVector.Zero);
+        Fit(BaseItem.Sling, 999, 101, 101, "pfh0_handr204").Should().Be(FitVector.Zero);
     }
 
     [Test]

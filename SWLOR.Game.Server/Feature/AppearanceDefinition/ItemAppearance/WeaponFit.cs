@@ -120,8 +120,10 @@ public static class WeaponFit
         var appearance = (int)GetAppearanceType(creature);
         if (!Get2DAString("appearance", "MODELTYPE", appearance).StartsWith("P", StringComparison.OrdinalIgnoreCase))
             return string.Empty;
+        var handHiddenByRobe = robe > 0 &&
+            Get2DAString("parts_robe", "HIDEHAND" + side.ToUpperInvariant(), robe) != "0";
         return WeaponGripFits.ResolveHandModel(Get2DAString("appearance", "RACE", appearance),
-            GetGender(creature), side, GetCreatureBodyPart(part, creature), armorPart, robe);
+            GetGender(creature), side, GetCreatureBodyPart(part, creature), armorPart, handHiddenByRobe);
     }
 
     private static void ApplyHand(uint creature, uint item, string hand, string supportHand, string variable)

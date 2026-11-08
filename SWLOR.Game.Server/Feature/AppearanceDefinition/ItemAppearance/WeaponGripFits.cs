@@ -19,9 +19,19 @@ internal static class WeaponGripFits
             fits[(BaseItem.Sling, 101, 310, 101, $"p{gender}h0_hand{side}001", "")] = FitVector.Zero;
         fits[(BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "")] = FitVector.Zero;
         fits[(BaseItem.Rifle, 101, 213, 101, "pmh0_handr001", "pmh0_handl001")] = FitVector.Zero;
-        // Pistol #310, male Wookiee hand #214: seat the handle behind the fingertips.
-        // Measured against the actual grip neck and checked from both sides, idle and attack.
-        fits[(BaseItem.Sling, 101, 310, 101, "pme0_handr214", "")] = new FitVector(0f, 0f, .035f);
+        // Male Wookiee hand #214 and female Mon Calamari hand #204: seat the
+        // handles in the palm. Profiles are independent of the player's identity.
+        // Explicitly inspected assemblies only; new models do not inherit an unmeasured fit.
+        foreach (var middle in new[]
+                 {
+                     101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 114,
+                     116, 117, 118, 119, 120, 121, 122, 123, 124, 125,
+                     301, 302, 303, 305, 307, 308, 309, 310, 311, 320, 322, 324, 325, 404, 701
+                 })
+        {
+            fits[(BaseItem.Sling, 101, middle, 101, "pme0_handr214", "")] = new FitVector(0f, 0f, .035f);
+            fits[(BaseItem.Sling, 101, middle, 101, "pfh0_handr204", "")] = new FitVector(0f, 0f, .035f);
+        }
         return fits;
     }
 
@@ -37,10 +47,10 @@ internal static class WeaponGripFits
     private static bool RequiresSupportHand(BaseItem type) => type is BaseItem.Rifle or BaseItem.GreatSword or
         BaseItem.QuarterStaff or BaseItem.ShortSpear or BaseItem.TwoBladedSword or BaseItem.TwinElectroBlade or BaseItem.Saberstaff;
 
-    internal static string ResolveHandModel(string race, Gender gender, string side, int natural, int armor, int robe)
+    internal static string ResolveHandModel(string race, Gender gender, string side, int natural, int armor, bool handHiddenByRobe)
     {
         // Costume hands require a measured costume profile, never the hidden natural hand's fit.
-        if (robe > 0 || string.IsNullOrWhiteSpace(race) || race.Length != 1 ||
+        if (handHiddenByRobe || string.IsNullOrWhiteSpace(race) || race.Length != 1 ||
             gender is not (Gender.Male or Gender.Female) || side is not ("r" or "l")) return string.Empty;
         var part = armor > 2 ? armor : natural;
         return part > 0 ? $"p{(gender == Gender.Female ? 'f' : 'm')}{race.ToLowerInvariant()}0_hand{side}{part:D3}" : string.Empty;

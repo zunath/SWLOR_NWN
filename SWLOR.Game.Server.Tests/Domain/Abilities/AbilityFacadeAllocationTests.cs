@@ -11,14 +11,16 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 /// <summary>
-/// The ability reads run on every attack and activation, so a facade call that only reads a table must not allocate: the
-/// facade resolves its instance from a cache and the instance reads its own fields. These tests count the bytes the
-/// current thread allocates over many calls, with no impact active and with one active. The queued-attack and activation
-/// reads of <c>UsePerkFeat</c> and the quick cast map are here too, because they moved with the state.
+/// The ability reads run on every attack and activation, so a static call that only reads a table must not allocate: the
+/// accessor <c>GameServices.Ability</c> (the facade until P2-ZF) resolves its instance from the same cache the facade read and
+/// the instance reads its own fields. These tests count the bytes the current thread allocates over many calls, with no
+/// impact active and with one active. The queued-attack and activation reads of <c>UsePerkFeat</c> and the quick cast map
+/// are here too, because they moved with the state.
 /// </summary>
 [TestFixture]
 [NonParallelizable]
@@ -43,7 +45,7 @@ public class AbilityFacadeAllocationTests
 
     /// <summary>
     /// The container's ability service is the bench's instance, whose calls into unconverted code answer from its own
-    /// tables without allocating, so a count here is the facade and the instance and nothing behind them.
+    /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
     public void SetUp()

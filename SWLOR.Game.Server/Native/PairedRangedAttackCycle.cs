@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using Ability = SWLOR.Game.Server.Service.Ability;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     var applyQueuedHit = UsePerkFeat.CaptureQueuedWeaponAbilityHit(actor, targetId, weaponId, () =>
                     {
-                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.Ability.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                     });
                     if (applyQueuedHit != null)
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Native
                         var resolvedDamage = resolveDamageTaken?.Invoke() ?? damage;
                         shot.Damage = resolvedDamage;
                         CombatPoint.RecordWeaponAttackPoint(actor, targetId, weaponId, skill);
-                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.Ability.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                         TwinPistolMastery.RecordOrdinaryHit(actor, targetId, true);
                         foreach (var applyImpact in impactActions) applyImpact(resolvedDamage);

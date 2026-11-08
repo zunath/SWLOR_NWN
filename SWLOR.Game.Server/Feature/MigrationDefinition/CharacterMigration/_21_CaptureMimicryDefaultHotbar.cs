@@ -3,11 +3,12 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
-/// Records the quickbar positions of the active Mimicry build in that build, as <see cref="Mimicry.CaptureLoadoutHotbar"/>
+/// Records the quickbar positions of the active Mimicry build in that build, as <see cref="Domain.Abilities.IMimicryService.CaptureLoadoutHotbar"/>
 /// does. The quickbar lives in the character file, so the record learns it from there.
 /// </summary>
 internal sealed class _21_CaptureMimicryDefaultHotbar : ICharacterMigration

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.NWN.API.NWScript.Enum;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.AI;
 

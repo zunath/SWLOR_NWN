@@ -28,33 +28,26 @@ Mimicry -> PlayerFeedback | 4
 Mimicry -> Random | 1
 QuickCast -> DB | 3
 
-# Abilities -> Platform (20 edges)
-Ability -> Platform/Composition | 1
+# Abilities -> Platform (13 edges)
 Ability -> Platform/Core | 13
-AbilityCooldownVisual -> Platform/Composition | 1
-AbilityCooldownVisual -> Platform/Core | 7
+AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-AbilityTargetingCache -> Platform/Composition | 1
+Feature/AbilityDefinition -> Platform/Composition | 252
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
-FieldEngineerPulseEmitters -> Platform/Composition | 1
-ForceControlCooldowns -> Platform/Composition | 1
-Mimicry -> Platform/Composition | 1
 Mimicry -> Platform/Core | 7
-Mimicry -> Platform/Entity | 43
+Mimicry -> Platform/Entity | 33
 Mimicry -> Platform/Extension | 1
 MimicryLoadouts -> Platform/Entity | 5
-QuickCast -> Platform/Composition | 1
 QuickCast -> Platform/Core | 2
-QuickCast -> Platform/Entity | 9
-ReviveHistory -> Platform/Composition | 1
+QuickCast -> Platform/Entity | 7
 
 # Administration -> Core (8 edges)
 DMBlueprintCatalog -> Log | 5
 DMCreatorFavorite -> DB | 4
 DMCreatureManagerFavorite -> DB | 6
-DMObjectDetails -> Cache | 2
+DMObjectDetails -> Cache | 4
 DMPlayerDirectory -> DB | 10
 DMPreference -> DB | 4
 DMPresence -> Log | 4
@@ -114,7 +107,7 @@ StatusEffect -> DB | 4
 StatusEffect -> FrameProfiler | 2
 StatusEffect -> Messaging | 4
 
-# Character -> Platform (52 edges)
+# Character -> Platform (54 edges)
 Achievement -> Platform/Composition | 1
 Achievement -> Platform/Core | 2
 Achievement -> Platform/Entity | 1
@@ -130,7 +123,9 @@ EspionageInfiltration -> Platform/Core | 3
 EspionageInfiltration -> Platform/Entity | 1
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
+Feature/PerkDefinition -> Platform/Composition | 3
 Feature/PerkDefinition -> Platform/Entity | 1
+Feature/StatusEffectDefinition -> Platform/Composition | 15
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Composition | 1
@@ -279,7 +274,8 @@ DroidEquipmentDiagnostics -> Platform/Core | 5
 IncubationFieldNote -> Platform/Composition | 1
 IncubationFieldNote -> Platform/Core | 1
 
-# Core -> Platform (59 edges)
+# Core -> Platform (61 edges)
+Animation -> Platform/Composition | 1
 Animation -> Platform/Core | 1
 Animation -> Platform/Enumeration | 1
 Animation -> Platform/Root | 1
@@ -307,6 +303,7 @@ Feature/DialogDefinition -> Platform/Composition | 1
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
+Feature/MigrationDefinition -> Platform/Composition | 4
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
@@ -378,8 +375,8 @@ Slicing -> Platform/Core | 2
 Slicing -> Platform/Entity | 1
 
 # Creatures -> Core (13 edges)
-AI -> Conversation | 1
-AI -> ConversationMenu | 1
+AI -> Conversation | 3
+AI -> ConversationMenu | 3
 AI -> GameMath | 1
 AI -> Log | 2
 AI -> Random | 1
@@ -390,14 +387,15 @@ Feature/SpawnDefinition -> Random | 6
 Spawn -> Animation | 7
 Spawn -> Log | 1
 Spawn -> Random | 4
-Spawn -> Walkmesh | 1
+Spawn -> Walkmesh | 3
 
-# Creatures -> Platform (10 edges)
+# Creatures -> Platform (11 edges)
 AI -> Platform/Composition | 1
 AI -> Platform/Core | 25
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Composition | 1
 CompanionControl -> Platform/Core | 6
+Feature/AIDefinition -> Platform/Composition | 1
 NPCGroup -> Platform/Composition | 1
 NPCGroup -> Platform/Core | 1
 NPCGroup -> Platform/Extension | 1
@@ -506,7 +504,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (91 edges)
+# Gameplay -> Platform (93 edges)
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Platform/Core | 1
@@ -588,6 +586,7 @@ Feature.SlicingTerminal -> Platform/Core | 1
 Feature.StackDecrementPrevention -> Platform/Core | 1
 Feature.StandardItemConfigurations -> Platform/Core | 2
 Feature.StoreManagement -> Platform/Core | 5
+Feature.TlkOverrides -> Platform/Composition | 1
 Feature.TlkOverrides -> Platform/Core | 1
 Feature.TrashCan -> Platform/Core | 4
 Feature.TwinPistolCombatLifecycle -> Platform/Core | 9
@@ -596,6 +595,7 @@ Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
 Feature.TwinPistolPairLifecycle -> Platform/Core | 8
 Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
+Feature.UsePerkFeat -> Platform/Composition | 21
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerTask -> Platform/Root | 4
 
@@ -610,7 +610,7 @@ Feature/LootTableDefinition -> Random | 2
 Item -> DB | 3
 ItemTrash -> Log | 2
 KeyItem -> DB | 6
-KeyItem -> ObjectVisibility | 1
+KeyItem -> ObjectVisibility | 3
 LightsaberWorkbench -> DB | 3
 LightsaberWorkbench -> Log | 1
 Loot -> Log | 2
@@ -660,17 +660,17 @@ Faction -> DB | 4
 Feature/QuestDefinition -> Cache | 19
 Feature/QuestDefinition -> DB | 20
 Feature/QuestDefinition -> ObjectVisibility | 5
-Quest -> Cache | 5
+Quest -> Cache | 7
 Quest -> ColorToken | 3
-Quest -> Conversation | 1
+Quest -> Conversation | 3
 Quest -> ConversationMenu | 1
 Quest -> DB | 36
 Quest -> Log | 2
 Quest -> Time | 1
 QuestContract -> DB | 3
 QuestContract -> Log | 2
-QuestContractBoard -> Authorization | 1
-QuestContractBoard -> Cache | 2
+QuestContractBoard -> Authorization | 3
+QuestContractBoard -> Cache | 4
 QuestContractBoard -> ColorToken | 3
 QuestContractBoard -> DB | 25
 QuestContractBoard -> Log | 10
@@ -693,7 +693,7 @@ QuestContractBoard -> Platform/Entity | 55
 QuestContractBoard -> Platform/Enumeration | 2
 
 # Social -> Core (17 edges)
-ChatCommand -> Authorization | 3
+ChatCommand -> Authorization | 5
 ChatCommand -> ColorToken | 3
 ChatPortraitTells -> ColorToken | 2
 Feature/ChatCommandDefinition -> Animation | 3
@@ -711,13 +711,14 @@ Performance -> NamedAnimation | 5
 PlayerList -> DB | 5
 PlayerList -> Log | 1
 
-# Social -> Platform (19 edges)
+# Social -> Platform (20 edges)
 ChatCommand -> Platform/Composition | 1
 ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
 ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
+Feature/ChatCommandDefinition -> Platform/Composition | 3
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
@@ -742,9 +743,10 @@ Space -> Log | 9
 Space -> Messaging | 3
 Space -> Random | 1
 
-# Space -> Platform (5 edges)
+# Space -> Platform (6 edges)
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
+Space -> Platform/Composition | 2
 Space -> Platform/Core | 21
 Space -> Platform/Entity | 29
 Space -> Platform/Enumeration | 6
@@ -771,10 +773,11 @@ Gui -> DB | 5
 Gui -> FrameProfiler | 2
 Gui -> Log | 1
 
-# UI -> Platform (14 edges)
+# UI -> Platform (15 edges)
 ExtraHotbars -> Platform/Composition | 1
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 31
+Feature/GuiDefinition -> Platform/Composition | 21
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21
@@ -794,18 +797,18 @@ Feature/FishingLocationDefinition -> Random | 1
 Feature/PropertyLayoutDefinition -> DB | 3
 Feature/TrapDefinition -> Messaging | 1
 Fishing -> Animation | 9
-Fishing -> Cache | 1
+Fishing -> Cache | 3
 Fishing -> ColorToken | 3
 Fishing -> DB | 3
-Fishing -> Messaging | 2
-Fishing -> NamedAnimation | 3
+Fishing -> Messaging | 4
+Fishing -> NamedAnimation | 5
 Fishing -> Random | 4
 HoloCom -> ColorToken | 2
 Music -> DB | 11
 Notes -> DB | 5
-Property -> BackgroundJob | 1
+Property -> BackgroundJob | 3
 Property -> ColorToken | 3
-Property -> ConversationMenu | 1
+Property -> ConversationMenu | 3
 Property -> DB | 48
 Property -> Log | 19
 Shuttle -> ColorToken | 4

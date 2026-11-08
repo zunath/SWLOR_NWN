@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var secondFixture = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
             var player = fixture.Creature;
             var feat = FeatType.SnapRushTechnique;
-            var detail = Mimicry.GetTechniqueDetail(feat);
+            var detail = GameServices.Mimicry.GetTechniqueDetail(feat);
             var npc = ctx.SpawnCreature("nw_rat001", 2f);
             await ctx.DelaySecondsAsync(1f);
             fixture.Update(record => record.Skills[SkillType.Mimicry].Rank = Math.Max(0, detail.MimicrySkillRequirement - 1));
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Use the public observation path and the real death event. No learn-all shortcut.
             await ctx.ExecuteInCreatureContextAsync(npc, () =>
             {
-                Mimicry.OnCreatureAbilityUsed(npc, detail.MimicrySourceFeat);
+                GameServices.Mimicry.OnCreatureAbilityUsed(npc, detail.MimicrySourceFeat);
             });
             var witnesses = ServiceInternals.Field<IMimicryService, Dictionary<uint, Dictionary<string, HashSet<FeatType>>>>("_witnesses");
             ctx.Assert(witnesses.TryGetValue(npc, out var recorded) && recorded.TryGetValue(fixture.Id, out var witnessed) && witnessed.Contains(feat),
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SeedRandom(attempt + 1);
                 await ctx.ExecuteInCreatureContextAsync(npc, () =>
                 {
-                    Mimicry.OnCreatureAbilityUsed(npc, detail.MimicrySourceFeat);
+                    GameServices.Mimicry.OnCreatureAbilityUsed(npc, detail.MimicrySourceFeat);
                     ApplyEffectToObject(DurationType.Instant, EffectDeath(), npc);
                 });
                 await ctx.WaitUntilAsync(() => !witnesses.ContainsKey(npc), 5f, "learning death event");
@@ -61,15 +62,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(1, learned.LearnedTechniques.Count, "unwitnessed techniques are not granted");
             ctx.Assert(DB.Get<Player>(secondFixture.Id).LearnedTechniques.ContainsKey(feat), "the death event also rolls learning for the second witness");
             ctx.AssertEqual(1, DB.Get<Player>(secondFixture.Id).LearnedTechniques.Count, "the second player only learns the witnessed technique");
-            ctx.Assert(!Mimicry.IsTechniqueEquipped(player, feat), "learning does not automatically equip");
+            ctx.Assert(!GameServices.Mimicry.IsTechniqueEquipped(player, feat), "learning does not automatically equip");
             fixture.Update(record => record.Perks.Remove(PerkType.CombatAnalyzer));
-            ctx.Assert(!Mimicry.CanEquip(player, feat, out _), "zero available slots denies equipment");
+            ctx.Assert(!GameServices.Mimicry.CanEquip(player, feat, out _), "zero available slots denies equipment");
             fixture.Update(record => record.Perks[PerkType.CombatAnalyzer] = 1);
-            ctx.Assert(Mimicry.EquipTechnique(player, feat), "learned technique equips within the slot budget");
+            ctx.Assert(GameServices.Mimicry.EquipTechnique(player, feat), "learned technique equips within the slot budget");
             ctx.Assert(GetHasFeat(feat, player), "active technique feat is granted");
             fixture.Update(record => record.Skills[SkillType.Mimicry].Rank = Math.Max(0, detail.MimicrySkillRequirement - 1));
-            Mimicry.EnforceSlotBudget(player);
-            ctx.Assert(!Mimicry.IsTechniqueEquipped(player, feat) && !GetHasFeat(feat, player), "skill decay removes an invalid loadout and its feat");
+            GameServices.Mimicry.EnforceSlotBudget(player);
+            ctx.Assert(!GameServices.Mimicry.IsTechniqueEquipped(player, feat) && !GetHasFeat(feat, player), "skill decay removes an invalid loadout and its feat");
         }
 
     }

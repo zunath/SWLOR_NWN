@@ -16,7 +16,7 @@ public class ScriptHandlerManifestOrderTests
 {
     private const string DbLoad = "SWLOR.Game.Server.Service.DB.Load";
     private const string OnModulePreload = "SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload";
-    private const string AbilityCacheData = "SWLOR.Game.Server.Service.Ability.CacheData";
+    private const string AbilityCacheData = "SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData";
     private const string AchievementLoad = "SWLOR.Game.Server.Service.Achievement.LoadAchievements";
 
     [Test]

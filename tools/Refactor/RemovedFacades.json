@@ -1,7 +1,18 @@
 {
   "description": "The static facades the branch deleted (P2-Z, SWLOR.Game.Server/Readmes/MaintainabilityRefactorFacadeRemoval.md). Read by tools/Refactor/Apply-FacadeRemoval.ps1 (SWLOR.FacadeRemoval), which keeps their callers in the branch's shape. Each entry is a \"facade\" named relative to SWLOR.Game.Server.Service (Taxi, or QuestService.QuestEncounter for a further facade); static callers reach its service through the property of the same name on SWLOR.Game.Server.Composition.GameServices. Optional: \"explicit\": true for a name that is also a namespace segment (Combat, Mimicry, Performance, Prospecting), which callers write GameServices.<Name>.X; \"constants\": [ { \"name\": \"MaximumHitRate\", \"owner\": \"SWLOR.Game.Server.Domain.Combat.CombatRules\" } ] for each public constant the facade repeated, with the full name of the class that holds it now. Keep the list sorted by facade. A removed service also has \"facadeRemoved\": true in SWLOR.Architecture.Tests/ConvertedServices.json, and each of its handlers a line in tools/Refactor/HandlerRenames.txt.",
   "facades": [
+    { "facade": "Area" },
+    { "facade": "Fishing", "constants": [ { "name": "ActiveBaitVariable", "owner": "SWLOR.Game.Server.Domain.World.FishingService" }, { "name": "FishingPointLocationVariable", "owner": "SWLOR.Game.Server.Domain.World.FishingService" }, { "name": "FishingPointRemainingAttemptsVariable", "owner": "SWLOR.Game.Server.Domain.World.FishingService" }, { "name": "FishingRodTag", "owner": "SWLOR.Game.Server.Domain.World.FishingService" }, { "name": "LoadedBaitTypeVariable", "owner": "SWLOR.Game.Server.Domain.World.FishingService" }, { "name": "RemainingBaitVariable", "owner": "SWLOR.Game.Server.Domain.World.FishingService" } ] },
+    { "facade": "FishingService.FishingFights" },
+    { "facade": "HoloCom", "constants": [ { "name": "HologramFactionId", "owner": "SWLOR.Game.Server.Domain.World.HoloComService" } ] },
+    { "facade": "Music", "constants": [ { "name": "MusicPlayerTag", "owner": "SWLOR.Game.Server.Domain.World.MusicService" } ] },
+    { "facade": "Notes", "constants": [ { "name": "AllCategoriesLabel", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "EntriesPerPage", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "MaxCategoryNameLength", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "MaxNoteLength", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "MaxNumberOfCategories", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "MaxNumberOfNotes", "owner": "SWLOR.Game.Server.Domain.World.NotesService" }, { "name": "UncategorizedLabel", "owner": "SWLOR.Game.Server.Domain.World.NotesService" } ] },
+    { "facade": "Planet" },
+    { "facade": "Property", "constants": [ { "name": "ElectionRegistrationDays", "owner": "SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService" }, { "name": "ElectionVotingDays", "owner": "SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService" }, { "name": "MinimumCitizensGracePeriodHours", "owner": "SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService" } ] },
     { "facade": "ServerTask" },
-    { "facade": "Taxi" }
+    { "facade": "Shuttle", "constants": [ { "name": "ShuttleInteriorResref", "owner": "SWLOR.Game.Server.Domain.World.ShuttleService" } ] },
+    { "facade": "Taxi" },
+    { "facade": "Traps" },
+    { "facade": "Weather" }
   ]
 }

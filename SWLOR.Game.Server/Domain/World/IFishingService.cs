@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service.FishingService;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Fishing: the rod, bait and fish tables, and the cast-and-reel flow at a fishing point. The static facade
-    /// <c>Service.Fishing</c> forwards to the container's instance of this interface and keeps the event handlers.
+    /// Fishing: the rod, bait and fish tables, and the cast-and-reel flow at a fishing point. Static callers reach the
+    /// container's instance through <c>GameServices.Fishing</c>; the event handlers are on <see cref="FishingService"/>.
     /// </summary>
     public interface IFishingService
     {

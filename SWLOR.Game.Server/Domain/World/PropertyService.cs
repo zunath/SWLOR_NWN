@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -23,8 +24,9 @@ namespace SWLOR.Game.Server.Domain.World
     /// The property system: creating and deleting properties, permissions, entering and leaving them, placing
     /// structures and the terminal menus. The definitions, instance loading and city governance are the parts
     /// <see cref="IPropertyCatalogService"/>, <see cref="IPropertyLoaderService"/> and <see cref="IPropertyCityGovernanceService"/>; the logic and
-    /// state that used to be static in <c>Service.Property</c> moved to these classes unchanged, and the members of the
-    /// parts are forwarded from here so the facade keeps one interface. The facade still carries the event handlers.
+    /// state that used to be part of the static property class moved to these classes unchanged, and the members of the
+    /// parts are forwarded from here so the service keeps one interface. The event handlers run on this instance; static
+    /// callers reach it through <c>GameServices.Property</c>.
     /// </summary>
     public class PropertyService : IPropertyService
     {
@@ -64,6 +66,7 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             _catalog.CacheData();
@@ -72,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void OnModuleLoad()
         {
             RefreshPermissions();
@@ -1024,6 +1028,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
+        [NWNEventHandler(ScriptName.OnApartmentTerminal)]
         public void StartApartmentConversation()
         {
             var player = GetLastUsedBy();
@@ -1114,12 +1119,14 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void EnterPropertyInstance()
         {
             _loader.EnterPropertyInstance();
         }
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void ShowPropertyDescription()
         {
             _loader.ShowPropertyDescription();
@@ -1132,6 +1139,7 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void ExitPropertyInstance()
         {
             _loader.ExitPropertyInstance();
@@ -1215,6 +1223,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the property menu feat is used, open the GUI window.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
         public void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1297,6 +1306,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// Before an item is used, if it is a structure item, place it at the specified location.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnItemUseBefore)]
         public void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
@@ -1448,6 +1458,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// When a building entrance is used, port the player inside the instance if they have permission
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnEnterProperty)]
         public void EnterBuilding()
         {
             var player = GetLastUsedBy();
@@ -1513,6 +1524,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the Citizenship terminal is used, open the Manage Citizenship UI.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnOpenCitizenship)]
         public void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
@@ -1548,6 +1560,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the City Management terminal is used, open the City Management UI.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnOpenCityManage)]
         public void OpenCityManagementMenu()
         {
             var player = GetLastUsedBy();

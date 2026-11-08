@@ -10,8 +10,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The area cache: the logic and state that used to be static in <c>Service.Area</c>, moved here unchanged. The
-    /// facade still carries the event handlers and forwards every call to the container's instance.
+    /// The area cache: the logic and state that used to be a static class, moved here unchanged. The event handlers
+    /// run on the container's instance; static callers reach it through <c>GameServices.Area</c>.
     /// </summary>
     public class AreaService : IAreaService
     {
@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Domain.World
             SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CacheAreasByResref();
@@ -63,11 +64,12 @@ namespace SWLOR.Game.Server.Domain.World
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RemoveInstancesFromCache()
         {
             // Scheduled flights clone this template without a property layout definition.
             // Keep flight coordinates out of persistent player locations.
-            AreasByResref.Remove(Shuttle.ShuttleInteriorResref);
+            AreasByResref.Remove(ShuttleService.ShuttleInteriorResref);
 
             foreach (var areaResref in _property.Value.GetAllInstanceAreaResrefs())
             {
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Domain.World
             return PlayersByArea[area].ToList();
         }
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void EnterArea()
         {
             var player = GetEnteringObject();
@@ -133,6 +136,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
         }
 
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void ExitArea()
         {
             var player = GetExitingObject();

@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.World;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -295,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
                 .OrderBy(nameof(PlayerNote.Name))
-                .AddPaging(Notes.MaxNumberOfNotes, 0);
+                .AddPaging(NotesService.MaxNumberOfNotes, 0);
 
             return DB.Search(query).ToList();
         }
@@ -311,11 +313,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var categoryToggled = new GuiBindingList<bool>();
             var filterOptions = new GuiBindingList<GuiComboEntry>
             {
-                new(Notes.AllCategoriesLabel, 0)
+                new(NotesService.AllCategoriesLabel, 0)
             };
             var noteOptions = new GuiBindingList<GuiComboEntry>
             {
-                new(Notes.UncategorizedLabel, 0)
+                new(NotesService.UncategorizedLabel, 0)
             };
 
             for (var index = 0; index < _categories.Count; index++)
@@ -361,8 +363,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             UpdatePagination(filtered.Count);
 
             var pageNotes = filtered
-                .Skip(SelectedPageIndex * Notes.EntriesPerPage)
-                .Take(Notes.EntriesPerPage)
+                .Skip(SelectedPageIndex * NotesService.EntriesPerPage)
+                .Take(NotesService.EntriesPerPage)
                 .ToList();
 
             var noteNames = new GuiBindingList<string>();
@@ -412,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var pagination = GuiPaginationState.Create(
                 totalRecordCount,
-                Notes.EntriesPerPage,
+                NotesService.EntriesPerPage,
                 SelectedPageIndex);
             PageNumbers = pagination.PageNumbers;
             SelectedPageIndex = pagination.SelectedPageIndex;
@@ -553,8 +555,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The text edit caps length client-side, but enforce it here too so a crafted client
             // cannot persist an oversized note. This is the single funnel for every note write.
             var text = ActiveNoteText ?? string.Empty;
-            dbNote.Text = text.Length > Notes.MaxNoteLength
-                ? text[..Notes.MaxNoteLength]
+            dbNote.Text = text.Length > NotesService.MaxNoteLength
+                ? text[..NotesService.MaxNoteLength]
                 : text;
 
             dbNote.CategoryId = GetCategoryIdByOptionIndex(ActiveNoteCategoryIndex);
@@ -575,7 +577,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index >= 0)
             {
                 _suppressReload = true;
-                SelectedPageIndex = index / Notes.EntriesPerPage;
+                SelectedPageIndex = index / NotesService.EntriesPerPage;
                 _suppressReload = false;
             }
 
@@ -796,8 +798,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (name.Length > Notes.MaxCategoryNameLength)
-                name = name[..Notes.MaxCategoryNameLength];
+            if (name.Length > NotesService.MaxCategoryNameLength)
+                name = name[..NotesService.MaxCategoryNameLength];
 
             // The combo boxes prepend synthetic entries for "no category" and "no filter". A real
             // category sharing either label would render as two identical options with different

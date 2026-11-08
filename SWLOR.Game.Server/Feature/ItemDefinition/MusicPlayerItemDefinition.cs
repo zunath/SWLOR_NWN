@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void MusicPlayer()
         {
-            _builder.Create(Music.MusicPlayerTag)
+            _builder.Create(MusicService.MusicPlayerTag)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var payload = new MusicPickerPayload(MusicPickerMode.Personal, musicPlayer: item);

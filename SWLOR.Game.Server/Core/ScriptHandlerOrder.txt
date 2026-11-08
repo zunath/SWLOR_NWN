@@ -18,7 +18,7 @@ mod_content_chg  # run by EventRegistration.OnModulePreload through ExecuteScrip
 mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Service.Ability.CacheData
   action      SWLOR.Game.Server.Service.Achievement.LoadAchievements
-  action      SWLOR.Game.Server.Service.Area.CacheData
+  action      SWLOR.Game.Server.Domain.World.AreaService.CacheData
   action      SWLOR.Game.Server.Service.BeastMastery.CacheData
   action      SWLOR.Game.Server.Service.Cache.CacheData
   action      SWLOR.Game.Server.Service.ChatCommand.OnModuleLoad
@@ -27,19 +27,19 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Service.Currency.CacheCurrencies
   action      SWLOR.Game.Server.Service.Droid.CacheData
   action      SWLOR.Game.Server.Service.Faction.LoadFactions
-  action      SWLOR.Game.Server.Service.Fishing.CacheData
+  action      SWLOR.Game.Server.Domain.World.FishingService.CacheData
   action      SWLOR.Game.Server.Service.Guild.LoadData
   action      SWLOR.Game.Server.Service.Item.CacheData
   action      SWLOR.Game.Server.Service.KeyItem.LoadData
   action      SWLOR.Game.Server.Service.Loot.RegisterLootTables
   action      SWLOR.Game.Server.Service.MeleeTechnique.ResetProfiles
-  action      SWLOR.Game.Server.Service.Music.LoadSongList
+  action      SWLOR.Game.Server.Domain.World.MusicService.LoadSongList
   action      SWLOR.Game.Server.Service.NPCGroup.CacheData
   action      SWLOR.Game.Server.Service.ObjectVisibility.LoadVisibilityObjects
   action      SWLOR.Game.Server.Service.Perk.CacheData
-  action      SWLOR.Game.Server.Service.Planet.CacheData
+  action      SWLOR.Game.Server.Domain.World.PlanetService.CacheData
   action      SWLOR.Game.Server.Service.PlayerMarket.CacheData
-  action      SWLOR.Game.Server.Service.Property.CacheData
+  action      SWLOR.Game.Server.Domain.World.PropertyService.CacheData
   action      SWLOR.Game.Server.Service.Quest.CacheData
   action      SWLOR.Game.Server.Service.Recast.CacheRecastGroups
   action      SWLOR.Game.Server.Service.Skill.CacheData
@@ -51,7 +51,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Service.Stat.CacheData
   action      SWLOR.Game.Server.Service.StatusEffect.CacheData
   action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
-  action      SWLOR.Game.Server.Service.Weather.LoadData
+  action      SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
   action      SWLOR.Game.Server.Feature.UnarmedMastery.Register
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load
@@ -79,17 +79,17 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
 
 mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
   action      SWLOR.Game.Server.Service.Achievement.ReserveGuiIds
-  action      SWLOR.Game.Server.Service.Area.RemoveInstancesFromCache
+  action      SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   action      SWLOR.Game.Server.Service.FrameProfiler.Load
   action      SWLOR.Game.Server.Service.Language.LoadTranslators
   action      SWLOR.Game.Server.Service.PlayerMarket.RemoveOldListings
-  action      SWLOR.Game.Server.Service.Property.OnModuleLoad
+  action      SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
   action      SWLOR.Game.Server.Service.Race.LoadRaces
   action      SWLOR.Game.Server.Service.Resistance.LoadResistanceTypes
-  action      SWLOR.Game.Server.Service.Shuttle.LoadShuttleFlights
+  action      SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
   action      SWLOR.Game.Server.Service.Space.LoadLandingPoints
   action      SWLOR.Game.Server.Service.Walkmesh.RetrieveWalkmeshes
-  action      SWLOR.Game.Server.Service.Weather.InitializeWeather
+  action      SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StartAudienceTick
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceWindows.ReserveGuiIds
   action      SWLOR.Game.Server.Native.ChatPortraitSpeakers.RegisterHooks
@@ -130,7 +130,7 @@ actions
   action      SWLOR.Game.Server.Service.Snippet.ConversationAction
 
 apartment_term
-  action      SWLOR.Game.Server.Service.Property.StartApartmentConversation
+  action      SWLOR.Game.Server.Domain.World.PropertyService.StartApartmentConversation
 
 app_shutdown
   action      SWLOR.Game.Server.Service.CombatRecorder.StopOnShutdown
@@ -147,17 +147,17 @@ appears
   conditional SWLOR.Game.Server.Service.Snippet.ConversationAppearsWhen
 
 area_enter
-  action      SWLOR.Game.Server.Service.Area.EnterArea
+  action      SWLOR.Game.Server.Domain.World.AreaService.EnterArea
   action      SWLOR.Game.Server.Service.Conversation.EndOnAreaEnter
   action      SWLOR.Game.Server.Service.ExtraHotbars.OpenBarsOnEnter
   action      SWLOR.Game.Server.Service.Gui.CloseAllWindows
-  action      SWLOR.Game.Server.Service.Music.ApplyPlayerMusic
-  action      SWLOR.Game.Server.Service.Property.EnterPropertyInstance
-  action      SWLOR.Game.Server.Service.Property.ShowPropertyDescription
+  action      SWLOR.Game.Server.Domain.World.MusicService.ApplyPlayerMusic
+  action      SWLOR.Game.Server.Domain.World.PropertyService.EnterPropertyInstance
+  action      SWLOR.Game.Server.Domain.World.PropertyService.ShowPropertyDescription
   action      SWLOR.Game.Server.Service.Space.UpdateSpacePosition
   action      SWLOR.Game.Server.Service.Spawn.SpawnArea
   action      SWLOR.Game.Server.Service.Telegraph.OnAreaEnter
-  action      SWLOR.Game.Server.Service.Weather.OnAreaEnter
+  action      SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
   action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnAreaEnter
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingOnAreaEnter
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnAreaEnter
@@ -172,7 +172,7 @@ area_enter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAreaEnter
 
 area_exit
-  action      SWLOR.Game.Server.Service.Area.ExitArea
+  action      SWLOR.Game.Server.Domain.World.AreaService.ExitArea
   action      SWLOR.Game.Server.Service.CombatPoint.OnPlayerExit
   action      SWLOR.Game.Server.Service.Conversation.EndOnAreaExit
   action      SWLOR.Game.Server.Service.Enmity.PlayerExit
@@ -180,8 +180,8 @@ area_exit
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
   action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
   action      SWLOR.Game.Server.Service.Performance.EndOnAreaExit
-  action      SWLOR.Game.Server.Service.Property.ExitPropertyInstance
-  action      SWLOR.Game.Server.Service.Shuttle.HandleShuttleAreaExit
+  action      SWLOR.Game.Server.Domain.World.PropertyService.ExitPropertyInstance
+  action      SWLOR.Game.Server.Domain.World.ShuttleService.HandleShuttleAreaExit
   action      SWLOR.Game.Server.Service.Space.ClearTargetOnAreaExit
   action      SWLOR.Game.Server.Service.Spawn.QueueDespawnArea
   action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit
@@ -313,7 +313,7 @@ crea_attack_aft
 
 crea_attack_bef
   action      SWLOR.Game.Server.Service.Enmity.CreatureAttacked
-  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnAttack
+  action      SWLOR.Game.Server.Domain.World.MusicService.StartBattleThemeOnAttack
   action      SWLOR.Game.Server.Service.Stealth.RecordPlayerCombatInitiation
 
 crea_block_aft
@@ -333,7 +333,7 @@ crea_damaged_aft
 
 crea_damaged_bef
   action      SWLOR.Game.Server.Service.Enmity.CreatureDamaged
-  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnDamage
+  action      SWLOR.Game.Server.Domain.World.MusicService.StartBattleThemeOnDamage
 
 crea_death_aft
   action      SWLOR.Game.Server.Service.AI.CreatureDeath
@@ -521,7 +521,7 @@ enmity_changed
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugEnmityViewModel.OnEnmityChanged
 
 enter_property
-  action      SWLOR.Game.Server.Service.Property.EnterBuilding
+  action      SWLOR.Game.Server.Domain.World.PropertyService.EnterBuilding
 
 enter_world
   action      SWLOR.Game.Server.Feature.GameWorldEntry.EnterGameWorld
@@ -531,7 +531,7 @@ equip_uneqp_bef
   action      SWLOR.Game.Server.Service.EquipmentUnequip.BeforeUnequip
 
 espn_trap_used
-  action      SWLOR.Game.Server.Service.Traps.DisarmTrap
+  action      SWLOR.Game.Server.Domain.World.TrapsService.DisarmTrap
 
 examine_aft
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExaminePlayer
@@ -552,12 +552,12 @@ explore_trigger
   action      SWLOR.Game.Server.Feature.ExplorationTrigger.EnterExplorationTrigger
 
 feat_use_bef
-  action      SWLOR.Game.Server.Service.Property.PropertyMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyService.PropertyMenu
   action      SWLOR.Game.Server.Service.Space.HandleShipModuleFeats
   action      SWLOR.Game.Server.Feature.UsePerkFeat.UseFeat
 
 fish_point
-  action      SWLOR.Game.Server.Service.Fishing.ClickFishingPoint
+  action      SWLOR.Game.Server.Domain.World.FishingService.ClickFishingPoint
 
 generic_convo
   action      SWLOR.Game.Server.Feature.PlaceableScripts.GenericConversation
@@ -583,7 +583,7 @@ input_atk_bef
 
 interval_pc_6s
   action      SWLOR.Game.Server.Service.Combat.ClearCombatState
-  action      SWLOR.Game.Server.Service.Music.StopBattleThemeAfterCombat
+  action      SWLOR.Game.Server.Domain.World.MusicService.StopBattleThemeAfterCombat
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.Reconcile
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.Reconcile
 
@@ -658,7 +658,7 @@ item_uneqp_bef
 
 item_use_bef
   action      SWLOR.Game.Server.Service.Item.UseItem
-  action      SWLOR.Game.Server.Service.Property.PlaceStructure
+  action      SWLOR.Game.Server.Domain.World.PropertyService.PlaceStructure
   action      SWLOR.Game.Server.Feature.InstantItemUse.OnUseItem
 
 jukebox_used
@@ -690,7 +690,7 @@ mod_acquire
 
 mod_chat
   action      SWLOR.Game.Server.Service.Communication.ProcessNativeChatMessage
-  action      SWLOR.Game.Server.Service.HoloCom.OnModuleChat
+  action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleChat
 
 mod_death
   action      SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath
@@ -699,7 +699,7 @@ mod_death
   action      SWLOR.Game.Server.Service.Death.OnPlayerDeath
   action      SWLOR.Game.Server.Service.Enmity.PlayerDeath
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerDeath
-  action      SWLOR.Game.Server.Service.HoloCom.OnModuleDeath
+  action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleDeath
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnPlayerDeath
   action      SWLOR.Game.Server.Service.Performance.EndOnDeath
   action      SWLOR.Game.Server.Service.PvpCombat.EndOnDeath
@@ -709,7 +709,7 @@ mod_death
   action      SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnDeath
   action      SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnDeath
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingOnDeath
-  action      SWLOR.Game.Server.Service.FishingService.FishingFights.AbandonOnDeath
+  action      SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnDeath
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnPlayerDeath
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnDeath
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnDeath
@@ -734,7 +734,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter
   action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter
   action      SWLOR.Game.Server.Service.Gui.CreatePlayerWindows
-  action      SWLOR.Game.Server.Service.HoloCom.OnModuleEnter
+  action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleEnter
   action      SWLOR.Game.Server.Service.Item.EnsureInventoryItemActivations
   action      SWLOR.Game.Server.Service.Mimicry.OnPlayerLogin
   action      SWLOR.Game.Server.Service.ObjectVisibility.LoadPlayerVisibilityObjects
@@ -746,7 +746,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.QuestContractBoard.NotifyPendingDeliveries
   action      SWLOR.Game.Server.Service.QuickCast.ApplyOnEnter
   action      SWLOR.Game.Server.Service.Race.ApplyWookieeScaling
-  action      SWLOR.Game.Server.Service.Shuttle.EnterServer
+  action      SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
   action      SWLOR.Game.Server.Service.Skill.AddMissingSkills
   action      SWLOR.Game.Server.Service.Space.EnterServer
   action      SWLOR.Game.Server.Service.Stat.ApplyPlayerStats
@@ -806,10 +806,10 @@ mod_exit
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
   action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit
   action      SWLOR.Game.Server.Service.Gui.SavePlayerWindowGeometry
-  action      SWLOR.Game.Server.Service.HoloCom.OnModuleLeave
+  action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleLeave
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
   action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
-  action      SWLOR.Game.Server.Service.Music.ForgetBattleThemeCombat
+  action      SWLOR.Game.Server.Domain.World.MusicService.ForgetBattleThemeCombat
   action      SWLOR.Game.Server.Service.Party.LeaveServer
   action      SWLOR.Game.Server.Service.Performance.EndOnLogout
   action      SWLOR.Game.Server.Service.PlayerIntroduction.ClearOnExit
@@ -817,7 +817,7 @@ mod_exit
   action      SWLOR.Game.Server.Service.PlayerName.ReleaseKnownNamesOnExit
   action      SWLOR.Game.Server.Service.PlayerName.ClearAfkOnExit
   action      SWLOR.Game.Server.Service.PvpCombat.ForgetExitingPlayer
-  action      SWLOR.Game.Server.Service.Shuttle.ExitServer
+  action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
   action      SWLOR.Game.Server.Service.Space.ExitServer
   action      SWLOR.Game.Server.Service.Stat.ForgetOutOfCombatMovementState
   action      SWLOR.Game.Server.Service.StatusEffect.OnPlayerExit
@@ -827,7 +827,7 @@ mod_exit
   action      SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnExit
   action      SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnExit
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.ForgetExitingPlayer
-  action      SWLOR.Game.Server.Service.FishingService.FishingFights.AbandonOnExit
+  action      SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit
   action      SWLOR.Game.Server.Service.TemporaryStatModifier.ClearExitingObject
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
@@ -923,10 +923,10 @@ open_bank
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BankViewModel.ShowBank
 
 open_citizenship
-  action      SWLOR.Game.Server.Service.Property.OpenCitizenshipMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCitizenshipMenu
 
 open_city_manage
-  action      SWLOR.Game.Server.Service.Property.OpenCityManagementMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCityManagementMenu
 
 open_holonet
   action      SWLOR.Game.Server.Feature.HolonetTerminal.OpenHolonetUI
@@ -938,7 +938,7 @@ open_train_store
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.TrainingStoreViewModel.OpenTrainingStore
 
 pc_attacked
-  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnAttack
+  action      SWLOR.Game.Server.Domain.World.MusicService.StartBattleThemeOnAttack
   action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerAttacked
 
 pc_cap_adjusted
@@ -946,7 +946,7 @@ pc_cap_adjusted
 
 pc_damaged
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnDirectDamageApplied
-  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnDamage
+  action      SWLOR.Game.Server.Domain.World.MusicService.StartBattleThemeOnDamage
   action      SWLOR.Game.Server.Service.Performance.EndOnDamage
   action      SWLOR.Game.Server.Service.CompanionControl.OnOwnerDamaged
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerDamaged
@@ -1158,7 +1158,7 @@ swlor_gain_skill
 
 swlor_heartbeat
   action      SWLOR.Game.Server.Service.Spawn.ProcessSpawnSystem
-  action      SWLOR.Game.Server.Service.Weather.OnModuleHeartbeat
+  action      SWLOR.Game.Server.Domain.World.WeatherService.OnModuleHeartbeat
   action      SWLOR.Game.Server.Feature.EventRegistration.ExecuteHeartbeatEvent
   action      SWLOR.Game.Server.Feature.ServerTasks.ProcessAutoRestart
 

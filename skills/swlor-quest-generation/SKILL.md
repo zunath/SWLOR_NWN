@@ -10,7 +10,7 @@ description: Generate SWLOR NPC-delivered quest content from concepts or batch s
 Build quests in the real SWLOR artifacts, not in a side memo. Use the current repo patterns first:
 
 - Quest data: `SWLOR.Game.Server/Feature/QuestDefinition/*QuestDefinition.cs`
-- Quest service APIs: `SWLOR.Game.Server/Service/Quest.cs` and `Service/QuestService/*`
+- Quest service APIs: `SWLOR.Game.Server/Domain/Quests/QuestService.cs` (reached from static code as `GameServices.Quest`) and `Service/QuestService/*`
 - Authored conversations: `SWLOR.Game.Server/ConversationData/*.conversation.json`; quest operations: `Feature/SnippetDefinition/QuestSnippetDefinition.cs`. Read `SWLOR.Game.Server/Readmes/Conversations.md` for authoring, routing, and validation.
 - NPC templates and placement: `Module/utc/*.utc.json`, `Module/git/<area>.git.json`
 - Enemy groups and spawn tables: `NPCGroupType.cs`, `Feature/SpawnDefinition/*SpawnDefinition.cs`, enemy `Module/utc/*.utc.json`

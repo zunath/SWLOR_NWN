@@ -151,7 +151,7 @@ public class CapstoneProofServiceTests
     [Test]
     public void The_support_window_is_the_one_the_facade_repeats()
     {
-        CapstoneProof.SupportWindowSeconds.Should().Be(CapstoneProofService.SupportWindowSeconds).And.Be(30f);
+        CapstoneProofService.SupportWindowSeconds.Should().Be(CapstoneProofService.SupportWindowSeconds).And.Be(30f);
     }
 
     // ---- status effects on enemies

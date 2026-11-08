@@ -82,8 +82,8 @@ public class FactionServiceTests
     {
         FactionService.MinimumFaction.Should().Be(-5000);
         FactionService.MaximumFaction.Should().Be(5000);
-        Faction.MinimumFaction.Should().Be(FactionService.MinimumFaction);
-        Faction.MaximumFaction.Should().Be(FactionService.MaximumFaction);
+        FactionService.MinimumFaction.Should().Be(FactionService.MinimumFaction);
+        FactionService.MaximumFaction.Should().Be(FactionService.MaximumFaction);
     }
 
     // ---- standing

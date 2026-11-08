@@ -18,9 +18,9 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
-    /// Quest encounters: the logic that used to be static in <c>Service.QuestService.QuestEncounter</c>, moved here
-    /// unchanged. The facade keeps the event handlers and the constants and forwards every call to the container's
-    /// instance. The two dictionaries are this instance's own state.
+    /// Quest encounters: the logic that used to be static in <c>QuestEncounter</c>, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.QuestEncounter</c>. The two dictionaries are this instance's own state.
     /// </summary>
     public class QuestEncounterService : IQuestEncounterService
     {
@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             _quest = quest;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnModuleEnter()
         {
             var player = GetEnteringObject();
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             DelayCommand(1.0f, () => RefreshVisibilityForPlayer(player));
         }
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void OnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -69,6 +71,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             DelayCommand(0.2f, () => RefreshVisibilityForPlayer(player));
         }
 
+        [NWNEventHandler(ScriptName.OnQuestEncounter)]
         public void UseActivator()
         {
             var player = GetLastUsedBy();
@@ -136,6 +139,8 @@ namespace SWLOR.Game.Server.Domain.Quests
             ScheduleIdleDespawnCheck(activator, encounterCreature, encounterId);
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureAttackAfter)]
+        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
         public void TrackEncounterActivity()
         {
             var encounterCreature = OBJECT_SELF;
@@ -144,6 +149,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             MarkEncounterActivity(encounterCreature);
         }
 
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public void ObjectDestroyed()
         {
             var encounterCreature = OBJECT_SELF;

@@ -65,6 +65,7 @@ SWLOR.Game.Server.Service.ConversationMenu.CacheData SWLOR.Game.Server.Domain.Co
 SWLOR.Game.Server.Service.ConversationMenu.StartFromLocalConversation SWLOR.Game.Server.Domain.Core.ConversationMenuService.StartFromLocalConversation
 SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent SWLOR.Game.Server.Domain.Core.ConversationMenuService.StartFromObjectEvent
 SWLOR.Game.Server.Service.DB.Load SWLOR.Game.Server.Domain.Core.DBService.Load
+SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
 SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
 SWLOR.Game.Server.Service.Death.OnPlayerDeath SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
 SWLOR.Game.Server.Service.Death.OnPlayerDying SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDying
@@ -87,6 +88,7 @@ SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip SWLOR.Game.Server.Domain.U
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnequip
+SWLOR.Game.Server.Service.Faction.LoadFactions SWLOR.Game.Server.Domain.Quests.FactionService.LoadFactions
 SWLOR.Game.Server.Service.Fishing.CacheData SWLOR.Game.Server.Domain.World.FishingService.CacheData
 SWLOR.Game.Server.Service.Fishing.ClickFishingPoint SWLOR.Game.Server.Domain.World.FishingService.ClickFishingPoint
 SWLOR.Game.Server.Service.FishingService.FishingFights.AbandonOnDeath SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnDeath
@@ -175,6 +177,21 @@ SWLOR.Game.Server.Service.Property.StartApartmentConversation SWLOR.Game.Server.
 SWLOR.Game.Server.Service.PvpCombat.EndOnDeath SWLOR.Game.Server.Domain.Combat.PvpCombatService.EndOnDeath
 SWLOR.Game.Server.Service.PvpCombat.ForgetExitingPlayer SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
 SWLOR.Game.Server.Service.PvpCombat.ReduceHealing SWLOR.Game.Server.Domain.Combat.PvpCombatService.ReduceHealing
+SWLOR.Game.Server.Service.Quest.CacheData SWLOR.Game.Server.Domain.Quests.QuestService.CacheData
+SWLOR.Game.Server.Service.Quest.CloseItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.CloseItemCollector
+SWLOR.Game.Server.Service.Quest.DisturbItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.DisturbItemCollector
+SWLOR.Game.Server.Service.Quest.EnterQuestTrigger SWLOR.Game.Server.Domain.Quests.QuestService.EnterQuestTrigger
+SWLOR.Game.Server.Service.Quest.LoadPlayerQuests SWLOR.Game.Server.Domain.Quests.QuestService.LoadPlayerQuests
+SWLOR.Game.Server.Service.Quest.OpenItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.OpenItemCollector
+SWLOR.Game.Server.Service.Quest.ProgressKillTargetObjectives SWLOR.Game.Server.Domain.Quests.QuestService.ProgressKillTargetObjectives
+SWLOR.Game.Server.Service.Quest.UseQuestPlaceable SWLOR.Game.Server.Domain.Quests.QuestService.UseQuestPlaceable
+SWLOR.Game.Server.Service.QuestContractBoard.NotifyPendingDeliveries SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.NotifyPendingDeliveries
+SWLOR.Game.Server.Service.QuestContractBoard.RegisterContracts SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.RegisterContracts
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.ObjectDestroyed SWLOR.Game.Server.Domain.Quests.QuestEncounterService.ObjectDestroyed
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnAreaEnter SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnAreaEnter
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.TrackEncounterActivity SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.UseActivator SWLOR.Game.Server.Domain.Quests.QuestEncounterService.UseActivator
 SWLOR.Game.Server.Service.Recast.CacheRecastGroups SWLOR.Game.Server.Domain.Combat.RecastService.CacheRecastGroups
 SWLOR.Game.Server.Service.Resistance.LoadResistanceTypes SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
 SWLOR.Game.Server.Service.Shuttle.EnterServer SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer

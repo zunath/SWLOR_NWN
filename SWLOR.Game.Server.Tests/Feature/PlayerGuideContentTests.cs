@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -288,12 +289,12 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         guideText.Should().Contain($"up to {NotesService.MaxNumberOfCategories} categories");
         guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
 
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");
-        guideText.Should().Contain($"between 1 and {QuestContractBoard.MaxObjectives} item objectives");
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxRewardItems} reward items");
-        guideText.Should().Contain($"{QuestContractBoard.ContractDurationDays} days");
-        guideText.Should().Contain($"{QuestContractBoard.PostingFeePercent} percent");
-        guideText.Should().Contain($"minimum fee of {QuestContractBoard.MinimumPostingFee} credits");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxActiveContractsPerCDKey} published");
+        guideText.Should().Contain($"between 1 and {QuestContractBoardService.MaxObjectives} item objectives");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxRewardItems} reward items");
+        guideText.Should().Contain($"{QuestContractBoardService.ContractDurationDays} days");
+        guideText.Should().Contain($"{QuestContractBoardService.PostingFeePercent} percent");
+        guideText.Should().Contain($"minimum fee of {QuestContractBoardService.MinimumPostingFee} credits");
 
         guideText.Should().Contain($"begin with {Player.DefaultDisguiseSlotLimit} identity slot");
         guideText.Should().Contain($"base wait between disguise activations is {Disguise.ActivationDelayMinutes} minutes");

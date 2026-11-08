@@ -15,8 +15,8 @@ using Vector2 = System.Numerics.Vector2;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// DM avatar visibility and movement: the logic and state that used to be static in <c>Service.DMPresence</c>,
-    /// moved here unchanged. The facade forwards every call to the container's instance.
+    /// DM avatar visibility and movement: the logic and state that used to be static in <c>DMPresence</c>,
+    /// moved here unchanged. Static callers reach the container's instance through <c>GameServices.DMPresence</c>.
     /// </summary>
     public class DMPresenceService : IDMPresenceService
     {
@@ -118,8 +118,8 @@ namespace SWLOR.Game.Server.Domain.Administration
             return isSafe;
         }
 
-        // The area's jump spots come from the DM object search. That service takes this one, so the call stays on its static
-        // facade and a unit test subclass answers it.
+        // The area's jump spots come from the DM object search. That service takes this one, so the call stays in this
+        // wrapper and a unit test subclass answers it.
         protected virtual IEnumerable<Location> GetAreaJumpLocations(uint area) => _dmObjectSearch.Value.GetAreaJumpLocations(area);
 
         // The engine cancels a jump to a spot it cannot land on and tells no one, so the spot is checked first.

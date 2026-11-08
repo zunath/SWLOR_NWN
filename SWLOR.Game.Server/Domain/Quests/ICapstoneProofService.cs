@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
     /// Tracks which capstone mechanics each player has used, so capstone quest steps credit a kill only when the
-    /// player fought it with their skill's mechanic. The static facade <c>Service.CapstoneProof</c> forwards to the
-    /// container's instance of this interface and keeps the constant.
+    /// player fought it with their skill's mechanic. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.CapstoneProof</c>.
     /// </summary>
     public interface ICapstoneProofService
     {

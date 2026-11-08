@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Loads and saves each DM's DM Creator favorites, keyed by the DM's public CD key. Favorites are personal: they
-    /// never change the palettes other DMs see. The static facade <c>Service.DMCreatorFavorite</c> forwards to the
-    /// container's instance of this interface.
+    /// never change the palettes other DMs see. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.DMCreatorFavorite</c>.
     /// </summary>
     public interface IDMCreatorFavoriteService
     {

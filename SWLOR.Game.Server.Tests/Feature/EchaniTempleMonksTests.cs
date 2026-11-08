@@ -107,8 +107,8 @@ public class EchaniTempleMonksTests
                 Value(item, "Metal2Color").GetInt32().Should().Be(name == "master" ? 6 : 7);
             }
             foreach (var (field, slot) in parts)
-                ArmorAppearanceCatalog.GetStyles(catalog, slot).Should()
-                    .Contain(Value(armor, "ArmorPart_" + field).GetInt32(), $"{name} {field}");
+                ArmorAppearanceCatalog.AcceptsSavedStyle(catalog, slot, Value(armor, "ArmorPart_" + field).GetInt32())
+                    .Should().BeTrue($"{name} {field} must be a supported saved style");
             var model = Value(hood, "ModelPart1").GetInt32();
             catalog.Helmet.Should().Contain(model);
             Value(hood, "xModelPart1").GetInt32().Should().Be(model);

@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
-        // The main service of the Performance service, reached through its facade because it takes this one by constructor.
+        // The main service of the Performance service, reached lazily because it takes this one by constructor.
         protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
         protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);

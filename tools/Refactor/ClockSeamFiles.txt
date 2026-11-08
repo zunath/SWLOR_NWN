@@ -2,6 +2,9 @@
 # One path per line, relative to SWLOR.Game.Server/. A trailing /** means every .cs file under that folder.
 # Read by tools/Refactor/Apply-ClockSeam.ps1 and by ClockSeamSourceGuardTests (and by the daily sync as the list
 # of files this mechanical rewrite owns).
+# A line ending in ` # master-only` names a file the branch deleted that master still has (a removed facade, P2-Z): the
+# parity copy still rewrites master's version, the branch need not have it, and the sync does not own it (a master
+# change to it is ported by hand).
 Service/Combat.cs
 Service/CombatParts/**
 Domain/Combat/CombatResourcesService.cs

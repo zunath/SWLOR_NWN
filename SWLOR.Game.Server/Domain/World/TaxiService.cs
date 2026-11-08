@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Taxi destinations: the logic and state that used to be static in <c>Service.Taxi</c>, moved here unchanged. The
-    /// facade still carries the event handler and forwards every call to the container's instance.
+    /// event handler runs on the container's instance; static callers reach it through <c>GameServices.Taxi</c>.
     /// </summary>
     public class TaxiService : ITaxiService
     {
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.World
             _db = db;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadTaxiDestinations()
         {
             var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();

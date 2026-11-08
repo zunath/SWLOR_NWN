@@ -2,7 +2,7 @@
 
 How the server's services move from static classes to instances built by a dependency-injection container, and how to convert one. The decisions are in `MaintainabilityRefactorSpecs.md` (Phase 2); this guide is the working recipe, with the pilot (`Achievement`, `Faction`, `Taxi`) as the example. Read it before converting a service.
 
-Sections: The pattern · The container · Converting a service · A service of several classes · Dependencies · Tests · Rules the architecture tests enforce · Pitfalls
+Sections: The pattern · The container · Converting a service · A service of several classes · Dependencies · Tests · Rules the architecture tests enforce · Removing a facade (P2-Z transition) · Pitfalls
 
 ## The pattern
 
@@ -110,6 +110,31 @@ Never inject `IServiceProvider` or take the container in a constructor. Dependen
 - **Domain types name their service.** A type in `Domain.<Domain>` is classified as the service of that domain whose name starts its name (`IAchievementService`, `AchievementService` and `AchievementNotification` are all the service `Achievement`), so the cross-domain baseline (`CrossDomainEdges.txt`) is the same before and after a conversion. A type that names no service of its domain shows up as a new `Platform/Domain.<Domain>` edge.
 
 The composition root (`Composition/`) names every service it registers, so its outgoing edges are left out of the cross-domain guard (`wiringPlatformAreas` in `DomainMap.json`).
+
+## Removing a facade (P2-Z transition)
+
+Phase 2 ends by deleting the static facades area by area (`MaintainabilityRefactorFacadeRemoval.md`). While some facades are gone and others are not, a service is in one of two states, and `ConvertedServices.json` says which: an entry with `"facadeRemoved": true` has no `Service.<Name>` type any more. The first two were `ServerTask` and `Taxi` (P2-ZA). How the callers of a removed facade reach its service:
+
+| Caller | Reaches the service through |
+|---|---|
+| A class the container builds (an instance class or part) | Its constructor: the interface, or `Lazy<IXService>` where a direct parameter would make a constructor cycle. `Composition` registers `Lazy<>` once for every service (`ContainerLazy<T>`, resolved on the first `.Value`); `LazyDependencyCycleTests` fails for a `Lazy<>` that breaks no cycle. Never `GameServices`. |
+| Static code: `Feature/`, `Native/`, support types, unconverted `Service/` code, `SWLOR.CLI` and the other tools, tests | `Composition/GameServices`, a static partial class with one property per removed facade, named like it and typed as its interface (`public static ITaxiService Taxi => FacadeAccessor.Resolve<ITaxiService>();`, one file per domain, `GameServices.World.cs`). The file imports it with `using static SWLOR.Game.Server.Composition.GameServices;`, so a call keeps its text (`Taxi.RegisterTaxiDestination(player, type)`); a project whose `GlobalUsings.cs` imports `SWLOR.Game.Server.Service` globally (`EngineTests`, `SWLOR.Admin`) imports `GameServices` globally too. `Combat`, `Mimicry`, `Performance` and `Prospecting` are also namespace segments, which hide an imported property, so they are written `GameServices.Combat.X`. |
+| A constant the facade repeated | The class its initializer named (`CombatRules.MaximumHitRate`, `Domain.Quests.FactionService.MinimumFaction`); a literal constant moves to the instance class first. |
+| The script registry | A handler moves from the facade method to the instance method it forwarded to, same name. `ScriptRegistry` binds a public instance handler to the instance a resolver gives for its declaring class: `ServerBootstrapper.LoadScripts` passes `ContainerHost.ResolveHandlerOwner`, the container's singleton of that class (the one `GameServices` returns), so `Core` never touches the container. It binds a handler once, for the class that declares it (a test double that derives from a service registers nothing), and stops the boot with a message for a handler on a class the container does not register. Static handlers bind as before. |
+
+A property costs what the facade call did: it reads the same `FacadeCache` slot, so it allocates nothing (`GameServicesAllocationTests`) and serves the container a test installed (a `FacadeContainer` keeps working). A type and a property of one name in scope do not compile (CS0229), so the property is added in the pull request that deletes the facade.
+
+**Removing a facade** (after its converted callers inject the interface):
+
+1. Move each `[NWNEventHandler]` from the facade to the instance method of the same name, rename its line in place in `Core/ScriptHandlerOrder.txt` (`SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations` becomes `SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations`, same position) and add `<master name> <branch name>` to `tools/Refactor/HandlerRenames.txt`.
+2. Add the property to `Composition/GameServices.<Domain>.cs` and delete the facade files. Move its constants to their owners.
+3. List the facade in `tools/Refactor/RemovedFacades.json` (sorted; `"explicit": true` for the four names above; `"constants"` with each constant's owner) and mark the service `"facadeRemoved": true` in `ConvertedServices.json`.
+4. Run `tools/Refactor/Apply-FacadeRemoval.ps1` (a C# tool, `tools/Refactor/SWLOR.FacadeRemoval`): it adds the `using static` line to each caller (or the global form), drops a `Service.` qualifier, writes the explicit names, respells moved constants and renames the manifest lines from `HandlerRenames.txt`. It is idempotent, `-Check` is clean after it (a unit test runs the check on the branch), and the daily sync re-runs it (`MechanicalScripts.txt`), so new master code that calls a removed facade compiles. A tree without `Composition/GameServices.cs` (master) is left alone. Fix by hand what it cannot: `typeof(<Facade>)`, `cref`s, and a method group over the facade (a lambda now, or it allocates a delegate on each use).
+5. Tests that reflected on or read the facade follow it to the instance class; the two handler snapshots are regenerated (only the renamed lines change).
+
+**The guards during the transition.** For a removed service the architecture tests require no `Service.<Name>` type and a `GameServices.<Name>` property of its interface type, its handlers on its instance class (not a part or a support type), and `FacadeAccessor` only in `Composition`; for every service, that no class the container builds uses `GameServices`. `FacadeForwardingTests` skips the forwarding cases of a removed facade, proves each `GameServices` property returns the installed container's instance, and checks that the instance class has exactly the handlers `HandlerRenames.txt` moved onto it.
+
+**Parity with master.** Master still has every facade, so the parity copy (`MasterCopy.ps1`) runs `Apply-FacadeRemoval.ps1 -Reverse` on its copy of the characterization tests: it drops the `GameServices` imports and those of branch-only namespaces, turns `GameServices.<Name>.` back into `<Name>.` and moved constants back onto their facade. The constants snapshots of `Combat`, `Stat`, `Skill` and `Craft` are explicit lists the reversal can respell (`FacadeConstants` checks each list against the facade while it exists). An entry of `tools/Refactor/ClockSeamFiles.txt` for a deleted facade file stays, marked `# master-only`: the parity copy still rewrites master's version, the branch need not have it, and the sync leaves its conflicts to a person.
 
 ## Pitfalls
 

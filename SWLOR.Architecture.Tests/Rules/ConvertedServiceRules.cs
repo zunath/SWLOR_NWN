@@ -71,7 +71,8 @@ internal static class ConvertedServiceRules
     /// </summary>
     public static IReadOnlySet<TypeKey> FacadesMayLocate(ConvertedServiceList list)
     {
-        return list.Services.SelectMany(service => service.Facades)
+        // A removed facade no longer exists; only Composition (GameServices) resolves for it.
+        return list.Services.Where(service => !service.FacadeRemoved).SelectMany(service => service.Facades)
             .Concat(list.InProgress.Select(service => service.Facade))
             .ToHashSet();
     }
@@ -105,7 +106,9 @@ internal static class ConvertedServiceRules
     /// <summary>
     /// Each converted service has its three pieces: a static facade class, an interface, and a class that implements
     /// the interface. The same holds for each extra facade the service lists, with the interface and the instance class
-    /// named after the facade type. A part has the interface and the class that implements it, and no facade.
+    /// named after the facade type. A part has the interface and the class that implements it, and no facade. For a
+    /// service whose facades were removed (<see cref="ConvertedService.FacadeRemoved"/>) each facade type must be gone,
+    /// and <see cref="ConvertedService.Accessor"/> must have a static property of the facade's name typed as its interface.
     /// </summary>
     public static IReadOnlyList<string> MissingPieces(ConvertedServiceList list, AssemblyFacts facts)
     {
@@ -114,12 +117,20 @@ internal static class ConvertedServiceRules
         foreach (var type in facts.Types)
             byKey.TryAdd(type.Key, type);
 
+        var accessor = ConvertedService.Accessor;
         var problems = new List<string>();
         foreach (var service in list.Services)
         {
             foreach (var pieces in service.Pieces)
             {
-                if (pieces.Facade is { } facadeKey)
+                if (pieces.Facade is { } removedKey && service.FacadeRemoved)
+                {
+                    if (byKey.ContainsKey(removedKey))
+                        problems.Add($"{pieces.Label}: the static facade {removedKey} still exists, but the service is marked \"facadeRemoved\": delete it (static code uses {accessor}.{removedKey.Name}).");
+                    if (!facts.StaticProperties.Any(property => property.Owner == accessor && property.Name == removedKey.Name && property.Type == pieces.Interface.ToString()))
+                        problems.Add($"{pieces.Label}: {accessor} has no static property {removedKey.Name} of type {pieces.Interface}, which static code uses instead of the removed facade.");
+                }
+                else if (pieces.Facade is { } facadeKey)
                 {
                     if (!byKey.TryGetValue(facadeKey, out var facade))
                         problems.Add($"{pieces.Label}: the static facade {facadeKey} does not exist.");
@@ -180,6 +191,49 @@ internal static class ConvertedServiceRules
 
             var expected = facades.Count == 1 ? $"its facade {facades[0]}" : $"one of its facades ({string.Join(", ", facades)})";
             problems.Add($"{handler.Owner}.{handler.Method} is an event handler on a converted service but not on {expected}: leave the handler on the facade and forward to the instance.");
+        }
+
+        return problems.OrderBy(message => message, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    /// Once a service's facades are removed, its <c>[NWNEventHandler]</c> methods are on the instance classes the facades
+    /// forwarded to (the script registry binds them to the container's singleton), never on a part, a support type or a
+    /// leftover static class.
+    /// </summary>
+    /// <param name="facts">The compiled assembly.</param>
+    /// <param name="instancesOf">
+    /// For a type of a service whose facades were removed, the instance classes that had a facade (the main one and those of
+    /// its further facades); null for other types.
+    /// </param>
+    public static IReadOnlyList<string> HandlersOffTheInstance(AssemblyFacts facts, Func<TypeKey, IReadOnlyList<TypeKey>?> instancesOf)
+    {
+        var problems = new List<string>();
+        foreach (var handler in facts.Handlers)
+        {
+            if (instancesOf(handler.Owner) is not { Count: > 0 } instances || instances.Contains(handler.Owner))
+                continue;
+
+            var expected = instances.Count == 1 ? $"its instance class {instances[0]}" : $"one of its instance classes ({string.Join(", ", instances)})";
+            problems.Add($"{handler.Owner}.{handler.Method} is an event handler of a service whose facade was removed, but not on {expected}: " +
+                         "put it on the instance method the facade forwarded to and list the rename in tools/Refactor/HandlerRenames.txt.");
+        }
+
+        return problems.OrderBy(message => message, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    /// A class the container builds (the interface or the instance class of any piece of a converted service) never uses
+    /// <see cref="ConvertedService.Accessor"/>: that would be service location from inside the container. It takes the
+    /// interface through its constructor, or <c>Lazy&lt;IXService&gt;</c> where a direct parameter would make a cycle.
+    /// </summary>
+    public static IReadOnlyList<string> RegisteredClassesUseTheAccessor(TypeReferenceGraph graph, IEnumerable<TypeKey> registered, TypeKey accessor)
+    {
+        var problems = new List<string>();
+        foreach (var type in registered.Distinct())
+        {
+            if (graph.References.TryGetValue((type, accessor), out var members))
+                problems.Add($"{type} uses {accessor} ({string.Join(", ", members.OrderBy(m => m, StringComparer.Ordinal))}): a class the container builds takes the interface through its constructor (Lazy<IXService> for a constructor cycle).");
         }
 
         return problems.OrderBy(message => message, StringComparer.Ordinal).ToList();

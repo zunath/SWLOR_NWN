@@ -26,6 +26,9 @@ namespace SWLOR.Game.Server.Composition
     {
         internal static void Register(IServiceCollection services)
         {
+            // Lazy<IXService> for a constructor parameter that would otherwise make a cycle (LazyDependencyCycleTests).
+            services.AddSingleton(typeof(Lazy<>), typeof(ContainerLazy<>));
+
             // Core
             services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();

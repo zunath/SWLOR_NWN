@@ -664,11 +664,105 @@ public class ConvertedServiceRulesTests
         Locate().Should().NotContain(problem => problem.StartsWith(KeyOf(allowed).ToString() + " "));
     }
 
+    // ---- removed facades (P2-Z: "facadeRemoved": true, static code uses GameServices)
+
+    private static StaticPropertyFact AccessorProperty(string name, TypeKey type) => new(ConvertedService.Accessor, name, type.ToString());
+
+    [Test]
+    public void The_facade_removed_flag_is_read_from_the_list_and_must_be_a_boolean()
+    {
+        var list = ConvertedServiceList.Parse("""
+            { "services": [ { "name": "Achievement", "domain": "Character", "facadeRemoved": true }, { "name": "Stat", "domain": "Character", "facadeRemoved": "yes" } ] }
+            """);
+
+        list.Services.Select(service => service.FacadeRemoved).Should().Equal(true, false);
+        list.Problems.Should().ContainSingle().Which.Should().Contain("\"facadeRemoved\" of Stat must be true or false");
+        ConvertedServiceList.Parse("""{ "services": [ { "name": "Achievement", "domain": "Character" } ] }""").Services.Single().FacadeRemoved.Should().BeFalse();
+        ListOf(new ConvertedService("Achievement", "Character") { FacadeRemoved = true }).Services.Single().FacadeRemoved.Should().BeTrue();
+    }
+
+    [Test]
+    public void A_removed_facade_is_gone_and_the_accessor_has_a_property_of_its_interface()
+    {
+        var service = new ConvertedService("Achievement", "Character") { FacadeRemoved = true };
+        var facts = new AssemblyFacts(
+            [new TypeFact(service.Interface, true, false, false, []), new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()])],
+            [], [], [],
+            [AccessorProperty("Achievement", service.Interface)]);
+
+        ConvertedServiceRules.MissingPieces(ListOf(service), facts).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_removed_facade_that_still_exists_or_has_no_accessor_property_of_its_interface_is_reported()
+    {
+        var service = new ConvertedService("Achievement", "Character") { FacadeRemoved = true, Extras = [ExtraPiece.Facade(TrackerFacade)] };
+        var tracker = service.Pieces[1];
+        var facts = new AssemblyFacts(
+            [
+                new TypeFact(service.Facade, false, true, true, []),
+                new TypeFact(service.Interface, true, false, false, []),
+                new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
+                new TypeFact(tracker.Interface, true, false, false, []),
+                new TypeFact(tracker.Instance, false, false, true, [tracker.Interface.ToString()]),
+            ],
+            [], [], [],
+            [AccessorProperty("Achievement", service.Interface), AccessorProperty("AchievementTracker", service.Interface)]);
+
+        var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
+
+        problems.Should().HaveCount(2);
+        problems.Should().Contain(problem => problem.Contains("the static facade SWLOR.Game.Server.Service.Achievement still exists") && problem.Contains("GameServices.Achievement"));
+        problems.Should().Contain(problem => problem.Contains("has no static property AchievementTracker of type") && problem.Contains("IAchievementTrackerService"));
+    }
+
+    [Test]
+    public void The_scanner_reads_static_properties_with_their_types()
+    {
+        var accessor = KeyOf(typeof(FixtureServices));
+
+        Facts.StaticProperties.Should().Contain(new StaticPropertyFact(accessor, "Fixture", typeof(IFixtureContract).FullName!));
+        Facts.StaticProperties.Should().Contain(new StaticPropertyFact(accessor, "Name", "System.String"));
+        Facts.StaticProperties.Should().NotContain(property => property.Owner == KeyOf(typeof(CleanInstanceService)), "an instance property is not static");
+    }
+
+    [Test]
+    public void A_handler_of_a_removed_service_on_its_instance_class_passes_and_one_anywhere_else_is_reported()
+    {
+        var instance = KeyOf(typeof(HandlerOnInstance));
+
+        var problems = ConvertedServiceRules.HandlersOffTheInstance(
+            Facts,
+            type => type == instance || type == KeyOf(typeof(HandlerOnFacade)) ? new[] { instance } : null);
+
+        problems.Should().ContainSingle().Which.Should().Contain("HandlerOnFacade.Handle").And.Contain("its instance class").And.Contain("HandlerRenames.txt");
+        ConvertedServiceRules.HandlersOffTheInstance(Facts, _ => null).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_class_the_container_builds_that_uses_the_accessor_is_reported()
+    {
+        var accessor = KeyOf(typeof(FixtureServices));
+
+        var problems = ConvertedServiceRules.RegisteredClassesUseTheAccessor(Graph, [KeyOf(typeof(ServicesUser)), KeyOf(typeof(CleanInstanceService))], accessor);
+
+        problems.Should().ContainSingle().Which.Should().StartWith(KeyOf(typeof(ServicesUser)) + " uses " + accessor).And.Contain("constructor");
+    }
+
+    [Test]
+    public void A_removed_facade_may_not_resolve_from_the_container_any_more()
+    {
+        var list = ListOf(new ConvertedService("Achievement", "Character") { FacadeRemoved = true }, new ConvertedService("Stat", "Character"));
+
+        ConvertedServiceRules.FacadesMayLocate(list).Should().Equal(new TypeKey("SWLOR.Game.Server.Service", "Stat"));
+    }
+
     private static AssemblyFacts FactsOf(params TypeFact[] types) => new(types, [], [], []);
 
     private static ConvertedServiceList ListOf(params ConvertedService[] services) =>
         ConvertedServiceList.Parse("{ \"services\": [" + string.Join(",", services.Select(s =>
-            $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\", \"extras\": [{string.Join(",", s.Extras.Select(extra => $"{{ \"{extra.Kind}\": \"{extra.Name}\" }}"))}] }}")) + "] }");
+            $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\", \"extras\": [{string.Join(",", s.Extras.Select(extra => $"{{ \"{extra.Kind}\": \"{extra.Name}\" }}"))}]" +
+            (s.FacadeRemoved ? ", \"facadeRemoved\": true" : string.Empty) + " }")) + "] }");
 
     private static TypeKey KeyOf(Type type) => new(type.Namespace ?? string.Empty, type.Name);
 }

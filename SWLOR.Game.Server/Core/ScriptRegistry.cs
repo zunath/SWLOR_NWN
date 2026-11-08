@@ -64,9 +64,15 @@ namespace SWLOR.Game.Server.Core
             _loadManifest = loadManifest ?? throw new ArgumentNullException(nameof(loadManifest));
         }
 
-        public void LoadHandlersFromAssembly()
+        /// <param name="resolveOwner">
+        /// The instance a handler declared on an instance method runs on: given the class that declares the method, the
+        /// container's singleton of that class, or null when the container does not register it. The server passes the
+        /// container's resolver (<c>ContainerHost.ResolveHandlerOwner</c>); without one, a handler on an instance method
+        /// stops the load.
+        /// </param>
+        public void LoadHandlersFromAssembly(Func<Type, object> resolveOwner = null)
         {
-            LoadHandlersFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+            LoadHandlersFromAssemblies(AppDomain.CurrentDomain.GetAssemblies(), resolveOwner);
         }
 
         /// <summary>
@@ -76,17 +82,20 @@ namespace SWLOR.Game.Server.Core
         /// loaded in the current AppDomain, which is what the server does at boot; tests call it with an explicit
         /// assembly list so they do not depend on what else the test host has loaded.
         /// </summary>
-        public void LoadHandlersFromAssemblies(IEnumerable<Assembly> assemblies)
+        /// <param name="assemblies">The assemblies to scan, in discovery order.</param>
+        /// <param name="resolveOwner">See <see cref="LoadHandlersFromAssembly"/>.</param>
+        public void LoadHandlersFromAssemblies(IEnumerable<Assembly> assemblies, Func<Type, object> resolveOwner = null)
         {
-            LoadHandlersFromAssemblies(assemblies, ReadManifest());
+            LoadHandlersFromAssemblies(assemblies, ReadManifest(), resolveOwner);
         }
 
         /// <summary>
-        /// <see cref="LoadHandlersFromAssemblies(IEnumerable{Assembly})"/> with the manifest given instead of the shipped one.
+        /// <see cref="LoadHandlersFromAssemblies(IEnumerable{Assembly}, Func{Type, object})"/> with the manifest given
+        /// instead of the shipped one.
         /// </summary>
-        public void LoadHandlersFromAssemblies(IEnumerable<Assembly> assemblies, ScriptHandlerManifest manifest)
+        public void LoadHandlersFromAssemblies(IEnumerable<Assembly> assemblies, ScriptHandlerManifest manifest, Func<Type, object> resolveOwner = null)
         {
-            LoadHandlers(assemblies.SelectMany(a => a.GetTypes()).SelectMany(t => t.GetMethods()), manifest);
+            LoadHandlers(assemblies.SelectMany(a => a.GetTypes()).SelectMany(t => t.GetMethods()), manifest, resolveOwner);
         }
 
         /// <summary>
@@ -94,7 +103,15 @@ namespace SWLOR.Game.Server.Core
         /// The sequence is the discovery order, which only decides the order of handlers the manifest does not list
         /// and which unlisted or stale entries are reported first; it never changes the order of listed handlers.
         /// </summary>
-        public void LoadHandlers(IEnumerable<MethodInfo> candidateMethods, ScriptHandlerManifest manifest)
+        /// <remarks>
+        /// A static method is bound as it always was. A public instance method is bound to the instance
+        /// <paramref name="resolveOwner"/> gives for the class that declares it (the container's singleton), once per
+        /// load: a handler of a class reached through a subclass (a test double deriving from a service) is the same
+        /// handler and is not registered again. Its name stays <c>DeclaringType.FullName + "." + Name</c>
+        /// (<see cref="ScriptHandlerManifest.HandlerName"/>). A handler on a class the container does not register stops
+        /// the load with a message: it would have no instance to run on.
+        /// </remarks>
+        public void LoadHandlers(IEnumerable<MethodInfo> candidateMethods, ScriptHandlerManifest manifest, Func<Type, object> resolveOwner = null)
         {
             if (manifest == null)
                 throw new ArgumentNullException(nameof(manifest));
@@ -106,10 +123,13 @@ namespace SWLOR.Game.Server.Core
 
             var handlers = candidateMethods
                 .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+                .Where(m => m.IsStatic || m.DeclaringType == m.ReflectedType)
                 .ToArray();
+            var owners = new Dictionary<Type, object>();
 
             foreach (var mi in handlers)
             {
+                var target = mi.IsStatic ? null : OwnerOf(mi, resolveOwner, owners);
                 foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
                 {
                     var script = ((NWNEventHandler)attr).Script;
@@ -121,11 +141,11 @@ namespace SWLOR.Game.Server.Core
 
                     if (mi.ReturnType == typeof(bool))
                     {
-                        RegisterConditionalScript(script, mi);
+                        RegisterConditionalScript(script, mi, target);
                     }
                     else if (mi.ReturnType == typeof(void))
                     {
-                        RegisterActionScript(script, mi);
+                        RegisterActionScript(script, mi, target);
                     }
                     else
                     {
@@ -135,6 +155,50 @@ namespace SWLOR.Game.Server.Core
             }
 
             ApplyManifestOrder(manifest);
+        }
+
+        /// <summary>
+        /// The instance an instance-method handler runs on: the container's singleton of the declaring class, asked for
+        /// once per class and load. Throws (and logs) when there is no resolver or the container does not register the class.
+        /// </summary>
+        private static object OwnerOf(MethodInfo method, Func<Type, object> resolveOwner, Dictionary<Type, object> owners)
+        {
+            var type = method.DeclaringType;
+            if (owners.TryGetValue(type, out var known))
+                return known;
+
+            string problem = null;
+            object owner = null;
+            if (resolveOwner == null)
+            {
+                problem = $"{ScriptHandlerManifest.HandlerName(method)} is an event handler on an instance method, but the script registry " +
+                          "was loaded without a resolver for the classes that hold handlers. ServerBootstrapper.LoadScripts passes the " +
+                          "service container's; a test passes one too (or loads only static handlers).";
+            }
+            else
+            {
+                owner = resolveOwner(type);
+                if (owner == null)
+                {
+                    problem = $"{ScriptHandlerManifest.HandlerName(method)} is an event handler on an instance method of {type.FullName}, " +
+                              "which the service container does not register, so it has no instance to run on. Register the class in " +
+                              "Composition/ServiceRegistrations.cs (its handlers then run on the container's singleton) or make the handler static.";
+                }
+                else if (owner.GetType() != type)
+                {
+                    problem = $"{ScriptHandlerManifest.HandlerName(method)}: the resolver answered {type.FullName} with an instance of " +
+                              $"{owner.GetType().FullName}. A handler runs on the instance of the class that declares it.";
+                }
+            }
+
+            if (problem != null)
+            {
+                Log.Write(LogGroup.Error, "Script handlers were NOT registered: " + problem, true);
+                throw new InvalidOperationException(problem);
+            }
+
+            owners[type] = owner;
+            return owner;
         }
 
         private ScriptHandlerManifest ReadManifest()
@@ -247,9 +311,12 @@ namespace SWLOR.Game.Server.Core
             return text.ToString();
         }
 
-        private void RegisterConditionalScript(string script, MethodInfo methodInfo)
+        // target is null for a static handler and the class's instance for an instance handler.
+        private void RegisterConditionalScript(string script, MethodInfo methodInfo, object target)
         {
-            var del = (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate));
+            var del = target == null
+                ? (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate))
+                : (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate), target);
 
             if (!_conditionalScripts.ContainsKey(script))
                 _conditionalScripts[script] = new List<ConditionalScript>();
@@ -262,9 +329,11 @@ namespace SWLOR.Game.Server.Core
             });
         }
 
-        private void RegisterActionScript(string script, MethodInfo methodInfo)
+        private void RegisterActionScript(string script, MethodInfo methodInfo, object target)
         {
-            var del = (Action)methodInfo.CreateDelegate(typeof(Action));
+            var del = target == null
+                ? (Action)methodInfo.CreateDelegate(typeof(Action))
+                : (Action)methodInfo.CreateDelegate(typeof(Action), target);
 
             if (!_scripts.ContainsKey(script))
                 _scripts[script] = new List<ActionScript>();

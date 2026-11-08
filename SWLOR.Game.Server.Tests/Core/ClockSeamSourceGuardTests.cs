@@ -42,6 +42,33 @@ public class ClockSeamSourceGuardTests
     }
 
     [Test]
+    public void AMasterOnlyEntryNeedNotExistOnTheBranchButEveryOtherEntryMust()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "clock-seam-manifest-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(root, "tools", "Refactor"));
+            Directory.CreateDirectory(Path.Combine(root, "SWLOR.Game.Server", "Service"));
+            File.WriteAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Kept.cs"), "class Kept { }\n");
+            File.WriteAllText(ClockSeamSources.ManifestPath(root),
+                "# header\nService/Kept.cs  # why\nService/Gone.cs  # master-only (P2-Z)\nService/GoneFolder/**  # master-only\n");
+
+            ClockSeamSources.ReadManifest(root).Should().Equal(
+                ("Service/Kept.cs", false), ("Service/Gone.cs", true), ("Service/GoneFolder/**", true));
+            ClockSeamSources.ReadEntries(root).Should().Equal("Service/Kept.cs", "Service/Gone.cs", "Service/GoneFolder/**");
+            ClockSeamSources.ListFiles(root).Select(Path.GetFileName).Should().Equal("Kept.cs");
+
+            File.WriteAllText(ClockSeamSources.ManifestPath(root), "Service/Kept.cs\nService/Gone.cs\n");
+            var missing = () => ClockSeamSources.ListFiles(root);
+            missing.Should().Throw<Exception>().WithMessage("*manifest file Service/Gone.cs must exist*");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public void ListedFilesReadTimeOnlyThroughClock()
     {
         var root = ClockSeamSources.FindRepositoryRoot();

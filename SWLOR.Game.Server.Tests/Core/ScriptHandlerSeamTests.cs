@@ -28,16 +28,16 @@ public class ScriptHandlerSeamTests
         for (var pass = 0; pass < 10; pass++)
         {
             var before = AppDomain.CurrentDomain.GetAssemblies().Length;
-            new ScriptRegistry().LoadHandlersFromAssembly();
+            new ScriptRegistry().LoadHandlersFromAssembly(ScriptHandlerTestSupport.OwnersAndTestFixtures);
             if (AppDomain.CurrentDomain.GetAssemblies().Length == before)
                 break;
         }
 
         var loaded = AppDomain.CurrentDomain.GetAssemblies();
         var viaServerEntryPoint = new ScriptRegistry();
-        viaServerEntryPoint.LoadHandlersFromAssembly();
+        viaServerEntryPoint.LoadHandlersFromAssembly(ScriptHandlerTestSupport.OwnersAndTestFixtures);
         var viaExplicitList = new ScriptRegistry();
-        viaExplicitList.LoadHandlersFromAssemblies(loaded);
+        viaExplicitList.LoadHandlersFromAssemblies(loaded, ScriptHandlerTestSupport.OwnersAndTestFixtures);
 
         AppDomain.CurrentDomain.GetAssemblies().Should().HaveCount(loaded.Length,
             "the scans must not have loaded another assembly, or the two registries saw different sets");
@@ -60,7 +60,7 @@ public class ScriptHandlerSeamTests
         {
             var legacy = LegacyHandlerDiscovery.Discover(assemblies);
             var registry = new ScriptRegistry();
-            registry.LoadHandlersFromAssemblies(assemblies);
+            registry.LoadHandlersFromAssemblies(assemblies, ScriptHandlerTestSupport.OwnersAndTestFixtures);
 
             // Same scripts for each kind and the same handlers inside each script. Only the order is the manifest's
             // to decide now (the baseline fixture that compared the order with this discovery was deleted by P2-B9).
@@ -88,11 +88,11 @@ public class ScriptHandlerSeamTests
     {
         var engineTests = Assembly.Load(new AssemblyName("SWLOR.Game.Server.EngineTests"));
         var reused = new ScriptRegistry();
-        reused.LoadHandlersFromAssemblies(new[] { GameAssembly, engineTests });
-        reused.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        reused.LoadHandlersFromAssemblies(new[] { GameAssembly, engineTests }, ScriptHandlerTestSupport.Owners);
+        reused.LoadHandlersFromAssemblies(new[] { GameAssembly }, ScriptHandlerTestSupport.Owners);
 
         var fresh = new ScriptRegistry();
-        fresh.LoadHandlersFromAssemblies(new[] { GameAssembly });
+        fresh.LoadHandlersFromAssemblies(new[] { GameAssembly }, ScriptHandlerTestSupport.Owners);
 
         Describe(reused).Should().Equal(Describe(fresh));
     }

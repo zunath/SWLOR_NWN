@@ -1,4 +1,5 @@
-# Handlers the branch renamed on purpose (for example when one moved onto a facade). One line each:
+# Handlers the branch renamed on purpose (for example when one moved onto a facade, or from a removed facade onto the
+# instance method of its service, P2-Z). One line each:
 #   <master full handler name> <branch full handler name>
 # Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
 # or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
@@ -12,3 +13,4 @@ SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombat
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner SWLOR.Game.Server.Service.CompanionControl.OnHostileSpellCastAtOwner
 SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject SWLOR.Game.Server.Service.TemporaryStatModifier.ClearExitingObject
 SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired SWLOR.Game.Server.Service.TemporaryStatModifier.PurgeAllExpired
+SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations

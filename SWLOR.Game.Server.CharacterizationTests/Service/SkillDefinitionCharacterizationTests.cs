@@ -77,12 +77,17 @@ public class SkillDefinitionCharacterizationTests : FacadeFixture
             AllowConstantOutputs = true
         };
 
-        var constants = typeof(Skill)
-            .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.IsLiteral && !field.IsInitOnly)
-            .OrderBy(field => field.Name, StringComparer.Ordinal);
-        foreach (var field in constants)
-            table.Add(field.Name, field.FieldType.Name, field.GetRawConstantValue());
+        // An explicit list, sorted by name, not a reflection over Skill: when its facade is removed (P2-Z) the
+        // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
+        var constants = new (string Name, Type Type, object Value)[]
+        {
+            (nameof(Skill.SkillCap), typeof(int), Skill.SkillCap),
+            (nameof(Skill.StartingSkillPoints), typeof(int), Skill.StartingSkillPoints),
+            (nameof(Skill.TotalSkillPointCap), typeof(int), Skill.TotalSkillPointCap),
+        };
+        FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Skill", constants.Select(constant => constant.Name));
+        foreach (var (constantName, type, value) in constants)
+            table.Add(constantName, type.Name, value);
 
         table.Add(nameof(Skill.APCap), typeof(int).Name, Skill.APCap);
 

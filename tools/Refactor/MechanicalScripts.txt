@@ -17,3 +17,4 @@
 # the sync takes master's version and runs the script again instead of merging by hand.
 tools/Refactor/Apply-ClockSeam.ps1
 tools/Refactor/Apply-EngineSeam.ps1
+tools/Refactor/Apply-FacadeRemoval.ps1

@@ -26,13 +26,15 @@
     script owns, which are the entries of ClockSeamFiles.txt (a trailing /** stays: every file under that folder),
     whether or not they exist. The daily sync uses it to decide which merge
     conflicts it may settle by taking master's version and running this script again
-    (tools/Refactor/MechanicalScripts.txt).
+    (tools/Refactor/MechanicalScripts.txt). A master-only entry is not listed: the branch deleted that file (a removed
+    facade, P2-Z), so a master change to it is ported by hand, and taking master's version would bring it back.
 
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script. Against another root (the parity script's throwaway copy of
     master) a manifest entry whose file or folder does not exist there is skipped with a note, because it names code that
     exists only on the branch (a service the refactor moved into Domain/); the master code it came from is covered by
-    the other entries. Against the script's own repository every entry must exist.
+    the other entries. Against the script's own repository every entry must exist, except one marked
+    `# master-only` (a facade file the branch deleted; master's version is still rewritten in the parity copy).
 
 .EXAMPLE
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1
@@ -304,16 +306,34 @@ if (-not ('SwlorRefactor.ClockSeamRewriter' -as [type])) {
     Add-Type -TypeDefinition $rewriterSource -Language CSharp
 }
 
-function Get-ManifestFiles {
-    $paths = New-Object 'System.Collections.Generic.List[string]'
+# The manifest entries: Path (relative to SWLOR.Game.Server/) and MasterOnly (the line ends in `# master-only`: a file the
+# branch deleted, such as a removed facade, that master still has). Any other text after ` #` is a comment.
+function Read-ManifestEntries {
+    $entries = New-Object 'System.Collections.Generic.List[object]'
     foreach ($raw in [System.IO.File]::ReadAllLines($manifestPath)) {
         $entry = $raw.Trim()
         if ($entry.Length -eq 0 -or $entry.StartsWith('#')) { continue }
+        $masterOnly = $false
+        $comment = $entry.IndexOf(' #')
+        if ($comment -ge 0) {
+            $masterOnly = $entry.Substring($comment + 2).Trim().StartsWith('master-only')
+            $entry = $entry.Substring(0, $comment).TrimEnd()
+        }
+        $entries.Add([pscustomobject]@{ Path = $entry; MasterOnly = $masterOnly })
+    }
+    return $entries.ToArray()
+}
+
+function Get-ManifestFiles {
+    $paths = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($item in (Read-ManifestEntries)) {
+        $entry = $item.Path
 
         if ($entry.EndsWith('/**')) {
             $folder = Join-Path $serverRoot $entry.Substring(0, $entry.Length - 3)
             if (-not (Test-Path -LiteralPath $folder -PathType Container)) {
                 if (-not $onOwnRepository) { Write-Host "Skipped $entry (not in $RepositoryRoot; it exists only on the branch)"; continue }
+                if ($item.MasterOnly) { Write-Host "Skipped $entry (master-only: the branch deleted it)"; continue }
                 throw "Manifest folder not found: $entry"
             }
             foreach ($file in Get-ChildItem -LiteralPath $folder -Recurse -File -Filter '*.cs') {
@@ -324,6 +344,7 @@ function Get-ManifestFiles {
             $file = Join-Path $serverRoot $entry
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
                 if (-not $onOwnRepository) { Write-Host "Skipped $entry (not in $RepositoryRoot; it exists only on the branch)"; continue }
+                if ($item.MasterOnly) { Write-Host "Skipped $entry (master-only: the branch deleted it)"; continue }
                 throw "Manifest file not found: $entry"
             }
             $paths.Add([System.IO.Path]::GetFullPath($file))
@@ -377,11 +398,11 @@ function Add-CoreUsing([string]$text, [string]$eol) {
 
 if ($ListOwnedFiles) {
     # The manifest entries as they are, without checking that the files exist: a file master deleted or renamed is
-    # still owned, so the sync can settle a conflict in it.
-    foreach ($raw in [System.IO.File]::ReadAllLines($manifestPath)) {
-        $entry = $raw.Trim()
-        if ($entry.Length -eq 0 -or $entry.StartsWith('#')) { continue }
-        Write-Output ('SWLOR.Game.Server/' + $entry.Replace('\', '/'))
+    # still owned, so the sync can settle a conflict in it. A master-only entry is not: the branch deleted that file on
+    # purpose, so its conflict is ported by hand.
+    foreach ($item in (Read-ManifestEntries)) {
+        if ($item.MasterOnly) { continue }
+        Write-Output ('SWLOR.Game.Server/' + $item.Path.Replace('\', '/'))
     }
     exit 0
 }

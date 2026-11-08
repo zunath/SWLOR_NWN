@@ -40,12 +40,29 @@ public class StatFormulaCharacterizationTests
             new[] { "constant" },
             new[] { "type", "value" });
 
-        var constants = typeof(Stat)
-            .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.IsLiteral && !field.IsInitOnly)
-            .OrderBy(field => field.Name, StringComparer.Ordinal);
-        foreach (var field in constants)
-            table.Add(field.Name, field.FieldType.Name, field.GetRawConstantValue());
+        // An explicit list, sorted by name, not a reflection over Stat: when its facade is removed (P2-Z) the
+        // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
+        var constants = new (string Name, Type Type, object Value)[]
+        {
+            (nameof(Stat.BaseFP), typeof(int), Stat.BaseFP),
+            (nameof(Stat.BaseHP), typeof(int), Stat.BaseHP),
+            (nameof(Stat.BaseSTM), typeof(int), Stat.BaseSTM),
+            (nameof(Stat.BeastNaturalRegenStatDivisor), typeof(int), Stat.BeastNaturalRegenStatDivisor),
+            (nameof(Stat.BeastNaturalStaminaRegenDelaySeconds), typeof(float), Stat.BeastNaturalStaminaRegenDelaySeconds),
+            (nameof(Stat.DefaultMeleeDeflectionChanceCap), typeof(int), Stat.DefaultMeleeDeflectionChanceCap),
+            (nameof(Stat.DefaultRangedDeflectionChanceCap), typeof(int), Stat.DefaultRangedDeflectionChanceCap),
+            (nameof(Stat.MaximumCombatReadinessPercent), typeof(int), Stat.MaximumCombatReadinessPercent),
+            (nameof(Stat.MaximumDeflectionChanceCap), typeof(int), Stat.MaximumDeflectionChanceCap),
+            (nameof(Stat.MaximumGuardChance), typeof(int), Stat.MaximumGuardChance),
+            (nameof(Stat.MaximumMovementSpeedMultiplier), typeof(float), Stat.MaximumMovementSpeedMultiplier),
+            (nameof(Stat.MaximumNPCDetection), typeof(int), Stat.MaximumNPCDetection),
+            (nameof(Stat.MaximumShieldDeflectionChance), typeof(int), Stat.MaximumShieldDeflectionChance),
+            (nameof(Stat.MinimumMovementSpeedMultiplier), typeof(float), Stat.MinimumMovementSpeedMultiplier),
+            (nameof(Stat.SuppressNaturalRegenVariable), typeof(string), Stat.SuppressNaturalRegenVariable),
+        };
+        FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Stat", constants.Select(constant => constant.Name));
+        foreach (var (constantName, type, value) in constants)
+            table.Add(constantName, type.Name, value);
 
         Snapshot.Verify("Stat", "PublicConstants", table);
     }

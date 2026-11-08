@@ -163,7 +163,62 @@ public class ContainerHostTests
         build.Should().Throw<ArgumentNullException>();
     }
 
+    [Test]
+    public void The_owner_of_a_handler_is_the_singleton_of_the_registered_class_and_nothing_for_another_class()
+    {
+        var host = new ContainerHost();
+        host.Build(services =>
+        {
+            services.AddSingleton<IGreeter, Greeter>();
+            services.AddSingleton<IPrefix>(new ScopedPrefix());
+            services.AddSingleton(typeof(Lazy<>), typeof(Lazy<>));
+            services.AddTransient<Transient>();
+        });
+
+        host.ResolveHandlerOwner(typeof(Greeter)).Should().BeSameAs(host.Provider.GetRequiredService<IGreeter>());
+        host.ResolveHandlerOwner(typeof(ScopedPrefix)).Should().BeSameAs(host.Provider.GetRequiredService<IPrefix>(), "an instance registration counts too");
+        host.ResolveHandlerOwner(typeof(NeedsPrefix)).Should().BeNull("the class is not registered");
+        host.ResolveHandlerOwner(typeof(Transient)).Should().BeNull("only a singleton is one instance for its handlers");
+        host.ResolveHandlerOwner(typeof(Lazy<>)).Should().BeNull("an open generic registration is no class's owner");
+    }
+
+    [Test]
+    public void A_class_registered_under_two_service_types_has_no_single_owner_for_its_handlers()
+    {
+        var host = new ContainerHost();
+        host.Build(services =>
+        {
+            services.AddSingleton<IGreeter, TwoFaced>();
+            services.AddSingleton<IPrefix, TwoFaced>();
+        });
+
+        var resolve = () => host.ResolveHandlerOwner(typeof(TwoFaced));
+
+        resolve.Should().Throw<InvalidOperationException>().WithMessage("*TwoFaced is registered as*IGreeter*IPrefix*Register the class once*");
+    }
+
+    [Test]
+    public void The_owner_of_a_handler_needs_a_built_container_and_a_type()
+    {
+        var unbuilt = () => new ContainerHost().ResolveHandlerOwner(typeof(Greeter));
+        var built = new ContainerHost();
+        built.Build(services => services.AddSingleton<IGreeter, Greeter>());
+        var noType = () => built.ResolveHandlerOwner(null);
+
+        unbuilt.Should().Throw<ContainerNotBuiltException>();
+        noType.Should().Throw<ArgumentNullException>();
+    }
+
     public sealed class ScopedPrefix : IPrefix
+    {
+    }
+
+    public sealed class TwoFaced : IGreeter, IPrefix
+    {
+        public string Greet() => "two";
+    }
+
+    public sealed class Transient
     {
     }
 }

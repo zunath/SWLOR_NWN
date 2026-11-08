@@ -21,6 +21,9 @@ public class FacadeForwardingTests
 
     private static IEnumerable<TestCaseData> Facades() => ConvertedServiceFixtures.AsFacadeTestCases();
 
+    // The classes whose static facade the branch removed (P2-Z): they have no facade to forward, and GameServices reaches them.
+    private static IEnumerable<TestCaseData> RemovedFacades() => ConvertedServiceFixtures.AsRemovedFacadeTestCases();
+
     // The facade's methods and the getters of its static properties (the interface lists a property as its get_ method),
     // plus the internal static methods that code inside the server (a native hook, say) calls. Private members are the
     // facade's own plumbing.
@@ -97,6 +100,22 @@ public class FacadeForwardingTests
     {
         const string HandlerAttribute = "NWNEventHandler";
 
+        if (service.RemovedFacade is { } removed)
+        {
+            // The facade is gone (P2-Z): its handlers moved onto the instance methods it forwarded to, each renamed in
+            // tools/Refactor/HandlerRenames.txt, and the script registry binds them to the container's singleton.
+            var moved = service.Instance.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
+                .ToList();
+            moved.Select(method => service.Instance.FullName + "." + method.Name).Should().BeEquivalentTo(
+                ConvertedServiceFixtures.HandlerRenames().Where(rename => rename.Master.StartsWith(removed + ".", StringComparison.Ordinal)).Select(rename => rename.Branch),
+                "the instance keeps exactly the handlers its facade had, under the names HandlerRenames.txt gives them");
+            moved.Should().OnlyContain(method => method.IsPublic && !method.IsStatic && method.GetParameters().Length == 0 &&
+                                                 (method.ReturnType == typeof(void) || method.ReturnType == typeof(bool)),
+                "the script registry binds a public instance handler as an Action (or a conditional script) on the singleton");
+            return;
+        }
+
         service.Instance.GetMethods().Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().BeEmpty("the script registry binds handlers as static methods of the facade");
         if (service.Facade is null)
@@ -105,6 +124,46 @@ public class FacadeForwardingTests
         FacadeMethods(service.Facade).Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().OnlyContain(method => (method.ReturnType == typeof(void) || method.ReturnType == typeof(bool)) && method.GetParameters().Length == 0,
                 "the script registry binds a handler as an Action, or as a conditional script when it returns bool (Snippet.ConversationAppearsWhen)");
+    }
+
+    [TestCaseSource(nameof(RemovedFacades))]
+    public void The_accessor_property_of_a_removed_facade_returns_the_installed_containers_instance(ConvertedServiceTypes service)
+    {
+        var name = service.Name[(service.Name.LastIndexOf('.') + 1)..];
+        var property = typeof(GameServices).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
+        property.Should().NotBeNull($"GameServices.{name} replaces the removed facade {service.RemovedFacade}");
+        property!.PropertyType.Should().Be(service.Contract);
+
+        var proxyInstance = RecordingProxy.Create(service.Contract, out var proxy);
+        using (var provider = ContainerHost.Create(new ServiceCollection().AddSingleton(service.Contract, proxyInstance)))
+        using (CompositionRoot.InstallForTests(provider))
+        {
+            property.GetValue(null).Should().BeSameAs(proxyInstance, "the property reads the container a test installed");
+        }
+
+        proxy.Calls.Should().BeEmpty("reading the property only resolves the service");
+
+        var host = new ContainerHost();
+        CompositionRoot.Build(host);
+        using (CompositionRoot.InstallForTests(host.Provider))
+        {
+            property.GetValue(null).Should().BeOfType(service.Instance).And.BeSameAs(host.Provider.GetRequiredService(service.Contract));
+        }
+    }
+
+    [Test]
+    public void GameServices_has_a_property_for_each_removed_facade_and_nothing_else()
+    {
+        const BindingFlags Declared = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        var removed = ConvertedServiceFixtures.Load().Where(service => service.RemovedFacade is not null)
+            .Select(service => $"{service.Contract.Name} {service.Name[(service.Name.LastIndexOf('.') + 1)..]}")
+            .OrderBy(text => text, StringComparer.Ordinal);
+
+        typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")
+            .OrderBy(text => text, StringComparer.Ordinal)
+            .Should().Equal(removed, "the accessor has one property per removed facade, named like it and typed as its interface");
+        typeof(GameServices).GetFields(Declared).Should().BeEmpty("the accessor holds no state; its properties only resolve");
+        typeof(GameServices).GetMethods(Declared).Should().OnlyContain(method => method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal));
     }
 
     [Test]

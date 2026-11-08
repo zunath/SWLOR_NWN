@@ -47,6 +47,7 @@ internal static class AssemblyFactScanner
             var types = new List<TypeFact>();
             var fields = new List<StaticFieldFact>();
             var handlers = new List<HandlerFact>();
+            var properties = new List<StaticPropertyFact>();
 
             foreach (var handle in _metadata.TypeDefinitions)
             {
@@ -86,6 +87,19 @@ internal static class AssemblyFactScanner
                         _immutability.IsImmutable(field.DecodeSignature(_shapes, null))));
                 }
 
+                if (!generated)
+                {
+                    foreach (var propertyHandle in definition.GetProperties())
+                    {
+                        var property = _metadata.GetPropertyDefinition(propertyHandle);
+                        var getter = property.GetAccessors().Getter;
+                        if (getter.IsNil || (_metadata.GetMethodDefinition(getter).Attributes & MethodAttributes.Static) == 0)
+                            continue;
+
+                        properties.Add(new StaticPropertyFact(_source, _metadata.GetString(property.Name), TypeName(property.DecodeSignature(_shapes, null).ReturnType)));
+                    }
+                }
+
                 foreach (var methodHandle in definition.GetMethods())
                 {
                     var method = _metadata.GetMethodDefinition(methodHandle);
@@ -110,8 +124,18 @@ internal static class AssemblyFactScanner
                 .OrderBy(reference => reference.Source.ToString(), StringComparer.Ordinal)
                 .ThenBy(reference => reference.ExternalType, StringComparer.Ordinal)
                 .ToList();
-            return new AssemblyFacts(types, fields, handlers, external);
+            return new AssemblyFacts(types, fields, handlers, external, properties);
         }
+
+        /// <summary>The full name of a named type a signature decodes to, or empty for anything else.</summary>
+        private string TypeName(TypeShape shape) => shape.Kind switch
+        {
+            TypeShapeKind.Defined => FullName(_metadata.GetTypeDefinition(shape.Definition)),
+            TypeShapeKind.External => shape.Name ?? string.Empty,
+            // A primitive decodes to its type code (Int32, String), which is the name of its System type.
+            TypeShapeKind.Primitive => "System." + shape.Name,
+            _ => string.Empty
+        };
 
         private TypeFact DescribeType(TypeDefinition definition)
         {

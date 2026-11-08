@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         public const float MinimumWindowWidth = 400f;
         // Tall enough to show every General row, down to the Hotbars button.
-        public const float MinimumWindowHeight = 570f;
+        public const float MinimumWindowHeight = 613f;
 
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 
@@ -98,6 +98,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("When enabled, your failed ability attempts show the ability name and remaining time above your head, at most once every two seconds. Off by default.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayCooldownFloatingText);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Reduce Ally Combat Effects")
+                                .SetTooltip("When enabled, the impact bursts from abilities used by allies and other players are hidden, so group fights stay readable. Your own abilities and enemy abilities always show. Off by default.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.ReduceAlliedCombatEffects);
                         });
 
                         col.AddRow(row =>

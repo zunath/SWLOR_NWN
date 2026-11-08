@@ -2,6 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Reflection;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -12,12 +13,12 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class SettingsWindowTests
 {
-    [TestCase(375f, 340f, 400f, 570f)]
-    [TestCase(100f, 20f, 400f, 570f)]
-    [TestCase(600f, 340f, 600f, 570f)]
+    [TestCase(375f, 340f, 400f, 613f)]
+    [TestCase(100f, 20f, 400f, 613f)]
+    [TestCase(600f, 340f, 600f, 613f)]
     [TestCase(375f, 640f, 400f, 640f)]
-    [TestCase(400f, 450f, 400f, 570f)]
-    [TestCase(400f, 570f, 400f, 570f)]
+    [TestCase(400f, 450f, 400f, 613f)]
+    [TestCase(400f, 570f, 400f, 613f)]
     [TestCase(600f, 640f, 600f, 640f)]
     public void Geometry_RepairsLegacySizesWithoutMovingOrShrinkingTheWindow(
         float width, float height, float expectedWidth, float expectedHeight)
@@ -49,7 +50,7 @@ public class SettingsWindowTests
             callback.Invoke(model, new object[] { nameof(model.Geometry) });
 
             model.Geometry.Width.Should().Be(400f);
-            model.Geometry.Height.Should().Be(570f);
+            model.Geometry.Height.Should().Be(613f);
             model.Geometry.X.Should().Be(37f);
             model.Geometry.Y.Should().Be(52f);
             model.SelectedTabId.Should().Be(3);
@@ -76,7 +77,7 @@ public class SettingsWindowTests
         var (definition, viewModel) = LoadSettingsSources();
         definition.Should().Contain(".SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)");
         SettingsDefinition.MinimumWindowWidth.Should().Be(400f);
-        SettingsDefinition.MinimumWindowHeight.Should().Be(570f);
+        SettingsDefinition.MinimumWindowHeight.Should().Be(613f);
 
         var initialize = ExtractMethod(viewModel, "protected override void Initialize", "protected override void OnClientPropertyUpdated");
         initialize.IndexOf("EnsureUsableWindowGeometry();", StringComparison.Ordinal)
@@ -366,6 +367,38 @@ public class SettingsWindowTests
         loadGeneralView.Should().Contain("DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;");
         saveMethod.Should().Contain("dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;");
         viewModelSource.Should().Contain("OnPropertyChanged(nameof(DisplayCooldownFloatingText));");
+    }
+
+    [Test]
+    public void ReduceAlliedCombatEffects_DefaultsOffAndIsWiredThroughTheWindow()
+    {
+        new PlayerSettings().ReduceAlliedCombatEffects.Should().BeFalse();
+        JsonConvert.DeserializeObject<PlayerSettings>("{\"DisplayAchievementNotification\":true}")!
+            .ReduceAlliedCombatEffects.Should().BeFalse("saved records predate this setting");
+
+        var (definitionSource, viewModelSource) = LoadSettingsSources();
+        var saveMethod = ExtractMethod(viewModelSource, "public Action OnSave()", "public Action OnCancel()");
+        var loadGeneralView = ExtractMethod(viewModelSource, "private void LoadGeneralView", "private void LoadIdentityView");
+
+        definitionSource.Should().Contain(".BindIsChecked(model => model.ReduceAlliedCombatEffects)");
+        viewModelSource.Should().Contain("WatchOnClient(model => model.ReduceAlliedCombatEffects);");
+        viewModelSource.Should().Contain("OnPropertyChanged(nameof(ReduceAlliedCombatEffects));");
+        loadGeneralView.Should().Contain("ReduceAlliedCombatEffects = dbPlayer.Settings.ReduceAlliedCombatEffects;");
+        saveMethod.Should().Contain("dbPlayer.Settings.ReduceAlliedCombatEffects = ReduceAlliedCombatEffects;");
+        saveMethod.Should().Contain("CombatEffectPreferences.SetReducing(Player, ReduceAlliedCombatEffects);");
+    }
+
+    [TestCase(false, false, false, false)]
+    [TestCase(true, false, false, true)]
+    [TestCase(true, true, false, false)]
+    [TestCase(true, false, true, false)]
+    public void ReduceAlliedCombatEffects_KeepsOwnAndEnemyBursts(
+        bool isReducing,
+        bool isOwnAbility,
+        bool casterIsEnemy,
+        bool expectedHidden)
+    {
+        CombatEffectPreferences.ShouldHideBurst(isReducing, isOwnAbility, casterIsEnemy).Should().Be(expectedHidden);
     }
 
     private static string ExtractSection(string source, string startMarker, string endMarker)

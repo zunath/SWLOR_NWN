@@ -532,7 +532,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void PlaySuccessfulImpactVisualEffect(uint activator, uint recipient)
         {
-            PlaySuccessfulImpactVisualEffect(GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
+            PlaySuccessfulImpactVisualEffect(activator, GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
         }
 
         /// <summary>
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Service
         {
             var effect = GetSuccessfulImpactVisualEffect(activator);
             var visuals = new AbilityImpactVisualEffects(effect);
-            return recipient => PlaySuccessfulImpactVisualEffect(visuals, recipient);
+            return recipient => PlaySuccessfulImpactVisualEffect(activator, visuals, recipient);
         }
 
         /// <summary>
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Ability.SuccessfulImpactVisualEffect ?? VisualEffect.None;
         }
 
-        private static void PlaySuccessfulImpactVisualEffect(AbilityImpactVisualEffects visuals, uint recipient)
+        private static void PlaySuccessfulImpactVisualEffect(uint activator, AbilityImpactVisualEffects visuals, uint recipient)
         {
             if (visuals == null || !GetIsObjectValid(recipient) || !visuals.TryRecordRecipient(recipient))
                 return;
@@ -575,7 +575,29 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
+            if (!CombatEffectPreferences.AnyPlayerReducing)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
+                return;
+            }
+
+            // A broadcast effect cannot exclude a viewer, so send it per player once anyone has opted out.
+            var area = GetArea(recipient);
+            foreach (var player in ObjectSnapshot.Players())
+            {
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (GetArea(viewer) != area)
+                    continue;
+
+                var isOwnAbility = viewer == activator || GetMaster(activator) == viewer;
+                if (CombatEffectPreferences.ShouldHideBurst(
+                        CombatEffectPreferences.IsReducing(player),
+                        isOwnAbility,
+                        GetIsEnemy(viewer, activator)))
+                    continue;
+
+                PlayerPlugin.ApplyInstantVisualEffectToObject(player, recipient, visuals.Effect);
+            }
         }
 
         public static void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment)

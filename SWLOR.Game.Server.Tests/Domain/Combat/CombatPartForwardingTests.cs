@@ -25,6 +25,7 @@ public class CombatPartForwardingTests
 
     private static IEnumerable<Type> Parts() => new[]
     {
+        typeof(ICombatAbilityActivationService),
         typeof(ICombatAbilityBonusService),
         typeof(ICombatAbilityHitService),
         typeof(ICombatActivityService),
@@ -162,6 +163,12 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatDamageTakenService), "ApplyAbilityUsedAttackDeflection(deflectionFPRestoreStatType=Invalid)")]
     public void TheMovedDamageTakenDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 3, typeof(ICombatDamageTakenService));
+
+    // The one member of the ability activation part that has a default argument, with the default it had as a static member
+    // of Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatAbilityActivationService), "ApplyHitPointSpendAbilityEffects(hitPointCost=0)")]
+    public void TheMovedActivationDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 1, typeof(ICombatAbilityActivationService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

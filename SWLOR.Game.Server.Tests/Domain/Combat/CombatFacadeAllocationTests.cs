@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using CombatFacade = SWLOR.Game.Server.Service.Combat;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
@@ -1031,6 +1032,93 @@ public class CombatFacadeAllocationTests
             }
 
             GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    private sealed record ActivationAbilities(AbilityDetail Hostile, AbilityDetail Area, AbilityDetail Support, AbilityDetail Weapon,
+        AbilityImpactSummary Single, AbilityImpactSummary Empty, AbilityImpactSummary AreaSummary);
+
+    // The same world as the damage taken part (a container of its own, the constant engine, the clock held still, a status table
+    // for both creatures and the stat service that allocates nothing), with the ability activation part and one ability of each
+    // kind an activation sees. The tests that use it are named to run after every other combat part test of the fixture, for
+    // the reason the hit part tests give.
+    private static (ICombatAbilityActivationService Part, ActivationAbilities Abilities) InstallActivationPart(List<IDisposable> scopes)
+    {
+        InstallTimingParts(scopes);
+        var hostile = new AbilityDetail { Name = "Strike", IsHostileAbility = true, IsSingleTargetAbility = true, SkillType = SkillType.Rifle };
+        hostile.Requirements.Add(new AbilityRequirementStamina(10));
+        var area = new AbilityDetail { Name = "Burst", IsHostileAbility = true, IsAreaAbility = true, SkillType = SkillType.Force };
+        area.Requirements.Add(new AbilityRequirementFP(4));
+        var abilities = new ActivationAbilities(
+            hostile,
+            area,
+            new AbilityDetail { Name = "Mend", SkillType = SkillType.FirstAid },
+            new AbilityDetail { Name = "Shot", IsHostileAbility = true, ActivationType = AbilityActivationType.Weapon, SkillType = SkillType.Rifle },
+            new AbilityImpactSummary { SkillType = SkillType.Rifle, IsSingleTargetAbility = true },
+            new AbilityImpactSummary(),
+            new AbilityImpactSummary { SkillType = SkillType.Force, IsAreaAbility = true });
+        return (FacadeContainer.Current.Get<ICombatAbilityActivationService>(), abilities);
+    }
+
+    [Test]
+    public void WhileAnAbilityActivatesWhatAllocatedNothingStillAllocatesNothingThroughCombat()
+    {
+        // The HP-cost riders with none configured, an activation with no ability and the forget step of a death or exit. Each
+        // allocated nothing before the move either (measured against the base assembly in the same setup).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (part, abilities) = InstallActivationPart(scopes);
+            var forget = Private<Action<uint>>("ForgetActivationState", typeof(uint));
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("ApplyAbilityActivatedEffects(no ability)", () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single)),
+                ("ApplyHitPointSpendAbilityEffects", () => part.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12), () => CombatFacade.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12)),
+                ("ApplyHitPointSpendAbilityEffects(0)", () => part.ApplyHitPointSpendAbilityEffects(Attacker, 0), () => CombatFacade.ApplyHitPointSpendAbilityEffects(Attacker, 0)),
+                ("ForgetActivationState", () => part.ForgetActivationState(Attacker), () => forget(Attacker)),
+            };
+
+            foreach (var (name, own, forwarder) in reads)
+            {
+                LeastAllocated(own).Should().Be(0, $"{name} runs per ability use or per death");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhileAnAbilityActivatesEachMemberKeepsItsBytesThroughCombat()
+    {
+        // Bytes per call in this setup, each the same as the base assembly's in the same setup with tiered compilation on and
+        // off: an activation of a hostile ability records a new hostile ability sequence state (32 bytes), and tracking the use
+        // records the suppression use and schedules the idle readiness refresh in the activity part, as before the move.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var (part, abilities) = InstallActivationPart(scopes);
+            var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
+            {
+                ("ApplyAbilityActivatedEffects(weapon)", 32, () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Weapon, abilities.Single), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Weapon, abilities.Single)),
+                ("ApplyAbilityActivatedEffects(hostile)", 728, () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Hostile, abilities.Single), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Hostile, abilities.Single)),
+                ("ApplyAbilityActivatedEffects(hostile, no summary skill)", 728, () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Hostile, abilities.Empty), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, abilities.Hostile, abilities.Empty)),
+                ("ApplyAbilityActivatedEffects(area)", 816, () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.ForcePush1, abilities.Area, abilities.AreaSummary), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.ForcePush1, abilities.Area, abilities.AreaSummary)),
+                ("ApplyAbilityActivatedEffects(support)", 368, () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.MedKit1, abilities.Support, abilities.Empty), () => CombatFacade.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.MedKit1, abilities.Support, abilities.Empty)),
+                ("TrackQueuedWeaponAbilityUse", 696, () => part.TrackQueuedWeaponAbilityUse(Attacker, abilities.Weapon), () => CombatFacade.TrackQueuedWeaponAbilityUse(Attacker, abilities.Weapon)),
+            };
+
+            foreach (var (name, bytes, own, forwarder) in reads)
+            {
+                PerCall(own).Should().Be(bytes, $"{name} allocates what it did before the move");
+                PerCall(forwarder).Should().Be(bytes, $"Combat.{name} adds nothing to what the part allocates");
+            }
         }
         finally
         {

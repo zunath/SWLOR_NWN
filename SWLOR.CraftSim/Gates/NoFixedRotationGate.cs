@@ -118,7 +118,10 @@ namespace SWLOR.CraftSim.Gates
                 var margin = adaptive - singleBest;
                 var passed = margin >= run.Thresholds.RotationMarginPoints;
                 var label = $"{band.Band.Name} / {run.Gear[gearIndex].Name}";
-                if (!passed)
+
+                // A minigame tuned against full mods is meant to be easy for gear far above the recipe: nothing is left to earn, so a rotation matching it says nothing.
+                var saturated = run.Scenario.TunedAgainstFullMods && adaptive >= run.Thresholds.GearLadderSaturatedQuality;
+                if (!passed && !saturated)
                     failures.Add(label);
 
                 if (margin < smallest)
@@ -139,7 +142,7 @@ namespace SWLOR.CraftSim.Gates
                     Number(margin),
                     ">= " + Number(run.Thresholds.RotationMarginPoints, 0),
                     Number(aloneBest),
-                    passed ? "Passed" : "Failed");
+                    passed ? "Passed" : saturated ? "Reported" : "Failed");
 
                 rotations.Add(
                     band.Band.Name,

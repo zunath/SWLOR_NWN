@@ -24,7 +24,7 @@ namespace SWLOR.CraftSim.Gates
             Scenario = scenario ?? throw new ArgumentNullException(nameof(scenario));
             Thresholds = thresholds ?? GateThresholds.Default;
             XpCohort = xpCohort ?? new CraftXpRateCohort(this);
-            Gates = new IBalanceGate[]
+            var gates = new List<IBalanceGate>
             {
                 new NoFixedRotationGate(this),
                 new StyleBalanceGate(this),
@@ -34,6 +34,10 @@ namespace SWLOR.CraftSim.Gates
                 new XpRateGate(XpCohort, Thresholds),
                 new EnhancementParityGate(this)
             };
+            if (Scenario.TunedAgainstFullMods)
+                gates.Add(new GearLadderGate(this));
+
+            Gates = gates;
         }
 
         public ICraftScenario Scenario { get; }
@@ -51,6 +55,14 @@ namespace SWLOR.CraftSim.Gates
             var selected = new List<IBalanceGate>();
             foreach (var key in keys)
             {
+                if (string.Equals(key, GearLadderGate.Key, StringComparison.OrdinalIgnoreCase) && Gates.OfType<GearLadderGate>().FirstOrDefault() is { } ladder)
+                {
+                    if (!selected.Contains(ladder))
+                        selected.Add(ladder);
+
+                    continue;
+                }
+
                 var index = GateKeys.ToList().FindIndex(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
                 if (index < 0 && int.TryParse(key, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var number) &&
                     number >= 1 && number <= GateKeys.Count)
@@ -213,11 +225,11 @@ namespace SWLOR.CraftSim.Gates
                 var enhanced = plan.Bands.Any(b => b.Band.Band.Name == band.Band.Name);
                 foreach (var gear in run.Gear)
                 {
-                    cases.Add(new XpRateCase(band.Band.Name, CaseLabel(gear.Name, 0)));
+                    cases.Add(new XpRateCase(band.Band.Name, CaseLabel(gear.Name, 0), !run.IsUnderGeared(band.Band, gear)));
                     if (!enhanced)
                         continue;
 
-                    cases.AddRange(plan.Counts.Select(count => new XpRateCase(band.Band.Name, CaseLabel(gear.Name, count))));
+                    cases.AddRange(plan.Counts.Select(count => new XpRateCase(band.Band.Name, CaseLabel(gear.Name, count), !run.IsUnderGeared(band.Band, gear) && IsJudged(run, gear, count))));
                 }
             }
 
@@ -225,6 +237,20 @@ namespace SWLOR.CraftSim.Gates
         }
 
         public string Incomplete(GateContext context) => PlanFor(context).Problem;
+
+        /// <summary>Nobody slots two kits with no gear, or three with middle-tier gear, into a craft they are tuned to find hard, so those cases are only reported.</summary>
+        private static bool IsJudged(ScenarioRun run, GearLevel gear, int count)
+        {
+            if (!run.Scenario.TunedAgainstFullMods)
+                return true;
+
+            return gear.Name switch
+            {
+                CraftingGearCatalog.NoGearName => count < 2,
+                CraftingGearCatalog.MidGearName => count < 3,
+                _ => true
+            };
+        }
 
         public XpLoopSample PlayLegacy(XpRateCase xpCase, GateContext context)
         {

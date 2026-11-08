@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .Type(ShipModuleType.HypermatterInjector)
                 .CanTargetSelf()
+                .FallsBackToSelfOnEnemyTarget()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .Texture("iit_smhminject")

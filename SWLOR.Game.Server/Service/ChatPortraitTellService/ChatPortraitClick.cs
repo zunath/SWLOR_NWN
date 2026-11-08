@@ -10,5 +10,9 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
         FormerHolder,
         /// <summary>The current holder and a former holder both sent lines from the slot, so the clicked line is unknown.</summary>
         Ambiguous,
+        /// <summary>
+        /// The click was doubtful, but the player clicked the portrait again after being told who now holds the slot.
+        /// </summary>
+        Confirmed,
     }
 }

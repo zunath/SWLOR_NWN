@@ -125,11 +125,15 @@ namespace SWLOR.Game.Server.Core
                 .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
                 .Where(m => m.IsStatic || m.DeclaringType == m.ReflectedType)
                 .ToArray();
-            var owners = new Dictionary<Type, object>();
 
-            foreach (var mi in handlers)
+            // Every instance handler's owner is found before anything is registered, so a load that fails leaves nothing behind.
+            var owners = new Dictionary<Type, object>();
+            var targets = handlers.Select(mi => mi.IsStatic ? null : OwnerOf(mi, resolveOwner, owners)).ToArray();
+
+            for (var index = 0; index < handlers.Length; index++)
             {
-                var target = mi.IsStatic ? null : OwnerOf(mi, resolveOwner, owners);
+                var mi = handlers[index];
+                var target = targets[index];
                 foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
                 {
                     var script = ((NWNEventHandler)attr).Script;

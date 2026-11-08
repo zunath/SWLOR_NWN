@@ -105,12 +105,14 @@ public class ScriptRegistryInstanceHandlerTests
     public void A_handler_on_a_class_the_container_does_not_register_stops_the_load_with_a_message()
     {
         var registry = new ScriptRegistry();
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, Owners);
 
-        var load = () => registry.LoadHandlers(TaxiMethods, ScriptHandlerManifest.Empty, _ => null!);
+        var load = () => registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, _ => null!);
 
         load.Should().Throw<InvalidOperationException>()
             .WithMessage($"{TaxiHandler} is an event handler on an instance method of SWLOR.Game.Server.Domain.World.TaxiService, which the service container does not register*");
-        registry.HasScript(ScriptName.OnModuleCacheBefore).Should().BeFalse();
+        registry.GetActionScriptNames().Should().BeEmpty("a load that fails registers nothing, not even the static handlers found before it");
+        registry.GetConditionalScriptNames().Should().BeEmpty();
     }
 
     [Test]

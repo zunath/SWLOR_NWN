@@ -31,6 +31,7 @@
     "SWLOR.CLI": 39,
     "SWLOR.CombatSim": 94,
     "SWLOR.EngineSeamGenerator": 87,
+    "SWLOR.FacadeRemoval": 91,
     "SWLOR.NWN.API": 94,
     "SWLOR.NWN.Formats": 81,
     "SWLOR.RecipeParameters": 93

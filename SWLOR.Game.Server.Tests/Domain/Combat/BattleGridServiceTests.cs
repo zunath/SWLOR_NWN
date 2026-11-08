@@ -193,19 +193,4 @@ public class BattleGridServiceTests
         Live.Should().BeEmpty();
         _grid.GetSettings(Area).Should().Be(new BattleGridSettings(1f, 1, 1, 0f));
     }
-
-    [Test]
-    public void TheFacadeConstantsMatchTheInstance()
-    {
-        BattleGridService.AnchorTag.Should().Be(BattleGridService.AnchorTag);
-        BattleGridService.SquaresPerSection.Should().Be(BattleGridService.SquaresPerSection);
-        BattleGridService.MinSquareSize.Should().Be(BattleGridService.MinSquareSize);
-        BattleGridService.MaxSquareSize.Should().Be(BattleGridService.MaxSquareSize);
-        BattleGridService.SquareSizeStep.Should().Be(BattleGridService.SquareSizeStep);
-        BattleGridService.MinSections.Should().Be(BattleGridService.MinSections);
-        BattleGridService.MaxSections.Should().Be(BattleGridService.MaxSections);
-        BattleGridService.MinHeight.Should().Be(BattleGridService.MinHeight);
-        BattleGridService.MaxHeight.Should().Be(BattleGridService.MaxHeight);
-        BattleGridService.HeightStep.Should().Be(BattleGridService.HeightStep);
-    }
 }

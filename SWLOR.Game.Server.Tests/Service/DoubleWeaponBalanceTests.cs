@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -253,7 +255,7 @@ public class DoubleWeaponBalanceTests
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         return document.RootElement.TryGetProperty("VarTable", out var variables) &&
                variables.GetProperty("value").EnumerateArray().Any(variable =>
-                   variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable &&
+                   variable.GetProperty("Name").GetProperty("value").GetString() == ItemService.NoEconomyVariable &&
                    variable.GetProperty("Value").GetProperty("value").GetInt32() == 1);
     }
 

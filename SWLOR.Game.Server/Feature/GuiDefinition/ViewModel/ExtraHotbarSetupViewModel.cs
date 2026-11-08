@@ -1,6 +1,8 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -50,12 +52,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadValues()
         {
-            for (var index = 0; index < ExtraHotbars.BarCount; index++)
+            for (var index = 0; index < ExtraHotbarsService.BarCount; index++)
             {
                 var bar = ExtraHotbars.GetBar(Player, index);
                 Set(bar?.IsVisible ?? false, VisibleProperty(index));
-                Set(bar?.SlotCount ?? ExtraHotbars.MaxSlots, SlotCountProperty(index));
-                Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbars.MaxSlots), SlotCountTextProperty(index));
+                Set(bar?.SlotCount ?? ExtraHotbarsService.MaxSlots, SlotCountProperty(index));
+                Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbarsService.MaxSlots), SlotCountTextProperty(index));
                 Set((int)(bar?.Layout ?? ExtraHotbarLayout.Horizontal), LayoutProperty(index));
             }
         }
@@ -84,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_isListening)
                 return;
 
-            for (var index = 0; index < ExtraHotbars.BarCount; index++)
+            for (var index = 0; index < ExtraHotbarsService.BarCount; index++)
             {
                 if (propertyName == VisibleProperty(index))
                 {

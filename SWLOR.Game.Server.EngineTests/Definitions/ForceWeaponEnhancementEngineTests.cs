@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                SetLocalInt(weapon, Item.NoEconomyVariable, 1);
+                SetLocalInt(weapon, ItemService.NoEconomyVariable, 1);
                 AddItemProperty(DurationType.Permanent,
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Force), weapon);
             });

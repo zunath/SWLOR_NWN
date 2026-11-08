@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnClickRemoveItems()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.AssertEqual(1, model.InputItemNames.Count, "A removed ore without room stays listed");
-                    ctx.AssertEqual(Item.InventoryFullShortMessage, model.Instructions, "The refinery says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullShortMessage, model.Instructions, "The refinery says the inventory is full");
 
                     model = ReopenWindow<RefineryViewModel>(fixture, GuiWindowType.Refinery, null);
                     AssertCarriedIntact(ctx, player, carried);
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnClickHead()();
                     model.OnModalConfirmClick()();
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_headItem")), "A removed head without room stays installed");
-                    ctx.AssertEqual(Item.InventoryFullMessage, model.Error, "The window says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullMessage, model.Error, "The window says the inventory is full");
 
                     model.OnClickReset()();
                     model.OnModalConfirmClick()();

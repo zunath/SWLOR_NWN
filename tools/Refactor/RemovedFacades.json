@@ -12,13 +12,22 @@
     { "facade": "Conversation" },
     { "facade": "ConversationMenu" },
     { "facade": "DB" },
+    { "facade": "EquipmentUnequip" },
+    { "facade": "ExtraHotbars", "constants": [ { "name": "BarCount", "owner": "SWLOR.Game.Server.Domain.UI.ExtraHotbarsService" }, { "name": "MaxSlots", "owner": "SWLOR.Game.Server.Domain.UI.ExtraHotbarsService" } ] },
     { "facade": "FieldEngineerPulseEmitters" },
     { "facade": "ForceControlCooldowns" },
+    { "facade": "Gui", "constants": [ { "name": "GuiFontName", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "TextName", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowTopLeft", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowTopMiddle", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowTopRight", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowMiddleLeft", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowMiddleRight", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowMiddleBlank", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowBottomLeft", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowBottomRight", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "WindowBottomMiddle", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "Arrow", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "BlankWhite", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorTransparent", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorWhite", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorSilver", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorGray", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorDarkGray", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorBlack", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorRed", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorMaroon", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorOrange", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorYellow", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorOlive", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorLime", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorGreen", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorAqua", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorTeal", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorBlue", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorNavy", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorFuschia", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorPurple", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorHealthBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorFPBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorStaminaBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorShieldsBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorHullBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" }, { "name": "ColorCapacitorBar", "owner": "SWLOR.Game.Server.Domain.UI.GuiService" } ] },
+    { "facade": "Item", "constants": [ { "name": "PlayerProducedItemVariable", "owner": "SWLOR.Game.Server.Domain.Items.ItemService" }, { "name": "NoEconomyVariable", "owner": "SWLOR.Game.Server.Domain.Items.ItemService" }, { "name": "InventoryFullMessage", "owner": "SWLOR.Game.Server.Domain.Items.ItemService" }, { "name": "InventoryFullShortMessage", "owner": "SWLOR.Game.Server.Domain.Items.ItemService" }, { "name": "ItemsHeldMessage", "owner": "SWLOR.Game.Server.Domain.Items.ItemService" } ] },
+    { "facade": "ItemTrash" },
+    { "facade": "KeyItem" },
+    { "facade": "LightsaberWorkbench", "constants": [ { "name": "KyberTokenTag", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "WeaponSubmissionTokenTag", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "LightsaberResref", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "SaberstaffResref", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "EnhancementRecipeLevel", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "MiddlePartValue", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" }, { "name": "MatchBladeLightColor", "owner": "SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService" } ] },
+    { "facade": "Loot", "constants": [ { "name": "CorpseBodyVariable", "owner": "SWLOR.Game.Server.Domain.Items.LootService" } ] },
     { "facade": "Messaging" },
     { "facade": "Migration", "constants": [ { "name": "RetiredServerMigrationVersion", "owner": "SWLOR.Game.Server.Domain.Core.MigrationService" }, { "name": "PlayerFileVersionVariable", "owner": "SWLOR.Game.Server.Domain.Core.MigrationService" } ] },
     { "facade": "Mimicry", "explicit": true },
     { "facade": "NamedAnimation" },
     { "facade": "ObjectVisibility" },
+    { "facade": "OverflowStorage" },
     { "facade": "PlayerFeedback" },
     { "facade": "QuickCast" },
     { "facade": "ReviveHistory" },
@@ -26,6 +35,7 @@
     { "facade": "Snippet" },
     { "facade": "Taxi" },
     { "facade": "TileMagic" },
-    { "facade": "Walkmesh" }
+    { "facade": "Walkmesh" },
+    { "facade": "Wardrobe", "constants": [ { "name": "MaxNameLength", "owner": "SWLOR.Game.Server.Domain.Items.WardrobeService" }, { "name": "SlotsPerExpansion", "owner": "SWLOR.Game.Server.Domain.Items.WardrobeService" }, { "name": "MaxSlotLimit", "owner": "SWLOR.Game.Server.Domain.Items.WardrobeService" }, { "name": "ExpansionHint", "owner": "SWLOR.Game.Server.Domain.Items.WardrobeService" } ] }
   ]
 }

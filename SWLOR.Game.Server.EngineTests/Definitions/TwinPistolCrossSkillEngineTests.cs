@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -444,7 +445,7 @@ public static class TwinPistolCrossSkillEngineTests
                     {
                         var corpse = GetNearestObject(ObjectType.Placeable, target, nth);
                         if (!GetIsObjectValid(corpse) || GetDistanceBetween(target, corpse) > 10f) break;
-                        if (GetLocalObject(corpse, Loot.CorpseBodyVariable) != target) continue;
+                        if (GetLocalObject(corpse, LootService.CorpseBodyVariable) != target) continue;
                         ctx.Track(corpse);
                         break;
                     }

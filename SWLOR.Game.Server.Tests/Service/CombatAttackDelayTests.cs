@@ -17,6 +17,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -1149,26 +1151,26 @@ public class CombatAttackDelayTests
     }
 
     private static readonly IReadOnlyDictionary<int, ItemPropertyAttackDelay> WeaponDelayByBaseItem = BuildWeaponDelayByBaseItem();
-    private static readonly IReadOnlySet<int> ShieldBaseItems = SWLOR.Game.Server.Service.Item.ShieldBaseItemTypes
+    private static readonly IReadOnlySet<int> ShieldBaseItems = Item.ShieldBaseItemTypes
         .Select(x => (int)x)
         .ToHashSet();
 
     private static IReadOnlyDictionary<int, ItemPropertyAttackDelay> BuildWeaponDelayByBaseItem()
     {
         var delays = new Dictionary<int, ItemPropertyAttackDelay>();
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay240);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
+        AddWeaponDelays(delays, Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
+        AddWeaponDelays(delays, Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
+        AddWeaponDelays(delays, Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
+        AddWeaponDelays(delays, Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250);
+        AddWeaponDelays(delays, Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
+        AddWeaponDelays(delays, Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
+        AddWeaponDelays(delays, Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay240);
+        AddWeaponDelays(delays, Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
 
         return delays;
     }
@@ -1350,7 +1352,7 @@ public class CombatAttackDelayTests
             noEconomy = variables.EnumerateArray().Any(variable =>
                 TryGetWrappedValue(variable, "Name", out var variableName) &&
                 variableName.ValueKind == JsonValueKind.String &&
-                string.Equals(variableName.GetString(), Item.NoEconomyVariable, StringComparison.Ordinal) &&
+                string.Equals(variableName.GetString(), ItemService.NoEconomyVariable, StringComparison.Ordinal) &&
                 TryGetWrappedInt(variable, "Type", out var variableType) && variableType == 1 &&
                 TryGetWrappedInt(variable, "Value", out var variableValue) && variableValue == 1);
         }

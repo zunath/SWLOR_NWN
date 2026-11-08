@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Domain.Character
             const int WindowWidth = 26;
 
             var centerWindowX = _gui.CenterStringInWindow(name, WindowX, WindowWidth);
-            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId,Gui.TextName);
-            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName);
+            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId,GuiService.TextName);
+            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId + 1, GuiService.TextName);
             _gui.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 

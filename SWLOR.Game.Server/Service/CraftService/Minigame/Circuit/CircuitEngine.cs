@@ -136,7 +136,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
 
     private MinigameActionRule<CircuitState> ResolveTune(MinigameActionInfo info, CircuitState state)
     {
-        if (Locked(info, _setup.TuneIntegrity, CircuitRules.TuneCp, out var locked))
+        if (Locked(info, _setup.TuneIntegrity, _setup.TuneCp, out var locked))
             return locked;
 
         var gain = _setup.TuneGain(state.Load);
@@ -144,7 +144,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
         if (cleanSignal)
             gain *= CircuitRules.CleanSignalMultiplier;
 
-        return RiskyAction(info, state, CircuitRules.TuneCp, _setup.TuneIntegrity, _setup.TuneLoad,
+        return RiskyAction(info, state, _setup.TuneCp, _setup.TuneIntegrity, _setup.TuneLoad,
             cleanSignal ? "Tuned (Clean Signal)" : "Tuned",
             s => s.Adjust(new MinigameMeterDelta(Quality: gain)));
     }
@@ -152,7 +152,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
     private MinigameActionRule<CircuitState> ResolveMicroTune(MinigameActionInfo info, CircuitState state)
     {
         var gain = _setup.MicroTuneGain(state.Load);
-        return RiskyAction(info, state, CircuitRules.MicroTuneCp, _setup.MicroTuneIntegrity, loadGain: 0, "Micro-tuned",
+        return RiskyAction(info, state, _setup.MicroTuneCp, _setup.MicroTuneIntegrity, loadGain: 0, "Micro-tuned",
             s => s.Adjust(new MinigameMeterDelta(Quality: gain)));
     }
 
@@ -208,16 +208,16 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
 
     private MinigameActionRule<CircuitState> ResolveGround(MinigameActionInfo info, CircuitState state)
     {
-        if (Locked(info, CircuitRules.GroundIntegrity, CircuitRules.GroundCp, out var locked))
+        if (Locked(info, _setup.GroundIntegrity, CircuitRules.GroundCp, out var locked))
             return locked;
 
         if (state.Load <= 0)
         {
             return MinigameActionRule<CircuitState>.Disabled(
-                info, CircuitRules.GroundCp, CircuitRules.GroundIntegrity, "There is no Load to ground.");
+                info, CircuitRules.GroundCp, _setup.GroundIntegrity, "There is no Load to ground.");
         }
 
-        return Safe(info, CircuitRules.GroundCp, CircuitRules.GroundIntegrity, "Grounded",
+        return Safe(info, CircuitRules.GroundCp, _setup.GroundIntegrity, "Grounded",
             s => s with { Load = Math.Max(0, s.Load - CircuitRules.GroundLoad) });
     }
 

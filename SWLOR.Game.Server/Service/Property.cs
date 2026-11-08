@@ -2947,7 +2947,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterPropertyInstance()
         {
-            var player = GetExitingObject();
+            var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
@@ -3007,9 +3007,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void ExitPropertyInstance()
         {
+            // No GetIsPC check: it is false here for a player logging out, and the entry must still go, because
+            // the player keeps the same object ID when they log back in.
             var player = GetExitingObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
 
             var propertyId = GetPropertyId(OBJECT_SELF);
 
@@ -3019,8 +3019,7 @@ namespace SWLOR.Game.Server.Service
             if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
                 return;
 
-            if (_propertyInstances[propertyId].Players.Contains(player))
-                _propertyInstances[propertyId].Players.Remove(player);
+            _propertyInstances[propertyId].Players.Remove(player);
         }
 
 

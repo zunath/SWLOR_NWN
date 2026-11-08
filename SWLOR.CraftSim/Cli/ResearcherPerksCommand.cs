@@ -27,21 +27,22 @@ namespace SWLOR.CraftSim.Cli
         /// <summary>The same command with the Fabrication gear already built, so a test does not read the module's items.</summary>
         internal static int Run(string[] args, TextWriter output, IReadOnlyList<GearLevel> gear)
         {
-            var options = CommandLineOptions.Parse(args, ValueOptions, new[] { "--search", "--ablate", "--order" });
+            var options = CommandLineOptions.Parse(args, ValueOptions, new[] { "--search", "--ablate", "--order", "--ladder" });
             var search = options.ContainsKey("--search");
             var ablate = options.ContainsKey("--ablate");
             var order = options.ContainsKey("--order");
-            if ((search ? 1 : 0) + (ablate ? 1 : 0) + (order ? 1 : 0) > 1)
-                throw new ArgumentException("--search, --ablate and --order are separate reports; give one.");
+            var ladder = options.ContainsKey("--ladder");
+            if ((search ? 1 : 0) + (ablate ? 1 : 0) + (order ? 1 : 0) + (ladder ? 1 : 0) > 1)
+                throw new ArgumentException("--search, --ablate, --order and --ladder are separate reports; give one.");
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
             var outPath = options.TryGetValue("--out", out var outValues)
                 ? outValues[0]
-                : Path.Combine(root, "design", "testing", "crafting-revamp", search ? "fabrication-researcher-style-search.md" : ablate ? "fabrication-researcher-line-ablation.md" : order ? "fabrication-researcher-line-order.md" : "fabrication-researcher-perks.md");
+                : Path.Combine(root, "design", "testing", "crafting-revamp", search ? "fabrication-researcher-style-search.md" : ablate ? "fabrication-researcher-line-ablation.md" : order ? "fabrication-researcher-line-order.md" : ladder ? "fabrication-researcher-gear-ladder.md" : "fabrication-researcher-perks.md");
 
             if (gear == null)
             {
                 var recipes = RecipeCatalog.Load();
-                gear = CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes).Levels(SkillType.Fabrication);
+                gear = CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes).LevelsWithFullMods(SkillType.Fabrication);
             }
 
             var studyOptions = new ResearcherPerkStudyOptions
@@ -57,6 +58,7 @@ namespace SWLOR.CraftSim.Cli
             var report = search ? ResearcherStyleSearch.Build(studyOptions, command)
                 : ablate ? ResearcherLineAblation.Build(studyOptions, command)
                 : order ? ResearcherLineOrder.Build(studyOptions, command)
+                : ladder ? ResearcherPerkStudy.BuildLadder(studyOptions, command)
                 : ResearcherPerkStudy.Build(studyOptions, command);
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);

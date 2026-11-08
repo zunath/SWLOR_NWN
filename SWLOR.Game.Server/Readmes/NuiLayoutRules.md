@@ -175,6 +175,14 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   group directly and never schedule delayed re-applies (`GuiGroupLayoutSourceTests`
   enforces the single root call). `SwapNestedPartialView` is `ChangePartialView` with
   before/after callbacks.
+- **A layout change waits for the player to let go of the mouse button.** NUI fires a
+  button's `click` on the press. A root layout that arrives before the release replaces
+  the pressed control, the window never sees the release, and it then ignores every
+  press, close button included, until the player relogs (Player List "Send Tell", Nov
+  2026, reproduced in the live client). `Gui.HandleNuiEvents` records `click`/`mousedown`
+  and `mouseup` on the view model, and `ApplyRootLayout` holds the layout until the
+  release (`GuiPressLayoutHold`, with a 3-second fallback when no release is reported).
+  Binds sent while the layout is held are re-sent after it.
 - **Every group-layout change rebuilds the whole window.** Controls outside the
   changed group are recreated too, so scroll positions reset. Rebuilt controls do not
   send watch events, and values pushed while their controls were on screen survive.

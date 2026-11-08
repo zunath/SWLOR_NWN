@@ -51,6 +51,27 @@ public static class FabricatorRules
     /// <summary>Each point of Craftsmanship (Run) or Control (Precision Pass) adds this percent to the output.</summary>
     public const double GearPercentPerPoint = 1.0;
 
+    /// <summary>
+    /// Recipes above this level need more from the crafter, so gear and its enhancements decide how
+    /// well the top recipes turn out: Precision Passes add less and the machine wears faster.
+    /// </summary>
+    public const int DifficultyStartLevel = 30;
+
+    /// <summary>How much less a Precision Pass adds per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double QualityDifficultyPerLevel = 0.03;
+
+    /// <summary>How much faster the machine wears per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double WearDifficultyPerLevel = 0.06;
+
+    /// <summary>How much more CP a Service costs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double ServiceCpPerLevel = 0.2;
+
+    /// <summary>The factor Precision Pass gains are divided by on a recipe of the level.</summary>
+    public static double QualityDifficulty(int recipeLevel) => 1.0 + QualityDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
+    /// <summary>The factor on the wear of a recipe of the level.</summary>
+    public static double WearDifficulty(int recipeLevel) => 1.0 + WearDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
     /// <summary>The output each rank above or below the recipe's level adds, as a fraction.</summary>
     public const double RankStep = 0.05;
 
@@ -70,7 +91,7 @@ public static class FabricatorRules
     public const double XpMultiplierLevels11To20 = 1.50;
     public const double XpMultiplierLevels21To30 = 1.25;
     public const double XpMultiplierLevels31To40 = 1.1;
-    public const double XpMultiplierLevels41Up = 1.0;
+    public const double XpMultiplierLevels41Up = 1.06;
 
     /// <summary>The multiplier on the base XP of a Fabricator craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
     public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch
@@ -89,7 +110,9 @@ public static class FabricatorRules
     public static int RetoolCp(int recipeLevel) => RetoolCpBase + Math.Max(0, recipeLevel) / RetoolCpLevelDivisor;
 
     /// <summary>The CP one Service costs at a recipe level.</summary>
-    public static int ServiceCp(int recipeLevel) => ServiceCpBase + Math.Max(0, recipeLevel) / ServiceCpLevelDivisor;
+    public static int ServiceCp(int recipeLevel) =>
+        ServiceCpBase + Math.Max(0, recipeLevel) / ServiceCpLevelDivisor +
+        (int)Math.Round(ServiceCpPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel), MidpointRounding.AwayFromZero);
 
     /// <summary>Each of Dual Feed's two sub-assemblies gets this share of what a full Run makes.</summary>
     public const double DualFeedPercent = 60.0;

@@ -47,9 +47,7 @@ internal static class RemovedFacadeList
             var result = new List<RemovedFacade>();
             foreach (var element in facades.EnumerateArray())
             {
-                var facade = element.ValueKind == JsonValueKind.Object && element.TryGetProperty("facade", out var name) && name.ValueKind == JsonValueKind.String
-                    ? name.GetString()!
-                    : null;
+                var facade = StringProperty(element, "facade");
                 if (facade == null || !IsDottedName(facade))
                 {
                     problems.Add($"Every entry needs a \"facade\": a type name relative to {RemovedFacade.ServiceNamespace}, such as Taxi or QuestService.QuestEncounter.");
@@ -71,8 +69,8 @@ internal static class RemovedFacadeList
                     {
                         foreach (var entry in constantsElement.EnumerateArray())
                         {
-                            var constantName = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("name", out var n) ? n.GetString() : null;
-                            var owner = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("owner", out var o) ? o.GetString() : null;
+                            var constantName = StringProperty(entry, "name");
+                            var owner = StringProperty(entry, "owner");
                             if (constantName == null || !IsDottedName(constantName) || constantName.Contains('.') || owner == null || !IsDottedName(owner) || !owner.Contains('.'))
                             {
                                 problems.Add($"{facade}: every constant needs a plain \"name\" and the full type name of its \"owner\" (SWLOR.Game.Server.Domain.Combat.CombatRules).");
@@ -117,6 +115,13 @@ internal static class RemovedFacadeList
             return result;
         }
     }
+
+    // A string property of an object, or null when the element is not an object or the property is missing or not a string
+    // (GetString would throw instead of letting the problem be reported).
+    private static string? StringProperty(JsonElement element, string name) =>
+        element.ValueKind == JsonValueKind.Object && element.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
 
     private static bool IsDottedName(string name) =>
         name.Split('.').All(part => part.Length > 0 && (char.IsLetter(part[0]) || part[0] == '_') && part.All(c => char.IsLetterOrDigit(c) || c == '_'));

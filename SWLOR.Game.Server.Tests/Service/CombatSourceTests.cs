@@ -500,6 +500,35 @@ public class CombatSourceTests
     }
 
     [Test]
+    public void ReflectionReachesTheActivationSequenceTableOfTheInstalledContainer()
+    {
+        // The hostile ability sequence per activator moved from a static field of Combat to the ability activation part; a test
+        // that reads it by name gets the installed container's table, which Combat's forget forwarder clears.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        const string name = "_hostileAbilitySequenceStates";
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatAbilityActivationService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityActivationService>()));
+        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
+            "Combat keeps no copy");
+        typeof(SWLOR.Game.Server.Service.Combat).GetNestedType("HostileAbilitySequenceState", BindingFlags.NonPublic).Should().BeNull(
+            "the state type moved with its table");
+
+        // A record put into the reflected table is the one Combat's forget forwarder removes.
+        const uint creature = 0xFFFFFFF3;
+        var state = Activator.CreateInstance(field.FieldType.GetGenericArguments()[1], nonPublic: true)!;
+        table[creature] = state;
+        CombatMembers.CreateDelegate<Action<uint>>("ForgetActivationState", typeof(uint))(creature);
+        table.Contains(creature).Should().BeFalse();
+    }
+
+    [Test]
     public void TheTestOverridesOfTheHitRollsAreTheInstalledContainersAndCombatSetsThem()
     {
         using var facades = new FacadeContainer();

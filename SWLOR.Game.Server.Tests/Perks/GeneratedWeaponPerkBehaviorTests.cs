@@ -802,9 +802,9 @@ public class GeneratedWeaponPerkBehaviorTests
         applyStart.Should().BeGreaterThanOrEqualTo(0);
         applyEnd.Should().BeGreaterThan(applyStart);
         var applyRangedDeflection = combat[applyStart..applyEnd];
-        applyRangedDeflection.Should().Contain("if (StatusEffect.ApplyStatusEffect(");
+        applyRangedDeflection.Should().Contain("if (_statusEffect.ApplyStatusEffect(");
         applyRangedDeflection.Should().Contain(
-            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
+            "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
         applyRangedDeflection.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
     }
 

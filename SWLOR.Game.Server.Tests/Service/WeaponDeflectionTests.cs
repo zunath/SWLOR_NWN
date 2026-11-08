@@ -148,7 +148,7 @@ public class WeaponDeflectionTests
             @"_temporaryStatModifier\.Replace\(\s*activator,\s*targetStatType,\s*attackDeflection,\s*duration,\s*attackDeflectionStatType\);");
         combatSource.Should().Contain("_stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection)");
         combatSource.Should().Contain("_stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection)");
-        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
+        combatSource.Should().Contain("_stat.GetGrantedDeflectionStatType(sourceStatType)");
         combatSource.Should().Contain("var fpRestoreSource = _stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);");
         combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
         combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");

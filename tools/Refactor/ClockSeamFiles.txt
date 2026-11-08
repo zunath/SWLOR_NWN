@@ -12,6 +12,7 @@ Domain/Combat/CombatAbilityImpactService.cs
 Domain/Combat/CombatDamageModifiersService.cs
 Domain/Combat/CombatHitEffectsService.cs
 Domain/Combat/CombatDamageTakenService.cs
+Domain/Combat/CombatAbilityActivationService.cs
 Service/CombatService/**
 Service/CombatPoint.cs
 Domain/Combat/OrdinaryAttackTraitsService.cs

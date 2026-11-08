@@ -16,7 +16,7 @@ mod_content_chg  # run by EventRegistration.OnModulePreload through ExecuteScrip
   action      SWLOR.Game.Server.Service.Walkmesh.LoadWalkmeshes
 
 mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
-  action      SWLOR.Game.Server.Service.Ability.CacheData
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
   action      SWLOR.Game.Server.Service.Achievement.LoadAchievements
   action      SWLOR.Game.Server.Service.Area.CacheData
   action      SWLOR.Game.Server.Service.BeastMastery.CacheData
@@ -61,14 +61,14 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load
 
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
-  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.CacheData
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   action      SWLOR.Game.Server.Service.AI.CacheAIData
   action      SWLOR.Game.Server.Service.Conversation.CacheData
   action      SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes
   action      SWLOR.Game.Server.Service.Gui.CacheData
   action      SWLOR.Game.Server.Service.IncubationFieldNote.LoadDisplayText
   action      SWLOR.Game.Server.Service.Migration.AfterCacheLoaded
-  action      SWLOR.Game.Server.Service.Mimicry.CacheData
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
   action      SWLOR.Game.Server.Service.Perk.CachePerkFeatData
   action      SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
@@ -178,7 +178,7 @@ area_exit
   action      SWLOR.Game.Server.Service.Enmity.PlayerExit
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
-  action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
   action      SWLOR.Game.Server.Service.Performance.EndOnAreaExit
   action      SWLOR.Game.Server.Service.Property.ExitPropertyInstance
   action      SWLOR.Game.Server.Service.Shuttle.HandleShuttleAreaExit
@@ -204,10 +204,10 @@ assoc_stateffect
   action      SWLOR.Game.Server.Service.Stat.ReapplyFoodHP
 
 aura_enter
-  action      SWLOR.Game.Server.Service.Ability.AuraEnter
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraEnter
 
 aura_exit
-  action      SWLOR.Game.Server.Service.Ability.AuraExit
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraExit
 
 bart_end_bef
   action      SWLOR.Game.Server.Feature.SaveCharacters.RemoveBarteringFlag
@@ -293,7 +293,7 @@ corpse_disturbed
 
 cp_xp_distribute
   action      SWLOR.Game.Server.Service.BeastMastery.CombatPointXPDistributed
-  action      SWLOR.Game.Server.Service.Mimicry.CombatPointXPDistributed
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CombatPointXPDistributed
 
 craft_on_used
   action      SWLOR.Game.Server.Service.Craft.UseCraftingDevice
@@ -341,7 +341,7 @@ crea_death_aft
   action      SWLOR.Game.Server.Service.Enmity.CreatureDeath
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnNpcRemoved
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnDeath
-  action      SWLOR.Game.Server.Service.Mimicry.OnCreatureDeath
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnCreatureDeath
   action      SWLOR.Game.Server.Service.Space.CreatureDeath
   action      SWLOR.Game.Server.Service.Spawn.QueueRespawn
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnCreatureDeath
@@ -625,7 +625,7 @@ item_eqpval_bef
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ValidateItemEquip
 
 item_on_hit
-  action      SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AddLeadershipCombatPoint
   action      SWLOR.Game.Server.Service.CombatPoint.OnHitCastSpell
   action      SWLOR.Game.Server.Service.Loot.MarkCreditfinderAndTreasureHunterOnTarget
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ProcessQueuedWeaponAbility
@@ -693,7 +693,7 @@ mod_chat
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleChat
 
 mod_death
-  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnDeath
   action      SWLOR.Game.Server.Service.Activity.WipeStatusOnDeath
   action      SWLOR.Game.Server.Service.CombatRecorder.RecordPlayerDeath
   action      SWLOR.Game.Server.Service.Death.OnPlayerDeath
@@ -722,8 +722,8 @@ mod_dying
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDying
 
 mod_enter
-  action      SWLOR.Game.Server.Service.Ability.ApplyAuraAOE
-  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.RestoreCooldownVisuals
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals
   action      SWLOR.Game.Server.Service.Activity.WipeStatusOnEntry
   action      SWLOR.Game.Server.Service.ChatPortraitTells.RememberEnteringPlayer
   action      SWLOR.Game.Server.Service.Combat.AddDamageTypeResistances
@@ -736,7 +736,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.Gui.CreatePlayerWindows
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleEnter
   action      SWLOR.Game.Server.Service.Item.EnsureInventoryItemActivations
-  action      SWLOR.Game.Server.Service.Mimicry.OnPlayerLogin
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
   action      SWLOR.Game.Server.Service.ObjectVisibility.LoadPlayerVisibilityObjects
   action      SWLOR.Game.Server.Service.Performance.RecoverOnLogin
   action      SWLOR.Game.Server.Service.PlayerList.RefreshOnEnter
@@ -744,7 +744,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.PlayerName.ApplyNameOverridesOnEnter
   action      SWLOR.Game.Server.Service.Quest.LoadPlayerQuests
   action      SWLOR.Game.Server.Service.QuestContractBoard.NotifyPendingDeliveries
-  action      SWLOR.Game.Server.Service.QuickCast.ApplyOnEnter
+  action      SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnEnter
   action      SWLOR.Game.Server.Service.Race.ApplyWookieeScaling
   action      SWLOR.Game.Server.Service.Shuttle.EnterServer
   action      SWLOR.Game.Server.Service.Skill.AddMissingSkills
@@ -795,8 +795,8 @@ mod_equip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
 
 mod_exit
-  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnExit
-  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.ClearCooldownVisualsOnExit
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
   action      SWLOR.Game.Server.Service.ChatPortraitTells.ForgetExitingPlayer
   action      SWLOR.Game.Server.Service.Combat.ClearStatTriggerState
   action      SWLOR.Game.Server.Service.CombatPoint.ClearPendingWeaponAttackPoints
@@ -808,7 +808,7 @@ mod_exit
   action      SWLOR.Game.Server.Service.Gui.SavePlayerWindowGeometry
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleLeave
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
-  action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
   action      SWLOR.Game.Server.Service.Music.ForgetBattleThemeCombat
   action      SWLOR.Game.Server.Service.Party.LeaveServer
   action      SWLOR.Game.Server.Service.Performance.EndOnLogout
@@ -864,7 +864,7 @@ mod_p_target
   action      SWLOR.Game.Server.Service.Targeting.RunTargetedItemAction
 
 mod_respawn
-  action      SWLOR.Game.Server.Service.Ability.ReapplyAuraOnRespawn
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ReapplyAuraOnRespawn
   action      SWLOR.Game.Server.Service.Death.OnPlayerRespawn
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.GrantPendingXpOnRespawn
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnPlayerRespawn
@@ -1025,7 +1025,7 @@ pty_leave_bef
   action      SWLOR.Game.Server.Service.Party.LeaveParty
 
 qb_set_aft
-  action      SWLOR.Game.Server.Service.QuickCast.ApplyOnQuickbarEdit
+  action      SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnQuickbarEdit
 
 qcontract_board
   action      SWLOR.Game.Server.Feature.PlaceableScripts.UseQuestContractBoard
@@ -1095,7 +1095,7 @@ slice_terminal
   action      SWLOR.Game.Server.Feature.SlicingTerminal.UseTerminal
 
 space_enter
-  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnSpaceEntry
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnSpaceEntry
   action      SWLOR.Game.Server.Service.BeastMastery.RemoveAssociate
   action      SWLOR.Game.Server.Service.Droid.RemoveAssociate
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition
@@ -1163,7 +1163,7 @@ swlor_heartbeat
   action      SWLOR.Game.Server.Feature.ServerTasks.ProcessAutoRestart
 
 swlor_lose_skill
-  action      SWLOR.Game.Server.Service.Mimicry.OnMimicrySkillDecay
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnMimicrySkillDecay
   action      SWLOR.Game.Server.Service.Perk.RemovePerkLevelOnSkillDecay
 
 swlor_skl_cache

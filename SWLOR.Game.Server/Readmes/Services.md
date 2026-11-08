@@ -116,7 +116,7 @@ Service/
 - `AbilityDetail` - Stores ability data
 - `AbilityActivationType` - Defines how abilities activate
 
-**Common Usage**: See `Service/Ability.cs` for available methods and usage patterns.
+**Common Usage**: See `Domain/Abilities/IAbilityService.cs` for available methods; static code reaches them through `GameServices.Ability`.
 
 ### 2. CombatService
 

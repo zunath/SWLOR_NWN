@@ -24,6 +24,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -594,7 +596,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (!GetIsPC(activator))
                 {
-                    Mimicry.OnCreatureAbilityUsed(activator, feat);
+                    GameServices.Mimicry.OnCreatureAbilityUsed(activator, feat);
                 }
             }
             finally
@@ -1560,7 +1562,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (!GetIsPC(activator))
                 {
-                    Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
+                    GameServices.Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
                 }
             }
             finally

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

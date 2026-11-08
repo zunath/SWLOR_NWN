@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using Skill = SWLOR.Game.Server.Service.Skill;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -679,7 +680,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             selectedDetails += $"[{categoryDetail.Name}]\n";
             var isActive = detail.HotBarActionModes.Count > 0 ||
                            detail.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
-                               .Any(Ability.IsFeatRegistered);
+                               .Any(feat => Ability.IsFeatRegistered(feat));
             selectedDetails += $"Type: {(isActive ? "Active" : "Passive")}\n";
 
             var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
@@ -722,8 +723,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildAbilityCostText(PerkLevel level)
         {
             var abilities = level.GrantedFeats
-                .Where(Ability.IsFeatRegistered)
-                .Select(Ability.GetAbilityDetail)
+                .Where(feat => Ability.IsFeatRegistered(feat))
+                .Select(feat => Ability.GetAbilityDetail(feat))
                 .ToList();
             var text = string.Empty;
             foreach (var ability in abilities)
@@ -992,12 +993,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var currentFeats = currentActiveAbilityFeats
-                .Select(QuickCast.GetOriginalFeat)
+                .Select(feat => QuickCast.GetOriginalFeat(feat))
                 .Where(CanAddFeatToHotBar)
                 .Distinct()
                 .ToList();
             var previousFeats = previousActiveAbilityFeats
-                .Select(QuickCast.GetOriginalFeat)
+                .Select(feat => QuickCast.GetOriginalFeat(feat))
                 .Where(CanAddFeatToHotBar)
                 .Distinct()
                 .ToList();
@@ -1147,7 +1148,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!IsInMyPerksMode)
                 return;
 
-            var featSet = feats.Select(QuickCast.GetOriginalFeat).ToHashSet();
+            var featSet = feats.Select(feat => QuickCast.GetOriginalFeat(feat)).ToHashSet();
             if (featSet.Count <= 0)
                 return;
 

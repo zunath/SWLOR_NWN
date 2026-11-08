@@ -129,10 +129,11 @@ the very end, so one output-locking test project compiles against both") ends he
 - **Per item.** `FacadeForwardingTests` already proves every facade handler is parameterless and forwards to the instance member of the
   same name, so the move is: the attribute goes from the facade method to that instance method; the manifest line keeps its position
   with the new name (`SWLOR.Game.Server.Service.Taxi.X` becomes `SWLOR.Game.Server.Domain.World.TaxiService.X`); a
-  `<master name> <branch name>` line goes in `HandlerRenames.txt`; the two handler snapshots
+  `<master name> <branch name>` line goes in `HandlerRenames.txt` (the 9 handlers already listed there, of `Craft`, `CompanionControl` and
+  `TemporaryStatModifier`, get their branch side updated instead of a second line); the two handler snapshots
   (`Tests/Core/Snapshots/ScriptHandlerOrder.txt`, `.EngineTests.txt`) are regenerated; the parity run reports no handler-order difference.
   Combat's handlers go on `CombatService`, the class the facade forwarded to, not on the parts.
-- **Counts:** 364 registrations on 339 methods (25 methods carry two attributes), per item in the item table and per service in
+- **Counts:** 364 registrations on 339 methods (19 methods carry two attributes and 2 carry four), per item in the item table and per service in
   Appendix A. Core's 32 are renamed again by P2-Z2 (`Domain.Core` to `Domain.Foundation`); its script already updates the branch side
   of existing rename lines.
 
@@ -273,7 +274,7 @@ coordinator runs them.
 | D1 | What static code (`Feature/`, `Native/`, support types, tools, tests) uses after a facade goes | `GameServices` with `using static`; content code is not converted to injection in this refactor. If "delete facades" is read as "no static access to services at all", that converts 544 `Feature` types, cannot cover `Native/` before Phase 4, and changes the plan's size: the owner would have to confirm that reading | coordinator (owner only for the other reading) |
 | D2 | Accessor name | `GameServices` (`Services` collides with the namespaces `SWLOR.Admin.Services` and `SWLOR.Toolset.Services`) | coordinator |
 | D3 | Constructor cycles (259 sites, 67 pairs) | `Lazy<IXService>` from an open-generic `Composition` registration, guarded by the cycle test; not wrappers that call `GameServices` (service location inside instances) | coordinator |
-| D4 | `HandlerRenames.txt` shape | one line per handler (364 lines), the format every script reads today | coordinator |
+| D4 | `HandlerRenames.txt` shape | one line per handler method (339: 330 new, 9 updated), the format every script reads today | coordinator |
 | D5 | Constants | move reads to the owner the facade's initializer names; literal facade constants move to the instance class; no constants on interfaces | coordinator |
 | D6 | `Combat`'s pure members | static callers of the rule constants call `CombatRules` (required); rule methods too, which removes two hops from per-swing reads (`CombatSim` and `Player` already do it); anything ambiguous stays on `GameServices.Combat` | coordinator |
 | D7 | Transition marker | `"facadeRemoved": true` per entry in `ConvertedServices.json`, removed by P2-ZZ | coordinator |

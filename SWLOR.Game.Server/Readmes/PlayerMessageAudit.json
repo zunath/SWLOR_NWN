@@ -868,13 +868,6 @@
     "Call": "SendMessageToPC(user, $\"Your incubation mutations now check {day}. This resets when the server restarts.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/PazaakChatCommand.cs",
-    "Line": 22,
-    "Member": "BuildChatCommands",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"Pazaak is only available to player characters.\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/RenameChatCommand.cs",
     "Line": 29,
     "Member": "BuildChatCommands",
@@ -2331,48 +2324,6 @@
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"A category named '{name}' already exists.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 249,
-    "Member": "OnWindowClosed",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Your Pazaak match continues. Use /pazaak to return to the table.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 281,
-    "Member": "PromptPendingChallenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 449,
-    "Member": "PlayHandCard",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 508,
-    "Member": "OnClickEndTurn",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 515,
-    "Member": "OnClickStand",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
-    "Line": 531,
-    "Member": "OnClickChallenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs",
     "Line": 183,
     "Member": "OnApply",
@@ -3050,13 +3001,6 @@
     "Member": "Lockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, error)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/PazaakCardItemDefinition.cs",
-    "Line": 47,
-    "Member": "PazaakCard",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Green($\"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/RecipeItemDefinition.cs",
@@ -4152,210 +4096,217 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3372,
+    "Line": 3377,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3687,
+    "Line": 3692,
     "Member": "PrepareAutoAttackCycleCriticalRate",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3995,
+    "Line": 4000,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 3996,
+    "Line": 4001,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($\"Guard (-{preventedDamage})\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4002,
+    "Line": 4007,
     "Member": "SendGuardedHitFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4021,
+    "Line": 4026,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4022,
+    "Line": 4027,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4030,
+    "Line": 4035,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4156,
+    "Line": 4161,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 4339,
+    "Line": 4344,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5053,
+    "Line": 5064,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5161,
+    "Line": 5172,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 5193,
+    "Line": 5204,
     "Member": "ReadySameTargetPressure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 6749,
+    "Line": 6760,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 6750,
+    "Line": 6761,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Pinning Fire\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7045,
+    "Line": 7056,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7046,
+    "Line": 7057,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7087,
+    "Line": 7098,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7088,
+    "Line": 7099,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike ready ({maximumCount} {stackLabel})\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7114,
+    "Line": 7125,
     "Member": "ReportFirstStrikeCombatEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 7934,
+    "Line": 7954,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 8166,
+    "Line": 8186,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 8759,
+    "Line": 8779,
     "Member": "ApplyGuardedHitNextAttackEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 9147,
+    "Line": 9167,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($\"Overwatch: +{adjustment}% Accuracy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 9148,
+    "Line": 9168,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 11387,
+    "Line": 11407,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 11401,
+    "Line": 11421,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12452,
+    "Line": 12259,
+    "Member": "ShowReadyCue",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Combat.cs",
+    "Line": 12504,
     "Member": "SendAbilityCriticalHitFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12485,
+    "Line": 12537,
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 13077,
+    "Line": 13129,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
@@ -5215,106 +5166,57 @@
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 135,
-    "Member": "Challenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(challenger, ColorToken.Green($\"You challenge {targetName} to a game of Pazaak.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 136,
-    "Member": "Challenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(target, ColorToken.Green($\"{PlayerName.GetDisplayName(target, challenger)} challenges you to a game of Pazaak.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 154,
-    "Member": "DeclineChallenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(challenger, ColorToken.Red($\"{PlayerName.GetDisplayName(challenger, target)} declines your Pazaak challenge.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 185,
-    "Member": "AcceptChallenge",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(seat.Player, ColorToken.Green($\"Your Pazaak match with {PlayerName.GetDisplayName(seat.Player, opponent)} begins.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 272,
-    "Member": "AnnounceSetResult",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Cyan(\"Pazaak: \") + DescribeSetResult(match, seatIndex, player))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 325,
-    "Member": "AnnounceMatchEnd",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
-    "Line": 339,
-    "Member": "ScheduleTurnTimeout",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You took too long, so you stand.\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 210,
+    "Line": 211,
     "Member": "SetRoleplay",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, GetModeMessage(session.Kind, roleplay))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 333,
+    "Line": 335,
     "Member": "EndPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 448,
+    "Line": 450,
     "Member": "Toggle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 471,
+    "Line": 473,
     "Member": "StartPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You cannot perform right now.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 515,
+    "Line": 521,
     "Member": "StartPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 626,
+    "Line": 632,
     "Member": "ApplyTempo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                session.Performer,\n                $\"Tempo: {tempo} ({tempo.GetBeatSeconds():0.0}s beats, x{tempo.GetXPMultiplier():0.##} XP).\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 636,
+    "Line": 642,
     "Member": "TryFlourish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(performer, $\"Flourish is not ready ({session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}).\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 643,
+    "Line": 649,
     "Member": "TryFlourish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(performer, \"Flourish!\")"
@@ -6448,7 +6350,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 662,
+    "Line": 666,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"

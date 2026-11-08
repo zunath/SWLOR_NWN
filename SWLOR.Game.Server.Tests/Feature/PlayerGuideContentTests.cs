@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -92,6 +93,23 @@ public class PlayerGuideContentTests
             relatedTopics.Should().NotContain(topicName, $"{topicName} should not link to itself");
             relatedTopics.Where(related => !topicNameSet.Contains(related))
                 .Should().BeEmpty($"every related link from {topicName} should resolve");
+        }
+    }
+
+    [Test]
+    public void PerformanceGuide_NamesEveryPlayableInstrument()
+    {
+        var root = FindRepositoryRoot();
+        var block = GetItems(GetTopics().Single(topic => GetString(topic, "Name") == "Performance Combat Styles"), "Blocks")
+            .Single(item => GetString(item, "Title") == "Performance - Supported Instruments");
+        var body = GetString(block, "Body");
+
+        foreach (var resref in PerformanceInstrumentCatalog.Resrefs)
+        {
+            var blueprint = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            var name = (string)blueprint["LocalizedName"]!["value"]!["0"]!;
+
+            body.Should().Contain(name, $"the {resref} blueprint can be played");
         }
     }
 

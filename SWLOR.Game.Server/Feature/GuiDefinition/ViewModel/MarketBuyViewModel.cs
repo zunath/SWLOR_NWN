@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -144,15 +145,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadData()
         {
-            var categoryToggles = new GuiBindingList<bool>();
+            ApplyCategoryFilter(MarketCategoryFilter.GetActive(_categoryTypes, LoadExcludedCategories()));
+            CategoryNames = _categories;
+        }
 
-            foreach (var unused in _categories)
+        private void ApplyCategoryFilter(IReadOnlyCollection<MarketCategoryType> activeCategories)
+        {
+            var categoryToggles = new GuiBindingList<bool>();
+            _activeCategoryIdFilters.Clear();
+
+            foreach (var type in _categoryTypes)
             {
-                categoryToggles.Add(false);
+                var isActive = activeCategories.Contains(type);
+                categoryToggles.Add(isActive);
+                if (isActive)
+                    _activeCategoryIdFilters.Add((int)type);
             }
 
-            CategoryNames = _categories;
             CategoryToggles = categoryToggles;
+        }
+
+        private HashSet<MarketCategoryType> LoadExcludedCategories()
+        {
+            return DB.Get<Player>(GetObjectUUID(Player))?.Settings?.MarketExcludedCategories;
+        }
+
+        private void SaveExcludedCategories()
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            if (dbPlayer?.Settings == null)
+                return;
+
+            var active = _activeCategoryIdFilters.Select(id => (MarketCategoryType)id).ToList();
+            dbPlayer.Settings.MarketExcludedCategories = MarketCategoryFilter.GetExcluded(_categoryTypes, active);
+            DB.Set(dbPlayer);
+        }
+
+        private void SearchFromFirstPage()
+        {
+            _skipPaginationSearch = true;
+            SelectedPageIndex = 0;
+            _skipPaginationSearch = false;
+            Search();
         }
 
         protected override void Initialize(MarketPayload initialPayload)
@@ -160,7 +194,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _regionType = initialPayload.RegionType;
             var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
             _skipPaginationSearch = true;
-            _activeCategoryIdFilters.Clear();
             SelectedPageIndex = 0;
             SearchText = string.Empty;
             WindowTitle = $"{regionDetail.Name} Market";
@@ -363,9 +396,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClearFilters() => () =>
         {
-            LoadData();
-            _activeCategoryIdFilters.Clear();
-            Search();
+            ApplyCategoryFilter(Array.Empty<MarketCategoryType>());
+            SaveExcludedCategories();
+            SearchFromFirstPage();
+        };
+
+        public Action OnClickSelectAllFilters() => () =>
+        {
+            ApplyCategoryFilter(_categoryTypes);
+            SaveExcludedCategories();
+            SearchFromFirstPage();
         };
 
         public Action OnClickCategory() => () =>
@@ -378,7 +418,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (!CategoryToggles[index] && _activeCategoryIdFilters.Contains(categoryType))
                 _activeCategoryIdFilters.Remove(categoryType);
 
-            Search();
+            SaveExcludedCategories();
+            SearchFromFirstPage();
         };
 
         public Action OnClickSortByPrice() => () =>

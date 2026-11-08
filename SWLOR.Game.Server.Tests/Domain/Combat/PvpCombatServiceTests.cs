@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.PvpCombatService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
@@ -450,6 +452,11 @@ public class PvpCombatServiceTests
 
     private sealed class TestPvp : PvpCombatService
     {
+        public TestPvp()
+            : base(FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>())
+        {
+        }
+
         private Action? _update;
 
         public DateTime Now { get; set; } = new(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);

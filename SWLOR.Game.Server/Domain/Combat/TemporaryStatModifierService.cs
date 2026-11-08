@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatService;
@@ -12,6 +14,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         private const string DefaultGroup = "";
 
         private readonly Dictionary<uint, List<TemporaryModifier>> _modifiers = new();
+        private readonly IGuiService _gui;
+
+        public TemporaryStatModifierService(IGuiService gui)
+        {
+            _gui = gui;
+        }
 
         public void ClearExitingObject()
         {
@@ -176,7 +184,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 .Where(x => x.StatType == statType && MatchesGroup(x, group))
                 .ToList();
             var total = matching.Aggregate(
-                0, (aggregated, x) => Stat.AggregateStatAdjustment(statType, aggregated, x.Amount));
+                0, (aggregated, x) => StatRules.AggregateStatAdjustment(statType, aggregated, x.Amount));
 
             foreach (var modifier in matching)
             {
@@ -243,7 +251,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 if (groups.TryGetValue(modifier.Group, out var stats))
                 {
                     stats.TryGetValue(modifier.StatType, out var current);
-                    stats[modifier.StatType] = Stat.AggregateStatAdjustment(modifier.StatType, current, modifier.Amount);
+                    stats[modifier.StatType] = StatRules.AggregateStatAdjustment(modifier.StatType, current, modifier.Amount);
                 }
             }
 
@@ -264,7 +272,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             return _modifiers.TryGetValue(creature, out var modifiers)
                 ? modifiers
                     .Where(x => x.StatType == statType && MatchesGroup(x, group))
-                    .Aggregate(0, (total, x) => Stat.AggregateStatAdjustment(statType, total, x.Amount))
+                    .Aggregate(0, (total, x) => StatRules.AggregateStatAdjustment(statType, total, x.Amount))
                 : 0;
         }
 
@@ -349,7 +357,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (GetIsPC(creature))
             {
-                DelayCommand(0.0f, () => Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent()));
+                DelayCommand(0.0f, () => _gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent()));
             }
         }
 

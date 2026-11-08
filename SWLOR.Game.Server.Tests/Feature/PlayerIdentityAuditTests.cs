@@ -78,6 +78,11 @@ public class PlayerIdentityAuditTests
                 {{getAuditIdentity}}
                 private static string GetDisplayDescriptor(uint player) => Disguise.GetDisplayDescriptor(player);
                 private static PlayerDisguise GetActiveDisguise(uint player) => Disguise.GetActiveDisguise(player);
+                private static readonly Lazy<DisguiseShim> _disguise = new(() => new DisguiseShim());
+                private sealed class DisguiseShim
+                {
+                    public string BuildIdentityKey(string disguiseId) => Disguise.BuildIdentityKey(disguiseId);
+                }
                 public static string InputError => AuditWorld.ValidationError;
                 public static string ValidateKnownNameInput(string name) => InputError;
                 public static string ValidateKnownNameAssignment(uint observer, uint target, string name) => InputError;

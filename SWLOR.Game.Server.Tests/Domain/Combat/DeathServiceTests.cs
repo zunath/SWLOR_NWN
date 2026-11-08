@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Character;
@@ -499,7 +500,8 @@ public class DeathServiceTests
             IPlayerNameService names,
             IPropertyService property,
             IAreaService areas)
-            : base(db, animation, messaging, names, property, areas)
+            : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(),
+                FacadeForwarder.For<IAbilityService>())
         {
         }
 

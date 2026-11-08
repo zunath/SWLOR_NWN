@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
@@ -39,6 +41,29 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
         private int _lastTimedExitGeneration;
+
+        private readonly Lazy<IPerkService> _perk;
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<IEnmityService> _enmity;
+        private readonly IAIService _ai;
+        private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
+
+        public StealthService(
+            Lazy<IPerkService> perk,
+            Lazy<IStatService> stat,
+            Lazy<IStatusEffectService> statusEffect,
+            Lazy<IEnmityService> enmity,
+            IAIService ai,
+            Lazy<IEspionageInfiltrationService> espionageInfiltration)
+        {
+            _perk = perk;
+            _stat = stat;
+            _statusEffect = statusEffect;
+            _enmity = enmity;
+            _ai = ai;
+            _espionageInfiltration = espionageInfiltration;
+        }
 
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -714,31 +739,31 @@ namespace SWLOR.Game.Server.Domain.Combat
             Log.WriteStructured(group, messageTemplate, propertyValues);
 
         protected virtual int GetStealthPerkLevel(uint creature) =>
-            Perk.GetPerkLevel(creature, PerkType.Stealth);
+            _perk.Value.GetPerkLevel(creature, PerkType.Stealth);
 
         protected virtual int GetDetection(uint creature) =>
-            Stat.GetDetection(creature);
+            _stat.Value.GetDetection(creature);
 
         protected virtual int GetStealth(uint creature) =>
-            Stat.GetStealth(creature);
+            _stat.Value.GetStealth(creature);
 
         protected virtual int GetStealthDetectionBlockedAdjustment(uint observer) =>
-            Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked);
+            _stat.Value.GetStatAdjustment(observer, StatType.StealthDetectionBlocked);
 
         protected virtual void RemoveStealthStatus(uint creature) =>
-            StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+            _statusEffect.Value.RemoveStatusEffect<StealthStatusEffect>(creature);
 
         protected virtual bool HasStealthStatus(uint creature) =>
-            StatusEffect.HasStatusEffect<StealthStatusEffect>(creature);
+            _statusEffect.Value.HasStatusEffect<StealthStatusEffect>(creature);
 
         protected virtual bool ApplyStealthStatus(uint creature) =>
-            StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+            _statusEffect.Value.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
 
         protected virtual bool HasRestStatus(uint creature) =>
-            StatusEffect.HasStatusEffect<RestStatusEffect>(creature);
+            _statusEffect.Value.HasStatusEffect<RestStatusEffect>(creature);
 
         protected virtual void RemoveRestStatus(uint creature) =>
-            StatusEffect.RemoveStatusEffect<RestStatusEffect>(creature);
+            _statusEffect.Value.RemoveStatusEffect<RestStatusEffect>(creature);
 
         protected virtual void SilenceLightsaberWhileHidden(uint creature) =>
             LightsaberAudio.SilenceWhileHidden(creature);
@@ -747,28 +772,28 @@ namespace SWLOR.Game.Server.Domain.Combat
             LightsaberAudio.RestoreAfterHidden(creature);
 
         protected virtual void ReevaluateEnemyAttackTargets(uint creature) =>
-            Enmity.ReevaluateEnemyAttackTargets(creature);
+            _enmity.Value.ReevaluateEnemyAttackTargets(creature);
 
         protected virtual void AcquireAggroFromNearbyEnemies(uint target) =>
-            AI.AcquireAggroFromNearbyEnemies(target);
+            _ai.AcquireAggroFromNearbyEnemies(target);
 
         protected virtual int GetEnmityTableCount(uint enemy) =>
-            Enmity.GetEnmityTable(enemy).Count;
+            _enmity.Value.GetEnmityTable(enemy).Count;
 
         protected virtual void AttackHighestEnmityTarget(uint creature) =>
-            Enmity.AttackHighestEnmityTarget(creature);
+            _enmity.Value.AttackHighestEnmityTarget(creature);
 
         protected virtual void CancelInfiltration(uint creature) =>
-            EspionageInfiltration.CancelPlayer(creature);
+            _espionageInfiltration.Value.CancelPlayer(creature);
 
         protected virtual void RecordInfiltrationCombatInitiation(uint attacker) =>
-            EspionageInfiltration.RecordPlayerCombatInitiation(attacker);
+            _espionageInfiltration.Value.RecordPlayerCombatInitiation(attacker);
 
         protected virtual void RecordInfiltrationDetection(uint observer, uint target, bool detected) =>
-            EspionageInfiltration.RecordDetection(observer, target, detected);
+            _espionageInfiltration.Value.RecordDetection(observer, target, detected);
 
         protected virtual void TryAcquireAggroAfterDetection(uint observer, uint target) =>
-            AI.TryAcquireAggroAfterDetection(observer, target);
+            _ai.TryAcquireAggroAfterDetection(observer, target);
 
         protected virtual bool MayHaveScriptType(uint creature, EffectTypeScript effectType, EffectTypeScript otherEffectType) =>
             AppliedEffects.MayHaveScriptType(creature, effectType, otherEffectType);

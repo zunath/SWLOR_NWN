@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -58,7 +59,7 @@ public class AchievementServiceTests
         _engine.SetReturn("GetObjectUUID", PlayerId);
         _plugin = new FakePlayerPlugin();
         _db = new InMemoryDBService();
-        _service = new AchievementService(_db);
+        _service = new AchievementService(_db, FacadeForwarder.For<IGuiService>());
         _engineScope = NWScriptRuntime.Override(_engine);
         _pluginScope = PlayerPluginRuntime.Override(_plugin);
     }
@@ -134,7 +135,7 @@ public class AchievementServiceTests
     [Test]
     public void Each_instance_keeps_its_own_cache()
     {
-        var other = new AchievementService(new InMemoryDBService());
+        var other = new AchievementService(new InMemoryDBService(), FacadeForwarder.For<IGuiService>());
 
         _service.LoadAchievements();
 
@@ -160,7 +161,7 @@ public class AchievementServiceTests
         var first = Gui.GetSystemReservation("Achievement").StartId;
 
         _service.ReserveGuiIds();
-        new AchievementService(_db).ReserveGuiIds();
+        new AchievementService(_db, FacadeForwarder.For<IGuiService>()).ReserveGuiIds();
 
         Gui.GetSystemReservation("Achievement").StartId.Should().Be(first);
     }

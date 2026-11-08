@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Entity;
@@ -41,11 +42,19 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IAIService _ai;
+        private readonly IStealthService _stealth;
+        private readonly IEnmityService _enmity;
+        private readonly IStatService _stat;
+        private readonly ISkillService _skill;
 
-        public EspionageInfiltrationService(IDBService db, IAIService ai)
+        public EspionageInfiltrationService(IDBService db, IAIService ai, IStealthService stealth, IEnmityService enmity, IStatService stat, ISkillService skill)
         {
             _db = db;
             _ai = ai;
+            _stealth = stealth;
+            _enmity = enmity;
+            _stat = stat;
+            _skill = skill;
         }
 
         /// <summary>
@@ -398,55 +407,55 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Whether the player's stealth was granted by another source: <c>Stealth.HasGrantedStealth</c>.</summary>
         protected virtual bool HasGrantedStealth(uint creature)
         {
-            return Stealth.HasGrantedStealth(creature);
+            return _stealth.HasGrantedStealth(creature);
         }
 
         /// <summary>Whether detection by the observer is blocked: <c>Stealth.IsStealthDetectionBlocked</c>.</summary>
         protected virtual bool IsStealthDetectionBlocked(uint observer)
         {
-            return Stealth.IsStealthDetectionBlocked(observer);
+            return _stealth.IsStealthDetectionBlocked(observer);
         }
 
         /// <summary>Enmity between the pair: <c>Enmity.HasNonProximityEnmity</c>.</summary>
         protected virtual bool HasNonProximityEnmity(uint creature, uint enemy)
         {
-            return Enmity.HasNonProximityEnmity(creature, enemy);
+            return _enmity.HasNonProximityEnmity(creature, enemy);
         }
 
         /// <summary>Enmity of the enemy: <c>Enmity.HasNonProximityEnmity</c>.</summary>
         protected virtual bool HasNonProximityEnmity(uint enemy)
         {
-            return Enmity.HasNonProximityEnmity(enemy);
+            return _enmity.HasNonProximityEnmity(enemy);
         }
 
         /// <summary>Enmity of the creature: <c>Enmity.HasNonProximityEnmityForCreature</c>.</summary>
         protected virtual bool HasNonProximityEnmityForCreature(uint creature)
         {
-            return Enmity.HasNonProximityEnmityForCreature(creature);
+            return _enmity.HasNonProximityEnmityForCreature(creature);
         }
 
         /// <summary>Enmity outside the pair: <c>Enmity.HasNonProximityEnmityOutsidePair</c>.</summary>
         protected virtual bool HasNonProximityEnmityOutsidePair(uint first, uint second)
         {
-            return Enmity.HasNonProximityEnmityOutsidePair(first, second);
+            return _enmity.HasNonProximityEnmityOutsidePair(first, second);
         }
 
         /// <summary>The stats of an NPC: <c>Stat.GetNPCStats</c>.</summary>
         protected virtual NPCStats GetNPCStats(uint npc)
         {
-            return Stat.GetNPCStats(npc);
+            return _stat.GetNPCStats(npc);
         }
 
         /// <summary>Awards skill XP: <c>Skill.GiveSkillXP</c>.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses, bool applyHenchmanPenalty)
         {
-            return Skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
+            return _skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
         }
 
         /// <summary>The XP for a level difference: <c>Skill.GetDeltaXP</c>.</summary>
         protected virtual int GetDeltaXP(int delta)
         {
-            return Skill.GetDeltaXP(delta);
+            return _skill.GetDeltaXP(delta);
         }
     }
 }

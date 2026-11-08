@@ -500,7 +500,7 @@ public class AbilityCooldownVisualServiceTests
     private sealed class TestVisual : AbilityCooldownVisualService
     {
         public TestVisual(IDBService db, IGuiService gui)
-            : base(db, gui)
+            : base(db, gui, FacadeForwarder.LazyFor<IAbilityService>())
         {
         }
 

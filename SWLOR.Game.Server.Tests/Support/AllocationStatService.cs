@@ -25,8 +25,12 @@ internal sealed class AllocationStatService : StatService
         IBeastMasteryService beastMastery,
         IEnmityService enmity,
         IResistanceService resistance,
-        IPvpCombatService pvpCombat)
-        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat)
+        IPvpCombatService pvpCombat,
+        IPerkService perk,
+        ISkillService skill,
+        ITemporaryStatModifierService temporaryStatModifier)
+        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
+            perk, skill, temporaryStatModifier)
     {
     }
 

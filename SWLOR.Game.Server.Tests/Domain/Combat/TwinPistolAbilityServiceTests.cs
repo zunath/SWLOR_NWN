@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -392,7 +394,7 @@ public class TwinPistolAbilityServiceTests
         private readonly AbilityDetail _detail = new() { EffectiveLevelPerkType = PerkType.TempoShot };
 
         public TestAbility(IPairedRangedTraitsService traits, ITwinPistolMasteryService mastery)
-            : base(traits, mastery)
+            : base(traits, mastery, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

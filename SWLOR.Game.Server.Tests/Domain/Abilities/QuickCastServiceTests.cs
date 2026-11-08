@@ -445,7 +445,7 @@ public class QuickCastServiceTests
     private sealed class TestQuickCast : QuickCastService
     {
         public TestQuickCast(IDBService db)
-            : base(db)
+            : base(db, FacadeForwarder.LazyFor<IAbilityService>())
         {
         }
 

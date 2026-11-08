@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -25,6 +26,14 @@ namespace SWLOR.Game.Server.Domain.Combat
         public const int InternalCooldownSeconds = 6;
 
         private readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly IStatusEffectService _statusEffect;
+        private readonly ICombatPointService _combatPoint;
+
+        public PoisonsService(IStatusEffectService statusEffect, ICombatPointService combatPoint)
+        {
+            _statusEffect = statusEffect;
+            _combatPoint = combatPoint;
+        }
 
         public void ConsumePoisonCoating()
         {
@@ -89,15 +98,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
 
         protected virtual IStatusEffect GetStatusEffect(uint creature, Type statusEffectClass, uint source) =>
-            StatusEffect.GetStatusEffect(creature, statusEffectClass, source);
+            _statusEffect.GetStatusEffect(creature, statusEffectClass, source);
 
         protected virtual bool RefreshStatusEffectDuration(uint creature, Type statusEffectClass, uint source, float durationSeconds) =>
-            StatusEffect.RefreshStatusEffectDuration(creature, statusEffectClass, source, durationSeconds);
+            _statusEffect.RefreshStatusEffectDuration(creature, statusEffectClass, source, durationSeconds);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds) =>
-            StatusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
+            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
 
         protected virtual void AddEspionageCombatPoint(uint player, uint creature) =>
-            CombatPoint.AddCombatPoint(player, creature, SkillType.Espionage);
+            _combatPoint.AddCombatPoint(player, creature, SkillType.Espionage);
     }
 }

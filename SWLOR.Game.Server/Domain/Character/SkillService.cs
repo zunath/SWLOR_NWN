@@ -40,17 +40,20 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IGuiService _gui;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
+        private readonly Lazy<IStatService> _stat;
 
         public SkillService(
             IDBService db,
             IGuiService gui,
             IPlayerFeedbackService playerFeedback,
-            ITwinPistolEquipmentService twinPistolEquipment)
+            ITwinPistolEquipmentService twinPistolEquipment,
+            Lazy<IStatService> stat)
         {
             _db = db;
             _gui = gui;
             _playerFeedback = playerFeedback;
             _twinPistolEquipment = twinPistolEquipment;
+            _stat = stat;
             _xpMessages = new SkillXPMessageQueue(
                 callback => ScheduleXPMessages(callback),
                 (player, skill, xp) =>
@@ -1103,7 +1106,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The player's experience percent adjustment from status effects and gear (the unconverted <c>Stat</c>).</summary>
         protected virtual int GetExperiencePercentAdjustment(uint player)
         {
-            return Stat.GetStatAdjustment(player, StatType.ExperiencePercentAdjustment);
+            return _stat.Value.GetStatAdjustment(player, StatType.ExperiencePercentAdjustment);
         }
 
         /// <summary>Whether the creature is a droid (the unconverted <c>Droid</c>).</summary>

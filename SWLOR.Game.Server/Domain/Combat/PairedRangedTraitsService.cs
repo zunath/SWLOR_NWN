@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -24,10 +26,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<uint, PairedRangedTraitState> _states = new();
 
         private readonly ITwinPistolMasteryService _mastery;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly IStatService _stat;
+        private readonly IStatusEffectService _statusEffect;
 
-        public PairedRangedTraitsService(ITwinPistolMasteryService mastery)
+        public PairedRangedTraitsService(
+            ITwinPistolMasteryService mastery,
+            Lazy<IAbilityService> ability,
+            IStatService stat,
+            IStatusEffectService statusEffect)
         {
             _mastery = mastery;
+            _ability = ability;
+            _stat = stat;
+            _statusEffect = statusEffect;
         }
 
         /// <summary>Reports a weapon ability's first landed hit; its chain or own grant adds Cadence once.</summary>
@@ -413,31 +425,31 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>
-            Service.Ability.GetActiveAbilityImpactSummary(actor)?.Ability;
+            _ability.Value.GetActiveAbilityImpactSummary(actor)?.Ability;
 
         /// <summary>The unconverted <c>Stat</c> service.</summary>
-        protected virtual int GetStatAdjustment(uint actor, StatType stat) => Service.Stat.GetStatAdjustment(actor, stat);
+        protected virtual int GetStatAdjustment(uint actor, StatType stat) => _stat.GetStatAdjustment(actor, stat);
 
         /// <summary>The unconverted <c>Stat</c> service.</summary>
-        protected virtual int RestoreStamina(uint actor, int amount) => Service.Stat.RestoreStamina(actor, amount);
+        protected virtual int RestoreStamina(uint actor, int amount) => _stat.RestoreStamina(actor, amount);
 
         /// <summary>The unconverted <c>EquipmentPredicates</c> helper.</summary>
         protected virtual bool HasDualWield(uint actor) => EquipmentPredicates.HasDualWield(actor);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual T GetStatusEffect<T>(uint actor) where T : class, IStatusEffect =>
-            Service.StatusEffect.GetStatusEffect<T>(actor);
+            _statusEffect.GetStatusEffect<T>(actor);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RemoveStatusEffect<T>(uint actor) where T : IStatusEffect =>
-            Service.StatusEffect.RemoveStatusEffect<T>(actor);
+            _statusEffect.RemoveStatusEffect<T>(actor);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RefreshStatusEffectDuration(uint actor, Type statusEffectType, float seconds) =>
-            Service.StatusEffect.RefreshStatusEffectDuration(actor, statusEffectType, actor, seconds);
+            _statusEffect.RefreshStatusEffectDuration(actor, statusEffectType, actor, seconds);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void ApplyStatusEffect(uint actor, IStatusEffect effect, float seconds) =>
-            Service.StatusEffect.ApplyStatusEffect(actor, actor, effect, seconds);
+            _statusEffect.ApplyStatusEffect(actor, actor, effect, seconds);
     }
 }

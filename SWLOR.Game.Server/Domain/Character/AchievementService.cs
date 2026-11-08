@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -21,17 +22,19 @@ namespace SWLOR.Game.Server.Domain.Character
         private const string GuiReservationName = "Achievement";
 
         private readonly IDBService _db;
+        private readonly IGuiService _gui;
         private readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
         private IdReservation _idReservation;
 
-        public AchievementService(IDBService db)
+        public AchievementService(IDBService db, IGuiService gui)
         {
             _db = db;
+            _gui = gui;
         }
 
         public void ReserveGuiIds()
         {
-            _idReservation = Gui.ReserveIds(GuiReservationName, 6);
+            _idReservation = _gui.ReserveIds(GuiReservationName, 6);
         }
 
         public void LoadAchievements()
@@ -76,10 +79,10 @@ namespace SWLOR.Game.Server.Domain.Character
             const int WindowY = 4;
             const int WindowWidth = 26;
 
-            var centerWindowX = Gui.CenterStringInWindow(name, WindowX, WindowWidth);
+            var centerWindowX = _gui.CenterStringInWindow(name, WindowX, WindowWidth);
             PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId,Gui.TextName);
             PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName);
-            Gui.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
+            _gui.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 
         public AchievementAttribute GetAchievement(AchievementType type)

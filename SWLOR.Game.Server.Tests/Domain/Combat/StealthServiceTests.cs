@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Tests.Support;
@@ -867,6 +869,12 @@ public class StealthServiceTests
 
     private sealed class TestStealth : StealthService
     {
+        public TestStealth()
+            : base(FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IEnmityService>(),
+                FacadeForwarder.For<IAIService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>())
+        {
+        }
+
         public DateTime Now { get; set; }
         public int PerkLevel { get; set; }
         public int Detection { get; set; }

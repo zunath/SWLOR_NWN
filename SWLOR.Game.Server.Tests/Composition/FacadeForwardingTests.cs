@@ -121,7 +121,7 @@ public class FacadeForwardingTests
 
             var provider = ContainerHost.Create(registrations);
             var parameters = method.GetParameters();
-            var arguments = parameters.Select(parameter => SampleValue(parameter.ParameterType)).ToArray();
+            var arguments = parameters.Select((parameter, position) => SampleValue(parameter.ParameterType, position)).ToArray();
             for (var i = 0; i < parameters.Length; i++)
             {
                 if (!parameters[i].ParameterType.IsByRef)
@@ -306,32 +306,33 @@ public class FacadeForwardingTests
         return method.MakeGenericMethod(arguments);
     }
 
-    // A value per parameter type that differs from the default where it can, and is never null (only an out parameter
-    // starts as null; the proxy writes one back), so a forwarder that drops an argument or passes another fails.
-    private static object? SampleValue(Type type)
+    // A value per parameter that differs from the default where it can, and from the other parameters of the same type
+    // (it depends on the parameter's position), and is never null (only an out parameter starts as null; the proxy writes
+    // one back), so a forwarder that drops an argument, passes another or swaps two of one type fails.
+    private static object? SampleValue(Type type, int position)
     {
         if (type.IsByRef)
             return null;
         if (type == typeof(uint))
-            return 1001u;
+            return 1001u + (uint)position;
         if (type == typeof(int))
-            return 7;
+            return 7 + position;
         if (type == typeof(long))
-            return 7L;
+            return 7L + position;
         if (type == typeof(string))
-            return "sample";
+            return "sample" + position;
         if (type == typeof(bool))
             return true;
         if (type == typeof(float))
-            return 1.5f;
+            return 1.5f + position;
         if (type == typeof(TimeSpan))
-            return TimeSpan.FromSeconds(3);
+            return TimeSpan.FromSeconds(3 + position);
         if (Nullable.GetUnderlyingType(type) is { } underlying)
-            return SampleValue(underlying);
+            return SampleValue(underlying, position);
         if (type.IsEnum)
         {
             var values = Enum.GetValues(type);
-            return values.GetValue(values.Length > 1 ? 1 : 0);
+            return values.GetValue(values.Length > 1 ? 1 + position % (values.Length - 1) : 0);
         }
 
         if (type.IsValueType)

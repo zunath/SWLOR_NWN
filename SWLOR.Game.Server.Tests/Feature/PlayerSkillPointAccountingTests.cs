@@ -127,13 +127,13 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
             "PerksViewModel.cs"));
 
         characterSheetDefinition.Should().Contain("AddBoundValueRow(resourceCol, \"Ranks\", model => model.SkillRanks");
-        characterSheetDefinition.Should().Contain("$\"Skill ranks contributing to the {Skill.SkillCap}-rank limit.\"");
+        characterSheetDefinition.Should().Contain("$\"Skill ranks contributing to the {SkillService.SkillCap}-rank limit.\"");
         characterSheetDefinition.Should().NotContain("400-rank limit");
         characterSheet.Should().Contain("public bool ShowSkillRanks");
         characterSheet.Should().Contain("public string SkillRanks");
-        characterSheet.Should().Contain("SkillRanks = $\"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}\";");
-        characterSheet.Should().Contain("Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}");
-        perks.Should().Contain("Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}");
+        characterSheet.Should().Contain("SkillRanks = $\"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}\";");
+        characterSheet.Should().Contain("Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
+        perks.Should().Contain("Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
     }
 
     private static string ExtractMethod(string source, string signature)

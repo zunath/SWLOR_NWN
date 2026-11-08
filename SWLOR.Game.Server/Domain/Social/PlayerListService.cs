@@ -19,8 +19,8 @@ using NWNXLib = NWN.Native.API.NWNXLib;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The player list: the logic and state that used to be static in <c>Service.PlayerList</c>, moved here unchanged.
-    /// The facade still carries the event handlers and forwards every call to the container's instance.
+    /// The player list: the logic and state that used to be static in <c>PlayerList</c>, moved here unchanged.
+    /// The event handlers run on the container's instance; static callers reach it through <c>GameServices.PlayerList</c>.
     /// </summary>
     /// <remarks>
     /// The two places that read the engine's native party and PvP data (<see cref="IsHostileTo"/> and
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </remarks>
     public class PlayerListService : IPlayerListService
     {
-        /// <summary>The descriptor shown for a DM. <c>Service.PlayerList.DMDescriptor</c> repeats it.</summary>
+        /// <summary>The descriptor shown for a DM. Callers read it from here.</summary>
         public const string DMDescriptor = "Dungeon Master";
 
         private readonly IDBService _db;
@@ -286,11 +286,13 @@ namespace SWLOR.Game.Server.Domain.Social
             Scheduler.Schedule(RefreshOpenWindows, TimeSpan.Zero);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RefreshOnEnter()
         {
             QueueRefresh();
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void RefreshOnExit()
         {
             // The leaving player is still listed by GetFirstPC until the event finishes.
@@ -298,6 +300,8 @@ namespace SWLOR.Game.Server.Domain.Social
             QueueRefresh();
         }
 
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public void MoveWindowOnPossession()
         {
             // Possessing starts on the avatar; returning to it starts on the possessed creature.
@@ -317,6 +321,10 @@ namespace SWLOR.Game.Server.Domain.Social
             });
         }
 
+        [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
+        [NWNEventHandler(ScriptName.OnPartyLeaveAfter)]
+        [NWNEventHandler(ScriptName.OnPartyKickAfter)]
+        [NWNEventHandler(ScriptName.OnPartyTransferLeadershipAfter)]
         public void RefreshOnPartyChange()
         {
             QueueRefresh();

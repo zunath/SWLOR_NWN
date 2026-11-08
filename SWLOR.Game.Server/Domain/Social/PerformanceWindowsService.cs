@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
@@ -16,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// The engine side of the four Performance windows: the logic that used to be static in
-    /// <c>Service.PerformanceService.PerformanceWindows</c>, moved here unchanged. The windows only show state; input stays
-    /// on the hot bar feats. The id reservation of the window-less cue strip is this instance's own state. The facade keeps
-    /// the module-load handler and forwards every call to the container's instance.
+    /// <c>PerformanceWindows</c>, moved here unchanged. The windows only show state; input stays
+    /// on the hot bar feats. The id reservation of the window-less cue strip is this instance's own state. The module-load
+    /// handler runs on the container's instance; static callers reach it through <c>GameServices.PerformanceWindows</c>.
     /// </summary>
     public class PerformanceWindowsService : IPerformanceWindowsService
     {
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _stat = stat;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {
             _fallbackStrip = ReserveIds(GuiSystemName, 1);

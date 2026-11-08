@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NWN.Native.API;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatPortraitTellService;
@@ -8,8 +9,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// Chat portrait tells: the logic and state that used to be static in <c>Service.ChatPortraitTells</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// Chat portrait tells: the logic and state that used to be static in <c>ChatPortraitTells</c>, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through <c>GameServices.ChatPortraitTells</c>.
     /// See <see cref="ChatPortraitTellGuard"/> for why the client can address someone else.
     /// </summary>
     /// <remarks>
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // Character IDs by login object. A character that logs back in, even into the same slot, is the same speaker.
         private readonly Dictionary<uint, string> _characterIdByLoginObject = new();
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RememberEnteringPlayer()
         {
             var player = GetEnteringObject();
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _characterIdByLoginObject[player] = GetObjectUUID(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {
             var player = GetExitingObject();
@@ -70,6 +73,7 @@ namespace SWLOR.Game.Server.Domain.Social
             return client == null ? 0 : _guard.CountLinesReceived(client.Value.LoginObject);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public void CheckPortraitClick()
         {
             if (GetLastGuiEventType() != GuiEventType.ChatLogPortraitClick)

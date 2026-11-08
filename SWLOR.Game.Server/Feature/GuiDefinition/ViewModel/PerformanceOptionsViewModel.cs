@@ -6,6 +6,9 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Social;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -89,13 +92,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var kind = Performance.TryGetSession(Player, out var session) ? session.Kind : PerformanceKind.Dance;
+            var kind = GameServices.Performance.TryGetSession(Player, out var session) ? session.Kind : PerformanceKind.Dance;
             var firstTab = kind == PerformanceKind.Music ? InstrumentTabId : DanceTabId;
 
             // Rule R3: assign every watched property before WatchOnClient. Each tab loads its own lists when it is selected.
             TabToggles.SyncTo(firstTab, value => TabToggleValue = value);
-            TempoValue = (int)Performance.GetPreference(Player).Tempo;
-            ModeValue = Performance.GetPreference(Player).Roleplay ? RoleplayModeValue : ActiveModeValue;
+            TempoValue = (int)GameServices.Performance.GetPreference(Player).Tempo;
+            ModeValue = GameServices.Performance.GetPreference(Player).Roleplay ? RoleplayModeValue : ActiveModeValue;
             SecondRoutineIndex = 0;
             SecondSetIndex = 0;
             SongIndex = 0;
@@ -148,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSelectRoutine() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= AllRoutines.Length || !Performance.IsRoutineUnlocked(Player, AllRoutines[index]))
+            if (index < 0 || index >= AllRoutines.Length || !GameServices.Performance.IsRoutineUnlocked(Player, AllRoutines[index]))
                 return;
 
             _routineIndex = index;
@@ -158,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSelectSet() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= AllSets.Length || !Performance.IsSetUnlocked(Player, AllSets[index]))
+            if (index < 0 || index >= AllSets.Length || !GameServices.Performance.IsSetUnlocked(Player, AllSets[index]))
                 return;
 
             _setIndex = index;
@@ -173,12 +176,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ApplyInstrument();
 
             var tempo = (PerformanceTempo)Math.Clamp(TempoValue, 0, System.Enum.GetValues<PerformanceTempo>().Length - 1);
-            if (tempo != Performance.GetPreference(Player).Tempo)
-                Performance.SetTempo(Player, tempo);
+            if (tempo != GameServices.Performance.GetPreference(Player).Tempo)
+                GameServices.Performance.SetTempo(Player, tempo);
 
             var roleplay = ModeValue == RoleplayModeValue;
-            if (roleplay != Performance.GetPreference(Player).Roleplay)
-                Performance.SetRoleplay(Player, roleplay);
+            if (roleplay != GameServices.Performance.GetPreference(Player).Roleplay)
+                GameServices.Performance.SetRoleplay(Player, roleplay);
 
             SendMessageToPC(Player, "Performance options applied.");
             RefreshAudienceText(SelectedTabId);
@@ -186,46 +189,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyDance()
         {
-            var preference = Performance.GetPreference(Player);
+            var preference = GameServices.Performance.GetPreference(Player);
             var routine = AllRoutines[Math.Clamp(_routineIndex, 0, AllRoutines.Length - 1)];
             if (routine != preference.Routine)
-                Performance.SetRoutine(Player, routine);
+                GameServices.Performance.SetRoutine(Player, routine);
 
             if (!_hasShowstopper)
                 return;
 
             var second = _secondRoutineChoices[Math.Clamp(SecondRoutineIndex, 0, _secondRoutineChoices.Length - 1)];
             if (second != preference.SecondRoutine)
-                Performance.SetSecondRoutine(Player, second);
+                GameServices.Performance.SetSecondRoutine(Player, second);
         }
 
         private void ApplyInstrument()
         {
-            var preference = Performance.GetPreference(Player);
+            var preference = GameServices.Performance.GetPreference(Player);
             var set = AllSets[Math.Clamp(_setIndex, 0, AllSets.Length - 1)];
             if (set != preference.Set)
-                Performance.SetSet(Player, set);
+                GameServices.Performance.SetSet(Player, set);
 
             if (_hasVirtuoso)
             {
                 var second = _secondSetChoices[Math.Clamp(SecondSetIndex, 0, _secondSetChoices.Length - 1)];
                 if (second != preference.SecondSet)
-                    Performance.SetSecondSet(Player, second);
+                    GameServices.Performance.SetSecondSet(Player, second);
             }
 
             if (_songs.Length > 0)
             {
                 var song = _songs[Math.Clamp(SongIndex, 0, _songs.Length - 1)];
                 if (song.TrackId != preference.SongTrackId)
-                    Performance.SetSong(Player, song.TrackId);
+                    GameServices.Performance.SetSong(Player, song.TrackId);
             }
         }
 
         // Routines: unlocked ones can be picked; locked ones show the Performance rank that unlocks them.
         private void LoadDance()
         {
-            var preference = Performance.GetPreference(Player);
-            var selected = Performance.IsRoutineUnlocked(Player, preference.Routine)
+            var preference = GameServices.Performance.GetPreference(Player);
+            var selected = GameServices.Performance.IsRoutineUnlocked(Player, preference.Routine)
                 ? preference.Routine
                 : PerformanceRoutineType.CantinaShuffle;
 
@@ -237,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var routine = AllRoutines[index];
                 var perk = PerformanceRiderCatalog.GetUnlockPerk(routine);
                 var level = Perk.GetPerkLevel(Player, perk);
-                var unlocked = Performance.IsRoutineUnlocked(Player, routine);
+                var unlocked = GameServices.Performance.IsRoutineUnlocked(Player, routine);
 
                 names.Add(PerformanceRiderText.GetName(routine, level));
                 enabled.Add(unlocked);
@@ -246,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         routine,
                         Stat.GetStatAdjustment(Player, StatType.PerformanceLightFeetSpeedPercent),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceRoutineAttributeBonus))
-                    : PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk)));
+                    : PerformanceRiderText.GetLockedText(GameServices.Performance.GetRequiredRank(perk)));
 
                 if (routine == selected)
                     _routineIndex = index;
@@ -272,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 options.Add(new GuiComboEntry("None", 0));
                 foreach (var routine in AllRoutines)
                 {
-                    if (routine == PerformanceRoutineType.CantinaShuffle || !Performance.IsRoutineUnlocked(Player, routine))
+                    if (routine == PerformanceRoutineType.CantinaShuffle || !GameServices.Performance.IsRoutineUnlocked(Player, routine))
                         continue;
 
                     options.Add(new GuiComboEntry(PerformanceRiderText.GetName(routine), choices.Count));
@@ -292,8 +295,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Sets work like routines, and the song comes from the Cantina songs the musician owns.
         private void LoadInstrument()
         {
-            var preference = Performance.GetPreference(Player);
-            var selected = Performance.IsSetUnlocked(Player, preference.Set)
+            var preference = GameServices.Performance.GetPreference(Player);
+            var selected = GameServices.Performance.IsSetUnlocked(Player, preference.Set)
                 ? preference.Set
                 : PerformanceSetType.CantinaStandards;
 
@@ -305,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var set = AllSets[index];
                 var perk = PerformanceRiderCatalog.GetUnlockPerk(set);
                 var level = Perk.GetPerkLevel(Player, perk);
-                var unlocked = Performance.IsSetUnlocked(Player, set);
+                var unlocked = GameServices.Performance.IsSetUnlocked(Player, set);
 
                 names.Add(PerformanceRiderText.GetName(set, level));
                 enabled.Add(unlocked);
@@ -315,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Stat.GetStatAdjustment(Player, StatType.PerformanceSteadyHandsBonus),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceAnglersLullabyBonus),
                         Stat.GetStatAdjustment(Player, StatType.PerformanceSetAttributeBonus))
-                    : PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk)));
+                    : PerformanceRiderText.GetLockedText(GameServices.Performance.GetRequiredRank(perk)));
 
                 if (set == selected)
                     _setIndex = index;
@@ -342,7 +345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 options.Add(new GuiComboEntry("None", 0));
                 foreach (var set in AllSets)
                 {
-                    if (set == PerformanceSetType.CantinaStandards || !Performance.IsSetUnlocked(Player, set))
+                    if (set == PerformanceSetType.CantinaStandards || !GameServices.Performance.IsSetUnlocked(Player, set))
                         continue;
 
                     options.Add(new GuiComboEntry(PerformanceRiderText.GetName(set), choices.Count));
@@ -362,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadSongs(PerformancePreference preference)
         {
             var playerId = GetObjectUUID(Player);
-            _songs = Performance.GetAvailableSongs(playerId).ToArray();
+            _songs = GameServices.Performance.GetAvailableSongs(playerId).ToArray();
 
             var options = new GuiBindingList<GuiComboEntry>();
             for (var index = 0; index < _songs.Length; index++)
@@ -371,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_songs.Length == 0)
                 options.Add(new GuiComboEntry("No Cantina songs collected", 0));
 
-            var current = Performance.ChooseSong(playerId, preference.SongTrackId);
+            var current = GameServices.Performance.ChooseSong(playerId, preference.SongTrackId);
             SongEnabled = PerformanceSongs.CanChooseSong(_songs.Length);
             SongOptions = options;
             SongIndex = Math.Max(0, Array.FindIndex(_songs, song => song.TrackId == current));
@@ -384,8 +387,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             VenueHeaderText = $"VENUE RATING {breakdown.Total} / {PerformanceMath.MaxVenueRating}";
             VenueAreaText = $"{breakdown.AreaText} +{breakdown.AreaRating}";
             VenueFloorText = breakdown.DanceFloor
-                ? $"Standing on a Dance Floor +{PerformanceVenue.DanceFloorBonus}"
-                : $"Stand on a Dance Floor for +{PerformanceVenue.DanceFloorBonus}";
+                ? $"Standing on a Dance Floor +{PerformanceVenueService.DanceFloorBonus}"
+                : $"Stand on a Dance Floor for +{PerformanceVenueService.DanceFloorBonus}";
         }
 
         // What the audience of this kind of performer gets: the performer's own XP bonus plus the venue, and the debt cleared.
@@ -398,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static string BuildCapstoneText(string capstone, PerkType perk)
         {
-            return $"Requires {capstone} ({PerformanceRiderText.GetLockedText(Performance.GetRequiredRank(perk))})";
+            return $"Requires {capstone} ({PerformanceRiderText.GetLockedText(GameServices.Performance.GetRequiredRank(perk))})";
         }
 
         private static GuiBindingList<bool> BuildSelection(int count, int selectedIndex)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
@@ -13,8 +14,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// Chat commands: the logic and state that used to be static in <c>Service.ChatCommand</c>, moved here unchanged.
-    /// The facade still carries the event handlers and forwards every call to the container's instance.
+    /// Chat commands: the logic and state that used to be static in <c>ChatCommand</c>, moved here unchanged.
+    /// The event handlers run on the container's instance; static callers reach it through <c>GameServices.ChatCommand</c>.
     /// </summary>
     public class ChatCommandService : IChatCommandService
     {
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // constructor free of work.
         private static ApplicationSettings AppSettings => ApplicationSettings.Get();
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void OnModuleLoad()
         {
             LoadChatCommands();
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Domain.Social
             BuildEmoteUILists();
         }
 
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public void HandleChatMessage()
         {
             var sender = OBJECT_SELF;

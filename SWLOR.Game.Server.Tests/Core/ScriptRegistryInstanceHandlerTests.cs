@@ -145,18 +145,28 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
+        // Every handler a removed facade's service moved onto its instance (P2-Z) is bound to the singleton, not statically.
+        var instanceHandlers = ScriptHandlerOrderSnapshot.AllScriptNames(all)
+            .SelectMany(script => Bound(all, script))
+            .Where(handler => !handler.Method.IsStatic)
+            .Select(handler => ScriptHandlerManifest.HandlerName(handler.Method))
+            .ToHashSet(StringComparer.Ordinal);
+        instanceHandlers.Should().Contain(TaxiHandler);
+
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => name != TaxiHandler);
+                var expected = Names(all, script, conditional).Where(name => !instanceHandlers.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Should().Equal(new[] { $"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}" });
+        staticOnly.StaleManifestEntries.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
+        staticOnly.StaleManifestEntries.Select(entry => entry[(entry.LastIndexOf(' ') + 1)..]).Distinct().Should().BeEquivalentTo(instanceHandlers,
+            "the manifest names the instance handlers, which the static-only load does not find");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

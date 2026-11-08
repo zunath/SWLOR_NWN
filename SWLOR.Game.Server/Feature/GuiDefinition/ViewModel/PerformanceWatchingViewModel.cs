@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BankedText = string.Empty;
             DebtText = string.Empty;
             LeaveWithText = string.Empty;
-            PlayPerformerSong = Performance.GetPreference(Player).PlayPerformerSong;
+            PlayPerformerSong = GameServices.Performance.GetPreference(Player).PlayPerformerSong;
             _rows = System.Array.Empty<PerformanceWatchRow>();
             _shownHeader = null;
             _shownBanked = null;

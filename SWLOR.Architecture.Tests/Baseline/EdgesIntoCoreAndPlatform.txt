@@ -28,13 +28,14 @@ Mimicry -> PlayerFeedback | 4
 Mimicry -> Random | 1
 QuickCast -> DB | 3
 
-# Abilities -> Platform (20 edges)
+# Abilities -> Platform (21 edges)
 Ability -> Platform/Composition | 1
 Ability -> Platform/Core | 13
 AbilityCooldownVisual -> Platform/Composition | 1
 AbilityCooldownVisual -> Platform/Core | 7
 AbilityCooldownVisual -> Platform/Entity | 1
 AbilityTargetingCache -> Platform/Composition | 1
+Feature/AbilityDefinition -> Platform/Composition | 11
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
@@ -54,7 +55,7 @@ ReviveHistory -> Platform/Composition | 1
 DMBlueprintCatalog -> Log | 5
 DMCreatorFavorite -> DB | 4
 DMCreatureManagerFavorite -> DB | 6
-DMObjectDetails -> Cache | 2
+DMObjectDetails -> Cache | 4
 DMPlayerDirectory -> DB | 10
 DMPreference -> DB | 4
 DMPresence -> Log | 4
@@ -114,7 +115,7 @@ StatusEffect -> DB | 4
 StatusEffect -> FrameProfiler | 2
 StatusEffect -> Messaging | 4
 
-# Character -> Platform (52 edges)
+# Character -> Platform (54 edges)
 Achievement -> Platform/Composition | 1
 Achievement -> Platform/Core | 2
 Achievement -> Platform/Entity | 1
@@ -128,9 +129,11 @@ Disguise -> Platform/Entity | 32
 EspionageInfiltration -> Platform/Composition | 1
 EspionageInfiltration -> Platform/Core | 3
 EspionageInfiltration -> Platform/Entity | 1
+Feature/AppearanceDefinition -> Platform/Composition | 1
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Platform/Entity | 1
+Feature/StatusEffectDefinition -> Platform/Composition | 2
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Composition | 1
@@ -378,8 +381,8 @@ Slicing -> Platform/Core | 2
 Slicing -> Platform/Entity | 1
 
 # Creatures -> Core (13 edges)
-AI -> Conversation | 1
-AI -> ConversationMenu | 1
+AI -> Conversation | 3
+AI -> ConversationMenu | 3
 AI -> GameMath | 1
 AI -> Log | 2
 AI -> Random | 1
@@ -390,7 +393,7 @@ Feature/SpawnDefinition -> Random | 6
 Spawn -> Animation | 7
 Spawn -> Log | 1
 Spawn -> Random | 4
-Spawn -> Walkmesh | 1
+Spawn -> Walkmesh | 3
 
 # Creatures -> Platform (10 edges)
 AI -> Platform/Composition | 1
@@ -506,7 +509,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (91 edges)
+# Gameplay -> Platform (94 edges)
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Platform/Core | 1
@@ -560,11 +563,13 @@ Feature.PersistentMapProgression -> Platform/Entity | 2
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
 Feature.PistolBaseItemCompatibility -> Platform/Core | 1
+Feature.PlaceableScripts -> Platform/Composition | 1
 Feature.PlaceableScripts -> Platform/Core | 6
 Feature.PlayerAccountRecord -> Platform/Core | 1
 Feature.PlayerAccountRecord -> Platform/Entity | 1
 Feature.PlayerInitialization -> Platform/Core | 1
 Feature.PlayerInitialization -> Platform/Entity | 10
+Feature.PlayerRest -> Platform/Composition | 1
 Feature.PlayerRest -> Platform/Core | 3
 Feature.PlayerStatusWindow -> Platform/Core | 13
 Feature.PlayerStatusWindow -> Platform/Entity | 1
@@ -596,6 +601,7 @@ Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
 Feature.TwinPistolPairLifecycle -> Platform/Core | 8
 Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
+Feature.UsePerkFeat -> Platform/Composition | 1
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerTask -> Platform/Root | 4
 
@@ -610,7 +616,7 @@ Feature/LootTableDefinition -> Random | 2
 Item -> DB | 3
 ItemTrash -> Log | 2
 KeyItem -> DB | 6
-KeyItem -> ObjectVisibility | 1
+KeyItem -> ObjectVisibility | 3
 LightsaberWorkbench -> DB | 3
 LightsaberWorkbench -> Log | 1
 Loot -> Log | 2
@@ -660,17 +666,17 @@ Faction -> DB | 4
 Feature/QuestDefinition -> Cache | 19
 Feature/QuestDefinition -> DB | 20
 Feature/QuestDefinition -> ObjectVisibility | 5
-Quest -> Cache | 5
+Quest -> Cache | 7
 Quest -> ColorToken | 3
-Quest -> Conversation | 1
+Quest -> Conversation | 3
 Quest -> ConversationMenu | 1
 Quest -> DB | 36
 Quest -> Log | 2
 Quest -> Time | 1
 QuestContract -> DB | 3
 QuestContract -> Log | 2
-QuestContractBoard -> Authorization | 1
-QuestContractBoard -> Cache | 2
+QuestContractBoard -> Authorization | 3
+QuestContractBoard -> Cache | 4
 QuestContractBoard -> ColorToken | 3
 QuestContractBoard -> DB | 25
 QuestContractBoard -> Log | 10
@@ -693,7 +699,7 @@ QuestContractBoard -> Platform/Entity | 55
 QuestContractBoard -> Platform/Enumeration | 2
 
 # Social -> Core (17 edges)
-ChatCommand -> Authorization | 3
+ChatCommand -> Authorization | 5
 ChatCommand -> ColorToken | 3
 ChatPortraitTells -> ColorToken | 2
 Feature/ChatCommandDefinition -> Animation | 3
@@ -711,23 +717,19 @@ Performance -> NamedAnimation | 5
 PlayerList -> DB | 5
 PlayerList -> Log | 1
 
-# Social -> Platform (19 edges)
-ChatCommand -> Platform/Composition | 1
+# Social -> Platform (15 edges)
 ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
-ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
+Feature/ChatCommandDefinition -> Platform/Composition | 2
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
 Feature/ChatCommandDefinition -> Platform/Root | 6
-Party -> Platform/Composition | 1
 Party -> Platform/Core | 7
-Performance -> Platform/Composition | 4
 Performance -> Platform/Core | 18
 Performance -> Platform/Entity | 10
-PlayerList -> Platform/Composition | 1
 PlayerList -> Platform/Core | 5
 PlayerList -> Platform/Entity | 3
 PlayerList -> Platform/Extension | 1
@@ -771,10 +773,11 @@ Gui -> DB | 5
 Gui -> FrameProfiler | 2
 Gui -> Log | 1
 
-# UI -> Platform (14 edges)
+# UI -> Platform (15 edges)
 ExtraHotbars -> Platform/Composition | 1
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 31
+Feature/GuiDefinition -> Platform/Composition | 39
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21
@@ -794,18 +797,18 @@ Feature/FishingLocationDefinition -> Random | 1
 Feature/PropertyLayoutDefinition -> DB | 3
 Feature/TrapDefinition -> Messaging | 1
 Fishing -> Animation | 9
-Fishing -> Cache | 1
+Fishing -> Cache | 3
 Fishing -> ColorToken | 3
 Fishing -> DB | 3
-Fishing -> Messaging | 2
-Fishing -> NamedAnimation | 3
+Fishing -> Messaging | 4
+Fishing -> NamedAnimation | 5
 Fishing -> Random | 4
 HoloCom -> ColorToken | 2
 Music -> DB | 11
 Notes -> DB | 5
-Property -> BackgroundJob | 1
+Property -> BackgroundJob | 3
 Property -> ColorToken | 3
-Property -> ConversationMenu | 1
+Property -> ConversationMenu | 3
 Property -> DB | 48
 Property -> Log | 19
 Shuttle -> ColorToken | 4

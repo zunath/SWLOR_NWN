@@ -8,8 +8,9 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// The persistence layer: the Redis connection, the per-script-context entity cache, the search indexes and the reads
-    /// and writes of the entities. The implementation is <c>DBService</c>; the static <c>DB</c> class is its facade. A unit
-    /// test hands a service an in-memory fake. Members have the signatures of the static <c>DB</c> members.
+    /// and writes of the entities. The implementation is <c>DBService</c>; static callers reach the container's instance
+    /// through <c>GameServices.DB</c>. A unit test hands a service an in-memory fake. Members have the signatures of the
+    /// members of the removed static <c>DB</c> facade.
     /// </summary>
     public interface IDBService
     {
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
         Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
 
-        // The members below are what the static DB facade forwards.
+        // The members below are what the static DB facade forwarded.
 
         /// <summary>Connects to Redis, registers the entity types and builds their search indexes. Same as <c>DB.Load</c>.</summary>
         void Load();

@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Core
     /// <summary>
     /// The NUI-native conversation system: the registry of authored graphs, the token, condition and action runtime
     /// they run on, and the start and end of the conversation window. This service has no dependency on Dialog,
-    /// PlayerDialog, BeginConversation, or generated DLG shells. The static <c>Service.Conversation</c> forwards to the
-    /// container's instance of this interface.
+    /// PlayerDialog, BeginConversation, or generated DLG shells. Static callers reach the container's instance through
+    /// <c>GameServices.Conversation</c>; the event handlers are on <see cref="ConversationService"/>.
     /// </summary>
     public interface IConversationService
     {

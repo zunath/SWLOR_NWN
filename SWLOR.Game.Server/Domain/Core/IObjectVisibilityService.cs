@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Per-player visibility of tagged objects. The static facade <c>Service.ObjectVisibility</c> forwards to the
-    /// container's instance of this interface.
+    /// Per-player visibility of tagged objects. Static callers reach the container's instance through
+    /// <c>GameServices.ObjectVisibility</c>; the event handlers are on <see cref="ObjectVisibilityService"/>.
     /// </summary>
     public interface IObjectVisibilityService
     {

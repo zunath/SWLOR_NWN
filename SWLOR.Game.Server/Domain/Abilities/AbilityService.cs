@@ -33,10 +33,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// <summary>
     /// Abilities: the catalog of ability definitions, the validation of an activation, the tracker of each impact while it
     /// resolves, player auras, temporary immunities, and the activation and queued-attack state <c>UsePerkFeat</c> runs on.
-    /// The logic that used to be static in <c>Service.Ability</c> is moved here unchanged; the facade keeps the event
-    /// handlers and forwards every call to the container's instance. Converted services are injected. Calls into the
-    /// unconverted <c>Combat</c>, <c>Stat</c>, <c>Perk</c>, <c>Space</c>, <c>WeaponDamage</c> and feature code and the
-    /// definition search sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
+    /// The logic that used to be static in <c>Service.Ability</c> is moved here unchanged; the event handlers run on the
+    /// container's instance, and static callers reach it through <c>GameServices.Ability</c>. Converted services are
+    /// injected. Calls into the unconverted <c>Combat</c>, <c>Stat</c>, <c>Perk</c>, <c>Space</c>, <c>WeaponDamage</c> and
+    /// feature code and the definition search sit behind one-line <c>protected virtual</c> methods whose bodies are the
+    /// original calls.
     /// </summary>
     public class AbilityService : IAbilityService
     {
@@ -128,6 +129,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CacheAbilities();
@@ -1095,6 +1097,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public void AddLeadershipCombatPoint()
         {
             RecordLeadershipWeaponHit(OBJECT_SELF, GetSpellTargetObject());
@@ -1625,6 +1628,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
@@ -1635,6 +1639,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a player exits the server, remove all of their Aura effects.
         /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearAurasOnExit()
         {
             var player = GetExitingObject();
@@ -1646,6 +1651,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a player dies, remove all of their Aura effects.
         /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -1656,6 +1662,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -1666,6 +1673,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a player enters space mode, remove all of their Aura effects.
         /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSpaceEnter)]
         public void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
@@ -1676,6 +1684,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAuraEnter)]
         public void AuraEnter()
         {
             var entering = GetEnteringObject();
@@ -1709,6 +1718,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAuraExit)]
         public void AuraExit()
         {
             var exiting = GetExitingObject();

@@ -151,7 +151,7 @@ public static partial class MigrationEngineTests
             ctx.Assert(kits > 0 && kits < 20, $"The bag fills with retired kits ({kits})");
 
             SavedCharacterMigration.EnsureDataLoaded();
-            var migrate = typeof(Service.Migration).Assembly
+            var migrate = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly
                 .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.SavedObsoleteItemMigration")!
                 .GetMethod("MigrateSerialized", BindingFlags.NonPublic | BindingFlags.Static)!;
             var arguments = new object[] { ObjectPlugin.Serialize(bag), null, null };

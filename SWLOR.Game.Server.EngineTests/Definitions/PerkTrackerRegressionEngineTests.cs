@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -688,7 +689,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = fixture.Creature;
             ctx.SetResources(caster, 100, 100);
             fixture.Update(record => record.LearnedTechniques[FeatType.FinishingDriveTechnique] = DateTime.UtcNow);
-            ctx.Assert(Mimicry.EquipTechnique(caster, FeatType.FinishingDriveTechnique), "Finishing Drive equips through the player loadout");
+            ctx.Assert(GameServices.Mimicry.EquipTechnique(caster, FeatType.FinishingDriveTechnique), "Finishing Drive equips through the player loadout");
             var startingStamina = Stat.GetCurrentStamina(caster);
             for (var stack = 1; stack <= 3; stack++)
             {
@@ -712,7 +713,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = fixture.Creature;
             ctx.SetResources(caster, 100, 100);
             fixture.Update(record => record.LearnedTechniques[FeatType.SnapRushTechnique] = DateTime.UtcNow);
-            ctx.Assert(Mimicry.EquipTechnique(caster, FeatType.SnapRushTechnique), "Snap Rush equips through the player loadout");
+            ctx.Assert(GameServices.Mimicry.EquipTechnique(caster, FeatType.SnapRushTechnique), "Snap Rush equips through the player loadout");
             Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - 3);
             SWLOR.NWN.API.NWNX.CreaturePlugin.AddFeat(caster, FeatType.SnapRushTechnique);
             ctx.Assert(!Ability.CanUseAbility(caster, caster, FeatType.SnapRushTechnique, 1, GetLocation(caster)),

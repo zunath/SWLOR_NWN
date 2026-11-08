@@ -34,7 +34,7 @@ public class MigrationDataTests
     private const int ReleasedServerVersion = 30;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
     private const int NextServerVersion = ReleasedServerVersion + 1;
-    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
+    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
 
     [Test]
     public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
@@ -127,8 +127,7 @@ public class MigrationDataTests
     [Test]
     public void RetiredServerMigrations_StartNewDatabasesAtTheBaselineAndRejectOlderOnes()
     {
-        var migration = ServerAssembly.GetType("SWLOR.Game.Server.Service.Migration")!;
-        var baseline = (int)migration.GetField("RetiredServerMigrationVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var baseline = Game.Server.Domain.Core.MigrationService.RetiredServerMigrationVersion;
         var db = new Tests.Support.InMemoryDBService();
         var service = new Game.Server.Domain.Core.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
         ServerConfiguration Resolve(ServerConfiguration stored) => service.ResolveConfiguration(stored!);

@@ -11,6 +11,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Race = SWLOR.Game.Server.Service.Race;
+using SWLOR.Game.Server.Domain.Core;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -54,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     InitializeNewCharacter(player, initializing);
                 }, updated => DB.Set(updated),
-                    () => GetLocalInt(player, Migration.PlayerFileVersionVariable),
+                    () => GetLocalInt(player, MigrationService.PlayerFileVersionVariable),
                     version => Migration.SavePlayerFileCheckpoint(player, version));
             }
             catch (Exception exception)

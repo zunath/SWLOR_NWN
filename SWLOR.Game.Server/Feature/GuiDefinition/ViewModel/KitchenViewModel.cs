@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var colors = new GuiBindingList<GuiColor>();
             if (_parameters != null)
             {
-                var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, Cache.GetItemNameByResref);
+                var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, resref => Cache.GetItemNameByResref(resref));
                 TargetText = KitchenText.TargetText(kitchen.Target);
 
                 description.Add("[KITCHEN]");
@@ -573,7 +573,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Build the dish first, so a recipe the Kitchen cannot read never takes the player's materials.
             var recipe = Craft.GetRecipe(_recipe);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-            var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, Cache.GetItemNameByResref);
+            var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, resref => Cache.GetItemNameByResref(resref));
             var penalty = _slots.TotalProgressPenalty;
             var engine = new KitchenEngine(
                 ServiceMinigameRandom.Instance,

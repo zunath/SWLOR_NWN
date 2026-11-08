@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Enumeration;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Draws and removes tile magic ground tiles in an area. The static facade <c>Service.TileMagic</c> forwards to
-    /// the container's instance of this interface.
+    /// Draws and removes tile magic ground tiles in an area. Static callers reach the container's instance through
+    /// <c>GameServices.TileMagic</c>.
     /// </summary>
     public interface ITileMagicService
     {

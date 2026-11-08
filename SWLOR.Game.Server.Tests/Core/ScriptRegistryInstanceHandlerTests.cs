@@ -145,24 +145,27 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
+        // The handlers that moved from a removed facade onto its instance class (P2-Z), which a static-only load cannot bind.
         var instanceHandlers = MethodsOf(GameAssembly)
-            .Where(method => !method.IsStatic && IsHandler(method))
-            .Select(ScriptHandlerManifest.HandlerName)
-            .ToHashSet();
+            .Where(method => !method.IsStatic && method.DeclaringType == method.ReflectedType && IsHandler(method))
+            .ToList();
+        var instanceNames = instanceHandlers.Select(ScriptHandlerManifest.HandlerName).ToHashSet(StringComparer.Ordinal);
+        instanceNames.Should().Contain(TaxiHandler);
 
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => !instanceHandlers.Contains(name));
+                var expected = Names(all, script, conditional).Where(name => !instanceNames.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Select(entry => entry[(entry.LastIndexOf(' ') + 1)..]).Distinct()
-            .Should().BeEquivalentTo(instanceHandlers, "the manifest lines the static-only load left unbound are exactly the instance handlers");
+        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(instanceHandlers.SelectMany(method => method.GetCustomAttributes<NWNEventHandler>()
+            .Select(attribute => $"{attribute.Script} {(method.ReturnType == typeof(bool) ? "conditional" : "action")} {ScriptHandlerManifest.HandlerName(method)}")),
+            "the manifest lists every instance handler, and only those are missing from a static-only load");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

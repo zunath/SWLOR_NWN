@@ -16,7 +16,7 @@ internal static class CharacterMigrations
     private const string ServiceNamespace = "SWLOR.Game.Server.Service.MigrationService.";
     private const string MigrationNamespace = "SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.";
 
-    private static readonly Assembly Game = typeof(Migration).Assembly;
+    private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
 
     private static Type GameType(string name) => Game.GetType(name) ?? throw new InvalidOperationException($"No game type '{name}'.");
 
@@ -68,7 +68,7 @@ internal static class CharacterMigrations
 /// <summary>Builds minimal saved character files (BIC) with the structures the character upgrade reads.</summary>
 internal static class SavedCharacterFile
 {
-    private static readonly Type Document = typeof(Migration).Assembly
+    private static readonly Type Document = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly
         .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
 

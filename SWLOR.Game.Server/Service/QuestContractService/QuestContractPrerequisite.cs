@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.QuestService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.QuestContractService
 {

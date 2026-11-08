@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Service.AnimationService;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Plays the visual effect an object carries for an animation event. The static facade
-    /// <c>Service.AnimationPlayer</c> forwards to the container's instance of this interface.
+    /// Plays the visual effect an object carries for an animation event. Static callers reach the container's
+    /// instance through <c>GameServices.AnimationPlayer</c>.
     /// </summary>
     public interface IAnimationPlayerService
     {

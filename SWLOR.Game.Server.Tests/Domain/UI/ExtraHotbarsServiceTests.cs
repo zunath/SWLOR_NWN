@@ -20,6 +20,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.UI;
 
@@ -437,7 +438,7 @@ public class ExtraHotbarsServiceTests
 
         var slot = Stored().ExtraHotbars[0].Slots[2];
         slot.Type.Should().Be(ExtraHotbarSlotType.Ability);
-        slot.Feat.Should().Be(SWLOR.Game.Server.Service.QuickCast.GetOriginalFeat(FeatType.Alertness));
+        slot.Feat.Should().Be(QuickCast.GetOriginalFeat(FeatType.Alertness));
         Names(_guiCalls).Should().Equal("PublishRefreshEvent");
     }
 

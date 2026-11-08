@@ -15,7 +15,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// <summary>
     /// Abilities: the catalog of ability definitions, the validation of an activation, the tracker of each impact while it
     /// resolves, player auras, temporary immunities, and the activation and queued-attack state <c>UsePerkFeat</c> runs on.
-    /// The static <c>Ability</c> facade forwards here.
+    /// Static callers reach the container's instance through <c>GameServices.Ability</c>; the event handlers are on
+    /// <see cref="AbilityService"/>.
     /// </summary>
     public interface IAbilityService
     {

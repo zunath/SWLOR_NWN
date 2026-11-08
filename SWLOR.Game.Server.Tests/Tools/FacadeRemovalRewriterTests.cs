@@ -146,6 +146,12 @@ public class FacadeRemovalRewriterTests
     [TestCase("using Taxi = Some.Other.Type;\nclass C { void M() { Taxi.Register(1); } }\n")]
     [TestCase("class C { void M() { if (Get() is Holder Taxi) Taxi.Register(1); } }\n")]
     [TestCase("class C { int M() => Faction.MinimumFaction; static class Faction { public const int MinimumFaction = 1; } }\n")]
+    [TestCase("class C { event Handler Taxi { add { } remove { } } void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { object M(int[] xs) => from Taxi in xs select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs) => from x in xs let Taxi = x select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs, int[] ys) => from x in xs join Taxi in ys on x equals Taxi select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs, int[] ys) => from x in xs join y in ys on x equals y into Taxi select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs) => from x in xs select x into Taxi select Taxi.Register(1); }\n")]
     public void A_bare_name_the_file_declares_itself_is_not_the_facade(string text)
     {
         var result = CallerRewriter.Apply(text, All, false);

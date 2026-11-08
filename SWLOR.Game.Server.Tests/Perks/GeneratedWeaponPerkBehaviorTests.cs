@@ -1923,7 +1923,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = CombatSource.Read();
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
-        combatSource.Should().Contain("StatusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
+        combatSource.Should().Contain("_statusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");
 
         var steelShoulder = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];

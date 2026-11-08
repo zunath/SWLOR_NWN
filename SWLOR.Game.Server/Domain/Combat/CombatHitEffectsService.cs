@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _party = party;
         }
 
-        // The damage taken part has not moved yet; triggered damage runs the target's damage taken modifiers through Combat.
+        // The damage taken part takes this part, so triggered damage runs the target's damage taken modifiers through Combat.
         protected virtual int ApplyDamageTakenModifiers(
             uint defender,
             int damage,

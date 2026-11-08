@@ -4998,32 +4998,32 @@
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageTaken.cs",
-    "Line": 730,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
+    "Line": 794,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageTaken.cs",
-    "Line": 1067,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
+    "Line": 1131,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageTaken.cs",
-    "Line": 1250,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
+    "Line": 1314,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.DamageTaken.cs",
-    "Line": 1483,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
+    "Line": 1547,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",

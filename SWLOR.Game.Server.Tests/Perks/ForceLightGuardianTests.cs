@@ -168,7 +168,7 @@ public class ForceLightGuardianTests
         scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
 
         var combat = CombatSource.Read();
-        combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
+        combat.Should().Contain("_statusEffect.GetStatusEffectSourceWithStat(");
         combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
         combat.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
 

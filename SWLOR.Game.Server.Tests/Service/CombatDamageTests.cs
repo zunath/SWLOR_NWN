@@ -874,6 +874,8 @@ public class CombatDamageTests
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
         combatSource.Should().NotContain("Enmity.ModifyEnmity(attacker, target, appliedDamage);",
             "triggered damage is credited by the native damage event, once");
+        combatSource.Should().NotContain("_enmity.ModifyEnmity(attacker, target, appliedDamage);",
+            "triggered damage is credited by the native damage event, once, also through an injected enmity service");
         abilitySource.Should().Contain("ApplyDamageReflectionEffects(activator, target, damage, damageType);");
         abilitySource.Should().NotContain("ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
@@ -900,9 +902,9 @@ public class CombatDamageTests
         whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;");
 
         var resolver = ExtractMethod(combatSource, "private static int ResolveGuardRetaliationDamage");
-        resolver.Should().Contain("Stat.GetAttack(source, damageAbility, skillType)");
+        resolver.Should().Contain("_stat.GetAttack(source, damageAbility, skillType)");
         resolver.Should().Contain("ApplyTargetStatusAttackModifiers(source, target, attack, skillType)");
-        resolver.Should().Contain("Stat.GetDefense(target, damageType, defenseAbility)");
+        resolver.Should().Contain("_stat.GetDefense(target, damageType, defenseAbility)");
         resolver.Should().Contain("ApplyStatusSourceDefenseModifiers(source, target, defense)");
         resolver.Should().Contain("return CalculateDamage(");
         resolver.Should().NotContain("ApplyCombatImpact");
@@ -1065,7 +1067,7 @@ public class CombatDamageTests
         guard.IndexOf("!isLandedAttack", StringComparison.Ordinal).Should().BeLessThan(
             guard.IndexOf("var guardChance", StringComparison.Ordinal),
             "discarded swings must never enter the Guard roll");
-        var hostileSource = ExtractMethod(combatSource, "internal static bool IsHostileAttackSource(");
+        var hostileSource = ExtractMethod(combatSource, "public static bool IsHostileAttackSource(");
         hostileSource.Should().Contain("GetIsPC(attacker)");
         hostileSource.Should().Contain("GetIsDM(attacker)");
         hostileSource.Should().Contain("GetIsDMPossessed(attacker)");
@@ -1162,7 +1164,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
         combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
-        lowHPGuardTrigger.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        lowHPGuardTrigger.Should().Contain("_statusEffect.ApplyStatusEffect(");
         lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");

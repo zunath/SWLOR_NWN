@@ -382,7 +382,6 @@ public class CombatFacadeAllocationTests
             var firstStrikeCount = Private<Action<uint, AbilityDetail>>("ApplyFirstHostileAbilityHitCount", typeof(uint), typeof(AbilityDetail));
             var forgetOpening = Private<Action<uint>>("ForgetOpeningActivityState", typeof(uint));
             var forgetTiming = Private<Action<uint>>("ForgetAttackTimingState", typeof(uint));
-            var recentDamageTargets = Private<Func<Dictionary<(uint, uint), DateTime>>>("get__recentDamageTargets");
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 // Per swing.
@@ -419,7 +418,6 @@ public class CombatFacadeAllocationTests
                 ("GetLastOffensiveActivityAt", () => sink += activity.GetLastOffensiveActivityAt(Attacker).Second, () => sink += CombatFacade.GetLastOffensiveActivityAt(Attacker).Second),
                 ("GetLastCompletedOffensiveActivityAt", () => sink += activity.GetLastCompletedOffensiveActivityAt(Attacker).Second, () => sink += CombatFacade.GetLastCompletedOffensiveActivityAt(Attacker).Second),
                 ("IsUsingAbility", () => sink += activity.IsUsingAbility(Attacker) ? 1 : 0, () => sink += CombatFacade.IsUsingAbility(Attacker) ? 1 : 0),
-                ("RecentDamageTargets", () => sink += activity.RecentDamageTargets.Count, () => sink += recentDamageTargets().Count),
             };
 
             foreach (var (name, part, forwarder) in reads)
@@ -427,6 +425,9 @@ public class CombatFacadeAllocationTests
                 LeastAllocated(part).Should().Be(0, $"{name} runs per swing, per attack or per hit");
                 LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
             }
+
+            // The hit effects and damage taken parts read the recent damage targets through the activity part itself.
+            LeastAllocated(() => sink += activity.RecentDamageTargets.Count).Should().Be(0, "RecentDamageTargets runs per hit");
 
             GC.KeepAlive(sink);
         }
@@ -883,6 +884,150 @@ public class CombatFacadeAllocationTests
                 var (own, forwarded) = InterleavedPerCall(part, forwarder);
                 own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
                 ForwarderAddsNothing(name, own, forwarded, 64);
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    // The same world as the hit parts (a container of its own, the constant engine, the clock held still, a status table for
+    // both creatures and the stat service that allocates nothing), with the damage taken part. The two tests that use it are
+    // named to run after every other combat part test of the fixture, for the reason the hit part tests give.
+    private static ICombatDamageTakenService InstallDamageTakenPart(List<IDisposable> scopes)
+    {
+        InstallTimingParts(scopes);
+        return FacadeContainer.Current.Get<ICombatDamageTakenService>();
+    }
+
+    [Test]
+    public void WhereTheDamageTakenPartAllocatesItsPinnedBytesItsForwarderAddsNothing()
+    {
+        // Bytes per call in this setup, each the same as the base assembly's in the same sequence (with tiered compilation on
+        // and off) unless a comment says otherwise. A landed hit builds the closures of the redirect and share stages on entry
+        // (32 and 24 bytes; neither holds the part), the deflection record the nearby ally guard's closure (24), the exposed
+        // bonus read the temporary modifier's closures, the forget query its LINQ iterator and list, and the combat log line
+        // its strings, as before the move.
+        // The physical-to-Force conversion is 8 bytes more than before the move (64 to 72): the closure class it creates on
+        // entry now also holds the part, because its converted hit calls the recorder and the hit effects part.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var taken = InstallDamageTakenPart(scopes);
+            var sink = 0;
+            var consume = Private<Func<uint, SkillType, int>>("ConsumeGuardedHitNextSkillAbilityExposedDamageBonus", typeof(uint), typeof(SkillType));
+            var forget = Private<Action<uint>>("ForgetDamageTakenState", typeof(uint));
+            var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
+            {
+                ("ApplyDamageTakenModifiers", 56, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker)),
+                ("ApplyDamageTakenModifiers(fire)", 56, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Fire), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Fire)),
+                ("ApplyDamageTakenModifiers(force)", 56, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Force), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Force)),
+                ("ApplyDamageTakenModifiers(typed)", 56, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, -10, true, true), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, -10, true, true)),
+                ("ApplyDamageTakenModifiers(transferred)", 32, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Transferred), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Transferred)),
+                ("TrackDeflection", 24, () => taken.TrackDeflection(Defender, DeflectionSource.Melee), () => CombatFacade.TrackDeflection(Defender, DeflectionSource.Melee)),
+                ("ConsumeGuardedHitNextSkillAbilityExposedDamageBonus", 56, () => sink += taken.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(Defender, SkillType.Rifle), () => sink += consume(Defender, SkillType.Rifle)),
+                ("ApplyIncomingPhysicalToForceConversion", 72, () => { var damage = 10; sink += taken.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref damage); }, () => { var damage = 10; sink += CombatFacade.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref damage); }),
+                ("ForgetDamageTakenState", 184, () => taken.ForgetDamageTakenState(Defender), () => forget(Defender)),
+                ("BuildDeflectingReturnCombatLogMessage", 968, () => sink += taken.BuildDeflectingReturnCombatLogMessage(Attacker, Defender, Attacker, 5).Length, () => sink += CombatFacade.BuildDeflectingReturnCombatLogMessage(Attacker, Defender, Attacker, 5).Length),
+            };
+
+            foreach (var (name, bytes, part, forwarder) in reads)
+            {
+                PerCall(part).Should().Be(bytes, $"{name} allocates what it did before the move");
+                PerCall(forwarder).Should().Be(bytes, $"Combat.{name} adds nothing to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereTheDamageTakenPartAllocatesMoreItsForwarderAddsNothing()
+    {
+        // Deflecting Return reads the Embattled stack count from the status table, as before the move, so what it allocates
+        // per call depends on what the JIT has done with those reads by the time it runs (336 bytes on the base and 344 here
+        // when run alone, with tiered compilation on or off; less after the fixture's other tests). It is 8 bytes more than
+        // before the move: the closure class it creates on entry for its message builder now also holds the part, because
+        // the builder calls the part's own BuildDeflectingReturnCombatLogMessage. The forwarder is checked on the upper side
+        // only (ForwarderAddsNothing): it could only add a closure and its delegate (88 bytes or more).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var taken = InstallDamageTakenPart(scopes);
+            var sink = 0;
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("ApplyRangedDeflectionReflection", () => sink += taken.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle), () => sink += CombatFacade.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var (own, forwarded) = InterleavedPerCall(part, forwarder);
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                ForwarderAddsNothing(name, own, forwarded, 64);
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereTheDamageTakenPartAllocatesNothingItsForwarderAllocatesNothing()
+    {
+        // Run per damage roll or per damage event. Each allocated nothing before the move either (measured against the base
+        // assembly in the same sequence).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var taken = InstallDamageTakenPart(scopes);
+            var sink = 0;
+            Func<int> forceDefense = () => 80;
+            var hostile = Private<Func<uint, uint, bool>>("IsHostileAttackSource", typeof(uint), typeof(uint));
+            var used = Private<Action<uint, StatType, StatType, StatType>>("ApplyAbilityUsedAttackDeflection", typeof(uint), typeof(StatType), typeof(StatType), typeof(StatType));
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("ApplyDamageTakenModifiers(unlanded)", () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, 0, false), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, 0, false)),
+                ("ApplyDamageTakenModifiers(0)", () => sink += taken.ApplyDamageTakenModifiers(Defender, 0), () => sink += CombatFacade.ApplyDamageTakenModifiers(Defender, 0)),
+                ("ApplyTypedLeadershipDamageTakenModifier", () => sink += taken.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Physical), () => sink += CombatFacade.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Physical)),
+                ("ApplyTypedLeadershipDamageTakenModifier(force)", () => sink += taken.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Force), () => sink += CombatFacade.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Force)),
+                ("ApplyTypedLeadershipDamageTakenModifier(fire)", () => sink += taken.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Fire), () => sink += CombatFacade.ApplyTypedLeadershipDamageTakenModifier(Defender, 10, CombatDamageType.Fire)),
+                ("ApplyDamageReflectionEffects", () => taken.ApplyDamageReflectionEffects(Attacker, Defender, 10, CombatDamageType.Physical), () => CombatFacade.ApplyDamageReflectionEffects(Attacker, Defender, 10, CombatDamageType.Physical)),
+                ("ApplyDamageReflectionEffects(force)", () => taken.ApplyDamageReflectionEffects(Attacker, Defender, 10, CombatDamageType.Force), () => CombatFacade.ApplyDamageReflectionEffects(Attacker, Defender, 10, CombatDamageType.Force)),
+                ("ApplyDamageOverTimeTakenModifiers", () => sink += taken.ApplyDamageOverTimeTakenModifiers(Defender, 10, CombatDamageType.Physical), () => sink += CombatFacade.ApplyDamageOverTimeTakenModifiers(Defender, 10, CombatDamageType.Physical)),
+                ("ApplyDamageOverTimeTakenModifiers(out)", () => sink += taken.ApplyDamageOverTimeTakenModifiers(Defender, 10, CombatDamageType.Force, out _), () => sink += CombatFacade.ApplyDamageOverTimeTakenModifiers(Defender, 10, CombatDamageType.Force, out _)),
+                ("TryPreventFatalDamageAndGrantTemporaryHP", () => sink += taken.TryPreventFatalDamageAndGrantTemporaryHP(Defender, 10, false) ? 1 : 0, () => sink += CombatFacade.TryPreventFatalDamageAndGrantTemporaryHP(Defender, 10, false) ? 1 : 0),
+                ("ApplyDamageTakenEffects", () => taken.ApplyDamageTakenEffects(Defender, Attacker, 10), () => CombatFacade.ApplyDamageTakenEffects(Defender, Attacker, 10)),
+                ("ApplyDamageTakenEffects()", () => taken.ApplyDamageTakenEffects(), () => CombatFacade.ApplyDamageTakenEffects()),
+                ("ApplyLowHPDamageTakenEffects", () => taken.ApplyLowHPDamageTakenEffects(Defender, 10), () => CombatFacade.ApplyLowHPDamageTakenEffects(Defender, 10)),
+                ("ApplyLowHPGuardEffectFromProtectedTarget", () => taken.ApplyLowHPGuardEffectFromProtectedTarget(Attacker, Defender, 10), () => CombatFacade.ApplyLowHPGuardEffectFromProtectedTarget(Attacker, Defender, 10)),
+                ("TrackGuardedHit", () => taken.TrackGuardedHit(Defender), () => CombatFacade.TrackGuardedHit(Defender)),
+                ("TrackAvoidedAttack", () => taken.TrackAvoidedAttack(Defender, Attacker), () => CombatFacade.TrackAvoidedAttack(Defender, Attacker)),
+                ("ApplyMeleeDamageTakenEffects", () => taken.ApplyMeleeDamageTakenEffects(Defender, Attacker), () => CombatFacade.ApplyMeleeDamageTakenEffects(Defender, Attacker)),
+                ("ApplyGuardedHitModifiers", () => sink += taken.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true), () => sink += CombatFacade.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true)),
+                ("IsHostileAttackSource", () => sink += taken.IsHostileAttackSource(Defender, Attacker) ? 1 : 0, () => sink += hostile(Defender, Attacker) ? 1 : 0),
+                ("GetGuardDamageReductionPercent", () => sink += taken.GetGuardDamageReductionPercent(Defender), () => sink += CombatFacade.GetGuardDamageReductionPercent(Defender)),
+                ("HasRecentGuardedHit", () => sink += taken.HasRecentGuardedHit(Defender, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentGuardedHit(Defender, 6f) ? 1 : 0),
+                ("HasRecentDeflection", () => sink += taken.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f) ? 1 : 0, () => sink += CombatFacade.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f) ? 1 : 0),
+                ("ApplyIncomingPhysicalToForceDefenseConversion", () => sink += taken.ApplyIncomingPhysicalToForceDefenseConversion(Defender, CombatDamageType.Physical, 100, forceDefense), () => sink += CombatFacade.ApplyIncomingPhysicalToForceDefenseConversion(Defender, CombatDamageType.Physical, 100, forceDefense)),
+                ("ApplyAbilityUsedAttackDeflection", () => taken.ApplyAbilityUsedAttackDeflection(Attacker, StatType.AbilityUsedAttackDeflection, StatType.AbilityUsedAttackDeflectionDurationSeconds, StatType.Invalid), () => used(Attacker, StatType.AbilityUsedAttackDeflection, StatType.AbilityUsedAttackDeflectionDurationSeconds, StatType.Invalid)),
+                ("ApplyAbilityGrantedAttackDeflectionEffects", () => taken.ApplyAbilityGrantedAttackDeflectionEffects(Attacker, DeflectionSource.Ranged), () => CombatFacade.ApplyAbilityGrantedAttackDeflectionEffects(Attacker, DeflectionSource.Ranged)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                LeastAllocated(part).Should().Be(0, $"{name} runs per damage roll or per damage event");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
             }
 
             GC.KeepAlive(sink);

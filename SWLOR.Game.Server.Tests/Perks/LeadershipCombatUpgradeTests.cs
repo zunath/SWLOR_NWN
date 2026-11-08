@@ -607,7 +607,8 @@ public class LeadershipCombatUpgradeTests
             "genericAdjustment",
             "typedLeadershipReductionAlreadyApplied",
             "targetStatusDamagePercentAdjustment");
-        return (int)method.Invoke(null, new object[]
+        // An instance member of the damage taken part since P2-CB8: CombatMembers calls it on the installed container's part.
+        return (int)CombatMembers.Invoke("ApplyDamageTakenPercentageModifiers", new object[]
         {
             damage,
             damageType,
@@ -635,7 +636,7 @@ public class LeadershipCombatUpgradeTests
             "leadershipPhysicalAdjustment",
             "leadershipForceAdjustment",
             "leadershipOtherAdjustment");
-        return (int)method.Invoke(null, new object[]
+        return (int)CombatMembers.Invoke("ApplyTypedLeadershipDamageTakenPercentageModifier", new object[]
         {
             damage,
             damageType,

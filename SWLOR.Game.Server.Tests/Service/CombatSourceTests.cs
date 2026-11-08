@@ -410,6 +410,43 @@ public class CombatSourceTests
             "Combat keeps no copy");
     }
 
+    [TestCase("_recentGuardedHits")]
+    [TestCase("_recentDeflections")]
+    public void ReflectionReachesTheDamageTakenTablesOfTheInstalledContainer(string name)
+    {
+        // The recent guarded hits and deflections moved from static fields of Combat to the instance; a test that reads one by
+        // name gets the installed container's table, which Combat's forwarders write.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatDamageTakenService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageTakenService>()));
+        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
+            "Combat keeps no copy");
+
+        // A record put into the reflected table is the one Combat's forwarder reads.
+        var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
+        engine.SetReturn("GetIsObjectValid", true);
+        using var runtime = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
+        const uint creature = 0xFFFFFFF2;
+        const SWLOR.Game.Server.Service.CombatService.DeflectionSource shield = SWLOR.Game.Server.Service.CombatService.DeflectionSource.Shield;
+        if (name == "_recentGuardedHits")
+        {
+            table[creature] = SWLOR.Game.Server.Core.Clock.UtcNow;
+            SWLOR.Game.Server.Service.Combat.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
+        }
+        else
+        {
+            table[(creature, shield)] = SWLOR.Game.Server.Core.Clock.UtcNow;
+            SWLOR.Game.Server.Service.Combat.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
+        }
+    }
+
     [Test]
     public void TheTestOverridesOfTheHitRollsAreTheInstalledContainersAndCombatSetsThem()
     {

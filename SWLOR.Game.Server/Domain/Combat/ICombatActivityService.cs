@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         /// <summary>
         /// The last time each attacker damaged each defender, keyed (attacker, defender): the instance's own table, which
-        /// the hit effects and damage taken parts of <c>Combat</c> read and prune until they move.
+        /// the hit effects part of <c>Combat</c> reads and prunes and the damage taken part reads.
         /// </summary>
         Dictionary<(uint, uint), DateTime> RecentDamageTargets { get; }
 

@@ -196,6 +196,7 @@ session "SWLOR maintainability refactor coordination", worktree `.claude/worktre
 - P2-CB9a merged (#3296, `524f3f3af`, 2026-11-07): `CombatAbilityActivation` service.
 - P2-CB9b merged (#3295, `94d91136f`, 2026-11-08): `CombatAbilityImpact` service.
 - P2-CB10 (`CombatService`, facade listed, partials merged): branch `claude/mr-p2-cb10`, agent-owned worktree.
+- P2-Z plan (facade removal plan, `Readmes/MaintainabilityRefactorFacadeRemoval.md`, no code): branch `claude/mr-p2-z-plan`, agent-owned worktree. The coordinator adds the P2-Z item rows when it merges.
 - Master sync merged (#3278, `a6877354c`, 2026-11-07): master `341cedaa6`, `Performance` and `Property` ported (see Sync log and Port log).
 - Parity tool fix (master build of `SkillCacheScope.cs` since P2-D15): **blocked**. The overlay fix is written but uncommitted in the agent worktree `agent-abc92a10b170547c0`; the session's guards refuse isolated agents any `powershell.exe` run and refused the coordinator finishing it (see Environment notes). Until fixed, parity's master build needs `SkillCacheScope.cs` reverted to its pre-#3266 version by hand.
 - P2-Z2 prep merged (#3280, `95ca21bd4`, 2026-11-07): namespace move script and data, not applied.

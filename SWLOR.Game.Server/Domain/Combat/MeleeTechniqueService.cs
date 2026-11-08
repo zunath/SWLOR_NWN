@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void ResetProfiles()
         {
             foreach (var (creature, owner) in Owners)
@@ -434,6 +435,8 @@ namespace SWLOR.Game.Server.Domain.Combat
                 Math.Max(0, GetCurrentHitPoints(defender) - GetTemporaryHitPoints(defender)), Clock.UtcNow);
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public void OnDirectDamageApplied()
         {
             var creature = OBJECT_SELF;
@@ -535,8 +538,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
         public void OnEquip() => OnEquipmentChanged(GetPCItemLastEquippedBy());
 
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public void OnUnequip() => OnEquipmentChanged(GetPCItemLastUnequippedBy());
 
         private void OnEquipmentChanged(uint creature)
@@ -546,6 +551,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             Activations.Remove(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnExit()
         {
             var creature = GetExitingObject();
@@ -553,12 +560,14 @@ namespace SWLOR.Game.Server.Domain.Combat
             ClearTargetReferences(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public void OnDeath()
         {
             ClearBenefits(OBJECT_SELF);
             ClearTargetReferences(OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void OnPlayerDeath()
         {
             var creature = GetLastPlayerDied();
@@ -566,6 +575,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ClearTargetReferences(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
         public void RefreshAll()
         {
             foreach (var (creature, owner) in Owners.ToArray())

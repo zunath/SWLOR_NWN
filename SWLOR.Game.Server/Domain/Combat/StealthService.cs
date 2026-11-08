@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
         /// combat. NPCs pass through so spawn tables can still field stealthy creatures.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnStealthEnterBefore)]
         public void GateStealthEntry()
         {
             var creature = OBJECT_SELF;
@@ -90,6 +91,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnStealthEnterAfter)]
         public void OnStealthEntered()
         {
             var creature = OBJECT_SELF;
@@ -193,6 +195,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// The Stealth status carries the stamina drain, so a stealthed player must never be
         /// without it. Rebuilds the status if something removed it while native stealth stayed on.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public void EnsureStealthStatusWhileHidden()
         {
             var creature = OBJECT_SELF;
@@ -214,6 +217,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Records player-initiated combat before the attack event can add pair enmity. This lets
         /// infiltration distinguish the attack from combat caused by a successful detection.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
         public void RecordPlayerCombatInitiation()
         {
             var enemy = OBJECT_SELF;
@@ -230,6 +234,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// BreaksStealth are already handled on activation; this covers auto-attacks and any
         /// damage-dealing path that does not route through an ability.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public void BreakStealthOnDamageDealt()
         {
             var attacker = OBJECT_SELF;
@@ -348,11 +353,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Local variables are saved with the character, but the window's timer belongs to the old
         /// creature object, so a grant never outlives the session that received it.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ClearGrantedStealthOnEnter()
         {
             ClearGrantedStealth(GetEnteringObject());
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearGrantedStealthOnExit()
         {
             ClearGrantedStealth(GetExitingObject());
@@ -361,11 +368,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// A granted window ends with the player's death so a quick respawn cannot reuse it.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void ClearGrantedStealthOnDeath()
         {
             ClearGrantedStealth(GetLastPlayerDied());
         }
 
+        [NWNEventHandler(ScriptName.OnStealthExitAfter)]
         public void OnStealthExited()
         {
             var creature = OBJECT_SELF;
@@ -399,6 +408,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// The engine only raises this event when the target is stealthed (invisibility is resolved
         /// before the event fires), so every call is a real stealth-vs-detection question.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnDoSpotDetectionBefore)]
         public void ResolveSpotDetection()
         {
             var observer = OBJECT_SELF;
@@ -518,6 +528,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             return false;
         }
 
+        [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
         public void SuppressListenDetection()
         {
             EventsPlugin.SkipEvent();

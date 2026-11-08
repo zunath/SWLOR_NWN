@@ -1405,10 +1405,10 @@ public class ItemServiceTests
     {
         _world.Add(ItemA, baseItem: BaseItem.Pistol);
         _world.Add(ItemB, baseItem: BaseItem.CompanionPistol);
-        _engine.SetLocalInt(ItemA, TwinPistolEquipment.PairVariable, 1);
-        _engine.SetLocalInt(ItemB, TwinPistolEquipment.SpareVariable, 1);
-        _engine.SetLocalObject(ItemB, TwinPistolEquipment.MainWeaponVariable, ItemA);
-        _engine.SetLocalObject(ItemB, TwinPistolEquipment.OwnerVariable, User);
+        _engine.SetLocalInt(ItemA, TwinPistolEquipmentService.PairVariable, 1);
+        _engine.SetLocalInt(ItemB, TwinPistolEquipmentService.SpareVariable, 1);
+        _engine.SetLocalObject(ItemB, TwinPistolEquipmentService.MainWeaponVariable, ItemA);
+        _engine.SetLocalObject(ItemB, TwinPistolEquipmentService.OwnerVariable, User);
         _world.Equip(User, InventorySlot.RightHand, ItemA);
         _world.Equip(User, InventorySlot.LeftHand, ItemB);
         return (ItemA, ItemB);

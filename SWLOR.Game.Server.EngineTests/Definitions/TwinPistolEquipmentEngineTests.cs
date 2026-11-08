@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -142,11 +143,11 @@ public static class TwinPistolEquipmentEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             // An off-hand gun that no longer belongs to the equipped item is a real stray.
-            DeleteLocalObject(spare, TwinPistolEquipment.MainWeaponVariable);
+            DeleteLocalObject(spare, TwinPistolEquipmentService.MainWeaponVariable);
             var judged = TwinPistolEquipmentValidation.TryGetHandErrors(actor, out _, out var companionError);
             ctx.Assert(judged, "A stray off hand is judged");
             ctx.AssertEqual(strayError, companionError, "A stray off-hand pistol is still reported");
-            SetLocalObject(spare, TwinPistolEquipment.MainWeaponVariable, main);
+            SetLocalObject(spare, TwinPistolEquipmentService.MainWeaponVariable, main);
         });
         AssertOwnedItems(ctx, actor, main, 1);
     }
@@ -459,7 +460,7 @@ public static class TwinPistolEquipmentEngineTests
         var items = OwnedItems(actor);
         var summary = string.Join(", ", items.Select(item =>
             $"{item:X}:{GetResRef(item)}:type={(int)GetBaseItemType(item)}:" +
-            $"pair={GetLocalInt(item, TwinPistolEquipment.PairVariable)}:archive={GetLocalString(item, "TWIN_ARCHIVE_ID")}"));
+            $"pair={GetLocalInt(item, TwinPistolEquipmentService.PairVariable)}:archive={GetLocalString(item, "TWIN_ARCHIVE_ID")}"));
         ctx.Log($"Restored owned items for {actor:X}: {summary}");
         var originals = items.Where(item => GetLocalString(item, "TWIN_ARCHIVE_ID") == identity).ToArray();
         ctx.AssertEqual(1, originals.Length, $"Native character reload retains exactly the original real item; observed={summary}");

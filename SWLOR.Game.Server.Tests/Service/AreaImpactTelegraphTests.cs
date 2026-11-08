@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.Game.Server.Tests.Support;
 using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

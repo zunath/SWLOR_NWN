@@ -65,7 +65,7 @@ public class MaxHitPointsReconciliationTests
             using SWLOR.Game.Server.Core.Bioware;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
-            using PowerGloveEquipment = SWLOR.Game.Server.Service.PowerGloveEquipment;
+            using static SWLOR.Game.Server.Composition.GameServices;
             using Stat = HitPointHarness;
 
             public static class HitPointHarness

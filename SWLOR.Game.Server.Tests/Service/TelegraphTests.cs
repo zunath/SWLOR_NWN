@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.TelegraphService;
 using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -196,7 +197,7 @@ public class TelegraphTests
             0,
             100,
             new TelegraphData { IsPersistentAreaIndicator = true });
-        var activationWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+        var activationWarnings = Enumerable.Range(1, TelegraphService.MaxRenderCount)
             .Select(start => new ActiveTelegraph(
                 1,
                 start,
@@ -211,7 +212,7 @@ public class TelegraphTests
 
         var selected = (ActiveTelegraph[])selector.Invoke(NewInstance(), new object[] { candidates })!;
 
-        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().HaveCount(TelegraphService.MaxRenderCount);
         selected.Should().OnlyContain(telegraph => !telegraph.Data.IsPersistentAreaIndicator);
     }
 

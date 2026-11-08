@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -134,21 +135,21 @@ public class QueuedAttackAnimationServiceTests
     }
 
     [Test]
-    public void TheFacadeEventAndMembersForwardToTheContainersInstance()
+    public void TheAccessorEventHandlersAndMembersReachTheContainersInstance()
     {
         using var container = new FacadeContainer();
         using var scope = container.Install();
         var seen = new List<uint>();
         void Handler(uint creature) => seen.Add(creature);
 
-        QueuedAttackAnimation.RestoreEquipmentAnimations += Handler;
+        QueuedAttackAnimation.AddRestoreEquipmentAnimationsHandler(Handler);
         QueuedAttackAnimation.AddRestoreEquipmentAnimationsHandler(Handler);
         QueuedAttackAnimation.Begin(Creature, AuthoredAnimation.ShieldBash);
         QueuedAttackAnimation.GetActiveSwingKeys(Creature).Should().NotBeEmpty();
         QueuedAttackAnimation.Stop(Creature);
         seen.Should().Equal(Creature, Creature);
 
-        QueuedAttackAnimation.RestoreEquipmentAnimations -= Handler;
+        QueuedAttackAnimation.RemoveRestoreEquipmentAnimationsHandler(Handler);
         QueuedAttackAnimation.RemoveRestoreEquipmentAnimationsHandler(Handler);
         QueuedAttackAnimation.Begin(Creature, AuthoredAnimation.ShieldBash);
         QueuedAttackAnimation.Stop(Creature);

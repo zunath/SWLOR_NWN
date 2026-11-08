@@ -231,6 +231,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             UpdateShadersForArea(area);
         }
 
+        [NWNEventHandler(ScriptName.TelegraphEffect)]
         public void OnTelegraphEffect()
         {
             var scriptType = (RunScriptEffectScriptType)GetLastRunScriptEffectScriptType();
@@ -497,6 +498,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// zones in (or logs in) while a telegraph is already running sees nothing until some unrelated
         /// telegraph happens to be created or removed in that same area.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void OnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -512,6 +514,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Possession moves a DM's client to another object, so the uniforms recorded as sent to that object are
         /// out of date. Resend every slot once the possession has settled.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public void ResendShaderStateOnDMPossess()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
@@ -529,6 +533,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             });
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetShaderStateOnExit()
         {
             _sentShaderStates.Remove(GetExitingObject());

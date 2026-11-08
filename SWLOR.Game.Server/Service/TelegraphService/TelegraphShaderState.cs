@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.TelegraphService
     /// </summary>
     public sealed class TelegraphShaderState
     {
-        public int?[] PackedData { get; } = new int?[Telegraph.MaxRenderCount];
-        public Vector3?[] Positions { get; } = new Vector3?[Telegraph.MaxRenderCount];
+        public int?[] PackedData { get; } = new int?[Domain.Combat.TelegraphService.MaxRenderCount];
+        public Vector3?[] Positions { get; } = new Vector3?[Domain.Combat.TelegraphService.MaxRenderCount];
     }
 }

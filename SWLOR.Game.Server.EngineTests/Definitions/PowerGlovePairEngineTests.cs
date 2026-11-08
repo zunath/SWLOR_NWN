@@ -432,7 +432,7 @@ public static class PowerGlovePairEngineTests
                 });
                 await ctx.WaitFrameAsync();
                 await ctx.WaitUntilAsync(() => !OwnedItems(GetObjectByTag("TEMP_ITEM_STORAGE")).Any(item =>
-                        PowerGloveEquipment.IsGeneratedCompanion(item) && GetLocalObject(item, PowerGloveEquipment.OwnerVariable) == actor),
+                        PowerGloveEquipment.IsGeneratedCompanion(item) && GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable) == actor),
                     3f, "failed companion creation to dispose of every owner-linked cosmetic in temporary storage");
                 ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "Failed safe return retains the exact real item in its equipped slot");
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, actor), "Failed creation leaves no cosmetic equipped object");
@@ -598,7 +598,7 @@ public static class PowerGlovePairEngineTests
                 DestroyObject(actor);
                 ctx.Assert(!pairs.ContainsKey(actor), "The actual destruction event clears the owner ID synchronously");
                 if (GetIsObjectValid(main))
-                    ctx.AssertEqual(OBJECT_INVALID, GetLocalObject(main, PowerGloveEquipment.CompanionVariable), "Destroyed-owner cleanup releases the real glove's cosmetic link");
+                    ctx.AssertEqual(OBJECT_INVALID, GetLocalObject(main, PowerGloveEquipmentService.CompanionVariable), "Destroyed-owner cleanup releases the real glove's cosmetic link");
                 ctx.AssertEqual((keeperMain, keeperCompanion), pairs[keeper], "Destroying one owner never clears another owner's pair");
             });
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(actor) && !GetIsObjectValid(companion), 6f,
@@ -656,7 +656,7 @@ public static class PowerGlovePairEngineTests
             foreach (var column in new[] { "EquipableSlots", "WeaponWield", "WeaponType", "NumDice", "DieToRoll", "ReqFeat0" })
                 ctx.Log($"Native base543 {column}={Get2DAString("baseitems", column, (int)BaseItem.CompanionPowerGlove)}.");
             foreach (var item in OwnedItems(actor).Where(item => PowerGloveEquipment.IsPairItem(item) || PowerGloveEquipment.IsGeneratedCompanion(item)))
-                ctx.Log($"Owned glove={item:X8}, base={(int)GetBaseItemType(item)}, directOwner={GetItemPossessor(item, true):X8}, owner={GetItemPossessor(item):X8}, slot={Item.GetItemSlot(actor, item)}, companion={GetLocalObject(item, PowerGloveEquipment.CompanionVariable):X8}, main={GetLocalObject(item, PowerGloveEquipment.MainWeaponVariable):X8}, linkedOwner={GetLocalObject(item, PowerGloveEquipment.OwnerVariable):X8}, useError={Item.GetCreatureItemUseError(actor, item)}, properties={Properties(item)}.");
+                ctx.Log($"Owned glove={item:X8}, base={(int)GetBaseItemType(item)}, directOwner={GetItemPossessor(item, true):X8}, owner={GetItemPossessor(item):X8}, slot={Item.GetItemSlot(actor, item)}, companion={GetLocalObject(item, PowerGloveEquipmentService.CompanionVariable):X8}, main={GetLocalObject(item, PowerGloveEquipmentService.MainWeaponVariable):X8}, linkedOwner={GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable):X8}, useError={Item.GetCreatureItemUseError(actor, item)}, properties={Properties(item)}.");
         });
     }
 

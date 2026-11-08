@@ -104,7 +104,7 @@ public class TwinPistolEquipmentServiceTests
     }
 
     private void MarkMainAsPair() => _engine.SetReturnHandler("GetLocalInt", args =>
-        (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipment.PairVariable ? 1 : _locals.Int((uint)args[0]!, (string)args[1]!));
+        (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipmentService.PairVariable ? 1 : _locals.Int((uint)args[0]!, (string)args[1]!));
 
     [Test]
     public void EnsurePairBuildsAndEquipsTheGeneratedOffHandPistol()
@@ -281,7 +281,7 @@ public class TwinPistolEquipmentServiceTests
         _world.Add(Spare, baseItem: BaseItem.CompanionPistol);
         _world.Equip(Owner, InventorySlot.LeftHand, Spare);
         _engine.SetReturnHandler("GetLocalInt", args => (uint)args[0]! == Spare && (string)args[1]! == "TWIN_PISTOL_SPARE" ? 1
-            : (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipment.PairVariable ? 1 : 0);
+            : (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipmentService.PairVariable ? 1 : 0);
         _engine.SetReturnHandler("GetLocalObject", args => (uint)args[0]! == Spare ? Main : ItemWorld.ObjectInvalid);
 
         _equipment.RemovePair(Owner).Should().BeTrue();
@@ -309,7 +309,7 @@ public class TwinPistolEquipmentServiceTests
         _world.Carry(Bag, strayInBag);
         _world.Carry(Owner, Bag);
         _engine.SetReturnHandler("GetLocalInt", args => (string)args[1]! == "TWIN_PISTOL_SPARE" ? 1
-            : (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipment.PairVariable ? 1 : 0);
+            : (uint)args[0]! == Main && (string)args[1]! == TwinPistolEquipmentService.PairVariable ? 1 : 0);
         _locals.ClearCalls();
 
         _equipment.ReleaseCompanions(Owner);

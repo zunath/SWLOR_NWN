@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 GetCurrentHitPoints(player) <= 0 ||
                 GetCurrentHitPoints(npc) <= 0 ||
                 !GetActionMode(player, ActionMode.Stealth) ||
-                GetLocalInt(player, Stealth.CombatEntryWindowVariable) != 0 ||
+                GetLocalInt(player, StealthService.CombatEntryWindowVariable) != 0 ||
                 !IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc)) ||
                 HasNonProximityEnmityForCreature(player) ||
                 !_ai.IsCreatureAIEnabled(npc) ||

@@ -58,10 +58,10 @@ public class PowerGloveEquipmentTests
 
         var noted = PowerGloveEquipment.GetPairDescription(existing);
 
-        noted.Should().Be($"{existing}\n{PowerGloveEquipment.PairDescriptionNote}");
+        noted.Should().Be($"{existing}\n{PowerGloveEquipmentService.PairDescriptionNote}");
         PowerGloveEquipment.GetPairDescription(noted).Should().Be(noted, "examining again adds nothing");
-        PowerGloveEquipment.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipment.PairDescriptionNote);
-        PowerGloveEquipment.PairDescriptionNote.Should().MatchRegex("^[\\x20-\\x7E]+$", "game text is plain ASCII");
+        PowerGloveEquipment.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipmentService.PairDescriptionNote);
+        PowerGloveEquipmentService.PairDescriptionNote.Should().MatchRegex("^[\\x20-\\x7E]+$", "game text is plain ASCII");
     }
 
     [Test]
@@ -130,8 +130,7 @@ public class PowerGloveEquipmentTests
     public void SavedPairRecoveryRequiresPreAreaPlayerSlotsAndUnchangedOwnership(
         bool isPlayer, bool hasArea, bool equippedPair, bool matchingOwners, bool cachedPairMatches, bool expected)
     {
-        var policy = typeof(PowerGloveEquipment).GetMethod("CanRestoreSavedPair", BindingFlags.Static | BindingFlags.NonPublic)!;
-        policy.Invoke(null, new object[] { isPlayer, hasArea, equippedPair, matchingOwners, cachedPairMatches })
+        PowerGloveEquipment.CanRestoreSavedPair(isPlayer, hasArea, equippedPair, matchingOwners, cachedPairMatches)
             .Should().Be(expected);
     }
 

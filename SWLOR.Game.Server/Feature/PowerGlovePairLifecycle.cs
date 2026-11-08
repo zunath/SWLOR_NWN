@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature;
 
@@ -73,7 +74,7 @@ public static class PowerGlovePairLifecycle
         PowerGloveEquipment.CollectCompanions(item, companions, new HashSet<uint>());
         foreach (var companion in companions)
         {
-            var owner = GetLocalObject(companion, PowerGloveEquipment.OwnerVariable);
+            var owner = GetLocalObject(companion, PowerGloveEquipmentService.OwnerVariable);
             // Module callbacks can arrive after storage relocation and native equip finish.
             // Current linked ownership distinguishes that completed move from a real escape.
             if (PowerGloveEquipment.IsChanging(owner) || PowerGloveEquipment.IsEquippedCompanion(companion))
@@ -94,7 +95,7 @@ public static class PowerGlovePairLifecycle
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
         if (!PowerGloveEquipment.IsGeneratedCompanion(item)) return;
         if (PowerGloveEquipment.IsCreatingCompanion) return;
-        var owner = GetLocalObject(item, PowerGloveEquipment.OwnerVariable);
+        var owner = GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable);
         if (PowerGloveEquipment.IsChanging(owner) || PowerGloveEquipment.IsDestroyingCompanion(item)) return;
         EventsPlugin.SkipEvent();
         if (!GetIsObjectValid(owner) || PowerGloveEquipment.RemovePair(owner, item))
@@ -130,7 +131,7 @@ public static class PowerGlovePairLifecycle
                 PowerGloveEquipment.SanitizeCompanion(companion);
                 continue;
             }
-            var linkedOwner = GetLocalObject(companion, PowerGloveEquipment.OwnerVariable);
+            var linkedOwner = GetLocalObject(companion, PowerGloveEquipmentService.OwnerVariable);
             if (PowerGloveEquipment.IsEquippedCompanion(companion) ||
                 PowerGloveEquipment.TryRestoreSavedCompanion(companion) ||
                 PowerGloveEquipment.IsChanging(linkedOwner) && GetItemPossessor(companion) == linkedOwner)

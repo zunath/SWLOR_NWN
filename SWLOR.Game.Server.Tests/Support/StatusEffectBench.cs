@@ -209,7 +209,7 @@ public sealed class TestStatusEffectService : StatusEffectService
         ICapstoneProofService capstoneProof,
         IDBService db,
         IQuickCastService quickCast)
-        : base(resistance, pvpCombat, stealth, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof, db, quickCast)
+        : base(resistance, pvpCombat, stealth, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof, db, quickCast, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IAbilityService>())
     {
         _bench = bench;
     }

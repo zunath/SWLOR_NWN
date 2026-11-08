@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Entity;
@@ -117,7 +118,7 @@ public class EspionageInfiltrationServiceTests
     private sealed class BenchEspionage : EspionageInfiltrationService
     {
         public BenchEspionage(IDBService db, IAIService ai)
-            : base(db, ai)
+            : base(db, ai, FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISkillService>())
         {
         }
 

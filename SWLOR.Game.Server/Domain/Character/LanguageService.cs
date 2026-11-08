@@ -25,11 +25,15 @@ namespace SWLOR.Game.Server.Domain.Character
         private Dictionary<SkillType, ITranslator> _translators = new Dictionary<SkillType, ITranslator>();
         private readonly TranslatorGeneric _genericTranslator = new TranslatorGeneric();
         private readonly IDBService _db;
+        private readonly ISkillService _skill;
+        private readonly IStatService _stat;
         private IEnumerable<LanguageCommand> _languages;
 
-        public LanguageService(IDBService db)
+        public LanguageService(IDBService db, ISkillService skill, IStatService stat)
         {
             _db = db;
+            _skill = skill;
+            _stat = stat;
         }
 
         public void LoadTranslators()
@@ -343,31 +347,31 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The skill definition of a language: <c>Skill.GetSkillDetails</c>.</summary>
         protected virtual SkillAttribute GetSkillDetails(SkillType skill)
         {
-            return Skill.GetSkillDetails(skill);
+            return _skill.GetSkillDetails(skill);
         }
 
         /// <summary>Awards skill XP: <c>Skill.GiveSkillXP</c>.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses, bool applyHenchmanPenalty)
         {
-            return Skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
+            return _skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
         }
 
         /// <summary>The XP needed for a rank: <c>Skill.GetRequiredXP</c>.</summary>
         protected virtual int GetRequiredXP(int rank)
         {
-            return Skill.GetRequiredXP(rank);
+            return _skill.GetRequiredXP(rank);
         }
 
         /// <summary>The active skills of a category in display order: <c>Skill.GetActiveSkillsByCategoryForDisplay</c>.</summary>
         protected virtual Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategoryForDisplay(SkillCategoryType category)
         {
-            return Skill.GetActiveSkillsByCategoryForDisplay(category);
+            return _skill.GetActiveSkillsByCategoryForDisplay(category);
         }
 
         /// <summary>The stat adjustment from gear and effects: <c>Stat.GetStatAdjustment</c>.</summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat)
         {
-            return Stat.GetStatAdjustment(creature, stat);
+            return _stat.GetStatAdjustment(creature, stat);
         }
     }
 }

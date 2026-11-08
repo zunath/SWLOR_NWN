@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Tests.Support;
@@ -109,7 +110,7 @@ public class PlayerIntroductionServiceTests
     private sealed class BenchIntroductionService : PlayerIntroductionService
     {
         public BenchIntroductionService(IPlayerNameService names)
-            : base(names)
+            : base(names, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
         {
         }
 
@@ -380,7 +381,7 @@ public class PlayerIntroductionServiceTests
     private sealed class TestableDefaultSeams : PlayerIntroductionService
     {
         public TestableDefaultSeams()
-            : base(null!)
+            : base(null!, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
         {
         }
 

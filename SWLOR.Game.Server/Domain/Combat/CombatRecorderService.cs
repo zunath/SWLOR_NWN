@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -70,11 +72,15 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly IDMPresenceService _dmPresence;
         private readonly IDBService _db;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<IStatService> _stat;
 
-        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db)
+        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, Lazy<IAbilityService> ability, Lazy<IStatService> stat)
         {
             _dmPresence = dmPresence;
             _db = db;
+            _ability = ability;
+            _stat = stat;
         }
 
         /// <summary>
@@ -1638,24 +1644,24 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual void InstallEffectHooks() => CombatRecorderEffectHooks.Install();
 
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
 
         protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint creature) =>
-            Ability.GetActiveAbilityImpactSummary(creature);
+            _ability.Value.GetActiveAbilityImpactSummary(creature);
 
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => Service.Combat.GetEquippedWeaponSkillType(creature);
 
-        protected virtual int GetCurrentFP(uint creature, Player dbPlayer = null) => Stat.GetCurrentFP(creature, dbPlayer);
+        protected virtual int GetCurrentFP(uint creature, Player dbPlayer = null) => _stat.Value.GetCurrentFP(creature, dbPlayer);
 
-        protected virtual int GetMaxFP(uint creature, Player dbPlayer = null) => Stat.GetMaxFP(creature, dbPlayer);
+        protected virtual int GetMaxFP(uint creature, Player dbPlayer = null) => _stat.Value.GetMaxFP(creature, dbPlayer);
 
-        protected virtual int GetCurrentStamina(uint creature, Player dbPlayer = null) => Stat.GetCurrentStamina(creature, dbPlayer);
+        protected virtual int GetCurrentStamina(uint creature, Player dbPlayer = null) => _stat.Value.GetCurrentStamina(creature, dbPlayer);
 
-        protected virtual int GetMaxStamina(uint creature, Player dbPlayer = null) => Stat.GetMaxStamina(creature, dbPlayer);
+        protected virtual int GetMaxStamina(uint creature, Player dbPlayer = null) => _stat.Value.GetMaxStamina(creature, dbPlayer);
 
         protected virtual int GetTemporaryHitPoints(uint creature) => TemporaryHitPointEffects.GetRemaining(creature);
 

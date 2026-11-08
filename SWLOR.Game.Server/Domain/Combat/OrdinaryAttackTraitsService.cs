@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -16,6 +17,14 @@ namespace SWLOR.Game.Server.Domain.Combat;
 public class OrdinaryAttackTraitsService : IOrdinaryAttackTraitsService
 {
     private readonly Dictionary<uint, OrdinaryAttackHasteState> _states = new();
+    private readonly IStatService _stat;
+    private readonly IStatusEffectService _statusEffect;
+
+    public OrdinaryAttackTraitsService(IStatService stat, IStatusEffectService statusEffect)
+    {
+        _stat = stat;
+        _statusEffect = statusEffect;
+    }
 
     public void RecordTargetChange(uint actor, uint target)
     {
@@ -95,21 +104,21 @@ public class OrdinaryAttackTraitsService : IOrdinaryAttackTraitsService
     }
 
     /// <summary>The unconverted <c>Stat</c> service.</summary>
-    protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+    protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual OrdinaryAttackHasteStatusEffect GetHasteEffect(uint actor) =>
-        StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
+        _statusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual void RemoveHasteEffect(uint actor) =>
-        StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
+        _statusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual void RefreshHasteEffectDuration(uint actor, float remaining) =>
-        StatusEffect.RefreshStatusEffectDuration(actor, typeof(OrdinaryAttackHasteStatusEffect), actor, remaining);
+        _statusEffect.RefreshStatusEffectDuration(actor, typeof(OrdinaryAttackHasteStatusEffect), actor, remaining);
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual void ApplyHasteEffect(uint actor, int stacks, int hastePerStack, float remaining) =>
-        StatusEffect.ApplyStatusEffect(actor, actor, new OrdinaryAttackHasteStatusEffect(stacks, hastePerStack), remaining);
+        _statusEffect.ApplyStatusEffect(actor, actor, new OrdinaryAttackHasteStatusEffect(stacks, hastePerStack), remaining);
 }

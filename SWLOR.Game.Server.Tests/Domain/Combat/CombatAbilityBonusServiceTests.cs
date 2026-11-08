@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -115,7 +116,7 @@ public class CombatAbilityBonusServiceTests
                 ((Type[])args[1]!).Any(type => _statuses.Contains(((uint)args[0]!, type))));
         var enmity = ScriptedProxy.Create<IEnmityService>(out _enmityCalls);
         _enmityCalls.On(nameof(IEnmityService.ModifyEnmity), _ => null);
-        _modifiers = new TemporaryStatModifierService();
+        _modifiers = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
         _db = new InMemoryDBService();
 
         _service = new CombatAbilityBonusService(queries, resources, activity, timing, stat, statusEffect, _modifiers, enmity, _db);

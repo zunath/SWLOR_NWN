@@ -102,17 +102,23 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IQuickCastService _quickCast;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IStatusEffectService _statusEffect;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<IStatService> _stat;
 
         public PerkService(
             IDBService db,
             IQuickCastService quickCast,
             IBeastMasteryService beastMastery,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            Lazy<IAbilityService> ability,
+            Lazy<IStatService> stat)
         {
             _db = db;
             _quickCast = quickCast;
             _beastMastery = beastMastery;
             _statusEffect = statusEffect;
+            _ability = ability;
+            _stat = stat;
         }
 
         /// <summary>
@@ -1452,17 +1458,17 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
         {
-            return Ability.GetAllAbilityDetails();
+            return _ability.Value.GetAllAbilityDetails();
         }
 
         protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat)
         {
-            return Stat.GetStatAdjustment(creature, stat);
+            return _stat.Value.GetStatAdjustment(creature, stat);
         }
 
         protected virtual int AggregateStatAdjustment(StatType stat, int current, int adjustment)
         {
-            return Stat.AggregateStatAdjustment(stat, current, adjustment);
+            return _stat.Value.AggregateStatAdjustment(stat, current, adjustment);
         }
 
         protected virtual bool IsDroid(uint creature)

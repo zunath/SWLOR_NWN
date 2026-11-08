@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.LogService;
@@ -19,10 +20,14 @@ namespace SWLOR.Game.Server.Domain.Character
         private const float IntroductionDelaySeconds = 120f;
         private readonly PlayerIntroductionInbox _inbox = new();
         private readonly IPlayerNameService _playerName;
+        private readonly IDisguiseService _disguise;
+        private readonly IRecastService _recast;
 
-        public PlayerIntroductionService(IPlayerNameService playerName)
+        public PlayerIntroductionService(IPlayerNameService playerName, IDisguiseService disguise, IRecastService recast)
         {
             _playerName = playerName;
+            _disguise = disguise;
+            _recast = recast;
         }
 
         public void ClearOnExit()
@@ -144,19 +149,19 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The identity key of the player's active identity: <c>Disguise.GetIdentityKey</c>.</summary>
         protected virtual string GetDisguiseIdentityKey(uint player)
         {
-            return Disguise.GetIdentityKey(player);
+            return _disguise.GetIdentityKey(player);
         }
 
         /// <summary>The introduction recast check: <c>Recast.IsOnRecastDelay</c> for <c>RecastGroup.Introduction</c>.</summary>
         protected virtual (bool, string) IsOnIntroductionRecastDelay(uint presenter)
         {
-            return Recast.IsOnRecastDelay(presenter, RecastGroup.Introduction);
+            return _recast.IsOnRecastDelay(presenter, RecastGroup.Introduction);
         }
 
         /// <summary>Starts the introduction recast delay: <c>Recast.ApplyRecastDelay</c> for <c>RecastGroup.Introduction</c>.</summary>
         protected virtual void ApplyIntroductionRecastDelay(uint presenter, float delaySeconds)
         {
-            Recast.ApplyRecastDelay(presenter, RecastGroup.Introduction, delaySeconds);
+            _recast.ApplyRecastDelay(presenter, RecastGroup.Introduction, delaySeconds);
         }
 
         /// <summary>The structured log line: <c>Log.WriteStructured</c> (<c>Log</c> stays static in Phase 2).</summary>

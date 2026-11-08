@@ -321,7 +321,8 @@ public sealed class TestStatService : StatService
         IEnmityService enmity,
         IResistanceService resistance,
         IPvpCombatService pvpCombat)
-        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat)
+        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
+            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>())
     {
         _bench = bench;
     }

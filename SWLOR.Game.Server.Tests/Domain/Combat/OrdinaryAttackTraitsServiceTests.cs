@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -213,6 +214,11 @@ public class OrdinaryAttackTraitsServiceTests
 
     private sealed class TestTraits : OrdinaryAttackTraitsService
     {
+        public TestTraits()
+            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
+        {
+        }
+
         private int _perStack, _maximum, _cooldown, _duration;
         private OrdinaryAttackHasteStatusEffect? _current;
         public readonly List<(int Stacks, int PerStack, float Seconds)> Applied = new();

@@ -574,7 +574,8 @@ public sealed class TestAbilityService : AbilityService
         IStealthService stealth,
         IPairedRangedTraitsService pairedRangedTraits)
         : base(statusEffect, enmity, combatPoint, recast, telegraph, messaging, music, namedAnimation, mimicry, activity, party,
-            playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, pairedRangedTraits)
+            playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, pairedRangedTraits, FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<IPerkService>())
     {
         _bench = bench;
     }

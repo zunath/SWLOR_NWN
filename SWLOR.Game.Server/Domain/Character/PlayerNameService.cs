@@ -45,12 +45,21 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IDBService _db;
         private readonly IPlayerListService _playerList;
         private readonly IChatPortraitTellsService _chatPortraitTells;
+        private readonly Lazy<IDisguiseService> _disguise;
+        private readonly Lazy<IPlayerDescriptorService> _playerDescriptor;
 
-        public PlayerNameService(IDBService db, IPlayerListService playerList, IChatPortraitTellsService chatPortraitTells)
+        public PlayerNameService(
+            IDBService db,
+            IPlayerListService playerList,
+            IChatPortraitTellsService chatPortraitTells,
+            Lazy<IDisguiseService> disguise,
+            Lazy<IPlayerDescriptorService> playerDescriptor)
         {
             _db = db;
             _playerList = playerList;
             _chatPortraitTells = chatPortraitTells;
+            _disguise = disguise;
+            _playerDescriptor = playerDescriptor;
         }
 
         public void ReleaseKnownNamesOnExit()
@@ -225,7 +234,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             var playerId = GetObjectUUID(target);
             var disguise = GetActiveDisguise(target);
-            var identityKey = disguise == null ? playerId : Disguise.BuildIdentityKey(disguise.Id);
+            var identityKey = disguise == null ? playerId : _disguise.Value.BuildIdentityKey(disguise.Id);
             return $"{name} [PlayerId={playerId} IdentityKey={identityKey} Disguised={disguise != null} DisguiseId={disguise?.Id ?? "none"} DisguiseName={disguise?.PrivateName ?? "none"}]";
         }
 
@@ -354,7 +363,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             return dbKnownNames.KnownNames
                 .Where(x => !string.IsNullOrWhiteSpace(x.Value) &&
-                            !Disguise.IsDisguiseIdentityKey(x.Key) &&
+                            !_disguise.Value.IsDisguiseIdentityKey(x.Key) &&
                             x.Value.ToLower().Contains(sanitizedSearch))
                 .Select(x => x.Key)
                 .Take(maxResults)
@@ -967,37 +976,37 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The active disguise of a player: <c>Disguise.GetActiveDisguise</c>.</summary>
         protected virtual PlayerDisguise GetActiveDisguise(uint player)
         {
-            return Disguise.GetActiveDisguise(player);
+            return _disguise.Value.GetActiveDisguise(player);
         }
 
         /// <summary>The descriptor others see: <c>Disguise.GetDisplayDescriptor</c>.</summary>
         protected virtual string GetDisplayDescriptor(uint player)
         {
-            return Disguise.GetDisplayDescriptor(player);
+            return _disguise.Value.GetDisplayDescriptor(player);
         }
 
         /// <summary>The identity key of the player's active identity: <c>Disguise.GetIdentityKey</c>.</summary>
         protected virtual string GetIdentityKey(uint player)
         {
-            return Disguise.GetIdentityKey(player);
+            return _disguise.Value.GetIdentityKey(player);
         }
 
         /// <summary>Whether the account name is scrambled: <c>Disguise.ShouldScrambleAccountName</c>.</summary>
         protected virtual bool ShouldScrambleAccountName(uint player)
         {
-            return Disguise.ShouldScrambleAccountName(player);
+            return _disguise.Value.ShouldScrambleAccountName(player);
         }
 
         /// <summary>Generates a missing base descriptor: <c>PlayerDescriptor.EnsureUnknownDisplayName</c>.</summary>
         protected virtual bool EnsureUnknownDisplayName(uint player)
         {
-            return PlayerDescriptor.EnsureUnknownDisplayName(player);
+            return _playerDescriptor.Value.EnsureUnknownDisplayName(player);
         }
 
         /// <summary>The base descriptor of a stored player: <c>PlayerDescriptor.GetUnknownDisplayNameByPlayerId</c>.</summary>
         protected virtual string GetUnknownDisplayNameByPlayerId(string targetPlayerId)
         {
-            return PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId);
+            return _playerDescriptor.Value.GetUnknownDisplayNameByPlayerId(targetPlayerId);
         }
     }
 }

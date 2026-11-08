@@ -58,6 +58,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IResistanceService _resistance;
         private readonly IStealthService _stealth;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
+        private readonly IStatService _stat;
+        private readonly IPerkService _perk;
 
         private readonly Dictionary<uint, AbilityActiveActivation> _activeAbilityActivations = new();
         private readonly Dictionary<uint, WeaponAbilityTraitActivation> _queuedWeaponTraits = new();
@@ -81,7 +83,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICapstoneProofService capstoneProof,
             IResistanceService resistance,
             IStealthService stealth,
-            IPairedRangedTraitsService pairedRangedTraits)
+            IPairedRangedTraitsService pairedRangedTraits,
+            IStatService stat,
+            IPerkService perk)
         {
             _statusEffect = statusEffect;
             _enmity = enmity;
@@ -101,6 +105,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _resistance = resistance;
             _stealth = stealth;
             _pairedRangedTraits = pairedRangedTraits;
+            _stat = stat;
+            _perk = perk;
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
@@ -4019,43 +4025,43 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual bool IsPlayerInSpaceMode(uint player) => Service.Space.IsPlayerInSpaceMode(player);
 
-        protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) => Stat.GetStatSources(creature, payloadStat);
+        protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) => _stat.GetStatSources(creature, payloadStat);
 
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
-        protected virtual int GetCombatReadinessPercent(uint creature) => Stat.GetCombatReadinessPercent(creature);
+        protected virtual int GetCombatReadinessPercent(uint creature) => _stat.GetCombatReadinessPercent(creature);
 
-        protected virtual int RestoreFP(uint creature, int amount) => Stat.RestoreFP(creature, amount);
+        protected virtual int RestoreFP(uint creature, int amount) => _stat.RestoreFP(creature, amount);
 
-        protected virtual int GetAttack(uint creature, AbilityType abilityType, SkillType skillType) => Stat.GetAttack(creature, abilityType, skillType);
+        protected virtual int GetAttack(uint creature, AbilityType abilityType, SkillType skillType) => _stat.GetAttack(creature, abilityType, skillType);
 
-        protected virtual int GetAttack(int level, int stat, int bonus) => Stat.GetAttack(level, stat, bonus);
+        protected virtual int GetAttack(int level, int stat, int bonus) => _stat.GetAttack(level, stat, bonus);
 
-        protected virtual int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType) => Stat.GetDefense(creature, type, abilityType);
+        protected virtual int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType) => _stat.GetDefense(creature, type, abilityType);
 
-        protected virtual NPCStats GetNPCStats(uint npc) => Stat.GetNPCStats(npc);
+        protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);
 
-        protected virtual int GetCurrentFP(uint creature) => Stat.GetCurrentFP(creature);
+        protected virtual int GetCurrentFP(uint creature) => _stat.GetCurrentFP(creature);
 
-        protected virtual int GetMaxFP(uint creature) => Stat.GetMaxFP(creature);
+        protected virtual int GetMaxFP(uint creature) => _stat.GetMaxFP(creature);
 
-        protected virtual int GetCurrentStamina(uint creature) => Stat.GetCurrentStamina(creature);
+        protected virtual int GetCurrentStamina(uint creature) => _stat.GetCurrentStamina(creature);
 
-        protected virtual int GetMaxStamina(uint creature) => Stat.GetMaxStamina(creature);
+        protected virtual int GetMaxStamina(uint creature) => _stat.GetMaxStamina(creature);
 
-        protected virtual float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType) => Perk.GetForceAffinityMagnitudeMultiplier(creature, perkType);
+        protected virtual float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType) => _perk.GetForceAffinityMagnitudeMultiplier(creature, perkType);
 
-        protected virtual float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType) => Perk.GetForceAffinityRestorativeMagnitudeMultiplier(creature, perkType);
+        protected virtual float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType) => _perk.GetForceAffinityRestorativeMagnitudeMultiplier(creature, perkType);
 
-        protected virtual int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount) => Perk.ApplyForceAffinityRestorativeMagnitude(creature, perkType, amount);
+        protected virtual int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityRestorativeMagnitude(creature, perkType, amount);
 
-        protected virtual int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => Perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
+        protected virtual int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
 
-        protected virtual float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount) => Perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
+        protected virtual float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
 
-        protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => Perk.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
+        protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _perk.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
 
-        protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => Perk.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
+        protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => _perk.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
 
         protected virtual SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => Service.Combat.GetAbilitySkillType(creature, ability);
 

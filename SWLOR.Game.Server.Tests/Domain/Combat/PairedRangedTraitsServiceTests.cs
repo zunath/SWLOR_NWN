@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -413,7 +415,7 @@ public class PairedRangedTraitsServiceTests
         public bool DualWield;
 
         public TestTraits(ITwinPistolMasteryService mastery)
-            : base(mastery)
+            : base(mastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

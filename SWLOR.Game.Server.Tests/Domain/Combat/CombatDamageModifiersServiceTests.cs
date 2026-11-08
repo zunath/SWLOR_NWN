@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -215,7 +216,7 @@ public class CombatDamageModifiersServiceTests
             _feedback.Add($"{args[1]} {args[0]}");
             return null;
         });
-        _modifiers = new TemporaryStatModifierService();
+        _modifiers = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
 
         _service = new TestDamageModifiers(queries, resources, stat, _statusEffect, _modifiers, ability, feedback);
     }

@@ -204,6 +204,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly ICapstoneProofService _capstoneProof;
         private readonly IDBService _db;
         private readonly IQuickCastService _quickCast;
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IAbilityService> _ability;
 
         public StatusEffectService(
             IResistanceService resistance,
@@ -216,7 +218,9 @@ namespace SWLOR.Game.Server.Domain.Character
             IGuiService gui,
             ICapstoneProofService capstoneProof,
             IDBService db,
-            IQuickCastService quickCast)
+            IQuickCastService quickCast,
+            Lazy<IStatService> stat,
+            Lazy<IAbilityService> ability)
         {
             _resistance = resistance;
             _pvpCombat = pvpCombat;
@@ -229,6 +233,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _capstoneProof = capstoneProof;
             _db = db;
             _quickCast = quickCast;
+            _stat = stat;
+            _ability = ability;
         }
 
         /// <summary>
@@ -2678,15 +2684,15 @@ namespace SWLOR.Game.Server.Domain.Character
                 .Where(w => typeof(StatusEffectBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
-        protected virtual void ReapplyFoodHP(uint player) => Stat.ReapplyFoodHP(player);
+        protected virtual void ReapplyFoodHP(uint player) => _stat.Value.ReapplyFoodHP(player);
 
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
 
-        protected virtual void ApplyCreatureMovementRate(uint creature) => Stat.ApplyCreatureMovementRate(creature);
+        protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.Value.ApplyCreatureMovementRate(creature);
 
-        protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
-        protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => Ability.GetActiveAbilityImpactSummary(activator);
+        protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => _ability.Value.GetActiveAbilityImpactSummary(activator);
 
         protected virtual void ApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory appliedCategories)
         {

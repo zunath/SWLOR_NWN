@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -32,10 +33,12 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     private readonly Dictionary<uint, (uint Item, InventorySlot Slot)> _failedReturns = new();
 
     private readonly IItemService _item;
+    private readonly Lazy<ISkillService> _skill;
 
-    public TwinPistolEquipmentService(IItemService item)
+    public TwinPistolEquipmentService(IItemService item, Lazy<ISkillService> skill)
     {
         _item = item;
+        _skill = skill;
     }
 
     public bool IsChanging(uint creature) => _changing.Contains(creature);
@@ -380,5 +383,5 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
         EquippedItemAppearance.Refresh(creature, item);
 
     /// <summary>The unconverted <c>Skill</c> service.</summary>
-    protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => Skill.GetSkillTypeByBaseItem(baseItem);
+    protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => _skill.Value.GetSkillTypeByBaseItem(baseItem);
 }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -229,6 +230,11 @@ public class PoisonsServiceTests
 
     private sealed class TestPoisons : PoisonsService
     {
+        public TestPoisons()
+            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatPointService>())
+        {
+        }
+
         public DateTime Now { get; set; }
         public IStatusEffect? Existing { get; set; }
         public bool ApplyResult { get; set; } = true;

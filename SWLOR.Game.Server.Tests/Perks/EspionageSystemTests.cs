@@ -619,7 +619,7 @@ public class EspionageSystemTests
         var credit = calls.Single(call => call.Expression.ToString() == "AddEspionageCombatPoint");
         credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
             .Equal("attacker", "defender");
-        source.Should().Contain("CombatPoint.AddCombatPoint(player, creature, SkillType.Espionage)");
+        source.Should().Contain("_combatPoint.AddCombatPoint(player, creature, SkillType.Espionage)");
         credit.Ancestors().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>()
             .Should().Contain(statement => statement.Condition.ToString() == "applied");
         source.Should().Contain("venom != null && !venom.IsFlaggedForRemoval");

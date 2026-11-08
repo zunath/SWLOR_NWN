@@ -28,11 +28,13 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IPlayerNameService _playerName;
+        private readonly Lazy<IDisguiseService> _disguise;
 
-        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName)
+        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName, Lazy<IDisguiseService> disguise)
         {
             _db = db;
             _playerName = playerName;
+            _disguise = disguise;
         }
 
         private readonly AbilityType[] DescriptorAbilityTypes =
@@ -323,7 +325,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The identity key of the player's active identity: <c>Disguise.GetIdentityKey</c>.</summary>
         protected virtual string GetDisguiseIdentityKey(uint player)
         {
-            return Disguise.GetIdentityKey(player);
+            return _disguise.Value.GetIdentityKey(player);
         }
     }
 }

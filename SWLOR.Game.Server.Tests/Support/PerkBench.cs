@@ -202,7 +202,7 @@ public sealed class TestPerkService : PerkService
         IQuickCastService quickCast,
         IBeastMasteryService beastMastery,
         IStatusEffectService statusEffect)
-        : base(db, quickCast, beastMastery, statusEffect)
+        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
     {
         _bench = bench;
     }

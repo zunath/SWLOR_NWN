@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatRecorderService;
@@ -36,9 +37,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         };
 
         private readonly Type[] _allStatusEffects;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly ICombatRecorderService _combatRecorder;
 
-        public PvpCombatService()
+        public PvpCombatService(Lazy<IStatusEffectService> statusEffect, ICombatRecorderService combatRecorder)
         {
+            _statusEffect = statusEffect;
+            _combatRecorder = combatRecorder;
             _allStatusEffects = new[] { typeof(PvpCombatStatusEffect) }.Concat(_healingStepStatusEffects).ToArray();
         }
 
@@ -311,21 +316,21 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
 
-        protected virtual bool IsRecording() => CombatRecorder.IsRecording;
+        protected virtual bool IsRecording() => _combatRecorder.IsRecording;
 
         protected virtual void RecordPvpHealingReduced(uint target, int requested, int reduced) =>
-            CombatRecorder.RecordPvpHealingReduced(target, requested, reduced);
+            _combatRecorder.RecordPvpHealingReduced(target, requested, reduced);
 
         protected virtual IDisposable ScheduleRepeating(Action task, TimeSpan schedule) =>
             Scheduler.ScheduleRepeating(task, schedule);
 
         protected virtual bool HasStatusEffect(uint creature, Type statusEffectClass) =>
-            StatusEffect.HasStatusEffect(creature, statusEffectClass);
+            _statusEffect.Value.HasStatusEffect(creature, statusEffectClass);
 
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectClass, bool sendsWornOffMessage) =>
-            StatusEffect.RemoveStatusEffect(creature, statusEffectClass, sendsWornOffMessage);
+            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectClass, sendsWornOffMessage);
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            StatusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
+            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
     }
 }

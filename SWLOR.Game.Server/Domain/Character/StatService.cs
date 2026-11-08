@@ -89,6 +89,9 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IEnmityService _enmity;
         private readonly IResistanceService _resistance;
         private readonly IPvpCombatService _pvpCombat;
+        private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
+        private readonly ITemporaryStatModifierService _temporaryStatModifier;
 
         public StatService(
             IDBService db,
@@ -103,7 +106,10 @@ namespace SWLOR.Game.Server.Domain.Character
             IBeastMasteryService beastMastery,
             IEnmityService enmity,
             IResistanceService resistance,
-            IPvpCombatService pvpCombat)
+            IPvpCombatService pvpCombat,
+            IPerkService perk,
+            ISkillService skill,
+            ITemporaryStatModifierService temporaryStatModifier)
         {
             _db = db;
             _combatRecorder = combatRecorder;
@@ -118,6 +124,9 @@ namespace SWLOR.Game.Server.Domain.Character
             _enmity = enmity;
             _resistance = resistance;
             _pvpCombat = pvpCombat;
+            _perk = perk;
+            _skill = skill;
+            _temporaryStatModifier = temporaryStatModifier;
         }
 
         /// <summary>
@@ -3267,29 +3276,29 @@ namespace SWLOR.Game.Server.Domain.Character
         // hot reads among them (the perk and temporary stat reads) add one virtual dispatch and no allocation.
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetPerkStatSources(uint creature, StatType payloadStat) =>
-            Perk.GetStatSources(creature, payloadStat);
+            _perk.GetStatSources(creature, payloadStat);
 
-        protected virtual int GetPerkStatBonus(uint creature, StatType stat) => Perk.GetStatBonus(creature, stat);
+        protected virtual int GetPerkStatBonus(uint creature, StatType stat) => _perk.GetStatBonus(creature, stat);
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetTemporaryStatSources(uint creature, StatType payloadStat) =>
-            TemporaryStatModifier.GetStatSources(creature, payloadStat);
+            _temporaryStatModifier.GetStatSources(creature, payloadStat);
 
         protected virtual int GetTemporaryStatAdjustment(uint creature, StatType stat) =>
-            TemporaryStatModifier.GetStatAdjustment(creature, stat);
+            _temporaryStatModifier.GetStatAdjustment(creature, stat);
 
         protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
-            TemporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
+            _temporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
 
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint creature) =>
             TemporaryHitPointEffects.ScheduleLimitCheck(creature);
 
         protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
 
-        protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => Service.Skill.GetSkillTypeByBaseItem(baseItem);
+        protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => _skill.GetSkillTypeByBaseItem(baseItem);
 
-        protected virtual SkillType GetWeaponSkill(uint creature, uint weapon) => Service.Skill.GetWeaponSkill(creature, weapon);
+        protected virtual SkillType GetWeaponSkill(uint creature, uint weapon) => _skill.GetWeaponSkill(creature, weapon);
 
-        protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => Service.Skill.GetSkillDetails(skillType);
+        protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => _skill.GetSkillDetails(skillType);
 
         protected virtual IReadOnlyList<CombatDamageType> GetDefenseDamageTypes() => Service.Combat.GetDefenseDamageTypes();
 

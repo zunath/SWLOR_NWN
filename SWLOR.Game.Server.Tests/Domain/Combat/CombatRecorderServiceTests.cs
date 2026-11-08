@@ -3,7 +3,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
@@ -1269,7 +1271,7 @@ public class CombatRecorderServiceTests
     private sealed class PlainRecorder : CombatRecorderService
     {
         public PlainRecorder(IDMPresenceService presence, IDBService db)
-            : base(presence, db)
+            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
         {
         }
 
@@ -1293,7 +1295,7 @@ public class CombatRecorderServiceTests
         private readonly string _logDirectory;
 
         public Probe(IDMPresenceService presence, IDBService db, string logDirectory)
-            : base(presence, db)
+            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
         {
             _logDirectory = logDirectory;
         }

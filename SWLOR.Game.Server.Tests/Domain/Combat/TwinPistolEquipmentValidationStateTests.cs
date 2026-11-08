@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
@@ -12,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 [TestFixture]
 public class TwinPistolEquipmentValidationStateTests
 {
-    private static TwinPistolEquipmentService Create() => new(null!);
+    private static TwinPistolEquipmentService Create() => new(null!, FacadeForwarder.LazyFor<ISkillService>());
 
     [Test]
     public void Revalidation_DoesNotNestAndEndsPerCreature()

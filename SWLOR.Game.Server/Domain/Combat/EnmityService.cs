@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Who each enemy hates and why: the enmity tables, the aggro-proximity share of them, the attack commands that
     /// follow the highest target, and the taunt, healing and damage rules that feed them. The logic that used to be
     /// static in <c>Service.Enmity</c> is moved here unchanged; the tables are this instance's own fields and are read
-    /// per damage event and per attack without being rebuilt. The facade keeps the event handlers and forwards every call
-    /// to the container's instance. Calls into the unconverted hot core and feature code sit behind one-line
+    /// per damage event and per attack without being rebuilt. The event handlers run on the container's instance; static
+    /// callers reach it through <c>GameServices.Enmity</c>. Calls into the unconverted hot core and feature code sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
     public class EnmityService : IEnmityService
@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
         public void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         // Healing events can nest when healing riders fire. Pair each before/after observation.
         private readonly Dictionary<uint, Stack<(uint Source, int HitPoints, long NestedHealing)>> _healingHitPoints = new();
+        [NWNEventHandler(ScriptName.OnHealBefore)]
         public void HealingStarted()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _healingHitPoints[target] = values = new Stack<(uint, int, long)>();
             values.Push((OBJECT_SELF, GetCurrentHitPoints(target), 0));
         }
+        [NWNEventHandler(ScriptName.OnHealAfter)]
         public void HealingCompleted()
         {
             var source = OBJECT_SELF;
@@ -153,6 +156,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
         public void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
@@ -164,6 +168,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public void CreatureDeath()
         {
             var enemy = OBJECT_SELF;
@@ -174,6 +179,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public void CreatureDestroyed()
         {
             var enemy = OBJECT_SELF;
@@ -184,6 +190,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void PlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -193,6 +200,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void PlayerExit()
         {
             var player = GetExitingObject();
@@ -202,6 +211,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnDMLimboBefore)]
         public void CreatureLimbo()
         {
             var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));

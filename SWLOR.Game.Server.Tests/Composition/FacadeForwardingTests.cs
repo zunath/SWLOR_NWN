@@ -264,12 +264,18 @@ public class FacadeForwardingTests
         if (service.RemovedFacade is { } removed)
         {
             // The facade is gone (P2-Z): its handlers moved onto the instance methods it forwarded to, each renamed in
-            // tools/Refactor/HandlerRenames.txt, and the script registry binds them to the container's singleton.
+            // tools/Refactor/HandlerRenames.txt, and the script registry binds them to the container's singleton. A line
+            // names master's handler, which for an earlier move is not on the removed facade
+            // (Service.CombatService.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a
+            // line belongs to this service when its master name is on the removed facade or its branch name on the instance.
             var moved = service.Instance.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
                 .ToList();
             moved.Select(method => service.Instance.FullName + "." + method.Name).Should().BeEquivalentTo(
-                ConvertedServiceFixtures.HandlerRenames().Where(rename => rename.Master.StartsWith(removed + ".", StringComparison.Ordinal)).Select(rename => rename.Branch),
+                ConvertedServiceFixtures.HandlerRenames()
+                    .Where(rename => rename.Master.StartsWith(removed + ".", StringComparison.Ordinal) ||
+                                     rename.Branch.StartsWith(service.Instance.FullName + ".", StringComparison.Ordinal))
+                    .Select(rename => rename.Branch),
                 "the instance keeps exactly the handlers its facade had, under the names HandlerRenames.txt gives them");
             moved.Should().OnlyContain(method => method.IsPublic && !method.IsStatic && method.GetParameters().Length == 0 &&
                                                  (method.ReturnType == typeof(void) || method.ReturnType == typeof(bool)),

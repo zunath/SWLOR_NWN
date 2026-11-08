@@ -3,6 +3,8 @@ using System.Numerics;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -71,8 +73,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : BattleGrid.DefaultSettings;
             IsPlaced = GetIsObjectValid(area) && BattleGrid.IsPlaced(area);
 
-            var squaresWide = settings.SectionsWide * BattleGrid.SquaresPerSection;
-            var squaresLong = settings.SectionsLong * BattleGrid.SquaresPerSection;
+            var squaresWide = settings.SectionsWide * BattleGridService.SquaresPerSection;
+            var squaresLong = settings.SectionsLong * BattleGridService.SquaresPerSection;
             var sections = settings.SectionsWide * settings.SectionsLong;
             var drawn = IsPlaced ? BattleGrid.GetDrawnSections(area) : 0;
             StatusText = !IsPlaced
@@ -168,10 +170,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         public Action OnSquareSizeDown() => () =>
-            ChangeSettings(settings => settings with { SquareSize = settings.SquareSize - BattleGrid.SquareSizeStep });
+            ChangeSettings(settings => settings with { SquareSize = settings.SquareSize - BattleGridService.SquareSizeStep });
 
         public Action OnSquareSizeUp() => () =>
-            ChangeSettings(settings => settings with { SquareSize = settings.SquareSize + BattleGrid.SquareSizeStep });
+            ChangeSettings(settings => settings with { SquareSize = settings.SquareSize + BattleGridService.SquareSizeStep });
 
         public Action OnWidthDown() => () =>
             ChangeSettings(settings => settings with { SectionsWide = settings.SectionsWide - 1 });
@@ -186,10 +188,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangeSettings(settings => settings with { SectionsLong = settings.SectionsLong + 1 });
 
         public Action OnHeightDown() => () =>
-            ChangeSettings(settings => settings with { Height = settings.Height - BattleGrid.HeightStep });
+            ChangeSettings(settings => settings with { Height = settings.Height - BattleGridService.HeightStep });
 
         public Action OnHeightUp() => () =>
-            ChangeSettings(settings => settings with { Height = settings.Height + BattleGrid.HeightStep });
+            ChangeSettings(settings => settings with { Height = settings.Height + BattleGridService.HeightStep });
 
         public Action OnMoveNorth() => () => Move(0, 1);
 

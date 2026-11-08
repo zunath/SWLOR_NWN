@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadResistanceTypes()
         {
             _allResistanceTypes.Clear();

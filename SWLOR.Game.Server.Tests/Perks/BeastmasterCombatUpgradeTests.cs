@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -119,8 +120,8 @@ public class BeastmasterCombatUpgradeTests
             .Calculate(0);
         var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment];
 
-        focusAttention.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
-        guardingBond.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
+        focusAttention.Should().BeLessThanOrEqualTo(EnmityService.MaximumEnmityPercentAdjustment);
+        guardingBond.Should().BeLessThanOrEqualTo(EnmityService.MaximumEnmityPercentAdjustment);
     }
 
     [Test]

@@ -21,6 +21,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -237,7 +238,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var anchors = new List<uint>();
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
-                if (GetTag(obj) == BattleGrid.AnchorTag)
+                if (GetTag(obj) == BattleGridService.AnchorTag)
                     anchors.Add(obj);
             }
 

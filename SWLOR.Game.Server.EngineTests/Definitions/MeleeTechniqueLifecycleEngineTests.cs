@@ -34,6 +34,8 @@ public static class MeleeTechniqueLifecycleEngineTests
     [EngineTest("Player subdual clears other fighters' setup, Flow and counter references in the native death event", Category = "MeleeTechnique", TimeoutSeconds = 45f)]
     public static async Task PlayerSubdualClearsTargetReferences(EngineTestContext context)
     {
+        // Death.OnPlayerDeath is a method group on the container's DeathService, so it equals the handler the registry bound
+        // to that singleton (a lambda would not).
         AssertObserverOrder(context, ScriptName.OnModuleDeath, ObservePlayerDeath,
             Death.OnPlayerDeath, MeleeTechnique.OnPlayerDeath);
         AssertObserverOrder(context, ScriptName.OnModuleHeartbeat, ObserveHeartbeat, MeleeTechnique.RefreshAll);

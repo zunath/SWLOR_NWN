@@ -157,7 +157,8 @@ public class FacadeForwardingTests
     // A facade member with no interface behind it forwards to the rule of the same name and parameter types of the service's
     // rules class (it needs no container: the Beast constructors call Combat.CreateDefaultDefenseValues). Its body is that
     // one call with its parameters in order: the compiled method loads each argument once, in order, calls the rule and
-    // returns (a Debug build may add a nop and keep the result in a local first).
+    // returns (a Debug build may add a nop and keep the result in a local first, and a coverage run records a hit first:
+    // the instrumentation's "load the hit index, call its tracker" pair is skipped).
     private static void AssertForwardsToItsRule(ConvertedServiceTypes service, MethodInfo method)
     {
         var label = $"{service.Facade!.Name}.{method.Name}";
@@ -175,6 +176,12 @@ public class FacadeForwardingTests
         var returned = false;
         while (position < il.Length)
         {
+            if (CoverageHitAt(method, il, position) is { } next)
+            {
+                position = next;
+                continue;
+            }
+
             var code = il[position++];
             switch (code)
             {
@@ -211,6 +218,26 @@ public class FacadeForwardingTests
         called.Should().Equal(new[] { rule }, $"{label} makes exactly one call, to {rules!.Name}.{rule.Name}");
         loaded.Should().Equal(Enumerable.Range(0, method.GetParameters().Length), $"{label} passes its parameters in order");
         returned.Should().BeTrue(label);
+    }
+
+    // Where the IL at a position is the hit a coverage run inserts (an ldc.i4 form loading the hit index, then a call to a
+    // method of coverlet's tracker class, namespace Coverlet.*), the position after that pair; otherwise null.
+    private static int? CoverageHitAt(MethodInfo method, byte[] il, int position)
+    {
+        var code = il[position];
+        var operand = code switch
+        {
+            >= 0x15 and <= 0x1E => 0, // ldc.i4.m1 to ldc.i4.8
+            0x1F => 1, // ldc.i4.s
+            0x20 => 4, // ldc.i4
+            _ => -1,
+        };
+        var call = position + 1 + operand;
+        if (operand < 0 || call + 5 > il.Length || il[call] != 0x28)
+            return null;
+
+        var target = method.Module.ResolveMethod(BitConverter.ToInt32(il, call + 1));
+        return target?.DeclaringType?.Namespace?.StartsWith("Coverlet", StringComparison.Ordinal) == true ? call + 5 : null;
     }
 
     [TestCaseSource(nameof(Services))]

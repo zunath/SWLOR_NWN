@@ -25,7 +25,7 @@ namespace SWLOR.CraftSim.Tests.Progression
 
             path.Steps.Select(s => s.Rank).Should().Equal(Enumerable.Range(0, 50));
             path.RequiredXp.Should().Be(411_125);
-            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(Skill.GetRequiredXP));
+            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(level => Skill.GetRequiredXP(level)));
             path.Steps.Should().OnlyContain(s => s.XpPerSecond > 0);
         }
 

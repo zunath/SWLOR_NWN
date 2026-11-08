@@ -265,7 +265,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 for (var researchLevel = 1; researchLevel <= 10; researchLevel++)
                 {
                     // Generous inputs: 6 actions, the 25% cap always reached, a 0 s overhead.
-                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, Skill.GetDeltaXP);
+                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, delta => Skill.GetDeltaXP(delta));
                     worst = Math.Max(worst, row.XpPerHour);
                 }
             }

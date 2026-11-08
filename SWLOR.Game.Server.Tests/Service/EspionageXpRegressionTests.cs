@@ -95,8 +95,8 @@ public class EspionageXpRegressionTests
     [Test]
     public void TheXpChartTheyShareIsUnchanged()
     {
-        Enumerable.Range(-6, 15).Select(Skill.GetDeltaXP)
+        Enumerable.Range(-6, 15).Select(delta => Skill.GetDeltaXP(delta))
             .Should().Equal(0, 0, 76, 150, 300, 450, 600, 676, 750, 900, 976, 1050, 1200, 1200, 1200);
-        Enumerable.Range(0, 50).Sum(Skill.GetRequiredXP).Should().Be(411_125);
+        Enumerable.Range(0, 50).Sum(level => Skill.GetRequiredXP(level)).Should().Be(411_125);
     }
 }

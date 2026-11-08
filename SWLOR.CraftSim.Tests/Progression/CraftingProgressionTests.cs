@@ -31,7 +31,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             var path = PerfectCrafter();
 
             path.Steps.Select(s => s.Rank).Should().Equal(Enumerable.Range(0, 50));
-            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(Skill.GetRequiredXP));
+            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(level => Skill.GetRequiredXP(level)));
             path.RequiredXp.Should().Be(411_125);
         }
 

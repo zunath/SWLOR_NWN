@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return StartingExperience(playerSkill.Rank) + playerSkill.XP;
         }
 
-        private static int StartingExperience(int rank) => Enumerable.Range(0, rank).Sum(Skill.GetRequiredXP);
+        private static int StartingExperience(int rank) => Enumerable.Range(0, rank).Sum(level => Skill.GetRequiredXP(level));
 
         private static int AfterPenalty(int xp) => xp - (int)(xp * 0.3f);
 

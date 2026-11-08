@@ -35,27 +35,27 @@ public class StatPlayerRecordCharacterizationTests
 
     private static readonly (string Name, Action<Player, int> Adjust, Func<Player, int> Read)[] RecordAdjustments =
     {
-        (nameof(Stat.AdjustAccuracy), Stat.AdjustAccuracy, player => player.Accuracy),
-        (nameof(Stat.AdjustAttack), Stat.AdjustAttack, player => player.Attack),
-        (nameof(Stat.AdjustCombatReadiness), Stat.AdjustCombatReadiness, player => player.CombatReadiness),
-        (nameof(Stat.AdjustDetection), Stat.AdjustDetection, player => player.Detection),
-        (nameof(Stat.AdjustEvasion), Stat.AdjustEvasion, player => player.Evasion),
-        (nameof(Stat.AdjustForceAttack), Stat.AdjustForceAttack, player => player.ForceAttack),
-        (nameof(Stat.AdjustFPRegen), Stat.AdjustFPRegen, player => player.FPRegen),
-        (nameof(Stat.AdjustHPRegen), Stat.AdjustHPRegen, player => player.HPRegen),
-        (nameof(Stat.AdjustLockpicking), Stat.AdjustLockpicking, player => player.Lockpicking),
-        (nameof(Stat.AdjustPoisonBonus), Stat.AdjustPoisonBonus, player => player.PoisonBonus),
-        (nameof(Stat.AdjustSTMRegen), Stat.AdjustSTMRegen, player => player.STMRegen),
-        (nameof(Stat.AdjustStealth), Stat.AdjustStealth, player => player.Stealth),
-        (nameof(Stat.AdjustTrapBonus), Stat.AdjustTrapBonus, player => player.TrapBonus),
-        (nameof(Stat.AdjustTrapDisarm), Stat.AdjustTrapDisarm, player => player.TrapDisarm),
+        (nameof(Stat.AdjustAccuracy), (player, amount) => Stat.AdjustAccuracy(player, amount), player => player.Accuracy),
+        (nameof(Stat.AdjustAttack), (player, amount) => Stat.AdjustAttack(player, amount), player => player.Attack),
+        (nameof(Stat.AdjustCombatReadiness), (player, amount) => Stat.AdjustCombatReadiness(player, amount), player => player.CombatReadiness),
+        (nameof(Stat.AdjustDetection), (player, amount) => Stat.AdjustDetection(player, amount), player => player.Detection),
+        (nameof(Stat.AdjustEvasion), (player, amount) => Stat.AdjustEvasion(player, amount), player => player.Evasion),
+        (nameof(Stat.AdjustForceAttack), (player, amount) => Stat.AdjustForceAttack(player, amount), player => player.ForceAttack),
+        (nameof(Stat.AdjustFPRegen), (player, amount) => Stat.AdjustFPRegen(player, amount), player => player.FPRegen),
+        (nameof(Stat.AdjustHPRegen), (player, amount) => Stat.AdjustHPRegen(player, amount), player => player.HPRegen),
+        (nameof(Stat.AdjustLockpicking), (player, amount) => Stat.AdjustLockpicking(player, amount), player => player.Lockpicking),
+        (nameof(Stat.AdjustPoisonBonus), (player, amount) => Stat.AdjustPoisonBonus(player, amount), player => player.PoisonBonus),
+        (nameof(Stat.AdjustSTMRegen), (player, amount) => Stat.AdjustSTMRegen(player, amount), player => player.STMRegen),
+        (nameof(Stat.AdjustStealth), (player, amount) => Stat.AdjustStealth(player, amount), player => player.Stealth),
+        (nameof(Stat.AdjustTrapBonus), (player, amount) => Stat.AdjustTrapBonus(player, amount), player => player.TrapBonus),
+        (nameof(Stat.AdjustTrapDisarm), (player, amount) => Stat.AdjustTrapDisarm(player, amount), player => player.TrapDisarm),
     };
 
     private static readonly (string Name, Action<Player, SkillType, int> Adjust, Func<Player, Dictionary<SkillType, int>> Read)[] SkillAdjustments =
     {
-        (nameof(Stat.AdjustControl), Stat.AdjustControl, player => player.Control),
-        (nameof(Stat.AdjustCPBonus), Stat.AdjustCPBonus, player => player.CPBonus),
-        (nameof(Stat.AdjustCraftsmanship), Stat.AdjustCraftsmanship, player => player.Craftsmanship),
+        (nameof(Stat.AdjustControl), (player, skill, amount) => Stat.AdjustControl(player, skill, amount), player => player.Control),
+        (nameof(Stat.AdjustCPBonus), (player, skill, amount) => Stat.AdjustCPBonus(player, skill, amount), player => player.CPBonus),
+        (nameof(Stat.AdjustCraftsmanship), (player, skill, amount) => Stat.AdjustCraftsmanship(player, skill, amount), player => player.Craftsmanship),
     };
 
     [Test]

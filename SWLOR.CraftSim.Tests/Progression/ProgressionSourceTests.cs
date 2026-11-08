@@ -83,7 +83,7 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void RankFiftyCostsTheXpTheOwnerQuotes()
         {
-            Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP).Should().Be(411_125);
+            Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(level => Skill.GetRequiredXP(level)).Should().Be(411_125);
         }
     }
 }

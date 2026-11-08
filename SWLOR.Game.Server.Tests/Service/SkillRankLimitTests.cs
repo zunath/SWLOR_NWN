@@ -509,7 +509,7 @@ public class SkillRankLimitTests
         Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
             .Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 30 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11));
 
-        var expectedToMax = Enumerable.Range(10, 40).Sum(Skill.GetRequiredXP) - 30;
+        var expectedToMax = Enumerable.Range(10, 40).Sum(level => Skill.GetRequiredXP(level)) - 30;
         Skill.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(expectedToMax);
     }
 

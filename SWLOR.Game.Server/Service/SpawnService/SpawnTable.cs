@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public SpawnTable(string name)
         {
             Name = name;
-            RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
-            RespawnDelayMaximumMinutes = Spawn.DefaultRespawnMinutes;
+            RespawnDelayMinutes = Domain.Creatures.SpawnService.DefaultRespawnMinutes;
+            RespawnDelayMaximumMinutes = Domain.Creatures.SpawnService.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }

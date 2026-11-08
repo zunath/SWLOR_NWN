@@ -591,7 +591,7 @@ public class AIModelTests
     [Test]
     public void CreatureSpawn_UsesExistingCreatureEventScriptsWithoutBaseNwnCombatScripts()
     {
-        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var aiSource = ReadSource("SWLOR.Game.Server", "Domain", "Creatures", "AIService.cs").Replace("\r\n", "\n");
         var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
         var attackedScript = ReadSource("Module", "nss", "nw_c2_default5.nss").Replace("\r\n", "\n");
         var damagedScript = ReadSource("Module", "nss", "nw_c2_default6.nss").Replace("\r\n", "\n");

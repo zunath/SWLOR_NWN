@@ -200,7 +200,7 @@ Service/
 - Beast mutations
 - Beast food and care
 
-**Common Usage**: See `Service/BeastMastery.cs` for beast management methods.
+**Common Usage**: See `Domain/Companions/BeastMasteryService.cs` for beast management methods.
 
 ### 9. CraftService
 

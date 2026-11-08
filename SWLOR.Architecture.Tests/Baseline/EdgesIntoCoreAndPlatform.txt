@@ -33,7 +33,7 @@ Ability -> Platform/Composition | 10
 Ability -> Platform/Core | 13
 AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-Feature/AbilityDefinition -> Platform/Composition | 394
+Feature/AbilityDefinition -> Platform/Composition | 397
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
@@ -133,7 +133,7 @@ Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Composition | 1
 Language -> Platform/Core | 1
 Language -> Platform/Entity | 11
-Perk -> Platform/Composition | 29
+Perk -> Platform/Composition | 30
 Perk -> Platform/Core | 4
 Perk -> Platform/Entity | 15
 Perk -> Platform/Enumeration | 10
@@ -254,16 +254,14 @@ Droid -> Random | 18
 DroidEquipmentDiagnostics -> Log | 1
 IncubationFieldNote -> Log | 1
 
-# Companions -> Platform (10 edges)
+# Companions -> Platform (8 edges)
 BeastMastery -> Platform/Composition | 11
 BeastMastery -> Platform/Core | 22
-BeastMastery -> Platform/Entity | 47
+BeastMastery -> Platform/Entity | 45
 BeastMastery -> Platform/Extension | 1
-Droid -> Platform/Composition | 13
+Droid -> Platform/Composition | 19
 Droid -> Platform/Core | 23
-DroidEquipmentDiagnostics -> Platform/Composition | 1
 DroidEquipmentDiagnostics -> Platform/Core | 5
-IncubationFieldNote -> Platform/Composition | 1
 IncubationFieldNote -> Platform/Core | 1
 
 # Core -> Platform (47 edges)
@@ -368,18 +366,15 @@ Spawn -> Log | 1
 Spawn -> Random | 4
 Spawn -> Walkmesh | 3
 
-# Creatures -> Platform (12 edges)
-AI -> Platform/Composition | 8
+# Creatures -> Platform (9 edges)
+AI -> Platform/Composition | 7
 AI -> Platform/Core | 25
 AI -> Platform/Native | 1
-CompanionControl -> Platform/Composition | 1
 CompanionControl -> Platform/Core | 6
 Feature/AIDefinition -> Platform/Composition | 1
 Feature/SpawnDefinition -> Platform/Composition | 1
-NPCGroup -> Platform/Composition | 1
 NPCGroup -> Platform/Core | 1
 NPCGroup -> Platform/Extension | 1
-Spawn -> Platform/Composition | 1
 Spawn -> Platform/Core | 6
 
 # Economy -> Core (11 edges)
@@ -590,7 +585,7 @@ Feature.RoleplayXP -> Platform/Root | 4
 Feature.SaveCharacters -> Platform/Core | 3
 Feature.SavedAnimationMappings -> Platform/Core | 1
 Feature.SavedAnimationMappings -> Platform/Native | 1
-Feature.ScavengePoint -> Platform/Composition | 2
+Feature.ScavengePoint -> Platform/Composition | 3
 Feature.ScavengePoint -> Platform/Core | 4
 Feature.ServerTasks -> Platform/Composition | 4
 Feature.ServerTasks -> Platform/Core | 5
@@ -614,7 +609,7 @@ Feature.TwinPistolPairLifecycle -> Platform/Core | 8
 Feature.UnarmedMastery -> Platform/Composition | 1
 Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
-Feature.UsePerkFeat -> Platform/Composition | 25
+Feature.UsePerkFeat -> Platform/Composition | 27
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerRestart -> Platform/Composition | 1
 ServerTask -> Platform/Root | 4
@@ -649,7 +644,7 @@ Feature/ItemDefinition -> Platform/Enumeration | 1
 Feature/LootTableDefinition -> Platform/Core | 1
 Item -> Platform/Core | 4
 Item -> Platform/Entity | 1
-KeyItem -> Platform/Composition | 1
+KeyItem -> Platform/Composition | 2
 KeyItem -> Platform/Core | 2
 KeyItem -> Platform/Entity | 4
 KeyItem -> Platform/Extension | 2
@@ -695,7 +690,7 @@ Faction -> Platform/Composition | 1
 Faction -> Platform/Core | 1
 Faction -> Platform/Entity | 2
 Faction -> Platform/Extension | 1
-Feature/QuestDefinition -> Platform/Composition | 100
+Feature/QuestDefinition -> Platform/Composition | 101
 Feature/QuestDefinition -> Platform/Entity | 21
 Quest -> Platform/Composition | 32
 Quest -> Platform/Core | 13
@@ -732,7 +727,7 @@ ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
 ChatPortraitTells -> Platform/Core | 3
-Feature/ChatCommandDefinition -> Platform/Composition | 49
+Feature/ChatCommandDefinition -> Platform/Composition | 52
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
@@ -758,7 +753,7 @@ Space -> Random | 1
 Feature/ShipModuleDefinition -> Platform/Composition | 18
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
-Space -> Platform/Composition | 33
+Space -> Platform/Composition | 34
 Space -> Platform/Core | 21
 Space -> Platform/Entity | 29
 Space -> Platform/Enumeration | 6
@@ -788,7 +783,7 @@ Gui -> Log | 1
 # UI -> Platform (14 edges)
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 560
+Feature/GuiDefinition -> Platform/Composition | 564
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21

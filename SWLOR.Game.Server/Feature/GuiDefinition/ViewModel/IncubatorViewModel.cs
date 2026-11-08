@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -767,7 +768,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != BeastMastery.DNAResref)
+                    if (GetResRef(item) != BeastMasteryService.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
@@ -937,7 +938,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
-        public Action OnClickHydrolase() => OnClickEnzyme("Hydrolase", BeastMastery.HydrolaseResrefPrefix,
+        public Action OnClickHydrolase() => OnClickEnzyme("Hydrolase", BeastMasteryService.HydrolaseResrefPrefix,
             () => _hydrolaseItem,
             (serialized, color, icon, detail) =>
             {
@@ -948,7 +949,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HydrolaseDetail = detail;
             });
 
-        public Action OnClickLyase() => OnClickEnzyme("Lyase", BeastMastery.LyaseResrefPrefix,
+        public Action OnClickLyase() => OnClickEnzyme("Lyase", BeastMasteryService.LyaseResrefPrefix,
             () => _lyaseItem,
             (serialized, color, icon, detail) =>
             {
@@ -959,7 +960,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LyaseDetail = detail;
             });
 
-        public Action OnClickIsomerase() => OnClickEnzyme("Isomerase", BeastMastery.IsomeraseResrefPrefix,
+        public Action OnClickIsomerase() => OnClickEnzyme("Isomerase", BeastMasteryService.IsomeraseResrefPrefix,
             () => _isomeraseItem,
             (serialized, color, icon, detail) =>
             {

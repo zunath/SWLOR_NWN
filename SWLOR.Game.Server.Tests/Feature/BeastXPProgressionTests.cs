@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -35,7 +36,7 @@ public class BeastXPProgressionTests
     [Test]
     public void BeastXPRequirement_IsTwiceTheSkillRequirementAtEveryLevel()
     {
-        for (var level = 0; level < BeastMastery.MaxLevel; level++)
+        for (var level = 0; level < BeastMasteryService.MaxLevel; level++)
         {
             BeastMastery.GetRequiredXP(level, 0).Should().Be(Skill.GetRequiredXP(level) * 2, $"level {level}");
         }
@@ -102,7 +103,7 @@ public class BeastXPProgressionTests
         var cumulative = columns[BeastCumulativeHeader];
 
         var total = 0;
-        for (var level = 1; level <= BeastMastery.MaxLevel; level++)
+        for (var level = 1; level <= BeastMasteryService.MaxLevel; level++)
         {
             var row = levels.Single(entry => ParseNumber(entry.Value) == level).Key;
             var expected = BeastMastery.GetRequiredXP(level - 1, 0);

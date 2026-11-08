@@ -19,6 +19,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Creatures;
 
@@ -1164,7 +1165,7 @@ public class CompanionControlServiceTests
 
         var call = _player.CallsTo("SetTlkOverride").Single();
         call.Arguments[0].Should().Be(_master.Id);
-        call.Arguments[1].Should().Be(CompanionControl.AssociateAbilitiesLabelStrRef);
+        call.Arguments[1].Should().Be(CompanionControlService.AssociateAbilitiesLabelStrRef);
         call.Arguments[2].Should().Be("abilities");
 
         _player.ClearCalls();
@@ -1254,7 +1255,7 @@ public class CompanionControlServiceTests
     [Test]
     public void The_facade_constant_is_the_instance_constant()
     {
-        CompanionControl.AssociateAbilitiesLabelStrRef.Should().Be(CompanionControlService.AssociateAbilitiesLabelStrRef);
+        CompanionControlService.AssociateAbilitiesLabelStrRef.Should().Be(CompanionControlService.AssociateAbilitiesLabelStrRef);
     }
 }
 

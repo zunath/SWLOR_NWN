@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// method that yields that target. Notes are always discoverable by performing the
     /// mutation, and may additionally be sold or dropped depending on their acquisition type.
     /// The logic and state that used to be static in <c>Service.IncubationFieldNote</c>, moved here unchanged. The
-    /// facade still carries the event handler and forwards every call to the container's instance.
+    /// event handler runs on the container's instance; static callers reach it through <c>GameServices.IncubationFieldNote</c>.
     /// </summary>
     public class IncubationFieldNoteService : IIncubationFieldNoteService
     {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _registered = true;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void LoadDisplayText()
         {
             EnsureRegistered();

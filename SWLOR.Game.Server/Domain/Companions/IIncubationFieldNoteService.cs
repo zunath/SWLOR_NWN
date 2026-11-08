@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// Incubation field notes are key items that document how to produce a mutated beast. There is one note per
     /// mutation target beast; the note aggregates every incubation method that yields that target. Notes are always
     /// discoverable by performing the mutation, and may additionally be sold or dropped depending on their acquisition
-    /// type. The static facade <c>Service.IncubationFieldNote</c> forwards to the container's instance of this
-    /// interface and keeps the event handler.
+    /// type. Static callers reach the container's instance through
+    /// <c>GameServices.IncubationFieldNote</c>; the event handler is on <see cref="IncubationFieldNoteService"/>.
     /// </summary>
     public interface IIncubationFieldNoteService
     {

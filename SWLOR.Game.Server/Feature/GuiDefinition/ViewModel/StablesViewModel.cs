@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -521,8 +522,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HP = $"{level.HP}";
             FP = $"{fp}";
             STM = $"{stm}";
-            SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-            Level = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+            SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            Level = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
             Might = $"{level.Stats[AbilityType.Might]}";
             Perception = $"{level.Stats[AbilityType.Perception]}";
             Vitality = $"{level.Stats[AbilityType.Vitality]}";
@@ -669,8 +670,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             const int PurityMaxId = 1000;
             var beastDetail = BeastMastery.GetBeastDetail(dbBeast.Type);
-            var dna = CreateItemOnObject(BeastMastery.DNAResref, Player);
-            var percentage = (float)dbBeast.Level / (float)BeastMastery.MaxLevel;
+            var dna = CreateItemOnObject(BeastMasteryService.DNAResref, Player);
+            var percentage = (float)dbBeast.Level / (float)BeastMasteryService.MaxLevel;
 
             var attackPurity = (int)(dbBeast.AttackPurity * percentage) * 10;
             var accuracyPurity = (int)(dbBeast.AccuracyPurity * percentage) * 10;

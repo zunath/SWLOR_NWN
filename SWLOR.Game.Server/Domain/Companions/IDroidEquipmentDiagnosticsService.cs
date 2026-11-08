@@ -4,9 +4,9 @@ namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// Logs equipment changes on player droids outside their summon restore, so reports of droids dropping their
-    /// weapons mid-fight can be traced to the code path that moved the item. The static facade
-    /// <c>Service.DroidEquipmentDiagnostics</c> forwards to the container's instance of this interface and keeps the
-    /// event handlers.
+    /// weapons mid-fight can be traced to the code path that moved the item. Static callers reach
+    /// the container's instance through <c>GameServices.DroidEquipmentDiagnostics</c>; the event handlers are on
+    /// <see cref="DroidEquipmentDiagnosticsService"/>.
     /// </summary>
     public interface IDroidEquipmentDiagnosticsService
     {

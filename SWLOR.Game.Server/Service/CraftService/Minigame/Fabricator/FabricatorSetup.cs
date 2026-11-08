@@ -1,4 +1,5 @@
 using System.Linq;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -11,15 +12,15 @@ using Random = SWLOR.Game.Server.Service.Random;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The casino slot machine: the logic that used to be static in <c>Service.CasinoSlot</c>, moved here unchanged. The
-    /// facade still carries the event handler and the constants and forwards every call to the container's instance.
+    /// The casino slot machine: the logic that used to be a static class, moved here unchanged. The
+    /// event handler runs on the container's instance; static callers reach it through <c>GameServices.CasinoSlot</c>.
     /// </summary>
     public class CasinoSlotService : ICasinoSlotService
     {
-        /// <summary>The credits a spin costs. <c>Service.CasinoSlot.SpinCost</c> repeats it.</summary>
+        /// <summary>The credits a spin costs. Read as <c>CasinoSlotService.SpinCost</c>.</summary>
         public const int SpinCost = 100;
 
-        /// <summary>The most a spin can pay. <c>Service.CasinoSlot.MaximumPayout</c> repeats it.</summary>
+        /// <summary>The most a spin can pay. Read as <c>CasinoSlotService.MaximumPayout</c>.</summary>
         public const int MaximumPayout = 10000;
 
         private readonly IDBService _db;
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             IsCasinoMachine(GetResRef(GetArea(machine)), GetResRef(machine), GetTag(machine)) &&
             GetDistanceBetween(player, machine) <= 4.0f;
 
+        [NWNEventHandler(ScriptName.OnCasinoSlotUsed)]
         public void OnUsed()
         {
             var player = GetLastUsedBy();

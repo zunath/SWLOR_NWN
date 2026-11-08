@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Crafting: the recipe, category and enhancement caches, recipe requirement checks, enhancement item properties, blueprint
-    /// details and the research cost formulas. The logic that used to be static in <c>Service.Craft</c>, moved here unchanged: the
+    /// details and the research cost formulas. The logic that used to be a static class, moved here unchanged: the
     /// caches, and the objects the crafting minigames keep (the session and quick craft worlds, the quick craft batches and the
-    /// route cache), are this instance's state. The facade keeps the event handlers and forwards every call to the container's instance.
+    /// route cache), are this instance's state. The event handlers run on the container's instance; static callers reach it through <c>GameServices.Craft</c>.
     /// </summary>
     public class CraftService : ICraftService
     {
@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
         public void CacheData()
         {
             CacheCategories();
@@ -438,6 +439,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCraftUsed)]
         public void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
@@ -1065,11 +1067,13 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }
+        [NWNEventHandler(ScriptName.OnRefineryUsed)]
         public void UseRefinery()
         {
             var player = GetLastUsedBy();
             _gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
+        [NWNEventHandler(ScriptName.OnResearchTerminal)]
         public void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
@@ -1288,6 +1292,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <summary>
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
         public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
@@ -1302,15 +1307,16 @@ namespace SWLOR.Game.Server.Domain.Crafting
         }
 
         /// <summary>Applies the player's selected crafting styles again when they log in; the effects are not kept across a logout.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreCraftingStylesOnEnter()
         {
             RestoreCraftingStyles(GetEnteringObject());
         }
 
-        /// <summary>Deletes a research job. The research experiment service depends on this one, so it is reached through its facade.</summary>
+        /// <summary>Deletes a research job. The research experiment service depends on this one, so it is reached through a lazy reference.</summary>
         protected virtual void DeleteResearchJob(ResearchJob job) => _craftResearchExperiment.Value.DeleteJob(job);
 
-        /// <summary>Applies the creature's selected crafting styles. The style service is reached through its facade.</summary>
+        /// <summary>Applies the creature's selected crafting styles. The style service is reached through its interface.</summary>
         protected virtual void RestoreCraftingStyles(uint creature) => _craftStyleEffects.Restore(creature);
     }
 }

@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service.QuestService;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The guilds, a player's guild points and rank, and the guild tasks on offer. The static facade
-    /// <c>Service.Guild</c> forwards to the container's instance of this interface and keeps the event handlers.
+    /// The guilds, a player's guild points and rank, and the guild tasks on offer. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.Guild</c>; the event handlers are on <see cref="GuildService"/>.
     /// </summary>
     public interface IGuildService
     {

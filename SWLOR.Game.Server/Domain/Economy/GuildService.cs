@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Quests;
@@ -15,8 +16,8 @@ using Random = SWLOR.Game.Server.Service.Random;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The guilds: the logic and state that used to be static in <c>Service.Guild</c>, moved here unchanged. The facade
-    /// still carries the event handlers and forwards every call to the container's instance.
+    /// The guilds: the logic and state that used to be a static class, moved here unchanged. The event
+    /// handlers run on the container's instance; static callers reach it through <c>GameServices.Guild</c>.
     /// </summary>
     public class GuildService : IGuildService
     {
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         public DateTime? DateTasksLoaded { get; private set; }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
@@ -131,6 +133,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             _db.Set(dbPlayer);
         }
 
+        [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public void RefreshGuildTasks()
         {
             if (DateTasksLoaded != null) return;

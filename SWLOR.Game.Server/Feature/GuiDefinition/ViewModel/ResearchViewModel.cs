@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -329,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)} is required to research this recipe.";
             }
 
-            if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
+            if (researchJob.CurrentLevel >= CraftService.MaxResearchLevel)
             {
                 return $"Blueprint cannot be researched any further.";
             }

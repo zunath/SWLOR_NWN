@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 internal sealed class BlueprintBonusSource
 {
     private const string TypeName = "SWLOR.Game.Server.Service.CraftService.BlueprintBonuses";
-    private static readonly Type BonusesType = typeof(Craft).Assembly.GetType(TypeName, throwOnError: true)!;
+    private static readonly Type BonusesType = typeof(RecipeDetail).Assembly.GetType(TypeName, throwOnError: true)!;
     private static readonly FieldInfo TablesField = BonusesType.GetField("_bonusesByEnhancementType", BindingFlags.Instance | BindingFlags.NonPublic)!;
     private static readonly MethodInfo PickMethod = BonusesType.GetMethod("PickBonus")!;
 

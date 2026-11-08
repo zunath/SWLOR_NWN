@@ -16,14 +16,15 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.ProspectingService
 {
     /// <summary>The game-engine side of a Prospecting session. The rules it carries out are in <see cref="ProspectingLifecycle"/>.</summary>
     public sealed class NwnProspectingWorld : IProspectingWorld
     {
-        /// <summary>The one world of the process. <see cref="Prospecting"/> owns it.</summary>
-        public static NwnProspectingWorld Instance => Prospecting.World;
+        /// <summary>The one world of the process. <see cref="SWLOR.Game.Server.Domain.Crafting.ProspectingService"/> owns it.</summary>
+        public static NwnProspectingWorld Instance => GameServices.Prospecting.World;
 
         private readonly IDBService _db;
 

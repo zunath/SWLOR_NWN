@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Headline = CasinoSlotPresentation.GetHeadline(result.Payout);
             ResultText = result.Message;
-            ResultColor = result.Payout > CasinoSlot.SpinCost
+            ResultColor = result.Payout > CasinoSlotService.SpinCost
                 ? new GuiColor(100, 240, 150) : new GuiColor(245, 200, 75);
             _isAnimating = false;
             RefreshStatus();

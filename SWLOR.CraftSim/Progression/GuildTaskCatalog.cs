@@ -74,7 +74,7 @@ namespace SWLOR.CraftSim.Progression
         public static GuildTaskCatalog Build(RecipeCatalog recipes, string repositoryRoot)
         {
             var catalog = new GuildTaskCatalog();
-            Guild.LoadData();
+            GameServices.Guild.LoadData();
 
             // The task definitions look up each item's name while they build. The game fills that cache at boot by spawning
             // every blueprint; here every blueprint file name stands in so no engine call is needed. The cache is put back after. The cache is a

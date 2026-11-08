@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 namespace SWLOR.Game.Server.Domain.Crafting;
 
 /// <summary>
-/// Starts, tracks and cancels each player's quick craft batch. The static facade
-/// <c>Service.CraftService.Minigame.CraftQuickCraft</c> forwards to it.
+/// Starts, tracks and cancels each player's quick craft batch. Static callers reach
+/// the container's instance through <c>GameServices.CraftQuickCraft</c>.
 /// </summary>
 public interface ICraftQuickCraftService
 {

@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <summary>The game-engine side of a craft session. The rules it carries out are in <see cref="CraftSessionLifecycle"/>.</summary>
 public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 {
-    /// <summary>The one world of the process. <see cref="Craft"/> owns it, because it keeps the properties of the item being crafted.</summary>
+    /// <summary>The one world of the process. <see cref="SWLOR.Game.Server.Domain.Crafting.CraftService"/> owns it, because it keeps the properties of the item being crafted.</summary>
     public static NwnCraftSessionWorld Instance => Craft.SessionWorld;
 
     private readonly BlueprintBonuses BlueprintBonusPicker = new();
 
     /// <summary>
     /// The properties a finished item will carry, settled in memory while the craft applies its enhancements and blueprint bonuses and
-    /// written once in <see cref="PrepareUnits"/> (see <see cref="Craft.MergeCraftedItemProperty"/> for why the item is never edited
+    /// written once in <see cref="PrepareUnits"/> (see <see cref="SWLOR.Game.Server.Domain.Crafting.CraftService.MergeCraftedItemProperty"/> for why the item is never edited
     /// in place).
     /// </summary>
     private readonly Dictionary<uint, List<ItemProperty>> _craftedProperties = new();

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// The entry point the prospecting code and its window use to begin, play and end a visit. It runs <see cref="ProspectingLifecycle"/>
-    /// against the game engine. The static facade <c>Service.ProspectingService.ProspectingSessions</c> forwards to it and keeps the event handlers.
+    /// against the game engine. Static callers reach the container's instance through <c>GameServices.ProspectingSessions</c>; the event handlers are on <see cref="ProspectingSessionsService"/>.
     /// </summary>
     public interface IProspectingSessionsService
     {

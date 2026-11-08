@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.TelegraphService;
 using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
@@ -122,14 +123,16 @@ public class TelegraphTests
         // Instant-cast area abilities cannot gate damage behind a pre-cast telegraph without
         // contradicting the Bible, so the impact flash is what makes them visible at all. If this
         // default is ever zeroed, every instant area ability silently stops rendering.
-        var parameter = typeof(Ability)
-            .GetMethod(nameof(Ability.ApplyTelegraphedCombatImpact), BindingFlags.Static | BindingFlags.Public)!
+        // Static callers reach the service through GameServices.Ability, typed as the interface, so the interface's
+        // default is the one they get.
+        var parameter = typeof(IAbilityService)
+            .GetMethod(nameof(IAbilityService.ApplyTelegraphedCombatImpact), BindingFlags.Instance | BindingFlags.Public)!
             .GetParameters()
             .Single(x => x.Name == "impactFlashDuration");
 
         parameter.HasDefaultValue.Should().BeTrue();
-        parameter.DefaultValue.Should().Be(Ability.DefaultImpactFlashDuration);
-        Ability.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
+        parameter.DefaultValue.Should().Be(AbilityService.DefaultImpactFlashDuration);
+        AbilityService.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
     }
 
     /// <summary>

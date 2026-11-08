@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Abilities;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -91,7 +91,7 @@ public class AbilityDamageBudgetOrderTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Ability).Assembly.Location).Distinct()
+            .Split(Path.PathSeparator).Append(typeof(IAbilityService).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("AbilityDamageBudgetHarness",
             [CSharpSyntaxTree.ParseText(source)], references,

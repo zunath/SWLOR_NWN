@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

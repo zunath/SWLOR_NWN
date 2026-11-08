@@ -1,4 +1,5 @@
 using System;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
@@ -7,9 +8,10 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Named animations: the logic and state that used to be static in <c>Service.NamedAnimation</c>, moved here
+    /// Named animations: the logic and state that used to be static in the <c>NamedAnimation</c> facade, moved here
     /// unchanged. The playback state (the ownership dictionaries) lives in the <see cref="NamedAnimationPlayback"/> the
-    /// service owns. The facade keeps the event handler and forwards every call to the container's instance.
+    /// service owns. The event handler runs on the container's instance; static callers reach it through
+    /// <c>GameServices.NamedAnimation</c>.
     /// </summary>
     public class NamedAnimationService : INamedAnimationService
     {
@@ -121,6 +123,8 @@ namespace SWLOR.Game.Server.Domain.Core
 
         public void ClearOnDeath(uint creature) => _playback.ClearOnDeath(creature);
 
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public void OnEquipmentChanging()
         {
             var creature = OBJECT_SELF;

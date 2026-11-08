@@ -102,7 +102,7 @@ public class DMPossessionPlayerLoopTests
             }
 
             {{Type("Service/RoleplayXPService/OOCMessageContext.cs", "OOCMessageContext")}}
-            public static class Communication { public const string EventCommsAreaVariable = "EVENT_COMMS_AREA"; }
+            public static class CommunicationService { public const string EventCommsAreaVariable = "EVENT_COMMS_AREA"; }
             public static class RoleplayXP
             {
                 private static bool GetLocalBool(uint obj, string name) => false;

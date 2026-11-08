@@ -10,6 +10,8 @@ using SWLOR.FacadeRemoval;
  *     project's GlobalUsings.cs gets the global form when it imports SWLOR.Game.Server.Service globally;
  *   - a qualified call (Service.Taxi.X) loses its qualifier; an explicit name (Combat) is written GameServices.Combat.X;
  *     a moved constant (Combat.MaximumHitRate) is read from its owner (CombatRules.MaximumHitRate);
+ *   - a bare name the file declares itself (a property named Snippet) and every file of a project that does not reference
+ *     the server (SWLOR.BackgroundServices) are left alone: they are not callers of a facade;
  *   - each manifest line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt that names a removed facade's handler takes the
  *     branch name tools/Refactor/HandlerRenames.txt gives it.
  * A tree without SWLOR.Game.Server/Composition/GameServices.cs (master, the parity copy) is skipped entirely, and so is a

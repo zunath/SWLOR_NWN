@@ -18,6 +18,7 @@ using ObjectType = NWN.Native.API.ObjectType;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {

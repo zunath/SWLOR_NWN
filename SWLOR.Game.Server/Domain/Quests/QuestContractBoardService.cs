@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         }
 
         /// <summary>
-        /// The requester's authorization level (<see cref="Authorization.GetAuthorizationLevel"/>). The static lookup
+        /// The requester's authorization level (<see cref="IAuthorizationService.GetAuthorizationLevel"/>). The static lookup
         /// reads the stored authorized DMs, which needs the database, so a test overrides it.
         /// </summary>
         protected virtual AuthorizationLevel GetAuthorizationLevel(uint requester)
@@ -850,7 +850,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// Validates a contract draft's fields ahead of publishing. Pure aside from the injected
         /// <paramref name="resolveItemName"/> delegate, which is used to confirm each objective's item
-        /// resref maps to a real item (normally <see cref="Cache.GetItemNameByResref"/>).
+        /// resref maps to a real item (normally <see cref="ICacheService.GetItemNameByResref"/>).
         /// </summary>
         /// <param name="draft">The draft contract to validate.</param>
         /// <param name="title">The sanitized contract title.</param>

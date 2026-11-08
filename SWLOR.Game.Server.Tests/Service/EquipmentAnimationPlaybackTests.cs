@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -132,9 +133,9 @@ public class EquipmentAnimationPlaybackTests
             .Single(method => method.Identifier.Text == "PlayCombatImpactAnimation");
         AssertCreatureBinding(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "ImpactClip");
         AssertEquipmentPlayback(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "_namedAnimation.Play", "trackedAbility.AnimationEquipmentRequirement");
-        // The facade keeps the handler: the equipment events reach the service through it. What the service does with
-        // an equipment change is covered by NamedAnimationServiceTests.
-        typeof(NamedAnimation).GetMethod(nameof(NamedAnimation.OnEquipmentChanging))!
+        // The instance class carries the handler: the script registry binds the equipment events to the container's
+        // instance. What the service does with an equipment change is covered by NamedAnimationServiceTests.
+        typeof(NamedAnimationService).GetMethod(nameof(NamedAnimationService.OnEquipmentChanging))!
             .GetCustomAttributes(typeof(NWNEventHandler), false).Cast<NWNEventHandler>().Select(handler => handler.Script)
             .Should().BeEquivalentTo(ScriptName.OnSWLORItemEquipValidBefore, ScriptName.OnItemUnequipBefore);
     }

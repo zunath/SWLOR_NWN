@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 namespace SWLOR.FacadeRemoval;
 
 /// <summary>
-/// Runs the tool over a tree: every <c>.cs</c> file outside build output and data folders, the global usings of projects
-/// that import <c>SWLOR.Game.Server.Service</c> globally, and the handler order manifest. What the command line and the
-/// tests call.
+/// Runs the tool over a tree: every <c>.cs</c> file outside build output and data folders (except in a project that neither
+/// is the server nor references it), the global usings of projects that import <c>SWLOR.Game.Server.Service</c> globally,
+/// and the handler order manifest. What the command line and the tests call.
 /// </summary>
 internal static class FacadeRemovalRunner
 {
@@ -28,7 +28,12 @@ internal static class FacadeRemovalRunner
         "bin", "obj", ".git", ".vs", ".idea", ".claude", "node_modules", "packages", "TestResults", "SWLOR_Haks", "Module"
     };
 
-    private static readonly Regex GlobalServiceImport = new(@"^[ \t]*global[ \t]+using[ \t]+SWLOR\.Game\.Server\.Service[ \t]*;[^\n]*\n?", RegexOptions.Multiline);
+    /// <summary>The server's project file: a project that neither is it nor references it cannot call a removed facade.</summary>
+    private const string ServerProjectFile = "SWLOR.Game.Server.csproj";
+
+    private static readonly Regex ProjectReference = new(@"<ProjectReference\s+Include\s*=\s*""([^""]+)""", RegexOptions.IgnoreCase);
+
+    private static readonly Regex GlobalServiceImport =new(@"^[ \t]*global[ \t]+using[ \t]+SWLOR\.Game\.Server\.Service[ \t]*;[^\n]*\n?", RegexOptions.Multiline);
 
     public static int Run(RunOptions options, TextWriter log)
     {
@@ -69,6 +74,7 @@ internal static class FacadeRemovalRunner
         var usings = 0;
         var rewrites = 0;
         var projects = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        var seesServer = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         var needGlobal = new SortedSet<string>(StringComparer.Ordinal);
 
         if (active.Count > 0)
@@ -76,6 +82,12 @@ internal static class FacadeRemovalRunner
             foreach (var path in SourceFiles(root))
             {
                 var project = ProjectOf(Path.GetDirectoryName(path)!, root, projects);
+
+                // Only the server and the projects that reference it can call a removed facade; a name in any other
+                // project that matches one (SWLOR.BackgroundServices' own BackgroundJob) is that project's own.
+                if (project != null && !SeesServer(project, seesServer))
+                    continue;
+
                 var imported = project != null && ImportsServiceGlobally(project);
                 var source = SourceFile.Read(path);
                 var result = CallerRewriter.Apply(source.Text, active, imported);
@@ -198,6 +210,38 @@ internal static class FacadeRemovalRunner
 
         cache[folder] = project;
         return project;
+    }
+
+    /// <summary>True when a project file in <paramref name="project"/> is the server's or references it, directly or through another project.</summary>
+    private static bool SeesServer(string project, Dictionary<string, bool> cache) =>
+        Directory.EnumerateFiles(project, "*.csproj").Any(file => ReferencesServer(Path.GetFullPath(file), cache));
+
+    private static bool ReferencesServer(string projectFile, Dictionary<string, bool> cache)
+    {
+        if (cache.TryGetValue(projectFile, out var known))
+            return known;
+
+        cache[projectFile] = false; // a reference cycle ends here
+        var result = string.Equals(Path.GetFileName(projectFile), ServerProjectFile, StringComparison.OrdinalIgnoreCase);
+        if (!result)
+        {
+            foreach (Match match in ProjectReference.Matches(File.ReadAllText(projectFile)))
+            {
+                var include = match.Groups[1].Value;
+                if (include.Contains("$(", StringComparison.Ordinal))
+                    continue; // a path built from an MSBuild property points outside this tree (the external toolset sources)
+
+                var referenced = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(projectFile)!, include.Replace('\\', Path.DirectorySeparatorChar)));
+                if (File.Exists(referenced) && ReferencesServer(referenced, cache))
+                {
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        cache[projectFile] = result;
+        return result;
     }
 
     private static bool ImportsServiceGlobally(string project)

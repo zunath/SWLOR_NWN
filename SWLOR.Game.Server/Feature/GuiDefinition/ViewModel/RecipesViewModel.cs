@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -418,7 +419,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 recipes = recipes
-                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, Cache.GetItemNameByResref))
+                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, resref => Cache.GetItemNameByResref(resref)))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 

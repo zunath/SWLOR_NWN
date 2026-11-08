@@ -149,7 +149,7 @@ public class PlayerMessageAuditTests
     [TestCase("if (!PlayerFeedback.DiagnosticsEnabled || SendMessageToPC()) {}", true)]
     [TestCase("if (PlayerFeedback.DiagnosticsEnabled) Register(() => SendMessageToPC());", false)]
     [TestCase("Register(() => { if (PlayerFeedback.DiagnosticsEnabled) SendMessageToPC(); });", true)]
-    [TestCase("if (global::SWLOR.Game.Server.Service.PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", true)]
+    [TestCase("if (global::SWLOR.Game.Server.Composition.GameServices.PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", true)]
     [TestCase("if (unrelated.DiagnosticsEnabled) SendMessageToPC();", false)]
     public void MessageInventory_ClassifiesOnlyBranchesThatRequireDiagnostics(string body, bool diagnosticOnly)
     {

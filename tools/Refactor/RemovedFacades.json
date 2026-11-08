@@ -1,7 +1,23 @@
 {
   "description": "The static facades the branch deleted (P2-Z, SWLOR.Game.Server/Readmes/MaintainabilityRefactorFacadeRemoval.md). Read by tools/Refactor/Apply-FacadeRemoval.ps1 (SWLOR.FacadeRemoval), which keeps their callers in the branch's shape. Each entry is a \"facade\" named relative to SWLOR.Game.Server.Service (Taxi, or QuestService.QuestEncounter for a further facade); static callers reach its service through the property of the same name on SWLOR.Game.Server.Composition.GameServices. Optional: \"explicit\": true for a name that is also a namespace segment (Combat, Mimicry, Performance, Prospecting), which callers write GameServices.<Name>.X; \"constants\": [ { \"name\": \"MaximumHitRate\", \"owner\": \"SWLOR.Game.Server.Domain.Combat.CombatRules\" } ] for each public constant the facade repeated, with the full name of the class that holds it now. Keep the list sorted by facade. A removed service also has \"facadeRemoved\": true in SWLOR.Architecture.Tests/ConvertedServices.json, and each of its handlers a line in tools/Refactor/HandlerRenames.txt.",
   "facades": [
+    { "facade": "AnimationPlayer" },
+    { "facade": "Authorization" },
+    { "facade": "BackgroundJob", "constants": [ { "name": "StreamName", "owner": "SWLOR.Game.Server.Domain.Core.BackgroundJobService" }, { "name": "MaxStreamLength", "owner": "SWLOR.Game.Server.Domain.Core.BackgroundJobService" } ] },
+    { "facade": "Cache" },
+    { "facade": "Communication", "constants": [ { "name": "EventCommsAreaVariable", "owner": "SWLOR.Game.Server.Domain.Core.CommunicationService" }, { "name": "SuppressChatAuditVariable", "owner": "SWLOR.Game.Server.Domain.Core.CommunicationService" } ] },
+    { "facade": "Conversation" },
+    { "facade": "ConversationMenu" },
+    { "facade": "DB" },
+    { "facade": "Messaging" },
+    { "facade": "Migration", "constants": [ { "name": "RetiredServerMigrationVersion", "owner": "SWLOR.Game.Server.Domain.Core.MigrationService" }, { "name": "PlayerFileVersionVariable", "owner": "SWLOR.Game.Server.Domain.Core.MigrationService" } ] },
+    { "facade": "NamedAnimation" },
+    { "facade": "ObjectVisibility" },
+    { "facade": "PlayerFeedback" },
     { "facade": "ServerTask" },
-    { "facade": "Taxi" }
+    { "facade": "Snippet" },
+    { "facade": "Taxi" },
+    { "facade": "TileMagic" },
+    { "facade": "Walkmesh" }
   ]
 }

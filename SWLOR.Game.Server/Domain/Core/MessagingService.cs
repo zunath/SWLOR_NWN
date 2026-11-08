@@ -8,8 +8,8 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Messaging: the logic that used to be static in <c>Service.Messaging</c>, moved here unchanged. The facade forwards
-    /// every call to the container's instance.
+    /// Messaging: the logic that used to be static in the <c>Messaging</c> facade, moved here unchanged. Static callers
+    /// reach the container's instance through <c>GameServices.Messaging</c>.
     /// </summary>
     public class MessagingService : IMessagingService
     {

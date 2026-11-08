@@ -3,8 +3,8 @@ using AuthorizationLevel = SWLOR.Game.Server.Enumeration.AuthorizationLevel;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// The authorization level of a player. The static facade <c>Service.Authorization</c> forwards to the container's
-    /// instance of this interface.
+    /// The authorization level of a player. Static callers reach the container's instance through
+    /// <c>GameServices.Authorization</c>.
     /// </summary>
     public interface IAuthorizationService
     {

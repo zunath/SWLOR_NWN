@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service.PerkService;
 using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {

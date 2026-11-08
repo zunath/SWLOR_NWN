@@ -144,19 +144,26 @@ public class ScriptRegistryInstanceHandlerTests
         all.LoadHandlersFromAssemblies(new[] { GameAssembly }, manifest, Owners);
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
+        var instanceHandlers = MethodsOf(GameAssembly).Where(method => !method.IsStatic && IsHandler(method))
+            .Select(ScriptHandlerManifest.HandlerName).ToHashSet(StringComparer.Ordinal);
+        var instanceEntries = new List<string>();
 
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => name != TaxiHandler);
+                var expected = Names(all, script, conditional).Where(name => !instanceHandlers.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
+                instanceEntries.AddRange(Names(all, script, conditional).Where(instanceHandlers.Contains)
+                    .Select(name => $"{script} {(conditional ? "conditional" : "action")} {name}"));
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Should().Equal(new[] { $"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}" });
+        instanceEntries.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
+        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(instanceEntries,
+            "without the instance handlers, exactly their manifest entries (every removed facade's handlers) match nothing");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

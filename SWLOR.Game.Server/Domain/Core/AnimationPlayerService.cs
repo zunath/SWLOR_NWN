@@ -5,8 +5,8 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Animation player: the logic that used to be static in <c>Service.AnimationPlayer</c>, moved here unchanged.
-    /// The facade forwards every call to the container's instance.
+    /// Animation player: the logic that used to be static in the <c>AnimationPlayer</c> facade, moved here unchanged.
+    /// Static callers reach the container's instance through <c>GameServices.AnimationPlayer</c>.
     /// </summary>
     public class AnimationPlayerService : IAnimationPlayerService
     {

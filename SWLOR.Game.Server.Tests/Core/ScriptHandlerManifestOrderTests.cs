@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 [TestFixture]
 public class ScriptHandlerManifestOrderTests
 {
-    private const string DbLoad = "SWLOR.Game.Server.Service.DB.Load";
+    private const string DbLoad = "SWLOR.Game.Server.Domain.Core.DBService.Load";
     private const string OnModulePreload = "SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload";
     private const string AbilityCacheData = "SWLOR.Game.Server.Service.Ability.CacheData";
     private const string AchievementLoad = "SWLOR.Game.Server.Service.Achievement.LoadAchievements";

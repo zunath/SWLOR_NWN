@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Core
     /// <summary>
     /// NWN data which lives for the lifespan of the server: item names, icons and searchability, portraits and sound
     /// sets. Nothing in here is permanently stored; it only makes queries quicker. If you need persistent storage, refer
-    /// to the DB class. The static facade <c>Service.Cache</c> forwards to the container's instance of this interface and
-    /// keeps the event handler.
+    /// to the DB class. Static callers reach the container's instance through <c>GameServices.Cache</c>; the event
+    /// handler is on <see cref="CacheService"/>.
     /// </summary>
     public interface ICacheService
     {

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -48,10 +49,10 @@ public class DialogPrivacyTests
         tailHooks.Should().Contain("SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));");
         tailHooks.Should().Contain("ExecuteScript(\"crea_convo_aft\", OBJECT_SELF);");
 
-        // The handler stays on the static facade, where the script registry binds it. What it does (private before the
-        // window opens, the handled flag, the player/DM/possessed guards) is proved by ConversationServiceTests, and
-        // that the creature event routes the last speaker by ConversationMenuServiceTests.
-        typeof(Conversation).GetMethod(nameof(Conversation.StartAssignedCreatureConversation))!
+        // The handler is on the instance class, where the script registry binds it to the container's instance. What it
+        // does (private before the window opens, the handled flag, the player/DM/possessed guards) is proved by
+        // ConversationServiceTests, and that the creature event routes the last speaker by ConversationMenuServiceTests.
+        typeof(ConversationService).GetMethod(nameof(ConversationService.StartAssignedCreatureConversation))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
@@ -17,8 +18,9 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// Runs the server migrations against the database at boot, upgrades the saved characters and guards the login of
-    /// a character that is not current: the logic that used to be static in <c>Service.Migration</c>, moved here
-    /// unchanged. The facade keeps the event handlers and forwards every call to the container's instance.
+    /// a character that is not current: the logic that used to be static in the <c>Migration</c> facade, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.Migration</c>.
     /// </summary>
     public class MigrationService : IMigrationService
     {
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Domain.Core
 
         public SavedCharacterDataStore CharacterData { get; } = new();
 
+        [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public void AfterDatabaseLoaded()
         {
             var stored = _db.Get<ServerConfiguration>("SWLOR_CONFIG");
@@ -76,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Core
             RunServerMigrationsPostDatabase();
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void AfterCacheLoaded()
         {
             RunServerMigrationsPostCache();
@@ -245,6 +249,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// Character migrations run on saved characters at boot (<see cref="CharacterFileUpgrade"/>). A character
         /// still behind the latest version was not upgraded, so it is refused instead of played in an outdated state.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCharacterInitAfter)]
         public void AfterCharacterInitialization()
         {
             var player = GetEnteringObject();

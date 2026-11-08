@@ -2,8 +2,8 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// Registry and entry point for code-driven NUI conversations. This is independent of the old Dialog service and
-    /// never allocates or starts a generated DLG shell. The static <c>Service.ConversationMenu</c> forwards to the
-    /// container's instance of this interface.
+    /// never allocates or starts a generated DLG shell. Static callers reach the container's instance through
+    /// <c>GameServices.ConversationMenu</c>; the event handlers are on <see cref="ConversationMenuService"/>.
     /// </summary>
     public interface IConversationMenuService
     {

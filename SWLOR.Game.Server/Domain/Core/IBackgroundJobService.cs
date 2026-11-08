@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Queues jobs for the background worker process on the Redis stream it reads. The static facade
-    /// <c>Service.BackgroundJob</c> forwards to the container's instance of this interface.
+    /// Queues jobs for the background worker process on the Redis stream it reads. Static callers reach the
+    /// container's instance through <c>GameServices.BackgroundJob</c>.
     /// </summary>
     public interface IBackgroundJobService
     {

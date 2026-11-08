@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Service.MessagingService;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Messages to the players near a creature. The static facade <c>Service.Messaging</c> forwards to the container's
-    /// instance of this interface.
+    /// Messages to the players near a creature. Static callers reach the container's instance through
+    /// <c>GameServices.Messaging</c>.
     /// </summary>
     public interface IMessagingService
     {

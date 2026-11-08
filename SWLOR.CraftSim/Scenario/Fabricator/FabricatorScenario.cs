@@ -18,6 +18,8 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
 
         public virtual string Title => "Fabricator";
 
+        public bool TunedAgainstFullMods => true;
+
         public SkillType Skill => SkillType.Fabrication;
 
         public CraftMinigameType Minigame => CraftMinigameType.Fabricator;

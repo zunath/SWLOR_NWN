@@ -59,6 +59,7 @@ public class PlayerNameServiceTests
     private int _queueRefreshes;
     private readonly Dictionary<string, PlayerKnownName> _records = new();
     private bool _portraitTellRefused;
+    private bool _portraitTellConfirmed;
 
     // The converted disguise facade (identity keys) resolves its instance from a container.
     private FacadeContainer _facades = null!;
@@ -85,6 +86,7 @@ public class PlayerNameServiceTests
         _queueRefreshes = 0;
         _records.Clear();
         _portraitTellRefused = false;
+        _portraitTellConfirmed = false;
 
         _engine = new FakeNWScript();
         _variables = new LocalVariables(_engine);
@@ -121,7 +123,11 @@ public class PlayerNameServiceTests
             return null;
         });
         var portraits = ScriptedProxy.Create<IChatPortraitTellsService>(out _portraitScript);
-        _portraitScript.On("RefuseStalePortraitTell", _ => _portraitTellRefused);
+        _portraitScript.On("RefuseStalePortraitTell", arguments =>
+        {
+            arguments[3] = _portraitTellConfirmed;
+            return _portraitTellRefused;
+        });
         _service = new BenchPlayerNameService(_db, list, portraits);
     }
 
@@ -1207,6 +1213,21 @@ public class PlayerNameServiceTests
         _engine.CallsTo("SendMessageToPC").Should().ContainSingle().Which.Arguments[1].Should().Be(
             ColorToken.Red("'Kira' is ambiguous. Use /name on the intended player before sending tells."));
         Overrides().Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_tell_to_a_shared_name_from_a_confirmed_portrait_is_not_ambiguous()
+    {
+        Knows(Alice, Bob, "Kira");
+        Knows(Alice, Carol, "Kira");
+        _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
+        _portraitTellConfirmed = true;
+        Tell(ChatChannel.PlayerTell, Alice, Bob);
+
+        _service.PreventAmbiguousTellTargets();
+
+        _chat.CountOf("SkipMessage").Should().Be(0);
+        Overrides().Should().NotBeEmpty();
     }
 
     [Test]

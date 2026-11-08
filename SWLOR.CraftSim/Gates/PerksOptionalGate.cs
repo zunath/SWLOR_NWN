@@ -41,7 +41,10 @@ namespace SWLOR.CraftSim.Gates
                 var attempts = cells.Sum(cell => cell.Runs);
                 var share = cells.Sum(cell => cell.FullQuality) / (double)attempts;
                 var successes = cells.Sum(cell => cell.Successes);
-                var passed = share >= thresholds.PerksOptionalMinimumFullQualityShare;
+                var required = run.Scenario.TunedAgainstFullMods && band.Band.First > rank
+                    ? thresholds.PerksOptionalAboveRankFullModsShare
+                    : thresholds.PerksOptionalMinimumFullQualityShare;
+                var passed = share >= required;
                 if (!passed)
                     failures.Add(band.Band.Name);
 
@@ -53,7 +56,7 @@ namespace SWLOR.CraftSim.Gates
                     Percent(share),
                     Percent(successes / (double)attempts),
                     successes == 0 ? "n/a" : Percent(cells.Sum(cell => cell.QualitySum) / successes),
-                    ">= " + Percent(thresholds.PerksOptionalMinimumFullQualityShare),
+                    ">= " + Percent(required),
                     passed ? "Passed" : "Failed");
             }
 

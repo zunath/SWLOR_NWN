@@ -125,12 +125,47 @@ public static class ForgeRules
     public static double RankFactor(int rank, int recipeLevel) =>
         Math.Clamp(1.0 + OutputPerRankStep * (rank - recipeLevel), MinimumRankFactor, MaximumRankFactor);
 
-    public static int ShapeMax(int shapeShare, int enhancementShapePercent) =>
-        (int)Math.Round(MeterScale * (shapeShare / (double)EvenShapeShare) * (1.0 + Math.Max(0, enhancementShapePercent) / 100.0),
+    /// <summary>
+    /// Recipes above this level, the one that brings the rank-25 CP, need more Shape and Finish, so gear and its enhancements decide how well the top recipes turn out.
+    /// A fully modded set of the level's gear reaches a high quality; less gear still makes the item, at a lower quality.
+    /// </summary>
+    public const int DifficultyStartLevel = 25;
+
+    /// <summary>How much more Finish a recipe needs per level above <see cref="DifficultyStartLevel"/>.</summary>
+    public const double FinishDifficultyPerLevel = 0.0175;
+
+    /// <summary>How much more Shape a recipe needs per level above <see cref="DifficultyStartLevel"/>. Far less than Finish's, because too little Shape breaks the piece.</summary>
+    public const double ShapeDifficultyPerLevel = 0.0025;
+
+    /// <summary>
+    /// The least Finish a recipe needs before the level's factor, reached at <see cref="FinishFloorFullLevel"/>. Without it a Shape-heavy
+    /// recipe's Finish meter is small enough that one Cryo-Quench nearly fills it, and gear stops mattering well short of fully modded.
+    /// </summary>
+    public const int FinishFloor = 1300;
+
+    /// <summary>The recipe level at which <see cref="FinishFloor"/> applies in full; it ramps in from <see cref="DifficultyStartLevel"/>.</summary>
+    public const int FinishFloorFullLevel = 50;
+
+    /// <summary>The factor on the Shape a recipe of the level needs.</summary>
+    public static double ShapeDifficulty(int recipeLevel) => 1.0 + ShapeDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
+    /// <summary>The factor on the Finish a recipe of the level needs.</summary>
+    public static double FinishDifficulty(int recipeLevel) => 1.0 + FinishDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+
+    public static int ShapeMax(int shapeShare, int enhancementShapePercent, int recipeLevel) =>
+        (int)Math.Round(MeterScale * (shapeShare / (double)EvenShapeShare) * (1.0 + Math.Max(0, enhancementShapePercent) / 100.0) *
+                        ShapeDifficulty(recipeLevel),
             MidpointRounding.AwayFromZero);
 
-    public static int FinishMax(int shapeShare) =>
-        (int)Math.Round(MeterScale * ((100 - shapeShare) / (double)EvenShapeShare), MidpointRounding.AwayFromZero);
+    public static int FinishMax(int shapeShare, int recipeLevel) =>
+        (int)Math.Round(FinishBeforeLevelFactor(shapeShare, recipeLevel) * FinishDifficulty(recipeLevel), MidpointRounding.AwayFromZero);
+
+    private static double FinishBeforeLevelFactor(int shapeShare, int recipeLevel)
+    {
+        var share = MeterScale * ((100 - shapeShare) / (double)EvenShapeShare);
+        var ramp = Math.Clamp((recipeLevel - DifficultyStartLevel) / (double)(FinishFloorFullLevel - DifficultyStartLevel), 0.0, 1.0);
+        return share + Math.Max(0.0, FinishFloor - share) * ramp;
+    }
 
     /// <summary>
     /// How much more Shape the recipe needs for the enhancements' progress penalty. The penalty is in the original crafting

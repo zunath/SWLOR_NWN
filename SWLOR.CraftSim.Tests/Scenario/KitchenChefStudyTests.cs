@@ -33,6 +33,18 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void TheFirstCandidateIsTheStylesThePerkDefinitionsGive()
+        {
+            var candidate = KitchenChefStudy.StyleCandidates[0];
+            var slow = KitchenBuild.SlowCookingLine.StatsAt(50);
+            var flash = KitchenBuild.FlashCookingLine.StatsAt(50);
+
+            candidate.SlowLowDoneness.Should().Be(slow.LowHeatDonenessPercent);
+            candidate.SlowMediumDrift.Should().Be(slow.MediumDriftReductionPercent);
+            candidate.FlashHighDrift.Should().Be(flash.HighDriftReductionPercent);
+        }
+
+        [Test]
         public void ACandidateIsNamedByItsMagnitudes()
         {
             KitchenChefStudy.Candidate(100, 25, 20).Should().Be(new KitchenChefStudy.StyleCandidate(

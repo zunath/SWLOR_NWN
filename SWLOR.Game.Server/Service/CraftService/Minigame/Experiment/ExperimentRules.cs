@@ -24,8 +24,34 @@ public static class ExperimentRules
     /// <summary>The Fabrication CP Refine Method costs. It is the only thing CP pays for, so it sets how often a researcher can refine.</summary>
     public const int RefineCp = 30;
 
-    /// <summary>Each piece of spare evidence Analyze spends cuts this share of the job's time, in percent.</summary>
-    public const int TimeCutPercentPerEvidence = 5;
+    /// <summary>
+    /// Research tiers up to this one keep <see cref="BaseTestChancePercent"/>. Each tier above it lowers the base chance by
+    /// <see cref="TestChanceDropPerTier"/>, so the top tiers are built for good Fabrication gear, as the top crafting recipes are.
+    /// </summary>
+    public const int TestChanceCurveStartTier = 2;
+
+    /// <summary>The points of base Test chance each research tier above <see cref="TestChanceCurveStartTier"/> takes away.</summary>
+    public const int TestChanceDropPerTier = 5;
+
+    /// <summary>
+    /// Up to <see cref="ControlChanceSoftCap"/> points of Fabrication Control, each this many points add one point of Test chance.
+    /// </summary>
+    public const int ControlPerTestChancePoint = 2;
+
+    /// <summary>
+    /// The Fabrication Control the best unmodded gear gives. Control above it adds Test chance at the slower rate of
+    /// <see cref="ControlPerTestChancePointAboveSoftCap"/>, so fully modded gear does not take every Test to the chance cap.
+    /// </summary>
+    public const int ControlChanceSoftCap = 30;
+
+    /// <summary>Above <see cref="ControlChanceSoftCap"/>, each this many points of Fabrication Control add one point of Test chance.</summary>
+    public const int ControlPerTestChancePointAboveSoftCap = 4;
+
+    /// <summary>Each piece of spare evidence Analyze spends cuts this share of the job's time, in tenths of a percent (50 is 5%).</summary>
+    public const int TimeCutTenthsPerEvidence = 50;
+
+    /// <summary>Each this many points of Fabrication Craftsmanship add one trial. Only fully modded gear reaches it.</summary>
+    public const int CraftsmanshipPerTrial = 120;
 
     /// <summary>The most the experiment can cut from the job's time, in percent of the job.</summary>
     public const int TimeCutCapPercent = 25;
@@ -38,9 +64,6 @@ public static class ExperimentRules
 
     /// <summary>The Fabrication CP Peer Review costs. It uses no trial and can be used once per experiment.</summary>
     public const int PeerReviewCp = 25;
-
-    /// <summary>After Breakthrough, each piece of spare evidence Analyze spends cuts this many times its usual share of the job's time.</summary>
-    public const int BreakthroughTimeCutMultiplier = 2;
 
     // CP: gear CP plus this share of the rank. The rank-25 passive the other minigames add is re-tuned to nothing here, because
     // Refine Method is the only CP sink and a flat bonus would make it free for every researcher from rank 25.

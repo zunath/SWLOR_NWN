@@ -39,7 +39,7 @@ public class ImmutableStaticTableTests
     public void Style_stats_keep_the_order_the_tables_were_written_in()
     {
         CircuitStyles.StatsOf(CircuitStyle.Overclock).Keys.Should().Equal(
-            StatType.CircuitExtraLoadPerBuildAction, StatType.CircuitLoadBoostPercent);
+            StatType.CircuitExtraLoadPerBuildAction);
         CircuitStyles.StatsOf(CircuitStyle.SafeMode).Keys.Should().Equal(
             StatType.CircuitOverloadGrace, StatType.CircuitLoadBoostPercent);
         // A zero grants nothing, so a style lists only the stats it grants, in this order.

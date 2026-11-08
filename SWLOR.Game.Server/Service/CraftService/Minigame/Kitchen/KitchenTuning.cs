@@ -56,16 +56,17 @@ public static class KitchenTuning
 
     /// <summary>
     /// Doneness gained by each action grows by this share per point of Craftsmanship. Tuned: at 0.015 gear shortened crafts below the
-    /// length gate's floor of 10 actions.
+    /// length gate's floor of 10 actions; at 0.008 mid gear added too little over no gear at recipe levels 51-53 (the gear ladder).
     /// </summary>
-    public const double CraftsmanshipDonenessPerPoint = 0.008;
+    public const double CraftsmanshipDonenessPerPoint = 0.011;
 
     /// <summary>
     /// An enhancement's progress penalty (written for the old crafting window's much larger progress scale) adds this share of
     /// itself to the Doneness the dish needs. Tuned: at 0.5 dishes with two or three enhancements failed or fell
-    /// short of quality often enough that enhancement transfers dropped below today's (the enhancement parity gate).
+    /// short of quality often enough that enhancement transfers dropped below today's (the enhancement parity gate); at 0.25 three
+    /// enhancements on a level 41-45 dish still transferred under 0.90 of today's in fully modded gear.
     /// </summary>
-    public const double EnhancementDonenessPerPenalty = 0.25;
+    public const double EnhancementDonenessPerPenalty = 0.2;
 
     /// <summary>The Doneness a set of enhancements adds to what the dish needs, from their total progress penalty.</summary>
     public static int EnhancementDoneness(int progressPenalty) =>
@@ -122,7 +123,8 @@ public static class KitchenTuning
     // fastest at the lowest levels. Starting values until client timing replaces the seconds per action.
     public const double XpMultiplierLevels1To10 = 2.15;
     public const double XpMultiplierLevels11To20 = 1.15;
-    public const double XpMultiplierLevels21To30 = 1.1;
+    // 21-30 was 1.1, which left the perked Flash and Slow builds just under today's rate with no gear and one enhancement.
+    public const double XpMultiplierLevels21To30 = 1.12;
     public const double XpMultiplierLevels31To40 = 1.2;
     public const double XpMultiplierLevels41Up = 1.05;
 

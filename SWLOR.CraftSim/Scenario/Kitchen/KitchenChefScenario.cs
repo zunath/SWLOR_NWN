@@ -27,6 +27,9 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         /// <summary>The style comparison belongs to the unperked scenario, which plays both styles.</summary>
         public override IReadOnlyList<CraftStylePair> StylePairs => Array.Empty<CraftStylePair>();
 
+        /// <summary>The perk comparison belongs to the unperked scenario too.</summary>
+        public override IReadOnlyList<CraftStyle> GearLadderPerkStyles => Array.Empty<CraftStyle>();
+
         public override IReadOnlyList<string> Limitations => base.Limitations.Concat(new[]
         {
             $"Every cook plays as a {_build.Name} Chef: the style from rank 20 and every other purchase of the line the rank allows. The unperked rank-50 result for gate 3 is in the `kitchen` scenario."

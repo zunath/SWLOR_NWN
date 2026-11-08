@@ -175,6 +175,14 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   group directly and never schedule delayed re-applies (`GuiGroupLayoutSourceTests`
   enforces the single root call). `SwapNestedPartialView` is `ChangePartialView` with
   before/after callbacks.
+- **A layout change waits for the player to let go of the mouse button.** NUI fires a
+  button's `click` on the press. A root layout that arrives before the release replaces
+  the pressed control, the window never sees the release, and it then ignores every
+  press, close button included, until the player relogs (Player List "Send Tell", Nov
+  2026, reproduced in the live client). `Gui.HandleNuiEvents` records `click`/`mousedown`
+  and `mouseup` on the view model, and `ApplyRootLayout` holds the layout until the
+  release (`GuiPressLayoutHold`, with a 3-second fallback when no release is reported).
+  Binds sent while the layout is held are re-sent after it.
 - **Every group-layout change rebuilds the whole window.** Controls outside the
   changed group are recreated too, so scroll positions reset. Rebuilt controls do not
   send watch events, and values pushed while their controls were on screen survive.
@@ -184,7 +192,11 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   (labels, lists, visibility). It does not re-send input values (`textedit`, `check`,
   `combo`, `slider`, `options`, toggles, `color_picker`) or watched binds, because
   that would overwrite what the player typed. Set those after the swap, for example
-  in `onAfterApply`.
+  in `onAfterApply`. A watched input built without its value reports the control's
+  default (a slider reports its minimum), and saving that report corrupts player data:
+  the Hotbars window saved every bar at one slot (Nov 2026). Such windows send the
+  values again and only then start watching, one tick after the swap
+  (`ExtraHotbarSetupViewModel.Listen`).
 - **A group that is not on screen keeps its layout until it is.** While a modal is
   showing, or when the group belongs to a partial that is not displayed, the layout
   is remembered and nothing is sent. A mistyped element id therefore shows nothing and

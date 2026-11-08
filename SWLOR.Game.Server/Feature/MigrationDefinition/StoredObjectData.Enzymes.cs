@@ -26,6 +26,13 @@ internal sealed partial class StoredObjectData
         var changed = false;
         if (isItem)
         {
+            var currentModel = ReadSimpleModel(node);
+            var buildingModel = BuildingIconMigration.GetUpdatedModel(ReadResRef(node), (int)ReadBaseItem(node), currentModel);
+            if (buildingModel != currentModel)
+            {
+                WriteSimpleModel(node, buildingModel);
+                changed = true;
+            }
             if (EnzymeBaseItemMigration.TryGetConversion(ReadResRef(node), ReadBaseItem(node), out var model))
             {
                 WriteInteger(node, "BaseItem", (int)BaseItem.Enzyme);

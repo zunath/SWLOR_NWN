@@ -28,6 +28,7 @@ public class CombatPartForwardingTests
         typeof(ICombatAbilityActivationService),
         typeof(ICombatAbilityBonusService),
         typeof(ICombatAbilityHitService),
+        typeof(ICombatAbilityImpactService),
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
         typeof(ICombatDamageModifiersService),
@@ -169,6 +170,13 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatAbilityActivationService), "ApplyHitPointSpendAbilityEffects(hitPointCost=0)")]
     public void TheMovedActivationDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 1, typeof(ICombatAbilityActivationService));
+
+    // The members of the ability impact part that have default arguments, with the defaults they had as static members of
+    // Combat, on the forwarder, the interface and the instance class alike.
+    [TestCase(typeof(ICombatAbilityImpactService), "GetHighResourceAbilityDamageBonus(ability=null)")]
+    [TestCase(typeof(ICombatAbilityImpactService), "ApplySuccessfulAbilityImpactRiders(allowsHitProcs=True, targetWasAttackingAlly=False)")]
+    public void TheMovedImpactDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 2, typeof(ICombatAbilityImpactService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

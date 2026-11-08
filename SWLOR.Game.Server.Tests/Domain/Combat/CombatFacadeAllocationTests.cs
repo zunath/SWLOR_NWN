@@ -670,7 +670,6 @@ public class CombatFacadeAllocationTests
                 ("GetAbilityStaminaCostFlatAdjustment(perk)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityStaminaCostFlatAdjustment(ability)", 64, () => sink += bonus.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile), () => sink += CombatFacade.GetAbilityStaminaCostFlatAdjustment(Attacker, hostile)),
                 ("GetAbilityStatusDurationPercentAdjustment", 64, () => sink += bonus.GetAbilityStatusDurationPercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, typeof(StunnedStatusEffect), Array.Empty<Type>(), null!), () => sink += CombatFacade.GetAbilityStatusDurationPercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, typeof(StunnedStatusEffect), Array.Empty<Type>(), null!)),
-                ("GetAbilityDefenseIgnorePercentAdjustment", 504, () => sink += bonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender), () => sink += CombatFacade.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender)),
                 ("GetAbilityRecastDelayFlatAdjustment", 64, () => fsink += bonus.GetAbilityRecastDelayFlatAdjustment(Attacker, PerkType.DoubleShot), () => fsink += CombatFacade.GetAbilityRecastDelayFlatAdjustment(Attacker, PerkType.DoubleShot)),
                 ("GetAbilityDamageBonus", 312, () => sink += bonus.GetAbilityDamageBonus(Attacker, SkillType.Rifle), () => sink += CombatFacade.GetAbilityDamageBonus(Attacker, SkillType.Rifle)),
                 ("ApplyTargetStatusAttackModifiers", 152, () => sink += modifiers.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade), () => sink += CombatFacade.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade)),
@@ -704,6 +703,10 @@ public class CombatFacadeAllocationTests
         // add a closure and its delegate (88 bytes or more).
         // StoreQueuedWeaponAbilityCriticalRateBonus with a bonus is left out: its temporary modifier writes vary by up to 70
         // bytes between part and forwarder rounds (2399 to 2466 on the base and here alike).
+        // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of P2-CB9b the
+        // part measured 504 and the forwarder, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
+        // in between), so it is compared here, and its old pin stays as an upper budget for both, so an allocation the part
+        // and its forwarder gained together still fails.
         // Named to run last in the fixture: its million damage rolls let the JIT finish optimizing the status reads, which
         // changes what the pinned reads above allocate when they run after it.
         var scopes = new List<IDisposable>();
@@ -713,6 +716,7 @@ public class CombatFacadeAllocationTests
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
+                ("GetAbilityDefenseIgnorePercentAdjustment", () => sink += bonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender), () => sink += CombatFacade.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender)),
                 ("PrepareOpeningAutoAttack", () => sink += bonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle), () => sink += CombatFacade.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle)),
                 ("GetQueuedWeaponAbilityActivationHitChanceAdjustment", () => sink += bonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile), () => sink += CombatFacade.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile)),
                 ("ApplyCriticalDamageModifier", () => sink += modifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender), () => sink += CombatFacade.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender)),
@@ -736,12 +740,18 @@ public class CombatFacadeAllocationTests
                 ("GrantNextAbilityDamageBonus", () => bonus.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6), () => CombatFacade.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6)),
                 ("GrantNextSkillAbilityBonuses", () => bonus.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6), () => CombatFacade.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6)),
             };
+            var budgets = new Dictionary<string, long> { ["GetAbilityDefenseIgnorePercentAdjustment"] = 504 };
 
             foreach (var (name, part, forwarder) in reads)
             {
                 var (own, forwarded) = InterleavedPerCall(part, forwarder);
                 own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
                 ForwarderAddsNothing(name, own, forwarded, 32);
+                if (budgets.TryGetValue(name, out var budget))
+                {
+                    own.Should().BeLessThanOrEqualTo(budget, $"{name} allocates no more than it did before the move");
+                    forwarded.Should().BeLessThanOrEqualTo(budget, $"Combat.{name} allocates no more than it did before the move");
+                }
             }
 
             GC.KeepAlive(sink);
@@ -1029,6 +1039,170 @@ public class CombatFacadeAllocationTests
             {
                 LeastAllocated(part).Should().Be(0, $"{name} runs per damage roll or per damage event");
                 LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    // The same world as the hit parts (a container of its own, the constant engine, the clock held still, a status table for
+    // both creatures and the stat service that allocates nothing), with the ability impact part. The three tests that use it
+    // are named to run after every other combat part test of the fixture, for the reason the hit part tests give: a hit runs
+    // the same status and stat reads, so they cannot change what the JIT has done to the reads those tests compare.
+    private static ICombatAbilityImpactService InstallImpactPart(List<IDisposable> scopes)
+    {
+        InstallTimingParts(scopes);
+        return FacadeContainer.Current.Get<ICombatAbilityImpactService>();
+    }
+
+    private static AbilityDetail ImpactAbility(SkillType skill, bool area) => new()
+    {
+        SkillType = skill,
+        IsHostileAbility = true,
+        IsAreaAbility = area,
+        IsSingleTargetAbility = !area,
+        MaxRange = 5f
+    };
+
+    private static AbilityImpactSummary ImpactSummary(SkillType skill) => new()
+    {
+        Ability = ImpactAbility(skill, true),
+        SkillType = skill,
+        IsAreaAbility = true,
+        ImpactedTargetCount = 3
+    };
+
+    [Test]
+    public void WhereTheImpactPartAllocatesNothingItsForwarderAllocatesNothing()
+    {
+        // Run per ability hit, per target or per finished impact. Each allocated nothing before the move either (measured
+        // against the base assembly in the same sequence, with tiered compilation on and off).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var impact = InstallImpactPart(scopes);
+            var sink = 0;
+            var rifle = ImpactAbility(SkillType.Rifle, false);
+            var summaries = new[] { SkillType.Throwing, SkillType.Saberstaff, SkillType.Spear, SkillType.Rifle }.Select(ImpactSummary).ToArray();
+            var empty = new AbilityImpactSummary { SkillType = SkillType.Rifle };
+            var reads = new List<(string Name, Action Part, Action Forwarder)>
+            {
+                ("GetAbilityImpactBaseDamageBonus(null)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle), () => sink += CombatFacade.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle)),
+                ("GetHighResourceAbilityDamageBonus", () => sink += impact.GetHighResourceAbilityDamageBonus(Attacker, rifle), () => sink += CombatFacade.GetHighResourceAbilityDamageBonus(Attacker, rifle)),
+                ("GetHighResourceAbilityDamageBonus()", () => sink += impact.GetHighResourceAbilityDamageBonus(Attacker), () => sink += CombatFacade.GetHighResourceAbilityDamageBonus(Attacker)),
+                ("GetCostlyAbilityDamageBonus", () => sink += impact.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle), () => sink += CombatFacade.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle)),
+                ("ApplyHostileAbilityPartyBuff", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false), () => CombatFacade.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false)),
+                ("ApplyHostileAbilityPartyBuff(status)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true), () => CombatFacade.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true)),
+                ("ApplyHostileAbilityPartyBuff(miss)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false), () => CombatFacade.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false)),
+                ("ApplySpearDisablerSuppressionRiders", () => impact.ApplySpearDisablerSuppressionRiders(Attacker, Defender), () => CombatFacade.ApplySpearDisablerSuppressionRiders(Attacker, Defender)),
+                ("IsTargetAttackingAllyForStatusAppliedRiders", () => sink += impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0, () => sink += CombatFacade.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0),
+                ("ApplyStatusAppliedTargetStaminaDrain", () => impact.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff), () => CombatFacade.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff)),
+                ("ApplyAreaHitHaste", () => impact.ApplyAreaHitHaste(Attacker, 3), () => CombatFacade.ApplyAreaHitHaste(Attacker, 3)),
+                ("ApplyAbilityImpactEffects(empty)", () => impact.ApplyAbilityImpactEffects(Attacker, empty), () => CombatFacade.ApplyAbilityImpactEffects(Attacker, empty)),
+            };
+            foreach (var summary in summaries)
+                reads.Add(($"ApplyAbilityImpactEffects({summary.SkillType})", () => impact.ApplyAbilityImpactEffects(Attacker, summary), () => CombatFacade.ApplyAbilityImpactEffects(Attacker, summary)));
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                LeastAllocated(part).Should().Be(0, $"{name} runs per ability hit, per target or per impact");
+                LeastAllocated(forwarder).Should().Be(0, $"Combat.{name} only forwards");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereTheImpactPartAllocatesItsPinnedBytesItsForwarderAddsNothing()
+    {
+        // Bytes per call in this setup, each the same as the base assembly's in the same sequence with tiered compilation on and
+        // off, and the same whether the test runs alone or after the rest of the fixture: the ally check asks the party service,
+        // the base damage bonus reads the guarded-hit bonus's temporary modifiers, and the forget query builds its LINQ iterators
+        // and lists, as before the move. No closure of a moved method captures the part.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var impact = InstallImpactPart(scopes);
+            var sink = 0;
+            var forget = Private<Action<uint>>("ForgetImpactState", typeof(uint));
+            var rifle = ImpactAbility(SkillType.Rifle, false);
+            var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
+            {
+                ("IsAttackingAllyOf", 72, () => sink += impact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0, () => sink += CombatFacade.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0),
+                ("GetAbilityImpactBaseDamageBonus(Rifle)", 56, () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle), () => sink += CombatFacade.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle)),
+                ("ForgetImpactState", 344, () => impact.ForgetImpactState(Defender), () => forget(Defender)),
+            };
+
+            foreach (var (name, bytes, part, forwarder) in reads)
+            {
+                PerCall(part).Should().Be(bytes, $"{name} allocates what it did before the move");
+                PerCall(forwarder).Should().Be(bytes, $"Combat.{name} adds nothing to what the part allocates");
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WhereTheImpactPartAllocatesMoreItsForwarderAddsNothing()
+    {
+        // A damaging hit records it, reads the target's status table, the skill's attribute by reflection (IsWeaponSkillType) and
+        // the riders' temporary modifiers, as before the move; with tiered compilation off the base and this head allocate the same
+        // bytes for each (1285 to 1892), with it on the bytes depend on what the JIT has done by the time they run (by up to about
+        // 60 bytes on either side). The Twin Blade bonus reads the Reversal Cut temporary modifiers (96 or 168 bytes, base and here
+        // alike) and the single-target Lightsaber bonus the target's status table (208 bytes in a probe of its own on both, 144
+        // after this fixture's other tests). A hit with no damage records the hit and reads its riders' temporary modifiers and the
+        // skill's attribute (432 bytes in a probe on both, 432 to 456 here depending on what ran before). A forwarder is one call
+        // with the same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or
+        // more): the margin is below that.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var impact = InstallImpactPart(scopes);
+            var sink = 0;
+            var applied = new[] { typeof(DazedStatusEffect) };
+            var none = Array.Empty<Type>();
+            var rifle = ImpactAbility(SkillType.Rifle, false);
+            var twinBlade = ImpactAbility(SkillType.TwinBlade, false);
+            var lightsaber = ImpactAbility(SkillType.Lightsaber, false);
+            var reads = new List<(string Name, Action Part, Action Forwarder)>
+            {
+                ("GetAbilityImpactBaseDamageBonus(TwinBlade)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade), () => sink += CombatFacade.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade)),
+                ("GetAbilityImpactBaseDamageBonus(Lightsaber)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber), () => sink += CombatFacade.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber)),
+                ("ApplySuccessfulAbilityImpactRiders(no damage)",
+                    () => impact.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, rifle, SkillType.Rifle, CombatDamageType.Physical, 0, false, null!, none, false, false, StatusEffectCategory.None, false, true),
+                    () => CombatFacade.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, rifle, SkillType.Rifle, CombatDamageType.Physical, 0, false, null!, none, false, false, StatusEffectCategory.None, false, true)),
+            };
+            foreach (var (skill, area) in new[]
+                     {
+                         (SkillType.Rifle, false), (SkillType.Rifle, true), (SkillType.Katar, false), (SkillType.Lightsaber, false),
+                         (SkillType.Spear, true), (SkillType.Throwing, true), (SkillType.TwinBlade, false), (SkillType.Vibroknife, false)
+                     })
+            {
+                var ability = ImpactAbility(skill, area);
+                reads.Add(($"ApplySuccessfulAbilityImpactRiders({skill}, {(area ? "area" : "single")})",
+                    () => impact.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, ability, skill, CombatDamageType.Physical, 10, true, typeof(DazedStatusEffect), applied, true, true, StatusEffectCategory.Debuff),
+                    () => CombatFacade.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, ability, skill, CombatDamageType.Physical, 10, true, typeof(DazedStatusEffect), applied, true, true, StatusEffectCategory.Debuff)));
+            }
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var (own, forwarded) = InterleavedPerCall(part, forwarder);
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                ForwarderAddsNothing(name, own, forwarded, 64);
             }
 
             GC.KeepAlive(sink);

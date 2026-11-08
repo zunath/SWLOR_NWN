@@ -110,8 +110,7 @@ public class AreaAbilityFragmentationTests
     }
 
     private static (int Damage, int Radius) GetPulse(AbilityDetail ability, bool firstTarget) =>
-        ((IReadOnlyList<StatAdjustmentSource>)CombatMembers.FindMethod("GetAreaAbilityPulseSources")!
-            .Invoke(null, new object[] { Creature, ability, firstTarget })!)
+        ((IReadOnlyList<StatAdjustmentSource>)CombatMembers.Invoke("GetAreaAbilityPulseSources", Creature, ability, firstTarget))
             .Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .SingleOrDefault();
 
@@ -189,8 +188,7 @@ public class AreaAbilityFragmentationTests
     }
 
     private static int GetFragmentation(SkillType skill, StatType stat) =>
-        (int)CombatMembers.FindMethod("GetAreaAbilityFragmentationStatAdjustment")!
-            .Invoke(null, new object[] { Creature, skill, stat })!;
+        (int)CombatMembers.Invoke("GetAreaAbilityFragmentationStatAdjustment", Creature, skill, stat);
 
     private static object GetProfile(AbilityDetail ability) =>
         ability.ImpactAction.Target!.GetType()

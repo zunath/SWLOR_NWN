@@ -4893,8 +4893,8 @@
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CombatParts/Combat.AbilityImpact.cs",
-    "Line": 1376,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
+    "Line": 1427,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"

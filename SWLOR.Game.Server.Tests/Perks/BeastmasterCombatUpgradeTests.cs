@@ -320,7 +320,7 @@ public class BeastmasterCombatUpgradeTests
         combat.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);");
         combat.Should().NotContain("skillType != SkillType.BeastMastery");
         combat.Should().Contain("StatType.PredatorsMarkDurationSeconds");
-        combat.Should().Contain("StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)");
+        combat.Should().Contain("_statusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)");
         combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestoreChance");
         combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestore");
         combat.Should().Contain("StatType.BeastBalancedAbilityStaminaRestoreCategoryId");

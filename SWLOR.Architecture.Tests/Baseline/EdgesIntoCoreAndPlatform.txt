@@ -154,7 +154,7 @@ Skill -> Platform/Core | 5
 Skill -> Platform/Entity | 19
 Skill -> Platform/Enumeration | 55
 Skill -> Platform/Extension | 2
-Stat -> Platform/Composition | 2
+Stat -> Platform/Composition | 1
 Stat -> Platform/Core | 8
 Stat -> Platform/Entity | 86
 Stat -> Platform/Extension | 1

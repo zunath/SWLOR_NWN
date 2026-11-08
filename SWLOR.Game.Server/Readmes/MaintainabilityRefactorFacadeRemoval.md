@@ -264,7 +264,7 @@ coordinator runs them.
   `Combat`; it still handles `Space`.
 - **Handler renames stay one line per handler** (decision D4): the P2-Z2 script already updates the branch side of existing lines; a new
   type-level format would need changes to that script, `RefactorCommon.ps1` and the sync.
-- **`Space`.** P2-Z cannot clear `Service.Space` (a class) against `Domain.Space` (the namespace P2-Z2 creates); see D8.
+- **`Space`.** P2-Z cannot clear `Service.Space` (a class) against `Domain.Space` (the namespace P2-Z2 creates); the owner's D8 ruling: convert `Space` and `Droid` from master's code before P2-Z2 if the revamp has not landed.
 - **P3-3.** Can run alongside: tests it adds that call `Stat.X` keep compiling once the tool adds the `using`. Removing the facades deletes
   lines that `FacadeForwardingTests` covers, which lowers the overall percentage and the `Service` area; re-measure for P3-3 after P2-ZZ.
 
@@ -279,7 +279,7 @@ coordinator runs them.
 | D5 | Constants | move reads to the owner the facade's initializer names; literal facade constants move to the instance class; no constants on interfaces | coordinator |
 | D6 | `Combat`'s pure members | static callers of the rule constants call `CombatRules` (required); rule methods too, which removes two hops from per-swing reads (`CombatSim` and `Player` already do it); anything ambiguous stays on `GameServices.Combat` | coordinator |
 | D7 | Transition marker | `"facadeRemoved": true` per entry in `ConvertedServices.json`, removed by P2-ZZ | coordinator |
-| D8 | `Service.Space` against `Domain.Space` if `feature/space-revamp` has not landed when P2-Z2 is due | P2-Z cannot fix it; owner decision 12 forbids a namespace that hides a type at handover, so either P2-Z2 waits for P2-A9 or the owner accepts a temporary exception | owner |
+| D8 | `Service.Space` against `Domain.Space` if `feature/space-revamp` has not landed when P2-Z2 is due | Decided by the owner 2026-11-08: if the revamp is not on master when P2-Z2 is due, convert `Space` and `Droid` from master's code (no facades, the P2-ZZ recipe) before P2-Z2; no exception | owner |
 | D9 | Parity tool | land the blocked `SkillCacheScope.cs` overlay fix before P2-ZA's pilot: every item that moves a handler needs a parity run | coordinator |
 
 ## Appendix A: per service

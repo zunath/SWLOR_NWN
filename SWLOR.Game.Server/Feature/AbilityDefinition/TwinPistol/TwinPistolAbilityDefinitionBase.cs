@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 builder.GrantsWeaponAbilityCadence(spec.CadenceOnHit);
 
             if (spec.VolleyCount > 1)
-                builder.IsChanneledAbility(TwinPistolAbility.InterruptChannel, suppressAutoAttacks: true)
+                builder.IsChanneledAbility(actor => TwinPistolAbility.InterruptChannel(actor), suppressAutoAttacks: true)
                     .HasFixedActivationDelay(spec.ChannelSeconds)
                     .UsesAnimation(channelAnimation);
             else

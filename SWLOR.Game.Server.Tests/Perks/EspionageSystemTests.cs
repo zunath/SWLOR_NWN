@@ -38,9 +38,9 @@ public class EspionageSystemTests
     [TearDown]
     public void RemoveItemFacades() => _itemFacadeScope.Dispose();
 
-    // The event handlers stay on the static facade; the logic is in the instance class.
+    // The event handlers and the logic are on the instance class.
     private static string ReadStealthFacade() =>
-        File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
 
     [Test]
     public void StealthAndDetectionRatings_UseTheCommittedAttributeFormulas()

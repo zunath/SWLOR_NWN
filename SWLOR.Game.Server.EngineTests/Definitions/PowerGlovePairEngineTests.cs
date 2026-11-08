@@ -154,11 +154,11 @@ public static class PowerGlovePairEngineTests
         {
             await EquipExisting(ctx, actor, real, InventorySlot.RightHand);
             companion = await WaitForPair(ctx, actor, real);
-            ctx.AssertEqual(1, OwnedItems(actor).Count(PowerGloveEquipment.IsGeneratedCompanion), "A replacement creates only one cosmetic companion");
+            ctx.AssertEqual(1, OwnedItems(actor).Count(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "A replacement creates only one cosmetic companion");
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(real));
             await WaitForRemovedPair(ctx, actor, real, companion);
         }
-        ctx.AssertEqual(2, OwnedItems(actor).Count(PowerGloveEquipment.IsPairItem), "Swaps preserve exactly the two acquired real gloves");
+        ctx.AssertEqual(2, OwnedItems(actor).Count(item => PowerGloveEquipment.IsPairItem(item)), "Swaps preserve exactly the two acquired real gloves");
         await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
         companion = await WaitForPair(ctx, actor, main);
         await ctx.ExecuteInCreatureContextAsync(actor, () => ActionPutDownItem(companion));
@@ -174,8 +174,8 @@ public static class PowerGlovePairEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () => ItemPlugin.MoveTo(companion, recipient, true));
         await ctx.WaitUntilAsync(() => !GetIsObjectValid(companion), 6f, "a transferred cosmetic glove to be destroyed");
         await WaitForRemovedPair(ctx, actor, main, companion);
-        ctx.Assert(!OwnedItems(recipient).Any(PowerGloveEquipment.IsGeneratedCompanion), "The recipient retains no generated glove");
-        ctx.AssertEqual(2, OwnedItems(actor).Count(PowerGloveEquipment.IsPairItem), "Escape cleanup preserves the two real gloves");
+        ctx.Assert(!OwnedItems(recipient).Any(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "The recipient retains no generated glove");
+        ctx.AssertEqual(2, OwnedItems(actor).Count(item => PowerGloveEquipment.IsPairItem(item)), "Escape cleanup preserves the two real gloves");
     }
 
     [EngineTest("Power Gloves receive no Single Weapon or Doublehand bonus and both hands roll the owned glove's DMG", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
@@ -720,8 +720,8 @@ public static class PowerGlovePairEngineTests
     internal static void AssertOwnedItems(EngineTestContext ctx, uint actor, uint main, int companions)
     {
         var items = OwnedItems(actor);
-        ctx.AssertEqual(1, items.Count(PowerGloveEquipment.IsPairItem), "Exactly one purchased or crafted Power Glove is owned");
-        ctx.AssertEqual(companions, items.Count(PowerGloveEquipment.IsGeneratedCompanion), "Only the equipped cosmetic companion may exist");
+        ctx.AssertEqual(1, items.Count(item => PowerGloveEquipment.IsPairItem(item)), "Exactly one purchased or crafted Power Glove is owned");
+        ctx.AssertEqual(companions, items.Count(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "Only the equipped cosmetic companion may exist");
         ctx.Assert(items.Contains(main), "The exact real item remains in owned equipment or storage");
         ctx.AssertEqual(actor, GetItemPossessor(main), "The real item retains its owner");
         ctx.AssertEqual(1, GetItemStackSize(main), "The real item is never duplicated into a stack");

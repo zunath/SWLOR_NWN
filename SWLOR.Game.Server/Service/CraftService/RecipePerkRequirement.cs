@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {

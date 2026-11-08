@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -223,10 +224,10 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             .Where(row => row.TryGetValue("A", out var name) && !string.IsNullOrWhiteSpace(name))
             .ToDictionary(row => row["A"], StringComparer.Ordinal);
 
-        AssertStatRange(stats, "Combat Readiness", 0, Stat.MaximumCombatReadinessPercent);
-        AssertStatRange(stats, "Shield Deflection", 0, Stat.MaximumShieldDeflectionChance);
-        AssertStatRange(stats, "Melee / Ranged Deflection", 0, Stat.MaximumDeflectionChanceCap);
-        AssertStatRange(stats, "Guard", 0, Stat.MaximumGuardChance);
+        AssertStatRange(stats, "Combat Readiness", 0, StatService.MaximumCombatReadinessPercent);
+        AssertStatRange(stats, "Shield Deflection", 0, StatService.MaximumShieldDeflectionChance);
+        AssertStatRange(stats, "Melee / Ranged Deflection", 0, StatService.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Guard", 0, StatService.MaximumGuardChance);
         AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
         AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
         AssertStatRange(
@@ -239,8 +240,8 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         AssertStatRange(
             stats,
             "Movement Speed",
-            (decimal)Stat.MinimumMovementSpeedMultiplier,
-            (decimal)Stat.MaximumMovementSpeedMultiplier);
+            (decimal)StatService.MinimumMovementSpeedMultiplier,
+            (decimal)StatService.MaximumMovementSpeedMultiplier);
         AssertStatRange(
             stats,
             "Damage-Derived Healing per Hit",
@@ -259,7 +260,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             0,
             Combat.MaximumCombinedDamageReductionPercent);
 
-        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {Stat.DefaultMeleeDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {StatService.DefaultMeleeDeflectionChanceCap}%");
         stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
         stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
         stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");

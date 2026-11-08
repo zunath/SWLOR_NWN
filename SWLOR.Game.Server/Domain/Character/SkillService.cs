@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The skill catalog, XP awards, rank rules and decay: the logic and state that used to be static in
-    /// <c>Service.Skill</c>, moved here unchanged. The facade keeps the event handlers and forwards every call.
+    /// the facade <c>Skill</c>, moved here unchanged. The event handlers run on the container's instance, and static
+    /// callers reach it through <c>GameServices.Skill</c>.
     /// </summary>
     public class SkillService : ISkillService
     {
@@ -493,6 +494,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void AddMissingSkills()
         {
             var player = GetEnteringObject();
@@ -631,6 +633,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             // Initialize the list of categories.
@@ -894,6 +897,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadMappings()
         {
             LoadItemToSkillMapping();
@@ -1036,6 +1040,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// When the module loads, cache all XP chart data used for quick access. The chart is a constant table
         /// built when <see cref="SkillXPChart"/> loads, so there is nothing left to build here.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheXPChartData()
         {
             RuntimeHelpers.RunClassConstructor(typeof(SkillXPChart).TypeHandle);

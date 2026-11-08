@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Status effects: the per-creature trackers, what a logged-out player keeps, the definition catalog, the native
     /// effect that carries each status and the effects granted while a native attack cycle resolves. The logic that used
-    /// to be static in <c>Service.StatusEffect</c> is moved here unchanged; the facade keeps the event handlers and
-    /// forwards every call to the container's instance. Calls into the unconverted <c>Stat</c>, <c>Ability</c> and
+    /// to be static in the facade <c>StatusEffect</c> is moved here unchanged; the event handlers run on the container's
+    /// instance, and static callers reach it through <c>GameServices.StatusEffect</c>. Calls into <c>Stat</c>, <c>Ability</c> and
     /// <c>Combat</c>, the feature code, the native effect read and the definition search sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls. The pure duration rules live in
     /// <see cref="StatusEffectRules"/>, for code that has no container.
@@ -240,6 +240,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module caches, status effects will be discovered and cached.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CacheStatusEffects();
@@ -291,6 +292,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, apply the NWN effect system
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnPlayerEnter()
         {
             var player = GetEnteringObject();
@@ -397,6 +399,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player exits the server, hold their status effects until they return.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnPlayerExit()
         {
             var player = GetExitingObject();
@@ -438,6 +441,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Handle when a status effect is applied (called by NWN script)
         /// </summary>
+        [NWNEventHandler(ScriptName.OnApplyStatusEffect)]
         public void OnApplyStatusEffect()
         {
             OnApplyNWNStatusEffect(OBJECT_SELF);
@@ -446,6 +450,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Handle when a status effect is removed (called by NWN script)
         /// </summary>
+        [NWNEventHandler(ScriptName.OnRemoveStatusEffect)]
         public void OnRemoveStatusEffect()
         {
             OnRemoveNWNStatusEffect(OBJECT_SELF);
@@ -454,6 +459,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Handle status effect interval processing (called by NWN script)
         /// </summary>
+        [NWNEventHandler(ScriptName.OnStatusEffectInterval)]
         public void OnStatusEffectInterval()
         {
             OnNWNStatusEffectInterval(OBJECT_SELF);
@@ -2422,6 +2428,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             RemoveCreature(creature, removeNativeEffect);
         }
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public void OnDealtDamage()
         {
             var attacker = OBJECT_SELF;

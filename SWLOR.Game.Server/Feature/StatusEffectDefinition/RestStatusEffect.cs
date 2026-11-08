@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
@@ -20,8 +21,8 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using Skill = SWLOR.Game.Server.Service.Skill;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -618,12 +619,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var nativeWeapon = native.m_pInventory.GetItemInSlot((uint)slot);
             var baseline = Stat.GetAccuracyNative(native, nativeWeapon);
             var scriptBaseline = Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
-                Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon)));
+                GameServices.Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon)));
             var accuracy = ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 5);
             AddItemProperty(DurationType.Permanent, accuracy, weapon);
             ctx.AssertEqual(baseline + 5, Stat.GetAccuracyNative(native, nativeWeapon), $"{GetBaseItemType(weapon)} native ACC counts once");
             ctx.AssertEqual(scriptBaseline + 5, Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
-                Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))), $"{GetBaseItemType(weapon)} script ACC counts once");
+                GameServices.Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))), $"{GetBaseItemType(weapon)} script ACC counts once");
             RemoveItemProperty(weapon, accuracy);
         }
 
@@ -930,7 +931,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var defenderNative = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(defender).AsNWSCreature();
                     ctx.AssertEqual(useShield ? 0 : 100, Stat.GetMeleeDeflectionChanceNative(defenderNative),
                         "Shield replaces melee deflection rather than stacking with it");
-                    ctx.AssertEqual(useShield ? Stat.MaximumShieldDeflectionChance : 0,
+                    ctx.AssertEqual(useShield ? StatService.MaximumShieldDeflectionChance : 0,
                         Stat.GetShieldDeflectionChanceNative(defenderNative), "Expected shield deflection chance");
 
                     var round = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature().m_pcCombatRound;

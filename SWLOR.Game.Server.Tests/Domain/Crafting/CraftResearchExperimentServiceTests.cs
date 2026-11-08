@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 

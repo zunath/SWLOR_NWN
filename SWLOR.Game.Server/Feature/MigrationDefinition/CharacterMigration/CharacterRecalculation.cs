@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -35,12 +37,12 @@ internal static class CharacterRecalculation
         if (character.AppliesRecordEffects)
         {
             var record = character.Record;
-            record.MaxHP = Stat.BaseHP;
+            record.MaxHP = StatService.BaseHP;
             record.HPRegen = 0;
-            record.MaxFP = Stat.BaseFP;
+            record.MaxFP = StatService.BaseFP;
             record.FP = SavedEquipmentStats.GetMaxFP(character);
             record.FPRegen = 0;
-            record.MaxStamina = Stat.BaseSTM;
+            record.MaxStamina = StatService.BaseSTM;
             record.Stamina = SavedEquipmentStats.GetMaxStamina(character);
             record.STMRegen = 0;
             foreach (var (type, _) in Skill.GetActiveCraftingSkills())
@@ -80,7 +82,7 @@ internal static class CharacterRecalculation
     }
 
     /// <summary>
-    /// Saved-data <see cref="Perk.GetPlayerEffectivePerkLevel(uint, PerkType)"/>: the highest owned perk level whose
+    /// Saved-data <see cref="Domain.Character.IPerkService.GetPlayerEffectivePerkLevel(uint, PerkType)"/>: the highest owned perk level whose
     /// requirements the record (and its active beast) meet.
     /// </summary>
     public static int GetEffectivePerkLevel(SavedCharacter character, PerkType perkType)
@@ -99,7 +101,7 @@ internal static class CharacterRecalculation
         return 0;
     }
 
-    /// <summary>Saved-data <see cref="Perk.RestorePlayerFeats"/>: native feats granted by every owned player perk.</summary>
+    /// <summary>Saved-data <see cref="Domain.Character.IPerkService.RestorePlayerFeats"/>: native feats granted by every owned player perk.</summary>
     public static void RestorePlayerFeats(SavedCharacter character)
     {
         foreach (var (perkType, level) in character.Record.Perks.ToList())

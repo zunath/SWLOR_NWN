@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -385,7 +386,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var script = EventScript.Creature_OnHeartbeat; script <= EventScript.Creature_OnBlockedByDoor; script++)
                 SetEventScript(player, script, string.Empty);
             // Players regenerate normally; natural regeneration writes the player record.
-            DeleteLocalInt(player, Stat.SuppressNaturalRegenVariable);
+            DeleteLocalInt(player, StatService.SuppressNaturalRegenVariable);
             fixture.Update(record =>
             {
                 foreach (var (feat, _) in Rotation)

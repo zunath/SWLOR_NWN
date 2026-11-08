@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -158,7 +159,7 @@ public static class TwinPistolEquipmentEngineTests
         {
             record.Skills[SkillType.TwinPistol].Rank = 25;
             // STM gear rebuilds max STM from worn gear, so the fixture's seeded STM, which has no source, would vanish.
-            record.MaxStamina = record.Stamina = Stat.BaseSTM;
+            record.MaxStamina = record.Stamina = StatService.BaseSTM;
         });
         var actor = player.Creature;
         var main = await CreateCarriedItem(ctx, actor, "b_twinpistol");

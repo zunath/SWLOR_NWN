@@ -10,6 +10,8 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -468,7 +470,7 @@ namespace SWLOR.Game.Server.Native
                     currentWeaponAttackType);
                 if (currentAttackWeapon != null)
                 {
-                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetWeaponSkill(pCreature.m_idSelf, currentAttackWeapon.m_idSelf);
+                    attackSkillType = GameServices.Skill.GetWeaponSkill(pCreature.m_idSelf, currentAttackWeapon.m_idSelf);
                 }
                 var mainSkill = attackSkillType;
                 var offSkill = SkillType.Invalid;
@@ -478,7 +480,7 @@ namespace SWLOR.Game.Server.Native
                     var offWeapon = WeaponAttackCycle.GetAttackWeapon(pCreature, WEAPON_ATTACK_TYPE_OFFHAND);
                     if (offWeapon != null)
                     {
-                        offSkill = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        offSkill = GameServices.Skill.GetSkillTypeByBaseItem(
                             (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)offWeapon.m_nBaseItem);
                         // Either hand's scoped timing effect can drive the shared gate. Actual
                         // attack notifications still consume charges using each roll's own skill.

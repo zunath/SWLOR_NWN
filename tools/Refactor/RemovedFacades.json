@@ -1,7 +1,42 @@
 {
   "description": "The static facades the branch deleted (P2-Z, SWLOR.Game.Server/Readmes/MaintainabilityRefactorFacadeRemoval.md). Read by tools/Refactor/Apply-FacadeRemoval.ps1 (SWLOR.FacadeRemoval), which keeps their callers in the branch's shape. Each entry is a \"facade\" named relative to SWLOR.Game.Server.Service (Taxi, or QuestService.QuestEncounter for a further facade); static callers reach its service through the property of the same name on SWLOR.Game.Server.Composition.GameServices. Optional: \"explicit\": true for a name that is also a namespace segment (Combat, Mimicry, Performance, Prospecting), which callers write GameServices.<Name>.X; \"constants\": [ { \"name\": \"MaximumHitRate\", \"owner\": \"SWLOR.Game.Server.Domain.Combat.CombatRules\" } ] for each public constant the facade repeated, with the full name of the class that holds it now. Keep the list sorted by facade. A removed service also has \"facadeRemoved\": true in SWLOR.Architecture.Tests/ConvertedServices.json, and each of its handlers a line in tools/Refactor/HandlerRenames.txt.",
   "facades": [
+    { "facade": "Perk" },
     { "facade": "ServerTask" },
+    {
+      "facade": "Skill",
+      "constants": [
+        { "name": "SkillCap", "owner": "SWLOR.Game.Server.Domain.Character.SkillService" },
+        { "name": "StartingSkillPoints", "owner": "SWLOR.Game.Server.Domain.Character.SkillService" },
+        { "name": "TotalSkillPointCap", "owner": "SWLOR.Game.Server.Domain.Character.SkillService" }
+      ]
+    },
+    {
+      "facade": "Stat",
+      "constants": [
+        { "name": "BaseFP", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "BaseHP", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "BaseSTM", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "BeastNaturalRegenStatDivisor", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "BeastNaturalStaminaRegenDelaySeconds", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "DefaultMeleeDeflectionChanceCap", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "DefaultRangedDeflectionChanceCap", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumCombatReadinessPercent", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumDeflectionChanceCap", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumGuardChance", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumMovementSpeedMultiplier", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumNPCDetection", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MaximumShieldDeflectionChance", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "MinimumMovementSpeedMultiplier", "owner": "SWLOR.Game.Server.Domain.Character.StatService" },
+        { "name": "SuppressNaturalRegenVariable", "owner": "SWLOR.Game.Server.Domain.Character.StatService" }
+      ]
+    },
+    {
+      "facade": "StatusEffect",
+      "constants": [
+        { "name": "MaximumHardCrowdControlDurationSeconds", "owner": "SWLOR.Game.Server.Service.StatusEffectService.StatusEffectRules" }
+      ]
+    },
     { "facade": "Taxi" }
   ]
 }

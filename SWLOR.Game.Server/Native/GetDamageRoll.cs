@@ -17,6 +17,8 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -132,7 +134,7 @@ namespace SWLOR.Game.Server.Native
                 }
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
+                    : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
 
                 // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
                 damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);

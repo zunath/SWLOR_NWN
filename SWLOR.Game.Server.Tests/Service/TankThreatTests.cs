@@ -10,6 +10,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -220,7 +222,7 @@ public class TankThreatTests
             revisedTank.Should().BeGreaterThan(revisedOffense * 1.10, "both builds can spend the newly available stamina");
             revisedTank.Should().BeLessThan(revisedOffense * 2);
             // Opening burst pays actual costs from the unchanged pool with ten STM reserved.
-            var maximum = Stat.GetMaxStamina(Stat.BaseSTM, might, 0);
+            var maximum = Stat.GetMaxStamina(StatService.BaseSTM, might, 0);
             var current = maximum;
             remainder = 0;
             for (var second = 0; second < 300; second++)

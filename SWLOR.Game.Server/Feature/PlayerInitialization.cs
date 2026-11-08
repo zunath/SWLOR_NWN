@@ -11,6 +11,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Race = SWLOR.Game.Server.Service.Race;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -264,14 +266,14 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The player entity.</param>
         private static void AdjustStats(uint player, Player dbPlayer)
         {
-            dbPlayer.UnallocatedSP = Skill.StartingSkillPoints;
+            dbPlayer.UnallocatedSP = SkillService.StartingSkillPoints;
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
             // A failed first export can retry with an already initialized record.
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP - dbPlayer.MaxHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP - dbPlayer.MaxFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM - dbPlayer.MaxStamina, player);
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, StatService.BaseHP - dbPlayer.MaxHP);
+            Stat.AdjustPlayerMaxFP(dbPlayer, StatService.BaseFP - dbPlayer.MaxFP, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, StatService.BaseSTM - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPlayerNameService _playerName;
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
+        private readonly IStatusEffectService _statusEffect;
         private readonly Dictionary<uint, PerformanceAudienceState> _states = new();
         private readonly Dictionary<uint, PerformancePerformerState> _performerStates = new();
         private readonly List<PerformerSnapshot> _scratchPartners = new();
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerkService perk,
             IPlayerNameService playerName,
             ISkillService skill,
-            IStatService stat)
+            IStatService stat,
+            IStatusEffectService statusEffect)
         {
             _db = db;
             _venue = venue;
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _playerName = playerName;
             _skill = skill;
             _stat = stat;
+            _statusEffect = statusEffect;
         }
 
         public void StartAudienceTick()
@@ -1016,7 +1019,7 @@ namespace SWLOR.Game.Server.Domain.Social
         protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
         protected virtual InspiredStatusEffect GetInspiredEffect(uint creature) =>
-            StatusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
+            _statusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
 
         protected virtual void GiveSkillXP(uint player, SkillType skill, int xp) => _skill.GiveSkillXP(player, skill, xp);
 

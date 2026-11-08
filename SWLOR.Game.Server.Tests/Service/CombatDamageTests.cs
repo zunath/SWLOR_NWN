@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

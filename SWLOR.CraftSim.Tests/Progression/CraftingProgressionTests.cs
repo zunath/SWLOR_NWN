@@ -7,6 +7,7 @@ using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -106,7 +107,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         {
             SetLocalInt(player, "NATURAL_REGENERATION_TICK", 0);
             SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
-            SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 0);
+            SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 0);
             try
             {
                 for (var heartbeat = 1; heartbeat <= 5; heartbeat++)
@@ -116,7 +117,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                     ctx.AssertEqual(heartbeat == 5 ? fpBudget : 0, Stat.GetCurrentFP(player), "FP retains its thirty-second cadence");
                 }
             }
-            finally { SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1); }
+            finally { SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1); }
             NaturalRegeneration.ProcessRegeneration();
             ctx.AssertEqual(20, Stat.GetCurrentStamina(player), "suppressed heartbeats cannot leak recovery into other engine tests");
         });
@@ -131,7 +132,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         fixture.Update(record => { record.Stamina = 0; record.STMRegen = 0; });
         SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
         SetEventScript(player, EventScript.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);
-        SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 0);
+        SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 0);
         try
         {
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 7f, "a real native six-second heartbeat");
@@ -139,7 +140,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         }
         finally
         {
-            SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1);
             SetEventScript(player, EventScript.Creature_OnHeartbeat, "");
         }
     }

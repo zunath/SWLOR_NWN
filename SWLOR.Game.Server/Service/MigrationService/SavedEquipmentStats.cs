@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.MigrationService;
 
@@ -116,7 +117,7 @@ internal static class SavedEquipmentStats
     };
 
     /// <summary>
-    /// <see cref="Stat.GetMaxFP(uint, Entity.Player)"/> from saved data: the record's base, plus Willpower from
+    /// <see cref="Domain.Character.IStatService.GetMaxFP(uint, Entity.Player)"/> from saved data: the record's base, plus Willpower from
     /// the saved score and equipped ability bonuses. Status-effect adjustments only exist on a live character.
     /// </summary>
     public static int GetMaxFP(SavedCharacter character) =>

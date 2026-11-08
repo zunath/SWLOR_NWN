@@ -41,7 +41,7 @@ internal sealed class _2_CorrectAppearanceType : ICharacterMigration
     }
 }
 
-/// <summary>Login applies the player movement rate (<see cref="Service.Stat.ApplyPlayerStats"/>), so a saved character needs no change.</summary>
+/// <summary>Login applies the player movement rate (<see cref="Domain.Character.IStatService.ApplyPlayerStats"/>), so a saved character needs no change.</summary>
 internal sealed class _3_AdjustPlayerSpeeds : ICharacterMigration
 {
     public int Version => 3;

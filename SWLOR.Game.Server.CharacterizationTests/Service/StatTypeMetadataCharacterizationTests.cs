@@ -4,13 +4,14 @@ using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
 /// <summary>
 /// Locks how every <see cref="StatType"/> is classified (category, aggregation, deflection source) and the functions that
-/// read the classification: <see cref="Stat.AggregateStatAdjustment"/> merges adjustments by it, and
-/// <see cref="Stat.IsBeneficialStatAdjustment"/> and <see cref="Stat.GetGrantedDeflectionStatType"/> look it up.
+/// read the classification: <c>Stat.AggregateStatAdjustment</c> merges adjustments by it, and
+/// <c>Stat.IsBeneficialStatAdjustment</c> and <c>Stat.GetGrantedDeflectionStatType</c> look it up.
 /// </summary>
 public class StatTypeMetadataCharacterizationTests
 {

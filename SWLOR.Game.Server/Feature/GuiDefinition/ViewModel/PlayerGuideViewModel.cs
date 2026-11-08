@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -769,19 +771,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Damage Taken",
                             $"Percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined. Reductions from Leadership abilities, Guard, and elemental resistance are applied separately on top of that, and damage immunity effects stop a hit entirely."),
                         new ArticleBlock("Guard",
-                            $"Guard chance can reach {Stat.MaximumGuardChance} percent. A guarded hit loses {Combat.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {Combat.MaximumGuardDamageReductionPercent} percent."),
+                            $"Guard chance can reach {StatService.MaximumGuardChance} percent. A guarded hit loses {Combat.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {Combat.MaximumGuardDamageReductionPercent} percent."),
                         new ArticleBlock("Deflection",
-                            $"Melee and Ranged Deflection chance each stop at {Stat.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {Stat.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent."),
+                            $"Melee and Ranged Deflection chance each stop at {StatService.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {StatService.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent."),
                         new ArticleBlock("Resistances",
                             $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {Resistance.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {Resistance.MaximumResistance} percent."),
                         new ArticleBlock("Attack Speed and Movement",
-                            $"Attack speed bonuses shorten your attack delay by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(Stat.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
+                            $"Attack speed bonuses shorten your attack delay by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(StatService.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
                         new ArticleBlock("Combat Readiness",
-                            $"Combat Readiness stops at {Stat.MaximumCombatReadinessPercent} percent."),
+                            $"Combat Readiness stops at {StatService.MaximumCombatReadinessPercent} percent."),
                         new ArticleBlock("Healing From Damage",
                             $"Healing from damage you deal, such as lifesteal, is at most {Combat.MaximumDamageDerivedHealingPercentPerHit} percent of that hit's damage. An activated ability heals you at most {Combat.MaximumActivatedDamageHealingMaxHPPercent} percent of your maximum HP this way per use. Passive on-hit healing gives at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit} percent of your maximum HP per hit ({Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit} percent for effects with their own cooldown) and at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow} percent every {Combat.CombatHealingWindowSeconds} seconds. Healing from defeating enemies gives at most {Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow} percent of your maximum HP every {Combat.CombatHealingWindowSeconds} seconds."),
                         new ArticleBlock("Hard Crowd Control",
-                            $"Hard crowd control lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds, however long it was meant to last. Against players it is then halved by the PvP rules.")
+                            $"Hard crowd control lasts at most {StatusEffectRules.MaximumHardCrowdControlDurationSeconds} seconds, however long it was meant to last. Against players it is then halved by the PvP rules.")
                     },
                     new[]
                     {

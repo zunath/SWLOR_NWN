@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -81,9 +83,9 @@ public class SkillDefinitionCharacterizationTests : FacadeFixture
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {
-            (nameof(Skill.SkillCap), typeof(int), Skill.SkillCap),
-            (nameof(Skill.StartingSkillPoints), typeof(int), Skill.StartingSkillPoints),
-            (nameof(Skill.TotalSkillPointCap), typeof(int), Skill.TotalSkillPointCap),
+            (nameof(SkillService.SkillCap), typeof(int), SkillService.SkillCap),
+            (nameof(SkillService.StartingSkillPoints), typeof(int), SkillService.StartingSkillPoints),
+            (nameof(SkillService.TotalSkillPointCap), typeof(int), SkillService.TotalSkillPointCap),
         };
         FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Skill", constants.Select(constant => constant.Name));
         foreach (var (constantName, type, value) in constants)

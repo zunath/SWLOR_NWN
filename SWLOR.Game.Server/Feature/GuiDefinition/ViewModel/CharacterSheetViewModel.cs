@@ -17,7 +17,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
-using Skill = SWLOR.Game.Server.Service.Skill;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -1324,8 +1325,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(_target);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
-                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
+                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
             }
             else if (BeastMastery.IsPlayerBeast(_target))
@@ -1422,8 +1423,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
-            SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
+            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+            SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
 
             RefreshStats();

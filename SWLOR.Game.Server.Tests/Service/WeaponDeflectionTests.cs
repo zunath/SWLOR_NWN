@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -29,9 +31,9 @@ public class WeaponDeflectionTests
     [Test]
     public void WeaponDeflectionStats_HaveIndependentCapsAndSourceSpecificRiders()
     {
-        Stat.DefaultMeleeDeflectionChanceCap.Should().Be(50);
-        Stat.DefaultRangedDeflectionChanceCap.Should().Be(50);
-        Stat.MaximumDeflectionChanceCap.Should().Be(100);
+        StatService.DefaultMeleeDeflectionChanceCap.Should().Be(50);
+        StatService.DefaultRangedDeflectionChanceCap.Should().Be(50);
+        StatService.MaximumDeflectionChanceCap.Should().Be(100);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflection).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionChanceCap).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflection).Should().Be(DeflectionSource.Ranged);

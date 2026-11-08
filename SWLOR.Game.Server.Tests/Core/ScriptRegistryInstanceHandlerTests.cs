@@ -145,18 +145,30 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
+        // The handlers on instance methods (of the services whose facades were removed) are the ones a load of static
+        // methods alone cannot find; each of their manifest lines is stale there, and every other handler keeps its place.
+        var instanceHandlers = MethodsOf(GameAssembly).Where(method => !method.IsStatic && IsHandler(method))
+            .Select(ScriptHandlerManifest.HandlerName)
+            .ToHashSet(StringComparer.Ordinal);
+        instanceHandlers.Should().Contain(TaxiHandler);
+        var instanceLines = new List<string>();
+
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => name != TaxiHandler);
+                var names = Names(all, script, conditional);
+                var expected = names.Where(name => !instanceHandlers.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
+                instanceLines.AddRange(names.Where(instanceHandlers.Contains)
+                    .Select(name => $"{script} {(conditional ? "conditional" : "action")} {name}"));
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Should().Equal(new[] { $"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}" });
+        instanceLines.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
+        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(instanceLines);
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

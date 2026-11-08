@@ -24,7 +24,6 @@ using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using Ability = SWLOR.Game.Server.Service.Ability;
-using StatusEffect = SWLOR.Game.Server.Service.StatusEffect;
 using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions

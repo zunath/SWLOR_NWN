@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -155,7 +156,7 @@ public static partial class MigrationEngineTests
             // Keep the complete HP budget below the one-level fixture's native cap.
             var record = DB.Get<Player>(GetObjectUUID(player));
             record.TemporaryFoodHP = 0;
-            Stat.AdjustPlayerMaxHP(record, player, Stat.BaseHP - record.MaxHP);
+            Stat.AdjustPlayerMaxHP(record, player, StatService.BaseHP - record.MaxHP);
             DB.Set(record);
             SetCurrentHitPoints(player, GetMaxHitPoints(player));
         });

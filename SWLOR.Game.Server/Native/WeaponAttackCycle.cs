@@ -6,9 +6,10 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
 using Ability = SWLOR.Game.Server.Service.Ability;
-using Skill = SWLOR.Game.Server.Service.Skill;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -127,7 +128,7 @@ namespace SWLOR.Game.Server.Native
             for (var index = pending.AttackIndex; index < round.m_nCurrentAttack; index++)
             {
                 if (!ResolveAttackRoll.IsSuccessfulAttackResult(round.GetAttack(index).m_nAttackResult)) continue;
-                CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, Skill.GetWeaponSkill(attacker, glove));
+                CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, GameServices.Skill.GetWeaponSkill(attacker, glove));
                 Ability.RecordLeadershipWeaponHit(attacker, pending.Target);
                 Loot.RecordWeaponHitFindBonuses(attacker, pending.Target);
                 UsePerkFeat.ResolveQueuedWeaponAbilityHit(attacker, pending.Target, glove);

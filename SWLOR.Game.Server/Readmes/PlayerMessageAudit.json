@@ -5180,22 +5180,22 @@
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 61,
+    "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
+    "Line": 109,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 62,
+    "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
+    "Line": 110,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        player,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.\")"
+    "Call": "_messaging.SendMessageNearbyToPlayers(\n                        player,\n                        receiver => $\"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 264,
+    "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
+    "Line": 325,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
@@ -5796,22 +5796,22 @@
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 251,
+    "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
+    "Line": 266,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(healingStep < 0\n                        ? \"You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage.\"\n                        : $\"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 263,
+    "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
+    "Line": 278,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\n                    $\"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
-    "Line": 297,
+    "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
+    "Line": 312,
     "Member": "End",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"

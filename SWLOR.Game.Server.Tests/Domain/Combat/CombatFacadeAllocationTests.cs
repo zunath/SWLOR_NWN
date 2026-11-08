@@ -20,6 +20,7 @@ using SWLOR.NWN.API.NWScript;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using CombatFacade = SWLOR.Game.Server.Service.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 

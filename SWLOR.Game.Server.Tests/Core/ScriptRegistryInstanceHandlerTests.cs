@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Composition;
 using static SWLOR.Game.Server.Tests.Core.ScriptHandlerTestSupport;
 
 namespace SWLOR.Game.Server.Tests.Core;
@@ -145,18 +146,34 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
+        // The instance handlers are the ones moved off removed facades (P2-Z), each named on the branch side of a line of
+        // tools/Refactor/HandlerRenames.txt; a load of the static methods alone lacks exactly those.
+        var instanceHandlers = MethodsOf(GameAssembly)
+            .Where(method => !method.IsStatic && method.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+            .Select(ScriptHandlerManifest.HandlerName)
+            .ToHashSet(StringComparer.Ordinal);
+        instanceHandlers.Should().Contain(TaxiHandler);
+        instanceHandlers.Should().BeEquivalentTo(
+            ConvertedServiceFixtures.HandlerRenames().Select(rename => rename.Branch).Where(name => name.StartsWith("SWLOR.Game.Server.Domain.", StringComparison.Ordinal)),
+            "every instance handler was moved off a removed facade and renamed in HandlerRenames.txt");
+
+        var missingFromStaticOnly = new List<string>();
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var expected = Names(all, script, conditional).Where(name => name != TaxiHandler);
+                var names = Names(all, script, conditional);
+                var expected = names.Where(name => !instanceHandlers.Contains(name));
                 Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
+                missingFromStaticOnly.AddRange(names.Where(instanceHandlers.Contains).Select(name => $"{script} {(conditional ? "conditional" : "action")} {name}"));
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        staticOnly.StaleManifestEntries.Should().Equal(new[] { $"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}" });
+        missingFromStaticOnly.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
+        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(missingFromStaticOnly,
+            "the manifest lines a static-only load cannot place are exactly the instance handlers' lines");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

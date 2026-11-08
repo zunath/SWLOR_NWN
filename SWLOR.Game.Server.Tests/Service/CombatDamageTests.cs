@@ -14,6 +14,9 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Service.ResistanceService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -190,10 +193,10 @@ public class CombatDamageTests
             .Be(Combat.MaximumCriticalDamagePercentAdjustment);
         Enmity.ClampEnmityPercentAdjustment(-500)
             .Should()
-            .Be(Enmity.MinimumEnmityPercentAdjustment);
+            .Be(EnmityService.MinimumEnmityPercentAdjustment);
         Enmity.ClampEnmityPercentAdjustment(500)
             .Should()
-            .Be(Enmity.MaximumEnmityPercentAdjustment);
+            .Be(EnmityService.MaximumEnmityPercentAdjustment);
     }
 
     [Test]
@@ -1235,8 +1238,8 @@ public class CombatDamageTests
         resistanceSource.Should().Contain("effect.StatGroup.Stats.TryGetValue(statType");
         statusEffectSource.Should().Contain("_resistance.HasImmunity(creature, resistanceType)");
         statTypeSource.Should().NotContain("StatusImmunity");
-        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance");
-        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance");
+        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = ResistanceRules.MaximumResistance");
+        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mobility] = ResistanceRules.MaximumResistance");
 
         Directory.EnumerateFiles(perkDefinitionRoot, "*.cs", SearchOption.AllDirectories)
             .Select(File.ReadAllText)
@@ -1254,7 +1257,7 @@ public class CombatDamageTests
     {
         var coagulant = new Coagulant2StatusEffect();
         coagulant.PersistsOnLogout.Should().BeFalse();
-        coagulant.StatGroup.Stats[StatType.TraumaResistance].Should().Be(Resistance.MaximumResistance);
+        coagulant.StatGroup.Stats[StatType.TraumaResistance].Should().Be(ResistanceRules.MaximumResistance);
 
         var unbreakableBeast = new UnbreakableBeast1StatusEffect();
         unbreakableBeast.PersistsOnLogout.Should().BeFalse();
@@ -1267,8 +1270,8 @@ public class CombatDamageTests
         var holdTheLine = new HoldTheLine1StatusEffect();
         holdTheLine.PersistsOnLogout.Should().BeFalse();
         holdTheLine.ApplyEffect(0, 0, 1);
-        holdTheLine.StatGroup.Resists[ResistanceType.Mind].Should().Be(Resistance.MaximumResistance);
-        holdTheLine.StatGroup.Resists[ResistanceType.Mobility].Should().Be(Resistance.MaximumResistance);
+        holdTheLine.StatGroup.Resists[ResistanceType.Mind].Should().Be(ResistanceRules.MaximumResistance);
+        holdTheLine.StatGroup.Resists[ResistanceType.Mobility].Should().Be(ResistanceRules.MaximumResistance);
     }
 
     [Test]

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.World;
 
@@ -55,6 +56,19 @@ public class GameServicesAllocationTests
 
         taxi.Should().BeSameAs(_host.Provider.GetRequiredService<ITaxiService>());
         serverTask.Should().BeSameAs(_host.Provider.GetRequiredService<IServerTaskService>());
+    }
+
+    [Test]
+    public void The_recording_flag_every_managed_entry_reads_allocates_nothing()
+    {
+        // ManagedEntryDepth.Enter reads CombatRecorder.IsRecording on every managed entry point (main loop, script,
+        // closure, signal): one read of the accessor's slot and one interface call, as the facade did.
+        var instance = _host.Provider.GetRequiredService<ICombatRecorderService>();
+        var recording = true;
+
+        Allocated(() => recording = GameServices.CombatRecorder.IsRecording).Should().Be(0);
+        GameServices.CombatRecorder.Should().BeSameAs(instance);
+        recording.Should().Be(instance.IsRecording);
     }
 
     [Test]

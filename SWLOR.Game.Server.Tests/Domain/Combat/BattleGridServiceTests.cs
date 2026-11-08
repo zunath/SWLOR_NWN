@@ -197,15 +197,15 @@ public class BattleGridServiceTests
     [Test]
     public void TheFacadeConstantsMatchTheInstance()
     {
-        BattleGrid.AnchorTag.Should().Be(BattleGridService.AnchorTag);
-        BattleGrid.SquaresPerSection.Should().Be(BattleGridService.SquaresPerSection);
-        BattleGrid.MinSquareSize.Should().Be(BattleGridService.MinSquareSize);
-        BattleGrid.MaxSquareSize.Should().Be(BattleGridService.MaxSquareSize);
-        BattleGrid.SquareSizeStep.Should().Be(BattleGridService.SquareSizeStep);
-        BattleGrid.MinSections.Should().Be(BattleGridService.MinSections);
-        BattleGrid.MaxSections.Should().Be(BattleGridService.MaxSections);
-        BattleGrid.MinHeight.Should().Be(BattleGridService.MinHeight);
-        BattleGrid.MaxHeight.Should().Be(BattleGridService.MaxHeight);
-        BattleGrid.HeightStep.Should().Be(BattleGridService.HeightStep);
+        BattleGridService.AnchorTag.Should().Be(BattleGridService.AnchorTag);
+        BattleGridService.SquaresPerSection.Should().Be(BattleGridService.SquaresPerSection);
+        BattleGridService.MinSquareSize.Should().Be(BattleGridService.MinSquareSize);
+        BattleGridService.MaxSquareSize.Should().Be(BattleGridService.MaxSquareSize);
+        BattleGridService.SquareSizeStep.Should().Be(BattleGridService.SquareSizeStep);
+        BattleGridService.MinSections.Should().Be(BattleGridService.MinSections);
+        BattleGridService.MaxSections.Should().Be(BattleGridService.MaxSections);
+        BattleGridService.MinHeight.Should().Be(BattleGridService.MinHeight);
+        BattleGridService.MaxHeight.Should().Be(BattleGridService.MaxHeight);
+        BattleGridService.HeightStep.Should().Be(BattleGridService.HeightStep);
     }
 }

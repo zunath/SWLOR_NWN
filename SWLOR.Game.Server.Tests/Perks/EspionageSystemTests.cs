@@ -14,6 +14,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -541,7 +543,7 @@ public class EspionageSystemTests
     [Test]
     public void CoatingTierRaisesVenomDamageAndDuration()
     {
-        Enumerable.Range(1, 5).Select(Poisons.GetCoatingVenomDamagePerTick).Should().Equal(8, 12, 16, 21, 26);
+        Enumerable.Range(1, 5).Select(tier => Poisons.GetCoatingVenomDamagePerTick(tier)).Should().Equal(8, 12, 16, 21, 26);
         VenomStatusEffect.CalculateBaseDamagePerTick(50, 26).Should().Be(39);
 
         VenomStatusEffect.CalculateBaseDamagePerTick(0).Should().Be(8);
@@ -575,7 +577,7 @@ public class EspionageSystemTests
                 description.Should().Contain($"dealing {Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {interval} seconds", resref)
                     .And.Contain($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0} seconds", resref)
                     .And.Contain($"Charges: {charges}.", resref)
-                    .And.Contain($"at most once every {Poisons.InternalCooldownSeconds} seconds", resref);
+                    .And.Contain($"at most once every {PoisonsService.InternalCooldownSeconds} seconds", resref);
                 if (concentrated)
                     description.Should().Contain($"increased by {VenomCoatingItemDefinition.ConcentratedDamageBonusPercent}%", resref);
             }

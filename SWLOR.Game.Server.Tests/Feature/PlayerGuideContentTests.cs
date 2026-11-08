@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -344,7 +345,7 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
         text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
         text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");
-        text.Should().Contain($"stop at {Resistance.MaximumResistance - 1} percent for players");
+        text.Should().Contain($"stop at {ResistanceRules.MaximumResistance - 1} percent for players");
         text.Should().Contain("Movement speed stops at 150 percent of normal");
         text.Should().Contain($"lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds");
     }

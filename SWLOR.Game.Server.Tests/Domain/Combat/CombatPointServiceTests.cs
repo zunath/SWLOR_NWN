@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
@@ -537,7 +538,7 @@ public class CombatPointServiceTests
     private sealed class TestCombatPoint : CombatPointService
     {
         public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyService party, IBeastMasteryService beastMastery)
-            : base(db, enmity, party, beastMastery)
+            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

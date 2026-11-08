@@ -4,6 +4,8 @@ using Random = SWLOR.Game.Server.Service.Random;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -1338,7 +1340,8 @@ public class MimicryServiceTests
     private sealed class TestMimicry : MimicryService
     {
         public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback, IGuiService gui)
-            : base(db, quickCast, presence, feedback, gui)
+            : base(db, quickCast, presence, feedback, gui, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(),
+                FacadeForwarder.For<ISkillService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatPointService>())
         {
         }
 

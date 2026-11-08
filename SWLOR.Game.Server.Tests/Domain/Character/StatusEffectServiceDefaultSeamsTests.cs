@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatService;
@@ -133,7 +134,7 @@ public class StatusEffectServiceDefaultSeamsTests
     private sealed class Defaults : StatusEffectService
     {
         public Defaults()
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!)
+            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IAbilityService>())
         {
         }
 

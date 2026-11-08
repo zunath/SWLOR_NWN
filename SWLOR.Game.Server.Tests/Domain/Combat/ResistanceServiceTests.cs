@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using FluentAssertions;
 using NUnit.Framework;
@@ -508,7 +509,7 @@ public class ResistanceServiceTests
         private readonly CreatureStatusEffect _statusEffects = new() { StatGroup = new StatGroup() };
 
         public TestResistance(IDBService db)
-            : base(db, CreateMimicry(out var script))
+            : base(db, CreateMimicry(out var script), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>())
         {
             script.On("GetResistanceBonus", args => Mimicry.TryGetValue((ResistanceType)args[1]!, out var value) ? value : 0);
         }

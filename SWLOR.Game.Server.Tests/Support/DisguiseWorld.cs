@@ -153,7 +153,7 @@ public sealed class DisguiseWorld : IDisposable
 
         public BenchDisguises(IDBService db, ICacheService cache, IGuiService gui, IDMPresenceService dm,
             IPlayerNameService names, IPlayerDescriptorService descriptors, List<WorldLog> logs)
-            : base(db, cache, gui, dm, names, descriptors)
+            : base(db, cache, gui, dm, names, descriptors, FacadeForwarder.For<IStatService>())
         {
             _logs = logs;
         }
@@ -174,7 +174,7 @@ public sealed class DisguiseWorld : IDisposable
         private readonly List<WorldLog> _logs;
 
         public BenchDescriptors(IDBService db, IPlayerNameService names, List<WorldLog> logs)
-            : base(db, names)
+            : base(db, names, FacadeForwarder.LazyFor<IDisguiseService>())
         {
             _logs = logs;
         }

@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -806,6 +808,11 @@ public class MeleeTechniqueServiceTests
 
     private sealed class TestMelee : MeleeTechniqueService
     {
+        public TestMelee()
+            : base(FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<IStatusEffectService>())
+        {
+        }
+
         private readonly Dictionary<StatType, List<StatAdjustmentSource>> _sources = new();
 
         public Action<int>? Hit { get; set; }

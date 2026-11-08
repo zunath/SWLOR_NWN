@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerNameService _playerName;
         private readonly IPlayerDescriptorService _playerDescriptor;
+        private readonly IStatService _stat;
 
         public DisguiseService(
             IDBService db,
@@ -50,7 +51,8 @@ namespace SWLOR.Game.Server.Domain.Character
             IGuiService gui,
             IDMPresenceService dmPresence,
             IPlayerNameService playerName,
-            IPlayerDescriptorService playerDescriptor)
+            IPlayerDescriptorService playerDescriptor,
+            IStatService stat)
         {
             _db = db;
             _cache = cache;
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _dmPresence = dmPresence;
             _playerName = playerName;
             _playerDescriptor = playerDescriptor;
+            _stat = stat;
         }
 
         public void ApplyActiveDisguiseOnEnter()
@@ -863,7 +866,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The stat adjustment from gear and effects: <c>Stat.GetStatAdjustment</c>.</summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat)
         {
-            return Stat.GetStatAdjustment(creature, stat);
+            return _stat.GetStatAdjustment(creature, stat);
         }
 
         /// <summary>The structured log line: <c>Log.WriteStructured</c> (<c>Log</c> stays static in Phase 2).</summary>

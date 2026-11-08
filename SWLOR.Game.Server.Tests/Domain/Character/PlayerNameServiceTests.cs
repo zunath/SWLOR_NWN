@@ -142,7 +142,7 @@ public class PlayerNameServiceTests
     private sealed class BenchPlayerNameService : PlayerNameService
     {
         public BenchPlayerNameService(IDBService db, IPlayerListService list, IChatPortraitTellsService portraits)
-            : base(db, list, portraits)
+            : base(db, list, portraits, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
         {
         }
 
@@ -276,7 +276,7 @@ public class PlayerNameServiceTests
     private sealed class BlankIdentityService : PlayerNameService
     {
         public BlankIdentityService(IDBService db, PlayerNameService other)
-            : base(db, null!, null!)
+            : base(db, null!, null!, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
         {
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
@@ -29,17 +30,23 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IEnmityService _enmity;
         private readonly IPartyService _party;
         private readonly IBeastMasteryService _beastMastery;
+        private readonly ISkillService _skill;
+        private readonly IStatService _stat;
 
         public CombatPointService(
             IDBService db,
             IEnmityService enmity,
             IPartyService party,
-            IBeastMasteryService beastMastery)
+            IBeastMasteryService beastMastery,
+            ISkillService skill,
+            IStatService stat)
         {
             _db = db;
             _enmity = enmity;
             _party = party;
             _beastMastery = beastMastery;
+            _skill = skill;
+            _stat = stat;
         }
 
         private const float ReviveSupportRangeMeters = 20f;
@@ -494,20 +501,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
-        protected virtual SkillType GetWeaponSkill(uint creature, uint weapon) => Skill.GetWeaponSkill(creature, weapon);
+        protected virtual SkillType GetWeaponSkill(uint creature, uint weapon) => _skill.GetWeaponSkill(creature, weapon);
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
-        protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => Skill.GetSkillDetails(skillType);
+        protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => _skill.GetSkillDetails(skillType);
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
-        protected virtual int GetDeltaXP(int delta) => Skill.GetDeltaXP(delta);
+        protected virtual int GetDeltaXP(int delta) => _skill.GetDeltaXP(delta);
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, uint xpMessageSource = OBJECT_INVALID) =>
-            Skill.GiveSkillXP(player, skill, xp, xpMessageSource: xpMessageSource);
+            _skill.GiveSkillXP(player, skill, xp, xpMessageSource: xpMessageSource);
 
         /// <summary>The unconverted <c>Stat</c> pipeline.</summary>
-        protected virtual NPCStats GetNPCStats(uint npc) => Stat.GetNPCStats(npc);
+        protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);
 
         /// <summary>The unconverted <c>Space</c> service.</summary>
         protected virtual bool IsPlayerInSpaceMode(uint player) => Service.Space.IsPlayerInSpaceMode(player);

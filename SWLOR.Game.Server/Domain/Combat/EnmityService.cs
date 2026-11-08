@@ -32,19 +32,31 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPartyService _party;
         private readonly IHoloComService _holoCom;
         private readonly IBeastMasteryService _beastMastery;
+        private readonly Lazy<IStatService> _stat;
+        private readonly IStealthService _stealth;
+        private readonly ICompanionControlService _companionControl;
+        private readonly IStatusEffectService _statusEffect;
 
         public EnmityService(
             IAIService ai,
             IActivityService activity,
             IPartyService party,
             IHoloComService holoCom,
-            IBeastMasteryService beastMastery)
+            IBeastMasteryService beastMastery,
+            Lazy<IStatService> stat,
+            IStealthService stealth,
+            ICompanionControlService companionControl,
+            IStatusEffectService statusEffect)
         {
             _ai = ai;
             _activity = activity;
             _party = party;
             _holoCom = holoCom;
             _beastMastery = beastMastery;
+            _stat = stat;
+            _stealth = stealth;
+            _companionControl = companionControl;
+            _statusEffect = statusEffect;
         }
 
         public const int MinimumEnmityPercentAdjustment = -50;
@@ -1162,23 +1174,23 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>The unconverted <c>Stat</c> pipeline.</summary>
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
         /// <summary>The unconverted <c>Stealth</c> service.</summary>
-        protected virtual bool IsHiddenFrom(uint observer, uint target) => Stealth.IsHiddenFrom(observer, target);
+        protected virtual bool IsHiddenFrom(uint observer, uint target) => _stealth.IsHiddenFrom(observer, target);
 
         /// <summary>The unconverted <c>Droid</c> service.</summary>
         protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
 
         /// <summary>The companion-control service.</summary>
-        protected virtual bool IsRegisteredCompanion(uint creature) => CompanionControl.IsRegisteredCompanion(creature);
+        protected virtual bool IsRegisteredCompanion(uint creature) => _companionControl.IsRegisteredCompanion(creature);
 
         /// <summary>The companion-control service.</summary>
-        protected virtual uint PeekAuthorizedTarget(uint companion) => CompanionControl.PeekAuthorizedTarget(companion);
+        protected virtual uint PeekAuthorizedTarget(uint companion) => _companionControl.PeekAuthorizedTarget(companion);
 
         /// <summary>The companion-control service.</summary>
         protected virtual bool CanIssueAttackCommand(uint companion, uint target) =>
-            CompanionControl.CanIssueAttackCommand(companion, target);
+            _companionControl.CanIssueAttackCommand(companion, target);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => Service.Combat.GetEquippedWeaponSkillType(creature);
@@ -1206,7 +1218,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual HashSet<IStatusEffect> GetAllStatusEffects(uint creature) =>
-            StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects();
+            _statusEffect.GetCreatureStatusEffects(creature).GetAllEffects();
 
         /// <summary>The unconverted <c>Log</c> sink.</summary>
         protected virtual void WriteAILog(string details) => Log.Write(LogGroup.AI, details);

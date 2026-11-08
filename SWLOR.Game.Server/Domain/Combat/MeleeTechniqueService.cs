@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
@@ -24,6 +26,22 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<uint, Activation> Activations = new();
         private readonly Dictionary<uint, OrdinaryAttempt> OrdinaryAttempts = new();
         private readonly Dictionary<uint, DirectDamageSnapshot> DirectDamage = new();
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+
+        public MeleeTechniqueService(
+            Lazy<IStatService> stat,
+            Lazy<IAbilityService> ability,
+            ICombatRecorderService combatRecorder,
+            Lazy<IStatusEffectService> statusEffect)
+        {
+            _stat = stat;
+            _ability = ability;
+            _combatRecorder = combatRecorder;
+            _statusEffect = statusEffect;
+        }
 
         /// <summary>One notification per completed, landed technique which paid stamina.</summary>
         public event Action<uint, uint, AbilityDetail, MeleeTechniqueStage> TechniqueLanded;
@@ -652,13 +670,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             GetIsReactionTypeHostile(target, creature);
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) =>
-            Stat.GetStatSources(creature, payloadStat);
+            _stat.Value.GetStatSources(creature, payloadStat);
 
         protected virtual int GetStatAdjustment(uint creature, StatType stat) =>
-            Stat.GetStatAdjustment(creature, stat);
+            _stat.Value.GetStatAdjustment(creature, stat);
 
         protected virtual IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius) =>
-            Ability.GetHostileTargetsInSphere(activator, location, radius);
+            _ability.Value.GetHostileTargetsInSphere(activator, location, radius);
 
         protected virtual string GetActiveAbilityActivationId(uint activator) =>
             UsePerkFeat.GetActiveAbilityActivationId(activator);
@@ -682,19 +700,19 @@ namespace SWLOR.Game.Server.Domain.Combat
             Service.Combat.HasRecentHostileCombatActivity(creature);
 
         protected virtual CombatRecordAttributionScope BeginStatTriggerAttribution(uint creature, StatType stat) =>
-            CombatRecorder.BeginStatTriggerAttribution(creature, stat);
+            _combatRecorder.BeginStatTriggerAttribution(creature, stat);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds) =>
-            StatusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
+            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds, CombatDamageType sourceDamageType) =>
-            StatusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
+            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
 
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectClass, uint source, bool sendsWornOffMessage) =>
-            StatusEffect.RemoveStatusEffect(creature, statusEffectClass, source, sendsWornOffMessage);
+            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectClass, source, sendsWornOffMessage);
 
         protected virtual bool HasStatusEffect(uint creature, Type statusEffectClass, uint source) =>
-            StatusEffect.HasStatusEffect(creature, statusEffectClass, source);
+            _statusEffect.Value.HasStatusEffect(creature, statusEffectClass, source);
 
         protected virtual int GetTemporaryHitPoints(uint target) =>
             TemporaryHitPointEffects.GetRemaining(target);

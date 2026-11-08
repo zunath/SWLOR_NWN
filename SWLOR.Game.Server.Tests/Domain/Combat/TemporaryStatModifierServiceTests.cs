@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
@@ -44,7 +45,7 @@ public class TemporaryStatModifierServiceTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _now = new DateTime(2026, 11, 7, 12, 0, 0, DateTimeKind.Utc);
         _clockScope = Clock.OverrideForTests(() => _now);
-        _service = new TemporaryStatModifierService();
+        _service = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
     }
 
     [TearDown]
@@ -479,7 +480,7 @@ public class TemporaryStatModifierServiceTests
     [Test]
     public void The_state_belongs_to_the_instance()
     {
-        var second = new TemporaryStatModifierService();
+        var second = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
         _service.Add(Npc, StatType.Attack, 5, 30f);
 
         second.GetStatAdjustment(Npc, StatType.Attack).Should().Be(0);

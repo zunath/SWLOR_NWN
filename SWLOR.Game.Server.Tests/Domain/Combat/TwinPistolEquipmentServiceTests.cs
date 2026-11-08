@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
@@ -444,7 +445,7 @@ public class TwinPistolEquipmentServiceTests
         public uint DroidOwner;
 
         public TestEquipment(IItemService item, ItemWorld world)
-            : base(item)
+            : base(item, FacadeForwarder.LazyFor<ISkillService>())
         {
             _itemWorld = world;
         }

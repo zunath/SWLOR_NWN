@@ -60,7 +60,7 @@ public class PlayerDescriptorServiceTests
     private sealed class BenchDescriptorService : PlayerDescriptorService
     {
         public BenchDescriptorService(IDBService db, IPlayerNameService names)
-            : base(db, names)
+            : base(db, names, FacadeForwarder.LazyFor<IDisguiseService>())
         {
         }
 

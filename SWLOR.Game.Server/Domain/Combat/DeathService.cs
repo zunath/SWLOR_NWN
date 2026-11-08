@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
@@ -35,6 +36,9 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPlayerNameService _playerName;
         private readonly IPropertyService _property;
         private readonly IAreaService _area;
+        private readonly IStatusEffectService _statusEffect;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly IAbilityService _ability;
 
         public DeathService(
             IDBService db,
@@ -42,7 +46,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             IMessagingService messaging,
             IPlayerNameService playerName,
             IPropertyService property,
-            IAreaService area)
+            IAreaService area,
+            IStatusEffectService statusEffect,
+            ICombatRecorderService combatRecorder,
+            IAbilityService ability)
         {
             _db = db;
             _namedAnimation = namedAnimation;
@@ -50,6 +57,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             _playerName = playerName;
             _property = property;
             _area = area;
+            _statusEffect = statusEffect;
+            _combatRecorder = combatRecorder;
+            _ability = ability;
         }
 
         public void OnPlayerDying()
@@ -334,26 +344,26 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual void RecordPlayerDeath(uint deceased, uint killer) =>
             Feature.AbilityDefinition.ReviveRules.RecordPlayerDeath(deceased, killer);
 
-        protected virtual void ClearStatusEffectsOnDeath(uint player) => StatusEffect.ClearStatusEffectsOnDeath(player);
+        protected virtual void ClearStatusEffectsOnDeath(uint player) => _statusEffect.ClearStatusEffectsOnDeath(player);
 
         protected virtual List<IDeathDebtWaiverStatusEffect> GetDeathDebtWaiverEffects(uint player) =>
-            StatusEffect.GetCreatureStatusEffects(player).GetAllEffects()
+            _statusEffect.GetCreatureStatusEffects(player).GetAllEffects()
                 .OfType<IDeathDebtWaiverStatusEffect>().ToList();
 
-        protected virtual bool IsRecording() => CombatRecorder.IsRecording;
+        protected virtual bool IsRecording() => _combatRecorder.IsRecording;
 
-        protected virtual void RecordSubdual(uint subdued, uint subduedBy) => CombatRecorder.RecordSubdual(subdued, subduedBy);
+        protected virtual void RecordSubdual(uint subdued, uint subduedBy) => _combatRecorder.RecordSubdual(subdued, subduedBy);
 
-        protected virtual void RecordRespawn(uint player) => CombatRecorder.RecordRespawn(player);
+        protected virtual void RecordRespawn(uint player) => _combatRecorder.RecordRespawn(player);
 
-        protected virtual IDisposable BeginRespawnAttribution() => CombatRecorder.BeginRespawnAttribution();
+        protected virtual IDisposable BeginRespawnAttribution() => _combatRecorder.BeginRespawnAttribution();
 
         protected virtual void RestoreGhostAfterRevive(uint creature) => Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(creature);
 
-        protected virtual void ReapplyAuraEffectsForCreature(uint creature) => Ability.ReapplyAuraEffectsForCreature(creature);
+        protected virtual void ReapplyAuraEffectsForCreature(uint creature) => _ability.ReapplyAuraEffectsForCreature(creature);
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            StatusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
+            _statusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
 
         protected virtual void WriteLog(LogGroup group, string details) => Log.Write(group, details);
     }

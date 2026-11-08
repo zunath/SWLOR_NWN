@@ -3,6 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -63,19 +65,37 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IGuiService _gui;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<IPerkService> _perk;
+        private readonly Lazy<IStatService> _stat;
+        private readonly ISkillService _skill;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<ICombatPointService> _combatPoint;
 
         public MimicryService(
             IDBService db,
             IQuickCastService quickCast,
             IDMPresenceService dmPresence,
             IPlayerFeedbackService playerFeedback,
-            IGuiService gui)
+            IGuiService gui,
+            Lazy<IAbilityService> ability,
+            Lazy<IPerkService> perk,
+            Lazy<IStatService> stat,
+            ISkillService skill,
+            Lazy<IStatusEffectService> statusEffect,
+            Lazy<ICombatPointService> combatPoint)
         {
             _db = db;
             _quickCast = quickCast;
             _dmPresence = dmPresence;
             _playerFeedback = playerFeedback;
             _gui = gui;
+            _ability = ability;
+            _perk = perk;
+            _stat = stat;
+            _skill = skill;
+            _statusEffect = statusEffect;
+            _combatPoint = combatPoint;
         }
 
         private const float WitnessRadius = 15.0f;
@@ -1322,43 +1342,43 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public int TechniqueCount => _techniques.Count;
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Ability.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual bool IsFeatRegistered(FeatType feat) => Ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => Ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
 
         /// <summary>The unconverted <c>Perk</c> service.</summary>
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => Perk.GetPerkLevel(creature, perkType);
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
 
         /// <summary>The unconverted <c>Stat</c> service.</summary>
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
         /// <summary>The level of an NPC from the unconverted <c>Stat</c> service.</summary>
-        protected virtual int GetNpcLevel(uint npc) => Stat.GetNPCStats(npc).Level;
+        protected virtual int GetNpcLevel(uint npc) => _stat.Value.GetNPCStats(npc).Level;
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses = false,
             bool applyHenchmanPenalty = true, uint xpMessageSource = OBJECT_INVALID) =>
-            Skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty, xpMessageSource);
+            _skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty, xpMessageSource);
 
         /// <summary>The unconverted <c>Skill</c> XP chart.</summary>
-        protected virtual int GetDeltaXP(int delta) => Skill.GetDeltaXP(delta);
+        protected virtual int GetDeltaXP(int delta) => _skill.GetDeltaXP(delta);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectType, bool sendsWornOffMessage) =>
-            StatusEffect.RemoveStatusEffect(creature, statusEffectType, sendsWornOffMessage);
+            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectType, sendsWornOffMessage);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RemoveStatusEffectsFromAllTargetsBySource(uint source, Type statusEffectType,
             bool sendsWornOffMessage, AbilityDetail originatingAbility) =>
-            StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(source, statusEffectType, sendsWornOffMessage,
+            _statusEffect.Value.RemoveStatusEffectsFromAllTargetsBySource(source, statusEffectType, sendsWornOffMessage,
                 originatingAbility);
 
         /// <summary>The unconverted <c>CombatPoint</c> service.</summary>
-        protected virtual bool HasCombatPoints(uint player, uint creature) => CombatPoint.HasCombatPoints(player, creature);
+        protected virtual bool HasCombatPoints(uint player, uint creature) => _combatPoint.Value.HasCombatPoints(player, creature);
 
         /// <summary>The unconverted <c>Scheduler</c>.</summary>
         protected virtual void ScheduleRepeating(Action task, TimeSpan interval) => Scheduler.ScheduleRepeating(task, interval);

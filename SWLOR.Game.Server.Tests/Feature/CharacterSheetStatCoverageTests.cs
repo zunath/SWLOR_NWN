@@ -93,7 +93,7 @@ public class CharacterSheetStatCoverageTests
 
         viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");
-        temporaryModifiers.Should().Contain("Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
+        temporaryModifiers.Should().Contain("_gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
         temporaryModifiers.Should().Contain("if (PurgeExpired(creature))");
     }
 

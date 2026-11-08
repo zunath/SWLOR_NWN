@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -34,11 +35,15 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly IDBService _db;
         private readonly IMimicryService _mimicry;
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
 
-        public ResistanceService(IDBService db, IMimicryService mimicry)
+        public ResistanceService(IDBService db, IMimicryService mimicry, Lazy<IStatService> stat, Lazy<IStatusEffectService> statusEffect)
         {
             _db = db;
             _mimicry = mimicry;
+            _stat = stat;
+            _statusEffect = statusEffect;
         }
 
         public void LoadResistanceTypes()
@@ -305,14 +310,14 @@ namespace SWLOR.Game.Server.Domain.Combat
                     ));
         }
 
-        protected virtual NPCStats GetNPCStats(uint npc) => Stat.GetNPCStats(npc);
+        protected virtual NPCStats GetNPCStats(uint npc) => _stat.Value.GetNPCStats(npc);
 
-        protected virtual NPCStats GetNPCStatsNative(CNWSCreature npc) => Stat.GetNPCStatsNative(npc);
+        protected virtual NPCStats GetNPCStatsNative(CNWSCreature npc) => _stat.Value.GetNPCStatsNative(npc);
 
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
         protected virtual CreatureStatusEffect GetCreatureStatusEffects(uint creature) =>
-            StatusEffect.GetCreatureStatusEffects(creature);
+            _statusEffect.Value.GetCreatureStatusEffects(creature);
 
         protected virtual uint GetNativeSelf(CNWSCreature creature) => creature.m_idSelf;
 

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
@@ -31,11 +33,19 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly IPairedRangedTraitsService _traits;
         private readonly ITwinPistolMasteryService _mastery;
+        private readonly IAbilityService _ability;
+        private readonly IStatusEffectService _statusEffect;
 
-        public TwinPistolAbilityService(IPairedRangedTraitsService traits, ITwinPistolMasteryService mastery)
+        public TwinPistolAbilityService(
+            IPairedRangedTraitsService traits,
+            ITwinPistolMasteryService mastery,
+            IAbilityService ability,
+            IStatusEffectService statusEffect)
         {
             _traits = traits;
             _mastery = mastery;
+            _ability = ability;
+            _statusEffect = statusEffect;
         }
 
         public bool HasActiveActivation(uint actor) =>
@@ -276,26 +286,26 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>
-            Service.Ability.GetActiveAbilityImpactSummary(actor)?.Ability;
+            _ability.GetActiveAbilityImpactSummary(actor)?.Ability;
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
         protected virtual Action<int> CaptureRepeatedAbilityImpact(uint actor, Action<int> impactAction, int baseDamage) =>
-            Service.Ability.CaptureRepeatedAbilityImpact<int>(actor, impactAction, baseDamage, retainCapturedBonuses: true);
+            _ability.CaptureRepeatedAbilityImpact<int>(actor, impactAction, baseDamage, retainCapturedBonuses: true);
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
-        protected virtual void PlayAbilityImpactAnimation(uint actor) => Service.Ability.PlayAbilityImpactAnimation(actor);
+        protected virtual void PlayAbilityImpactAnimation(uint actor) => _ability.PlayAbilityImpactAnimation(actor);
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
         protected virtual int ApplyCombatImpact(uint actor, uint target, Location targetLocation,
             int baseDamage, CombatDamageType damageType, Action<uint> afterSuccessfulHit, AbilityType damageAbility) =>
-            Service.Ability.ApplyCombatImpact(actor, target, targetLocation, SkillType.TwinPistol,
+            _ability.ApplyCombatImpact(actor, target, targetLocation, SkillType.TwinPistol,
                 baseDamage, 0, null, false,
                 damageType: damageType, afterSuccessfulHit: afterSuccessfulHit,
                 playImpactAnimation: false, combatImpactDamageAbility: damageAbility);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual bool HasStatusEffectCategory(uint actor, StatusEffectCategory category) =>
-            Service.StatusEffect.HasStatusEffectCategory(actor, category);
+            _statusEffect.HasStatusEffectCategory(actor, category);
 
         /// <summary>The native paired ranged attack cycle.</summary>
         protected virtual void CancelPairedRangedAttackCycle(uint actor) => PairedRangedAttackCycle.Cancel(actor);

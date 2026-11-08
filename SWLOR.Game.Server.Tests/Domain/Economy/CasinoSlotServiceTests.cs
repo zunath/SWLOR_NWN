@@ -152,10 +152,10 @@ public class CasinoSlotServiceTests
     }
 
     [Test]
-    public void The_constants_are_the_ones_the_facade_repeats()
+    public void The_constants_keep_their_values()
     {
-        CasinoSlotService.SpinCost.Should().Be(CasinoSlotService.SpinCost).And.Be(100);
-        CasinoSlotService.MaximumPayout.Should().Be(CasinoSlotService.MaximumPayout).And.Be(10000);
+        CasinoSlotService.SpinCost.Should().Be(100);
+        CasinoSlotService.MaximumPayout.Should().Be(10000);
     }
 
     // ---- which placeable is the machine

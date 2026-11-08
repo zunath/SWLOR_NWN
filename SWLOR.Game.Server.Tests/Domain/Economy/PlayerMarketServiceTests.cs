@@ -291,7 +291,7 @@ public class PlayerMarketServiceTests
     }
 
     [Test]
-    public void The_facade_still_carries_the_listing_limit()
+    public void The_listing_limit_is_kept()
     {
         PlayerMarketService.MaxListingsPerMarket.Should().Be(25);
     }

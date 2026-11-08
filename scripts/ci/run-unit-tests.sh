@@ -105,6 +105,7 @@ exclusions_for() {
         echo "CustomShaderMobileCompatibilityTests.PostProcessShader_RunsTheStockPassOnMobile"
         echo "DevicesFieldEngineerTests.BeaconShotSounds_ExistInDeployedSoundResources"
         echo "DungeonEncounterWalkmeshTests"
+        echo "FillerTileWalkmeshTests"
         echo "HelmetTintTests.EveryTintableHelmetShipsRenderHeadsForEveryPlayableSpecies"
         echo "HutlarDroidFoundryAnimationTests"
         echo "ItemIconTests.EveryEssenceBlueprint_UsesReviewedOriginalArtwork"
@@ -152,6 +153,7 @@ exclusions_for() {
         echo "TintMapReviewTests.RodianMusicianPartsBindTheConvertedHumanFallbackMaterials"
         echo "TintMapReviewTests.TintAlphaSamplerIsDeclaredEvenWithoutNormalMapping"
         echo "TintMapReviewTests.TintShadersRebuildSpecularityFromFinalPaletteInputs"
+        echo "Udp2TileWalkmeshTests"
         ;;
     esac
 }

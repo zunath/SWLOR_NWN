@@ -62,9 +62,18 @@ namespace SWLOR.Game.Server.Service
         /// Whether to refuse a tell because a portrait click that may belong to another player started it, telling
         /// the sender why. A tell from the Player List names its target exactly and is never refused.
         /// </summary>
-        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell)
+        /// <param name="confirmedTarget">True when the tell goes to the player the sender confirmed with a second portrait click.</param>
+        public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell, out bool confirmedTarget)
         {
-            return Instance.RefuseStalePortraitTell(sender, target, isDirectTell);
+            return Instance.RefuseStalePortraitTell(sender, target, isDirectTell, out confirmedTarget);
+        }
+
+        /// <summary>
+        /// Classifies a chat-log portrait the way a click on it would, without counting as a click.
+        /// </summary>
+        public static ChatPortraitClick ClassifyPortrait(uint player, uint portraitOwner)
+        {
+            return Instance.ClassifyPortrait(player, portraitOwner);
         }
     }
 }

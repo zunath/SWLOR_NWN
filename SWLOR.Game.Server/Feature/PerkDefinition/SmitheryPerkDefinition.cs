@@ -71,16 +71,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(ForgemasterIcon)
 
                 .AddPerkLevel()
-                .Description($"In the Plasma Forge, the piece loses {ForgePerkRules.HeatRetentionRank1} less Thermal after every action, to a minimum of 1 lost.")
+                .Description($"In the Plasma Forge, the piece loses {ForgePerkRules.HeatRetentionCoolingReduction} less Thermal after every action, to a minimum of 1 lost.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .IncreasesStat(StatType.ForgeCoolingReduction, ForgePerkRules.HeatRetentionRank1)
+                .IncreasesStat(StatType.ForgeCoolingReduction, ForgePerkRules.HeatRetentionCoolingReduction)
 
                 .AddPerkLevel()
-                .Description($"In the Plasma Forge, the piece loses {ForgePerkRules.HeatRetentionRank2} less Thermal after every action, to a minimum of 1 lost.")
+                .Description($"In the Plasma Forge, the piece loses {ForgePerkRules.HeatRetentionCoolingReduction} less Thermal after every action, to a minimum of 1 lost, and Ramp Plasma costs {ForgePerkRules.HeatRetentionRampCpReduction} less CP, to a minimum of 1.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .IncreasesStat(StatType.ForgeCoolingReduction, ForgePerkRules.HeatRetentionRank2);
+                .IncreasesStat(StatType.ForgeCoolingReduction, ForgePerkRules.HeatRetentionCoolingReduction)
+                .IncreasesStat(StatType.ForgeRampCpReduction, ForgePerkRules.HeatRetentionRampCpReduction);
         }
 
         private void OverdrivePress()

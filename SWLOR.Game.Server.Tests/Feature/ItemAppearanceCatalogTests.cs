@@ -29,16 +29,17 @@ public class ItemAppearanceCatalogTests
     [TearDown]
     public void RemoveItemFacades() => _itemFacadeScope.Dispose();
 
-    private sealed record ArmorSlot(string Name, string Field, Func<BaseArmorAppearanceDefinition, int[]> Catalog, bool AllowsNone = false);
+    private sealed record ArmorSlot(string Name, string Field, Func<BaseArmorAppearanceDefinition, int[]> Catalog, bool AllowsNone = false,
+        bool KeepsBareStyles = true);
 
     private static readonly ArmorSlot[] ArmorSlots =
     {
         new("Neck", "ArmorPart_Neck", a => a.Neck, AllowsNone: true),
         new("Torso", "ArmorPart_Torso", a => a.Torso),
-        new("Belt", "ArmorPart_Belt", a => a.Belt),
+        new("Belt", "ArmorPart_Belt", a => a.Belt, KeepsBareStyles: false),
         new("Pelvis", "ArmorPart_Pelvis", a => a.Pelvis),
-        new("LShoulder", "ArmorPart_LShoul", a => a.Shoulder),
-        new("RShoulder", "ArmorPart_RShoul", a => a.Shoulder),
+        new("LShoulder", "ArmorPart_LShoul", a => a.Shoulder, KeepsBareStyles: false),
+        new("RShoulder", "ArmorPart_RShoul", a => a.Shoulder, KeepsBareStyles: false),
         new("LBicep", "ArmorPart_LBicep", a => a.Bicep),
         new("RBicep", "ArmorPart_RBicep", a => a.Bicep),
         new("LForearm", "ArmorPart_LFArm", a => a.Forearm),
@@ -51,7 +52,7 @@ public class ItemAppearanceCatalogTests
         new("RShin", "ArmorPart_RShin", a => a.Shin),
         new("LFoot", "ArmorPart_LFoot", a => a.Foot),
         new("RFoot", "ArmorPart_RFoot", a => a.Foot),
-        new("Robe", "ArmorPart_Robe", a => a.Robe),
+        new("Robe", "ArmorPart_Robe", a => a.Robe, KeepsBareStyles: false),
     };
 
     private sealed record Catalogs(
@@ -207,7 +208,9 @@ public class ItemAppearanceCatalogTests
             foreach (var slot in ArmorSlots)
             {
                 var part = ReadPart(blueprint, slot.Field);
-                if (!slot.Catalog(catalog).Contains(part) && !(slot.AllowsNone && part == 0))
+                if (!slot.Catalog(catalog).Contains(part) && !(slot.AllowsNone && part == 0) &&
+                    // The editor accepts existing armor on a retired bare style (1 or 2).
+                    !(slot.KeepsBareStyles && ArmorAppearanceCatalog.RetainedBareStyles.Contains(part)))
                     problems.Add($"{slot.Name} {part}");
             }
 

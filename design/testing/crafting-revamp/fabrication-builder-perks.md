@@ -1,5 +1,7 @@
 # Crafting revamp: the Fabrication Builder line
 
+**Superseded in part (November 2026):** the gear difficulty pass changed these perk values. `gear-difficulty-curve.md` has the current values and results; the tables below are the earlier pass's.
+
 Command: `SWLOR.CraftSim builder-perks --runs 50 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/fabrication-builder-perks.md`
 
 ## Inputs

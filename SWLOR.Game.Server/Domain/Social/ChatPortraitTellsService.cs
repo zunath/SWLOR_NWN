@@ -68,11 +68,17 @@ namespace SWLOR.Game.Server.Domain.Social
                 return;
 
             var player = GetLastGuiEventPlayer();
-            var result = ClickPortrait(player, GetLastGuiEventObject());
-            if (result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous)
+            var portraitOwner = GetLastGuiEventObject();
+            var result = ClickPortrait(player, portraitOwner);
+            if (ChatPortraitTellGuard.IsDoubtful(result))
             {
-                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so it could now point to someone else. " +
-                    "A tell started from it will not be sent. Use Send Tell in the Player List instead."));
+                SendMessageToPC(player, ColorToken.Red("That chat portrait may belong to a player who has logged out, so a tell started from it now goes to ") +
+                    GetColoredDisplayName(player, portraitOwner) +
+                    ColorToken.Red(". Click the portrait again to send your tell to them, or use Send Tell in the Player List."));
+            }
+            else if (result == ChatPortraitClick.Confirmed)
+            {
+                SendMessageToPC(player, "Your tell from that chat portrait goes to " + GetColoredDisplayName(player, portraitOwner) + ".");
             }
         }
 
@@ -86,8 +92,19 @@ namespace SWLOR.Game.Server.Domain.Social
             return _guard.Click(observer.Value.LoginObject, holder.Value.PlayerId, GetCharacterId(holder.Value), DateTime.UtcNow);
         }
 
-        public bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell)
+        public ChatPortraitClick ClassifyPortrait(uint player, uint portraitOwner)
         {
+            var observer = FindClientByObjectId(player);
+            var holder = FindClientByObjectId(portraitOwner);
+            if (observer == null || holder == null)
+                return ChatPortraitClick.Unrecorded;
+
+            return _guard.Classify(observer.Value.LoginObject, holder.Value.PlayerId, GetCharacterId(holder.Value));
+        }
+
+        public bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell, out bool confirmedTarget)
+        {
+            confirmedTarget = false;
             // A Player List tell does not send the chat prompt, so a refused click's prompt may still be open.
             if (isDirectTell)
                 return false;
@@ -98,14 +115,23 @@ namespace SWLOR.Game.Server.Domain.Social
 
             var targetClient = FindClientByObjectId(target);
             var refused = targetClient == null
-                ? _guard.ConsumeRefusedTell(senderClient.Value.LoginObject, uint.MaxValue, string.Empty, DateTime.UtcNow)
-                : _guard.ConsumeRefusedTell(senderClient.Value.LoginObject, targetClient.Value.PlayerId, GetCharacterId(targetClient.Value), DateTime.UtcNow);
+                ? _guard.ConsumeRefusedTell(senderClient.Value.LoginObject, uint.MaxValue, string.Empty, DateTime.UtcNow, out confirmedTarget)
+                : _guard.ConsumeRefusedTell(senderClient.Value.LoginObject, targetClient.Value.PlayerId, GetCharacterId(targetClient.Value), DateTime.UtcNow, out confirmedTarget);
             if (!refused)
                 return false;
 
             SendMessageToPC(sender, ColorToken.Red("Tell not sent: the chat portrait you clicked may belong to a player who has logged out. " +
-                "Use Send Tell in the Player List instead."));
+                "Click the portrait again to confirm who it goes to, or use Send Tell in the Player List."));
             return true;
+        }
+
+        /// <summary>
+        /// The colored name of <paramref name="target"/> as <paramref name="observer"/> sees it: <c>PlayerName.GetColoredDisplayName</c>.
+        /// A seam, because <c>PlayerNameService</c> takes this service (a constructor cycle otherwise).
+        /// </summary>
+        protected virtual string GetColoredDisplayName(uint observer, uint target)
+        {
+            return PlayerName.GetColoredDisplayName(observer, target);
         }
 
         /// <summary>

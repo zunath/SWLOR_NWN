@@ -34,8 +34,31 @@ public class RecordingProxy : DispatchProxy
         return instance;
     }
 
+    /// <summary>
+    /// When set, a member that returns an interface returns a distinct stand-in instead of null (<see cref="StandIn"/>), so a
+    /// test can see that a caller passes the result through. Off by default: a test that uses the proxy as a quiet stand-in
+    /// gets null as before.
+    /// </summary>
+    public bool ReturnsInterfaceStandIns { get; set; }
+
     /// <summary>The object the proxy returns for <paramref name="method"/>, or null for <c>void</c> and abstract types.</summary>
     public object? ReturnedBy(MethodInfo method) => _returns.TryGetValue(method, out var value) ? value : null;
+
+    /// <summary>
+    /// A distinct object of an interface type: a one-element array for a sequence or collection interface an array
+    /// implements (<c>IEnumerable&lt;T&gt;</c>, <c>IReadOnlyList&lt;T&gt;</c>, ...), another recording proxy otherwise.
+    /// </summary>
+    public static object StandIn(Type interfaceType)
+    {
+        if (interfaceType.IsGenericType && interfaceType.GetGenericArguments().Length == 1)
+        {
+            var array = interfaceType.GetGenericArguments()[0].MakeArrayType();
+            if (interfaceType.IsAssignableFrom(array))
+                return Array.CreateInstance(interfaceType.GetGenericArguments()[0], 1);
+        }
+
+        return Create(interfaceType, out _);
+    }
 
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
     {
@@ -51,7 +74,9 @@ public class RecordingProxy : DispatchProxy
         _calls.Add(new RecordedInvocation(targetMethod!, args ?? Array.Empty<object?>()));
         if (!_returns.TryGetValue(targetMethod!, out var value))
         {
-            value = ValueFor(targetMethod!.ReturnType);
+            value = ReturnsInterfaceStandIns && targetMethod!.ReturnType.IsInterface
+                ? StandIn(targetMethod.ReturnType)
+                : ValueFor(targetMethod!.ReturnType);
             _returns[targetMethod] = value;
         }
 

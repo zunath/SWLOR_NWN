@@ -481,7 +481,7 @@ public class CombatRulesTests
     [Test]
     public void EachForwarderPassesItsParametersInOrderToTheRuleOfTheSameName()
     {
-        var parts = new[] { "Combat.Rules.cs", "Combat.DamageCatalog.cs" };
+        var parts = new[] { "Combat.cs" };
         var forwarders = CombatSource.Paths()
             .Where(path => parts.Contains(Path.GetFileName(path)))
             .Select(path => CSharpSyntaxTree.ParseText(File.ReadAllText(path)))

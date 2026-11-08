@@ -1300,6 +1300,81 @@ public class CombatFacadeAllocationTests
         }
     }
 
+    // The world of the activation tests (a container of its own, the constant engine, the clock held still, a status table for
+    // both creatures and the stat service that allocates nothing) with an engine whose script context names the defeated or
+    // exiting creature and its killer, for what is left of Combat (CombatService). P2-CB10 moved these five members from
+    // static bodies on Combat to the service, so their forwarders are the one route that changed; the tests are named to run
+    // after every other combat part test of the fixture, for the reason the hit part tests give.
+    private static ICombatService InstallServicePart(List<IDisposable> scopes)
+    {
+        InstallTimingParts(scopes);
+        var answers = StatReadEngine.NpcAnswers();
+        answers["get_OBJECT_SELF"] = Defender;
+        answers["GetLastKiller"] = Attacker;
+        answers["GetExitingObject"] = Defender;
+        answers["GetIsInCombat"] = false;
+        scopes.Add(NWScriptRuntime.Override(StatReadEngine.Create(answers)));
+        return FacadeContainer.Current.Get<ICombatService>();
+    }
+
+    [Test]
+    public void WithWhatIsLeftOfCombatTheFacingCleanupAllocatesNothingThroughCombat()
+    {
+        // The facing cleanup runs per player every six seconds. It allocated nothing as a static body of Combat; through the
+        // facade it makes one more interface call and allocates nothing either.
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var service = InstallServicePart(scopes);
+
+            LeastAllocated(() => service.ClearCombatState()).Should().Be(0, "ClearCombatState runs per player every six seconds");
+            LeastAllocated(() => CombatFacade.ClearCombatState()).Should().Be(0, "Combat.ClearCombatState only forwards");
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
+    [Test]
+    public void WithWhatIsLeftOfCombatEachMemberThatAllocatesAllocatesNoMoreThroughCombat()
+    {
+        // The death and exit handlers forget the creature in every part (each forget step lists the keys it removes), the
+        // tracker refresh schedules the idle readiness refresh in the activity part, and the damage roll's range rule writes its
+        // attack log lines (as CalculateDamageRange does above): what they allocate is that work, as on the base, where the same
+        // bodies were static members of Combat that called the parts through Combat's forwarders. The forwarder could only add
+        // a closure and its delegate (88 bytes or more), so it is compared with the service's own call on the upper side only,
+        // interleaved (ForwarderAddsNothing).
+        var scopes = new List<IDisposable>();
+        try
+        {
+            var service = InstallServicePart(scopes);
+            var sink = 0;
+            var reads = new (string Name, Action Part, Action Forwarder)[]
+            {
+                ("CalculateDamage", () => sink += service.CalculateDamage(100, 45, 40, 100, 10, 0, 5), () => sink += CombatFacade.CalculateDamage(100, 45, 40, 100, 10, 0, 5)),
+                ("CalculateDamage(critical, default cap)", () => sink += service.CalculateDamage(100, 45, 40, 100, 10, 120), () => sink += CombatFacade.CalculateDamage(100, 45, 40, 100, 10, 120)),
+                ("ApplyDefeatedEnemyEffects", () => service.ApplyDefeatedEnemyEffects(), () => CombatFacade.ApplyDefeatedEnemyEffects()),
+                ("ClearStatTriggerState", () => service.ClearStatTriggerState(), () => CombatFacade.ClearStatTriggerState()),
+                ("RefreshStatDrivenTrackerEffects", () => service.RefreshStatDrivenTrackerEffects(Attacker), () => CombatFacade.RefreshStatDrivenTrackerEffects(Attacker)),
+            };
+
+            foreach (var (name, part, forwarder) in reads)
+            {
+                var (own, forwarded) = InterleavedPerCall(part, forwarder);
+                TestContext.Out.WriteLine($"{name}: service {own} bytes, Combat {forwarded} bytes per call");
+                own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
+                ForwarderAddsNothing(name, own, forwarded, 32);
+            }
+
+            GC.KeepAlive(sink);
+        }
+        finally
+        {
+            DisposeInReverse(scopes);
+        }
+    }
+
     [Test]
     public void TheDamageTypeDetailsAreReadWithoutAllocating()
     {

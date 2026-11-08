@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             services.AddSingleton<ICombatResourcesService, CombatResourcesService>();
+            services.AddSingleton<ICombatService, CombatService>();
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();

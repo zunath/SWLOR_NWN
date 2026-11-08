@@ -3,11 +3,11 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
     /// <summary>
-    /// Names the files and types that make up <c>Service.Combat</c> while it is split (see
-    /// <c>Readmes/MaintainabilityRefactorCombatSplit.md</c>): the partial class in <c>Service/CombatParts</c>, the part
-    /// services <c>Domain/Combat/Combat*Service.cs</c> and the static <c>CombatRules</c>. Tests that read the source of
-    /// <c>Combat</c> or reflect on its private members go through <see cref="CombatSource"/>-style helpers built on
-    /// this list, so a move changes this one place.
+    /// Names the types that make up <c>Service.Combat</c> since it was split (see
+    /// <c>Readmes/MaintainabilityRefactorCombatSplit.md</c>): the facade <c>Service/Combat.cs</c>, the part services
+    /// <c>Domain/Combat/Combat*Service.cs</c> (<c>CombatService</c> holds what is left) and the static <c>CombatRules</c>.
+    /// Tests that read the source of <c>Combat</c> or reflect on its private members go through <see cref="CombatSource"/>-style
+    /// helpers built on this list, so a move changes this one place.
     /// </summary>
     public static class CombatParts
     {

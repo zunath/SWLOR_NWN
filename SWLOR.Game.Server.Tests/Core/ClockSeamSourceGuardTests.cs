@@ -13,7 +13,7 @@ public class ClockSeamSourceGuardTests
     private static readonly string[] LockedSystemEntries =
     {
         "Service/Combat.cs",
-        "Service/CombatParts/**",
+        "Domain/Combat/CombatService.cs",
         "Service/CombatService/**",
         "Service/CombatPoint.cs",
         "Domain/Combat/OrdinaryAttackTraitsService.cs",

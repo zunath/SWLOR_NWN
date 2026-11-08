@@ -705,7 +705,8 @@ public class CombatFacadeAllocationTests
         // bytes between part and forwarder rounds (2399 to 2466 on the base and here alike).
         // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of P2-CB9b the
         // part measured 504 and the forwarder, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
-        // in between), so it is compared here.
+        // in between), so it is compared here, and its old pin stays as an upper budget for both, so an allocation the part
+        // and its forwarder gained together still fails.
         // Named to run last in the fixture: its million damage rolls let the JIT finish optimizing the status reads, which
         // changes what the pinned reads above allocate when they run after it.
         var scopes = new List<IDisposable>();
@@ -739,12 +740,18 @@ public class CombatFacadeAllocationTests
                 ("GrantNextAbilityDamageBonus", () => bonus.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6), () => CombatFacade.GrantNextAbilityDamageBonus(Attacker, (int)PerkType.DoubleShot, 1, 6)),
                 ("GrantNextSkillAbilityBonuses", () => bonus.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6), () => CombatFacade.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 1, 1, 6)),
             };
+            var budgets = new Dictionary<string, long> { ["GetAbilityDefenseIgnorePercentAdjustment"] = 504 };
 
             foreach (var (name, part, forwarder) in reads)
             {
                 var (own, forwarded) = InterleavedPerCall(part, forwarder);
                 own.Should().BeGreaterThan(0, $"{name} allocated before the move too");
                 ForwarderAddsNothing(name, own, forwarded, 32);
+                if (budgets.TryGetValue(name, out var budget))
+                {
+                    own.Should().BeLessThanOrEqualTo(budget, $"{name} allocates no more than it did before the move");
+                    forwarded.Should().BeLessThanOrEqualTo(budget, $"Combat.{name} allocates no more than it did before the move");
+                }
             }
 
             GC.KeepAlive(sink);

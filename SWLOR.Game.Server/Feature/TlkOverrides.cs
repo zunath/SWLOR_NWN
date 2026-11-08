@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AttributeService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -177,7 +179,7 @@ namespace SWLOR.Game.Server.Feature
                     descriptionId <= 0)
                     continue;
 
-                var description = BuildAbilityDescription(abilityDetail, Mimicry.GetTechniqueDescription(feat));
+                var description = BuildAbilityDescription(abilityDetail, GameServices.Mimicry.GetTechniqueDescription(feat));
                 SetTlkOverride(descriptionId, description);
                 var spellDescriptionId = GetSpellDescriptionId(feat);
                 if (spellDescriptionId > 0)

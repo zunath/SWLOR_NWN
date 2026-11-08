@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 {

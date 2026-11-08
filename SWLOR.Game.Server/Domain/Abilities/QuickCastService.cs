@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
@@ -16,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// <summary>
     /// Persisted targeting preferences apply to all eligible native ability buttons. The logic that used to be static in
     /// <c>Service.QuickCast</c> is moved here unchanged; the set of players being updated is this instance's own. The
-    /// facade keeps the event handlers and forwards every call to the container's instance. Calls into the unconverted
-    /// <c>Ability</c> and the feature code sit behind one-line <c>protected virtual</c> methods whose bodies are the
-    /// original calls.
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.QuickCast</c>.
+    /// Calls into the unconverted <c>Ability</c> and the feature code sit behind one-line <c>protected virtual</c> methods
+    /// whose bodies are the original calls.
     /// </summary>
     public class QuickCastService : IQuickCastService
     {
@@ -127,8 +128,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
             finally { _applying.Remove(player); }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyOnEnter() => ApplyPreferences(GetEnteringObject());
 
+        [NWNEventHandler(ScriptName.OnQuickbarSetButtonAfter)]
         public void ApplyOnQuickbarEdit() => ApplyPreferences(OBJECT_SELF);
 
         public bool TryCast(uint player, FeatType alias, out string error)

@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Abilities;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -54,7 +56,7 @@ public class ShipModuleRecastTests
             .Select(x => x.Texture).Distinct().ToArray();
         textures.Should().NotBeEmpty();
         foreach (var texture in textures)
-        for (var stage = 0; stage <= AbilityCooldownVisual.MaximumCooldownStage; stage++)
+        for (var stage = 0; stage <= AbilityCooldownVisualService.MaximumCooldownStage; stage++)
         {
             var resref = AbilityCooldownVisual.GetCooldownTextureName(texture, stage);
             resref.Should().NotBeNull($"{texture} must support cooldown artwork");

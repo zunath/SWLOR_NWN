@@ -28,28 +28,21 @@ Mimicry -> PlayerFeedback | 4
 Mimicry -> Random | 1
 QuickCast -> DB | 3
 
-# Abilities -> Platform (21 edges)
-Ability -> Platform/Composition | 2
+# Abilities -> Platform (14 edges)
+Ability -> Platform/Composition | 1
 Ability -> Platform/Core | 13
-AbilityCooldownVisual -> Platform/Composition | 1
-AbilityCooldownVisual -> Platform/Core | 7
+AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-AbilityTargetingCache -> Platform/Composition | 1
-Feature/AbilityDefinition -> Platform/Composition | 12
+Feature/AbilityDefinition -> Platform/Composition | 258
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
-FieldEngineerPulseEmitters -> Platform/Composition | 1
-ForceControlCooldowns -> Platform/Composition | 1
-Mimicry -> Platform/Composition | 1
 Mimicry -> Platform/Core | 7
-Mimicry -> Platform/Entity | 43
+Mimicry -> Platform/Entity | 33
 Mimicry -> Platform/Extension | 1
 MimicryLoadouts -> Platform/Entity | 5
-QuickCast -> Platform/Composition | 1
 QuickCast -> Platform/Core | 2
-QuickCast -> Platform/Entity | 9
-ReviveHistory -> Platform/Composition | 1
+QuickCast -> Platform/Entity | 7
 
 # Administration -> Core (8 edges)
 DMBlueprintCatalog -> Log | 5
@@ -132,9 +125,9 @@ EspionageInfiltration -> Platform/Entity | 1
 Feature/AppearanceDefinition -> Platform/Composition | 2
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
-Feature/PerkDefinition -> Platform/Composition | 1
+Feature/PerkDefinition -> Platform/Composition | 4
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 3
+Feature/StatusEffectDefinition -> Platform/Composition | 18
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Composition | 1
@@ -284,7 +277,7 @@ IncubationFieldNote -> Platform/Composition | 1
 IncubationFieldNote -> Platform/Core | 1
 
 # Core -> Platform (47 edges)
-Animation -> Platform/Composition | 2
+Animation -> Platform/Composition | 3
 Animation -> Platform/Core | 1
 Animation -> Platform/Enumeration | 1
 Animation -> Platform/Root | 1
@@ -304,7 +297,7 @@ Feature/DialogDefinition -> Platform/Composition | 12
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
-Feature/MigrationDefinition -> Platform/Composition | 17
+Feature/MigrationDefinition -> Platform/Composition | 21
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
@@ -384,12 +377,13 @@ Spawn -> Log | 1
 Spawn -> Random | 4
 Spawn -> Walkmesh | 3
 
-# Creatures -> Platform (11 edges)
+# Creatures -> Platform (12 edges)
 AI -> Platform/Composition | 1
 AI -> Platform/Core | 25
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Composition | 1
 CompanionControl -> Platform/Core | 6
+Feature/AIDefinition -> Platform/Composition | 1
 Feature/SpawnDefinition -> Platform/Composition | 1
 NPCGroup -> Platform/Composition | 1
 NPCGroup -> Platform/Core | 1
@@ -499,7 +493,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (112 edges)
+# Gameplay -> Platform (113 edges)
 Feature.AchievementProgression -> Platform/Composition | 6
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
@@ -601,6 +595,7 @@ Feature.SlicingTerminal -> Platform/Core | 1
 Feature.StackDecrementPrevention -> Platform/Core | 1
 Feature.StandardItemConfigurations -> Platform/Core | 2
 Feature.StoreManagement -> Platform/Core | 5
+Feature.TlkOverrides -> Platform/Composition | 1
 Feature.TlkOverrides -> Platform/Core | 1
 Feature.TrashCan -> Platform/Core | 4
 Feature.TwinPistolCombatLifecycle -> Platform/Core | 9
@@ -609,7 +604,7 @@ Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
 Feature.TwinPistolPairLifecycle -> Platform/Core | 8
 Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
-Feature.UsePerkFeat -> Platform/Composition | 5
+Feature.UsePerkFeat -> Platform/Composition | 22
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerTask -> Platform/Root | 4
 
@@ -735,7 +730,7 @@ ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
 ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
-Feature/ChatCommandDefinition -> Platform/Composition | 18
+Feature/ChatCommandDefinition -> Platform/Composition | 20
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
@@ -764,7 +759,7 @@ Space -> Random | 1
 Feature/ShipModuleDefinition -> Platform/Composition | 18
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
-Space -> Platform/Composition | 25
+Space -> Platform/Composition | 26
 Space -> Platform/Core | 21
 Space -> Platform/Entity | 29
 Space -> Platform/Enumeration | 6
@@ -795,7 +790,7 @@ Gui -> Log | 1
 ExtraHotbars -> Platform/Composition | 1
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 31
-Feature/GuiDefinition -> Platform/Composition | 272
+Feature/GuiDefinition -> Platform/Composition | 287
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21

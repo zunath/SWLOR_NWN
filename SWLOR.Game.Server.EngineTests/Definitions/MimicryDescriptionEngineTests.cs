@@ -7,6 +7,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var (feat, authored) in authoredDescriptions)
                 SetTlkOverride(int.Parse(Get2DAString("feat", "DESCRIPTION", (int)feat)), authored);
             cache.Clear();
-            Mimicry.CacheData();
+            GameServices.Mimicry.CacheData();
             ctx.AssertEqual(techniques.Length, cache.Count, "The boot routine eagerly rebuilds every description");
             foreach (var (feat, authored) in authoredDescriptions)
                 ctx.AssertEqual(authored, cache[feat], $"{feat}: boot retains the authored text");
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             foreach (var (feat, detail) in techniques)
             {
-                var authored = Mimicry.GetTechniqueDescription(feat);
+                var authored = GameServices.Mimicry.GetTechniqueDescription(feat);
                 ctx.Assert(!string.IsNullOrWhiteSpace(authored), $"{feat}: authored effects exist");
                 ctx.Assert(!authored.StartsWith("Name: "), $"{feat}: the menu retains text without a hotbar header");
                 var strRef = int.Parse(Get2DAString("feat", "DESCRIPTION", (int)feat));
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var (feat, detail) in techniques)
             {
                 var strRef = int.Parse(Get2DAString("feat", "DESCRIPTION", (int)feat));
-                AssertDescription(ctx, feat.ToString(), detail, Mimicry.GetTechniqueDescription(feat), GetStringByStrRef(strRef));
+                AssertDescription(ctx, feat.ToString(), detail, GameServices.Mimicry.GetTechniqueDescription(feat), GetStringByStrRef(strRef));
             }
             ctx.SetResultDetail($"All {techniques.Length} authored descriptions load eagerly in the boot cache; technique feat/spell descriptions include current activation costs and recasts, distinguish passive traits, and remain stable across repeated publication. Client UI is not attached.");
             return Task.CompletedTask;

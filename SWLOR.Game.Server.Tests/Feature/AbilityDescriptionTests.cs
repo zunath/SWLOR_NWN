@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -33,13 +35,13 @@ public class AbilityDescriptionTests
     public void TechniqueDescriptionCacheMissDoesNotReadFromTheEngine()
     {
         Ability.CacheData();
-        Mimicry.CacheData();
+        GameServices.Mimicry.CacheData();
 
         // A registered technique with no engine-backed boot data must remain a cache miss.
         // Reading feat/TLK data here would throw because this harness has no live engine.
-        Mimicry.IsTechnique(FeatType.DreadWaveTechnique).Should().BeTrue();
-        Mimicry.GetTechniqueDescription(FeatType.DreadWaveTechnique).Should().BeEmpty();
-        Mimicry.GetTechniqueDescription(FeatType.Invalid).Should().BeEmpty();
+        GameServices.Mimicry.IsTechnique(FeatType.DreadWaveTechnique).Should().BeTrue();
+        GameServices.Mimicry.GetTechniqueDescription(FeatType.DreadWaveTechnique).Should().BeEmpty();
+        GameServices.Mimicry.GetTechniqueDescription(FeatType.Invalid).Should().BeEmpty();
     }
 
     [TestCase(FeatType.DreadWaveTechnique, "Dread Wave", 8, 24)]

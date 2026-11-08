@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -346,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnRetrieveItem()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(DB.Get<WorldPropertyCategory>(category.Id).Items.ContainsKey(storedId), "The storage keeps the item");
-                    ctx.AssertEqual(Item.InventoryFullMessage, model.Instructions, "The window says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullMessage, model.Instructions, "The window says the inventory is full");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();
@@ -407,7 +408,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(DB.Get<WorldProperty>(structure.Id) != null, "The structure stays placed");
                     ctx.Assert(DB.Get<WorldProperty>(parent.Id).ChildPropertyIds[PropertyChildType.Structure].Contains(structure.Id),
                         "The property still lists the structure");
-                    ctx.AssertEqual(Item.InventoryFullShortMessage, model.Instructions, "The window says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullShortMessage, model.Instructions, "The window says the inventory is full");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();

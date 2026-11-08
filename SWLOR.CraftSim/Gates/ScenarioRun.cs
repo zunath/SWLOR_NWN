@@ -6,6 +6,7 @@ using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Gates
 {

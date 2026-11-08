@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition

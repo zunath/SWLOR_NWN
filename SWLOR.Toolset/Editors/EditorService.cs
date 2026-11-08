@@ -21,7 +21,7 @@ using SWLOR.Toolset.Shell;
 using ToolsetDockFactory = SWLOR.Toolset.Shell.ToolsetDockFactory;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
-using GameItem = SWLOR.Game.Server.Service.Item;
+using GameItem = SWLOR.Game.Server.Domain.Items.ItemService;
 using EconomyRestriction = SWLOR.Game.Server.Service.ItemService.EconomyRestriction;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 

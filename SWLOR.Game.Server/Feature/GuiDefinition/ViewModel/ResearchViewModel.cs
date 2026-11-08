@@ -16,6 +16,8 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -438,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
                         !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 
@@ -486,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(probe);
                 if (!fits)
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 
@@ -499,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 

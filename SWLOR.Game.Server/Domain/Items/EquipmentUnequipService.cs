@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return false;
         }
 
+        [NWNEventHandler(ScriptName.OnEquipmentUnequipBefore)]
         public void BeforeUnequip()
         {
             var creature = OBJECT_SELF;

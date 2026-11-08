@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -32,11 +33,11 @@ public class ConversationWindowLifecycleTests
             .Should().Contain("Area.RegisterEvents(area);");
     }
 
-    [TestCase(nameof(Conversation.EndOnAreaExit), ScriptName.OnAreaExit)]
-    [TestCase(nameof(Conversation.EndOnAreaEnter), ScriptName.OnAreaEnter)]
+    [TestCase(nameof(ConversationService.EndOnAreaExit), ScriptName.OnAreaExit)]
+    [TestCase(nameof(ConversationService.EndOnAreaEnter), ScriptName.OnAreaEnter)]
     public void AreaTransitions_HaveDedicatedConversationCleanup(string methodName, string eventName)
     {
-        typeof(Conversation).GetMethod(methodName)!
+        typeof(ConversationService).GetMethod(methodName)!
             .GetCustomAttributes<NWNEventHandler>()
             .Select(attribute => attribute.Script)
             .Should().Contain(eventName);

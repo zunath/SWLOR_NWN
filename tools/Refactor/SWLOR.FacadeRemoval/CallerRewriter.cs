@@ -14,6 +14,8 @@ namespace SWLOR.FacadeRemoval;
 /// <item><c>Service.Taxi.X</c> and <c>SWLOR.Game.Server.Service.Taxi.X</c> become <c>Taxi.X</c>.</item>
 /// <item>An explicit name (<c>Combat</c>) becomes <c>GameServices.Combat.X</c>, with <c>using SWLOR.Game.Server.Composition;</c>.</item>
 /// <item>A moved constant <c>Combat.MaximumHitRate</c> becomes <c>CombatRules.MaximumHitRate</c>, with a using of the owner's namespace.</item>
+/// <item>A bare name the file declares itself (<c>Snippet</c> as a property, <c>DB</c> as a test stub class) is not the facade and stays
+/// alone; a qualified call in such a file is written <c>GameServices.Snippet.X</c>.</item>
 /// </list>
 /// <see cref="Reverse"/> undoes this for a master-shaped file: it drops those using lines (the ones naming a namespace
 /// master does not have), turns <c>GameServices.Taxi.X</c> back into <c>Taxi.X</c> and moved constants back onto their
@@ -47,6 +49,7 @@ internal static class CallerRewriter
         var namespaces = new SortedSet<string>(StringComparer.Ordinal);
         var needsComposition = false;
         var needsAccessorImport = false;
+        HashSet<string>? declaredNames = null;
 
         foreach (var access in root.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
         {
@@ -59,13 +62,22 @@ internal static class CallerRewriter
 
             var member = access.Name.Identifier.ValueText;
             var bare = prefix == facade.Name;
+
+            // A bare name the file declares itself (a type, a member, a local, a parameter or an alias of that name) is
+            // that declaration, not the removed facade: a toolset view model's Snippet property, a test's DB stub. A
+            // qualified call in such a file is written explicitly, because the bare name would mean the declaration.
+            declaredNames ??= DeclaredNames(root);
+            var shadowed = declaredNames.Contains(facade.Name);
+            if (bare && shadowed)
+                continue;
+
             if (facade.Constant(member) is { } constant)
             {
                 edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, constant.OwnerName));
                 if (constant.OwnerNamespace.Length > 0)
                     namespaces.Add(constant.OwnerNamespace);
             }
-            else if (facade.Explicit)
+            else if (facade.Explicit || shadowed)
             {
                 edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, AccessorClass + "." + facade.Name));
                 needsComposition = true;
@@ -198,6 +210,45 @@ internal static class CallerRewriter
     private static bool HasPlainUsing(IEnumerable<UsingDirectiveSyntax> usings, string @namespace) =>
         usings.Any(directive => !directive.StaticKeyword.IsKind(SyntaxKind.StaticKeyword) && directive.Alias == null &&
                                 directive.Name != null && Dotted(directive.Name) == @namespace);
+
+    /// <summary>
+    /// Every name the file declares that a bare <c>X.Member</c> could mean instead of a type it imports: types and
+    /// delegates, properties, fields, events, locals, parameters (lambdas and primary constructors too), pattern and
+    /// query variables, type parameters and using aliases. Scope is ignored, so a file that declares a facade's name
+    /// anywhere is left alone for that name.
+    /// </summary>
+    public static HashSet<string> DeclaredNames(SyntaxNode root)
+    {
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var node in root.DescendantNodes())
+        {
+            var identifier = node switch
+            {
+                BaseTypeDeclarationSyntax type => type.Identifier,
+                DelegateDeclarationSyntax @delegate => @delegate.Identifier,
+                PropertyDeclarationSyntax property => property.Identifier,
+                EventDeclarationSyntax @event => @event.Identifier,
+                VariableDeclaratorSyntax variable => variable.Identifier,
+                ParameterSyntax parameter => parameter.Identifier,
+                TypeParameterSyntax typeParameter => typeParameter.Identifier,
+                SingleVariableDesignationSyntax designation => designation.Identifier,
+                ForEachStatementSyntax forEach => forEach.Identifier,
+                CatchDeclarationSyntax @catch => @catch.Identifier,
+                FromClauseSyntax from => from.Identifier,
+                LetClauseSyntax let => let.Identifier,
+                JoinClauseSyntax join => join.Identifier,
+                JoinIntoClauseSyntax into => into.Identifier,
+                QueryContinuationSyntax continuation => continuation.Identifier,
+                UsingDirectiveSyntax { Alias: { } alias } => alias.Name.Identifier,
+                _ => default
+            };
+
+            if (identifier.ValueText.Length > 0)
+                names.Add(identifier.ValueText);
+        }
+
+        return names;
+    }
 
     private static IReadOnlyList<string> DeclaredNamespaces(SyntaxNode root)
     {

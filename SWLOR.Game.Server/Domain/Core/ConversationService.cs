@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// Entry point for the NUI-native conversation system: the logic and state that used to be static in
-    /// <c>Service.Conversation</c>, moved here unchanged. The facade still carries the event handlers and forwards
-    /// every call to the container's instance. This service intentionally has no dependency on Dialog, PlayerDialog,
-    /// BeginConversation, or generated DLG shells.
+    /// the <c>Conversation</c> facade, moved here unchanged. The event handlers run on the container's instance; static
+    /// callers reach it through <c>GameServices.Conversation</c>. This service intentionally has no dependency on
+    /// Dialog, PlayerDialog, BeginConversation, or generated DLG shells.
     /// </summary>
     /// <remarks>
     /// The constructor registers the built-in tokens, condition and action of <see cref="Runtime"/>, as the static
@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Domain.Core
         // Snippet handlers are registered during OnModuleCacheBefore. Graphs must load in the
         // after phase so operation validation never depends on reflection handler ordering within
         // the before phase (Skill.CacheData raises OnSwlorSkillCache re-entrantly while it runs).
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
             LoadEmbeddedGraphs();
@@ -197,6 +198,7 @@ namespace SWLOR.Game.Server.Domain.Core
             return true;
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureConversationBefore)]
         public void StartAssignedCreatureConversation()
         {
             var player = GetLastSpeaker();
@@ -300,11 +302,13 @@ namespace SWLOR.Game.Server.Domain.Core
             TogglePlayerWindow(player, payload, tetherObject, uiTarget);
         }
 
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void EndOnAreaExit()
         {
             End(GetExitingObject());
         }
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void EndOnAreaEnter()
         {
             // Keep this independent of the other windows' geometry saves and close callbacks.

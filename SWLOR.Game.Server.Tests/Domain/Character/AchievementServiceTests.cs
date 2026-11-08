@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
@@ -271,9 +272,9 @@ public class AchievementServiceTests
 
         var posts = _engine.CallsTo("PostString");
         posts[0].Arguments.Should().Equal(PlayerObject, "Achievement Unlocked", centre + 2, 5, ScreenAnchor.TopRight, 10.0f,
-            Gui.ColorWhite, Gui.ColorYellow, start, Gui.TextName);
+            GuiService.ColorWhite, GuiService.ColorYellow, start, GuiService.TextName);
         posts[1].Arguments.Should().Equal(PlayerObject, " Kill Enemies I", centre + 4, 7, ScreenAnchor.TopRight, 10.0f,
-            Gui.ColorWhite, Gui.ColorYellow, start + 1, Gui.TextName);
+            GuiService.ColorWhite, GuiService.ColorYellow, start + 1, GuiService.TextName);
         posts.Should().HaveCountGreaterThan(2, "the frame is drawn after the two lines of text");
     }
 

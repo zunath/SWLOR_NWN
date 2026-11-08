@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -265,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
                     if (!Item.TryAcquireItem(Player, deserialized))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 

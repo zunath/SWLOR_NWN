@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.MigrationService;
 
 /// <summary>
 /// Game data player migrations read while upgrading saved characters on worker threads. The data lives on the
-/// migration service's <see cref="SavedCharacterDataStore"/> (the static facade <see cref="Migration"/> reaches it);
+/// migration service's <see cref="SavedCharacterDataStore"/> (static code reaches it through <c>GameServices.Migration</c>);
 /// this class keeps the static API the character migrations call, with no state of its own.
 /// </summary>
 internal static class SavedCharacterData

@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -2074,19 +2075,19 @@ public class CombatDamageTests
     {
         return new[]
             {
-                SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.KatarBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.StaffBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.RifleBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.PistolBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.SpearBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes,
-                SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes
+                Item.VibrobladeBaseItemTypes,
+                Item.KatarBaseItemTypes,
+                Item.TwinBladeBaseItemTypes,
+                Item.VibroknifeBaseItemTypes,
+                Item.StaffBaseItemTypes,
+                Item.RifleBaseItemTypes,
+                Item.HeavyVibrobladeBaseItemTypes,
+                Item.PistolBaseItemTypes,
+                Item.LightsaberBaseItemTypes,
+                Item.SpearBaseItemTypes,
+                Item.ThrowingWeaponBaseItemTypes,
+                Item.SaberstaffBaseItemTypes,
+                Item.CreatureBaseItemTypes
             }
             .SelectMany(x => x)
             .Select(x => (int)x)
@@ -2099,19 +2100,19 @@ public class CombatDamageTests
         const string AgilityPerceptionDescription = "16860218";
         var descriptions = new Dictionary<int, string>();
 
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, AgilityPerceptionDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, AgilityPerceptionDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, AgilityPerceptionDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, PerceptionMightDescription);
-        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.VibrobladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.KatarBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.TwinBladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.VibroknifeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.StaffBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.RifleBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, Item.HeavyVibrobladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.PistolBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, Item.LightsaberBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.SpearBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.ThrowingWeaponBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, Item.SaberstaffBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, Item.CreatureBaseItemTypes, PerceptionMightDescription);
 
         return descriptions;
     }
@@ -2129,7 +2130,7 @@ public class CombatDamageTests
 
     private static HashSet<int> BuildVibroknifeBaseItemIds()
     {
-        return SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes
+        return Item.VibroknifeBaseItemTypes
             .Select(x => (int)x)
             .ToHashSet();
     }

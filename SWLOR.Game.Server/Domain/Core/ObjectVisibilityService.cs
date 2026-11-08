@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -9,8 +10,9 @@ using SWLOR.NWN.API.NWNX;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Object visibility: the logic that used to be static in <c>Service.ObjectVisibility</c>, moved here unchanged. The
-    /// facade keeps the event handlers and forwards every call to the container's instance.
+    /// Object visibility: the logic that used to be static in the <c>ObjectVisibility</c> facade, moved here unchanged.
+    /// The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.ObjectVisibility</c>.
     /// </summary>
     public class ObjectVisibilityService : IObjectVisibilityService
     {
@@ -23,6 +25,7 @@ namespace SWLOR.Game.Server.Domain.Core
             _db = db;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadVisibilityObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -43,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Core
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();

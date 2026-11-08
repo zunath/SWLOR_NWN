@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         private const string ServiceNamespace = "SWLOR.Game.Server.Service.MigrationService.";
         private const string MigrationNamespace = "SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.";
 
-        private static readonly Assembly Game = typeof(Migration).Assembly;
+        private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
 
         private static Type GameType(string name) =>
             Game.GetType(name) ?? throw new InvalidOperationException($"The game assembly has no type '{name}'.");
@@ -278,10 +278,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// The server's boot-time pass over every character file in the server vault (<c>Migration.UpgradeServerVault</c>).
         /// Returns false when any character could not be upgraded. Must run inside an engine script.
         /// </summary>
-        public static void RequestVaultRescan() =>
-            typeof(SWLOR.Game.Server.Service.Migration).GetMethod("RequestVaultRescan", Members).Invoke(null, null);
+        public static void RequestVaultRescan() => Migration.RequestVaultRescan();
 
-        public static bool UpgradeServerVault() =>
-            (bool)typeof(SWLOR.Game.Server.Service.Migration).GetMethod("UpgradeServerVault", Members).Invoke(null, null);
+        public static bool UpgradeServerVault() => Migration.UpgradeServerVault();
     }
 }

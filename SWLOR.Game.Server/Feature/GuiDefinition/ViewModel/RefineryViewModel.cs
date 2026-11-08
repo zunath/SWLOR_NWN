@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -267,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (ReturnInputs(true) > 0)
             {
-                Instructions = Item.InventoryFullShortMessage;
+                Instructions = ItemService.InventoryFullShortMessage;
                 InstructionsColor = GuiColor.Red;
             }
         };
@@ -393,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (ReturnInputs(false) > 0)
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
     }

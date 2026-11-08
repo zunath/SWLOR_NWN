@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.ItemDefinition;
@@ -107,10 +109,16 @@ public class EspionageSystemTests
             .SelectMany(x => x.StatBonuses)
             .Should().NotContain(x => x.Stat == StatType.Stealth,
                 "the rank bonus applies only while the native stealth mode is active");
-        stealth.PurchasedTriggers.Should().ContainSingle()
-            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
-        stealth.RefundedTriggers.Should().ContainSingle()
-            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
+        // Each trigger refreshes the stealth status through the service the container holds.
+        var stealthService = ScriptedProxy.Create<IStealthService>(out var stealthCalls);
+        stealthCalls.On("RefreshActiveStatusAfterPerkLevelChange", _ => null);
+        using var triggerContainer = new FacadeContainer(services =>
+            services.Replace(ServiceDescriptor.Singleton(stealthService)));
+        using var triggerScope = triggerContainer.Install();
+        stealth.PurchasedTriggers.Should().ContainSingle().Subject(7u);
+        stealth.RefundedTriggers.Should().ContainSingle().Subject(9u);
+        stealthCalls.Calls.Select(call => (call.Member, (uint)call.Arguments[0]!)).Should().Equal(
+            ("RefreshActiveStatusAfterPerkLevelChange", 7u), ("RefreshActiveStatusAfterPerkLevelChange", 9u));
 
         var silentStride = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),

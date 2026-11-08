@@ -344,9 +344,9 @@ playback. After installing, compile the banks and regenerate the clothing bridge
 `performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
 (`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
 recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
-they end in native idle like every inventory clip. The other 22 clips are activity clips like
+they end in native idle like every inventory clip. The other 42 clips are activity clips like
 Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
-`performance/recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+`performance/recipe.json`, twenty in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
 
 | Group | Clips (project Id = internal name) | Length |
 |---|---|---|
@@ -355,7 +355,24 @@ Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are aut
 | Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
 | Strings | StringsLoop `sw_str_loop` (5.2 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
 | Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Vocals | VocalsLoop `sw_voc_loop` (5.2 s), VocalsLow/Mid/High `sw_voc_low/mid/high` (0.5 s), VocalsFlourish `sw_voc_flour` (1.5 s) | |
+| Pipes | PipesLoop `sw_pip_loop` (5.2 s), PipesLow/Mid/High `sw_pip_low/mid/high` (0.5 s), PipesFlourish `sw_pip_flour` (1.5 s) | |
+| Violin | ViolinLoop `sw_vio_loop` (5.2 s), ViolinLow/Mid/High `sw_vio_low/mid/high` (0.5 s), ViolinFlourish `sw_vio_flour` (1.5 s) | |
+| Tambourine | TambourineLoop `sw_tam_loop` (5.2 s), TambourineLow/Mid/High `sw_tam_low/mid/high` (0.5 s), TambourineFlourish `sw_tam_flour` (1.5 s) | |
 | Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
+
+`props-recipe.json` owns the microphone, panpipes, violin and tambourine clips; their provenance
+is in `props-manifest.json`. Generate that recipe into a temporary directory with the same
+`generate` command, then copy its projects into this directory and its manifest to
+`props-manifest.json`. Install with Category `Performance` and the internal names above.
+`leftGrip` optionally aims a held left-hand prop along a world-space direction, just as `blade`
+aims the right-hand prop. Recipes without it retain their native left wrist orientation.
+Microphones and violins occupy the left hand; a violin also requires its bow in the right.
+Singing clears the microphone's native `torchl` arm layer once at the opening, then suppresses
+its refresh on the looping carrier. The mapping is owned by the playback and restored on exit
+or equipment changes; other animation callers keep their existing torch behavior.
+Panpipes, tambourines and violin bows lift the polearm carry layer at the opening, then stay
+on the looping carrier. All clips in each new family return to their common playing hold.
 
 Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
 strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain

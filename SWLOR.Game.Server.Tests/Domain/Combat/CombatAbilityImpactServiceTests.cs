@@ -66,8 +66,8 @@ public class CombatAbilityImpactServiceTests
     private Dictionary<uint, int> _stamina = null!;
     private HashSet<uint> _partyMembers = null!;
     private HashSet<StatType> _blockedTriggers = null!;
-    private CombatAbilityStaminaCostState? _costState;
-    private AbilityImpactSequence? _sequence;
+    private CombatAbilityStaminaCostState _costState;
+    private AbilityImpactSequence _sequence;
     private uint _attackTarget;
     private uint _highestEnmity;
     private bool _areaImpact;
@@ -172,7 +172,7 @@ public class CombatAbilityImpactServiceTests
                 return matches.Contains((Type)args[0]!) || ((IEnumerable<Type>)args[1]!).Any(matches.Contains);
             })
             .On(nameof(ICombatQueriesService.AbilityAppliedAnyStatusCategory), args =>
-                args[0] == typeof(DazedStatusEffect) || ((IEnumerable<Type>)args[1]!).Contains(typeof(DazedStatusEffect)))
+                args[0] as Type == typeof(DazedStatusEffect) || ((IEnumerable<Type>)args[1]!).Contains(typeof(DazedStatusEffect)))
             .On(nameof(ICombatQueriesService.AbilityMatchesAnyPerkTypeStat), _ => _perkTypes)
             .On(nameof(ICombatQueriesService.AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger), _ => _heavyTrigger)
             .On(nameof(ICombatQueriesService.AbilityMatchesPerkCategoryStat), _ => _perkCategory)
@@ -365,7 +365,7 @@ public class CombatAbilityImpactServiceTests
         _scopes.Clear();
     }
 
-    private object? Log(string line)
+    private object Log(string line)
     {
         _log.Add(line);
         return null;
@@ -394,8 +394,8 @@ public class CombatAbilityImpactServiceTests
         SkillType skill,
         int damage = 10,
         bool statusApplied = false,
-        Type? primary = null,
-        Type[]? additional = null,
+        Type primary = null,
+        Type[] additional = null,
         bool firstHit = false,
         bool firstTarget = true,
         StatusEffectCategory applied = StatusEffectCategory.None,
@@ -406,7 +406,7 @@ public class CombatAbilityImpactServiceTests
         _service.ApplySuccessfulAbilityImpactRiders(Attacker, target, ability, skill, damageType, damage, statusApplied, primary!,
             additional ?? Array.Empty<Type>(), firstHit, firstTarget, applied, allowsHitProcs, attackingAlly);
 
-    private object? Private(string name, params object[] arguments) =>
+    private object Private(string name, params object[] arguments) =>
         typeof(CombatAbilityImpactService).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(_service, arguments);
 
     private IDictionary<(uint, uint), int> SameTargetCounts() =>

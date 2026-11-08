@@ -132,7 +132,8 @@ the very end, so one output-locking test project compiles against both") ends he
   `<master name> <branch name>` line goes in `HandlerRenames.txt` (the 9 handlers already listed there, of `Craft`, `CompanionControl` and
   `TemporaryStatModifier`, get their branch side updated instead of a second line); the two handler snapshots
   (`Tests/Core/Snapshots/ScriptHandlerOrder.txt`, `.EngineTests.txt`) are regenerated; the parity run reports no handler-order difference.
-  Combat's handlers go on `CombatService`, the class the facade forwarded to, not on the parts.
+  Each of Combat's 8 handlers goes on the class its facade method forwards to since P2-CB10: three on `CombatService` (death,
+  exit, 6 s), five on the owning part (`CombatDamageCatalog` 2, `CombatActivity` 2, `CombatDamageTaken` 1).
 - **Counts:** 364 registrations on 339 methods (19 methods carry two attributes and 2 carry four), per item in the item table and per service in
   Appendix A. Core's 32 are renamed again by P2-Z2 (`Domain.Core` to `Domain.Foundation`); its script already updates the branch side
   of existing rename lines.

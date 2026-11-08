@@ -19,9 +19,7 @@ internal static class WeaponGripFits
             fits[(BaseItem.Sling, 101, 310, 101, $"p{gender}h0_hand{side}001", "")] = FitVector.Zero;
         fits[(BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "")] = FitVector.Zero;
         fits[(BaseItem.Rifle, 101, 213, 101, "pmh0_handr001", "pmh0_handl001")] = FitVector.Zero;
-        // Male Wookiee hand #214 and female Mon Calamari hand #204: seat the
-        // handles in the palm. Profiles are independent of the player's identity.
-        // Explicitly inspected assemblies only; new models do not inherit an unmeasured fit.
+        // These exact pistol assemblies share a palm offset for the two measured hand resources.
         foreach (var middle in new[]
                  {
                      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 114,

@@ -175,8 +175,7 @@ public static class WeaponFitEngineTests
 
     private static async Task WithFixtureCorrection(Func<Task> test)
     {
-        // Exercise a nonzero delta without shipping an unverified fit. The test assembly is
-        // loaded only by the isolated engine-test runner, and every exit restores the catalog.
+        // Restore this test-only correction on every exit.
         var catalog = typeof(WeaponFit).Assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFits")!;
         var fits = (System.Collections.Generic.Dictionary<(BaseItem, int, int, int, string, string), FitVector>)catalog
             .GetField("Fits", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;

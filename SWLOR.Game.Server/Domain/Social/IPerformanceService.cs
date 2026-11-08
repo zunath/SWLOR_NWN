@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Dance and Play Instrument performances: the hot bar cues, the beat loop, the live sessions and the players'
-    /// performance preferences. The static facade <c>Service.Performance</c> forwards to the container's instance of this
-    /// interface and keeps the event handlers.
+    /// performance preferences. Static callers reach the container's instance of this
+    /// interface through <c>GameServices.Performance</c>; the event handlers are on <see cref="PerformanceService"/>.
     /// </summary>
     public interface IPerformanceService
     {

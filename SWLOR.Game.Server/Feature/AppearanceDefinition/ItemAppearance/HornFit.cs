@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
@@ -142,7 +143,7 @@ public static class HornFit
         var item = GetItemInSlot(InventorySlot.RightHand, creature);
         if (!GetIsObjectValid(item))
             return;
-        var performing = Performance.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
+        var performing = GameServices.Performance.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
         ApplyFit(item, ResolveFit(GetResRef(item), GetAppearanceType(creature),
             RobeModelRenderer.GetBasePhenotype(creature), GetGender(creature), performing));
     }

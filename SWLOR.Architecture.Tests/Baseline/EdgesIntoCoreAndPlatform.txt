@@ -33,7 +33,7 @@ Ability -> Platform/Composition | 2
 Ability -> Platform/Core | 13
 AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-Feature/AbilityDefinition -> Platform/Composition | 262
+Feature/AbilityDefinition -> Platform/Composition | 268
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
@@ -122,12 +122,12 @@ Disguise -> Platform/Entity | 32
 EspionageInfiltration -> Platform/Composition | 1
 EspionageInfiltration -> Platform/Core | 3
 EspionageInfiltration -> Platform/Entity | 1
-Feature/AppearanceDefinition -> Platform/Composition | 4
+Feature/AppearanceDefinition -> Platform/Composition | 5
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Platform/Composition | 4
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 18
+Feature/StatusEffectDefinition -> Platform/Composition | 20
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Composition | 1
@@ -494,7 +494,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (129 edges)
+# Gameplay -> Platform (130 edges)
 Feature.AchievementProgression -> Platform/Composition | 6
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
@@ -578,6 +578,7 @@ Feature.PlayerAccountRecord -> Platform/Entity | 1
 Feature.PlayerInitialization -> Platform/Composition | 2
 Feature.PlayerInitialization -> Platform/Core | 1
 Feature.PlayerInitialization -> Platform/Entity | 10
+Feature.PlayerRest -> Platform/Composition | 1
 Feature.PlayerRest -> Platform/Core | 3
 Feature.PlayerStatusWindow -> Platform/Composition | 14
 Feature.PlayerStatusWindow -> Platform/Core | 13
@@ -733,24 +734,19 @@ Performance -> NamedAnimation | 5
 PlayerList -> DB | 5
 PlayerList -> Log | 1
 
-# Social -> Platform (20 edges)
-ChatCommand -> Platform/Composition | 1
+# Social -> Platform (15 edges)
 ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
-ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
-Feature/ChatCommandDefinition -> Platform/Composition | 44
+Feature/ChatCommandDefinition -> Platform/Composition | 45
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
 Feature/ChatCommandDefinition -> Platform/Root | 6
-Party -> Platform/Composition | 1
 Party -> Platform/Core | 7
-Performance -> Platform/Composition | 4
 Performance -> Platform/Core | 18
 Performance -> Platform/Entity | 10
-PlayerList -> Platform/Composition | 1
 PlayerList -> Platform/Core | 5
 PlayerList -> Platform/Entity | 3
 PlayerList -> Platform/Extension | 1
@@ -799,7 +795,7 @@ Gui -> Log | 1
 # UI -> Platform (14 edges)
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 467
+Feature/GuiDefinition -> Platform/Composition | 503
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21

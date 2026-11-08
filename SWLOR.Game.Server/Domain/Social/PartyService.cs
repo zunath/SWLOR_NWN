@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
@@ -9,8 +10,8 @@ using NWNXLib = NWN.Native.API.NWNXLib;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The party caches: the logic and state that used to be static in <c>Service.Party</c>, moved here unchanged. The
-    /// facade still carries the event handlers and forwards every call to the container's instance.
+    /// The party caches: the logic and state that used to be static in <c>Party</c>, moved here unchanged. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.Party</c>.
     /// </summary>
     public class PartyService : IPartyService
     {
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly Dictionary<uint, Guid> _creatureToParty = new();
         private readonly Dictionary<Guid, uint> _partyLeaders = new();
 
+        [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
         public void JoinParty()
         {
             var creature = OBJECT_SELF;
@@ -72,6 +74,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
 
+        [NWNEventHandler(ScriptName.OnAssociateAddBefore)]
         public void AssociateJoinParty()
         {
             var owner = OBJECT_SELF;
@@ -80,18 +83,21 @@ namespace SWLOR.Game.Server.Domain.Social
             AddToParty(owner, associate);
         }
 
+        [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
         public void AssociateLeaveParty()
         {
             var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
             RemoveCreatureFromParty(associate);
         }
 
+        [NWNEventHandler(ScriptName.OnPartyLeaveBefore)]
         public void LeaveParty()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
             RemoveCreatureFromParty(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnPartyKickAfter)]
         public void KickFromParty()
         {
             var kicker = OBJECT_SELF;
@@ -104,6 +110,7 @@ namespace SWLOR.Game.Server.Domain.Social
             RemoveCreatureFromParty(kicked);
         }
 
+        [NWNEventHandler(ScriptName.OnPartyTransferLeadershipBefore)]
         public void TransferLeadership()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));
@@ -111,6 +118,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _partyLeaders[partyId] = creature;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void LeaveServer()
         {
             var creature = GetExitingObject();

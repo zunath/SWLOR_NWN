@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Social
     /// <summary>
     /// The audience side of Performance: one module-wide tick a minute turns watching into banked Inspired, cleared XP
     /// debt, band music and Performance XP for the performers. The static facade
-    /// <c>Service.PerformanceService.PerformanceAudience</c> forwards to the container's instance of this interface and
-    /// keeps the event handlers.
+    /// <c>GameServices.PerformanceAudience</c> reaches the container's instance of this interface and
+    /// the event handlers are on <see cref="PerformanceAudienceService"/>.
     /// </summary>
     public interface IPerformanceAudienceService
     {

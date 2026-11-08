@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service.PerformanceService;
 using static SWLOR.Game.Server.Tests.Service.PerformanceTestSnapshots;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

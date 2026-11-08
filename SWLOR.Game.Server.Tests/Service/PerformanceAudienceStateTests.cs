@@ -92,10 +92,8 @@ public class PerformanceAudienceStateTests
     {
         var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        var facade = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
-
-        facade.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
-        facade.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void StopWatchingOnAreaEnter\(\)");
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public void StopWatchingOnDeath\(\)");
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public void StopWatchingOnAreaEnter\(\)");
         Section(source, "public void StopWatchingOnAreaEnter(").Should().Contain("StopWatching(state);");
     }
 
@@ -104,8 +102,7 @@ public class PerformanceAudienceStateTests
     {
         var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"))
-            .Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnPlayerHeartbeat\)\]\s+public static void StopWatchingWhenOutOfRange\(\)");
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnPlayerHeartbeat\)\]\s+public void StopWatchingWhenOutOfRange\(\)");
         var check = Section(source, "public void StopWatchingWhenOutOfRange(");
         check.Should().Contain("!state.WatchingSinceUtc.HasValue", "players who are not watching return after one lookup");
         check.Should().Contain("InterruptWatching(state);");

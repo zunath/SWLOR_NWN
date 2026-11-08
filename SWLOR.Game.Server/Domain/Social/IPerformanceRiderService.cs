@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.PerkService;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// What a rider perk of a performance requires. A part of the Performance service; <c>Service.Performance</c> forwards to it.
+    /// What a rider perk of a performance requires. A part of the Performance service; <c>GameServices.Performance</c> callers reach it through <see cref="IPerformanceService"/>.
     /// </summary>
     public interface IPerformanceRiderService
     {

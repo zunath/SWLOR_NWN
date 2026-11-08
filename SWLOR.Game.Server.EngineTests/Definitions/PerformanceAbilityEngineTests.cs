@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -64,23 +65,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 fixture.Update(record => record.Perks[perk] = level);
                 Perk.SyncGrantedFeats(player, perk, level, true);
                 ctx.Assert(GetHasFeat(feat, player), $"buying {perk} rank {level} grants {feat}");
-                ctx.Assert(!Performance.TryGetSession(player, out _), "the player starts with no performance");
+                ctx.Assert(!GameServices.Performance.TryGetSession(player, out _), "the player starts with no performance");
 
                 if (!isDance)
                 {
                     ctx.AssertEqual(0, GetLocalInt(GetModule(), AllowNoInstrumentVariable), "the module does not waive the instrument");
-                    ctx.Assert(!Performance.HasInstrumentEquipped(player, out _), "the fixture starts with no instrument");
+                    ctx.Assert(!GameServices.Performance.HasInstrumentEquipped(player, out _), "the fixture starts with no instrument");
 
                     var instrumentless = await UseAsync(ctx, player, feat);
                     ctx.Assert(instrumentless, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
                     await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 5f, "the instrumentless activation to finish");
                     await ctx.WaitFrameAsync();
-                    ctx.Assert(!Performance.TryGetSession(player, out _), "playing music with no instrument starts no session");
+                    ctx.Assert(!GameServices.Performance.TryGetSession(player, out _), "playing music with no instrument starts no session");
                     ctx.Assert(Activity.GetBusyType(player) != ActivityStatusType.Performing, "a refused performance leaves the player free");
                     ctx.Assert(!GetHasFeat(FeatType.PerformanceFlourish, player), "a refused performance grants no mode feats");
 
                     instrument = await ctx.EquipItemAsync(player, InstrumentResref, InventorySlot.RightHand);
-                    ctx.Assert(Performance.HasInstrumentEquipped(player, out var family) && family == PerformanceInstrumentFamily.Strings,
+                    ctx.Assert(GameServices.Performance.HasInstrumentEquipped(player, out var family) && family == PerformanceInstrumentFamily.Strings,
                         "the equipped guitar is recognised as a strings instrument");
                 }
 
@@ -93,8 +94,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 var activated = await UseAsync(ctx, player, feat);
                 ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
-                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, $"{feat} to start a performance session");
-                Performance.TryGetSession(player, out var session);
+                await ctx.WaitUntilAsync(() => GameServices.Performance.TryGetSession(player, out _), 8f, $"{feat} to start a performance session");
+                GameServices.Performance.TryGetSession(player, out var session);
 
                 ctx.AssertEqual(player, session.Performer, "the session belongs to the activator");
                 ctx.AssertEqual(kind, session.Kind, "the session kind follows the ability");
@@ -127,18 +128,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The busy state refuses the toggle feat as an ordinary activation; the feat router sends it to Stop instead.
                 var again = await UseAsync(ctx, player, feat);
                 ctx.Assert(!again, "the busy performer cannot start a second activation");
-                ctx.Assert(Performance.TryGetSession(player, out _), "a refused second activation leaves the performance running");
-                ctx.Assert(Performance.IsModeFeat(player, feat), "the performer's own toggle feat is routed to the performance handler");
+                ctx.Assert(GameServices.Performance.TryGetSession(player, out _), "a refused second activation leaves the performance running");
+                ctx.Assert(GameServices.Performance.IsModeFeat(player, feat), "the performer's own toggle feat is routed to the performance handler");
 
                 var previousSequence = NwnCraftSessionWorld.Instance.FileSequence(player);
-                await ctx.ExecuteInCreatureContextAsync(player, () => Performance.HandleInput(player, feat));
+                await ctx.ExecuteInCreatureContextAsync(player, () => GameServices.Performance.HandleInput(player, feat));
 
-                ctx.Assert(!Performance.TryGetSession(player, out _), "using the toggle feat again ends the performance");
+                ctx.Assert(!GameServices.Performance.TryGetSession(player, out _), "using the toggle feat again ends the performance");
                 ctx.Assert(!Activity.IsBusy(player), "ending the performance frees the player");
                 foreach (var modeFeat in modeFeats)
                     ctx.Assert(!GetHasFeat(modeFeat, player), $"ending the performance removes {modeFeat}");
                 ctx.Assert(GetHasFeat(feat, player), $"{feat} is still known after the performance");
-                ctx.Assert(!Performance.IsModeFeat(player, feat), "outside a performance the toggle feat is an ordinary activation again");
+                ctx.Assert(!GameServices.Performance.IsModeFeat(player, feat), "outside a performance the toggle feat is an ordinary activation again");
 
                 var restoredBar = SnapshotQuickbar(player);
                 for (var slot = 0; slot < QuickbarSlotCount; slot++)
@@ -154,8 +155,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                if (Performance.TryGetSession(player, out _))
-                    Performance.EndPerformance(player, PerformanceEndReason.Invalid);
+                if (GameServices.Performance.TryGetSession(player, out _))
+                    GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
                 await ctx.WaitFrameAsync();
                 // Queued last so it runs after Dispose clears the player flag; otherwise the
                 // fixture stays at the spawn point through the rest of the sweep.

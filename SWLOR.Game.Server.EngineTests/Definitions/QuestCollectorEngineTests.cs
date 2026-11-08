@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -327,7 +328,7 @@ public static class QuestCollectorEngineTests
             SetItemStackSize(item, quantity);
             ctx.AssertEqual(quantity, GetItemStackSize(item), $"Set the hand-in quantity for {resref}.");
             if (crafted)
-                SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+                SetLocalBool(item, ItemService.PlayerProducedItemVariable, true);
             // Install the same event fields that the native inventory transfer supplies.
             var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(collector).AsNWSPlaceable();
             native.m_oidLastDisturbed = player;

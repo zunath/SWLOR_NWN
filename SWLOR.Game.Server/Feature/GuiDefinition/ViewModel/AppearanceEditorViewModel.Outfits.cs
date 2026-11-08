@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -223,8 +224,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var limit = Wardrobe.GetSlotLimit(DB.Get<Player>(playerId));
             if (count >= limit)
             {
-                FloatingTextStringOnCreature(limit < Wardrobe.MaxSlotLimit
-                    ? $"Your wardrobe holds {limit} outfits. {Wardrobe.ExpansionHint}"
+                FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit
+                    ? $"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}"
                     : $"Your wardrobe holds {limit} outfits.", _target, false);
                 return;
             }

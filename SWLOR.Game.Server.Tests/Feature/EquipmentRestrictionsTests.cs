@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -178,7 +179,7 @@ public class EquipmentRestrictionsTests
     [Test]
     public void LegacyPistols_RemainPistolsForEquipmentRestrictions()
     {
-        SWLOR.Game.Server.Service.Item.PistolBaseItemTypes
+        Item.PistolBaseItemTypes
             .Should()
             .Contain(BaseItem.LegacyPistol);
 

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Items
             _objectVisibility = objectVisibility;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {
             // Organize categories
@@ -188,6 +190,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return true;
         }
 
+        [NWNEventHandler(ScriptName.OnGetKeyItem)]
         public void ObtainKeyItem()
         {
 

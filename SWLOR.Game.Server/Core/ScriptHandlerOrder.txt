@@ -29,9 +29,9 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Service.Faction.LoadFactions
   action      SWLOR.Game.Server.Service.Fishing.CacheData
   action      SWLOR.Game.Server.Service.Guild.LoadData
-  action      SWLOR.Game.Server.Service.Item.CacheData
-  action      SWLOR.Game.Server.Service.KeyItem.LoadData
-  action      SWLOR.Game.Server.Service.Loot.RegisterLootTables
+  action      SWLOR.Game.Server.Domain.Items.ItemService.CacheData
+  action      SWLOR.Game.Server.Domain.Items.KeyItemService.LoadData
+  action      SWLOR.Game.Server.Domain.Items.LootService.RegisterLootTables
   action      SWLOR.Game.Server.Service.MeleeTechnique.ResetProfiles
   action      SWLOR.Game.Server.Service.Music.LoadSongList
   action      SWLOR.Game.Server.Service.NPCGroup.CacheData
@@ -65,7 +65,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
   action      SWLOR.Game.Server.Service.AI.CacheAIData
   action      SWLOR.Game.Server.Domain.Core.ConversationService.CacheData
   action      SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes
-  action      SWLOR.Game.Server.Service.Gui.CacheData
+  action      SWLOR.Game.Server.Domain.UI.GuiService.CacheData
   action      SWLOR.Game.Server.Service.IncubationFieldNote.LoadDisplayText
   action      SWLOR.Game.Server.Domain.Core.MigrationService.AfterCacheLoaded
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
@@ -149,8 +149,8 @@ appears
 area_enter
   action      SWLOR.Game.Server.Service.Area.EnterArea
   action      SWLOR.Game.Server.Domain.Core.ConversationService.EndOnAreaEnter
-  action      SWLOR.Game.Server.Service.ExtraHotbars.OpenBarsOnEnter
-  action      SWLOR.Game.Server.Service.Gui.CloseAllWindows
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.OpenBarsOnEnter
+  action      SWLOR.Game.Server.Domain.UI.GuiService.CloseAllWindows
   action      SWLOR.Game.Server.Service.Music.ApplyPlayerMusic
   action      SWLOR.Game.Server.Service.Property.EnterPropertyInstance
   action      SWLOR.Game.Server.Service.Property.ShowPropertyDescription
@@ -286,10 +286,10 @@ conditions
   conditional SWLOR.Game.Server.Domain.Core.SnippetService.ConversationAppearsWhen
 
 corpse_closed
-  action      SWLOR.Game.Server.Service.Loot.CloseCorpseContainer
+  action      SWLOR.Game.Server.Domain.Items.LootService.CloseCorpseContainer
 
 corpse_disturbed
-  action      SWLOR.Game.Server.Service.Loot.DisturbCorpseContainer
+  action      SWLOR.Game.Server.Domain.Items.LootService.DisturbCorpseContainer
 
 cp_xp_distribute
   action      SWLOR.Game.Server.Service.BeastMastery.CombatPointXPDistributed
@@ -353,8 +353,8 @@ crea_death_aft
 crea_death_bef
   action      SWLOR.Game.Server.Service.Combat.ApplyDefeatedEnemyEffects
   action      SWLOR.Game.Server.Service.CombatRecorder.RecordCreatureDeath
-  action      SWLOR.Game.Server.Service.Loot.SpawnLootOnCreatureDeath
-  action      SWLOR.Game.Server.Service.Loot.ProcessCorpse
+  action      SWLOR.Game.Server.Domain.Items.LootService.SpawnLootOnCreatureDeath
+  action      SWLOR.Game.Server.Domain.Items.LootService.ProcessCorpse
   action      SWLOR.Game.Server.Service.Quest.ProgressKillTargetObjectives
   action      SWLOR.Game.Server.Feature.AchievementProgression.KillEnemy
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.CreatureDeath
@@ -390,7 +390,7 @@ crea_spawn_aft
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
 crea_spawn_bef
-  action      SWLOR.Game.Server.Service.Loot.SpawnStealLoot
+  action      SWLOR.Game.Server.Domain.Items.LootService.SpawnStealLoot
   action      SWLOR.Game.Server.Service.Space.CreatureSpawn
 
 crea_splcast_aft
@@ -528,7 +528,7 @@ enter_world
 
 equip_uneqp_bef
   action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipping
-  action      SWLOR.Game.Server.Service.EquipmentUnequip.BeforeUnequip
+  action      SWLOR.Game.Server.Domain.Items.EquipmentUnequipService.BeforeUnequip
 
 espn_trap_used
   action      SWLOR.Game.Server.Service.Traps.DisarmTrap
@@ -563,7 +563,7 @@ generic_convo
   action      SWLOR.Game.Server.Feature.PlaceableScripts.GenericConversation
 
 get_key_item
-  action      SWLOR.Game.Server.Service.KeyItem.ObtainKeyItem
+  action      SWLOR.Game.Server.Domain.Items.KeyItemService.ObtainKeyItem
 
 heal_aft
   action      SWLOR.Game.Server.Service.Enmity.HealingCompleted
@@ -627,7 +627,7 @@ item_eqpval_bef
 item_on_hit
   action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AddLeadershipCombatPoint
   action      SWLOR.Game.Server.Service.CombatPoint.OnHitCastSpell
-  action      SWLOR.Game.Server.Service.Loot.MarkCreditfinderAndTreasureHunterOnTarget
+  action      SWLOR.Game.Server.Domain.Items.LootService.MarkCreditfinderAndTreasureHunterOnTarget
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ProcessQueuedWeaponAbility
 
 item_uneqp_aft
@@ -657,7 +657,7 @@ item_uneqp_bef
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnequipBefore
 
 item_use_bef
-  action      SWLOR.Game.Server.Service.Item.UseItem
+  action      SWLOR.Game.Server.Domain.Items.ItemService.UseItem
   action      SWLOR.Game.Server.Service.Property.PlaceStructure
   action      SWLOR.Game.Server.Feature.InstantItemUse.OnUseItem
 
@@ -665,7 +665,7 @@ jukebox_used
   action      SWLOR.Game.Server.Feature.Jukebox.UseJukebox
 
 lsaber_bench
-  action      SWLOR.Game.Server.Service.LightsaberWorkbench.UseLightsaberWorkbench
+  action      SWLOR.Game.Server.Domain.Items.LightsaberWorkbenchService.UseLightsaberWorkbench
 
 mappin_add_bef
   action      SWLOR.Game.Server.Feature.PersistentMapPin.AddMapPin
@@ -679,8 +679,8 @@ mappin_rem_bef
 mod_acquire
   action      SWLOR.Game.Server.Service.BeastMastery.OnAcquireItem
   action      SWLOR.Game.Server.Service.Droid.OnAcquireItem
-  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnAcquire
-  action      SWLOR.Game.Server.Service.Item.EnsureAcquiredItemActivation
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnAcquire
+  action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureAcquiredItemActivation
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnAcquire
   action      SWLOR.Game.Server.Feature.StoreManagement.AcquireItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnAcquire
@@ -732,10 +732,10 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Core.CommunicationService.ApplyShoutChannelName
   action      SWLOR.Game.Server.Service.Death.InitializeRespawnPoint
   action      SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter
-  action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter
-  action      SWLOR.Game.Server.Service.Gui.CreatePlayerWindows
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
+  action      SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleEnter
-  action      SWLOR.Game.Server.Service.Item.EnsureInventoryItemActivations
+  action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureInventoryItemActivations
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
   action      SWLOR.Game.Server.Domain.Core.ObjectVisibilityService.LoadPlayerVisibilityObjects
   action      SWLOR.Game.Server.Service.Performance.RecoverOnLogin
@@ -781,8 +781,8 @@ mod_enter
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
 
 mod_equip
-  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip
-  action      SWLOR.Game.Server.Service.Gui.RefreshOnEquip
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnEquip
+  action      SWLOR.Game.Server.Domain.UI.GuiService.RefreshOnEquip
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnEquip
   action      SWLOR.Game.Server.Service.WeaponDelay.ApplyWeaponDelayFallback
   action      SWLOR.Game.Server.Feature.ArmorDisplay.EquipHelmet
@@ -804,8 +804,8 @@ mod_exit
   action      SWLOR.Game.Server.Service.Droid.OnPlayerExit
   action      SWLOR.Game.Server.Service.Enmity.PlayerExit
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
-  action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit
-  action      SWLOR.Game.Server.Service.Gui.SavePlayerWindowGeometry
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit
+  action      SWLOR.Game.Server.Domain.UI.GuiService.SavePlayerWindowGeometry
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleLeave
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
@@ -844,7 +844,7 @@ mod_exit
 mod_gui_event
   action      SWLOR.Game.Server.Service.ChatPortraitTells.CheckPortraitClick
   action      SWLOR.Game.Server.Domain.Core.CommunicationService.TypingIndicator
-  action      SWLOR.Game.Server.Service.Gui.ReplaceNWNGuis
+  action      SWLOR.Game.Server.Domain.UI.GuiService.ReplaceNWNGuis
   action      SWLOR.Game.Server.Feature.BuffTimer.DisplayBuffInfo
   action      SWLOR.Game.Server.Feature.MiniMaps.MiniMapGui
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExamineDisabledPlayerPanel
@@ -857,8 +857,8 @@ mod_heartbeat
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.ClearInactive
 
 mod_nui_event
-  action      SWLOR.Game.Server.Service.Gui.HandleNuiEvents
-  action      SWLOR.Game.Server.Service.Gui.HandleNuiWatchEvent
+  action      SWLOR.Game.Server.Domain.UI.GuiService.HandleNuiEvents
+  action      SWLOR.Game.Server.Domain.UI.GuiService.HandleNuiWatchEvent
 
 mod_p_target
   action      SWLOR.Game.Server.Service.Targeting.RunTargetedItemAction
@@ -878,7 +878,7 @@ mod_rest
 
 mod_unacquire
   action      SWLOR.Game.Server.Service.Droid.OnLostItem
-  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
@@ -887,8 +887,8 @@ mod_unacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
 
 mod_unequip
-  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip
-  action      SWLOR.Game.Server.Service.Gui.RefreshOnUnequip
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnequip
+  action      SWLOR.Game.Server.Domain.UI.GuiService.RefreshOnUnequip
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnUnequip
   action      SWLOR.Game.Server.Service.Performance.EndOnInstrumentUnequipped
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnUnequip
@@ -957,7 +957,7 @@ pc_fp_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerFPAdjusted
 
 pc_heartbeat
-  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat
+  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
   action      SWLOR.Game.Server.Service.Stat.RefreshOutOfCombatMovementRate
   action      SWLOR.Game.Server.Service.Stealth.EnsureStealthStatusWhileHidden
   action      SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingWhenOutOfRange

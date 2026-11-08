@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             DB.Set(record);
 
             // Headless fixtures skip OnModuleEnter, so their windows are registered here.
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(SWLOR.Game.Server.Domain.UI.GuiService)
+                .GetField("_playerWindows", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Gui)!;
             ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
             var playerWindows = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var type in new[] { GuiWindowType.ExtraHotbarSetup, GuiWindowType.ExtraHotbar1,

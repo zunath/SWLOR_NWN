@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
             LoadWindowTemplates();
@@ -113,6 +114,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void CreatePlayerWindows()
         {
             var player = GetEnteringObject();
@@ -169,6 +171,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a player exits the server, save the geometry positions of any open windows.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void SavePlayerWindowGeometry()
         {
             var player = GetExitingObject();
@@ -242,6 +245,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// When a NUI event is fired, look for an associated event on the specified element
         /// and execute the cached action.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
@@ -315,6 +319,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a NUI event is fired, if it was a watch event, update the associated player's view model.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public void HandleNuiWatchEvent()
         {
             var player = NuiGetEventPlayer();
@@ -548,6 +553,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
         /// Applies to the Journal, Character Sheet, Player Guide, Item Examine, and Player List panels.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public void ReplaceNWNGuis()
         {
             var player = GetLastGuiEventPlayer();
@@ -617,6 +623,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a player enters an area, close all NUI windows except those marked to stay open.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void CloseAllWindows()
         {
             var player = GetEnteringObject();
@@ -809,6 +816,7 @@ namespace SWLOR.Game.Server.Domain.UI
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
         }
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
         public void RefreshOnEquip()
         {
             var player = GetPCItemLastEquippedBy();
@@ -817,6 +825,7 @@ namespace SWLOR.Game.Server.Domain.UI
 
             DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
         }
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public void RefreshOnUnequip()
         {
             var player = GetPCItemLastUnequippedBy();

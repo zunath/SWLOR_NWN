@@ -12,6 +12,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!GetIsObjectValid(usedToken), "Successful construction consumes exactly one submission token");
             var sabers = 0;
             for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
-                if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) sabers++;
+                if (GetResRef(item) == LightsaberWorkbenchService.LightsaberResref) sabers++;
             ctx.AssertEqual(1, sabers, "Exactly one constructed saber is retained in the inventory");
         }
 
@@ -138,7 +139,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     // Mirrors the reported token: crafted DMG 5 Electrical, Accuracy 12, and
                     // Stamina 7 on top of the blueprint's dagger delay and skill scaffolding.
-                    var token = CreateItemOnObject(LightsaberWorkbench.WeaponSubmissionTokenTag, owner);
+                    var token = CreateItemOnObject(LightsaberWorkbenchService.WeaponSubmissionTokenTag, owner);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 5), token);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Electrical), token);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 12), token);
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     uint saber = OBJECT_INVALID;
                     for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
-                        if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) saber = item;
+                        if (GetResRef(item) == LightsaberWorkbenchService.LightsaberResref) saber = item;
                     ctx.Assert(GetIsObjectValid(saber), "The saber is constructed");
 
                     var properties = new List<ItemProperty>();

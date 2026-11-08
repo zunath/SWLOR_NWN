@@ -6,6 +6,7 @@ using SWLOR.Game.Server.EngineTests.Characterization.Support;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Characterization;
 
@@ -117,7 +118,7 @@ public static class KillScenarios
     {
         for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
         {
-            if (GetLocalObject(obj, Loot.CorpseBodyVariable) == body && GetObjectType(obj) == ObjectType.Placeable)
+            if (GetLocalObject(obj, LootService.CorpseBodyVariable) == body && GetObjectType(obj) == ObjectType.Placeable)
                 return obj;
         }
 

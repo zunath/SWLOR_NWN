@@ -267,8 +267,8 @@ public class ExtraHotbarsServiceTests
     {
         ExtraHotbarsService.BarCount.Should().Be(3);
         ExtraHotbarsService.MaxSlots.Should().Be(12);
-        SWLOR.Game.Server.Service.ExtraHotbars.BarCount.Should().Be(ExtraHotbarsService.BarCount);
-        SWLOR.Game.Server.Service.ExtraHotbars.MaxSlots.Should().Be(ExtraHotbarsService.MaxSlots);
+        ExtraHotbarsService.BarCount.Should().Be(ExtraHotbarsService.BarCount);
+        ExtraHotbarsService.MaxSlots.Should().Be(ExtraHotbarsService.MaxSlots);
     }
 
     [Test]

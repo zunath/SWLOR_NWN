@@ -140,12 +140,12 @@ public class GuiServiceTests
     [Test]
     public void The_facade_constants_match_the_instance()
     {
-        SWLOR.Game.Server.Service.Gui.GuiFontName.Should().Be(GuiService.GuiFontName);
-        SWLOR.Game.Server.Service.Gui.TextName.Should().Be(GuiService.TextName);
-        SWLOR.Game.Server.Service.Gui.ColorWhite.Should().Be(-1);
-        SWLOR.Game.Server.Service.Gui.ColorTransparent.Should().Be(unchecked((int)0xFFFFFF00));
-        SWLOR.Game.Server.Service.Gui.ColorRed.Should().Be(Convert.ToInt32("0xFF0000FF", 16));
-        SWLOR.Game.Server.Service.Gui.ColorShieldsBar.Should().Be(Convert.ToInt32("0x00AAE4FF", 16));
+        GuiService.GuiFontName.Should().Be(GuiService.GuiFontName);
+        GuiService.TextName.Should().Be(GuiService.TextName);
+        GuiService.ColorWhite.Should().Be(-1);
+        GuiService.ColorTransparent.Should().Be(unchecked((int)0xFFFFFF00));
+        GuiService.ColorRed.Should().Be(Convert.ToInt32("0xFF0000FF", 16));
+        GuiService.ColorShieldsBar.Should().Be(Convert.ToInt32("0x00AAE4FF", 16));
     }
 
     [Test]

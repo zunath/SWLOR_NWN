@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
                     return;
 
-                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                if (GetLocalObject(placeable, LootService.CorpseBodyVariable) == body)
                 {
                     ctx.Track(placeable);
                     return;

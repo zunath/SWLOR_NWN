@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -758,7 +759,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
                 {
                     if (!RemoveDNA())
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     SwitchViews();
                 }, SwitchViews);
             }
@@ -898,7 +899,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(serialized);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         SwitchViews();
                         return;
                     }
@@ -1172,7 +1173,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (!RemoveDNA())
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
         public void Refresh(PerkAcquiredRefreshEvent payload)

@@ -9,6 +9,7 @@ using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
 using Skill = SWLOR.Game.Server.Service.Skill;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.ProspectingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

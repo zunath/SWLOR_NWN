@@ -188,14 +188,14 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     public uint CreateCraftedItem(uint player, RecipeDetail recipe)
     {
         var item = CreateItemOnObject(recipe.Resref, player, recipe.Quantity);
-        SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+        SetLocalBool(item, Domain.Items.ItemService.PlayerProducedItemVariable, true);
         return item;
     }
 
     public uint CreateFinishedItem(RecipeDetail recipe)
     {
         var item = CreateItemOnObject(recipe.Resref, GetObjectByTag("TEMP_ITEM_STORAGE"), Math.Max(1, recipe.Quantity));
-        SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+        SetLocalBool(item, Domain.Items.ItemService.PlayerProducedItemVariable, true);
         return item;
     }
 

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {

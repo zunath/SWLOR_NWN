@@ -22,13 +22,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float FullWidth = 204f;
         private const float ButtonHeight = 40f;
 
-        // Wide enough for the rows plus the vertical scrollbar.
-        private const float PanelWidth = 232f;
+        // The rows plus the panel margins.
+        private const float PanelWidth = 212f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.HuttballPlayer)
-                .SetInitialGeometry(0f, 0f, 260f, 600f)
+                .SetInitialGeometry(0f, 0f, 280f, 640f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -39,14 +39,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
-        /// The whole window in one borderless panel that scrolls when the window is shorter than its rows.
+        /// The whole window in one borderless panel (rule R5). Players resize the window to see every row.
         /// </summary>
         private static void AddBody(GuiGroup<HuttballPlayerViewModel> host)
         {
             host.AddColumn(column => column.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
-                panel.SetScrollbars(NuiScrollbars.Y);
+                panel.SetScrollbars(NuiScrollbars.None);
                 panel.AddColumn(col =>
                 {
                     col.AddRow(row =>

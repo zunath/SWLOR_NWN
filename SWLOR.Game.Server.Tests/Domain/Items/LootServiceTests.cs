@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -131,7 +132,7 @@ public class LootServiceTests
     private sealed class TestLootService : LootService
     {
         public TestLootService(IBeastMasteryService beastMastery)
-            : base(beastMastery)
+            : base(beastMastery, FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

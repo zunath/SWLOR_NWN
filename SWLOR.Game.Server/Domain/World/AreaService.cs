@@ -16,13 +16,15 @@ namespace SWLOR.Game.Server.Domain.World
     public class AreaService : IAreaService
     {
         private readonly IDBService _db;
+        private readonly Lazy<IPropertyService> _property;
 
         private Dictionary<string, uint> AreasByResref { get; } = new();
         private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        public AreaService(IDBService db)
+        public AreaService(IDBService db, Lazy<IPropertyService> property)
         {
             _db = db;
+            _property = property;
         }
 
         public uint CreateInstance(string sourceResref, string newTag = "", string newName = "")
@@ -67,7 +69,7 @@ namespace SWLOR.Game.Server.Domain.World
             // Keep flight coordinates out of persistent player locations.
             AreasByResref.Remove(Shuttle.ShuttleInteriorResref);
 
-            foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
+            foreach (var areaResref in _property.Value.GetAllInstanceAreaResrefs())
             {
                 if (AreasByResref.ContainsKey(areaResref))
                     AreasByResref.Remove(areaResref);

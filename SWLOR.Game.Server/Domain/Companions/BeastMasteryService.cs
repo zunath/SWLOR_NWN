@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -51,15 +56,42 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
         private readonly IIncubationFieldNoteService _incubationFieldNotes;
         private readonly IPropertyService _property;
+        private readonly Lazy<IAIService> _ai;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly Lazy<ICompanionControlService> _companionControl;
+        private readonly IGuiService _gui;
+        private readonly Lazy<IItemService> _item;
+        private readonly Lazy<IPerkService> _perk;
+        private readonly Lazy<IResistanceService> _resistance;
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
 
         public BeastMasteryService(
             IDBService db,
             IIncubationFieldNoteService incubationFieldNotes,
-            IPropertyService property)
+            IPropertyService property,
+            Lazy<IAIService> ai,
+            ICombatRecorderService combatRecorder,
+            Lazy<ICompanionControlService> companionControl,
+            IGuiService gui,
+            Lazy<IItemService> item,
+            Lazy<IPerkService> perk,
+            Lazy<IResistanceService> resistance,
+            Lazy<IStatService> stat,
+            Lazy<IStatusEffectService> statusEffect)
         {
             _db = db;
             _incubationFieldNotes = incubationFieldNotes;
             _property = property;
+            _ai = ai;
+            _combatRecorder = combatRecorder;
+            _companionControl = companionControl;
+            _gui = gui;
+            _item = item;
+            _perk = perk;
+            _resistance = resistance;
+            _stat = stat;
+            _statusEffect = statusEffect;
         }
 
         public void CacheData()
@@ -222,7 +254,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType)
         {
-            return Perk.GetPerkLevel(creature, perkType);
+            return _perk.Value.GetPerkLevel(creature, perkType);
         }
 
         /// <summary>
@@ -231,7 +263,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat)
         {
-            return Stat.GetStatAdjustment(creature, stat);
+            return _stat.Value.GetStatAdjustment(creature, stat);
         }
 
         /// <summary>
@@ -240,7 +272,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void PublishBeastGainXPRefresh(uint player)
         {
-            Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+            _gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
         /// <summary>
@@ -395,7 +427,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
 
             ApplyStats(beast);
-            AI.SetAIProfile(beast, AIProfileType.BeastCompanion);
+            _ai.Value.SetAIProfile(beast, AIProfileType.BeastCompanion);
 
             AddHenchman(player, beast);
 
@@ -440,7 +472,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     if (percentHeal > 0)
                     {
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
-                        using var recorderAttribution = CombatRecorder.BeginSetupAttribution(beast);
+                        using var recorderAttribution = _combatRecorder.BeginSetupAttribution(beast);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
 
@@ -491,7 +523,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
             {
                 var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
                 BiowareXP2.IPSafeAddItemProperty(
@@ -499,7 +531,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     ItemPropertyCustom(
                         ItemPropertyType.Resistance,
                         (int)resistanceType,
-                        Resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                        _resistance.Value.EncodeItemPropertyCostTableValue(resistanceBonus)),
                     0f,
                     AddItemPropertyPolicy.ReplaceExisting,
                     false,
@@ -513,7 +545,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
         {
-            Perk.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
+            _perk.Value.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
         }
 
         /// <summary>
@@ -522,7 +554,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints)
         {
-            Stat.SetNPCMaxHitPoints(creature, desiredMaxHitPoints);
+            _stat.Value.SetNPCMaxHitPoints(creature, desiredMaxHitPoints);
         }
 
         public (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
@@ -568,7 +600,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual NPCStats GetNPCStats(uint npc)
         {
-            return Stat.GetNPCStats(npc);
+            return _stat.Value.GetNPCStats(npc);
         }
 
         /// <summary>
@@ -614,7 +646,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void ReturnItem(uint owner, uint item)
         {
-            Item.ReturnItem(owner, item);
+            _item.Value.ReturnItem(owner, item);
         }
 
         public void BeastOnBlocked()
@@ -727,37 +759,37 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>Clears the companion control state of a companion. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ClearCompanionControl(uint companion)
         {
-            CompanionControl.Clear(companion);
+            _companionControl.Value.Clear(companion);
         }
 
         /// <summary>Sets up the companion control state of a companion. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void InitializeCompanionControl(uint companion)
         {
-            CompanionControl.Initialize(companion);
+            _companionControl.Value.Initialize(companion);
         }
 
         /// <summary>Runs a companion's combat round. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ProcessCompanionCombatRound(uint companion)
         {
-            CompanionControl.ProcessCombatRound(companion);
+            _companionControl.Value.ProcessCombatRound(companion);
         }
 
         /// <summary>Runs a companion's heartbeat. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ProcessCompanionHeartbeat(uint companion)
         {
-            CompanionControl.ProcessHeartbeat(companion);
+            _companionControl.Value.ProcessHeartbeat(companion);
         }
 
         /// <summary>Lets the companion control answer a conversation. The original call into <c>CompanionControl</c>.</summary>
         protected virtual bool HandleCompanionConversation(uint companion)
         {
-            return CompanionControl.HandleConversation(companion);
+            return _companionControl.Value.HandleConversation(companion);
         }
 
         /// <summary>Registers a threat a companion defends against. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void RegisterDefensiveThreat(uint companion, uint threat)
         {
-            CompanionControl.RegisterDefensiveThreat(companion, threat);
+            _companionControl.Value.RegisterDefensiveThreat(companion, threat);
         }
 
         /// <summary>
@@ -772,25 +804,25 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>Restores the stamina and focus of the beasts. The original call into <c>Stat</c>.</summary>
         protected virtual void RestoreBeastStats()
         {
-            Stat.RestoreBeastStats();
+            _stat.Value.RestoreBeastStats();
         }
 
         /// <summary>Loads the stats of the NPC that runs the current script. The original call into <c>Stat</c>.</summary>
         protected virtual void LoadNPCStats()
         {
-            Stat.LoadNPCStats();
+            _stat.Value.LoadNPCStats();
         }
 
         /// <summary>Applies the movement rate of a creature. The original call into <c>Stat</c>.</summary>
         protected virtual void ApplyCreatureMovementRate(uint creature)
         {
-            Stat.ApplyCreatureMovementRate(creature);
+            _stat.Value.ApplyCreatureMovementRate(creature);
         }
 
         /// <summary>Puts the rest status effect on a beast. The original call into <c>StatusEffect</c>.</summary>
         protected virtual void ApplyRestStatusEffect(uint beast)
         {
-            StatusEffect.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
+            _statusEffect.Value.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
         }
 
         /// <summary>
@@ -798,7 +830,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void TogglePlayerWindow(uint player, GuiWindowType windowType, GuiPayloadBase payload, uint tetherObject)
         {
-            Gui.TogglePlayerWindow(player, windowType, payload, tetherObject);
+            _gui.TogglePlayerWindow(player, windowType, payload, tetherObject);
         }
 
         private readonly Dictionary<int, int> _beastXPRequirements = new()
@@ -1054,7 +1086,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
             }
 
-            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
             {
                 if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
                     continue;
@@ -1099,7 +1131,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             };
 
             purities.AddRange(Service.Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
-            purities.AddRange(Resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
+            purities.AddRange(_resistance.Value.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();
             var qualityPercent = averagePurity / maxPurityValue;

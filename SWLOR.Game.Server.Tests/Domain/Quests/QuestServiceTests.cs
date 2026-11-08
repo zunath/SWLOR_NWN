@@ -1,6 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -149,7 +152,7 @@ public class QuestServiceTests
     private sealed class TestQuestService : QuestService
     {
         public TestQuestService(IDBService db, IQuestEncounterService encounters)
-            : base(db, encounters)
+            : base(db, encounters, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>())
         {
         }
 

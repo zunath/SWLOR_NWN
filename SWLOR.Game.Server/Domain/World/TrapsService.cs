@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -71,17 +75,39 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<uint, List<TrapRecord>> _trapsByOwner = new();
 
         private readonly IDBService _db;
+        private readonly IAbilityService _ability;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly IDMPresenceService _dmPresence;
+        private readonly IPerkService _perk;
+        private readonly IPvpCombatService _pvpCombat;
+        private readonly ISkillService _skill;
+        private readonly IStatService _stat;
 
-        public TrapsService(IDBService db)
+        public TrapsService(
+            IDBService db,
+            IAbilityService ability,
+            ICombatRecorderService combatRecorder,
+            IDMPresenceService dmPresence,
+            IPerkService perk,
+            IPvpCombatService pvpCombat,
+            ISkillService skill,
+            IStatService stat)
         {
             _db = db;
+            _ability = ability;
+            _combatRecorder = combatRecorder;
+            _dmPresence = dmPresence;
+            _perk = perk;
+            _pvpCombat = pvpCombat;
+            _skill = skill;
+            _stat = stat;
         }
 
         public int GetTrapCapacity(uint owner)
         {
             return Math.Max(
                 BaseTrapCapacity,
-                BaseTrapCapacity + Stat.GetStatAdjustment(owner, StatType.AdditionalTrapCapacity));
+                BaseTrapCapacity + _stat.GetStatAdjustment(owner, StatType.AdditionalTrapCapacity));
         }
 
         /// <summary>
@@ -103,15 +129,15 @@ namespace SWLOR.Game.Server.Domain.World
 
             // Trap strength is snapshotted now so later gear or stance swaps do not retune a
             // trap that is already on the ground.
-            var trapBonus = Stat.GetStatAdjustment(owner, StatType.TrapBonus);
+            var trapBonus = _stat.GetStatAdjustment(owner, StatType.TrapBonus);
             var snapshotDamage = baseDamage + (int)Math.Ceiling(baseDamage * (trapBonus / 100f));
 
             var record = new TrapRecord
             {
                 Owner = owner,
                 Location = location,
-                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner),
-                PlacedBy = CombatRecorder.CaptureScope()
+                SuccessfulImpactVisualEffect = _ability.GetSuccessfulImpactVisualEffect(owner),
+                PlacedBy = _combatRecorder.CaptureScope()
             };
             record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 location,
@@ -126,7 +152,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
 
             RegisterTrap(record, ownerTraps);
-            var trigger = Ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
+            var trigger = _ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
                 record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
                 snapshotDamage, requiresLivingActivator: false);
             ScheduleArming(record, trigger);
@@ -148,7 +174,7 @@ namespace SWLOR.Game.Server.Domain.World
                 return false;
 
             var baseDamage = KitTrapDamageByTier[tier - 1];
-            var trapBonus = Stat.GetStatAdjustment(owner, StatType.TrapBonus);
+            var trapBonus = _stat.GetStatAdjustment(owner, StatType.TrapBonus);
             var snapshotDamage = baseDamage + (int)Math.Ceiling(baseDamage * (trapBonus / 100f));
 
             var record = new TrapRecord
@@ -157,7 +183,7 @@ namespace SWLOR.Game.Server.Domain.World
                 Location = location,
                 Tier = tier,
                 IsConcealed = true,
-                PlacedBy = CombatRecorder.CaptureScope()
+                PlacedBy = _combatRecorder.CaptureScope()
             };
             record.Marker = CreateObject(ObjectType.Placeable, ConcealedTrapResref, location, false, ConcealedTrapResref);
             if (!GetIsObjectValid(record.Marker))
@@ -228,7 +254,7 @@ namespace SWLOR.Game.Server.Domain.World
             TrapRecord record,
             Action trigger)
         {
-            var placementSpeed = Math.Clamp(Stat.GetStatAdjustment(record.Owner, StatType.TrapPlacementSpeedPercent), 0, 90);
+            var placementSpeed = Math.Clamp(_stat.GetStatAdjustment(record.Owner, StatType.TrapPlacementSpeedPercent), 0, 90);
             var armingDelay = ArmingDelaySeconds * (100 - placementSpeed) / 100f;
 
             DelayCommand(armingDelay, () => RunProximityChecks(
@@ -298,9 +324,9 @@ namespace SWLOR.Game.Server.Domain.World
                 {
                     var rank = _db.Get<Player>(GetObjectUUID(record.Owner)).Skills[SkillType.Espionage].Rank;
                     var xp = record.IsConcealed
-                        ? Math.Min(TrapTriggerXP, Skill.CalculateEspionageXP(PerkType.Trapcraft, record.Tier, rank))
+                        ? Math.Min(TrapTriggerXP, _skill.CalculateEspionageXP(PerkType.Trapcraft, record.Tier, rank))
                         : TrapTriggerXP;
-                    Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
+                    _skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
                 trigger();
                 return;
@@ -320,7 +346,7 @@ namespace SWLOR.Game.Server.Domain.World
             int statusDurationSeconds,
             VisualEffect triggerVisualEffect)
         {
-            using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
+            using var recorderAttribution = _combatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
             CombatAreaPulses.ApplyCombatPulse(
                 record.Owner,
                 record.Location,
@@ -350,7 +376,7 @@ namespace SWLOR.Game.Server.Domain.World
             {
                 if (record.DetectedBy.Contains(player) ||
                     GetArea(player) != GetAreaFromLocation(record.Location) ||
-                    DMPresence.IsControlledByDM(player))
+                    _dmPresence.IsControlledByDM(player))
                 {
                     continue;
                 }
@@ -358,7 +384,7 @@ namespace SWLOR.Game.Server.Domain.World
                 if (!CanUseTrapTier(player, record.Tier))
                     continue;
 
-                var range = BaseDetectionRangeMeters + Stat.GetStatAdjustment(player, StatType.TrapDetectionRangeBonus);
+                var range = BaseDetectionRangeMeters + _stat.GetStatAdjustment(player, StatType.TrapDetectionRangeBonus);
                 if (GetDistanceBetweenLocations(GetLocation(player), record.Location) > range)
                     continue;
 
@@ -428,7 +454,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         private int CalculateDisarmChance(uint user, int tier)
         {
-            var disarm = Stat.GetStatAdjustment(user, StatType.TrapDisarm);
+            var disarm = _stat.GetStatAdjustment(user, StatType.TrapDisarm);
             var perceptionModifier = GetAbilityModifier(AbilityType.Perception, user);
             var chance = BaseDisarmChance + (disarm + perceptionModifier) * DisarmStatMultiplier - tier * DisarmTierPenalty;
 
@@ -445,30 +471,30 @@ namespace SWLOR.Game.Server.Domain.World
         // The perk levels come from the static Perk service, which reads the stored player and so cannot run in a
         // unit test; a test subclass answers this instead.
         protected virtual bool CanUseTrapTier(uint player, int tier) => CanUseTrapTier(
-            Perk.GetPerkLevel(player, PerkType.Trapcraft),
-            Perk.GetPerkLevel(player, PerkType.MasterSaboteur) >= 1,
+            _perk.GetPerkLevel(player, PerkType.Trapcraft),
+            _perk.GetPerkLevel(player, PerkType.MasterSaboteur) >= 1,
             tier);
 
         private void GrantDisarmXP(uint user, int tier)
         {
             var playerId = GetObjectUUID(user);
             var dbPlayer = _db.Get<Player>(playerId);
-            var xp = Skill.CalculateEspionageXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
+            var xp = _skill.CalculateEspionageXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
             if (xp > 0)
             {
-                Skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);
+                _skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);
             }
         }
 
         private void TriggerOnDisarmFailure(TrapRecord record, uint victim)
         {
             // This hit skips the damage modifiers, so a player's trap applies the PvP ramp and PvP combat here.
-            var damage = PvpCombat.ApplyDamageIncrease(victim, record.Owner, KitTrapDamageByTier[record.Tier - 1], true);
+            var damage = _pvpCombat.ApplyDamageIncrease(victim, record.Owner, KitTrapDamageByTier[record.Tier - 1], true);
             Deactivate(record);
 
             AssignCommand(record.Owner, () =>
             {
-                using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
+                using var recorderAttribution = _combatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
                 ApplyEffectToObject(
                     DurationType.Instant,
                     EffectDamage(damage, DamageType.Piercing),

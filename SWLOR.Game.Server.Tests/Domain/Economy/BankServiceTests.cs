@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Tests.Support;
@@ -55,7 +56,7 @@ public class BankServiceTests
         _objectPlugin = new FakeObjectPlugin();
         _objectPluginScope = ObjectPluginRuntime.Override(_objectPlugin);
         _db = new InMemoryDBService();
-        _service = new BankService(_db);
+        _service = new BankService(_db, FacadeForwarder.For<IItemService>());
     }
 
     [TearDown]
@@ -369,7 +370,7 @@ public class BankServiceTests
     [Test]
     public void Each_instance_reads_its_own_database()
     {
-        var other = new BankService(new InMemoryDBService());
+        var other = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
         _db.With(BankedItem());
 
         _service.GetItemCount(PlayerId).Should().Be(1);

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Tests.Support;
@@ -422,6 +423,11 @@ public class DMPresenceServiceTests
 /// <summary>The instance with the engine's safe-point search and the area spot list answered by the test.</summary>
 internal sealed class LandingPresenceService : DMPresenceService
 {
+    public LandingPresenceService()
+        : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>())
+    {
+    }
+
     public Func<Location, bool> CanLand { get; set; } = _ => true;
 
     public IEnumerable<Location> AreaLocations { get; set; } = Array.Empty<Location>();

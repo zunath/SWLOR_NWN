@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -35,10 +37,16 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<int, MusicSong> _collectibleSongsByTrackId;
 
         private readonly IDBService _db;
+        private readonly IKeyItemService _keyItem;
+        private readonly Lazy<IPerformanceAudienceService> _performanceAudience;
+        private readonly IPropertyService _property;
 
-        public MusicService(IDBService db)
+        public MusicService(IDBService db, IKeyItemService keyItem, Lazy<IPerformanceAudienceService> performanceAudience, IPropertyService property)
         {
             _db = db;
+            _keyItem = keyItem;
+            _performanceAudience = performanceAudience;
+            _property = property;
             _collectibleSongs = new MusicSongCatalog().Songs;
             _collectibleSongsByKeyItem = _collectibleSongs.ToDictionary(song => song.KeyItem);
             _collectibleSongsByTrackId = _collectibleSongs.ToDictionary(song => song.TrackId);
@@ -180,15 +188,15 @@ namespace SWLOR.Game.Server.Domain.World
 
         // The key items of a player live in the stored player, which the static KeyItem service reads from the
         // database; a test subclass answers this instead.
-        protected virtual bool HasKeyItem(uint player, KeyItemType keyItem) => KeyItem.HasKeyItem(player, keyItem);
+        protected virtual bool HasKeyItem(uint player, KeyItemType keyItem) => _keyItem.HasKeyItem(player, keyItem);
 
         // Giving a key item saves the stored player and refreshes the key item window; a test subclass answers this
         // instead.
-        protected virtual void GiveKeyItem(uint player, KeyItemType keyItem) => KeyItem.GiveKeyItem(player, keyItem);
+        protected virtual void GiveKeyItem(uint player, KeyItemType keyItem) => _keyItem.GiveKeyItem(player, keyItem);
 
         // A performance audience remembers the band song it follows in static state; a test subclass records the call
         // instead.
-        protected virtual void ForgetBandSong(uint player) => PerformanceAudience.ForgetBandSong(player);
+        protected virtual void ForgetBandSong(uint player) => _performanceAudience.Value.ForgetBandSong(player);
 
         public Player ClearUncollectedMusicSettings(string playerId)
         {
@@ -244,7 +252,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         public string GetSongName(MusicSong song)
         {
-            return KeyItem.GetKeyItem(song.KeyItem).Name;
+            return _keyItem.GetKeyItem(song.KeyItem).Name;
         }
 
         public string GetCategoryName(MusicCategoryType category)
@@ -266,7 +274,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         public string GetJukeboxOwnerId(uint jukebox)
         {
-            return ResolveJukeboxOwnerId(Property.GetPropertyId(jukebox), _db.Get<WorldProperty>);
+            return ResolveJukeboxOwnerId(_property.GetPropertyId(jukebox), _db.Get<WorldProperty>);
         }
 
         private string ResolveJukeboxOwnerId(string propertyId, Func<string, WorldProperty> getProperty)

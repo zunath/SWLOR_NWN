@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,8 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceRiderService _riders;
         private readonly ICraftService _craft;
+        private readonly IActivityService _activity;
+        private readonly IPerkService _perk;
 
         public PerformanceService(
             IDBService db,
@@ -84,7 +87,9 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceWindowsService windows,
             IPerformanceSongService songs,
             IPerformanceRiderService riders,
-            ICraftService craft)
+            ICraftService craft,
+            IActivityService activity,
+            IPerkService perk)
         {
             _db = db;
             _namedAnimation = namedAnimation;
@@ -93,6 +98,8 @@ namespace SWLOR.Game.Server.Domain.Social
             _songs = songs;
             _riders = riders;
             _craft = craft;
+            _activity = activity;
+            _perk = perk;
         }
 
         public IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId)
@@ -938,7 +945,7 @@ namespace SWLOR.Game.Server.Domain.Social
         protected virtual IDisposable ScheduleRepeating(Action task, TimeSpan interval) =>
             Scheduler.ScheduleRepeating(task, interval);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perk) => Perk.GetPerkLevel(creature, perk);
+        protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
 
         // The craft session world's character file checkpoint, behind the converted Craft service.
         protected virtual int AdvanceFileSequence(uint player) => _craft.SessionWorld.AdvanceFileSequence(player);
@@ -947,13 +954,13 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual void PersistCharacter(uint player) => _craft.SessionWorld.PersistCharacter(player);
 
-        protected virtual bool IsBusy(uint target) => Activity.IsBusy(target);
+        protected virtual bool IsBusy(uint target) => _activity.IsBusy(target);
 
-        protected virtual ActivityStatusType GetBusyType(uint target) => Activity.GetBusyType(target);
+        protected virtual ActivityStatusType GetBusyType(uint target) => _activity.GetBusyType(target);
 
-        protected virtual void SetBusy(uint target, ActivityStatusType type) => Activity.SetBusy(target, type);
+        protected virtual void SetBusy(uint target, ActivityStatusType type) => _activity.SetBusy(target, type);
 
-        protected virtual void ClearBusy(uint target) => Activity.ClearBusy(target);
+        protected virtual void ClearBusy(uint target) => _activity.ClearBusy(target);
 
         protected virtual bool IsPlayerInSpaceMode(uint player) => Space.IsPlayerInSpaceMode(player);
 

@@ -1,9 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 
@@ -15,6 +17,11 @@ public class CraftMinigameRoutingServiceTests
 
     private sealed class TestRouting : CraftMinigameRoutingService
     {
+        public TestRouting()
+            : base(FacadeForwarder.For<IGuiService>())
+        {
+        }
+
         public HashSet<GuiWindowType> Open { get; } = new();
 
         protected override bool IsWindowOpen(uint player, GuiWindowType window) => Open.Contains(window);

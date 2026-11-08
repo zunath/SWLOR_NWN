@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         private const string OwnedBeastHitPrefix = "OWNED_BEAST_HIT_";
 
         private readonly IBeastMasteryService _beastMastery;
+        private readonly Lazy<IAbilityService> _ability;
         private readonly Dictionary<string, CapstoneProofDefinition> _proofs = new();
         private readonly Dictionary<Type, List<CapstoneProofDefinition>> _byEnemyStatus = new();
         private readonly Dictionary<Type, List<CapstoneProofDefinition>> _bySupportStatus = new();
@@ -37,9 +39,10 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// Registers the capstone proofs the quest definitions name. That only fills dictionaries from static data (no
         /// engine, database or service call), as the static constructor of the old class did on first use.
         /// </summary>
-        public CapstoneProofService(IBeastMasteryService beastMastery)
+        public CapstoneProofService(IBeastMasteryService beastMastery, Lazy<IAbilityService> ability)
         {
             _beastMastery = beastMastery;
+            _ability = ability;
 
             foreach (var proof in CapstoneProofDefinitions.All)
                 Register(proof);
@@ -231,7 +234,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// </summary>
         protected virtual bool IsFeatRegistered(FeatType feat)
         {
-            return Ability.IsFeatRegistered(feat);
+            return _ability.Value.IsFeatRegistered(feat);
         }
 
         /// <summary>
@@ -240,7 +243,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// </summary>
         protected virtual AbilityDetail GetAbilityDetail(FeatType feat)
         {
-            return Ability.GetAbilityDetail(feat);
+            return _ability.Value.GetAbilityDetail(feat);
         }
     }
 }

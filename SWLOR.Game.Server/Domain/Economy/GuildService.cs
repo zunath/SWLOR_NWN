@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -19,6 +21,8 @@ namespace SWLOR.Game.Server.Domain.Economy
     public class GuildService : IGuildService
     {
         private readonly IDBService _db;
+        private readonly IPerkService _perk;
+        private readonly IQuestService _quest;
         private readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new Dictionary<GuildType, GuildAttribute>();
         private readonly Dictionary<int, int> _rankProgression = new Dictionary<int, int>
         {
@@ -33,9 +37,11 @@ namespace SWLOR.Game.Server.Domain.Economy
         private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
         private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<string, QuestDetail>>();
 
-        public GuildService(IDBService db)
+        public GuildService(IDBService db, IPerkService perk, IQuestService quest)
         {
             _db = db;
+            _perk = perk;
+            _quest = quest;
         }
 
         public int MaxRank { get; private set; }
@@ -73,7 +79,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 
             var dbGuild = dbPlayer.Guilds[guild];
             var rankBonus = 0.25f * dbGuild.Rank;
-            var perkBonus = Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
+            var perkBonus = _perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
             var socialBonus = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
             var amount = baseAmount +
                          (perkBonus * baseAmount) +
@@ -133,7 +139,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             {
                 foreach (var (type, _) in _activeGuilds)
                 {
-                    var potentialTasks = Quest.GetQuestsByGuild(type, rank);
+                    var potentialTasks = _quest.GetQuestsByGuild(type, rank);
                     List<QuestDetail> tasks;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.

@@ -1,10 +1,12 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 
@@ -164,6 +166,11 @@ public class PerformanceSnapshotServiceTests
 
     private sealed class TestSnapshots : PerformanceSnapshotService
     {
+        public TestSnapshots()
+            : base(FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
+        {
+        }
+
         public Dictionary<PerkType, int> Perks { get; } = new();
         public Dictionary<StatType, int> Stats { get; } = new();
         public HashSet<PerformanceRoutineType> UnlockedRoutines { get; } = new();

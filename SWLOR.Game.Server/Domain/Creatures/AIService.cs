@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
@@ -44,17 +48,53 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IPartyService _party;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IDMPresenceService _dmPresence;
+        private readonly Lazy<IAbilityService> _ability;
+        private readonly IActivityService _activity;
+        private readonly Lazy<ICompanionControlService> _companionControl;
+        private readonly IConversationMenuService _conversationMenu;
+        private readonly IConversationService _conversation;
+        private readonly Lazy<IEnmityService> _enmity;
+        private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
+        private readonly Lazy<IPerkService> _perk;
+        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<IStealthService> _stealth;
 
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIProfileType, AIProfile> _profiles = new();
         private readonly Dictionary<uint, AIState> _states = new();
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
-        public AIService(IPartyService party, IBeastMasteryService beastMastery, IDMPresenceService dmPresence)
+        public AIService(
+            IPartyService party,
+            IBeastMasteryService beastMastery,
+            IDMPresenceService dmPresence,
+            Lazy<IAbilityService> ability,
+            IActivityService activity,
+            Lazy<ICompanionControlService> companionControl,
+            IConversationMenuService conversationMenu,
+            IConversationService conversation,
+            Lazy<IEnmityService> enmity,
+            Lazy<IEspionageInfiltrationService> espionageInfiltration,
+            Lazy<IPerkService> perk,
+            Lazy<IStatService> stat,
+            Lazy<IStatusEffectService> statusEffect,
+            Lazy<IStealthService> stealth)
         {
             _party = party;
             _beastMastery = beastMastery;
             _dmPresence = dmPresence;
+            _ability = ability;
+            _activity = activity;
+            _companionControl = companionControl;
+            _conversationMenu = conversationMenu;
+            _conversation = conversation;
+            _enmity = enmity;
+            _espionageInfiltration = espionageInfiltration;
+            _perk = perk;
+            _stat = stat;
+            _statusEffect = statusEffect;
+            _stealth = stealth;
         }
 
         public void CacheAIData()
@@ -114,7 +154,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return;
 
             var handled = false;
-            if (!Activity.IsBusy(creature))
+            if (!_activity.IsBusy(creature))
             {
                 if (TryStartLeashEvade(creature, GetHighestEnmityTarget(creature)))
                     return;
@@ -136,9 +176,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                if (Conversation.TryGetGraph(conversation, out _))
-                    Conversation.Start(talker, owner, conversation);
-                else if (!ConversationMenu.TryStart(talker, owner, conversation))
+                if (_conversation.TryGetGraph(conversation, out _))
+                    _conversation.Start(talker, owner, conversation);
+                else if (!_conversationMenu.TryStart(talker, owner, conversation))
                     AssignCommand(talker, () => ActionStartConversation(owner, conversation, true, false));
             }
         }
@@ -836,7 +876,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private void RemoveEnemySourcedStatusEffects(uint creature)
         {
-            var effects = StatusEffect.GetCreatureStatusEffects(creature)
+            var effects = _statusEffect.Value.GetCreatureStatusEffects(creature)
                 .GetAllEffects()
                 .Where(effect => GetIsObjectValid(effect.Source) &&
                                  GetIsEnemy(effect.Source, creature))
@@ -844,7 +884,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             foreach (var effect in effects)
             {
-                StatusEffect.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
+                _statusEffect.Value.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
             }
         }
 
@@ -1140,7 +1180,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             UpdateActivePhase(context);
 
-            if (Activity.IsBusy(creature))
+            if (_activity.IsBusy(creature))
             {
                 ScheduleBossTimer(context);
                 return false;
@@ -1354,7 +1394,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             if (action.Type == AIActionType.Ability)
             {
-                var ability = Ability.GetAbilityDetail(action.Feat);
+                var ability = _ability.Value.GetAbilityDetail(action.Feat);
                 AITargetSelector selector;
                 if (action.TargetSelector != null)
                     selector = action.TargetSelector;
@@ -1422,13 +1462,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             return action.Type == AIActionType.Ability &&
                    action.Feat != FeatType.Invalid &&
-                   Ability.IsFeatRegistered(action.Feat) &&
-                   Ability.GetAbilityDetail(action.Feat).IsHostileAbility;
+                   _ability.Value.IsFeatRegistered(action.Feat) &&
+                   _ability.Value.GetAbilityDetail(action.Feat).IsHostileAbility;
         }
 
         private bool CanUseAbility(AIContext context, AIActionDefinition action, uint target)
         {
-            if (action.Feat == FeatType.Invalid || !Ability.IsFeatRegistered(action.Feat))
+            if (action.Feat == FeatType.Invalid || !_ability.Value.IsFeatRegistered(action.Feat))
                 return false;
 
             if (IsControlledCompanion(context.Self) &&
@@ -1440,7 +1480,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!GetHasFeat(action.Feat, context.Self))
                 return false;
 
-            var ability = Ability.GetAbilityDetail(action.Feat);
+            var ability = _ability.Value.GetAbilityDetail(action.Feat);
             if (ability.IsHostileAbility &&
                 ability.IsSingleTargetAbility &&
                 (!GetIsObjectValid(target) ||
@@ -1581,7 +1621,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return false;
             }
 
-            var candidates = Ability.GetAllAbilityDetails()
+            var candidates = _ability.Value.GetAllAbilityDetails()
                 .Where(x => x.Value.IsHealingAbility &&
                             !x.Value.IsHostileAbility &&
                             x.Value.RequiresTarget &&
@@ -1706,7 +1746,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                         throw new InvalidOperationException($"AI profile '{profile.Type}' has an ability action with an invalid feat.");
                     }
 
-                    if (!Ability.IsFeatRegistered(action.Feat))
+                    if (!_ability.Value.IsFeatRegistered(action.Feat))
                     {
                         throw new InvalidOperationException($"AI profile '{profile.Type}' references feat '{action.Feat}', but it is not registered as an ability.");
                     }
@@ -1753,53 +1793,53 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 .Where(w => typeof(IAIProfileDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
-        protected virtual uint GetHighestEnmityTarget(uint enemy) => Enmity.GetHighestEnmityTarget(enemy);
+        protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.Value.GetHighestEnmityTarget(enemy);
 
-        protected virtual uint GetHighestEnmityAttackTarget(uint enemy) => Enmity.GetHighestEnmityAttackTarget(enemy);
+        protected virtual uint GetHighestEnmityAttackTarget(uint enemy) => _enmity.Value.GetHighestEnmityAttackTarget(enemy);
 
-        protected virtual Dictionary<uint, int> GetEnmityTable(uint enemy) => Enmity.GetEnmityTable(enemy);
+        protected virtual Dictionary<uint, int> GetEnmityTable(uint enemy) => _enmity.Value.GetEnmityTable(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => Enmity.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.Value.AttackHighestEnmityTarget(creature);
 
-        protected virtual void ResumeAttackAfterActionsCleared(uint creature) => Enmity.ResumeAttackAfterActionsCleared(creature);
+        protected virtual void ResumeAttackAfterActionsCleared(uint creature) => _enmity.Value.ResumeAttackAfterActionsCleared(creature);
 
-        protected virtual void IssueAttackCommand(uint creature, uint target) => Enmity.IssueAttackCommand(creature, target);
+        protected virtual void IssueAttackCommand(uint creature, uint target) => _enmity.Value.IssueAttackCommand(creature, target);
 
-        protected virtual void ClearEnmityTable(uint enemy) => Enmity.ClearEnmityTable(enemy);
+        protected virtual void ClearEnmityTable(uint enemy) => _enmity.Value.ClearEnmityTable(enemy);
 
-        protected virtual void RemoveEnmity(uint creature, uint enemy) => Enmity.RemoveEnmity(creature, enemy);
+        protected virtual void RemoveEnmity(uint creature, uint enemy) => _enmity.Value.RemoveEnmity(creature, enemy);
 
-        protected virtual void ModifyEnmity(uint creature, uint enemy, int amount) => Enmity.ModifyEnmity(creature, enemy, amount);
+        protected virtual void ModifyEnmity(uint creature, uint enemy, int amount) => _enmity.Value.ModifyEnmity(creature, enemy, amount);
 
-        protected virtual bool HasProximityEnmity(uint creature, uint enemy) => Enmity.HasProximityEnmity(creature, enemy);
+        protected virtual bool HasProximityEnmity(uint creature, uint enemy) => _enmity.Value.HasProximityEnmity(creature, enemy);
 
-        protected virtual void ModifyProximityEnmity(uint creature, uint enemy, int amount) => Enmity.ModifyProximityEnmity(creature, enemy, amount);
+        protected virtual void ModifyProximityEnmity(uint creature, uint enemy, int amount) => _enmity.Value.ModifyProximityEnmity(creature, enemy, amount);
 
-        protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => Enmity.RemoveProximityEnmity(creature, enemy);
+        protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => _enmity.Value.RemoveProximityEnmity(creature, enemy);
 
-        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => Stat.RestoreNPCStats(outOfCombatRegen);
+        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.Value.RestoreNPCStats(outOfCombatRegen);
 
-        protected virtual void LoadNPCStats() => Stat.LoadNPCStats();
+        protected virtual void LoadNPCStats() => _stat.Value.LoadNPCStats();
 
-        protected virtual void ApplyCreatureMovementRate(uint creature) => Stat.ApplyCreatureMovementRate(creature);
+        protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.Value.ApplyCreatureMovementRate(creature);
 
-        protected virtual bool TryBeginInfiltration(uint player, uint npc) => EspionageInfiltration.TryBegin(player, npc);
+        protected virtual bool TryBeginInfiltration(uint player, uint npc) => _espionageInfiltration.Value.TryBegin(player, npc);
 
-        protected virtual void CompleteInfiltration(uint player, uint npc) => EspionageInfiltration.Complete(player, npc);
+        protected virtual void CompleteInfiltration(uint player, uint npc) => _espionageInfiltration.Value.Complete(player, npc);
 
-        protected virtual bool CanAcquireAggro(uint observer, uint target) => Stealth.CanAcquireAggro(observer, target);
+        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.Value.CanAcquireAggro(observer, target);
 
-        protected virtual bool IsControlledCompanion(uint creature) => CompanionControl.IsControlledCompanion(creature);
+        protected virtual bool IsControlledCompanion(uint creature) => _companionControl.Value.IsControlledCompanion(creature);
 
-        protected virtual bool AreCompanionAbilitiesEnabled(uint companion) => CompanionControl.AreAbilitiesEnabled(companion);
+        protected virtual bool AreCompanionAbilitiesEnabled(uint companion) => _companionControl.Value.AreAbilitiesEnabled(companion);
 
         protected virtual uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget) =>
-            CompanionControl.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
+            _companionControl.Value.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => Perk.GetPerkLevel(creature, perkType);
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
 
         protected virtual bool CanActivateAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation) =>
-            Ability.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _ability.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
 
         protected virtual bool TryUseAbility(uint creature, uint target, FeatType feat, Location targetLocation) =>
             UsePerkFeat.TryUseAbility(creature, target, feat, targetLocation);

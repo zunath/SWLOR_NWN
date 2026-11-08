@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
@@ -69,7 +70,7 @@ public class FishingServiceTests
     private sealed class TestFishing : FishingService
     {
         public TestFishing(IDBService db)
-            : base(db)
+            : base(db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IFishingFightsService>(), FacadeForwarder.For<IMessagingService>(), FacadeForwarder.For<INamedAnimationService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

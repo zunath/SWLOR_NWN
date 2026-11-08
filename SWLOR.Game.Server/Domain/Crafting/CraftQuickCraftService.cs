@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -16,16 +17,23 @@ public class CraftQuickCraftService : ICraftQuickCraftService
     private readonly ICraftService _craft;
     private readonly ICraftSessionsService _sessions;
     private readonly ICraftMinigameRoutingService _routing;
+    private readonly ISkillService _skill;
 
     // Each player's quick craft batch, by player object.
     private readonly Dictionary<uint, QuickCraftBatch> _batches = new();
 
-    public CraftQuickCraftService(IDBService db, ICraftService craft, ICraftSessionsService sessions, ICraftMinigameRoutingService routing)
+    public CraftQuickCraftService(
+        IDBService db,
+        ICraftService craft,
+        ICraftSessionsService sessions,
+        ICraftMinigameRoutingService routing,
+        ISkillService skill)
     {
         _db = db;
         _craft = craft;
         _sessions = sessions;
         _routing = routing;
+        _skill = skill;
     }
 
     /// <inheritdoc />
@@ -108,7 +116,7 @@ public class CraftQuickCraftService : ICraftQuickCraftService
         new(_craft.QuickCraftWorld, player, recipe, quantity);
 
     /// <summary>The display name of a skill. Skill is not converted yet.</summary>
-    protected virtual string GetSkillName(SkillType skill) => Skill.GetSkillDetails(skill).Name;
+    protected virtual string GetSkillName(SkillType skill) => _skill.GetSkillDetails(skill).Name;
 
     /// <summary>Writes a crafting log line. Log is not converted yet.</summary>
     protected virtual void WriteLog(string message) => Log.Write(LogGroup.Crafting, message);

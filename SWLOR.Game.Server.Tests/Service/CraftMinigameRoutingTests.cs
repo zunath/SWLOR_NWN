@@ -164,7 +164,7 @@ public class CraftMinigameRoutingTests
 
         var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Domain", "Items", "ItemService.cs"));
 
-        source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
+        source.Should().Contain("_craftMinigameRouting.IsAnyCraftWindowOpen(creature)");
         source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",
             "a minigame's window must block equipping");
     }

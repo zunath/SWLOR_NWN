@@ -61,12 +61,12 @@ public class DiscordWebhookCallerSafetyTests
         foreach (var path in Directory.EnumerateFiles(ServerRoot(), "*.cs", SearchOption.AllDirectories))
         {
             var source = File.ReadAllText(path);
-            if (!source.Contains("BackgroundJob.EnqueueDiscordWebhook", StringComparison.Ordinal))
+            if (!source.Contains(".EnqueueDiscordWebhook", StringComparison.Ordinal))
                 continue;
 
             var root = CSharpSyntaxTree.ParseText(source).GetRoot();
             foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>()
-                         .Where(call => call.Expression.ToString() == "BackgroundJob.EnqueueDiscordWebhook"))
+                         .Where(call => call.Expression.ToString() is "BackgroundJob.EnqueueDiscordWebhook" or "_backgroundJob.EnqueueDiscordWebhook"))
             {
                 var method = call.Ancestors().OfType<MethodDeclarationSyntax>().First();
                 callers.Add(Path.GetFileNameWithoutExtension(path) + "." + method.Identifier.ValueText);

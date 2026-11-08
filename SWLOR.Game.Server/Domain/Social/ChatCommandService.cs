@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -16,6 +18,15 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </summary>
     public class ChatCommandService : IChatCommandService
     {
+        private readonly IAuthorizationService _authorization;
+        private readonly ITargetingService _targeting;
+
+        public ChatCommandService(IAuthorizationService authorization, ITargetingService targeting)
+        {
+            _authorization = authorization;
+            _targeting = targeting;
+        }
+
         private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
         public string HelpTextPlayer { get; private set; }
@@ -98,11 +109,11 @@ namespace SWLOR.Game.Server.Domain.Social
                 }
 
 
-                var authorization = Authorization.GetAuthorizationLevel(sender);
+                var authorization = _authorization.GetAuthorizationLevel(sender);
 
                 if (CanUseCommand(chatCommand, authorization))
                 {
-                    Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
+                    _targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
                     {
                         // Clicking a bare ground tile still returns a "valid" target of the area itself
@@ -124,7 +135,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         public List<(string Name, string Description)> GetAvailableCommands(uint sender)
         {
-            var authorization = Authorization.GetAuthorizationLevel(sender);
+            var authorization = _authorization.GetAuthorizationLevel(sender);
             return _chatCommands
                 .Where(command => CanUseCommand(command.Value, authorization))
                 .OrderBy(command => command.Key)
@@ -168,7 +179,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 targetLocation = CreateEmptyLocation();
             }
 
-            var authorization = Authorization.GetAuthorizationLevel(sender);
+            var authorization = _authorization.GetAuthorizationLevel(sender);
 
             if (CanUseCommand(command, authorization))
             {

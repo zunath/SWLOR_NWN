@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Service.MessagingService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.Testing;
@@ -28,6 +30,11 @@ public class MessagingServiceTests
     /// <summary>The messaging service with the creatures in stealth or invisible answered by the test.</summary>
     private sealed class TestMessaging : MessagingService
     {
+        public TestMessaging()
+            : base(FacadeForwarder.For<IStealthService>())
+        {
+        }
+
         public HashSet<uint> Concealed { get; } = new();
 
         protected override bool IsConcealed(uint creature) => Concealed.Contains(creature);

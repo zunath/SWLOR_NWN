@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -23,7 +24,7 @@ public class CasinoSlotPresentationTests
     [Test]
     public void EveryPossiblePayoutHasACompleteVisualResult()
     {
-        var slot = new CasinoSlotService(new InMemoryDBService());
+        var slot = new CasinoSlotService(new InMemoryDBService(), FacadeForwarder.For<IGuiService>());
         foreach (var payout in Enumerable.Range(0, 10000).Select(slot.GetPayout).Distinct())
         {
             Assert.That(CasinoSlotPresentation.GetReels(payout), Has.Length.EqualTo(3));

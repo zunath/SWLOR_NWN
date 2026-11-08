@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -30,11 +33,31 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         private readonly IDBService _db;
         private readonly IQuestEncounterService _encounters;
+        private readonly IActivityService _activity;
+        private readonly ICacheService _cache;
+        private readonly IConversationService _conversation;
+        private readonly IEnmityService _enmity;
+        private readonly IItemService _item;
+        private readonly IPerkService _perk;
 
-        public QuestService(IDBService db, IQuestEncounterService encounters)
+        public QuestService(
+            IDBService db,
+            IQuestEncounterService encounters,
+            IActivityService activity,
+            ICacheService cache,
+            IConversationService conversation,
+            IEnmityService enmity,
+            IItemService item,
+            IPerkService perk)
         {
             _db = db;
             _encounters = encounters;
+            _activity = activity;
+            _cache = cache;
+            _conversation = conversation;
+            _enmity = enmity;
+            _item = item;
+            _perk = perk;
         }
 
         /// <summary>
@@ -414,7 +437,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
             // Note: this event needs to be called before the Enmity tables are cleared up after
             // creature death.
-            var killer = Enmity.GetHighestEnmityTarget(creature);
+            var killer = _enmity.GetHighestEnmityTarget(creature);
             if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
@@ -498,14 +521,14 @@ namespace SWLOR.Game.Server.Domain.Quests
 
             foreach (var itemProgress in quest.ItemProgresses)
             {
-                var itemName = Cache.GetItemNameByResref(itemProgress.Key);
+                var itemName = _cache.GetItemNameByResref(itemProgress.Key);
                 text += $"{itemProgress.Value}x {itemName}\n";
             }
 
             SendMessageToPC(player, text);
 
             SetLocalObject(player, ActiveItemCollectorVariable, container);
-            Activity.SetBusy(player, ActivityStatusType.Quest);
+            _activity.SetBusy(player, ActivityStatusType.Quest);
         }
 
         private void ReleaseItemCollectorPlayer(uint container)
@@ -515,8 +538,8 @@ namespace SWLOR.Game.Server.Domain.Quests
                 return;
 
             DeleteLocalObject(player, ActiveItemCollectorVariable);
-            if (Activity.GetBusyType(player) == ActivityStatusType.Quest)
-                Activity.ClearBusy(player);
+            if (_activity.GetBusyType(player) == ActivityStatusType.Quest)
+                _activity.ClearBusy(player);
         }
 
         private void DestroyItemCollector(uint container)
@@ -562,7 +585,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             var questId = GetLocalString(container, "QUEST_ID");
             if (player != questPlayer || dbPlayer == null || !dbPlayer.Quests.TryGetValue(questId, out var quest))
             {
-                Item.ReturnItem(player, item);
+                _item.ReturnItem(player, item);
                 SendMessageToPC(player, "This quest collector is no longer available to you.");
                 return;
             }
@@ -571,7 +594,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             if (!quest.ItemProgresses.ContainsKey(resref) ||
                 quest.ItemProgresses[resref] <= 0)
             {
-                Item.ReturnItem(player, item);
+                _item.ReturnItem(player, item);
                 SendMessageToPC(player, "That item is not required for this quest.");
                 return;
             }
@@ -582,7 +605,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             // fulfilled by another player or taken down). Return the item rather than consuming it.
             if (questDetail == null)
             {
-                Item.ReturnItem(player, item);
+                _item.ReturnItem(player, item);
                 SendMessageToPC(player, "This quest is no longer available.");
                 return;
             }
@@ -597,7 +620,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 var rejection = collectItemObjective.GetCollectTurnInRejectionMessage(player, item);
                 if (rejection != string.Empty)
                 {
-                    Item.ReturnItem(player, item);
+                    _item.ReturnItem(player, item);
                     SendMessageToPC(player, rejection);
                     return;
                 }
@@ -636,19 +659,19 @@ namespace SWLOR.Game.Server.Domain.Quests
             if (stackSize > requiredAmount)
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] = 0;
-                Item.ReduceItemStack(item, requiredAmount);
-                Item.ReturnItem(player, item);
+                _item.ReduceItemStack(item, requiredAmount);
+                _item.ReturnItem(player, item);
             }
             else
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] -= stackSize;
-                Item.ReduceItemStack(item, stackSize);
+                _item.ReduceItemStack(item, stackSize);
             }
 
             _db.Set(dbPlayer);
 
             // Give the player an update and reduce the item stack.
-            var itemName = Cache.GetItemNameByResref(resref);
+            var itemName = _cache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
 
             // Attempt to advance the quest.
@@ -666,7 +689,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 ReleaseItemCollectorPlayer(container);
                 if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
                 {
-                    if (!Conversation.TryStartAssigned(player, owner))
+                    if (!_conversation.TryStartAssigned(player, owner))
                         AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
                 }
 
@@ -757,7 +780,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             var guildRelations = 0f;
             if (isGuildQuest)
             {
-                var perkLevel = Perk.GetPerkLevel(player, PerkType.GuildRelations);
+                var perkLevel = _perk.GetPerkLevel(player, PerkType.GuildRelations);
                 guildRelations = perkLevel * 0.05f;
             }
             var amount = baseAmount +

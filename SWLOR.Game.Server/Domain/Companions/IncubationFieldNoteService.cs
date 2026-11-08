@@ -26,10 +26,12 @@ namespace SWLOR.Game.Server.Domain.Companions
         private bool _registered;
 
         private readonly IKeyItemService _keyItem;
+        private readonly Lazy<IBeastMasteryService> _beastMastery;
 
-        public IncubationFieldNoteService(IKeyItemService keyItem)
+        public IncubationFieldNoteService(IKeyItemService keyItem, Lazy<IBeastMasteryService> beastMastery)
         {
             _keyItem = keyItem;
+            _beastMastery = beastMastery;
         }
 
         private void Register(BeastType target, KeyItemType note, FieldNoteAcquisitionType acquisition)
@@ -192,7 +194,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual IEnumerable<BeastType> GetAllBeastTypes()
         {
-            return BeastMastery.GetAllBeastTypes();
+            return _beastMastery.Value.GetAllBeastTypes();
         }
 
         /// <summary>
@@ -201,7 +203,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual BeastDetail GetBeastDetail(BeastType type)
         {
-            return BeastMastery.GetBeastDetail(type);
+            return _beastMastery.Value.GetBeastDetail(type);
         }
 
         /// <summary>

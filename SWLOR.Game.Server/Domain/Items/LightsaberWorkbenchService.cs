@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -32,11 +33,13 @@ namespace SWLOR.Game.Server.Domain.Items
 
         private readonly IDBService _db;
         private readonly ICurrencyService _currency;
+        private readonly IGuiService _gui;
 
-        public LightsaberWorkbenchService(IDBService db, ICurrencyService currency)
+        public LightsaberWorkbenchService(IDBService db, ICurrencyService currency, IGuiService gui)
         {
             _db = db;
             _currency = currency;
+            _gui = gui;
         }
 
         private readonly List<SaberHiltPart> _lightsaberHilts = new()
@@ -269,7 +272,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual void TogglePlayerWindow(uint player, GuiWindowType windowType, uint targetObject)
         {
-            Gui.TogglePlayerWindow(player, windowType, null, targetObject);
+            _gui.TogglePlayerWindow(player, windowType, null, targetObject);
         }
     }
 }

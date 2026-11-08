@@ -1,7 +1,13 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -63,7 +69,7 @@ public class CapstoneProofServiceTests
     }
 
     private static TestCapstoneProofService NewService() =>
-        new(new BeastMasteryService(new InMemoryDBService(), null!, null!));
+        new(new BeastMasteryService(new InMemoryDBService(), null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>()));
 
     private static string EnemyKey(string proof) => "CAPSTONE_PROOF_" + proof + "_" + PlayerId;
 
@@ -569,7 +575,7 @@ public class CapstoneProofServiceTests
     private sealed class TestCapstoneProofService : CapstoneProofService
     {
         public TestCapstoneProofService(IBeastMasteryService beastMastery)
-            : base(beastMastery)
+            : base(beastMastery, FacadeForwarder.LazyFor<IAbilityService>())
         {
         }
 

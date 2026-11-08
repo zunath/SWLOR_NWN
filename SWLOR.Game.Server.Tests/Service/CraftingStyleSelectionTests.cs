@@ -211,7 +211,7 @@ public class CraftingStyleSelectionTests
 
         facade.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
         Squash(handler).Should().Contain("RestoreCraftingStyles(GetEnteringObject())");
-        Squash(Method(Source("Domain", "Crafting", "CraftService.cs"), "RestoreCraftingStyles")).Should().Contain("CraftStyleEffects.Restore(creature)");
+        Squash(Method(Source("Domain", "Crafting", "CraftService.cs"), "RestoreCraftingStyles")).Should().Contain("_craftStyleEffects.Restore(creature)");
     }
 
     [Test]

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Tests.Support;
@@ -365,7 +366,7 @@ public class CommunicationServiceTests
     private sealed class DefaultSeams : CommunicationService
     {
         public DefaultSeams(CommunicationBench bench)
-            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.HoloCom, bench.Planet, bench.Area, bench.Property)
+            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.HoloCom, bench.Planet, bench.Area, bench.Property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>())
         {
         }
 

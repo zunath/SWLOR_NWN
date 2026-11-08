@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -39,7 +41,7 @@ public class GuildServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new GuildService(_db);
+        _service = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
         _service.LoadData();
     }
 
@@ -84,7 +86,7 @@ public class GuildServiceTests
     [Test]
     public void The_max_rank_is_zero_until_the_data_is_loaded_and_each_instance_keeps_its_own_cache()
     {
-        var fresh = new GuildService(_db);
+        var fresh = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
 
         fresh.MaxRank.Should().Be(0);
         var get = () => fresh.GetGuild(GuildType.HuntersGuild);

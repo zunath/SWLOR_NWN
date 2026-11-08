@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Crafting;
@@ -33,7 +34,7 @@ public class SlicingSessionServiceTests
     private sealed class TestSlicing : SlicingSessionService
     {
         public TestSlicing(IDBService db, ISlicingService slicing, IItemService item, IGuiService gui, ISpawnService spawn, ICacheService cache)
-            : base(db, slicing, item, gui, spawn, cache)
+            : base(db, slicing, item, gui, spawn, cache, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

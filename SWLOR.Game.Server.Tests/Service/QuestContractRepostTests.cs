@@ -1,6 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Tests.Support;
@@ -11,7 +14,7 @@ public class QuestContractRepostTests
 {
     // These rules touch neither the engine nor the database.
     private static readonly InMemoryDBService Db = new();
-    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db));
+    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db), FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>());
 
     /// <summary>
     /// Checks reusable statuses produce a fresh draft whose editable values are independent of the

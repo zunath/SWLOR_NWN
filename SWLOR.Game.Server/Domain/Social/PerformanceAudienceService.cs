@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
@@ -33,6 +34,11 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceSnapshotService _snapshots;
         private readonly IPerformanceInspiredService _inspired;
+        private readonly Lazy<IPerformanceService> _performance;
+        private readonly IPerkService _perk;
+        private readonly IPlayerNameService _playerName;
+        private readonly ISkillService _skill;
+        private readonly IStatService _stat;
         private readonly Dictionary<uint, PerformanceAudienceState> _states = new();
         private readonly Dictionary<uint, PerformancePerformerState> _performerStates = new();
         private readonly List<PerformerSnapshot> _scratchPartners = new();
@@ -46,7 +52,12 @@ namespace SWLOR.Game.Server.Domain.Social
             IMusicService music,
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
-            IPerformanceInspiredService inspired)
+            IPerformanceInspiredService inspired,
+            Lazy<IPerformanceService> performance,
+            IPerkService perk,
+            IPlayerNameService playerName,
+            ISkillService skill,
+            IStatService stat)
         {
             _db = db;
             _venue = venue;
@@ -55,6 +66,11 @@ namespace SWLOR.Game.Server.Domain.Social
             _songs = songs;
             _snapshots = snapshots;
             _inspired = inspired;
+            _performance = performance;
+            _perk = perk;
+            _playerName = playerName;
+            _skill = skill;
+            _stat = stat;
         }
 
         public void StartAudienceTick()
@@ -993,22 +1009,22 @@ namespace SWLOR.Game.Server.Domain.Social
             Scheduler.ScheduleRepeating(action, interval);
 
         protected virtual bool TryGetSession(uint performer, out PerformanceSession session) =>
-            Performance.TryGetSession(performer, out session);
+            _performance.Value.TryGetSession(performer, out session);
 
-        protected virtual IReadOnlyList<PerformanceSession> GetSessions() => Performance.GetSessions();
+        protected virtual IReadOnlyList<PerformanceSession> GetSessions() => _performance.Value.GetSessions();
 
-        protected virtual PerformancePreference GetPreference(uint player) => Performance.GetPreference(player);
+        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
         protected virtual InspiredStatusEffect GetInspiredEffect(uint creature) =>
             StatusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
 
-        protected virtual void GiveSkillXP(uint player, SkillType skill, int xp) => Skill.GiveSkillXP(player, skill, xp);
+        protected virtual void GiveSkillXP(uint player, SkillType skill, int xp) => _skill.GiveSkillXP(player, skill, xp);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perk) => Perk.GetPerkLevel(creature, perk);
+        protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
 
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
-        protected virtual string GetDisplayName(uint observer, uint target) => PlayerName.GetDisplayName(observer, target);
+        protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
             _snapshots.Build(session, venue, songTrackId);

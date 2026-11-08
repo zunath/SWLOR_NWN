@@ -1,6 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
@@ -112,7 +116,7 @@ public class TrapsServiceTests
     private sealed class TrapsWithTraining : TrapsService
     {
         public TrapsWithTraining(IDBService db)
-            : base(db)
+            : base(db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
         {
         }
 
@@ -258,7 +262,7 @@ public class TrapsServiceTests
     public void Each_instance_keeps_its_own_traps()
     {
         PlacePerkTrap(Owner, At(0f)).Should().BeTrue();
-        var other = new TrapsService(_db);
+        var other = new TrapsService(_db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
 
         other.TryPlaceTrap(OtherOwner, At(0f), 14, CombatDamageType.Physical, typeof(BleedStatusEffect), 30, TriggerEffect, MarkerEffect)
             .Should().BeTrue("state lives on the instance, not in static fields");
@@ -339,7 +343,7 @@ public class TrapsServiceTests
     {
         for (var tier = 1; tier <= 5; tier++)
         {
-            var service = new TrapsService(_db);
+            var service = new TrapsService(_db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
             _engine.SetReturnSequence("CreateObject", (uint)(900 + tier));
 
             service.TryPlaceKitTrap(Owner, At(tier * 100f), tier).Should().BeTrue($"tier {tier}");

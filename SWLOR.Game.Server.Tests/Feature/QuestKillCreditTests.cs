@@ -50,6 +50,7 @@ public class QuestKillCreditTests
                 public static Detail GetQuestById(string id) => new();
                 private static readonly Encounters _encounters = new();
                 private static readonly Database _db = new();
+                private static readonly Enmity _enmity = new();
                 METHOD
             }
             public sealed class Encounters
@@ -62,7 +63,7 @@ public class QuestKillCreditTests
             {
                 public T Get<T>(string id) => DB.Get<T>(id);
             }
-            public static class Enmity { public static uint GetHighestEnmityTarget(uint o) => 1; }
+            public sealed class Enmity { public uint GetHighestEnmityTarget(uint o) => 1; }
             public static class DB
             {
                 public static T Get<T>(string id) => (T)(object)new Player("player")

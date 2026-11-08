@@ -15,7 +15,7 @@ public class IntegrationMigrationService : MigrationService
 
     /// <param name="migrations">The server migrations to run instead of the ones the assemblies hold.</param>
     public IntegrationMigrationService(IDBService db, IEnumerable<IServerMigration>? migrations = null)
-        : base(db, new OverflowStorageService(db))
+        : base(db, new OverflowStorageService(db), null!, null!)
     {
         _migrations = migrations;
     }

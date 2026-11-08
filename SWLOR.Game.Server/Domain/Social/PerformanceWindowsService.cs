@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -29,18 +31,33 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IMusicService _music;
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceSnapshotService _snapshots;
+        private readonly IGuiService _gui;
+        private readonly Lazy<IPerformanceService> _performance;
+        private readonly IPerkService _perk;
+        private readonly IPlayerNameService _playerName;
+        private readonly IStatService _stat;
         private IdReservation _fallbackStrip;
 
         public PerformanceWindowsService(
             IPerformanceVenueService venue,
             IMusicService music,
             IPerformanceSongService songs,
-            IPerformanceSnapshotService snapshots)
+            IPerformanceSnapshotService snapshots,
+            IGuiService gui,
+            Lazy<IPerformanceService> performance,
+            IPerkService perk,
+            IPlayerNameService playerName,
+            IStatService stat)
         {
             _venue = venue;
             _music = music;
             _songs = songs;
             _snapshots = snapshots;
+            _gui = gui;
+            _performance = performance;
+            _perk = perk;
+            _playerName = playerName;
+            _stat = stat;
         }
 
         public void ReserveGuiIds()
@@ -270,29 +287,29 @@ namespace SWLOR.Game.Server.Domain.Social
         // The calls into the unconverted Gui, Perk, Stat, PlayerName and Performance statics, one line each so a test can answer them.
 
         /// <summary>Reserves GUI ids for a system through the unconverted <c>Gui</c> service.</summary>
-        protected virtual IdReservation ReserveIds(string systemName, int amount) => Gui.ReserveIds(systemName, amount);
+        protected virtual IdReservation ReserveIds(string systemName, int amount) => _gui.ReserveIds(systemName, amount);
 
-        protected virtual bool IsWindowOpen(uint player, GuiWindowType type) => Gui.IsWindowOpen(player, type);
+        protected virtual bool IsWindowOpen(uint player, GuiWindowType type) => _gui.IsWindowOpen(player, type);
 
-        protected virtual void TogglePlayerWindow(uint player, GuiWindowType type) => Gui.TogglePlayerWindow(player, type);
+        protected virtual void TogglePlayerWindow(uint player, GuiWindowType type) => _gui.TogglePlayerWindow(player, type);
 
-        protected virtual void ClosePlayerWindow(uint player, GuiWindowType type) => Gui.ClosePlayerWindow(player, type);
+        protected virtual void ClosePlayerWindow(uint player, GuiWindowType type) => _gui.ClosePlayerWindow(player, type);
 
         /// <summary>The view model of the player's window of that type.</summary>
-        protected virtual object GetWindowViewModel(uint player, GuiWindowType type) => Gui.GetPlayerWindow(player, type).ViewModel;
+        protected virtual object GetWindowViewModel(uint player, GuiWindowType type) => _gui.GetPlayerWindow(player, type).ViewModel;
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perk) => Perk.GetPerkLevel(creature, perk);
+        protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
 
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => Stat.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
-        protected virtual string GetDisplayName(uint observer, uint target) => PlayerName.GetDisplayName(observer, target);
+        protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
         // The main service of the Performance service, reached through its facade because it takes this one by constructor.
-        protected virtual PerformancePreference GetPreference(uint player) => Performance.GetPreference(player);
+        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
-        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => Performance.IsRoutineUnlocked(player, routine);
+        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);
 
-        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => Performance.IsSetUnlocked(player, set);
+        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _performance.Value.IsSetUnlocked(player, set);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
             _snapshots.Build(session, venue, songTrackId);

@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -20,12 +24,31 @@ namespace SWLOR.Game.Server.Domain.Economy
     public class PlayerMarketService : IPlayerMarketService
     {
         private readonly IDBService _db;
+        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICraftService _craft;
+        private readonly IFishingService _fishing;
+        private readonly IItemService _item;
+        private readonly IMusicService _music;
+        private readonly IPropertyService _property;
         private Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new Dictionary<MarketCategoryType, MarketCategoryAttribute>();
         private readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new Dictionary<MarketRegionType, MarketRegionAttribute>();
 
-        public PlayerMarketService(IDBService db)
+        public PlayerMarketService(
+            IDBService db,
+            IBeastMasteryService beastMastery,
+            ICraftService craft,
+            IFishingService fishing,
+            IItemService item,
+            IMusicService music,
+            IPropertyService property)
         {
             _db = db;
+            _beastMastery = beastMastery;
+            _craft = craft;
+            _fishing = fishing;
+            _item = item;
+            _music = music;
+            _property = property;
         }
 
         public void CacheData()
@@ -120,31 +143,31 @@ namespace SWLOR.Game.Server.Domain.Economy
         public MarketCategoryType? GetBaseItemMarketCategory(BaseItem baseItemType)
         {
             // Weapon Classes
-            if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
+            if (_item.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
-            if (Item.VibroknifeBaseItemTypes.Contains(baseItemType))
+            if (_item.VibroknifeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroknife;
-            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
+            if (_item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.HeavyVibroblade;
-            if (Item.SpearBaseItemTypes.Contains(baseItemType))
+            if (_item.SpearBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Spear;
-            if (Item.StaffBaseItemTypes.Contains(baseItemType))
+            if (_item.StaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Staff;
-            if (Item.PistolBaseItemTypes.Contains(baseItemType))
+            if (_item.PistolBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Pistol;
-            if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+            if (_item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Throwing;
-            if (Item.RifleBaseItemTypes.Contains(baseItemType))
+            if (_item.RifleBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Rifle;
-            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType))
+            if (_item.TwinBladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.TwinBlade;
-            if (Item.KatarBaseItemTypes.Contains(baseItemType))
+            if (_item.KatarBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Katar;
-            if (Item.PowerGloveBaseItemTypes.Contains(baseItemType))
+            if (_item.PowerGloveBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.PowerGlove;
-            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
+            if (_item.LightsaberBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Lightsaber;
-            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+            if (_item.SaberstaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Saberstaff;
 
             // Universal armor classes
@@ -192,13 +215,13 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return baseItemCategory.Value;
 
             // Recipes
-            if (Craft.IsItemRecipe(item))
+            if (_craft.IsItemRecipe(item))
                 return MarketCategoryType.Recipe;
             // Components
-            if (Craft.IsItemComponent(item))
+            if (_craft.IsItemComponent(item))
                 return MarketCategoryType.Components;
             // Enhancements
-            if (Craft.IsItemEnhancement(item))
+            if (_craft.IsItemEnhancement(item))
                 return MarketCategoryType.Enhancement;
 
             // Ship Deeds
@@ -208,7 +231,7 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return MarketCategoryType.StarshipParts;
 
             // Structures
-            if (Property.GetStructureTypeFromItem(item) != StructureType.Invalid)
+            if (_property.GetStructureTypeFromItem(item) != StructureType.Invalid)
                 return MarketCategoryType.Structure;
 
             // Food
@@ -220,19 +243,19 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return MarketCategoryType.PetFood;
 
             // Fishing Rods & Bait
-            if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
+            if (_fishing.IsItemFishingRod(item) || _fishing.IsItemBait(item))
                 return MarketCategoryType.Fishing;
 
             // Incubation
-            if (BeastMastery.IsIncubationCraftingItem(item))
+            if (_beastMastery.IsIncubationCraftingItem(item))
                 return MarketCategoryType.Incubation;
 
             // Beast Egg
-            if (BeastMastery.IsBeastEgg(item))
+            if (_beastMastery.IsBeastEgg(item))
                 return MarketCategoryType.BeastEgg;
 
             // Blueprint
-            if (Craft.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
+            if (_craft.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
                 return MarketCategoryType.Blueprint;
 
             //Starship Ammo
@@ -240,7 +263,7 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return MarketCategoryType.StarshipAmmo;
 
             // Song discs and music players
-            if (Music.IsMusicItem(item))
+            if (_music.IsMusicItem(item))
                 return MarketCategoryType.Music;
 
             return MarketCategoryType.Miscellaneous;

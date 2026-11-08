@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -48,10 +49,32 @@ namespace SWLOR.Game.Server.Domain.World
         public const string FishingRodTag = "FISHING_ROD";
 
         private readonly IDBService _db;
+        private readonly IActivityService _activity;
+        private readonly ICacheService _cache;
+        private readonly IFishingFightsService _fishingFights;
+        private readonly IMessagingService _messaging;
+        private readonly INamedAnimationService _namedAnimation;
+        private readonly IPlayerNameService _playerName;
+        private readonly IStatService _stat;
 
-        public FishingService(IDBService db)
+        public FishingService(
+            IDBService db,
+            IActivityService activity,
+            ICacheService cache,
+            IFishingFightsService fishingFights,
+            IMessagingService messaging,
+            INamedAnimationService namedAnimation,
+            IPlayerNameService playerName,
+            IStatService stat)
         {
             _db = db;
+            _activity = activity;
+            _cache = cache;
+            _fishingFights = fishingFights;
+            _messaging = messaging;
+            _namedAnimation = namedAnimation;
+            _playerName = playerName;
+            _stat = stat;
         }
 
         /// <summary>
@@ -241,7 +264,7 @@ namespace SWLOR.Game.Server.Domain.World
                 var position = GetPosition(player);
                 var equippedRod = GetItemInSlot(InventorySlot.RightHand, player);
                 var point = GetLocalObject(player, FishingPointVariable);
-                var ownsActivity = Activity.GetBusyType(player) == ActivityStatusType.Fishing;
+                var ownsActivity = _activity.GetBusyType(player) == ActivityStatusType.Fishing;
                 if (GetIsDead(player) || GetIsInCombat(player) ||
                     !ownsActivity ||
                     !GetIsObjectValid(equippedRod) || GetTag(equippedRod) != FishingRodTag ||
@@ -281,7 +304,7 @@ namespace SWLOR.Game.Server.Domain.World
                 return;
             }
 
-            if (Activity.IsBusy(player))
+            if (_activity.IsBusy(player))
             {
                 SendMessageToPC(player, "You are busy.");
                 return;
@@ -317,7 +340,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                Activity.ClearBusy(player);
+                _activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -339,15 +362,15 @@ namespace SWLOR.Game.Server.Domain.World
                     FinishFishing(player);
             }));
 
-            Activity.SetBusy(player, ActivityStatusType.Fishing);
-            Messaging.SendMessageNearbyToPlayers(
+            _activity.SetBusy(player, ActivityStatusType.Fishing);
+            _messaging.SendMessageNearbyToPlayers(
                 player,
-                receiver => $"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.");
+                receiver => $"{_playerName.GetDisplayName(receiver, player)} casts a line into the water.");
 
             ClearAllActions(oObject: player);
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
             var clip = GetFishingAnimation(fishingDelay);
-            SetLocalString(player, FishingAnimationVariable, NamedAnimation.Play(player, clip));
+            SetLocalString(player, FishingAnimationVariable, _namedAnimation.Play(player, clip));
             AssignCommand(GetModule(), () => CheckPosition(player, position, attemptId));
         }
 
@@ -367,7 +390,7 @@ namespace SWLOR.Game.Server.Domain.World
         {
             if (string.IsNullOrEmpty(GetLocalString(player, FishingAttemptVariable)))
                 return;
-            if (GetIsDead(player) || GetIsInCombat(player) || Activity.GetBusyType(player) != ActivityStatusType.Fishing)
+            if (GetIsDead(player) || GetIsInCombat(player) || _activity.GetBusyType(player) != ActivityStatusType.Fishing)
             {
                 ClearFishingAttempt(player);
                 return;
@@ -396,7 +419,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                Activity.ClearBusy(player);
+                _activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -477,7 +500,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         protected virtual string GetBaitName(string resref)
         {
-            return Cache.GetItemNameByResref(resref);
+            return _cache.GetItemNameByResref(resref);
         }
 
         /// <summary>
@@ -487,7 +510,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         protected virtual void StartFight(FishingBite bite)
         {
-            FishingFights.Bite(bite);
+            _fishingFights.Bite(bite);
         }
 
         /// <summary>
@@ -496,16 +519,16 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         protected virtual LineAnglerEffects GetAnglerEffects(uint player)
         {
-            return LineAnglerEffects.FromStatTotals(stat => Stat.GetStatAdjustment(player, stat));
+            return LineAnglerEffects.FromStatTotals(stat => _stat.GetStatAdjustment(player, stat));
         }
 
         /// <summary>Releases this attempt's animation and state without clearing a replacement activity.</summary>
         private void ClearFishingAttempt(uint player)
         {
-            NamedAnimation.StopIfCurrent(player, GetLocalString(player, FishingAnimationVariable));
+            _namedAnimation.StopIfCurrent(player, GetLocalString(player, FishingAnimationVariable));
             DeleteLocalString(player, FishingAnimationVariable);
-            if (Activity.GetBusyType(player) == ActivityStatusType.Fishing)
-                Activity.ClearBusy(player);
+            if (_activity.GetBusyType(player) == ActivityStatusType.Fishing)
+                _activity.ClearBusy(player);
             DeleteLocalFloat(player, FishingPositionVariableX);
             DeleteLocalFloat(player, FishingPositionVariableY);
             DeleteLocalFloat(player, FishingPositionVariableZ);

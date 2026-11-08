@@ -1,6 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
@@ -73,6 +75,11 @@ public class ChatCommandServiceTests
     // A real engine structure frees its native handle when it is finalized, which crashes a process with no engine.
     private sealed class TestableService : ChatCommandService
     {
+        public TestableService()
+            : base(FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ITargetingService>())
+        {
+        }
+
         protected override Location CreateEmptyLocation() => EngineStructures.Create<Location>();
     }
 

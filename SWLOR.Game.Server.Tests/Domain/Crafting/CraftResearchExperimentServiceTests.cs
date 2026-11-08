@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
@@ -26,7 +27,7 @@ public class CraftResearchExperimentServiceTests : SkillFacadeFixture
     private sealed class TestResearch : CraftResearchExperimentService
     {
         public TestResearch(IDBService db, ICraftService craft, ICraftSessionsService sessions)
-            : base(db, craft, sessions)
+            : base(db, craft, sessions, FacadeForwarder.For<ISkillService>())
         {
         }
 

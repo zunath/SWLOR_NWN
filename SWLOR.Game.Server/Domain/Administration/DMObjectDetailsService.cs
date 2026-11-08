@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DMToolService;
@@ -37,10 +42,26 @@ namespace SWLOR.Game.Server.Domain.Administration
         private List<string> _factionNames;
 
         private readonly IDMBlueprintCatalogService _catalog;
+        private readonly IAIService _ai;
+        private readonly IAreaService _area;
+        private readonly ICacheService _cache;
+        private readonly IItemService _item;
+        private readonly IStatService _stat;
 
-        public DMObjectDetailsService(IDMBlueprintCatalogService catalog)
+        public DMObjectDetailsService(
+            IDMBlueprintCatalogService catalog,
+            IAIService ai,
+            IAreaService area,
+            ICacheService cache,
+            IItemService item,
+            IStatService stat)
         {
             _catalog = catalog;
+            _ai = ai;
+            _area = area;
+            _cache = cache;
+            _item = item;
+            _stat = stat;
         }
 
         public (string Icon, string Summary) GetBlueprintRow(DMBlueprint blueprint)
@@ -93,11 +114,11 @@ namespace SWLOR.Game.Server.Domain.Administration
             switch (GetObjectType(obj))
             {
                 case ObjectType.Creature:
-                    var stats = Stat.GetNPCStats(obj);
+                    var stats = _stat.GetNPCStats(obj);
                     var level = stats.Level > 0 ? stats.Level : GetHitDice(obj);
                     return (GetObjectPortrait(obj, ListPortraitSize), $"Lv {level} · HP {GetCurrentHitPoints(obj)}/{GetMaxHitPoints(obj)}");
                 case ObjectType.Item:
-                    return (Item.GetIconResref(obj), GetBaseItemName((int)GetBaseItemType(obj)));
+                    return (_item.GetIconResref(obj), GetBaseItemName((int)GetBaseItemType(obj)));
                 case ObjectType.Placeable:
                     return (GetObjectPortrait(obj, ListPortraitSize), JoinFlags(
                         (GetHasInventory(obj), "Container"),
@@ -138,7 +159,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 lines.Add($"Area: {GetName(GetArea(obj))}");
 
             var icon = GetObjectType(obj) == ObjectType.Item
-                ? Item.GetIconResref(obj)
+                ? _item.GetIconResref(obj)
                 : GetObjectPortrait(obj, DetailPortraitSize);
             return new DMDetails(WithFallbackIcon(icon, GetObjectType(obj)), GetName(obj), string.Join("\n", lines));
         }
@@ -150,7 +171,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             {
                 var itemTemplate = _catalog.ReadTemplate(blueprint);
                 var baseItem = DMTemplateFields.ReadInt(itemTemplate, "BaseItem", -1);
-                return (Cache.GetItemIconByResref(blueprint.Resref), baseItem >= 0 ? GetBaseItemName(baseItem) : leafCategory);
+                return (_cache.GetItemIconByResref(blueprint.Resref), baseItem >= 0 ? GetBaseItemName(baseItem) : leafCategory);
             }
 
             if (blueprint.Category is DMBlueprintCategory.Stores or DMBlueprintCategory.Waypoints
@@ -190,8 +211,8 @@ namespace SWLOR.Game.Server.Domain.Administration
             {
                 WithTemporaryItem(skinResref, skin =>
                 {
-                    stats = Stat.GetNPCSkinStats(skin);
-                    skinHP = Stat.GetNPCSkinMaxHP(skin);
+                    stats = _stat.GetNPCSkinStats(skin);
+                    skinHP = _stat.GetNPCSkinMaxHP(skin);
                 });
             }
 
@@ -230,7 +251,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         private List<string> DescribeCreature(uint creature)
         {
             var lines = new List<string>();
-            var stats = Stat.GetNPCStats(creature);
+            var stats = _stat.GetNPCStats(creature);
             var level = stats.Level > 0 ? stats.Level : GetHitDice(creature);
             lines.Add($"Level {level}   Faction: {GetFactionName(CreaturePlugin.GetFaction(creature))}");
             lines.Add($"HP {GetCurrentHitPoints(creature)} / {GetMaxHitPoints(creature)}");
@@ -243,7 +264,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 GetAbilityScore(creature, AbilityType.Willpower),
                 GetAbilityScore(creature, AbilityType.Social)));
             lines.Add($"Race: {GetRaceName((int)GetRacialType(creature))}   Gender: {GetGenderName((int)GetGender(creature))}");
-            lines.Add($"AI: {AI.GetAIProfile(creature)}");
+            lines.Add($"AI: {_ai.GetAIProfile(creature)}");
             AddFlags(lines, (GetPlotFlag(creature), "Plot"), (GetImmortal(creature), "Immortal"), (GetIsDMPossessed(creature), "DM possessed"));
 
             var lootTables = ReadLocalVariables(creature, LootTablePrefix);
@@ -273,14 +294,14 @@ namespace SWLOR.Game.Server.Domain.Administration
             }
 
             if (hasDMG)
-                lines.Add($"DMG {Item.GetDMG(item)}");
+                lines.Add($"DMG {_item.GetDMG(item)}");
 
             lines.Add($"Weight {(GetWeight(item) / 10.0).ToString("0.0", CultureInfo.InvariantCulture)} lbs");
             lines.Add($"Value {GetGoldPieceValue(item)} credits");
-            if (Item.IsEconomyRestricted(item))
+            if (_item.IsEconomyRestricted(item))
                 lines.Add("NPC-only: kept out of player markets and searches");
 
-            var properties = Item.BuildItemPropertyString(item);
+            var properties = _item.BuildItemPropertyString(item);
             if (!string.IsNullOrWhiteSpace(properties))
             {
                 lines.Add(string.Empty);
@@ -456,7 +477,7 @@ namespace SWLOR.Game.Server.Domain.Administration
 
         public int CountPlayersInArea(uint area)
         {
-            return Area.GetPlayersInArea(area).Count(player => !GetIsDM(player) && !GetIsDMPossessed(player));
+            return _area.GetPlayersInArea(area).Count(player => !GetIsDM(player) && !GetIsDMPossessed(player));
         }
 
         public DMDetails DescribeArea(uint area)
@@ -644,7 +665,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         private string GetBlueprintIcon(DMBlueprint blueprint, Json template, string portraitSize)
         {
             if (blueprint.Category == DMBlueprintCategory.Items)
-                return Cache.GetItemIconByResref(blueprint.Resref);
+                return _cache.GetItemIconByResref(blueprint.Resref);
 
             if (blueprint.Category is not (DMBlueprintCategory.Creatures or DMBlueprintCategory.Placeables))
                 return string.Empty;

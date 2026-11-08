@@ -1,6 +1,8 @@
 #nullable enable
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Service;
@@ -1263,7 +1265,7 @@ public class CompanionControlServiceTests
 public sealed class TestCompanionControl : CompanionControlService
 {
     public TestCompanionControl(IAIService ai, IBeastMasteryService beastMastery)
-        : base(ai, beastMastery)
+        : base(ai, beastMastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>())
     {
     }
 

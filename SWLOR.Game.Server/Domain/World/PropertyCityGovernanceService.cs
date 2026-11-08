@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Domain.World
     {
         private readonly IDBService _db;
         private readonly IPropertyCatalogService _catalog;
+        private readonly IBackgroundJobService _backgroundJob;
 
         private readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -66,10 +67,11 @@ namespace SWLOR.Game.Server.Domain.World
         /// </summary>
         public const int ElectionVotingDays = 7;
 
-        public PropertyCityGovernanceService(IDBService db, IPropertyCatalogService catalog)
+        public PropertyCityGovernanceService(IDBService db, IPropertyCatalogService catalog, IBackgroundJobService backgroundJob)
         {
             _db = db;
             _catalog = catalog;
+            _backgroundJob = backgroundJob;
         }
 
         public void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
@@ -88,7 +90,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             try
             {
-                var enqueued = BackgroundJob.EnqueueDiscordWebhook(
+                var enqueued = _backgroundJob.EnqueueDiscordWebhook(
                         url,
                         "SWLOR Property Broadcast",
                         description,

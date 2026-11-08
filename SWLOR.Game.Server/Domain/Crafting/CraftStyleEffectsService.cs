@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -11,10 +12,12 @@ namespace SWLOR.Game.Server.Domain.Crafting;
 public class CraftStyleEffectsService : ICraftStyleEffectsService
 {
     private readonly IDBService _db;
+    private readonly IStatusEffectService _statusEffect;
 
-    public CraftStyleEffectsService(IDBService db)
+    public CraftStyleEffectsService(IDBService db, IStatusEffectService statusEffect)
     {
         _db = db;
+        _statusEffect = statusEffect;
     }
 
     private static bool IsPlayer(uint creature) =>
@@ -71,12 +74,12 @@ public class CraftStyleEffectsService : ICraftStyleEffectsService
     }
 
     /// <summary>Whether the creature has the effect. StatusEffect is not converted yet.</summary>
-    protected virtual bool HasEffect(Type effect, uint creature) => StatusEffect.HasEffect(effect, creature);
+    protected virtual bool HasEffect(Type effect, uint creature) => _statusEffect.HasEffect(effect, creature);
 
     /// <summary>Applies the effect to the creature for good. StatusEffect is not converted yet.</summary>
     protected virtual void ApplyPermanentEffect(Type effect, uint creature) =>
-        StatusEffect.ApplyPermanentStatusEffect(effect, creature, creature);
+        _statusEffect.ApplyPermanentStatusEffect(effect, creature, creature);
 
     /// <summary>Removes the effect from the creature. StatusEffect is not converted yet.</summary>
-    protected virtual void RemoveEffect(uint creature, Type effect) => StatusEffect.RemoveStatusEffect(creature, effect);
+    protected virtual void RemoveEffect(uint creature, Type effect) => _statusEffect.RemoveStatusEffect(creature, effect);
 }

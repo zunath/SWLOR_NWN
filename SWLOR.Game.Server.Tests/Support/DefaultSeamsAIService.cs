@@ -1,6 +1,10 @@
 #nullable enable
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -14,7 +18,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class DefaultSeamsAIService : AIService
 {
     public DefaultSeamsAIService(IPartyService party, IBeastMasteryService beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence)
+        : base(party, beastMastery, dmPresence, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IStealthService>())
     {
     }
 

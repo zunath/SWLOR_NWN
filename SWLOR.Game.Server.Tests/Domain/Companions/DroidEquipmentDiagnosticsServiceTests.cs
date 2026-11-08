@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Tests.Support;
@@ -360,7 +362,7 @@ public class DroidEquipmentDiagnosticsServiceTests
     [Test]
     public void WithoutASubclass_TheEntryCarriesTheSummaryOfTheRealStack()
     {
-        var plain = new DroidEquipmentDiagnosticsService();
+        var plain = new DroidEquipmentDiagnosticsService(FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IItemService>());
         _bench.Slots[InventorySlot.RightHand] = Rifle;
         _bench.EventItem = Rifle;
 
@@ -446,6 +448,11 @@ public class DroidEquipmentDiagnosticsServiceTests
     /// <summary>The service with the log and the managed stack answered by the test.</summary>
     private sealed class RecordingService : DroidEquipmentDiagnosticsService
     {
+        public RecordingService()
+            : base(FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IItemService>())
+        {
+        }
+
         public List<(LogGroup Group, string Details)> Logs { get; } = new();
 
         public string Stack { get; set; } = "   at SWLOR.Game.Server.Feature.TwinPistolEquipment.Revalidate()";

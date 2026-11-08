@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -22,10 +23,12 @@ namespace SWLOR.Game.Server.Domain.Economy
         private const string CityIdLocalName = "CITY_ID";
 
         private readonly IDBService _db;
+        private readonly IItemService _item;
 
-        public BankService(IDBService db)
+        public BankService(IDBService db, IItemService item)
         {
             _db = db;
+            _item = item;
         }
 
         public long GetItemCount(string playerId)
@@ -79,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         public string GetDepositFailure(uint player, uint item)
         {
-            var canStore = Item.CanBePersistentlyStored(player, item);
+            var canStore = _item.CanBePersistentlyStored(player, item);
             if (!string.IsNullOrWhiteSpace(canStore))
                 return canStore;
 
@@ -100,7 +103,7 @@ namespace SWLOR.Game.Server.Domain.Economy
                 Resref = GetResRef(item),
                 Quantity = GetItemStackSize(item),
                 Data = ObjectPlugin.Serialize(item),
-                IconResref = Item.GetIconResref(item),
+                IconResref = _item.GetIconResref(item),
                 DepositedTicks = DateTime.UtcNow.Ticks
             };
 
@@ -129,7 +132,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             if (!GetIsObjectValid(item))
                 return "That item could not be withdrawn.";
 
-            if (!Item.FitsInInventory(player, item) || !ObjectPlugin.AcquireItem(player, item))
+            if (!_item.FitsInInventory(player, item) || !ObjectPlugin.AcquireItem(player, item))
             {
                 DestroyObject(item);
                 return "Your inventory is full. Make room and try again.";
@@ -190,7 +193,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         private void RemoveLegacyItemProperties(uint item)
         {
-            if (!Item.IsLegacyItem(item))
+            if (!_item.IsLegacyItem(item))
                 return;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))

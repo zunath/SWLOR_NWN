@@ -3,7 +3,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Tests.Support;
@@ -109,7 +111,7 @@ public class QuestEncounterServiceTests
         _world.Place(Activator, Cantina);
 
         _db = new InMemoryDBService();
-        _service = new QuestEncounterService(_db, new DMPresenceService());
+        _service = new QuestEncounterService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
         _facadeScope = _facades.Install();
     }
 

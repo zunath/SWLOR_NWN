@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -32,16 +33,20 @@ namespace SWLOR.Game.Server.Domain.Core
 
         private readonly IDBService _db;
         private readonly IOverflowStorageService _overflowStorage;
+        private readonly IPerkService _perk;
+        private readonly IStatService _stat;
         private readonly Lazy<IReadOnlyList<ICharacterMigration>> _characterMigrations;
         private int _currentMigrationVersion;
         private ServerMigrationState _serverMigrationState = new(0);
         private readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
 
-        public MigrationService(IDBService db, IOverflowStorageService overflowStorage)
+        public MigrationService(IDBService db, IOverflowStorageService overflowStorage, IPerkService perk, IStatService stat)
         {
             _db = db;
             _overflowStorage = overflowStorage;
+            _perk = perk;
+            _stat = stat;
             _characterMigrations = new Lazy<IReadOnlyList<ICharacterMigration>>(LoadCharacterMigrations);
         }
 
@@ -277,31 +282,31 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>Restores the base attributes the record holds. The static <c>Stat</c> reads the record and the engine.</summary>
         protected virtual void RestorePlayerAttributes(uint player)
         {
-            Stat.RestorePlayerAttributes(player);
+            _stat.RestorePlayerAttributes(player);
         }
 
         /// <summary>Restores the native feats the record holds. The static <c>Perk</c> reads the record and the engine.</summary>
         protected virtual void RestorePlayerFeats(uint player)
         {
-            Perk.RestorePlayerFeats(player);
+            _perk.RestorePlayerFeats(player);
         }
 
         /// <summary>Reconciles combat readiness with the worn equipment. The static <c>Stat</c> reads the record and the engine.</summary>
         protected virtual void RefreshCombatReadinessEquipment(uint player)
         {
-            Stat.RefreshCombatReadinessEquipment(player);
+            _stat.RefreshCombatReadinessEquipment(player);
         }
 
         /// <summary>Recomputes the maximum hit points. The static <c>Stat</c> reads the record and the engine.</summary>
         protected virtual void RefreshPlayerMaxHP(uint player)
         {
-            Stat.RefreshPlayerMaxHP(player);
+            _stat.RefreshPlayerMaxHP(player);
         }
 
         /// <summary>Recomputes the equipment stats on the record. The static <c>Stat</c> reads the record and the engine.</summary>
         protected virtual void RefreshPlayerEquipmentStats(uint player)
         {
-            Stat.RefreshPlayerEquipmentStats(player);
+            _stat.RefreshPlayerEquipmentStats(player);
         }
 
         private void DeliverUpgradeNotices(uint player, Player dbPlayer)

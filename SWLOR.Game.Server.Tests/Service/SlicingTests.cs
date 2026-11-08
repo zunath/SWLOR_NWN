@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Tests.Support;
 using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -288,7 +290,7 @@ public class SlicingTests
         var stat = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
         var getLockpicking = Between(stat, "public int GetLockpicking", "public int GetStealth");
 
-        session.Should().Contain("Stat.GetLockpicking(player)",
+        session.Should().Contain("_stat.GetLockpicking(player)",
             "gear writes Lockpicking to the player record, which GetStatAdjustment never reads");
         session.Should().Contain("Slicing.GetTraceBonus(slicingRank, tier, lockpicking, perception)");
         getLockpicking.Should().Contain("dbPlayer.Lockpicking");
@@ -571,7 +573,7 @@ public class SlicingTests
     private static T InvokeSessionMethod<T>(string name, params object[] arguments)
     {
         // The private rules read no collaborator, so the instance needs none.
-        var service = new SWLOR.Game.Server.Domain.Crafting.SlicingSessionService(null!, null!, null!, null!, null!, null!);
+        var service = new SWLOR.Game.Server.Domain.Crafting.SlicingSessionService(null!, null!, null!, null!, null!, null!, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
         var method = typeof(SWLOR.Game.Server.Domain.Crafting.SlicingSessionService).GetMethod(
             name,
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;

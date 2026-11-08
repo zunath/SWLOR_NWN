@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.MessagingService;
@@ -12,9 +13,16 @@ namespace SWLOR.Game.Server.Domain.Core
     /// </summary>
     public class MessagingService : IMessagingService
     {
+        private readonly IStealthService _stealth;
+
+        public MessagingService(IStealthService stealth)
+        {
+            _stealth = stealth;
+        }
+
         // Whether a creature is in stealth or invisible. Reads the creature's effects through the native library, so a unit
         // test subclass answers this instead.
-        protected virtual bool IsConcealed(uint creature) => Stealth.IsConcealed(creature);
+        protected virtual bool IsConcealed(uint creature) => _stealth.IsConcealed(creature);
 
         public bool ShouldDeliverNearby(bool senderConcealed, bool actorConcealed)
         {

@@ -61,8 +61,18 @@ public class DMToolbarPossessionTests
                 }
             }
 
+            // The presence instance reaches the GUI service through a lazy field; the harness answers it with the static stand-in above.
+            public sealed class GuiService
+            {
+                public bool IsWindowOpen(uint player, GuiWindowType type) => Gui.IsWindowOpen(player, type);
+                public void ClosePlayerWindow(uint player, GuiWindowType type, uint uiTarget = OBJECT_INVALID) => Gui.ClosePlayerWindow(player, type, uiTarget);
+                public void TogglePlayerWindow(uint player, GuiWindowType type, object payload = null, uint tetherObject = OBJECT_INVALID, uint uiTarget = OBJECT_INVALID) => Gui.TogglePlayerWindow(player, type, payload, tetherObject, uiTarget);
+            }
+
             public static class DMPresence
             {
+                private static readonly Lazy<GuiService> _gui = new(() => new GuiService());
+
                 {{InstanceField("Domain/Administration/DMPresenceService.cs", "_windowTargets")}}
                 {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
                 {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}

@@ -11,7 +11,7 @@ namespace SWLOR.CraftSim.Progression
     {
         private static readonly Lazy<GuildService> Service = new(() =>
         {
-            var service = new GuildService(null);
+            var service = new GuildService(null, null!, null!);
             service.LoadData();
             return service;
         });

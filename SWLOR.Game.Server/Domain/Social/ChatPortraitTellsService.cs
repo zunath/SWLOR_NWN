@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NWN.Native.API;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatPortraitTellService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,6 +18,13 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </remarks>
     public class ChatPortraitTellsService : IChatPortraitTellsService
     {
+        private readonly Lazy<IPlayerNameService> _playerName;
+
+        public ChatPortraitTellsService(Lazy<IPlayerNameService> playerName)
+        {
+            _playerName = playerName;
+        }
+
         // A player can take a while to write the tell after clicking.
         private const int RefusalLifetimeMinutes = 10;
 
@@ -131,7 +139,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// </summary>
         protected virtual string GetColoredDisplayName(uint observer, uint target)
         {
-            return PlayerName.GetColoredDisplayName(observer, target);
+            return _playerName.Value.GetColoredDisplayName(observer, target);
         }
 
         /// <summary>

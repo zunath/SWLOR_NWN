@@ -120,7 +120,7 @@ public class PerformanceAudienceCostTests
         source.Should().NotContain("GetNearestObject");
         CountOf(source, "_db.Get<Player>(").Should().Be(1);
         CountOf(source, "_db.Set(").Should().Be(1);
-        CountOf(source, "Skill.GiveSkillXP(").Should().Be(1);
+        CountOf(source, "_skill.GiveSkillXP(").Should().Be(1);
     }
 
     [Test]

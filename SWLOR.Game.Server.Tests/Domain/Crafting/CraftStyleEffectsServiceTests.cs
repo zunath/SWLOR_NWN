@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
@@ -22,7 +23,7 @@ public class CraftStyleEffectsServiceTests
     private sealed class TestStyles : CraftStyleEffectsService
     {
         public TestStyles(IDBService db)
-            : base(db)
+            : base(db, FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

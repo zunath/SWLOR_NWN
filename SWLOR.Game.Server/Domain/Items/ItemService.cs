@@ -3,8 +3,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -34,11 +37,34 @@ namespace SWLOR.Game.Server.Domain.Items
     {
         private readonly IBeastMasteryService _beastMastery;
         private readonly IDBService _db;
+        private readonly IActivityService _activity;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICraftMinigameRoutingService _craftMinigameRouting;
+        private readonly Lazy<IPerkService> _perk;
+        private readonly IRecastService _recast;
+        private readonly Lazy<ISkillService> _skill;
+        private readonly Lazy<ITwinPistolEquipmentService> _twinPistolEquipment;
 
-        public ItemService(IBeastMasteryService beastMastery, IDBService db)
+        public ItemService(
+            IBeastMasteryService beastMastery,
+            IDBService db,
+            IActivityService activity,
+            ICombatRecorderService combatRecorder,
+            ICraftMinigameRoutingService craftMinigameRouting,
+            Lazy<IPerkService> perk,
+            IRecastService recast,
+            Lazy<ISkillService> skill,
+            Lazy<ITwinPistolEquipmentService> twinPistolEquipment)
         {
             _beastMastery = beastMastery;
             _db = db;
+            _activity = activity;
+            _combatRecorder = combatRecorder;
+            _craftMinigameRouting = craftMinigameRouting;
+            _perk = perk;
+            _recast = recast;
+            _skill = skill;
+            _twinPistolEquipment = twinPistolEquipment;
             _attackWeaponBaseItems = new(_meleeStatMappedBaseItems.Concat(_rangedStatMappedBaseItems));
             ForceSensitiveWeaponBaseItemTypes = LightsaberBaseItemTypes
                 .Concat(SaberstaffBaseItemTypes)
@@ -304,7 +330,7 @@ namespace SWLOR.Game.Server.Domain.Items
                     position.Y != originalPosition.Y ||
                     position.Z != originalPosition.Z)
                 {
-                    Activity.ClearBusy(actionUser);
+                    _activity.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
                     PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
@@ -342,7 +368,7 @@ namespace SWLOR.Game.Server.Domain.Items
             }
 
             // User is busy
-            if (Activity.IsBusy(user))
+            if (_activity.IsBusy(user))
             {
                 SendMessageToPC(user, "You are busy.");
                 return;
@@ -351,7 +377,7 @@ namespace SWLOR.Game.Server.Domain.Items
             // Check recast cooldown
             if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
             {
-                var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
                 if (isOnRecast)
                 {
                     SendMessageToPC(user, $"This item can be used in {timeToWait}.");
@@ -423,14 +449,14 @@ namespace SWLOR.Game.Server.Domain.Items
             if (itemDetail.ApplyAction != null)
             {
                 var actionId = Guid.NewGuid().ToString();
-                Activity.SetBusy(user, ActivityStatusType.UseItem);
+                _activity.SetBusy(user, ActivityStatusType.UseItem);
                 SetLocalBool(user, actionId, true);
                 CheckPosition(user, actionId, userPosition);
 
                 DelayCommand(delay + 0.1f, () =>
                 {
                     DeleteLocalBool(user, actionId);
-                    Activity.ClearBusy(user);
+                    _activity.ClearBusy(user);
 
                     var updatedPosition = GetPosition(user);
 
@@ -450,20 +476,20 @@ namespace SWLOR.Game.Server.Domain.Items
                         return;
                     }
 
-                    using (CombatRecorder.BeginItemAttribution(user, item))
+                    using (_combatRecorder.BeginItemAttribution(user, item))
                         itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown);
+                        _recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown);
                     }
 
                     // Reduce item charge if specified.
                     var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? false;
                     if (reducesItemCharge)
                     {
-                        if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordItemChargeUsed(user, item);
+                        if (_combatRecorder.IsRecording)
+                            _combatRecorder.RecordItemChargeUsed(user, item);
                         var charges = GetItemCharges(item) - 1;
 
                         if (charges <= 0)
@@ -485,7 +511,7 @@ namespace SWLOR.Game.Server.Domain.Items
         public bool CanCreatureUseItem(uint creature, uint item)
         {
             var skill = item == GetItemInSlot(InventorySlot.RightHand, creature) &&
-                        TwinPistolEquipment.IsActivePair(creature) ? SkillType.TwinPistol : SkillType.Invalid;
+                        _twinPistolEquipment.Value.IsActivePair(creature) ? SkillType.TwinPistol : SkillType.Invalid;
             return string.IsNullOrWhiteSpace(GetCreatureItemUseError(creature, item, skill));
         }
 
@@ -513,7 +539,7 @@ namespace SWLOR.Game.Server.Domain.Items
                 else if (type == ItemPropertyType.RequiresSkill)
                 {
                     var skillType = (SkillType)GetItemPropertySubType(ip);
-                    skillType = TwinPistolEquipment.ResolveRequirementSkill(GetBaseItemType(item), skillType,
+                    skillType = _twinPistolEquipment.Value.ResolveRequirementSkill(GetBaseItemType(item), skillType,
                         weaponSkillRequirementOverride == SkillType.TwinPistol);
                     var rankRequired = GetItemPropertyCostTableValue(ip);
 
@@ -546,25 +572,25 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>The creature's perk level (the perk service reads the database for a player).</summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType)
         {
-            return Perk.GetPerkLevel(creature, perkType);
+            return _perk.Value.GetPerkLevel(creature, perkType);
         }
 
         /// <summary>The display name of a perk (the perk service keeps the catalog in a static dictionary).</summary>
         protected virtual string GetPerkName(PerkType perkType)
         {
-            return Perk.GetPerkDetails(perkType).Name;
+            return _perk.Value.GetPerkDetails(perkType).Name;
         }
 
         /// <summary>The creature's skill rank (the skill service reads the database for a player).</summary>
         protected virtual int GetCreatureSkillRank(uint creature, SkillType skillType)
         {
-            return Skill.GetCreatureSkillRank(creature, skillType);
+            return _skill.Value.GetCreatureSkillRank(creature, skillType);
         }
 
         /// <summary>The display name of a skill (the skill service keeps the catalog in a static dictionary).</summary>
         protected virtual string GetSkillName(SkillType skillType)
         {
-            return Skill.GetSkillDetails(skillType).Name;
+            return _skill.Value.GetSkillDetails(skillType).Name;
         }
 
         public string CanEquip(uint creature, uint item, InventorySlot? prospectiveSlot = null)
@@ -573,10 +599,10 @@ namespace SWLOR.Game.Server.Domain.Items
             var isDroid = Droid.IsDroid(creature);
             var itemType = GetBaseItemType(item);
             var hands = prospectiveSlot.HasValue
-                ? TwinPistolEquipment.GetProspectiveHands(creature, item, prospectiveSlot.Value)
+                ? _twinPistolEquipment.Value.GetProspectiveHands(creature, item, prospectiveSlot.Value)
                 : (MainHand: GetItemInSlot(InventorySlot.RightHand, creature),
                    OffHand: GetItemInSlot(InventorySlot.LeftHand, creature));
-            var pairError = TwinPistolEquipment.GetPairCompatibilityError(
+            var pairError = _twinPistolEquipment.Value.GetPairCompatibilityError(
                 GetIsObjectValid(hands.MainHand) ? GetBaseItemType(hands.MainHand) : null,
                 GetIsObjectValid(hands.OffHand) ? GetBaseItemType(hands.OffHand) : null);
             if ((prospectiveSlot == null || prospectiveSlot is InventorySlot.RightHand or InventorySlot.LeftHand) &&
@@ -591,26 +617,26 @@ namespace SWLOR.Game.Server.Domain.Items
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
 
-            if (CraftMinigameRouting.IsAnyCraftWindowOpen(creature))
+            if (_craftMinigameRouting.IsAnyCraftWindowOpen(creature))
                 return "Items cannot be equipped while crafting.";
 
             if (itemType == BaseItem.CompanionPistol)
             {
-                if (!TwinPistolEquipment.IsLinkedPair(creature, hands.MainHand, item))
+                if (!_twinPistolEquipment.Value.IsLinkedPair(creature, hands.MainHand, item))
                     return "The off-hand pistol is created automatically by equipping a Twin Pistols item.";
-                var propertyError = TwinPistolEquipment.GetCompanionPropertyError(item);
+                var propertyError = _twinPistolEquipment.Value.GetCompanionPropertyError(item);
                 if (!string.IsNullOrEmpty(propertyError)) return propertyError;
             }
 
-            if (TwinPistolEquipment.IsPairItem(item))
+            if (_twinPistolEquipment.Value.IsPairItem(item))
             {
                 if (GetIsObjectValid(hands.OffHand) &&
-                    !TwinPistolEquipment.IsLinkedPair(creature, item, hands.OffHand))
+                    !_twinPistolEquipment.Value.IsLinkedPair(creature, item, hands.OffHand))
                     return "Twin Pistols require both hands. Unequip your off-hand item first.";
             }
 
             var paired = GetIsObjectValid(hands.MainHand) && GetIsObjectValid(hands.OffHand) &&
-                TwinPistolEquipment.IsPair(GetBaseItemType(hands.MainHand), GetBaseItemType(hands.OffHand));
+                _twinPistolEquipment.Value.IsPair(GetBaseItemType(hands.MainHand), GetBaseItemType(hands.OffHand));
             var requirementSkill = paired && item == hands.MainHand ? SkillType.TwinPistol : SkillType.Invalid;
             var itemUseError = GetCreatureItemUseError(creature, item, requirementSkill);
             if (!string.IsNullOrWhiteSpace(itemUseError))
@@ -619,7 +645,7 @@ namespace SWLOR.Game.Server.Domain.Items
             // Pair requirements must pass for both items, whichever hand is equipped first.
             if (paired)
             {
-                var companionError = TwinPistolEquipment.GetCompanionPropertyError(hands.OffHand);
+                var companionError = _twinPistolEquipment.Value.GetCompanionPropertyError(hands.OffHand);
                 if (!string.IsNullOrEmpty(companionError)) return companionError;
                 var mainError = GetCreatureItemUseError(creature, hands.MainHand, SkillType.TwinPistol);
                 if (!string.IsNullOrEmpty(mainError)) return mainError;
@@ -1477,8 +1503,8 @@ namespace SWLOR.Game.Server.Domain.Items
             if (stackSize < reduceBy)
                 return false;
 
-            if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordItemStackReduced(item, amount);
+            if (_combatRecorder.IsRecording)
+                _combatRecorder.RecordItemStackReduced(item, amount);
 
             var remaining = stackSize - reduceBy;
             if (remaining <= 0)

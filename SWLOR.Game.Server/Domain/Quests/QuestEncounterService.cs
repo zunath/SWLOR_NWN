@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -41,11 +42,15 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         private readonly IDBService _db;
         private readonly IDMPresenceService _presence;
+        private readonly IEnmityService _enmity;
+        private readonly Lazy<IQuestService> _quest;
 
-        public QuestEncounterService(IDBService db, IDMPresenceService presence)
+        public QuestEncounterService(IDBService db, IDMPresenceService presence, IEnmityService enmity, Lazy<IQuestService> quest)
         {
             _db = db;
             _presence = presence;
+            _enmity = enmity;
+            _quest = quest;
         }
 
         public void OnModuleEnter()
@@ -123,7 +128,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             MarkEncounterActivity(encounterCreature);
 
             StartCooldown(dbPlayer, encounterId, GetCooldown(activator), DateTime.UtcNow);
-            Enmity.ModifyEnmity(player, encounterCreature, 1);
+            _enmity.ModifyEnmity(player, encounterCreature, 1);
             AssignCommand(encounterCreature, () => ActionAttack(player));
 
             SendMessageToPC(player, "The encounter has begun.");
@@ -244,7 +249,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             {
                 if (!dbPlayer.Quests.TryGetValue(questId, out var playerQuest)) continue;
 
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = _quest.Value.GetQuestById(questId);
                 if (!questDetail.States.TryGetValue(playerQuest.CurrentState, out var questState)) continue;
 
                 var killRequiredForQuestAndState = false;
@@ -270,7 +275,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         private IReadOnlyList<uint> GetParticipantPlayers(uint encounterCreature)
         {
             var participants = new HashSet<uint>();
-            foreach (var target in Enmity.GetEnmityTable(encounterCreature).Keys)
+            foreach (var target in _enmity.GetEnmityTable(encounterCreature).Keys)
             {
                 AddParticipantPlayer(participants, target);
             }

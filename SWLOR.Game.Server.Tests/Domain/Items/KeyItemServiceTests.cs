@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Tests.Support;
@@ -273,7 +275,7 @@ public class KeyItemServiceTests
     private sealed class Visibility : KeyItemService
     {
         public Visibility(InMemoryDBService db)
-            : base(db)
+            : base(db, FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IObjectVisibilityService>())
         {
         }
 

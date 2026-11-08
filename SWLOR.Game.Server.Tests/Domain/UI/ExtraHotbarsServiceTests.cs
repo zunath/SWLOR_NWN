@@ -1,6 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.UI;
@@ -61,7 +65,7 @@ public class ExtraHotbarsServiceTests
     private sealed class TestHotbars : ExtraHotbarsService
     {
         public TestHotbars(IDBService db, IGuiService gui, IChatCommandService chat, IItemService item)
-            : base(db, gui, chat, item)
+            : base(db, gui, chat, item, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuickCastService>(), FacadeForwarder.For<ITargetingService>(), FacadeForwarder.For<ITwinPistolEquipmentService>())
         {
         }
 

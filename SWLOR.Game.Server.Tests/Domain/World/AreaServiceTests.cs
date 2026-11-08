@@ -49,7 +49,7 @@ public class AreaServiceTests
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != ObjectInvalid);
         _scope = NWScriptRuntime.Override(_engine);
         _db = new InMemoryDBService();
-        _service = new AreaService(_db);
+        _service = new AreaService(_db, FacadeForwarder.LazyFor<IPropertyService>());
     }
 
     [TearDown]
@@ -175,7 +175,7 @@ public class AreaServiceTests
         ModuleHasAreas((Cantina, "cantina"));
         _service.CacheData();
 
-        new AreaService(_db).GetAreas().Should().BeEmpty("state lives on the instance, not in static fields");
+        new AreaService(_db, FacadeForwarder.LazyFor<IPropertyService>()).GetAreas().Should().BeEmpty("state lives on the instance, not in static fields");
     }
 
     [Test]

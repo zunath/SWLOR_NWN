@@ -1385,7 +1385,7 @@ public static class ItemIconMigration
     {
         var updated = resref != null && Models.TryGetValue(resref, out var model) &&
                model.BaseItem == baseItem && model.OldModel == currentModel
-            ? model.NewModel : currentModel;
+            ? model.NewModel : BuildingIconMigration.GetUpdatedModel(resref, baseItem, currentModel);
         // Creature archives use this artwork-only pass to preserve authored stats
         // and equipment slots. Repair reserved helmet models in that same visit.
         return baseItem == (int)BaseItem.Helmet
@@ -1398,7 +1398,7 @@ public static class ItemIconMigration
     {
         return resref != null && Models.TryGetValue(resref, out var model) &&
                string.Equals(model.OldIcon, currentIcon, StringComparison.OrdinalIgnoreCase)
-            ? model.NewIcon : currentIcon;
+            ? model.NewIcon : BuildingIconMigration.GetUpdatedIcon(resref, currentIcon);
     }
 
     public static bool MigrateObject(uint obj)

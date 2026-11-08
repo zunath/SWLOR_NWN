@@ -94,6 +94,8 @@ public class ChatPortraitTellsServiceTests
                 _bySlot.Remove(client.PlayerId);
         }
 
+        protected override string GetColoredDisplayName(uint observer, uint target) => $"name-{target}";
+
         protected override ChatPortraitTellsClient? FindClientByObjectId(uint objectId) =>
             _byObject.TryGetValue(objectId, out var client) ? client : null;
 
@@ -278,7 +280,7 @@ public class ChatPortraitTellsServiceTests
 
         ClicksPortrait(SecondSpeaker);
 
-        Messages().Should().ContainSingle().Which.Should().Contain("A tell started from it will not be sent");
+        Messages().Should().ContainSingle().Which.Should().Contain("Click the portrait again to send your tell to them");
         _engine.CallsTo("SendMessageToPC").Single().Arguments[0].Should().Be(Observer);
     }
 
@@ -326,14 +328,14 @@ public class ChatPortraitTellsServiceTests
     [Test]
     public void A_direct_tell_from_the_player_list_is_never_refused()
     {
-        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, true).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, true, out _).Should().BeFalse();
         Messages().Should().BeEmpty();
     }
 
     [Test]
     public void A_tell_from_an_unknown_sender_is_not_refused()
     {
-        _service.RefuseStalePortraitTell(4040, FirstSpeaker, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(4040, FirstSpeaker, false, out _).Should().BeFalse();
     }
 
     [Test]
@@ -342,7 +344,7 @@ public class ChatPortraitTellsServiceTests
         _service.Connect(FirstSpeaker, SharedSlot);
         Enter(FirstSpeaker);
 
-        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, false, out _).Should().BeFalse();
     }
 
     [Test]
@@ -357,10 +359,58 @@ public class ChatPortraitTellsServiceTests
         ClicksPortrait(SecondSpeaker);
         _engine.ClearCalls();
 
-        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false).Should().BeTrue();
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out _).Should().BeTrue();
 
         Messages().Should().ContainSingle().Which.Should().Contain("Tell not sent");
         _engine.CallsTo("SendMessageToPC").Single().Arguments[0].Should().Be(Observer);
+    }
+
+    [Test]
+    public void The_warning_for_a_doubtful_portrait_names_who_the_tell_now_reaches()
+    {
+        _service.Connect(FirstSpeaker, SharedSlot);
+        Enter(FirstSpeaker);
+        Speaks(FirstSpeaker);
+        Exit(FirstSpeaker);
+        _service.Connect(SecondSpeaker, SharedSlot);
+        Enter(SecondSpeaker);
+
+        ClicksPortrait(SecondSpeaker);
+
+        Messages().Should().ContainSingle().Which.Should().Contain($"name-{SecondSpeaker}");
+    }
+
+    [Test]
+    public void A_refused_tell_tells_the_sender_to_click_the_portrait_again()
+    {
+        _service.Connect(FirstSpeaker, SharedSlot);
+        Enter(FirstSpeaker);
+        Speaks(FirstSpeaker);
+        Exit(FirstSpeaker);
+        _service.Connect(SecondSpeaker, SharedSlot);
+        Enter(SecondSpeaker);
+        ClicksPortrait(SecondSpeaker);
+        _engine.ClearCalls();
+
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out var confirmed).Should().BeTrue();
+
+        confirmed.Should().BeFalse();
+        Messages().Should().ContainSingle().Which.Should().Contain("Click the portrait again to confirm");
+    }
+
+    [Test]
+    public void A_classified_portrait_does_not_count_as_a_click()
+    {
+        _service.Connect(FirstSpeaker, SharedSlot);
+        Enter(FirstSpeaker);
+        Speaks(FirstSpeaker);
+        Exit(FirstSpeaker);
+        _service.Connect(SecondSpeaker, SharedSlot);
+        Enter(SecondSpeaker);
+
+        _service.ClassifyPortrait(Observer, SecondSpeaker).Should().Be(ChatPortraitClick.FormerHolder);
+
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out _).Should().BeFalse();
     }
 
     [Test]
@@ -374,8 +424,8 @@ public class ChatPortraitTellsServiceTests
         Enter(SecondSpeaker);
         ClicksPortrait(SecondSpeaker);
 
-        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false).Should().BeTrue();
-        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out _).Should().BeTrue();
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out _).Should().BeFalse();
     }
 
     [Test]
@@ -392,7 +442,7 @@ public class ChatPortraitTellsServiceTests
         _service.Connect(third, OtherSlot);
         Enter(third);
 
-        _service.RefuseStalePortraitTell(Observer, third, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, third, false, out _).Should().BeFalse();
     }
 
     [Test]
@@ -406,7 +456,7 @@ public class ChatPortraitTellsServiceTests
         _service.Connect(SecondSpeaker, SharedSlot);
         Enter(SecondSpeaker);
 
-        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false).Should().BeTrue();
+        _service.RefuseStalePortraitTell(Observer, SecondSpeaker, false, out _).Should().BeTrue();
     }
 
     [Test]
@@ -417,7 +467,7 @@ public class ChatPortraitTellsServiceTests
         Speaks(FirstSpeaker);
         ClicksPortrait(FirstSpeaker);
 
-        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, FirstSpeaker, false, out _).Should().BeFalse();
         Messages().Should().BeEmpty();
     }
 
@@ -433,7 +483,7 @@ public class ChatPortraitTellsServiceTests
         ClicksPortrait(SecondSpeaker);
 
         // The target is no longer connected, so it cannot match the clicked slot.
-        _service.RefuseStalePortraitTell(Observer, 4040, false).Should().BeFalse();
+        _service.RefuseStalePortraitTell(Observer, 4040, false, out _).Should().BeFalse();
     }
 
     [Test]

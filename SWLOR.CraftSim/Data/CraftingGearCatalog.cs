@@ -80,6 +80,14 @@ namespace SWLOR.CraftSim.Data
             return new GearLevel(name ?? $"tier {tier} set", skill, tier, worn);
         }
 
+        /// <summary>
+        /// What a full set of the best tier gains in each of Control and Craftsmanship when its 18 enhancement slots hold the best kits,
+        /// +10 each, half of them Control and half Craftsmanship. Kits add neither CP nor anything else the minigames read.
+        /// </summary>
+        public const int FullyModdedPointsPerStat = 90;
+
+        public const string FullyModdedGearName = "fully modded gear";
+
         /// <summary>No gear, the middle tier and the best tier of each skill that has crafting gear.</summary>
         public IReadOnlyList<GearLevel> Levels(SkillType skill)
         {
@@ -92,6 +100,20 @@ namespace SWLOR.CraftSim.Data
             if (mid < best)
                 levels.Add(Tier(skill, mid, MidGearName));
             levels.Add(Tier(skill, best, BestGearName));
+            return levels;
+        }
+
+        /// <summary><see cref="Levels"/> and, last, the best tier fully modded, for the minigames tuned against the gear players really reach.</summary>
+        public IReadOnlyList<GearLevel> LevelsWithFullMods(SkillType skill)
+        {
+            var levels = Levels(skill).ToList();
+            var top = levels[^1];
+            if (top.Tier > 0)
+            {
+                levels.Add(GearLevel.Fixed(
+                    FullyModdedGearName, skill, top.Control + FullyModdedPointsPerStat, top.Craftsmanship + FullyModdedPointsPerStat, top.CpBonus));
+            }
+
             return levels;
         }
 

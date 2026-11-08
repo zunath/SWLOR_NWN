@@ -1023,7 +1023,8 @@ Feature/ChatCommandDefinition -> DMPresence | 14
 PlayerList -> DMPresence | 10
 PlayerList -> DMTool | 1
 
-# Social -> Character (19 edges)
+# Social -> Character (20 edges)
+ChatPortraitTells -> PlayerName | 1
 Feature/ChatCommandDefinition -> Disguise | 3
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 Feature/ChatCommandDefinition -> Language | 1

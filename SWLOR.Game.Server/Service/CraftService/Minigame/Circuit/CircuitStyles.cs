@@ -34,8 +34,7 @@ public static class CircuitStyles
         {
             [CircuitStyle.Overclock] = new Dictionary<StatType, int>
             {
-                [StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad,
-                [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.OverclockLoadBoostPercent
+                [StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad
             }.ToFrozenDictionary(),
             [CircuitStyle.SafeMode] = new Dictionary<StatType, int>
             {
@@ -59,7 +58,7 @@ public static class CircuitStyles
     public static string Description(CircuitStyle style) => style switch
     {
         CircuitStyle.Overclock =>
-            $"Wire and Tune add {CircuitPerkRules.OverclockExtraLoad} extra Load, and each Load point adds {CircuitPerkRules.OverclockLoadBoostPercent} more {CircuitPerkRules.PointWord(CircuitPerkRules.OverclockLoadBoostPercent)} of output.",
+            $"Wire and Tune add {CircuitPerkRules.OverclockExtraLoad} extra Load.",
         CircuitStyle.SafeMode =>
             $"Actions cannot overload while Load is no more than {CircuitPerkRules.SafeModeOverloadGrace} over the line, and each Load point adds {-CircuitPerkRules.SafeModeLoadBoostPercent} fewer {CircuitPerkRules.PointWord(-CircuitPerkRules.SafeModeLoadBoostPercent)} of output.",
         _ => "No style: the Circuit plays by its usual rules."

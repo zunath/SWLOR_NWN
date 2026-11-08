@@ -54,6 +54,14 @@ public class FakeViewModel : IGuiViewModel, IGuiRefreshable<FakeRefreshEvent>
     {
     }
 
+    public void OnPointerPressed()
+    {
+    }
+
+    public void OnPointerReleased()
+    {
+    }
+
     public Action OnModalClose() => () => { };
     public Action OnModalConfirmClick() => () => { };
     public Action OnModalCancelClick() => () => { };

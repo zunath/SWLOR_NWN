@@ -1130,7 +1130,7 @@
     [1199, "ExperimentTestChancePercent", "BeneficialWhenPositive", "Additive", "None"],
     [1200, "ExperimentRefineCpReduction", "BeneficialWhenPositive", "Additive", "None"],
     [1201, "ExperimentRefineChancePercent", "BeneficialWhenPositive", "Additive", "None"],
-    [1202, "ExperimentTimeCutPerEvidencePercent", "BeneficialWhenPositive", "Additive", "None"],
+    [1202, "ExperimentTimeCutPerEvidenceTenths", "BeneficialWhenPositive", "Additive", "None"],
     [1203, "ExperimentPeerReviewUnlocked", "BeneficialWhenPositive", "Maximum", "None"],
     [1204, "ExperimentBreakthroughUnlocked", "BeneficialWhenPositive", "Maximum", "None"],
     [1208, "ForgeRangeShift", "BeneficialWhenPositive", "Additive", "None"],

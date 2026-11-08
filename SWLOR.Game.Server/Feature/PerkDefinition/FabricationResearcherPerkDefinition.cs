@@ -36,16 +36,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_rsrch")
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 10 more points of chance to find evidence.")
+                .Description("In a research experiment, every Test has 1 more point of chance to find evidence.")
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 5)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 10)
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 1)
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 20 more points of chance to find evidence.")
+                .Description("In a research experiment, every Test has 2 more points of chance to find evidence.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 15)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 20);
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 2);
         }
 
         private void SteadyHands()
@@ -81,11 +81,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_sci_net")
 
                 .AddPerkLevel()
-                .Description("Your research style, always active: every research experiment has 2 more trials, and every Test has 15 fewer points of chance. Cannot be purchased with Intuitive.")
+                .Description("Your research style, always active: every research experiment has 1 more trial, and every Test has 15 fewer points of chance. Cannot be purchased with Intuitive.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.Intuitive)
-                .IncreasesStat(StatType.ExperimentTrials, 2)
+                .IncreasesStat(StatType.ExperimentTrials, 1)
                 .IncreasesStat(StatType.ExperimentTestChancePercent, -15);
         }
 
@@ -96,11 +96,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_tiny_bulb")
 
                 .AddPerkLevel()
-                .Description("Your research style, always active: every Test has 20 more points of chance, and every research experiment has 1 fewer trial. Cannot be purchased with Methodical.")
+                .Description("Your research style, always active: every Test has 4 more points of chance, and every research experiment has 1 fewer trial. Cannot be purchased with Methodical.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.Methodical)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 20)
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 4)
                 .IncreasesStat(StatType.ExperimentTrials, -1);
         }
 
@@ -124,16 +124,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_min_light")
 
                 .AddPerkLevel()
-                .Description("In a research experiment, Analyze cuts 6% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
+                .Description("In a research experiment, Analyze cuts 5.3% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 10)
-                .IncreasesStat(StatType.ExperimentTimeCutPerEvidencePercent, 1)
+                .IncreasesStat(StatType.ExperimentTimeCutPerEvidenceTenths, 3)
 
                 .AddPerkLevel()
-                .Description("In a research experiment, Analyze cuts 7% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
+                .Description("In a research experiment, Analyze cuts 5.5% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 30)
-                .IncreasesStat(StatType.ExperimentTimeCutPerEvidencePercent, 2);
+                .IncreasesStat(StatType.ExperimentTimeCutPerEvidenceTenths, 5);
         }
 
         private void SecondOpinion()
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_spark")
 
                 .AddPerkLevel()
-                .Description("Adds Breakthrough to a research experiment: once per experiment, free and without a trial, your next Test succeeds automatically, and for the rest of the experiment each piece of spare evidence cuts twice as much of the job's time, within the cap of 25%. It grants no extra bonuses.")
+                .Description("Adds Breakthrough to a research experiment: once per experiment, free and without a trial, your next Test succeeds automatically. It grants no extra bonuses.")
                 .Price(4)
                 .RequirementSkill(SkillType.Fabrication, 50)
                 .IncreasesStat(StatType.ExperimentBreakthroughUnlocked, 1);

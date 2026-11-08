@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Domain.Character
             var sender = ChatPlugin.GetSender();
             var target = ChatPlugin.GetTarget();
 
-            if (_chatPortraitTells.RefuseStalePortraitTell(sender, target, GetLocalBool(sender, DirectTellVariable)))
+            if (_chatPortraitTells.RefuseStalePortraitTell(sender, target, GetLocalBool(sender, DirectTellVariable), out var confirmedPortraitTarget))
             {
                 ChatPlugin.SkipMessage();
                 return;
@@ -179,7 +179,9 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             var displayName = GetDisplayName(sender, target);
+            // A Player List tell or a confirmed portrait tell names its target exactly, so a shared name is not ambiguous.
             if (GetLocalBool(sender, DirectTellVariable) ||
+                confirmedPortraitTarget ||
                 string.IsNullOrWhiteSpace(displayName) ||
                 CountDisplayNameMatches(sender, displayName) <= 1)
             {

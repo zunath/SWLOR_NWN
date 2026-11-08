@@ -32,7 +32,7 @@ namespace SWLOR.CraftSim.Cli
             if (gear == null)
             {
                 var recipes = RecipeCatalog.Load();
-                gear = CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes).Levels(SkillType.Fabrication);
+                gear = CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes).LevelsWithFullMods(SkillType.Fabrication);
             }
 
             var report = ResearchReport.Build(

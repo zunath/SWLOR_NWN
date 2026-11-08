@@ -48,6 +48,17 @@ namespace SWLOR.Game.Server.Service.GuiService
         void ChangePartialView(string elementId, string partialName);
 
         /// <summary>
+        /// Records that the player pressed a control in this window.
+        /// Layout changes wait for the release (see <see cref="GuiPressLayoutHold"/>).
+        /// </summary>
+        void OnPointerPressed();
+
+        /// <summary>
+        /// Records that the player released the press and sends any layout change held during it.
+        /// </summary>
+        void OnPointerReleased();
+
+        /// <summary>
         /// Retrieves the text used by the modal partial view.
         /// </summary>
         string ModalPromptText { get; }

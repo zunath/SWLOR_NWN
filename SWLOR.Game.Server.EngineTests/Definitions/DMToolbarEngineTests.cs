@@ -786,7 +786,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 ctx.AssertEqual(1L, ChatPortraitTells.CountLinesReceived(second.Creature), "the Player Search message reaches the selected player");
                 // The unsent portrait tell is still refused afterwards.
-                ctx.Assert(ChatPortraitTells.RefuseStalePortraitTell(dm.Creature, second.Creature, false), "the stale portrait tell");
+                ctx.Assert(ChatPortraitTells.RefuseStalePortraitTell(dm.Creature, second.Creature, false, out _), "the stale portrait tell");
             }
             finally
             {

@@ -22,12 +22,12 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             ResearcherBuild.Unperked.TuningAt(50).Should().Be(ExperimentTuning.Default);
             ResearcherBuild.MethodicalAlone.TuningAt(19).Should().Be(ExperimentTuning.Default, "the style opens at Fabrication 20");
-            ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -15 });
-            ResearcherBuild.IntuitiveAlone.TuningAt(50).Should().Be(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 20 });
-            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, 5, 20, 25, 7, 25, true, true));
-            ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 40, 20, 25, 7, 25, true, true));
-            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(14).TestChanceBonusPercent.Should().Be(10);
-            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(15).TestChanceBonusPercent.Should().Be(20);
+            ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 7, TestChanceBonusPercent = -15 });
+            ResearcherBuild.IntuitiveAlone.TuningAt(50).Should().Be(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 4 });
+            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(8, -13, 20, 25, 55, 25, true, true));
+            ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 6, 20, 25, 55, 25, true, true));
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(14).TestChanceBonusPercent.Should().Be(1);
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(15).TestChanceBonusPercent.Should().Be(2);
             ResearcherBuild.AllPerks.Should().HaveCount(9);
         }
 
@@ -221,7 +221,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         public void TheLineAblationDescribesTheLineUnderTestAndNamesEachSharedPurchase()
         {
             ResearcherLineAblation.DescribeLine().Should().Be(
-                "Broader Hypotheses (+1 trial) from rank 25, Second Opinion from rank 45, Field Notes +10 from rank 5 then +20 from rank 15");
+                "Broader Hypotheses (+1 trial) from rank 25, Second Opinion from rank 45, Field Notes +1 from rank 5 then +2 from rank 15");
 
             var options = new ResearcherPerkStudyOptions { Runs = 2, Seed = 1, Gear = new[] { GearLevel.None(SkillType.Fabrication), Mid } };
             var report = ResearcherLineAblation.Build(options, "test");

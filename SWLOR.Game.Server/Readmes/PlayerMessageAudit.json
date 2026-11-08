@@ -5544,20 +5544,6 @@
     "Call": "SendMessageToPC(user, validationMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 23,
-    "Member": "SendMessageNearbyToPlayers",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Instance.SendMessageNearbyToPlayers(sender, message, range)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Messaging.cs",
-    "Line": 34,
-    "Member": "SendMessageNearbyToPlayers",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Instance.SendMessageNearbyToPlayers(sender, buildMessage, range)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
     "Line": 15,
     "Member": "SendMessageNearbyToPlayers",
@@ -5591,41 +5577,6 @@
     "Member": "RemovePerkLevelOnSkillDecay",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 27,
-    "Member": "SendDiagnosticToPlayer",
-    "Delivery": "Testing only",
-    "Call": "Instance.SendDiagnosticToPlayer(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 32,
-    "Member": "ShowDiagnosticFloatingText",
-    "Delivery": "Testing only",
-    "Call": "Instance.ShowDiagnosticFloatingText(message, creature, displayToFaction)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 50,
-    "Member": "SendWarningToPlayer",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Instance.SendWarningToPlayer(player, warningKey, message, intervalSeconds)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 60,
-    "Member": "SendWarningNearby",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Instance.SendWarningNearby(creature, warningKey, buildMessage, intervalSeconds, range)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 75,
-    "Member": "SendResourceRestored",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Instance.SendResourceRestored(creature, restored, resource)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",

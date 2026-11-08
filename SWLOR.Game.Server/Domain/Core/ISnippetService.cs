@@ -4,7 +4,8 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// The conversation snippets: the named conditions and actions that conversation graphs and native dialogue
-    /// scripts run. The static <c>Service.Snippet</c> forwards to the container's instance of this interface.
+    /// scripts run. Static callers reach the container's instance through <c>GameServices.Snippet</c>; the event
+    /// handlers are on <see cref="SnippetService"/>.
     /// </summary>
     public interface ISnippetService
     {

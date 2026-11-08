@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.QuestContractService
 {

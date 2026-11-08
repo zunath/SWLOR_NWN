@@ -20,9 +20,10 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// The persistence layer: the Redis connection, the per-script-context entity cache, the search indexes and every
-    /// read and write of the entities. The logic that used to be static in <c>Service.DB</c>, moved here unchanged. The facade keeps the
-    /// <c>OnModulePreload</c> handler and forwards every call to the container's instance. The Redis, engine and settings
-    /// calls sit behind the protected virtual methods at the end of the class, so a test can run the service without a server.
+    /// read and write of the entities. The logic that used to be static in the <c>DB</c> facade, moved here unchanged. The
+    /// <c>OnModulePreload</c> handler runs on the container's instance; static callers reach it through
+    /// <c>GameServices.DB</c>. The Redis, engine and settings calls sit behind the protected virtual methods at the end of
+    /// the class, so a test can run the service without a server.
     /// </summary>
     public class DBService : IDBService
     {
@@ -75,6 +76,7 @@ namespace SWLOR.Game.Server.Domain.Core
         }
 
         /// <inheritdoc/>
+        [NWNEventHandler(ScriptName.OnModulePreload)]
         public void Load()
         {
             _appSettings = GetApplicationSettings();

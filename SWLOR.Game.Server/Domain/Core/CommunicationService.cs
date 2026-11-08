@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
@@ -20,12 +21,13 @@ using WorldProperty = SWLOR.Game.Server.Entity.WorldProperty;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Chat handling: the logic that used to be static in <c>Service.Communication</c>, moved here unchanged. The
-    /// facade still carries the event handlers and forwards every call to the container's instance.
+    /// Chat handling: the logic that used to be static in the <c>Communication</c> facade, moved here unchanged. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.Communication</c>.
     /// </summary>
     public class CommunicationService : ICommunicationService
     {
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
+        public const string SuppressChatAuditVariable = "SUPPRESS_CHAT_AUDIT";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
         // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the
@@ -96,6 +98,7 @@ namespace SWLOR.Game.Server.Domain.Core
             ColonBackward
         };
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyCommsChannelName()
         {
             var player = GetEnteringObject();
@@ -107,6 +110,7 @@ namespace SWLOR.Game.Server.Domain.Core
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyShoutChannelName()
         {
             var player = GetEnteringObject();
@@ -123,6 +127,8 @@ namespace SWLOR.Game.Server.Domain.Core
         /// This runs before the engine accepts the possession, and the engine refuses creatures that have a
         /// master (familiars, henchmen, and other associates), so nothing here may assume the possession happened.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public void OnDMPossess()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
@@ -137,6 +143,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// unfocused, remove the indicator.
         /// </summary>
 
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public void TypingIndicator()
         {
             var player = GetLastGuiEventPlayer();
@@ -154,11 +161,13 @@ namespace SWLOR.Game.Server.Domain.Core
         }
 
         // Register DMFI Voice Command Handler which lives in nwscript land.
+        [NWNEventHandler(ScriptName.OnModuleChat)]
         public void ProcessNativeChatMessage()
         {
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public void ProcessChatMessage()
         {
             var channel = ChatPlugin.GetChannel();

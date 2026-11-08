@@ -17,7 +17,7 @@ public class CraftingPerkConversionMigrationTests
     private const int StartingSP = 5;
     private const int StartingTokens = 2;
 
-    private static readonly Type SavedCharacterType = typeof(Migration).Assembly
+    private static readonly Type SavedCharacterType = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly
         .GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
 
     // The refund table of the crafting revamp plan: SP paid per rank, read from the combat-rebuild prices.

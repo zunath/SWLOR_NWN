@@ -51,9 +51,7 @@ public static class SettingsTargetingEngineTests
             var legacySettings = (JObject)JObject.Parse(DB.GetRawJson<Player>(fixture.Id))[nameof(Player.Settings)];
             legacySettings.Remove(nameof(PlayerSettings.SelfQuickCastEnabled));
             legacySettings.Remove(nameof(PlayerSettings.EnemyQuickCastEnabled));
-            typeof(DB).GetMethod("SetUnindexedJsonProperty", BindingFlags.Static | BindingFlags.NonPublic)
-                .MakeGenericMethod(typeof(Player)).Invoke(null,
-                    new object[] { fixture.Id, nameof(Player.Settings), legacySettings.ToString(Formatting.None) });
+            DB.SetUnindexedJsonProperty<Player>(fixture.Id, nameof(Player.Settings), legacySettings.ToString(Formatting.None));
             var persistedLegacy = JObject.Parse(DB.GetRawJson<Player>(fixture.Id))[nameof(Player.Settings)];
             ctx.Assert(persistedLegacy[nameof(PlayerSettings.SelfQuickCastEnabled)] == null &&
                        persistedLegacy[nameof(PlayerSettings.EnemyQuickCastEnabled)] == null,

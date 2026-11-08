@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Domain.Core
     /// Optional calculations and tester feedback can be hidden in Production.
     /// Gameplay outcomes, state changes, progression, and errors use the normal message APIs,
     /// even when they occur frequently. Frequency alone does not make a message diagnostic.
-    /// The logic that used to be static in <c>Service.PlayerFeedback</c>, moved here unchanged. The facade forwards every
-    /// call to the container's instance.
+    /// The logic that used to be static in the <c>PlayerFeedback</c> facade, moved here unchanged. Static callers reach
+    /// the container's instance through <c>GameServices.PlayerFeedback</c>.
     /// </summary>
     public class PlayerFeedbackService : IPlayerFeedbackService
     {

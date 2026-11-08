@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
 using Skill = SWLOR.Game.Server.Service.Skill;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

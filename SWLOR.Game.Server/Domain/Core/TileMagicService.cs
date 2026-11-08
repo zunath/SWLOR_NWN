@@ -7,8 +7,8 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Tile magic: the logic that used to be static in <c>Service.TileMagic</c>, moved here unchanged. The facade
-    /// forwards every call to the container's instance.
+    /// Tile magic: the logic that used to be static in the <c>TileMagic</c> facade, moved here unchanged. Static callers
+    /// reach the container's instance through <c>GameServices.TileMagic</c>.
     /// </summary>
     public class TileMagicService : ITileMagicService
     {

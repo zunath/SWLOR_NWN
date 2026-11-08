@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Domain.World
             // Interiors without a console point (the legacy freighter) fall back to the boarding point.
             var console = CreateObject(ObjectType.Placeable, TerminalTag, consoleLocation ?? flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
-            SetLocalInt(console, Communication.SuppressChatAuditVariable, 1);
+            SetLocalInt(console, CommunicationService.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
@@ -12,8 +13,8 @@ namespace SWLOR.Game.Server.Domain.Core
     /// This class is responsible for loading and retrieving NWN data which lives for the lifespan of the server.
     /// Nothing in here will be permanently stored, it's simply here to make queries quicker.
     /// If you need persistent storage, refer to the DB class.
-    /// The logic and state that used to be static in <c>Service.Cache</c>, moved here unchanged. The facade keeps the
-    /// event handler and forwards every call to the container's instance.
+    /// The logic and state that used to be static in the <c>Cache</c> facade, moved here unchanged. The event handler
+    /// runs on the container's instance; static callers reach it through <c>GameServices.Cache</c>.
     /// </summary>
     public class CacheService : ICacheService
     {
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CacheAllItemData();

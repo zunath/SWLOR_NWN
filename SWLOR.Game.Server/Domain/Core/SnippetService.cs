@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
@@ -9,8 +10,9 @@ using SWLOR.NWN.API.NWNX;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// The conversation snippets: the logic and state that used to be static in <c>Service.Snippet</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// The conversation snippets: the logic and state that used to be static in the <c>Snippet</c> facade, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.Snippet</c>.
     /// </summary>
     /// <remarks>
     /// The constructor does no work: the snippets are registered by <see cref="CacheData"/>, which runs in the
@@ -30,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Core
             _conversation = conversation;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             foreach (var type in GetSnippetListDefinitionTypes())
@@ -82,12 +85,18 @@ namespace SWLOR.Game.Server.Domain.Core
                 .Where(w => typeof(ISnippetListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
+        [NWNEventHandler(ScriptName.OnDialogAppear)]
+        [NWNEventHandler(ScriptName.OnDialogAppears)]
+        [NWNEventHandler(ScriptName.OnDialogCondition)]
+        [NWNEventHandler(ScriptName.OnDialogConditions)]
         public bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();
             return ProcessConditions(player);
         }
 
+        [NWNEventHandler(ScriptName.OnDialogAction)]
+        [NWNEventHandler(ScriptName.OnDialogActions)]
         public void ConversationAction()
         {
             var player = GetPCSpeaker();

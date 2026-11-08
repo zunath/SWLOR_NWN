@@ -418,13 +418,13 @@ public static void OnPlayerDamaged(uint player, uint attacker, int damage)
 
 ### 4. Script Handler Order
 
-At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Service.DB.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Core.DBService.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
 
 **Format.** One block per script. The script name starts in column 0 (an optional `  # comment` may follow it), then one indented line per handler in run order: `action` (a `void` handler) or `conditional` (a `bool` handler), then `Namespace.Type.Method`. Blank lines, `#` comment lines and `== section ==` headings are ignored. Anything else is an error.
 
 ```text
 mod_preload  # run by the engine before the module loads
-  action      SWLOR.Game.Server.Service.DB.Load
+  action      SWLOR.Game.Server.Domain.Core.DBService.Load
   action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
 ```
 

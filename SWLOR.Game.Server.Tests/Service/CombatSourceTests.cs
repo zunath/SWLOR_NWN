@@ -249,7 +249,7 @@ public class CombatSourceTests
     }
 
     [Test]
-    public void CombinedSourceReadsTheFacadeThenThePartsThenThePartServices()
+    public void CombinedSourceReadsTheFacadeThenThePartServices()
     {
         var root = Path.Combine(Path.GetTempPath(), "mr-p2-cb0-" + Guid.NewGuid().ToString("N"));
         try
@@ -267,9 +267,11 @@ public class CombatSourceTests
             var files = CombatSource.Load(root);
 
             files.Select(file => Path.GetFileName(file.FullPath)).Should().Equal(
-                "Combat.cs", "Combat.Activity.cs", "CombatFooService.cs", "CombatRules.cs");
+                new[] { "Combat.cs", "CombatFooService.cs", "CombatRules.cs" },
+                "the partial class files are gone (P2-CB10 merged them into Combat.cs), so a stray one is not read");
             var text = CombatSource.Combine(files);
-            text.Should().StartWith("FACADE\r\nPARTIAL\r\n");
+            text.Should().StartWith("FACADE\r\n");
+            text.Should().NotContain("PARTIAL");
             text.Should().Contain("private static int Compute(uint creature, int damage)");
             text.Should().Contain("RULES\r\n", "a file without a final line break still ends one");
             text.Should().NotContain("INTERFACE").And.NotContain("OTHER SERVICE").And.NotContain("NOT A SERVICE").And.NotContain("ANOTHER");
@@ -281,14 +283,22 @@ public class CombatSourceTests
     }
 
     [Test]
-    public void TheRealSourceStartsWithCombatCsAndKeepsItsText()
+    public void TheRealSourceStartsWithCombatCsAndKeepsItsTextApartFromThePartForwarders()
     {
         var combat = CombatSource.Paths()[0];
 
         Path.GetFileName(combat).Should().Be("Combat.cs");
         Path.GetFileName(Path.GetDirectoryName(combat)).Should().Be("Service");
-        CombatSource.Read().Should().Contain(File.ReadAllText(combat));
+        var facade = File.ReadAllText(combat);
+        var kept = CombatSource.ElidePartForwarders(facade);
+        CombatSource.Read().Should().StartWith(kept);
+        kept.Should().Contain("public static int CalculateHitRate(", "rule forwarders stay");
+        kept.Should().Contain("Instance.ApplyDefeatedEnemyEffects();", "a handler's block body stays");
+        kept.Should().NotContain("=> Queries.GetRelevantSkillWeapon(", "a part forwarder is left out");
+        kept.Should().NotContain("=> Instance.RefreshStatDrivenTrackerEffects(", "a forwarder to CombatService is left out");
+        facade.Should().Contain("=> Queries.GetRelevantSkillWeapon(").And.Contain("=> Instance.RefreshStatDrivenTrackerEffects(");
         CombatSource.IsCombatFile(combat).Should().BeTrue();
+        Directory.Exists(Path.Combine(Path.GetDirectoryName(combat)!, "CombatParts")).Should().BeFalse("P2-CB10 merged the partial class files into Combat.cs");
     }
 
     [Test]

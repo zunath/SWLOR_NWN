@@ -15,7 +15,7 @@ public class QuestContractEscrowTests
 {
     // These rules touch neither the engine nor the database.
     private static readonly InMemoryDBService Db = new();
-    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db), AmbientServices.Of<IAuthorizationService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IItemService>());
+    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db), FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>());
 
     [Test]
     public void PartialSubmission_CannotBeClaimedByEitherPartyWhileContractIsActive()

@@ -134,7 +134,7 @@ public class PerformanceAudienceServiceTests
         });
 
         _audience = new TestAudience(
-            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()), new PerformanceInspiredService(AmbientServices.Of<IStatusEffectService>()))
+            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()), new PerformanceInspiredService(FacadeForwarder.For<IStatusEffectService>()))
         {
             Now = T0,
             PositionOf = creature => _positions.GetValueOrDefault(creature, Vector3.Zero)
@@ -778,7 +778,7 @@ public class PerformanceAudienceServiceTests
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
             IPerformanceInspiredService inspired)
-            : base(db, venue, windows, music, songs, snapshots, inspired, AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>())
+            : base(db, venue, windows, music, songs, snapshots, inspired, FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

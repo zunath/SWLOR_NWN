@@ -238,7 +238,7 @@ public class LightsaberWorkbenchServiceTests
     private sealed class BenchService : LightsaberWorkbenchService
     {
         public BenchService(InMemoryDBService db)
-            : base(db, new CurrencyService(db, AmbientServices.Of<IGuiService>()), AmbientServices.Of<IGuiService>())
+            : base(db, new CurrencyService(db, FacadeForwarder.For<IGuiService>()), FacadeForwarder.For<IGuiService>())
         {
         }
 

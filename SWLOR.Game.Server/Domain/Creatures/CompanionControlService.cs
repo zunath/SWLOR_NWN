@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private readonly IAIService _ai;
         private readonly IBeastMasteryService _beastMastery;
-        private readonly IAbilityService _ability;
+        private readonly Lazy<IAbilityService> _ability;
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public CompanionControlService(
             IAIService ai,
             IBeastMasteryService beastMastery,
-            IAbilityService ability,
+            Lazy<IAbilityService> ability,
             IActivityService activity,
             IPerkService perk,
             IPlayerNameService playerName,
@@ -1064,9 +1064,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
             _perk.GetPerkLevel(creature, perkType);
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
 
         protected virtual bool CanUseAbility(
             uint activator,
@@ -1074,6 +1074,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             FeatType feat,
             int effectiveLevel,
             Location targetLocation) =>
-            _ability.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _ability.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

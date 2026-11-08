@@ -41,7 +41,7 @@ public class GuildServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new GuildService(_db, AmbientServices.Of<IPerkService>(), AmbientServices.Of<IQuestService>());
+        _service = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
         _service.LoadData();
     }
 
@@ -86,7 +86,7 @@ public class GuildServiceTests
     [Test]
     public void The_max_rank_is_zero_until_the_data_is_loaded_and_each_instance_keeps_its_own_cache()
     {
-        var fresh = new GuildService(_db, AmbientServices.Of<IPerkService>(), AmbientServices.Of<IQuestService>());
+        var fresh = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
 
         fresh.MaxRank.Should().Be(0);
         var get = () => fresh.GetGuild(GuildType.HuntersGuild);

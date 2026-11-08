@@ -27,7 +27,7 @@ public class CraftResearchExperimentServiceTests : SkillFacadeFixture
     private sealed class TestResearch : CraftResearchExperimentService
     {
         public TestResearch(IDBService db, ICraftService craft, ICraftSessionsService sessions)
-            : base(db, craft, sessions, AmbientServices.Of<ISkillService>())
+            : base(db, craft, sessions, FacadeForwarder.For<ISkillService>())
         {
         }
 

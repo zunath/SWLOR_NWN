@@ -541,7 +541,7 @@ public class CasinoSlotServiceTests
     private sealed class TestCasinoSlotService : CasinoSlotService
     {
         public TestCasinoSlotService(IDBService db)
-            : base(db, AmbientServices.Of<IGuiService>())
+            : base(db, FacadeForwarder.For<IGuiService>())
         {
         }
 

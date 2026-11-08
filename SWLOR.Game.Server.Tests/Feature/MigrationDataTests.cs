@@ -130,7 +130,7 @@ public class MigrationDataTests
         var migration = ServerAssembly.GetType("SWLOR.Game.Server.Service.Migration")!;
         var baseline = (int)migration.GetField("RetiredServerMigrationVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
         var db = new Tests.Support.InMemoryDBService();
-        var service = new Game.Server.Domain.Core.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>());
+        var service = new Game.Server.Domain.Core.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
         ServerConfiguration Resolve(ServerConfiguration stored) => service.ResolveConfiguration(stored!);
 
         baseline.Should().Be(ReleasedServerVersion, "every server migration production has run is retired");

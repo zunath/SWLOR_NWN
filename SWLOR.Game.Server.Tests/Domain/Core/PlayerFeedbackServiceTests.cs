@@ -138,7 +138,7 @@ public class PlayerFeedbackServiceTests
     [Test]
     public void The_servers_own_settings_are_the_default()
     {
-        var plain = new PlayerFeedbackService(_db, _messaging, AmbientServices.Of<IPlayerNameService>());
+        var plain = new PlayerFeedbackService(_db, _messaging, FacadeForwarder.For<IPlayerNameService>());
 
         var read = () => plain.DiagnosticsEnabled;
 
@@ -382,7 +382,7 @@ public class PlayerFeedbackServiceTests
     [Test]
     public void The_real_clock_is_the_default()
     {
-        var plain = new PlayerFeedbackService(_db, _messaging, AmbientServices.Of<IPlayerNameService>());
+        var plain = new PlayerFeedbackService(_db, _messaging, FacadeForwarder.For<IPlayerNameService>());
         MakePlayer(Player);
         AllowCooldownText();
         var before = DateTime.UtcNow.Ticks;
@@ -508,7 +508,7 @@ public class PlayerFeedbackServiceTests
     private sealed class TestPlayerFeedbackService : PlayerFeedbackService
     {
         public TestPlayerFeedbackService(IDBService db, IMessagingService messaging)
-            : base(db, messaging, AmbientServices.Of<IPlayerNameService>())
+            : base(db, messaging, FacadeForwarder.For<IPlayerNameService>())
         {
         }
 

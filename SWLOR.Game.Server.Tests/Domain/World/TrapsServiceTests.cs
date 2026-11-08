@@ -116,7 +116,7 @@ public class TrapsServiceTests
     private sealed class TrapsWithTraining : TrapsService
     {
         public TrapsWithTraining(IDBService db)
-            : base(db, AmbientServices.Of<IAbilityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPvpCombatService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>())
+            : base(db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
         {
         }
 
@@ -262,7 +262,7 @@ public class TrapsServiceTests
     public void Each_instance_keeps_its_own_traps()
     {
         PlacePerkTrap(Owner, At(0f)).Should().BeTrue();
-        var other = new TrapsService(_db, AmbientServices.Of<IAbilityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPvpCombatService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>());
+        var other = new TrapsService(_db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
 
         other.TryPlaceTrap(OtherOwner, At(0f), 14, CombatDamageType.Physical, typeof(BleedStatusEffect), 30, TriggerEffect, MarkerEffect)
             .Should().BeTrue("state lives on the instance, not in static fields");
@@ -343,7 +343,7 @@ public class TrapsServiceTests
     {
         for (var tier = 1; tier <= 5; tier++)
         {
-            var service = new TrapsService(_db, AmbientServices.Of<IAbilityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPvpCombatService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>());
+            var service = new TrapsService(_db, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
             _engine.SetReturnSequence("CreateObject", (uint)(900 + tier));
 
             service.TryPlaceKitTrap(Owner, At(tier * 100f), tier).Should().BeTrue($"tier {tier}");

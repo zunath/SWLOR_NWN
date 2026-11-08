@@ -35,7 +35,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         World.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyService(db, World.Areas, World.Planets, World.Recorded, World.Loader, World.City, AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IGuiService>());
+        _ = new PropertyService(db, World.Areas, World.Planets, World.Recorded, World.Loader, World.City, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IGuiService>());
 
         World.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();

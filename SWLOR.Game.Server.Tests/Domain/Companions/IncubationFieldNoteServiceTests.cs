@@ -52,7 +52,7 @@ public class IncubationFieldNoteServiceTests
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
         _db.With(new Player(PlayerId));
-        _keyItems = new KeyItemService(_db, AmbientServices.Of<IGuiService>(), AmbientServices.Of<IObjectVisibilityService>());
+        _keyItems = new KeyItemService(_db, FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IObjectVisibilityService>());
         _keyItems.LoadData();
         _service = new CatalogService(_keyItems);
     }
@@ -111,7 +111,7 @@ public class IncubationFieldNoteServiceTests
     [Test]
     public void TheConstructorDoesNoWork()
     {
-        var create = () => new IncubationFieldNoteService(null!, AmbientServices.LazyOf<IBeastMasteryService>());
+        var create = () => new IncubationFieldNoteService(null!, FacadeForwarder.LazyFor<IBeastMasteryService>());
 
         create.Should().NotThrow();
     }
@@ -277,7 +277,7 @@ public class IncubationFieldNoteServiceTests
     public void LoadDisplayText_BeforeTheKeyItemsAreCached_PopulatesNothing()
     {
         UseSmallCatalog();
-        var uncached = new CatalogService(new KeyItemService(_db, AmbientServices.Of<IGuiService>(), AmbientServices.Of<IObjectVisibilityService>()));
+        var uncached = new CatalogService(new KeyItemService(_db, FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IObjectVisibilityService>()));
         foreach (var (type, detail) in _service.Beasts)
             uncached.Beasts[type] = detail;
         var registered = uncached.GetAllNotes().Count;
@@ -364,7 +364,7 @@ public class IncubationFieldNoteServiceTests
     private sealed class CatalogService : IncubationFieldNoteService
     {
         public CatalogService(IKeyItemService keyItem)
-            : base(keyItem, AmbientServices.LazyOf<IBeastMasteryService>())
+            : base(keyItem, FacadeForwarder.LazyFor<IBeastMasteryService>())
         {
         }
 

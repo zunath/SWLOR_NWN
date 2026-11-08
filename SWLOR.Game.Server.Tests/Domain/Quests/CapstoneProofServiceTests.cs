@@ -69,7 +69,7 @@ public class CapstoneProofServiceTests
     }
 
     private static TestCapstoneProofService NewService() =>
-        new(new BeastMasteryService(new InMemoryDBService(), null!, null!, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>()));
+        new(new BeastMasteryService(new InMemoryDBService(), null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>()));
 
     private static string EnemyKey(string proof) => "CAPSTONE_PROOF_" + proof + "_" + PlayerId;
 
@@ -575,7 +575,7 @@ public class CapstoneProofServiceTests
     private sealed class TestCapstoneProofService : CapstoneProofService
     {
         public TestCapstoneProofService(IBeastMasteryService beastMastery)
-            : base(beastMastery, AmbientServices.LazyOf<IAbilityService>())
+            : base(beastMastery, FacadeForwarder.LazyFor<IAbilityService>())
         {
         }
 

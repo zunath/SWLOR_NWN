@@ -71,7 +71,7 @@ public class CraftServiceTests
         var cache = ScriptedProxy.Create<ICacheService>(out _cacheScript);
         var item = ScriptedProxy.Create<IItemService>(out _itemScript);
         var property = ScriptedProxy.Create<IPropertyService>(out _propertyScript);
-        _service = new CraftService(cache, _db, item, property, AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
+        _service = new CraftService(cache, _db, item, property, FacadeForwarder.LazyFor<ICraftResearchExperimentService>(), FacadeForwarder.For<ICraftStyleEffectsService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<ISkillService>());
     }
 
     [TearDown]
@@ -125,7 +125,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
+            ScriptedProxy.Create<IPropertyService>(out _), FacadeForwarder.LazyFor<ICraftResearchExperimentService>(), FacadeForwarder.For<ICraftStyleEffectsService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<ISkillService>());
 
         other.RecipeExists(RecipeType.VenomCoating1).Should().BeFalse();
         _service.RecipeExists(RecipeType.VenomCoating1).Should().BeTrue();
@@ -138,7 +138,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
+            ScriptedProxy.Create<IPropertyService>(out _), FacadeForwarder.LazyFor<ICraftResearchExperimentService>(), FacadeForwarder.For<ICraftStyleEffectsService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<ISkillService>());
 
         _service.SessionWorld.Should().NotBeNull().And.BeSameAs(_service.SessionWorld).And.NotBeSameAs(other.SessionWorld);
         _service.QuickCraftWorld.Should().NotBeNull().And.BeSameAs(_service.QuickCraftWorld).And.NotBeSameAs(other.QuickCraftWorld);

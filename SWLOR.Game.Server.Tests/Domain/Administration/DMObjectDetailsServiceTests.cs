@@ -68,8 +68,8 @@ public class DMObjectDetailsServiceTests
         _engine.SetReturnHandler("GetStringByStrRef", arguments => "text " + arguments[0]);
         _engine.SetReturnHandler("Get2DAString", arguments =>
             _twoDA.TryGetValue(((string)arguments[0]!, (string)arguments[1]!, (int)arguments[2]!), out var value) ? value : string.Empty);
-        _catalog = new DMBlueprintCatalogService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<ISpawnService>());
-        _service = new DMObjectDetailsService(_catalog, AmbientServices.Of<IAIService>(), AmbientServices.Of<IAreaService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IStatService>());
+        _catalog = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<ISpawnService>());
+        _service = new DMObjectDetailsService(_catalog, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<IAreaService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IStatService>());
         // The service reads the players in an area through the Area facade, which resolves its instance from a container.
         _container = new FacadeContainer();
         _containerScope = _container.Install();
@@ -868,7 +868,7 @@ public class DMObjectDetailsServiceTests
         _service.GetBlueprintRow(blueprint);
         _engine.ClearCalls();
 
-        new DMObjectDetailsService(_catalog, AmbientServices.Of<IAIService>(), AmbientServices.Of<IAreaService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IStatService>()).GetBlueprintRow(blueprint);
+        new DMObjectDetailsService(_catalog, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<IAreaService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IStatService>()).GetBlueprintRow(blueprint);
 
         _engine.CallsTo("TemplateToJson").Should().NotBeEmpty("state lives on the instance, not in static fields");
     }

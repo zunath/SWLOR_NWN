@@ -406,7 +406,7 @@ public sealed class PropertyWorld : IDisposable
             IPropertyCatalogService catalog,
             IPropertyLoaderService loader,
             IPropertyCityGovernanceService city)
-            : base(db, area, planet, catalog, loader, city, AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IGuiService>())
+            : base(db, area, planet, catalog, loader, city, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IGuiService>())
         {
         }
 
@@ -423,7 +423,7 @@ public sealed class PropertyWorld : IDisposable
     public sealed class CityUnderTest : PropertyCityGovernanceService
     {
         public CityUnderTest(IDBService db, IPropertyCatalogService catalog)
-            : base(db, catalog, AmbientServices.Of<IBackgroundJobService>())
+            : base(db, catalog, FacadeForwarder.For<IBackgroundJobService>())
         {
         }
 

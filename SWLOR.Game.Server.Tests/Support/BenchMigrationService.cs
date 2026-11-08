@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class BenchMigrationService : MigrationService
 {
     public BenchMigrationService(InMemoryDBService db)
-        : base(db, new OverflowStorageService(db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>())
+        : base(db, new OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
     {
     }
 

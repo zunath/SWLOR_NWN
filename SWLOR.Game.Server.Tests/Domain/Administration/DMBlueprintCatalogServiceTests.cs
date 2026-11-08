@@ -65,7 +65,7 @@ public class DMBlueprintCatalogServiceTests
         _utilScope = UtilPluginRuntime.Override(_util);
         _objectScope = ObjectPluginRuntime.Override(_objectPlugin);
         _world.Engine.SetReturnHandler("GetStringByStrRef", arguments => "text " + arguments[0]);
-        _service = new DMBlueprintCatalogService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<ISpawnService>());
+        _service = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<ISpawnService>());
     }
 
     [TearDown]

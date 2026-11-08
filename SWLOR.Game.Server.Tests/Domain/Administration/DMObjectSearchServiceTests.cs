@@ -37,7 +37,7 @@ public class DMObjectSearchServiceTests
     public void SetUp()
     {
         _world = new DMPossessionEngine();
-        _service = new DMObjectSearchService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()));
+        _service = new DMObjectSearchService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()));
         _objects.Clear();
         _cursor.Clear();
         _world.Engine.SetReturnSequence("GetFirstArea", Cantina);

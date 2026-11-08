@@ -18,5 +18,5 @@ public static class CraftServices
         ScriptedProxy.Create<ICacheService>(out _),
         db ?? new InMemoryDBService(),
         ScriptedProxy.Create<IItemService>(out _),
-        ScriptedProxy.Create<IPropertyService>(out _), AmbientServices.LazyOf<ICraftResearchExperimentService>(), AmbientServices.Of<ICraftStyleEffectsService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.Of<ISkillService>());
+        ScriptedProxy.Create<IPropertyService>(out _), FacadeForwarder.LazyFor<ICraftResearchExperimentService>(), FacadeForwarder.For<ICraftStyleEffectsService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<ISkillService>());
 }

@@ -30,7 +30,7 @@ public class DMCreatureManagerFavoriteServiceTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _service = new DMCreatureManagerFavoriteService(_db, new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()));
+        _service = new DMCreatureManagerFavoriteService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()));
     }
 
     [TearDown]

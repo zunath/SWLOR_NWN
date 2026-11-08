@@ -111,7 +111,7 @@ public class QuestEncounterServiceTests
         _world.Place(Activator, Cantina);
 
         _db = new InMemoryDBService();
-        _service = new QuestEncounterService(_db, new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IEnmityService>(), AmbientServices.LazyOf<IQuestService>());
+        _service = new QuestEncounterService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
         _facadeScope = _facades.Install();
     }
 

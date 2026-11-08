@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IConversationService _conversation;
         private readonly Lazy<IEnmityService> _enmity;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
-        private readonly IPerkService _perk;
+        private readonly Lazy<IPerkService> _perk;
         private readonly Lazy<IStatService> _stat;
-        private readonly IStatusEffectService _statusEffect;
-        private readonly IStealthService _stealth;
+        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<IStealthService> _stealth;
 
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIProfileType, AIProfile> _profiles = new();
@@ -76,10 +76,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IConversationService conversation,
             Lazy<IEnmityService> enmity,
             Lazy<IEspionageInfiltrationService> espionageInfiltration,
-            IPerkService perk,
+            Lazy<IPerkService> perk,
             Lazy<IStatService> stat,
-            IStatusEffectService statusEffect,
-            IStealthService stealth)
+            Lazy<IStatusEffectService> statusEffect,
+            Lazy<IStealthService> stealth)
         {
             _party = party;
             _beastMastery = beastMastery;
@@ -876,7 +876,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private void RemoveEnemySourcedStatusEffects(uint creature)
         {
-            var effects = _statusEffect.GetCreatureStatusEffects(creature)
+            var effects = _statusEffect.Value.GetCreatureStatusEffects(creature)
                 .GetAllEffects()
                 .Where(effect => GetIsObjectValid(effect.Source) &&
                                  GetIsEnemy(effect.Source, creature))
@@ -884,7 +884,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             foreach (var effect in effects)
             {
-                _statusEffect.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
+                _statusEffect.Value.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
             }
         }
 
@@ -1827,7 +1827,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual void CompleteInfiltration(uint player, uint npc) => _espionageInfiltration.Value.Complete(player, npc);
 
-        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.CanAcquireAggro(observer, target);
+        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.Value.CanAcquireAggro(observer, target);
 
         protected virtual bool IsControlledCompanion(uint creature) => _companionControl.Value.IsControlledCompanion(creature);
 
@@ -1836,7 +1836,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         protected virtual uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget) =>
             _companionControl.Value.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.GetPerkLevel(creature, perkType);
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
 
         protected virtual bool CanActivateAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation) =>
             _ability.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);

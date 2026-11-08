@@ -23,7 +23,7 @@ public class CraftStyleEffectsServiceTests
     private sealed class TestStyles : CraftStyleEffectsService
     {
         public TestStyles(IDBService db)
-            : base(db, AmbientServices.Of<IStatusEffectService>())
+            : base(db, FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

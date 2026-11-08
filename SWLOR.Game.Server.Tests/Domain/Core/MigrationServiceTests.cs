@@ -205,7 +205,7 @@ public class MigrationServiceTests
         Environment.SetEnvironmentVariable("SWLOR_SERVERVAULT_DIRECTORY", Path.Combine(Path.GetTempPath(), "mr-p2-c6-missing-vault-" + Guid.NewGuid()));
         try
         {
-            new MigrationService(_db, new OverflowStorageService(_db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()).UpgradeServerVault().Should().BeTrue();
+            new MigrationService(_db, new OverflowStorageService(_db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()).UpgradeServerVault().Should().BeTrue();
         }
         finally
         {
@@ -218,7 +218,7 @@ public class MigrationServiceTests
     {
         _db.With(new ServerConfiguration { CharacterFileVersion = CharacterMigrations.LatestVersion });
 
-        new MigrationService(_db, new OverflowStorageService(_db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()).UpgradeServerVault().Should().BeTrue();
+        new MigrationService(_db, new OverflowStorageService(_db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()).UpgradeServerVault().Should().BeTrue();
 
         _db.Saved.Should().BeEmpty();
     }

@@ -47,7 +47,7 @@ public class PlayerMarketServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new PlayerMarketService(_db, AmbientServices.Of<IBeastMasteryService>(), AmbientServices.Of<ICraftService>(), AmbientServices.Of<IFishingService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IMusicService>(), AmbientServices.Of<IPropertyService>());
+        _service = new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>());
     }
 
     [TearDown]
@@ -84,7 +84,7 @@ public class PlayerMarketServiceTests
 
         _service.CacheData();
 
-        new PlayerMarketService(_db, AmbientServices.Of<IBeastMasteryService>(), AmbientServices.Of<ICraftService>(), AmbientServices.Of<IFishingService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IMusicService>(), AmbientServices.Of<IPropertyService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
+        new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
     }
 
     [Test]

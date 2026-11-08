@@ -163,7 +163,7 @@ public class PropertyCityGovernanceServiceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyCityGovernanceService(db, _world.Recorded, AmbientServices.Of<IBackgroundJobService>());
+        _ = new PropertyCityGovernanceService(db, _world.Recorded, FacadeForwarder.For<IBackgroundJobService>());
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();
@@ -629,7 +629,7 @@ public class PropertyCityGovernanceServiceTests
     [Test]
     public void The_governance_uses_the_webhook_of_the_environment_unless_a_test_names_one()
     {
-        var plain = new PropertyCityGovernanceService(Db, _world.Recorded, AmbientServices.Of<IBackgroundJobService>());
+        var plain = new PropertyCityGovernanceService(Db, _world.Recorded, FacadeForwarder.For<IBackgroundJobService>());
 
         var city = StoreCity();
         var broadcast = () => plain.BroadcastPropertyEvent(city, "Title", "Details");

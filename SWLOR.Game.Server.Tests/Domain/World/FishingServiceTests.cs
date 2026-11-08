@@ -70,7 +70,7 @@ public class FishingServiceTests
     private sealed class TestFishing : FishingService
     {
         public TestFishing(IDBService db)
-            : base(db, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IFishingFightsService>(), AmbientServices.Of<IMessagingService>(), AmbientServices.Of<INamedAnimationService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<IStatService>())
+            : base(db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IFishingFightsService>(), FacadeForwarder.For<IMessagingService>(), FacadeForwarder.For<INamedAnimationService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

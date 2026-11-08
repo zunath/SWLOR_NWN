@@ -303,7 +303,7 @@ public class ItemTrashServiceTests
     {
         // The log sinks, the property text and the player lookups are the original static calls here. No logger is
         // registered in a unit test, so the writes are dropped; the audit itself still runs to the end.
-        var production = new ItemTrashService(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IDisguiseService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IPlayerNameService>());
+        var production = new ItemTrashService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPlayerNameService>());
         _failSnapshotOfItem = true;
 
         production.Audit(ObjectInvalid, Item, "trash-added");
@@ -328,7 +328,7 @@ public class ItemTrashServiceTests
         private readonly List<string> _timeline;
 
         public AuditRecorder(List<string> timeline)
-            : base(new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IDisguiseService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IPlayerNameService>())
+            : base(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPlayerNameService>())
         {
             _timeline = timeline;
         }

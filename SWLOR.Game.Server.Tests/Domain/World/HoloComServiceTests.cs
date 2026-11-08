@@ -59,7 +59,7 @@ public class HoloComServiceTests
     private sealed class TestHoloCom : HoloComService
     {
         public TestHoloCom(IPlayerListService playerList)
-            : base(playerList, AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<IStealthService>())
+            : base(playerList, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>())
         {
         }
 
@@ -264,7 +264,7 @@ public class HoloComServiceTests
     {
         _service.StartCall(Alice, Bob);
 
-        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<IStealthService>());
+        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>());
         other.StartCall(Carol, Bob);
 
         _locals.Int(Carol, Token).Should().Be(1, "the token counter lives on the instance, not in a static field");

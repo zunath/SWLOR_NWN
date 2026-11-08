@@ -275,7 +275,7 @@ public class KeyItemServiceTests
     private sealed class Visibility : KeyItemService
     {
         public Visibility(InMemoryDBService db)
-            : base(db, AmbientServices.Of<IGuiService>(), AmbientServices.Of<IObjectVisibilityService>())
+            : base(db, FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IObjectVisibilityService>())
         {
         }
 

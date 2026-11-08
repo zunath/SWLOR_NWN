@@ -573,7 +573,7 @@ public class SlicingTests
     private static T InvokeSessionMethod<T>(string name, params object[] arguments)
     {
         // The private rules read no collaborator, so the instance needs none.
-        var service = new SWLOR.Game.Server.Domain.Crafting.SlicingSessionService(null!, null!, null!, null!, null!, null!, AmbientServices.Of<IPerkService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>());
+        var service = new SWLOR.Game.Server.Domain.Crafting.SlicingSessionService(null!, null!, null!, null!, null!, null!, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>());
         var method = typeof(SWLOR.Game.Server.Domain.Crafting.SlicingSessionService).GetMethod(
             name,
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;

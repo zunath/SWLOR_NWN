@@ -111,7 +111,7 @@ public class PerformanceInspiredServiceTests
     private sealed class TestInspired : PerformanceInspiredService
     {
         public TestInspired()
-            : base(AmbientServices.Of<IStatusEffectService>())
+            : base(FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

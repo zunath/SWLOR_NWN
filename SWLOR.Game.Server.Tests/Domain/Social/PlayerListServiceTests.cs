@@ -161,7 +161,7 @@ public class PlayerListServiceTests
     private class TestableService : PlayerListService
     {
         public TestableService(IDBService db, IPartyService party)
-            : base(db, party, AmbientServices.Of<IDMPresenceService>(), AmbientServices.LazyOf<IDisguiseService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IHoloComService>(), AmbientServices.LazyOf<IPlayerNameService>())
+            : base(db, party, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IHoloComService>(), FacadeForwarder.LazyFor<IPlayerNameService>())
         {
         }
 
@@ -858,7 +858,7 @@ public class PlayerListServiceTests
     private sealed class LandableDMPresenceService : DMPresenceService
     {
         public LandableDMPresenceService()
-            : base(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>())
+            : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>())
         {
         }
 

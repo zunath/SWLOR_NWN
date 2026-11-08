@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IGuiService _gui;
         private readonly Lazy<IItemService> _item;
         private readonly Lazy<IPerkService> _perk;
-        private readonly IResistanceService _resistance;
+        private readonly Lazy<IResistanceService> _resistance;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
 
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             IGuiService gui,
             Lazy<IItemService> item,
             Lazy<IPerkService> perk,
-            IResistanceService resistance,
+            Lazy<IResistanceService> resistance,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect)
         {
@@ -523,7 +523,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
             {
                 var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
                 BiowareXP2.IPSafeAddItemProperty(
@@ -531,7 +531,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     ItemPropertyCustom(
                         ItemPropertyType.Resistance,
                         (int)resistanceType,
-                        _resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                        _resistance.Value.EncodeItemPropertyCostTableValue(resistanceBonus)),
                     0f,
                     AddItemPropertyPolicy.ReplaceExisting,
                     false,
@@ -1086,7 +1086,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
             }
 
-            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
             {
                 if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
                     continue;
@@ -1131,7 +1131,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             };
 
             purities.AddRange(Service.Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
-            purities.AddRange(_resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
+            purities.AddRange(_resistance.Value.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();
             var qualityPercent = averagePurity / maxPurityValue;

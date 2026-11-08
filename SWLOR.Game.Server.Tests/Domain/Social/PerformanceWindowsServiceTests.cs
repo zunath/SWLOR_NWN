@@ -47,7 +47,7 @@ public class PerformanceWindowsServiceTests
         _music.On("GetTrackName", arguments => $"Track {(int)arguments[0]!}");
         var venue = ScriptedProxy.Create<IPerformanceVenueService>(out _venue);
         _venue.On("GetRating", _ => 2);
-        _windows = new TestWindows(venue, music, new PerformanceSongService(music), new PerformanceSnapshotService(AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>()));
+        _windows = new TestWindows(venue, music, new PerformanceSongService(music), new PerformanceSnapshotService(FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()));
         _windows.ReserveGuiIds();
     }
 
@@ -379,7 +379,7 @@ public class PerformanceWindowsServiceTests
             IMusicService music,
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots)
-            : base(venue, music, songs, snapshots, AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IPerformanceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPlayerNameService>(), AmbientServices.Of<IStatService>())
+            : base(venue, music, songs, snapshots, FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

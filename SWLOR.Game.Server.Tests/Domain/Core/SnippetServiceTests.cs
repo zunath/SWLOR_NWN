@@ -25,7 +25,7 @@ public class SnippetServiceTests
     public void SetUp()
     {
         _bench = new ConversationBench();
-        _conversation = new ConversationService(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>());
+        _conversation = new ConversationService(FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IPlayerNameService>());
         _service = new TestableSnippetService(_conversation);
         Probe.Reset(_service);
     }

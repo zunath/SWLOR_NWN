@@ -41,7 +41,7 @@ public class DMPlayerDirectoryServiceTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _service = new DMPlayerDirectoryService(_db, new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()), AmbientServices.Of<IAreaService>(), AmbientServices.Of<IDisguiseService>(), AmbientServices.Of<IPlayerDescriptorService>());
+        _service = new DMPlayerDirectoryService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IAreaService>(), FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IPlayerDescriptorService>());
         // The disguise and descriptor lookups read a player's record from the static database when the object is a PC.
         // An object that is not a PC takes their no-database path, which is enough to list the online characters here.
         _world.Engine.SetReturnHandler("GetIsPC", _ => false);

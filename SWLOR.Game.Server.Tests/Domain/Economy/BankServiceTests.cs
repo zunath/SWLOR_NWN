@@ -56,7 +56,7 @@ public class BankServiceTests
         _objectPlugin = new FakeObjectPlugin();
         _objectPluginScope = ObjectPluginRuntime.Override(_objectPlugin);
         _db = new InMemoryDBService();
-        _service = new BankService(_db, AmbientServices.Of<IItemService>());
+        _service = new BankService(_db, FacadeForwarder.For<IItemService>());
     }
 
     [TearDown]
@@ -370,7 +370,7 @@ public class BankServiceTests
     [Test]
     public void Each_instance_reads_its_own_database()
     {
-        var other = new BankService(new InMemoryDBService(), AmbientServices.Of<IItemService>());
+        var other = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
         _db.With(BankedItem());
 
         _service.GetItemCount(PlayerId).Should().Be(1);

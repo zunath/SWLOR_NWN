@@ -24,7 +24,7 @@ public class CasinoSlotPresentationTests
     [Test]
     public void EveryPossiblePayoutHasACompleteVisualResult()
     {
-        var slot = new CasinoSlotService(new InMemoryDBService(), AmbientServices.Of<IGuiService>());
+        var slot = new CasinoSlotService(new InMemoryDBService(), FacadeForwarder.For<IGuiService>());
         foreach (var payout in Enumerable.Range(0, 10000).Select(slot.GetPayout).Distinct())
         {
             Assert.That(CasinoSlotPresentation.GetReels(payout), Has.Length.EqualTo(3));

@@ -26,7 +26,7 @@ public sealed class TestAIService : AIService
     private readonly AIBench _bench;
 
     public TestAIService(AIBench bench, IPartyService party, IBeastMasteryService beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, AmbientServices.LazyOf<IAbilityService>(), AmbientServices.Of<IActivityService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IConversationMenuService>(), AmbientServices.Of<IConversationService>(), AmbientServices.LazyOf<IEnmityService>(), AmbientServices.LazyOf<IEspionageInfiltrationService>(), AmbientServices.Of<IPerkService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.Of<IStatusEffectService>(), AmbientServices.Of<IStealthService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IStealthService>())
     {
         _bench = bench;
     }

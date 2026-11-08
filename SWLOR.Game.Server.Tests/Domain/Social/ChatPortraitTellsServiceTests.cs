@@ -81,7 +81,7 @@ public class ChatPortraitTellsServiceTests
     private class TestableService : ChatPortraitTellsService
     {
         public TestableService()
-            : base(AmbientServices.LazyOf<IPlayerNameService>())
+            : base(FacadeForwarder.LazyFor<IPlayerNameService>())
         {
         }
 

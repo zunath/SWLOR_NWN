@@ -117,7 +117,7 @@ public class EspionageProgressionTests
     [TestCase(4, true, 0, false)]
     public void TrapAccess_UsesTheSameTierRulesForPlacementDetectionAndDisarm(int trapcraft, bool master, int tier, bool allowed)
     {
-        Assert.That(new TrapsService(new InMemoryDBService(), AmbientServices.Of<IAbilityService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.Of<IDMPresenceService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IPvpCombatService>(), AmbientServices.Of<ISkillService>(), AmbientServices.Of<IStatService>()).CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
+        Assert.That(new TrapsService(new InMemoryDBService(), FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>()).CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
     }
 
     private static PerkDetail BuildPerk(PerkType profession)

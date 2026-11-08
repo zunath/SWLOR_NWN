@@ -366,7 +366,7 @@ public class CommunicationServiceTests
     private sealed class DefaultSeams : CommunicationService
     {
         public DefaultSeams(CommunicationBench bench)
-            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.HoloCom, bench.Planet, bench.Area, bench.Property, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ILanguageService>(), AmbientServices.Of<IPlayerNameService>())
+            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.HoloCom, bench.Planet, bench.Area, bench.Property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>())
         {
         }
 

@@ -44,7 +44,7 @@ public class CurrencyServiceTests
     {
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new CurrencyService(_db, AmbientServices.Of<IGuiService>());
+        _service = new CurrencyService(_db, FacadeForwarder.For<IGuiService>());
     }
 
     [TearDown]
@@ -94,7 +94,7 @@ public class CurrencyServiceTests
     {
         _service.CacheCurrencies();
 
-        var other = new CurrencyService(_db, AmbientServices.Of<IGuiService>());
+        var other = new CurrencyService(_db, FacadeForwarder.For<IGuiService>());
 
         var get = () => other.GetCurrencyDetail(CurrencyType.RebuildToken);
         get.Should().Throw<KeyNotFoundException>("state lives on the instance, not in static fields");

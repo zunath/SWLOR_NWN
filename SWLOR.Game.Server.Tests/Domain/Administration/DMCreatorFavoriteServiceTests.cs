@@ -30,7 +30,7 @@ public class DMCreatorFavoriteServiceTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _service = new DMCreatorFavoriteService(_db, new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>()));
+        _service = new DMCreatorFavoriteService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()));
     }
 
     [TearDown]

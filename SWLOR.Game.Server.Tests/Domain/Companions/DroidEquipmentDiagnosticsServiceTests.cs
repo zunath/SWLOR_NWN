@@ -362,7 +362,7 @@ public class DroidEquipmentDiagnosticsServiceTests
     [Test]
     public void WithoutASubclass_TheEntryCarriesTheSummaryOfTheRealStack()
     {
-        var plain = new DroidEquipmentDiagnosticsService(AmbientServices.Of<IActivityService>(), AmbientServices.Of<IItemService>());
+        var plain = new DroidEquipmentDiagnosticsService(FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IItemService>());
         _bench.Slots[InventorySlot.RightHand] = Rifle;
         _bench.EventItem = Rifle;
 
@@ -449,7 +449,7 @@ public class DroidEquipmentDiagnosticsServiceTests
     private sealed class RecordingService : DroidEquipmentDiagnosticsService
     {
         public RecordingService()
-            : base(AmbientServices.Of<IActivityService>(), AmbientServices.Of<IItemService>())
+            : base(FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IItemService>())
         {
         }
 

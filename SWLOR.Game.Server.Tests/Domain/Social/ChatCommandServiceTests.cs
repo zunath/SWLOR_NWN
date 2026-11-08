@@ -76,7 +76,7 @@ public class ChatCommandServiceTests
     private sealed class TestableService : ChatCommandService
     {
         public TestableService()
-            : base(AmbientServices.Of<IAuthorizationService>(), AmbientServices.Of<ITargetingService>())
+            : base(FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ITargetingService>())
         {
         }
 

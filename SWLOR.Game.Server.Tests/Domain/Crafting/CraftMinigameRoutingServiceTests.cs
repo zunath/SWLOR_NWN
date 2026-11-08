@@ -18,7 +18,7 @@ public class CraftMinigameRoutingServiceTests
     private sealed class TestRouting : CraftMinigameRoutingService
     {
         public TestRouting()
-            : base(AmbientServices.Of<IGuiService>())
+            : base(FacadeForwarder.For<IGuiService>())
         {
         }
 

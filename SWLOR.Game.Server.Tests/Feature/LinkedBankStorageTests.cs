@@ -17,7 +17,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_UsesCanonicalStorageIdAndCap()
     {
-        var bank = new BankService(new InMemoryDBService(), AmbientServices.Of<IItemService>());
+        var bank = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
         bank.GetItemCountText(5).Should().Be("5 / 120 Items");
         bank.GetStoragePercentage(240).Should().Be(1f);
 
@@ -80,7 +80,7 @@ public class LinkedBankStorageTests
     public void BankService_ConstrainsItemQueriesToGlobalBankStorage()
     {
         var db = new InMemoryDBService();
-        var bank = new BankService(db, AmbientServices.Of<IItemService>());
+        var bank = new BankService(db, FacadeForwarder.For<IItemService>());
 
         bank.GetItemCount("player-id");
         bank.SearchItems("player-id", string.Empty, 0);
@@ -98,7 +98,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
     {
-        var bank = new BankService(new InMemoryDBService(), AmbientServices.Of<IItemService>());
+        var bank = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
         var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
 
         var all = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", string.Empty })!)

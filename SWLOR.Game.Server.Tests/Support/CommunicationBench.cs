@@ -42,7 +42,7 @@ public sealed class CommunicationBench : IDisposable
         Chat = new FakeChatPlugin();
         Events = new FakeEventsPlugin();
         Db = new InMemoryDBService();
-        DMPresence = new DMPresenceService(AmbientServices.LazyOf<IDMObjectSearchService>(), AmbientServices.LazyOf<IGuiService>());
+        DMPresence = new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>());
         DMPreference = new DMPreferenceService(Db, DMPresence);
 
         Engine.SetReturnHandler("StringToObject", arguments => uint.TryParse((string)arguments[0]!, out var obj) ? obj : Invalid);

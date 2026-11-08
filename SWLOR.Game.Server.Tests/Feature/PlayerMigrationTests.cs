@@ -29,7 +29,7 @@ public class PlayerMigrationTests
     private static MigrationService NewMigrationService()
     {
         var db = new InMemoryDBService();
-        return new MigrationService(db, new OverflowStorageService(db), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>());
+        return new MigrationService(db, new OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
     }
 
     private static Player Record(int version, int tokens = RebuildTokens)

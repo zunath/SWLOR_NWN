@@ -130,7 +130,7 @@ public class MusicServiceTests
         private readonly InMemoryDBService _store;
 
         public MusicWithKeyItems(InMemoryDBService db)
-            : base(db, AmbientServices.Of<IKeyItemService>(), AmbientServices.LazyOf<IPerformanceAudienceService>(), AmbientServices.Of<IPropertyService>())
+            : base(db, FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.LazyFor<IPerformanceAudienceService>(), FacadeForwarder.For<IPropertyService>())
         {
             _store = db;
         }
@@ -176,7 +176,7 @@ public class MusicServiceTests
     [Test]
     public void The_constructor_builds_the_song_tables_without_touching_the_engine()
     {
-        var service = new MusicService(new InMemoryDBService(), AmbientServices.Of<IKeyItemService>(), AmbientServices.LazyOf<IPerformanceAudienceService>(), AmbientServices.Of<IPropertyService>());
+        var service = new MusicService(new InMemoryDBService(), FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.LazyFor<IPerformanceAudienceService>(), FacadeForwarder.For<IPropertyService>());
 
         service.GetCollectibleSongs().Should().HaveCount(new MusicSongCatalog().Songs.Count);
         _engine.Calls.Should().BeEmpty();

@@ -24,7 +24,7 @@ public sealed class TestCommunicationService : CommunicationService
         IPlanetService planet,
         IAreaService area,
         IPropertyService property)
-        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ILanguageService>(), AmbientServices.Of<IPlayerNameService>())
+        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>())
     {
     }
 

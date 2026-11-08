@@ -127,7 +127,7 @@ public class QuestContractBoardServiceTests
     private sealed class TestBoard : QuestContractBoardService
     {
         public TestBoard(IDBService db, IQuestService quests)
-            : base(db, quests, AmbientServices.Of<IAuthorizationService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IGuiService>(), AmbientServices.Of<IItemService>())
+            : base(db, quests, FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>())
         {
         }
 

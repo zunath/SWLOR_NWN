@@ -31,7 +31,7 @@ public class MessagingServiceTests
     private sealed class TestMessaging : MessagingService
     {
         public TestMessaging()
-            : base(AmbientServices.Of<IStealthService>())
+            : base(FacadeForwarder.For<IStealthService>())
         {
         }
 

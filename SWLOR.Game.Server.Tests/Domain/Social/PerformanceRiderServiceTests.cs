@@ -48,7 +48,7 @@ public class PerformanceRiderServiceTests
         private readonly Dictionary<PerkType, PerkDetail> _perks;
 
         public TestRiders(Dictionary<PerkType, PerkDetail> perks)
-            : base(AmbientServices.Of<IPerkService>()) => _perks = perks;
+            : base(FacadeForwarder.For<IPerkService>()) => _perks = perks;
 
         protected override bool TryGetPerkDetails(PerkType perk, out PerkDetail detail) => _perks.TryGetValue(perk, out detail!);
     }

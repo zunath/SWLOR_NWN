@@ -93,7 +93,7 @@ public class ConversationServiceTests
     [Test]
     public void Each_service_has_a_runtime_of_its_own()
     {
-        new ConversationService(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>()).Runtime.Should().NotBeSameAs(new ConversationService(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>()).Runtime);
+        new ConversationService(FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IPlayerNameService>()).Runtime.Should().NotBeSameAs(new ConversationService(FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IPlayerNameService>()).Runtime);
     }
 
     [Test]
@@ -775,7 +775,7 @@ public class ConversationServiceTests
         private readonly ConversationBench _bench;
 
         public TestableConversationService(ConversationBench bench)
-            : base(AmbientServices.Of<IGuiService>(), AmbientServices.Of<IPlayerNameService>())
+            : base(FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IPlayerNameService>())
         {
             _bench = bench;
         }

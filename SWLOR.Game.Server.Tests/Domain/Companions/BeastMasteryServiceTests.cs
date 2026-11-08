@@ -264,7 +264,7 @@ public class BeastMasteryServiceTests
     private sealed class TestBeastMastery : BeastMasteryService
     {
         public TestBeastMastery(IDBService db, IIncubationFieldNoteService notes, IPropertyService property)
-            : base(db, notes, property, AmbientServices.LazyOf<IAIService>(), AmbientServices.Of<ICombatRecorderService>(), AmbientServices.LazyOf<ICompanionControlService>(), AmbientServices.Of<IGuiService>(), AmbientServices.LazyOf<IItemService>(), AmbientServices.LazyOf<IPerkService>(), AmbientServices.Of<IResistanceService>(), AmbientServices.LazyOf<IStatService>(), AmbientServices.LazyOf<IStatusEffectService>())
+            : base(db, notes, property, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>())
         {
         }
 

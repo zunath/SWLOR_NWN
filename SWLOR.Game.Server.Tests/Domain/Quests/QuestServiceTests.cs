@@ -152,7 +152,7 @@ public class QuestServiceTests
     private sealed class TestQuestService : QuestService
     {
         public TestQuestService(IDBService db, IQuestEncounterService encounters)
-            : base(db, encounters, AmbientServices.Of<IActivityService>(), AmbientServices.Of<ICacheService>(), AmbientServices.Of<IConversationService>(), AmbientServices.Of<IEnmityService>(), AmbientServices.Of<IItemService>(), AmbientServices.Of<IPerkService>())
+            : base(db, encounters, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>())
         {
         }
 

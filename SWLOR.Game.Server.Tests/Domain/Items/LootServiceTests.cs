@@ -132,7 +132,7 @@ public class LootServiceTests
     private sealed class TestLootService : LootService
     {
         public TestLootService(IBeastMasteryService beastMastery)
-            : base(beastMastery, AmbientServices.Of<IItemService>(), AmbientServices.Of<IPerkService>(), AmbientServices.Of<IStatService>())
+            : base(beastMastery, FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

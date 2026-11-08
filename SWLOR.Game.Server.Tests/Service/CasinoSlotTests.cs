@@ -19,7 +19,7 @@ public class CasinoSlotTests
         while (root != null && !Directory.Exists(Path.Combine(root.FullName, "Module", "git")))
             root = root.Parent;
         Assert.That(root, Is.Not.Null);
-        var service = new CasinoSlotService(new InMemoryDBService(), AmbientServices.Of<IGuiService>());
+        var service = new CasinoSlotService(new InMemoryDBService(), FacadeForwarder.For<IGuiService>());
         string[] resrefs = ["swd_smach01", "swd_smach02", "swd_smach03", "swd_smach04"];
         using var area = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(root!.FullName,
             "Module", "git", "pw_ar_nscasino.git.json")));

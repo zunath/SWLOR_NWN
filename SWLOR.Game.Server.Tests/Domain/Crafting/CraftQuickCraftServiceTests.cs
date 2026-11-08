@@ -49,7 +49,7 @@ public class CraftQuickCraftServiceTests
     private sealed class TestQuickCraft : CraftQuickCraftService
     {
         public TestQuickCraft(IDBService db, ICraftService craft, ICraftSessionsService sessions, ICraftMinigameRoutingService routing)
-            : base(db, craft, sessions, routing, AmbientServices.Of<ISkillService>())
+            : base(db, craft, sessions, routing, FacadeForwarder.For<ISkillService>())
         {
         }
 

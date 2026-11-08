@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -49,6 +50,15 @@ namespace SWLOR.Game.Server.Service
 
         // A player-run match stays up this long after full time, then clears itself away.
         private const int FullTimeSeconds = 60;
+
+        // How high above the ground a player-laid pitch looks for walls between its spots.
+        private const float SightHeight = 1f;
+
+        // Match text names each creature by a token, so every reader sees the name they know that player by.
+        private const char MentionStart = '\u0001';
+        private const char MentionEnd = '\u0002';
+        private static readonly Regex MentionPattern = new($"{MentionStart}(\\d+){MentionEnd}");
+        private static readonly Dictionary<uint, (string PlayerId, string Name)> _mentions = new();
 
         private class MatchEntry
         {
@@ -129,10 +139,93 @@ namespace SWLOR.Game.Server.Service
             if (!pitch.FitsWithin(GetAreaSize(Dimension.Width, area) * 10f, GetAreaSize(Dimension.Height, area) * 10f))
                 return "There isn't room for a pitch here. Move toward the middle of a large open area.";
 
-            var entry = OpenMatch(area, pitch, isPlayerRun: true);
-            var result = entry.Match.AddPlayer(creature, GetName(creature), HuttballTeam.Home, role, CanCaptain(creature));
-            Apply(area, result, creature);
+            // Line of sight only works for a script running on an object in the area, so the player checks it.
+            AssignCommand(creature, () =>
+            {
+                if (_matches.ContainsKey(area) || GetIsObjectValid(FindMatchArea(creature)))
+                    return;
+
+                var obstruction = FindObstruction(area, pitch, GetPosition(creature));
+                if (obstruction != null)
+                {
+                    SendMessageToPC(creature, ColorToken.Red(obstruction));
+                    return;
+                }
+
+                var entry = OpenMatch(area, pitch, isPlayerRun: true);
+                var result = entry.Match.AddPlayer(creature, Mention(creature), HuttballTeam.Home, role, CanCaptain(creature));
+                Apply(area, result, creature);
+            });
             return null;
+        }
+
+        /// <summary>
+        /// Returns why a player can't lay a pitch here, or null. Players are placed on its squares and benches
+        /// directly, so every spot must be walkable ground in plain sight of the player, with no door near it.
+        /// </summary>
+        private static string FindObstruction(uint area, HuttballPitch pitch, Vector3 origin)
+        {
+            var spots = Enumerable.Range(0, pitch.Length)
+                .SelectMany(y => Enumerable.Range(0, pitch.Width).Select(x => pitch.GetSquareCenter(new HuttballSquare(x, y))))
+                .Concat(Enumerable.Range(0, pitch.Length).SelectMany(slot => new[]
+                {
+                    pitch.GetBenchPosition(HuttballTeam.Home, slot),
+                    pitch.GetBenchPosition(HuttballTeam.Away, slot),
+                }));
+            var eye = origin with { Z = origin.Z + SightHeight };
+            foreach (var spot in spots)
+            {
+                var location = Location(area, spot, 0f);
+                var material = GetSurfaceMaterial(location);
+                if (material <= 0 || Get2DAString("surfacemat", "Walk", material) != "1")
+                    return "Part of the pitch isn't open ground. Find a large, flat, open space.";
+                if (!LineOfSightVector(eye, spot with { Z = GetGroundHeight(location) + SightHeight }))
+                    return "Walls or obstacles cut across the pitch. Find a large, flat, open space.";
+            }
+
+            var southWest = pitch.GetPoint(-4f, -2f);
+            var northEast = pitch.GetPoint(pitch.Width + 4f, pitch.Length + 2f);
+            for (var door = GetFirstObjectInArea(area, ObjectType.Door); GetIsObjectValid(door); door = GetNextObjectInArea(area, ObjectType.Door))
+            {
+                var position = GetPosition(door);
+                if (position.X >= southWest.X && position.X <= northEast.X && position.Y >= southWest.Y && position.Y <= northEast.Y)
+                    return "There's a door in the way of the pitch. Find a large, flat, open space.";
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the token match text uses for a creature's name. <see cref="ResolveNames"/> turns it into the
+        /// name each reader knows that player by.
+        /// </summary>
+        public static string Mention(uint creature)
+        {
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            _mentions[creature] = (isPlayer ? GetObjectUUID(creature) : null, GetName(creature));
+            return $"{MentionStart}{creature}{MentionEnd}";
+        }
+
+        /// <summary>
+        /// Replaces the name tokens in match text with the names <paramref name="reader"/> knows those players by.
+        /// Windows pass <paramref name="plain"/>, since they can't show color tokens.
+        /// </summary>
+        public static string ResolveNames(uint reader, string text, bool plain = false)
+        {
+            if (string.IsNullOrEmpty(text) || text.IndexOf(MentionStart) < 0)
+                return text;
+
+            return MentionPattern.Replace(text, token =>
+            {
+                var creature = uint.Parse(token.Groups[1].Value);
+                _mentions.TryGetValue(creature, out var mention);
+                var name = GetIsObjectValid(creature)
+                    ? PlayerName.GetDisplayName(reader, creature)
+                    : mention.PlayerId != null
+                        ? PlayerName.GetDisplayNameByPlayerId(reader, mention.PlayerId, mention.Name)
+                        : mention.Name ?? "Someone";
+                return plain ? UtilPlugin.StripColors(name) : name;
+            });
         }
 
         private static MatchEntry OpenMatch(uint area, HuttballPitch pitch, bool isPlayerRun)
@@ -166,7 +259,7 @@ namespace SWLOR.Game.Server.Service
             var result = entry.Match.RemovePlayer(creature);
             if (result.Succeeded && entry.IsPlayerRun && !entry.Match.Players.Any(p => p.CanCaptain))
             {
-                Announce(area, new[] { $"{GetName(creature)} was the last player in the match." });
+                Announce(area, new[] { $"{Mention(creature)} was the last player in the match." });
                 EndMatch(area);
                 return;
             }
@@ -319,7 +412,7 @@ namespace SWLOR.Game.Server.Service
                     SetName(creature, name);
                     SetPlotFlag(creature, true);
                     entry.TestPlayers.Add(creature);
-                    result.Messages.AddRange(match.AddPlayer(creature, name, team, roles[index]).Messages);
+                    result.Messages.AddRange(match.AddPlayer(creature, Mention(creature), team, roles[index]).Messages);
                     match.Place(creature, square.Value);
                 }
             }
@@ -410,7 +503,7 @@ namespace SWLOR.Game.Server.Service
         public static void PickSquare(uint actor, string message, System.Action<HuttballSquare> onPicked)
         {
             var controlled = DMPresence.GetControlledCreature(actor);
-            Targeting.EnterTargetingMode(controlled, ObjectType.All, message, target =>
+            Targeting.EnterTargetingMode(controlled, ObjectType.All, ResolveNames(actor, message), target =>
             {
                 // A ground pick arrives as the area object, the way the battle grid window reads it.
                 var area = GetArea(controlled);
@@ -437,7 +530,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void PickCreature(uint actor, string message, System.Action<uint> onPicked)
         {
-            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(actor), ObjectType.Creature, message, onPicked);
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(actor), ObjectType.Creature, ResolveNames(actor, message), onPicked);
         }
 
         /// <summary>
@@ -474,7 +567,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!result.Succeeded)
             {
-                DMPresence.SendMessage(actor, ColorToken.Red(result.Error));
+                DMPresence.SendMessage(actor, ColorToken.Red(ResolveNames(actor, result.Error)));
                 return;
             }
 
@@ -563,7 +656,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), scorer.Creature);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), scorer.Creature);
-                FloatingTextStringOnCreature(ColorToken.Yellow($"TOUCHDOWN! {scorer.Name}!"), scorer.Creature, false);
+                FloatingTextStringOnCreature(ColorToken.Yellow($"TOUCHDOWN! {ResolveNames(scorer.Creature, scorer.Name)}!"), scorer.Creature, false);
             }
 
             var cheers = new[] { Animation.FireForgetVictory1, Animation.FireForgetVictory2, Animation.FireForgetVictory3 };
@@ -620,7 +713,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 foreach (var line in lines)
-                    SendMessageToPC(controlled, ColorToken.SkillCheck("Huttball: ") + line);
+                    SendMessageToPC(controlled, ColorToken.SkillCheck("Huttball: ") + ResolveNames(pc, line));
             }
         }
 
@@ -846,6 +939,18 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RemoveFromMatch(area, player, player);
+        }
+
+        /// <summary>
+        /// Takes a player who walks out of the match's area out of the match, since they can no longer play it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void RemovePlayerLeavingArea()
+        {
+            var area = OBJECT_SELF;
+            var creature = GetExitingObject();
+            if (FindMatchArea(creature) == area)
+                RemoveFromMatch(area, creature, creature);
         }
 
         /// <summary>

@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class HuttballPlayerViewModel : GuiViewModelBase<HuttballPlayerViewModel, GuiPayloadBase>,
         IGuiRefreshable<HuttballRefreshEvent>
     {
+        public const string BodyElement = "huttball_player_body";
+        public const string BodyPartial = "HUTTBALL_PLAYER_BODY";
+
         public string StatsText { get => Get<string>(); set => Set(value); }
         public string MoveText { get => Get<string>(); set => Set(value); }
         public bool CanMoveOrStand { get => Get<bool>(); set => Set(value); }
@@ -39,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Refresh();
             WatchOnClient(model => model.TeamSelection);
             WatchOnClient(model => model.RoleSelection);
+            ChangePartialView(BodyElement, BodyPartial);
         }
 
         public void Refresh(HuttballRefreshEvent payload)
@@ -197,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var team = TeamSelection == 1 ? HuttballTeam.Away : HuttballTeam.Home;
             var role = (HuttballRole)(RoleSelection + 1);
             var character = Character;
-            Huttball.Command(Player, m => m.AddPlayer(character, GetName(character), team, role, Huttball.CanCaptain(character)));
+            Huttball.Command(Player, m => m.AddPlayer(character, Huttball.Mention(character), team, role, Huttball.CanCaptain(character)));
         };
 
         public Action OnLeave() => () =>

@@ -197,23 +197,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanStaffEdit = _isStaff;
             CanSpawnTestTeams = IsSetup && _isStaff;
             ScoreText = $"Score: Home (blue) {match.GetScore(HuttballTeam.Home)} - Away (red) {match.GetScore(HuttballTeam.Away)}";
-            ResourcesText = $"{DescribeResources(match, HuttballTeam.Home)}\n{DescribeResources(match, HuttballTeam.Away)}\n" +
-                            $"Captains: Home {match.GetCaptain(HuttballTeam.Home)?.Name ?? "none"}, " +
-                            $"Away {match.GetCaptain(HuttballTeam.Away)?.Name ?? "none"}";
+            ResourcesText = Names($"{DescribeResources(match, HuttballTeam.Home)}\n{DescribeResources(match, HuttballTeam.Away)}\n" +
+                                  $"Captains: Home {match.GetCaptain(HuttballTeam.Home)?.Name ?? "none"}, " +
+                                  $"Away {match.GetCaptain(HuttballTeam.Away)?.Name ?? "none"}");
             TurnText = match.Phase switch
             {
                 HuttballPhase.Setup => $"Half {match.Half}, turn {match.Turn}: set up. {match.ActiveTeam} moves first.",
                 HuttballPhase.Playing => $"Half {match.Half}, turn {match.Turn} of {HuttballRules.TurnsPerHalf}: the {match.ActiveTeam} team's move.",
                 _ => "Full time.",
             };
-            BallText = match.BallCarrier != null
+            BallText = Names(match.BallCarrier != null
                 ? $"Ball: held by {match.BallCarrier.DisplayName} ({match.BallCarrier.Team})."
                 : match.LooseBall != null
                     ? $"Ball: loose at {match.LooseBall.Value}."
-                    : "Ball: not in play.";
+                    : "Ball: not in play.");
 
             var unit = GetUnit();
-            UnitText = DescribeUnit(match, unit);
+            UnitText = Names(DescribeUnit(match, unit));
             CanMove = unit != null && match.CanMove(unit);
             CanBlock = unit != null && match.CanBlock(unit);
             CanPass = unit != null && match.CanPass(unit);
@@ -224,8 +224,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var team = GetResourceTeam();
             CanReroll = team != null && match.CanReroll(team.Value);
             CanUseMedic = team != null && match.CanUseMedic(team.Value);
-            LogText = string.Join("\n", match.Log.Reverse());
+            LogText = Names(string.Join("\n", match.Log.Reverse()));
         }
+
+        /// <summary>
+        /// Shows match text with each player named the way this user knows them.
+        /// </summary>
+        private string Names(string text) => Huttball.ResolveNames(Player, text, plain: true);
 
         private static string DescribeResources(HuttballMatch match, HuttballTeam team)
         {
@@ -389,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _selectedUnit = target;
-                Run(match => match.AddPlayer(target, name, team, role, Huttball.CanCaptain(target)));
+                Run(match => match.AddPlayer(target, Huttball.Mention(target), team, role, Huttball.CanCaptain(target)));
             });
         };
 
@@ -468,7 +473,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var player = Match?.GetPlayer(target);
             if (player == null)
             {
-                DMPresence.SendMessage(Player, ColorToken.Red($"{GetName(target)} is not in this match."));
+                DMPresence.SendMessage(Player, ColorToken.Red($"{PlayerName.GetDisplayName(Player, target)} is not in this match."));
                 return false;
             }
 
@@ -484,7 +489,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (player.Team != team)
             {
-                DMPresence.SendMessage(Player, ColorToken.Red($"{player.Name} is not on your team."));
+                DMPresence.SendMessage(Player, ColorToken.Red(Names($"{player.Name} is not on your team.")));
                 return false;
             }
 
@@ -500,7 +505,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (Match?.GetPlayer(target) == null)
                 {
-                    DMPresence.SendMessage(Player, ColorToken.Red($"{GetName(target)} is not in this match."));
+                    DMPresence.SendMessage(Player, ColorToken.Red($"{PlayerName.GetDisplayName(Player, target)} is not in this match."));
                     return;
                 }
 

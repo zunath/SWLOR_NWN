@@ -894,6 +894,31 @@ public class HuttballMatchTests
     }
 
     [Test]
+    public void LeavingAndRejoiningKeepsAnInjury()
+    {
+        var match = CreateMatch();
+        Add(match, HomeBruiser, HuttballTeam.Home, HuttballRole.Bruiser, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 5, 10);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 0, 19);
+        match.AddPlayer(AwayBruiser, "Hurt", HuttballTeam.Away, HuttballRole.Bruiser);
+        match.GetPlayer(AwayBruiser).Status = HuttballPlayerStatus.Injured;
+        Kickoff(match);
+
+        _dice.Queue(18, 1, 20); // Maimed.
+        match.Block(HomeBruiser, AwayCatcher);
+
+        match.RemovePlayer(AwayCatcher);
+        match.RemovePlayer(AwayBruiser);
+        match.AddPlayer(AwayCatcher, "Back", HuttballTeam.Away, HuttballRole.Catcher);
+        match.GetPlayer(AwayCatcher).Status.Should().Be(HuttballPlayerStatus.Maimed);
+
+        for (var call = 0; call < HuttballRules.TurnsPerHalf * 2 && match.Half == 1; call++)
+            match.EndTeamTurn();
+        match.AddPlayer(AwayBruiser, "Healed", HuttballTeam.Away, HuttballRole.Bruiser);
+        match.GetPlayer(AwayBruiser).Status.Should().Be(HuttballPlayerStatus.Standing, "halftime ends an injury");
+    }
+
+    [Test]
     public void AnEmptyPitchStopsTheDriveInsteadOfRunningOutTheHalf()
     {
         var match = CreateMatch();

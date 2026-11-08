@@ -22,14 +22,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float FullWidth = 204f;
         private const float ButtonHeight = 40f;
 
+        // Wide enough for the rows plus the vertical scrollbar.
+        private const float PanelWidth = 232f;
+
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.HuttballPlayer)
-                .SetInitialGeometry(0f, 0f, 240f, 600f)
+            var window = _builder.CreateWindow(GuiWindowType.HuttballPlayer)
+                .SetInitialGeometry(0f, 0f, 260f, 600f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .AddColumn(col =>
+                .DefinePartialView(HuttballPlayerViewModel.BodyPartial, AddBody);
+            window.AddStandardLayout(layout => layout.SetContentPartialElement(HuttballPlayerViewModel.BodyElement));
+
+            return _builder.Build();
+        }
+
+        /// <summary>
+        /// The whole window in one borderless panel that scrolls when the window is shorter than its rows.
+        /// </summary>
+        private static void AddBody(GuiGroup<HuttballPlayerViewModel> host)
+        {
+            host.AddColumn(column => column.AddRow(row => row.AddGroup(panel =>
+            {
+                panel.SetShowBorder(false);
+                panel.SetScrollbars(NuiScrollbars.Y);
+                panel.AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
@@ -93,8 +111,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     AddActionRow(col, "Done", "Finish your turn.",
                         model => model.OnDone(), model => model.CanFinish);
                 });
-
-            return _builder.Build();
+            }).SetWidth(PanelWidth)));
         }
 
         private static void AddActionRow(

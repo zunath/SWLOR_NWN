@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Service.HuttballService
         private readonly Dictionary<HuttballTeam, int> _medics = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
         private readonly Dictionary<HuttballTeam, HuttballPlayer> _captains = new() { [HuttballTeam.Home] = null, [HuttballTeam.Away] = null };
 
+        // Injuries and send-offs of players who left, so leaving and rejoining never heals them.
+        private readonly Dictionary<uint, HuttballPlayerStatus> _benchedLeavers = new();
+
         // Dice rolled so far, so a command can tell whether it rolled any.
         private int _rollCount;
 
@@ -219,6 +222,12 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
             var result = new HuttballActionResult();
             Say(result, $"{player.DisplayName} joins the {team} team.");
+            if (_benchedLeavers.Remove(creature, out var status))
+            {
+                player.Status = status;
+                Say(result, $"{player.Name} is still {DescribeStatus(status)}.");
+            }
+
             if (HasCaptains && canCaptain && _captains[team] == null)
             {
                 _captains[team] = player;
@@ -260,6 +269,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var square = player.Square;
             _rerollable = null;
             _players.Remove(player);
+            if (IsTreatable(player.Status) || player.Status == HuttballPlayerStatus.SentOff)
+                _benchedLeavers[creature] = player.Status;
             Say(result, $"{player.DisplayName} leaves the match.");
             if (_captains[player.Team] == player)
             {
@@ -1374,6 +1385,12 @@ namespace SWLOR.Game.Server.Service.HuttballService
             Turn = 1;
             ActiveTeam = GetFirstTeam(Half);
             Phase = HuttballPhase.Setup;
+            foreach (var (creature, status) in _benchedLeavers.ToList())
+            {
+                if (status is HuttballPlayerStatus.Injured or HuttballPlayerStatus.SentOff)
+                    _benchedLeavers.Remove(creature);
+            }
+
             foreach (var player in _players)
             {
                 switch (player.Status)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.LogService;
@@ -9,9 +10,9 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// Registry and entry point for code-driven NUI conversations: the logic and state that used to be static in
-    /// <c>Service.ConversationMenu</c>, moved here unchanged. The facade still carries the event handlers and forwards
-    /// every call to the container's instance. This is independent of the old Dialog service and never allocates or
-    /// starts a generated DLG shell.
+    /// the <c>ConversationMenu</c> facade, moved here unchanged. The event handlers run on the container's instance;
+    /// static callers reach it through <c>GameServices.ConversationMenu</c>. This is independent of the old Dialog
+    /// service and never allocates or starts a generated DLG shell.
     /// </summary>
     /// <remarks>
     /// The constructor does no work: the menus are registered by <see cref="CacheData"/>. The reflection search and
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Core
             _conversation = conversation;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             _definitions.Clear();
@@ -53,6 +55,7 @@ namespace SWLOR.Game.Server.Domain.Core
         public bool Contains(string name) =>
             !string.IsNullOrWhiteSpace(name) && _definitions.ContainsKey(name);
 
+        [NWNEventHandler(ScriptName.OnDialogStart)]
         public void StartFromObjectEvent()
         {
             var owner = OBJECT_SELF;
@@ -112,6 +115,7 @@ namespace SWLOR.Game.Server.Domain.Core
             return GetCommandable(creature) || isCharmed;
         }
 
+        [NWNEventHandler(ScriptName.OnDialogStartConversation)]
         public void StartFromLocalConversation()
         {
             var owner = OBJECT_SELF;

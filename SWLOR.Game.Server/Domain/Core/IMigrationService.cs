@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
     /// Runs the server migrations against the database at boot, upgrades the saved characters, and guards the login of
-    /// a character that is not current. The static facade <c>Service.Migration</c> keeps the event handlers and forwards
-    /// every member to the container's instance of this interface.
+    /// a character that is not current. Static callers reach the container's instance through
+    /// <c>GameServices.Migration</c>; the event handlers are on <see cref="MigrationService"/>.
     /// </summary>
     public interface IMigrationService
     {

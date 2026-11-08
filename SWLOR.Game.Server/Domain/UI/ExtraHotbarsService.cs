@@ -136,14 +136,17 @@ namespace SWLOR.Game.Server.Domain.UI
         }
 
         // Area entry follows every login, after the player's windows exist.
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void OpenBarsOnEnter()
         {
             ApplyVisibility(GetEnteringObject());
         }
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LockBarsOnEnter()
         {
             _unlockedPlayers.Remove(GetEnteringObject());
         }
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void LockBarsOnExit()
         {
             var player = GetExitingObject();
@@ -872,24 +875,29 @@ namespace SWLOR.Game.Server.Domain.UI
 
             return null;
         }
+        [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public void RefreshOnAcquire()
         {
             RefreshStatus(GetModuleItemAcquiredBy());
         }
+        [NWNEventHandler(ScriptName.OnModuleUnacquire)]
         public void RefreshOnUnacquire()
         {
             RefreshStatus(GetModuleItemLostBy());
         }
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
         public void RefreshOnEquip()
         {
             RefreshStatus(GetPCItemLastEquippedBy());
         }
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public void RefreshOnUnequip()
         {
             RefreshStatus(GetPCItemLastUnequippedBy());
         }
 
         // Scripted item uses lower stack sizes and attacks drop stealth without an event, so slots also catch up each heartbeat.
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public void RefreshOnHeartbeat()
         {
             RefreshStatus(OBJECT_SELF);

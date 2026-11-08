@@ -129,7 +129,7 @@ public class PerformanceAudienceCostTests
         var shared = new[]
         {
             SourcePath("Domain", "Combat", "DeathService.cs"),
-            SourcePath("Service", "Fishing.cs"),
+            SourcePath("Domain", "World", "FishingService.cs"),
             SourcePath("Domain", "Character", "StatService.cs"),
             SourcePath("Domain", "Character", "StatusEffectService.cs")
         };

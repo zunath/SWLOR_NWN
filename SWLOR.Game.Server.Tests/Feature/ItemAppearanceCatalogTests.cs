@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -188,7 +190,7 @@ public class ItemAppearanceCatalogTests
     private static bool IsExcluded(JObject blueprint, BaseItem baseItem, out string name)
     {
         var noEconomy = (blueprint["VarTable"]?["value"] as JArray)?.Any(variable =>
-            variable["Name"]?["value"]?.Value<string>() == Item.NoEconomyVariable &&
+            variable["Name"]?["value"]?.Value<string>() == ItemService.NoEconomyVariable &&
             variable["Type"]?["value"]?.Value<int>() == 1 &&
             variable["Value"]?["value"]?.Value<int>() == 1) == true;
         name = blueprint["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty;

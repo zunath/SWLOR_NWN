@@ -3,6 +3,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -15,13 +16,13 @@ public class ConversationArchitectureTests
     [Test]
     public void ConversationGraphs_LoadOnlyAfterSnippetRegistrationCompletes()
     {
-        var snippetCacheEvents = typeof(Snippet)
-            .GetMethod(nameof(Snippet.CacheData))!
+        var snippetCacheEvents = typeof(SnippetService)
+            .GetMethod(nameof(SnippetService.CacheData))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);
-        var conversationCacheEvents = typeof(Conversation)
-            .GetMethod(nameof(Conversation.CacheData))!
+        var conversationCacheEvents = typeof(SWLOR.Game.Server.Domain.Core.ConversationService)
+            .GetMethod(nameof(SWLOR.Game.Server.Domain.Core.ConversationService.CacheData))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);

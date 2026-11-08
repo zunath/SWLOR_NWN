@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Force, 3);
                     CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Mimicry, 3);
                     ctx.SeedRandom(attempt + 1);
-                    Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
+                    GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
                     await Kill(ctx, npc, fixture.Creature);
                     await ctx.WaitUntilAsync(() => messages.Count > 0, 3f, "combined Mimicry XP feedback");
                     await ctx.WaitFrameAsync();
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(forceXP > 0, "the baseline fight awards Force XP");
                 ctx.AssertEqual(forceXP, Experience(observer, SkillType.Force),
                     $"automatic observation with Mimicry {mimicryRank} does not lower Force XP");
-                ctx.AssertEqual(mimicryRank == 50 ? 0 : AfterPenalty(Mimicry.CalculateAnalysisXP(0, mimicryRank)),
+                ctx.AssertEqual(mimicryRank == 50 ? 0 : AfterPenalty(GameServices.Mimicry.CalculateAnalysisXP(0, mimicryRank)),
                     Experience(observer, SkillType.Mimicry) - StartingExperience(mimicryRank),
                     "observation grants only its independent rank-relative reward");
                 ctx.Assert(!Observers.ContainsKey(npc), "the kill consumes the observer's credit");
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the higher actively used Mimicry rank still reduces and shares the utility pool");
             ctx.AssertEqual(forceXP, activeMimicryXP, "equal active credits still receive equal shares");
             ctx.AssertEqual(forceXP, Experience(observer, SkillType.Force), "observation does not alter active sharing");
-            ctx.AssertEqual(activeMimicryXP + AfterPenalty(Mimicry.CalculateAnalysisXP(0, 4)),
+            ctx.AssertEqual(activeMimicryXP + AfterPenalty(GameServices.Mimicry.CalculateAnalysisXP(0, 4)),
                 Experience(observer, SkillType.Mimicry) - StartingExperience(4),
                 "observation adds only its small separate reward to active Mimicry XP");
         }
@@ -226,8 +227,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void Observe(uint npc)
         {
-            Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
-            Mimicry.OnCreatureAbilityUsed(npc, FeatType.StaticWeb);
+            GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
+            GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.StaticWeb);
         }
 
         private static async Task Kill(EngineTestContext ctx, uint npc, uint player)

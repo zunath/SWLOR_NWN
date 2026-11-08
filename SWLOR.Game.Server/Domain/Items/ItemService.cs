@@ -76,6 +76,15 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         public const string PlayerProducedItemVariable = "PLAYER_PRODUCED_ITEM";
 
+        /// <summary>The message shown when an item cannot be returned because the player's inventory is full.</summary>
+        public const string InventoryFullMessage = "Your inventory is full. Make room and try again.";
+
+        /// <summary>The inventory-full message for window labels too narrow for the full one.</summary>
+        public const string InventoryFullShortMessage = "Your inventory is full.";
+
+        /// <summary>The message shown when a closing window keeps the items that did not fit until it is opened again.</summary>
+        public const string ItemsHeldMessage = "Your inventory is full. Items that did not fit stay at the station; open it again after making room.";
+
         private readonly Dictionary<string, ItemDetail> _items = new();
         private readonly Dictionary<int, int[]> _2daCache = new();
         private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
@@ -149,6 +158,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             Load2DACache();
@@ -266,11 +276,13 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>
         /// Ensure saved and newly acquired scripted items expose their declared activation action.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public void EnsureAcquiredItemActivation()
         {
             EnsureItemAndContentsActivations(GetModuleItemAcquired());
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnsureInventoryItemActivations()
         {
             var player = GetEnteringObject();
@@ -316,6 +328,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>
         /// When a registered item is used, run its scripted action instead of native behavior.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnItemUseBefore)]
         public void UseItem()
         {
             var user = OBJECT_SELF;

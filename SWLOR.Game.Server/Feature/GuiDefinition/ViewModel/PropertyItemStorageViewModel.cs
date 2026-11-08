@@ -9,6 +9,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -537,7 +539,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = ObjectPlugin.Deserialize(dbItem.Data);
             if (!Item.TryAcquireItem(Player, item))
             {
-                Instructions = Item.InventoryFullMessage;
+                Instructions = ItemService.InventoryFullMessage;
                 InstructionsColor = GuiColor.Red;
                 return;
             }

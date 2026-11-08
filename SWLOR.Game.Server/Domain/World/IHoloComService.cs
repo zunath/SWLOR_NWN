@@ -4,8 +4,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// HoloCom calls between players: ringing, answering, connected calls with their holograms, and the state kept on
-    /// each player. The static facade <c>Service.HoloCom</c> forwards to the container's instance of this interface,
-    /// repeats the faction constant and keeps the event handlers.
+    /// each player. Static callers reach the container's instance through <c>GameServices.HoloCom</c>; the event
+    /// handlers and the faction constant are on <see cref="HoloComService"/>.
     /// </summary>
     public interface IHoloComService
     {

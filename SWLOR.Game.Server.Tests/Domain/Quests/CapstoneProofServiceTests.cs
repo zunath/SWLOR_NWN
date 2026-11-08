@@ -17,7 +17,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
-using GameAbility = SWLOR.Game.Server.Service.Ability;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Quests;
 
@@ -558,11 +558,11 @@ public class CapstoneProofServiceTests
         // The defaults are the original Ability calls. Their answer depends on the shared ability table, so each is
         // compared with the answer of the static service itself.
         var feat = FeatType.QuickDraw1;
-        _service.RunDefaultIsFeatRegistered(feat).Should().Be(GameAbility.IsFeatRegistered(feat));
+        _service.RunDefaultIsFeatRegistered(feat).Should().Be(Ability.IsFeatRegistered(feat));
 
-        if (GameAbility.IsFeatRegistered(feat))
+        if (Ability.IsFeatRegistered(feat))
         {
-            _service.RunDefaultGetAbilityDetail(feat).Should().BeSameAs(GameAbility.GetAbilityDetail(feat));
+            _service.RunDefaultGetAbilityDetail(feat).Should().BeSameAs(Ability.GetAbilityDetail(feat));
         }
         else
         {

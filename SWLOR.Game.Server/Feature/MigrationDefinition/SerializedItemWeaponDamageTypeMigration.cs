@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -23,17 +24,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static readonly WeaponDamageScale[] WeaponDamageScales =
         {
-            new(SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
-            new(SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, new[] { 5, 9, 14, 18, 22 }, new[] { 5, 8, 12, 16, 19 }),
-            new(SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 8, 15, 27, 34, 40 }),
-            new(SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 7, 14, 25, 32, 38 }),
-            new(SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
-            new(SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
-            new(SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, new[] { 8, 10, 13, 15, 19 }, new[] { 7, 9, 11, 13, 16 }),
-            new(SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
-            new(SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 16, 20 }),
-            new(SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, new[] { 4, 7, 11, 14, 17 }, new[] { 4, 6, 9, 12, 15 }),
-            new(SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, new[] { 8, 15, 27, 34, 39 }, new[] { 7, 14, 25, 31, 36 }),
+            new(Item.VibrobladeBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
+            new(Item.VibroknifeBaseItemTypes, new[] { 5, 9, 14, 18, 22 }, new[] { 5, 8, 12, 16, 19 }),
+            new(Item.HeavyVibrobladeBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 8, 15, 27, 34, 40 }),
+            new(Item.SpearBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 7, 14, 25, 32, 38 }),
+            new(Item.TwinBladeBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
+            new(Item.SaberstaffBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
+            new(Item.KatarBaseItemTypes, new[] { 8, 10, 13, 15, 19 }, new[] { 7, 9, 11, 13, 16 }),
+            new(Item.StaffBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
+            new(Item.PistolBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 16, 20 }),
+            new(Item.ThrowingWeaponBaseItemTypes, new[] { 4, 7, 11, 14, 17 }, new[] { 4, 6, 9, 12, 15 }),
+            new(Item.RifleBaseItemTypes, new[] { 8, 15, 27, 34, 39 }, new[] { 7, 14, 25, 31, 36 }),
             new(new[] { BaseItem.Lightsaber }, new[] { 8, 12, 16, 20, 24 }, new[] { 6, 10, 14, 17, 21 }),
             new(new[] { BaseItem.Electroblade }, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
         };
@@ -102,19 +103,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             return new[]
                 {
-                    SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.KatarBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.StaffBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.RifleBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.PistolBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.SpearBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes,
-                    SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes,
+                    Item.VibrobladeBaseItemTypes,
+                    Item.KatarBaseItemTypes,
+                    Item.TwinBladeBaseItemTypes,
+                    Item.VibroknifeBaseItemTypes,
+                    Item.StaffBaseItemTypes,
+                    Item.RifleBaseItemTypes,
+                    Item.HeavyVibrobladeBaseItemTypes,
+                    Item.PistolBaseItemTypes,
+                    Item.LightsaberBaseItemTypes,
+                    Item.SpearBaseItemTypes,
+                    Item.ThrowingWeaponBaseItemTypes,
+                    Item.SaberstaffBaseItemTypes,
+                    Item.CreatureBaseItemTypes,
                 }
                 .SelectMany(x => x)
                 .ToHashSet();
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             if (objectType == ObjectType.Item)
             {
-                if (!doubleWeaponsOnly || SWLOR.Game.Server.Service.Item.IsDoubleWeaponType(GetBaseItemType(obj)))
+                if (!doubleWeaponsOnly || Item.IsDoubleWeaponType(GetBaseItemType(obj)))
                     wasMigrated |= MigrateItem(obj);
                 else
                     wasMigrated |= MigrateConstructedDroidLocalVariable(obj);
@@ -203,8 +204,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             // NPC double weapons retain their explicit budgets: two ends share
             // twice the previous single-end interval, preserving damage per second.
-            var isDoubleWeapon = SWLOR.Game.Server.Service.Item.IsDoubleWeaponType(baseItem);
-            if (isDoubleWeapon && SWLOR.Game.Server.Service.Item.IsEconomyRestricted(item))
+            var isDoubleWeapon = Item.IsDoubleWeaponType(baseItem);
+            if (isDoubleWeapon && Item.IsEconomyRestricted(item))
                 return wasMigrated;
 
             var hasTargetWeaponDelay = HasTargetWeaponDelay(item);
@@ -698,7 +699,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         internal static bool ShouldRemoveWeaponDamageType(BaseItem baseItem)
         {
-            return SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes.Contains(baseItem);
+            return Item.VibroknifeBaseItemTypes.Contains(baseItem);
         }
 
         private static CombatDamageType ResolveDamageType(

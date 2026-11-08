@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// The music of the module: the songs of the ambientmusic.2da file, the collectible songs players own as key items,
-    /// each player's personal track and battle theme, and the music of an area. The static facade <c>Service.Music</c>
-    /// forwards to the container's instance of this interface and keeps the event handlers.
+    /// each player's personal track and battle theme, and the music of an area. Static callers reach the container's
+    /// instance through <c>GameServices.Music</c>; the event handlers are on <see cref="MusicService"/>.
     /// </summary>
     public interface IMusicService
     {

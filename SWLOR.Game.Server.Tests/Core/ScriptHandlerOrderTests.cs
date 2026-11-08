@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// namespaces depth first, a namespace's own types before its child namespaces, siblings last-declared-first, the
 /// project's .cs files sorted by full path. Adding a file that had no handler at all could reorder every handler: a
 /// throwaway <c>Core/AAA_Unrelated.cs</c> that only declared <c>namespace SWLOR.Game.Server.Service</c> moved
-/// <c>Service.DB.Load</c> after <c>Feature.EventRegistration.OnModulePreload</c> in <c>mod_preload</c>, although
+/// the <c>DB.Load</c> handler after <c>Feature.EventRegistration.OnModulePreload</c> in <c>mod_preload</c>, although
 /// <c>DB.Load</c> (which connects Redis) must run before <c>OnModulePreload</c> (which reads it). Moving a handler class
 /// to another folder or namespace, renaming a folder, and splitting or merging partial parts had the same effect.
 /// <see cref="ScriptHandlerManifestOrderTests"/> proves the manifest ends that dependence.</para>

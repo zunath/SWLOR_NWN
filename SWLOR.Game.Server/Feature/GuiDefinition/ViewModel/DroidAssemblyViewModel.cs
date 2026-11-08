@@ -9,6 +9,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -644,7 +646,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (!Reset())
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
         public Action OnClickCPU() => () =>
@@ -668,7 +670,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         var part = Droid.LoadDroidPartItemPropertyDetails(item);
                         if (!Item.TryAcquireItem(Player, item))
                         {
-                            ShowError(Item.InventoryFullMessage);
+                            ShowError(ItemService.InventoryFullMessage);
                             return;
                         }
 
@@ -713,7 +715,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -756,7 +758,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -799,7 +801,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -842,7 +844,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -889,7 +891,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to reset everything?", () =>
             {
                 if (!Reset())
-                    ShowError(Item.InventoryFullMessage);
+                    ShowError(ItemService.InventoryFullMessage);
             });
         };
 

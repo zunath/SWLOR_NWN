@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -104,7 +106,7 @@ public class MimicryLoadoutTests
     public void WholeBuildValidationRejectsUnknownUnlearnedDuplicateOverRankAndOverBudgetWithoutMutation()
     {
         Ability.CacheData();
-        Mimicry.CacheData();
+        GameServices.Mimicry.CacheData();
         var player = new Player();
         player.Perks[PerkType.CombatAnalyzer] = 1;
         player.Skills[SkillType.Mimicry] = new PlayerSkill { Rank = 50 };
@@ -118,14 +120,14 @@ public class MimicryLoadoutTests
             [FeatType.FrostSpitTechnique, FeatType.FrostSpitTechnique], [FeatType.TerrifyingBellowTechnique]
         })
         {
-            Mimicry.ValidateLoadout(player, invalid, out var error).Should().BeFalse();
+            GameServices.Mimicry.ValidateLoadout(player, invalid, out var error).Should().BeFalse();
             error.Should().NotBeEmpty();
             JsonConvert.SerializeObject(player).Should().Be(before);
         }
-        Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out _).Should().BeTrue();
+        GameServices.Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out _).Should().BeTrue();
         player.Skills[SkillType.Mimicry].Rank = 0;
-        Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out var rankError).Should().BeFalse();
+        GameServices.Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out var rankError).Should().BeFalse();
         rankError.Should().Contain("rank 3");
-        Mimicry.ValidateLoadout(player, [], out _).Should().BeTrue();
+        GameServices.Mimicry.ValidateLoadout(player, [], out _).Should().BeTrue();
     }
 }

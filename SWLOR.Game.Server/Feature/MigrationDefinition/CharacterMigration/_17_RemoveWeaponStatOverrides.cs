@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -53,7 +55,7 @@ internal sealed class _17_RemoveWeaponStatOverrides : ICharacterMigration
         var name = item.Name;
         if (string.IsNullOrEmpty(name) && StoredObjectData.ReadLocalizedNameReference(item.Node) != uint.MaxValue)
             name = TalkTableName;
-        return Item.IsEconomyRestricted(item.BaseItem, name, item.GetLocalInt(Item.NoEconomyVariable) == 1,
+        return Item.IsEconomyRestricted(item.BaseItem, name, item.GetLocalInt(ItemService.NoEconomyVariable) == 1,
             SavedCharacterData.WeaponHasInventoryIcon(item.BaseItem, item.SimpleModel));
     }
 

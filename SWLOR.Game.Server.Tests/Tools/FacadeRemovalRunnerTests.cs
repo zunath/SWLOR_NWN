@@ -30,6 +30,8 @@ public class FacadeRemovalRunnerTests
 
     private const string EngineTest = "namespace SWLOR.Game.Server.EngineTests\n{\n    class T { void M() { Taxi.GetDestinationsByRegionId(1); } }\n}\n";
 
+    private const string EngineProject = "<Project>\n  <ItemGroup>\n    <ProjectReference Include=\"..\\SWLOR.Game.Server\\SWLOR.Game.Server.csproj\" />\n  </ItemGroup>\n</Project>\n";
+
     private string _root = null!;
 
     [SetUp]
@@ -43,7 +45,7 @@ public class FacadeRemovalRunnerTests
         Write("SWLOR.Game.Server/Feature/Untouched.cs", "class Untouched { }\n");
         Write("SWLOR.Game.Server/Core/ScriptHandlerOrder.txt", Manifest);
         Write("SWLOR.Game.Server/obj/Generated.cs", "class G { void M() { Taxi.Register(1); } }\n");
-        Write("SWLOR.Game.Server.EngineTests/SWLOR.Game.Server.EngineTests.csproj", "<Project />");
+        Write("SWLOR.Game.Server.EngineTests/SWLOR.Game.Server.EngineTests.csproj", EngineProject);
         Write("SWLOR.Game.Server.EngineTests/GlobalUsings.cs", EngineGlobals);
         Write("SWLOR.Game.Server.EngineTests/Definitions/T.cs", EngineTest);
         Write("tools/Refactor/RemovedFacades.json", Data);
@@ -87,6 +89,23 @@ public class FacadeRemovalRunnerTests
 
         Snapshot().Should().BeEquivalentTo(before);
         log.ToString().Should().Contain("Would change 3 file(s) for 1 removed facade(s): 2 using line(s) added, 0 call site(s) rewritten, 1 manifest line(s) renamed.");
+    }
+
+    [Test]
+    public void Only_projects_that_reference_the_server_are_rewritten()
+    {
+        // A worker project with its own Taxi type, and a tool that reaches the server through another project.
+        Write("SWLOR.Worker/SWLOR.Worker.csproj", "<Project><ItemGroup><ProjectReference Include=\"$(External)\\Lib.csproj\" /></ItemGroup></Project>\n");
+        Write("SWLOR.Worker/Jobs.cs", "class Jobs { void M() { Taxi.Register(1); } }\n");
+        Write("SWLOR.Domain/SWLOR.Domain.csproj", "<Project><ItemGroup><ProjectReference Include=\"../SWLOR.Game.Server/SWLOR.Game.Server.csproj\" /></ItemGroup></Project>\n");
+        Write("SWLOR.Tool/SWLOR.Tool.csproj", "<Project><ItemGroup><ProjectReference Include=\"..\\SWLOR.Domain\\SWLOR.Domain.csproj\" /></ItemGroup></Project>\n");
+        Write("SWLOR.Tool/Program.cs", "class Program { void M() { Taxi.Register(1); } }\n");
+
+        Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Ok);
+
+        Text("SWLOR.Worker/Jobs.cs").Should().Be("class Jobs { void M() { Taxi.Register(1); } }\n", "the worker cannot see the server, so its Taxi is its own");
+        Text("SWLOR.Tool/Program.cs").Should().StartWith("using static SWLOR.Game.Server.Composition.GameServices;\n");
+        Run(RunMode.Check).Should().Be(FacadeRemovalRunner.Ok);
     }
 
     [Test]

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.ItemDefinition;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Unloading partly used bait onto a partial stack returns only the remaining bait", Category = "Fishing")]
         public static async Task UnloadOntoPartialStack(EngineTestContext ctx)
         {
-            var apply = new FishingRodItemDefinition().BuildItems()[Fishing.FishingRodTag].ApplyAction;
+            var apply = new FishingRodItemDefinition().BuildItems()[FishingService.FishingRodTag].ApplyAction;
             var user = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
 
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(user, () =>
             {
                 apply(user, rod, loaded, GetLocation(user), -1);
-                SetLocalInt(rod, Fishing.RemainingBaitVariable, 40);
+                SetLocalInt(rod, FishingService.RemainingBaitVariable, 40);
                 replacement = CreateItemOnObject(BaitResref, user, 60);
             });
             await ctx.WaitFrameAsync();
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(user, () =>
             {
                 ctx.AssertEqual(100, CountBait(user), "Unloading returns the 40 remaining bait, no more");
-                ctx.AssertEqual(0, GetLocalInt(rod, Fishing.RemainingBaitVariable), "The rod is empty after unloading");
+                ctx.AssertEqual(0, GetLocalInt(rod, FishingService.RemainingBaitVariable), "The rod is empty after unloading");
             });
         }
 

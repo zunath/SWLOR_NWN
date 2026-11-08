@@ -4,8 +4,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Plays installed named animations through temporary, creature-local native animation mappings. The static
-    /// facade <c>Service.NamedAnimation</c> forwards to the container's instance of this interface.
+    /// Plays installed named animations through temporary, creature-local native animation mappings. Static callers
+    /// reach the container's instance through <c>GameServices.NamedAnimation</c>; the event handler is on
+    /// <see cref="NamedAnimationService"/>.
     /// </summary>
     public interface INamedAnimationService
     {

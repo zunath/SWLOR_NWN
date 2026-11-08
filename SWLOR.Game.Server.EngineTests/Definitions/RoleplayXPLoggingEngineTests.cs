@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.RoleplayXPService;
 using SWLOR.NWN.API.NWScript.Enum;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.Game.Server.Domain.Core;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -19,8 +20,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var recordMessage = typeof(RoleplayXP).GetMethod("ProcessOOCMessage", BindingFlags.NonPublic | BindingFlags.Static);
             var settings = ApplicationSettings.Get();
             var area = GetArea(owner.Creature);
-            var wasEventArea = GetLocalBool(area, Communication.EventCommsAreaVariable);
-            SetLocalBool(area, Communication.EventCommsAreaVariable, false);
+            var wasEventArea = GetLocalBool(area, CommunicationService.EventCommsAreaVariable);
+            SetLocalBool(area, CommunicationService.EventCommsAreaVariable, false);
             var expectedBalance = DB.Get<Player>(owner.Id).UnallocatedXP;
             var expectedLifetimeOOC = DB.Get<Player>(owner.Id).RoleplayProgress.OOCMessageCount;
             var expectedLifetimeXP = DB.Get<Player>(owner.Id).RoleplayProgress.TotalRPExpGained;
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                SetLocalBool(area, Communication.EventCommsAreaVariable, wasEventArea);
+                SetLocalBool(area, CommunicationService.EventCommsAreaVariable, wasEventArea);
             }
         }
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -203,7 +204,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
                     break;
 
-                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                if (GetLocalObject(placeable, LootService.CorpseBodyVariable) == body)
                 {
                     DestroyObject(placeable);
                     break;

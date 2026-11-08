@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -87,8 +88,8 @@ public static class WardrobeEngineTests
             ctx.AssertEqual(Player.DefaultOutfitSlotLimit, Wardrobe.GetSlotLimit(DB.Get<Player>(GetObjectUUID(player))), "A new character starts with 25 slots");
             for (var expansion = 1; expansion <= 5; expansion++)
                 ctx.AssertEqual(25 + expansion * 5, Wardrobe.ExpandSlotLimit(player), $"Expansion {expansion} adds five slots");
-            ctx.AssertEqual(Wardrobe.MaxSlotLimit, Wardrobe.ExpandSlotLimit(player), "A sixth expansion stays at fifty");
-            ctx.AssertEqual(Wardrobe.MaxSlotLimit, DB.Get<Player>(GetObjectUUID(player)).OutfitSlotLimit, "The limit is saved");
+            ctx.AssertEqual(WardrobeService.MaxSlotLimit, Wardrobe.ExpandSlotLimit(player), "A sixth expansion stays at fifty");
+            ctx.AssertEqual(WardrobeService.MaxSlotLimit, DB.Get<Player>(GetObjectUUID(player)).OutfitSlotLimit, "The limit is saved");
         });
     }
 }

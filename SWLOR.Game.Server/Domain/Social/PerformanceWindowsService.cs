@@ -70,13 +70,13 @@ namespace SWLOR.Game.Server.Domain.Social
         public void ShowFallbackStrip(uint performer, string text, float beatSeconds)
         {
             PostString(performer, text, -text.Length / 2, FallbackStripRow, ScreenAnchor.Center,
-                beatSeconds + FallbackStripOverlapSeconds, Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+                beatSeconds + FallbackStripOverlapSeconds, GuiService.ColorWhite, GuiService.ColorWhite, _fallbackStrip.StartId, GuiService.TextName);
         }
 
         public void ClearFallbackStrip(uint performer)
         {
             PostString(performer, string.Empty, 0, FallbackStripRow, ScreenAnchor.Center, 0.1f,
-                Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+                GuiService.ColorWhite, GuiService.ColorWhite, _fallbackStrip.StartId, GuiService.TextName);
         }
 
         public GuiWindowType GetCueWindowType(PerformanceKind kind)

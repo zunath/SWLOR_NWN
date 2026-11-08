@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The limits, usage figures and category storage behind the player notes window. The static facade
-    /// <c>Service.Notes</c> forwards to the container's instance of this interface and repeats the constants.
+    /// The limits, usage figures and category storage behind the player notes window. Static callers reach the
+    /// container's instance through <c>GameServices.Notes</c>; the constants are on <see cref="NotesService"/>.
     /// </summary>
     public interface INotesService
     {

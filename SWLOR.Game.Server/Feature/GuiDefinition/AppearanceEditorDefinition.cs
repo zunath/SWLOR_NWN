@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -974,7 +975,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetId("ae_outfit_name")
                                     .SetPlaceholder("Name")
                                     .BindValue(model => model.OutfitName)
-                                    .SetMaxLength(Wardrobe.MaxNameLength)
+                                    .SetMaxLength(WardrobeService.MaxNameLength)
                                     .SetHeight(32f);
                                 nameRow.AddButton()
                                     .SetId("ae_outfit_rename")

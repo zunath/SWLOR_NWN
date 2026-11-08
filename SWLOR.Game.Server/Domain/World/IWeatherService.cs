@@ -4,8 +4,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// The weather of the outdoor areas: the shared weather front, each area's conditions, native precipitation, fog,
-    /// mist and storms, and the damage the hazardous weather deals. The static facade <c>Service.Weather</c> forwards
-    /// to the container's instance of this interface and keeps the event handlers.
+    /// mist and storms, and the damage the hazardous weather deals. Static callers reach the container's instance
+    /// through <c>GameServices.Weather</c>; the event handlers are on <see cref="WeatherService"/>.
     /// </summary>
     public interface IWeatherService
     {

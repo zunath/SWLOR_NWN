@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -160,7 +161,7 @@ public class PowerGloveEquipmentTests
         foreach (var field in new[] { "Cost", "AddCost" })
             item.GetProperty(field).GetProperty("value").GetInt32().Should().Be(0);
         var noEconomy = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
-            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable);
+            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == ItemService.NoEconomyVariable);
         noEconomy.GetProperty("Value").GetProperty("value").GetInt32().Should().Be(1);
     }
 

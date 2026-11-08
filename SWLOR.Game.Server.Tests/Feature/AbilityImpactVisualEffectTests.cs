@@ -304,6 +304,16 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
+    public void ReducedBursts_AreSentToTheCreatureAPossessingDMControls()
+    {
+        var service = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server/Service/Ability.cs"));
+
+        service.Should().Contain("var viewer = DMPresence.GetControlledCreature(player);");
+        service.Should().Contain("CombatEffectPreferences.IsReducing(player)");
+        service.Should().Contain("PlayerPlugin.ApplyInstantVisualEffectToObject(viewer, recipient, visuals.Effect);");
+    }
+
+    [Test]
     public void SubsequentPulse_HasItsOwnReceiptState()
     {
         var first = new AbilityImpactVisualEffects(VisualEffect.Vfx_Imp_Shield_Bash);

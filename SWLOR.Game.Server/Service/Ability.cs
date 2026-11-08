@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.Service
                         GetIsEnemy(viewer, activator)))
                     continue;
 
-                PlayerPlugin.ApplyInstantVisualEffectToObject(player, recipient, visuals.Effect);
+                PlayerPlugin.ApplyInstantVisualEffectToObject(viewer, recipient, visuals.Effect);
             }
         }
 

@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(buildContent);
                     })
                         .SetWidth(ContentPanelWidth);

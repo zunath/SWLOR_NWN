@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private IReadOnlyDictionary<PazaakCardType, int> _collection = new Dictionary<PazaakCardType, int>();
         private readonly bool[] _handNegative = new bool[PazaakCards.HandSize];
         private bool _isModalOpen;
-        private uint _promptedChallenger = OBJECT_INVALID;
+        private PazaakInvite _promptedInvite;
 
         public int SelectedTabId { get => Get<int>(); set => Set(value); }
 
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _collection = Pazaak.GetCollection(Player);
             Array.Clear(_handNegative);
             _isModalOpen = false;
-            _promptedChallenger = OBJECT_INVALID;
+            _promptedInvite = null;
 
             var cardNames = new GuiBindingList<string>();
             var cardDescriptions = new GuiBindingList<string>();
@@ -261,30 +261,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isModalOpen = false;
             TabToggles.SyncTo(SelectedTabId, v => TabToggleValue = v);
             Tabs.Select(this, TabContentElement, SelectedTabId);
+
+            // A challenge that arrived while a prompt was open is shown now.
+            PromptPendingChallenge();
         }
 
         private void PromptPendingChallenge()
         {
-            var challenger = Pazaak.GetPendingChallenger(Player);
-            if (challenger == OBJECT_INVALID || challenger == _promptedChallenger || _isModalOpen)
+            var invite = Pazaak.GetPendingInvite(Player);
+            if (invite == null || invite == _promptedInvite || _isModalOpen)
                 return;
 
-            _promptedChallenger = challenger;
+            // Accept and Decline answer this invitation only, never one that replaced it.
+            _promptedInvite = invite;
             _isModalOpen = true;
             ShowModal(
-                $"{PlayerName.GetDisplayName(Player, challenger)} challenges you to a game of Pazaak. Do you accept?",
+                $"{PlayerName.GetDisplayName(Player, invite.Challenger)} challenges you to a game of Pazaak. Do you accept?",
                 () =>
                 {
-                    _promptedChallenger = OBJECT_INVALID;
-                    var error = Pazaak.AcceptChallenge(Player);
+                    var error = Pazaak.AcceptChallenge(Player, invite);
                     if (!string.IsNullOrEmpty(error))
                         SendMessageToPC(Player, ColorToken.Red(error));
                 },
-                () =>
-                {
-                    _promptedChallenger = OBJECT_INVALID;
-                    Pazaak.DeclineChallenge(Player);
-                },
+                () => Pazaak.DeclineChallenge(Player, invite),
                 "Accept",
                 "Decline");
         }

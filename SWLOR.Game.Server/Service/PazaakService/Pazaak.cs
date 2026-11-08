@@ -83,18 +83,24 @@ namespace SWLOR.Game.Server.Service.PazaakService
         /// <summary>
         /// The player who challenged this player, or OBJECT_INVALID when no challenge is waiting.
         /// </summary>
-        public static uint GetPendingChallenger(uint target)
+        public static uint GetPendingChallenger(uint target) =>
+            GetPendingInvite(target)?.Challenger ?? OBJECT_INVALID;
+
+        /// <summary>
+        /// The challenge waiting for this player, or null when none is waiting.
+        /// </summary>
+        public static PazaakInvite GetPendingInvite(uint target)
         {
             if (!_invitesByTarget.TryGetValue(target, out var invite))
-                return OBJECT_INVALID;
+                return null;
 
             if (invite.ExpiresUtc < DateTime.UtcNow || !GetIsObjectValid(invite.Challenger))
             {
                 _invitesByTarget.Remove(target);
-                return OBJECT_INVALID;
+                return null;
             }
 
-            return invite.Challenger;
+            return invite;
         }
 
         public static void OpenWindow(uint player)
@@ -144,26 +150,31 @@ namespace SWLOR.Game.Server.Service.PazaakService
             return string.Empty;
         }
 
-        public static void DeclineChallenge(uint target)
+        /// <summary>
+        /// Declines the challenge the player was shown. A challenge that has since expired or been
+        /// replaced by another one is left alone.
+        /// </summary>
+        public static void DeclineChallenge(uint target, PazaakInvite invite)
         {
-            var challenger = GetPendingChallenger(target);
-            _invitesByTarget.Remove(target);
-            if (challenger == OBJECT_INVALID)
+            if (invite == null || GetPendingInvite(target) != invite)
                 return;
 
+            _invitesByTarget.Remove(target);
+            var challenger = invite.Challenger;
             SendMessageToPC(challenger, ColorToken.Red($"{PlayerName.GetDisplayName(challenger, target)} declines your Pazaak challenge."));
         }
 
         /// <summary>
-        /// Starts a match from the waiting challenge. Returns an error to show the target, or an empty string.
+        /// Starts a match from the challenge the player was shown. A challenge that has since expired or
+        /// been replaced by another one is refused. Returns an error to show the target, or an empty string.
         /// </summary>
-        public static string AcceptChallenge(uint target)
+        public static string AcceptChallenge(uint target, PazaakInvite invite)
         {
-            var challenger = GetPendingChallenger(target);
-            _invitesByTarget.Remove(target);
-
-            if (challenger == OBJECT_INVALID)
+            if (invite == null || GetPendingInvite(target) != invite)
                 return "The challenge is no longer available.";
+
+            _invitesByTarget.Remove(target);
+            var challenger = invite.Challenger;
 
             if (IsInActiveMatch(challenger) || IsInActiveMatch(target))
                 return "One of you is already playing a match.";

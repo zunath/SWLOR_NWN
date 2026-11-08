@@ -139,7 +139,6 @@ exclusions_for() {
         echo "SpeederTailRemovalTests.PlaceableSpeedersKeepTheirAppearanceModelsAndSharedTextures"
         echo "TelegraphTests.ShaderPalette_MatchesTheServerColorProtocol"
         echo "TintMapReviewTests.ApplyingAColorUsesOneAtomicPaletteOrRgbScalar"
-        echo "Udp2TileWalkmeshTests"
         echo "TintMapReviewTests.DefaultMaleHumanHandsRetainDetailedGeometryAndTintBindings"
         echo "TintMapReviewTests.EveryGeneratedTintMaterialUsesAShaderWithPaletteDerivedSpecularity"
         echo "TintMapReviewTests.EveryPackedTintMaskDeclaresItsFullAti2MipChain"
@@ -154,6 +153,7 @@ exclusions_for() {
         echo "TintMapReviewTests.RodianMusicianPartsBindTheConvertedHumanFallbackMaterials"
         echo "TintMapReviewTests.TintAlphaSamplerIsDeclaredEvenWithoutNormalMapping"
         echo "TintMapReviewTests.TintShadersRebuildSpecularityFromFinalPaletteInputs"
+        echo "Udp2TileWalkmeshTests"
         ;;
     esac
 }

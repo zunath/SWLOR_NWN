@@ -24,6 +24,7 @@ import UpdateCraftingProgressionBible as Bible  # noqa: E402  (shared zip/XML he
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Circuit" / "CircuitRules.cs"
+TOP_RECIPE_RULES = DEFAULT_RULES.parent.parent / "TopRecipeRules.cs"
 SHEET = "System Changes & Migrations"
 FIRST_ENTRY_ROW = 3
 ENTRY_OPENING = "Engineering crafts use the Circuit minigame."
@@ -41,6 +42,13 @@ def read_constant(source: str, name: str) -> float:
     match = re.search(rf"public const double {name} = ([0-9.]+);", source)
     if not match:
         raise ValueError(f"CircuitRules.cs has no 'public const double {name}'")
+    return float(match.group(1))
+
+
+def top_recipe_constant(name: str) -> float:
+    match = re.search(rf"public const (?:int|double) {name} = ([0-9.]+);", TOP_RECIPE_RULES.read_text(encoding="utf-8"))
+    if not match:
+        raise ValueError(f"TopRecipeRules.cs has no '{name}'")
     return float(match.group(1))
 
 
@@ -69,7 +77,10 @@ def entry_text(source: str) -> str:
         f" {format_number(cap * 100)}% of the Assembly the recipe itself needs."
         f" Above recipe level {format_number(constant(source, 'DifficultyStartLevel'))} each level adds {format_number(constant(source, 'CalibrationDifficultyPerLevel') * 100)}% to the Calibration a recipe needs and"
         f" {format_number(constant(source, 'IntegrityDifficultyPerLevel') * 100)}% to the Integrity actions cost, and {format_number(constant(source, 'PatchCpPerLevel'))} CP to Patch and {format_number(constant(source, 'TuneCpPerLevel'))} CP to Tune and Micro-Tune,"
-        " so a full set of top-tier gear with both slots of the best mods is the target for the top recipes.")
+        " so a full set of top-tier gear with both slots of the best mods is the target for the top recipes."
+        f" On recipes above level {format_number(top_recipe_constant('LastOrdinaryLevel'))} Calibration and Integrity difficulty are"
+        f" {format_number((constant(source, 'TopRecipeDifficultyFactor') - 1) * 100)}% higher and Control above"
+        f" {format_number(top_recipe_constant('ControlSoftCap'))} counts for {format_number(top_recipe_constant('ControlAboveSoftCapValue') * 100)}%.")
 
 
 def entry_row(sheet: Bible.Sheet) -> tuple[int, int]:

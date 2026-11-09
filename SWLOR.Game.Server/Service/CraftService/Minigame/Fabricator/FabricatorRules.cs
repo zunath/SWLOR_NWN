@@ -57,6 +57,9 @@ public static class FabricatorRules
     /// </summary>
     public const int DifficultyStartLevel = 30;
 
+    /// <summary>What a Builder perk's numeric bonus is worth on a recipe above <see cref="TopRecipeRules.LastOrdinaryLevel"/>. Without it perked crafters reach 100% on nearly every top recipe.</summary>
+    public const double TopRecipePerkValue = 0.25;
+
     /// <summary>How much less a Precision Pass adds per level above <see cref="DifficultyStartLevel"/>.</summary>
     public const double QualityDifficultyPerLevel = 0.03;
 

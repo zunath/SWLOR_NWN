@@ -36,7 +36,7 @@ public class SpaceServiceTests
     {
         _engine = new FakeNWScript();
         _locals = new LocalVariables(_engine);
-        _engine.SetReturnHandler("GetLocation", arguments => new Location((nint)(uint)arguments[0]!));
+        _engine.SetReturnHandler("GetLocation", arguments => EngineStructures.Create<Location>((nint)(uint)arguments[0]!));
         _engine.SetReturnHandler("GetName", arguments => "Dock " + arguments[0]);
         _scope = NWScriptRuntime.Override(_engine);
         _space = NewSpace();

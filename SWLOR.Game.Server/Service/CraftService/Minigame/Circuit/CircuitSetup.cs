@@ -217,7 +217,7 @@ public sealed class CircuitSetup
         (1.0 + StationAssemblyPercent / 100.0);
 
     private double CalibrationFactor() =>
-        (1.0 + Control * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(0) / CircuitRules.CalibrationDifficulty(RecipeLevel);
+        (1.0 + TopRecipeRules.EffectiveControl(Control, RecipeLevel) * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(0) / CircuitRules.CalibrationDifficulty(RecipeLevel);
 
     /// <summary>A crafter below the recipe's level works at a penalty; a crafter above it works faster, up to <paramref name="maxAbove"/> ranks.</summary>
     private double RankFactor(int maxAbove)

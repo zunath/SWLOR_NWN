@@ -1910,7 +1910,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "Feature",
             "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs"));
-        weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
+        weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivationFromHit(target)");
         weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
         weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
         weaponBaseSource.Should().Contain("SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0",

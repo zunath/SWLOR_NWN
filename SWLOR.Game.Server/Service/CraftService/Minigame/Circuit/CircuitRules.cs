@@ -29,6 +29,9 @@ public static class CircuitRules
     /// </summary>
     public const int DifficultyStartLevel = 30;
 
+    /// <summary>The extra factor on Calibration and Integrity difficulty for a recipe above <see cref="TopRecipeRules.LastOrdinaryLevel"/>.</summary>
+    public const double TopRecipeDifficultyFactor = 1.1;
+
     /// <summary>How much slower Calibration comes per level above <see cref="DifficultyStartLevel"/>.</summary>
     public const double CalibrationDifficultyPerLevel = 0.06;
 
@@ -53,10 +56,12 @@ public static class CircuitRules
         MicroTuneCp + (int)Math.Round(MicroTuneCpPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel), MidpointRounding.AwayFromZero);
 
     /// <summary>The factor Calibration gains are divided by on a recipe of the level.</summary>
-    public static double CalibrationDifficulty(int recipeLevel) => 1.0 + CalibrationDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+    public static double CalibrationDifficulty(int recipeLevel) => TopRecipeFactor(recipeLevel) * (1.0 + CalibrationDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel));
 
     /// <summary>The factor on the Integrity an action costs on a recipe of the level.</summary>
-    public static double IntegrityDifficulty(int recipeLevel) => 1.0 + IntegrityDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel);
+    public static double IntegrityDifficulty(int recipeLevel) => TopRecipeFactor(recipeLevel) * (1.0 + IntegrityDifficultyPerLevel * Math.Max(0, recipeLevel - DifficultyStartLevel));
+
+    private static double TopRecipeFactor(int recipeLevel) => TopRecipeRules.IsTopRecipe(recipeLevel) ? TopRecipeDifficultyFactor : 1.0;
 
     /// <summary>The CP a Patch costs on a recipe of the level.</summary>
     public static int PatchCpAt(int recipeLevel) =>

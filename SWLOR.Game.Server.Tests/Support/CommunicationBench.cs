@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.UI;
@@ -11,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
@@ -165,10 +167,10 @@ public sealed class CommunicationBench : IDisposable
     public void Wookiee(uint creature) => _wookiees.Add(creature);
 
     /// <summary>Sets the language a speaker is speaking.</summary>
-    public void Speaks(uint speaker, SkillType language) => SWLOR.Game.Server.Service.Language.SetActiveLanguage(speaker, language);
+    public void Speaks(uint speaker, SkillType language) => GameServices.Language.SetActiveLanguage(speaker, language);
 
     /// <summary>The language a speaker is speaking right now.</summary>
-    public SkillType Language(uint speaker) => SWLOR.Game.Server.Service.Language.GetActiveLanguage(speaker);
+    public SkillType Language(uint speaker) => GameServices.Language.GetActiveLanguage(speaker);
 
     /// <summary>Saves a world property the chat reads when it resolves a planet or a starship.</summary>
     public WorldProperty AddProperty(string id, PropertyType type, string parentId = null)

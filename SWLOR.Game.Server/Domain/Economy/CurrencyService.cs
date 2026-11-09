@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -11,8 +12,8 @@ using SWLOR.Game.Server.Service.CurrencyService;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The currencies a player holds: the logic and state that used to be static in <c>Service.Currency</c>, moved here
-    /// unchanged. The facade still carries the event handler and forwards every call to the container's instance.
+    /// The currencies a player holds: the logic and state that used to be a static class, moved here
+    /// unchanged. The event handler runs on the container's instance; static callers reach it through <c>GameServices.Currency</c>.
     /// </summary>
     public class CurrencyService : ICurrencyService
     {
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             _gui = gui;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();

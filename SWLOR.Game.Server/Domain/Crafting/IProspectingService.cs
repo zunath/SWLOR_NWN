@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Prospecting: owns the engine world of the harvest nodes. The sessions themselves are run by
-    /// <see cref="IProspectingSessionsService"/>. The static facade <c>Service.Prospecting</c> forwards to it.
+    /// <see cref="IProspectingSessionsService"/>. Static callers reach the container's instance through <c>GameServices.Prospecting</c>.
     /// </summary>
     public interface IProspectingService
     {

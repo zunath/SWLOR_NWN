@@ -141,14 +141,14 @@ namespace SWLOR.Game.Server.Service.QuestService
             Guild = guild;
             Amount = amount;
 
-            var guildDetail = Service.Guild.GetGuild(guild);
+            var guildDetail = GameServices.Guild.GetGuild(guild);
             MenuName = amount + " " + guildDetail.Name + " GP";
         }
 
         public void GiveReward(uint player)
         {
-            var reward = Service.Guild.CalculateGPReward(player, Guild, Amount);
-            Service.Guild.GiveGuildPoints(player, Guild, reward);
+            var reward = GameServices.Guild.CalculateGPReward(player, Guild, Amount);
+            GameServices.Guild.GiveGuildPoints(player, Guild, reward);
         }
     }
 

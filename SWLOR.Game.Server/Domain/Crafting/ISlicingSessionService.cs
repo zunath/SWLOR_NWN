@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.SlicingService;
 namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
-    /// Starts, plays and ends slicing attempts on lockboxes and terminals. The static facade
-    /// <c>Service.SlicingService.SlicingSession</c> forwards to it and keeps the event handlers.
+    /// Starts, plays and ends slicing attempts on lockboxes and terminals. Static callers reach
+    /// the container's instance through <c>GameServices.SlicingSession</c>; the event handlers are on <see cref="SlicingSessionService"/>.
     /// </summary>
     public interface ISlicingSessionService
     {

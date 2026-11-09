@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using SWLOR.Game.Server.Service.SlicingService;
+using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 
 if (args.Length != 1)
 {

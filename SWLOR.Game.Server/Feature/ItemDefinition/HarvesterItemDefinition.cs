@@ -13,7 +13,7 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     /// <summary>
-    /// The harvesters. Using one on a vein or a tree opens a Prospecting session (<see cref="ProspectingSessions"/>) instead of taking one
+    /// The harvesters. Using one on a vein or a tree opens a Prospecting session (<see cref="SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService"/>) instead of taking one
     /// unit after a delay: the session's actions spend the harvester's charges, and its Quick Harvest takes the units the node has left, a
     /// charge and a harvest delay for each, as every harvest did before.
     /// </summary>

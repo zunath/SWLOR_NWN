@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Extension;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -43,8 +44,8 @@ public class CraftCalculationCharacterizationTests : FacadeFixture
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {
-            (nameof(Craft.MaxResearchLevel), typeof(int), Craft.MaxResearchLevel),
-            (nameof(Craft.RecipeSkillUnlockOffset), typeof(int), Craft.RecipeSkillUnlockOffset),
+            (nameof(CraftService.MaxResearchLevel), typeof(int), CraftService.MaxResearchLevel),
+            (nameof(CraftService.RecipeSkillUnlockOffset), typeof(int), CraftService.RecipeSkillUnlockOffset),
         };
         FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Craft", constants.Select(constant => constant.Name));
         foreach (var (constantName, type, value) in constants)

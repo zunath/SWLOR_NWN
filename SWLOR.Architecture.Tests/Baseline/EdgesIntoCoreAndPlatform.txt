@@ -100,48 +100,37 @@ StatusEffect -> DB | 4
 StatusEffect -> FrameProfiler | 2
 StatusEffect -> Messaging | 4
 
-# Character -> Platform (54 edges)
-Achievement -> Platform/Composition | 1
+# Character -> Platform (42 edges)
 Achievement -> Platform/Core | 2
 Achievement -> Platform/Entity | 1
 Achievement -> Platform/Extension | 1
-Activity -> Platform/Composition | 1
 Activity -> Platform/Core | 2
-AppearanceRenderState -> Platform/Composition | 1
-Disguise -> Platform/Composition | 1
 Disguise -> Platform/Core | 1
-Disguise -> Platform/Entity | 32
-EspionageInfiltration -> Platform/Composition | 1
+Disguise -> Platform/Entity | 27
 EspionageInfiltration -> Platform/Core | 3
 EspionageInfiltration -> Platform/Entity | 1
-Feature/AppearanceDefinition -> Platform/Composition | 5
+Feature/AppearanceDefinition -> Platform/Composition | 36
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Platform/Composition | 7
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 98
+Feature/StatusEffectDefinition -> Platform/Composition | 101
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
-Language -> Platform/Composition | 1
 Language -> Platform/Core | 1
-Language -> Platform/Entity | 11
+Language -> Platform/Entity | 8
 Perk -> Platform/Composition | 30
 Perk -> Platform/Core | 4
 Perk -> Platform/Entity | 15
 Perk -> Platform/Enumeration | 10
 Perk -> Platform/Extension | 2
-PlayerDescriptor -> Platform/Composition | 1
-PlayerDescriptor -> Platform/Entity | 11
-PlayerIntroduction -> Platform/Composition | 1
+PlayerDescriptor -> Platform/Entity | 9
 PlayerIntroduction -> Platform/Core | 1
-PlayerName -> Platform/Composition | 1
 PlayerName -> Platform/Core | 6
 PlayerName -> Platform/Entity | 14
-Race -> Platform/Composition | 1
 Race -> Platform/Core | 2
 RoleplayXP -> Platform/Entity | 1
 RoleplayXP -> Platform/Enumeration | 3
-RoleplayXPDetection -> Platform/Composition | 1
 Skill -> Platform/Core | 5
 Skill -> Platform/Entity | 19
 Skill -> Platform/Enumeration | 55
@@ -154,7 +143,6 @@ StatusEffect -> Platform/Composition | 10
 StatusEffect -> Platform/Core | 18
 StatusEffect -> Platform/Entity | 2
 StatusEffect -> Platform/Native | 1
-TintMapState -> Platform/Composition | 1
 
 # Combat -> Core (33 edges)
 Combat -> ColorToken | 30
@@ -275,11 +263,11 @@ DB -> Platform/Core | 2
 DB -> Platform/Entity | 32
 DB -> Platform/Extension | 4
 DB -> Platform/Root | 3
-Feature/DialogDefinition -> Platform/Composition | 28
+Feature/DialogDefinition -> Platform/Composition | 29
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
-Feature/MigrationDefinition -> Platform/Composition | 50
+Feature/MigrationDefinition -> Platform/Composition | 51
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
@@ -329,19 +317,18 @@ Slicing -> DB | 3
 Slicing -> Log | 1
 Slicing -> Random | 3
 
-# Crafting -> Platform (14 edges)
-Craft -> Platform/Composition | 39
-Craft -> Platform/Core | 12
-Craft -> Platform/Entity | 90
+# Crafting -> Platform (13 edges)
+Craft -> Platform/Composition | 49
+Craft -> Platform/Core | 11
+Craft -> Platform/Entity | 83
 Craft -> Platform/Extension | 2
 Feature/RecipeDefinition -> Platform/Composition | 3
-Prospecting -> Platform/Composition | 10
+Prospecting -> Platform/Composition | 11
 Prospecting -> Platform/Core | 2
 Prospecting -> Platform/Entity | 11
-Scavenge -> Platform/Composition | 8
+Scavenge -> Platform/Composition | 7
 Scavenge -> Platform/Core | 2
 Scavenge -> Platform/Entity | 3
-Slicing -> Platform/Composition | 2
 Slicing -> Platform/Core | 2
 Slicing -> Platform/Entity | 1
 
@@ -387,28 +374,22 @@ Guild -> Random | 1
 GuildTaskXp -> DB | 3
 PlayerMarket -> DB | 4
 
-# Economy -> Platform (24 edges)
-Bank -> Platform/Composition | 1
-Bank -> Platform/Entity | 13
+# Economy -> Platform (18 edges)
+Bank -> Platform/Entity | 11
 BankItemPage -> Platform/Entity | 3
 CasinoPlayTracker -> Platform/Entity | 3
-CasinoSlot -> Platform/Composition | 1
 CasinoSlot -> Platform/Core | 1
 CasinoSlot -> Platform/Entity | 3
-Currency -> Platform/Composition | 1
 Currency -> Platform/Core | 1
 Currency -> Platform/Entity | 3
 Currency -> Platform/Extension | 1
-Guild -> Platform/Composition | 1
 Guild -> Platform/Core | 2
 Guild -> Platform/Entity | 2
-Guild -> Platform/Enumeration | 24
+Guild -> Platform/Enumeration | 18
 Guild -> Platform/Extension | 2
-GuildTaskXp -> Platform/Composition | 1
 GuildTaskXp -> Platform/Entity | 1
-GuildTaskXp -> Platform/Enumeration | 15
+GuildTaskXp -> Platform/Enumeration | 10
 GuildTaskXp -> Platform/Extension | 2
-PlayerMarket -> Platform/Composition | 1
 PlayerMarket -> Platform/Core | 3
 PlayerMarket -> Platform/Entity | 2
 PlayerMarket -> Platform/Extension | 2
@@ -476,8 +457,8 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (135 edges)
-Feature.AchievementProgression -> Platform/Composition | 6
+# Gameplay -> Platform (138 edges)
+Feature.AchievementProgression -> Platform/Composition | 7
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Platform/Composition | 1
@@ -487,7 +468,7 @@ Feature.AreaConfiguration -> Platform/Extension | 1
 Feature.ArmorDisplay -> Platform/Composition | 5
 Feature.ArmorDisplay -> Platform/Core | 1
 Feature.ArmorDisplay -> Platform/Entity | 4
-Feature.Auditing -> Platform/Composition | 1
+Feature.Auditing -> Platform/Composition | 3
 Feature.Auditing -> Platform/Core | 3
 Feature.BeastStableTrials -> Platform/Composition | 1
 Feature.BuffTimer -> Platform/Composition | 3
@@ -497,6 +478,7 @@ Feature.CZ220FlightsTerminal -> Platform/Core | 1
 Feature.CivilianPatrol -> Platform/Composition | 3
 Feature.CivilianPatrol -> Platform/Core | 2
 Feature.ClientVersionCheck -> Platform/Core | 1
+Feature.CraftingInterruptions -> Platform/Composition | 4
 Feature.CraftingInterruptions -> Platform/Core | 4
 Feature.CreatureDeathAnimation -> Platform/Composition | 1
 Feature.CreatureDeathAnimation -> Platform/Core | 1
@@ -538,6 +520,7 @@ Feature.MiniMaps -> Platform/Core | 3
 Feature.NaturalRegeneration -> Platform/Composition | 2
 Feature.NaturalRegeneration -> Platform/Core | 1
 Feature.NaturalRegeneration -> Platform/Entity | 2
+Feature.OrdinaryAttackCombatLifecycle -> Platform/Composition | 1
 Feature.OrdinaryAttackCombatLifecycle -> Platform/Core | 7
 Feature.PersistentHitPoints -> Platform/Composition | 2
 Feature.PersistentHitPoints -> Platform/Core | 2
@@ -555,12 +538,12 @@ Feature.PistolAnimationRemap -> Platform/Composition | 2
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
 Feature.PistolBaseItemCompatibility -> Platform/Core | 1
-Feature.PlaceableScripts -> Platform/Composition | 4
+Feature.PlaceableScripts -> Platform/Composition | 5
 Feature.PlaceableScripts -> Platform/Core | 6
 Feature.PlayerAccountRecord -> Platform/Composition | 1
 Feature.PlayerAccountRecord -> Platform/Core | 1
 Feature.PlayerAccountRecord -> Platform/Entity | 1
-Feature.PlayerInitialization -> Platform/Composition | 3
+Feature.PlayerInitialization -> Platform/Composition | 5
 Feature.PlayerInitialization -> Platform/Core | 1
 Feature.PlayerInitialization -> Platform/Entity | 10
 Feature.PlayerRest -> Platform/Composition | 1
@@ -568,23 +551,24 @@ Feature.PlayerRest -> Platform/Core | 3
 Feature.PlayerStatusWindow -> Platform/Composition | 14
 Feature.PlayerStatusWindow -> Platform/Core | 13
 Feature.PlayerStatusWindow -> Platform/Entity | 1
-Feature.PlayerTemporaryEffects -> Platform/Composition | 3
+Feature.PlayerTemporaryEffects -> Platform/Composition | 4
 Feature.PlayerTemporaryEffects -> Platform/Core | 2
 Feature.PlayerTemporaryEffects -> Platform/Entity | 2
 Feature.PowerGlovePairLifecycle -> Platform/Composition | 1
 Feature.PowerGlovePairLifecycle -> Platform/Core | 14
 Feature.ProceduralTreasure -> Platform/Composition | 1
 Feature.ProceduralTreasure -> Platform/Core | 1
+Feature.ResearchInterruptions -> Platform/Composition | 2
 Feature.ResearchInterruptions -> Platform/Core | 2
 Feature.Resource -> Platform/Core | 2
-Feature.RoleplayXP -> Platform/Composition | 4
+Feature.RoleplayXP -> Platform/Composition | 5
 Feature.RoleplayXP -> Platform/Core | 3
 Feature.RoleplayXP -> Platform/Entity | 6
 Feature.RoleplayXP -> Platform/Root | 4
 Feature.SaveCharacters -> Platform/Core | 3
 Feature.SavedAnimationMappings -> Platform/Core | 1
 Feature.SavedAnimationMappings -> Platform/Native | 1
-Feature.ScavengePoint -> Platform/Composition | 2
+Feature.ScavengePoint -> Platform/Composition | 3
 Feature.ScavengePoint -> Platform/Core | 4
 Feature.ServerTasks -> Platform/Composition | 4
 Feature.ServerTasks -> Platform/Core | 5
@@ -636,7 +620,7 @@ Wardrobe -> DB | 6
 
 # Items -> Platform (17 edges)
 EquipmentUnequip -> Platform/Core | 1
-Feature/ItemDefinition -> Platform/Composition | 32
+Feature/ItemDefinition -> Platform/Composition | 33
 Feature/ItemDefinition -> Platform/Core | 3
 Feature/ItemDefinition -> Platform/Entity | 5
 Feature/ItemDefinition -> Platform/Enumeration | 1
@@ -687,9 +671,9 @@ QuestContractBoard -> Log | 10
 Faction -> Platform/Core | 1
 Faction -> Platform/Entity | 2
 Faction -> Platform/Extension | 1
-Feature/QuestDefinition -> Platform/Composition | 100
+Feature/QuestDefinition -> Platform/Composition | 144
 Feature/QuestDefinition -> Platform/Entity | 21
-Quest -> Platform/Composition | 37
+Quest -> Platform/Composition | 42
 Quest -> Platform/Core | 13
 Quest -> Platform/Entity | 43
 Quest -> Platform/Enumeration | 17
@@ -723,7 +707,7 @@ ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 9
 ChatCommand -> Platform/Root | 2
 ChatPortraitTells -> Platform/Core | 3
-Feature/ChatCommandDefinition -> Platform/Composition | 64
+Feature/ChatCommandDefinition -> Platform/Composition | 68
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
@@ -749,7 +733,7 @@ Space -> Random | 1
 Feature/ShipModuleDefinition -> Platform/Composition | 18
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
-Space -> Platform/Composition | 33
+Space -> Platform/Composition | 34
 Space -> Platform/Core | 21
 Space -> Platform/Entity | 29
 Space -> Platform/Enumeration | 6
@@ -779,7 +763,7 @@ Gui -> Log | 1
 # UI -> Platform (14 edges)
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 625
+Feature/GuiDefinition -> Platform/Composition | 696
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21
@@ -826,13 +810,13 @@ Weather -> Log | 1
 # World -> Platform (38 edges)
 Area -> Platform/Core | 4
 Area -> Platform/Entity | 1
-Feature/PropertyLayoutDefinition -> Platform/Composition | 5
+Feature/PropertyLayoutDefinition -> Platform/Composition | 7
 Feature/PropertyLayoutDefinition -> Platform/Core | 2
 Feature/PropertyLayoutDefinition -> Platform/Entity | 3
 Feature/PropertyLayoutDefinition -> Platform/Enumeration | 4
 Feature/TrapDefinition -> Platform/Composition | 2
 Feature/TrapDefinition -> Platform/Core | 3
-Fishing -> Platform/Composition | 7
+Fishing -> Platform/Composition | 9
 Fishing -> Platform/Core | 4
 Fishing -> Platform/Entity | 1
 Fishing -> Platform/Extension | 3

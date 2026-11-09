@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Crafting: the recipe, category and enhancement caches, recipe requirement checks, enhancement item properties, blueprint
-    /// details and the research cost formulas. The static facade <c>Service.Craft</c> forwards to it.
+    /// details and the research cost formulas. Static callers reach the container's instance through <c>GameServices.Craft</c>; the event handlers are on <see cref="CraftService"/>.
     /// </summary>
     public interface ICraftService
     {

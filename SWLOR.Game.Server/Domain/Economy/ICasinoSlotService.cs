@@ -3,9 +3,9 @@ using SWLOR.Game.Server.Service;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The Smuggler's Moon Casino slot machine: who can use it, what a roll pays and how a spin settles credits. The
-    /// static facade <c>Service.CasinoSlot</c> forwards to the container's instance of this interface and keeps the
-    /// event handler and the constants.
+    /// The Smuggler's Moon Casino slot machine: who can use it, what a roll pays and how a spin settles credits. Static
+    /// callers reach the container's instance through <c>GameServices.CasinoSlot</c>; the event handler and the constants are on
+    /// <see cref="CasinoSlotService"/>.
     /// </summary>
     public interface ICasinoSlotService
     {

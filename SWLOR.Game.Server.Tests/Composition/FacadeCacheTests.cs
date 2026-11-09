@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Composition;
 

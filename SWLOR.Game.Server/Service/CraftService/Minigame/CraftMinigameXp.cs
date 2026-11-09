@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 

@@ -236,14 +236,14 @@ namespace SWLOR.Game.Server.Domain.Social
             var speaker = senderIsDM ? _dmPresence.GetDM(sender) : sender;
             var channel = senderIsDM ? ChatChannel.DMTell : ChatChannel.PlayerTell;
 
-            SetLocalBool(speaker, PlayerName.DirectTellVariable, true);
+            SetLocalBool(speaker, PlayerNameService.DirectTellVariable, true);
             try
             {
                 ChatPlugin.SendMessage(channel, message, speaker, _dmPresence.GetControlledCreature(target));
             }
             finally
             {
-                DeleteLocalBool(speaker, PlayerName.DirectTellVariable);
+                DeleteLocalBool(speaker, PlayerNameService.DirectTellVariable);
             }
 
             // Matches the DM log entry the Player Search window writes for its private messages.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.RaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The default racial appearances and the race rules: the logic and state that used to be static in
-    /// <c>Service.Race</c>, moved here unchanged. The facade keeps the event handlers and forwards every call.
+    /// <c>Service.Race</c>, moved here unchanged. The event handlers run on the container's instance.
     /// </summary>
     public class RaceService : IRaceService
     {
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadRaces()
         {
             // Male appearances
@@ -501,6 +503,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, apply the proper scaling to their character.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyWookieeScaling()
         {
             var player = GetEnteringObject();

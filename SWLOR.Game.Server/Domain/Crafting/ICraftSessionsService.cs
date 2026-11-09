@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Crafting;
 
 /// <summary>
 /// The entry point crafting windows use to start, finish and settle a craft. It loads the player's record and runs
-/// <see cref="CraftSessionLifecycle"/> against the game engine. The static facade
-/// <c>Service.CraftService.Minigame.CraftSessions</c> forwards to it.
+/// <see cref="CraftSessionLifecycle"/> against the game engine. Static callers reach
+/// the container's instance through <c>GameServices.CraftSessions</c>.
 /// </summary>
 public interface ICraftSessionsService
 {

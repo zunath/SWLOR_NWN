@@ -3916,7 +3916,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
@@ -3924,7 +3924,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -1
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
@@ -3932,7 +3932,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 4,
         "fortbonus": {
@@ -5109,7 +5109,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
@@ -5117,7 +5117,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",
@@ -5125,7 +5125,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 4,
         "fortbonus": {
@@ -6302,7 +6302,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
@@ -6310,7 +6310,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",
@@ -6318,7 +6318,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 4,
         "fortbonus": {
@@ -258748,7 +258748,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -258855,11 +258855,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 55
+          "value": 55.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -258958,7 +258958,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68
+          "value": 68.0
         },
         "YOrientation": {
           "type": "float",
@@ -258966,11 +258966,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 55
+          "value": 55.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -259069,7 +259069,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68
+          "value": 68.0
         },
         "YOrientation": {
           "type": "float",
@@ -259077,11 +259077,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 90
+          "value": 90.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -259899,11 +259899,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 55
+          "value": 55.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -259970,7 +259970,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -260025,7 +260025,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 27
+          "value": 27.0
         },
         "YOrientation": {
           "type": "float",
@@ -260033,11 +260033,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 62
+          "value": 62.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -260104,7 +260104,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },
@@ -260171,7 +260171,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "__struct_id": 5
       }

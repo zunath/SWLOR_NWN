@@ -146433,7 +146433,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 315
+          "value": 315.0
         },
         "YOrientation": {
           "type": "float",
@@ -146441,11 +146441,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 145
+          "value": 145.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 5
+          "value": 5.0
         },
         "__struct_id": 5
       },
@@ -146638,7 +146638,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 5
+          "value": 5.0
         },
         "__struct_id": 5
       }

@@ -42283,7 +42283,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 60
+          "value": 60.0
         },
         "YOrientation": {
           "type": "float",
@@ -42291,11 +42291,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 44
+          "value": 44.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "__struct_id": 5
       },

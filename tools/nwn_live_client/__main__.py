@@ -37,6 +37,14 @@ def parser() -> argparse.ArgumentParser:
     up.add_argument('--server-env', action='append', metavar='KEY=VALUE',
                     help='Extra server environment, for example an environment-gated test driver switch.')
     up.add_argument('--player-name', default='SwlorLive', help='Client player (login) name.')
+    up.add_argument('--show-render-stats', action='store_true',
+                    help='Show the native renderer statistics in the isolated client for cadence checks.')
+    up.add_argument('--gpu-renderer', choices=('wsl-d3d12',),
+                    help='Use a WSL2 GPU through D3D12 while keeping the private Xvfb display.')
+    up.add_argument('--window-size', choices=('1280x720', '960x600', '800x600', '640x480'), default='1280x720',
+                    help='Native client size; smaller windows are available for motion-capture cadence.')
+    up.add_argument('--motion-capture', action='store_true',
+                    help='Reduce post-processing and disable shadows in this isolated profile for motion checks.')
     up.add_argument('--no-seed', action='store_true', help='Do not seed the Player record for --character.')
     up.add_argument('--play', action='store_true', help='Click Play at character select after the client starts.')
     up.add_argument('--settle', type=float, default=45,

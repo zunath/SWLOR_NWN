@@ -19,9 +19,12 @@ xdotool windowfocus --sync "$w"
 # No audio input, host desktop capture, interpolation, or synthetic motion.
 timeout --signal=INT --kill-after=5 "$(($2 + 30))" ffmpeg -hide_banner -loglevel info -nostdin -n \
     -filter_threads 1 -thread_queue_size 120 -f x11grab -draw_mouse 0 -framerate "$3" \
-    -window_id "$w" -video_size 1280x720 -i "$DISPLAY" -t "$2" -an \
+    -window_id "$w" -video_size "${SWLOR_LIVE_WINDOW_WIDTH:-1280}x${SWLOR_LIVE_WINDOW_HEIGHT:-720}" -i "$DISPLAY" -t "$2" -an \
     -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p -r "$3" \
-    -threads 2 -movflags +faststart "$partial" 2>"/verify/$1.ffmpeg.log"
+    -threads 2 -movflags +faststart "$partial" \
+    -map 0:v:0 -t "$2" -an -c:v rawvideo -pix_fmt bgr0 -threads 1 \
+    -fps_mode passthrough -enc_time_base 1:1000000 -f framemd5 "/verify/$1.frames.md5" \
+    2>"/verify/$1.ffmpeg.log"
 ffprobe -v error -count_frames -select_streams v:0 \
     -show_entries stream=codec_name,width,height,r_frame_rate,avg_frame_rate,nb_read_frames,duration \
     -of json "$partial" > "/verify/$1.video.json"

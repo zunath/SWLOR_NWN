@@ -261,6 +261,59 @@ class LiveClientHelperTests(unittest.TestCase):
         self.assertIn('HAK=/hak\n', stack.CLIENT_ALIASES)
         self.assertIn('TLK=/tlk\n', stack.CLIENT_ALIASES)
 
+    def test_capture_client_is_not_throttled_when_xvfb_focus_changes(self):
+        import tomllib
+        settings = tomllib.loads(stack.client_settings('SwlorLive'))['graphics']
+        self.assertTrue(settings['framelimiter']['enabled'])
+        for mode in ('foreground', 'background', 'non-interactive'):
+            self.assertGreaterEqual(settings['framelimiter'][mode]['target-fps'], 60)
+        self.assertFalse(settings['stats']['enabled'])
+        self.assertTrue(tomllib.loads(stack.client_settings('SwlorLive', True))['graphics']['stats']['enabled'])
+
+    def test_smaller_motion_window_starts_at_native_size_without_changing_ui_scale(self):
+        import tomllib
+        for size in ((960, 600), (800, 600), (640, 480)):
+            settings = tomllib.loads(stack.client_settings('SwlorLive', True, False, size))
+            self.assertEqual({'width': size[0], 'height': size[1]}, settings['graphics']['window']['windowed'])
+            self.assertEqual(1, settings['ui']['scale'])
+        with self.assertRaises(stack.LiveStackError):
+            stack.client_settings('SwlorLive', window_size=(960, 540))
+
+    def test_motion_capture_changes_only_the_owned_rendering_profile(self):
+        import tomllib
+        regular = tomllib.loads(stack.client_settings('SwlorLive'))
+        capture = tomllib.loads(stack.client_settings('SwlorLive', True, True))
+        for key in ('sound', 'client', 'net', 'ui', 'game'):
+            self.assertEqual(regular[key], capture[key])
+        self.assertEqual(regular['graphics']['window'], capture['graphics']['window'])
+        self.assertFalse(capture['graphics']['fbo']['ssao']['enabled'])
+        self.assertFalse(capture['graphics']['shadows']['environment']['enabled'])
+        self.assertNotIn('fbo', regular['graphics'])
+
+    def test_gpu_composition_is_optional_and_keeps_the_run_snapshot(self):
+        directory = self.root / 'gpu-run'
+        directory.mkdir()
+        state = directory / 'state.json'
+        import json
+        for gpu in (None, 'wsl-d3d12'):
+            state.write_text(json.dumps({'project': 'swlor-live-gpu-test', 'gpu_renderer': gpu}))
+            owned = stack.Stack(directory)
+            with patch.object(stack, 'run') as run:
+                owned.compose('ps', client=True)
+            command = run.call_args.args[0]
+            self.assertEqual(2 if gpu else 1, command.count('-f'))
+            self.assertIn(str(directory / 'compose.yml'), command)
+            self.assertEqual(bool(gpu), str(directory / 'compose.gpu.yml') in command)
+            self.assertEqual(bool(gpu), 'compose.gpu.yml' in owned.compose_command('ps'))
+
+    def test_gpu_backend_does_not_mount_a_host_display_or_publish_ports(self):
+        text = (stack.PACKAGE_DIR / 'compose.gpu.yml').read_text()
+        for forbidden in ('ports:', 'privileged:', 'network_mode:', '/tmp/.X11-unix', 'DISPLAY:'):
+            self.assertNotIn(forbidden, text)
+        self.assertIn('read_only: true', text)
+        self.assertIn('GALLIUM_DRIVER: d3d12', text)
+        self.assertIn('source: /usr/lib/wsl/drivers', text)
+
     def test_join_and_leave_patterns_match_server_log(self):
         log = self.write('nwserverLog1.txt', (
             'Tester (ABCD1234) Joined as Player 1\n'

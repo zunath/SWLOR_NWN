@@ -21,12 +21,60 @@ class LiveVideoTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.fake = SimpleNamespace(evidence=self.root, compose=Mock(), ensure_owner=Mock())
 
-    def output(self, fps=60, frames=120, duration=2):
+    def output(self, fps=60, frames=120, duration=2, width=1280, height=720):
         (self.root / 'motion.mp4').write_bytes(b'fixture-video')
         (self.root / 'motion.video.json').write_text(json.dumps({'streams': [{
-            'codec_name': 'h264', 'width': 1280, 'height': 720, 'avg_frame_rate': f'{fps}/1',
+            'codec_name': 'h264', 'width': width, 'height': height, 'avg_frame_rate': f'{fps}/1',
             'r_frame_rate': f'{fps}/1', 'nb_read_frames': str(frames), 'duration': str(duration)}]}))
+        (self.root / 'motion.frames.md5').write_text('#tb 0: 1/1000000\n' + ''.join(
+            f'0, {round(index*1000000/fps)}, {round(index*1000000/fps)}, 1, 100, {index:032x}\n'
+            for index in range(frames)))
         return subprocess.CompletedProcess([], 0, b'', b'')
+
+    def test_raw_capture_reports_repeated_images_even_when_timestamps_are_sixty_fps(self):
+        path = self.root / 'source.frames.md5'
+        path.write_text('#tb 0: 1/1000000\n' + ''.join(
+            f'0, {time}, {time}, 16667, 100, same\n' for time in (0, 16667, 33334, 50001)))
+        result = stack.frame_cadence(path)
+        self.assertAlmostEqual(60, result['acquired_fps'], places=2)
+        self.assertEqual(3, result['consecutive_identical_frames'])
+        self.assertEqual(1, result['unique_hashes'])
+        self.assertNotIn('renderer_fps', result)
+
+    def test_raw_capture_exposes_long_acquisition_stalls(self):
+        path = self.root / 'source.frames.md5'
+        path.write_text('#tb 0: 1/1000000\n' + ''.join(
+            f'0, {time}, {time}, 16667, 100, frame{index}\n'
+            for index, time in enumerate((0, 16667, 1016667))))
+        self.assertEqual(1000, stack.frame_cadence(path)['longest_acquisition_gap_ms'])
+
+    def test_bad_raw_capture_is_quarantined_with_the_video(self):
+        def output(*args, **kwargs):
+            result = self.output()
+            (self.root / 'motion.frames.md5').write_text('truncated')
+            return result
+        self.fake.compose.side_effect = output
+        with patch.object(stack, 'require_running'), self.assertRaises(stack.LiveStackError):
+            stack.record_video(self.fake, 'motion', 2, 60)
+        self.assertTrue((self.root / 'motion.failed.mp4').is_file())
+        self.assertEqual('truncated', (self.root / 'motion.failed.frames.md5').read_text())
+        self.assertFalse((self.root / 'videos.jsonl').exists())
+
+    def test_missing_raw_capture_fails_instead_of_certifying_only_encoded_fps(self):
+        def output(*args, **kwargs):
+            result = self.output()
+            (self.root / 'motion.frames.md5').unlink()
+            return result
+        self.fake.compose.side_effect = output
+        with patch.object(stack, 'require_running'), self.assertRaises(stack.LiveStackError):
+            stack.record_video(self.fake, 'motion', 2, 60)
+        self.assertTrue((self.root / 'motion.failed.mp4').exists())
+
+    def test_smaller_native_recording_must_match_the_runs_window_size(self):
+        self.fake.window_size = (960, 600)
+        self.fake.compose.side_effect = lambda *args, **kwargs: self.output(width=960, height=600)
+        with patch.object(stack, 'require_running'):
+            self.assertTrue(stack.record_video(self.fake, 'motion', 2, 60).exists())
 
     def test_invalid_bounds_or_path_do_not_start_a_recorder(self):
         for label, seconds, fps in (('../escape', 2, 60), ('motion', 121, 60),
@@ -112,7 +160,7 @@ class RecorderShellFailureTests(unittest.TestCase):
 export DISPLAY=:fixture
 xdotool() { if [ "$1" = search ]; then echo 123; fi; }
 timeout() { shift 3; "$@"; }
-ffmpeg() { printf 'unfinished-video' > "${@: -1}"; return ENCODER_STATUS; }
+ffmpeg() { for argument in "$@"; do case "$argument" in *.recording.mp4) printf 'unfinished-video' > "$argument";; esac; done; return ENCODER_STATUS; }
 ffprobe() { printf '{'; return PROBE_STATUS; }
 source ./recorder.sh motion 2 60
 '''.replace('ENCODER_STATUS', str(encoder_status)).replace('PROBE_STATUS', str(probe_status))

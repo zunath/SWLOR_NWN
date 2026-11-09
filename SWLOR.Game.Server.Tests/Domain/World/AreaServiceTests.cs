@@ -248,6 +248,37 @@ public class AreaServiceTests
         _service.GetPlayersInArea(Cantina).Should().Equal(OtherPlayer);
     }
 
+    private void PlayerDisconnects(uint player, uint area)
+    {
+        _engine.SetReturn("OBJECT_SELF", player);
+        _engine.SetReturnHandler("GetIsPC", arguments => (uint)arguments[0]! != Npc);
+        _engine.SetReturnHandler("GetArea", arguments => area);
+        _service.DisconnectBefore();
+    }
+
+    [Test]
+    public void DisconnectBefore_removes_the_player_from_the_area_they_were_in_and_keeps_the_others()
+    {
+        PlayerEnters(Player, Cantina);
+        PlayerEnters(OtherPlayer, Cantina);
+
+        PlayerDisconnects(Player, Cantina);
+
+        _service.GetPlayersInArea(Cantina).Should().Equal(OtherPlayer);
+    }
+
+    [Test]
+    public void DisconnectBefore_ignores_creatures_that_are_not_players_and_players_who_never_entered()
+    {
+        PlayerEnters(Player, Cantina);
+
+        PlayerDisconnects(Npc, Cantina);
+        PlayerDisconnects(OtherPlayer, Spaceport);
+
+        _service.GetPlayersInArea(Cantina).Should().Equal(Player);
+        _service.GetPlayersInArea(Spaceport).Should().BeEmpty();
+    }
+
     [Test]
     public void ExitArea_is_safe_for_a_player_who_never_entered_and_for_creatures_that_are_not_players()
     {

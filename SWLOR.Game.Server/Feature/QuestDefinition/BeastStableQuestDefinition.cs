@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {

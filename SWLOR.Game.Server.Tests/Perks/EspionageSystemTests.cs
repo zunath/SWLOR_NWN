@@ -433,9 +433,9 @@ public class EspionageSystemTests
     [Test]
     public void InfiltrationXp_UsesFullSuccessAndFifteenPercentDetectionFailureAwards()
     {
-        EspionageInfiltration.RequiredTravelDistanceMeters.Should().Be(4f);
-        EspionageInfiltration.DetectionFailureXpPercent.Should().Be(0.15f);
-        EspionageInfiltration.HostileFactionId.Should().Be(1);
+        EspionageInfiltrationService.RequiredTravelDistanceMeters.Should().Be(4f);
+        EspionageInfiltrationService.DetectionFailureXpPercent.Should().Be(0.15f);
+        EspionageInfiltrationService.HostileFactionId.Should().Be(1);
 
         EspionageInfiltration.CalculateXp(20, 20, false).Should().Be(600);
         EspionageInfiltration.CalculateXp(20, 20, true).Should().Be(90);

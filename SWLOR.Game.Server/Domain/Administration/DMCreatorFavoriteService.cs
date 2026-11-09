@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Loads and saves each DM's DM Creator favorites: the logic that used to be static in
-    /// <c>Service.DMCreatorFavorite</c>, moved here unchanged. The facade forwards every call to the container's
-    /// instance.
+    /// <c>DMCreatorFavorite</c>, moved here unchanged. Static callers reach the container's
+    /// instance through <c>GameServices.DMCreatorFavorite</c>.
     /// </summary>
     public class DMCreatorFavoriteService : IDMCreatorFavoriteService
     {

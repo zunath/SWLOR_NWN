@@ -17,7 +17,6 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MusicService;
-using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -26,6 +25,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -863,7 +863,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void AdjustFactionStanding()
         {
             _builder.Create("adjustfactionstanding")
-                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
                 .Validate((user, args) =>
@@ -872,7 +872,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                        ((FactionType)factionId) == FactionType.Invalid)
                     {
                         var error = "Invalid faction Id. Must be one of the following values:";
-                        foreach (var (faction, detail) in Faction.GetAllFactions())
+                        foreach (var (faction, detail) in GameServices.Faction.GetAllFactions())
                         {
                             error += $"{(int) faction} = {detail.Name}";
                         }
@@ -882,12 +882,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if(!int.TryParse(args[1], out var amount))
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}";
                     }
 
-                    if (amount < Faction.MinimumFaction || amount > Faction.MaximumFaction)
+                    if (amount < FactionService.MinimumFaction || amount > FactionService.MaximumFaction)
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}";
                     }
 
                     return string.Empty;
@@ -905,7 +905,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = GameServices.Faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }
@@ -915,7 +915,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GetFactionStanding()
         {
             _builder.Create("getfactionstanding")
-                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -932,7 +932,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = GameServices.Faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }

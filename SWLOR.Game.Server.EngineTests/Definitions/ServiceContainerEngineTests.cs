@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("Township", Property.GetCityLevelName(3), "Property city rules answer through the container");
             ctx.AssertEqual(SWLOR.Game.Server.Service.PropertyService.PropertyLoadState.Failed, Property.GetPropertyLoadState("no-such-property"),
                 "The property loader answers through the container");
-            ctx.AssertEqual(QuestContractBoard.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
+            ctx.AssertEqual(QuestContractBoardService.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
             ctx.Assert(Quest.GetQuestByIdOrDefault("scrapmetal_monster") != null, "Quests cached by the module-cache handler");
             ctx.Assert(!QuestEncounter.IsQuestEncounterCreature(OBJECT_INVALID), "Quest encounters answer through the container");
         }

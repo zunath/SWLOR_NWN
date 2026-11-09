@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Creatures;
@@ -17,8 +18,8 @@ namespace SWLOR.Game.Server.Domain.Character
     /// Tracks one infiltration attempt per player/hostile pair. A player succeeds by evading at
     /// least one Detection check, moving meaningfully through the hostile's aggro aura, and leaving
     /// that aura while still stealthed. Detection resolves the pair for a smaller failure award.
-    /// The logic and state moved here unchanged from the static <c>Service.EspionageInfiltration</c>; the facade keeps
-    /// the event handlers.
+    /// The logic and state moved here unchanged from the static <c>Service.EspionageInfiltration</c>; the event
+    /// handlers run on the container's instance.
     /// </summary>
     public class EspionageInfiltrationService : IEspionageInfiltrationService
     {
@@ -265,6 +266,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _resolvedPlayerIdsByNpc.Remove(npc);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()
         {
             var exiting = GetExitingObject();
@@ -274,11 +277,14 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void OnPlayerDeath()
         {
             CancelPlayer(GetLastPlayerDied());
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public void OnNpcRemoved()
         {
             ClearNpc(OBJECT_SELF);

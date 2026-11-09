@@ -43,13 +43,13 @@ public class ResearchPerkRegressionTests
         buildJob.Should().Contain("RequiredResearchTier = researchTier");
         validateJob.Should().Contain("CraftRankMilestones.GetResearchTier(Player) < researchJob.RequiredResearchTier");
         validateJob.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)");
-        validateJob.Should().Contain("researchJob.CurrentLevel >= Craft.MaxResearchLevel");
+        validateJob.Should().Contain("researchJob.CurrentLevel >= CraftService.MaxResearchLevel");
 
         validateBlueprint.Should().Contain("var requiredTier = recipe.Level / 10 + 1;");
         validateBlueprint.Should().Contain("if (requiredTier > 5)");
         validateBlueprint.Should().Contain("if (researchTier < requiredTier)");
         validateBlueprint.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)");
-        validateBlueprint.Should().Contain("blueprint.Level >= Craft.MaxResearchLevel");
+        validateBlueprint.Should().Contain("blueprint.Level >= CraftService.MaxResearchLevel");
     }
 
     [Test]

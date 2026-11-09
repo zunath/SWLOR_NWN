@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.FactionService;
 namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
-    /// Factions and a player's standing and points with them. The static facade <c>Service.Faction</c> forwards to the
-    /// container's instance of this interface and keeps the event handler.
+    /// Factions and a player's standing and points with them. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.Faction</c>; the event handler is on <see cref="FactionService"/>.
     /// </summary>
     public interface IFactionService
     {

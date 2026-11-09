@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -34,12 +35,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RecordSpin(CasinoDailyPlay play, DateTime utcNow, int payout)
         {
-            if (payout < 0 || payout > CasinoSlot.MaximumPayout)
+            if (payout < 0 || payout > CasinoSlotService.MaximumPayout)
                 throw new ArgumentOutOfRangeException(nameof(payout));
             if (IsCoolingDown(play, utcNow))
                 throw new InvalidOperationException("Spin cooldown is active.");
             play.Spins++;
-            if (payout > CasinoSlot.SpinCost)
+            if (payout > CasinoSlotService.SpinCost)
                 play.ProfitableWins++;
             play.NextSpinUtc = utcNow.AddSeconds(3);
         }

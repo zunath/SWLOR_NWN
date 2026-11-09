@@ -21,7 +21,7 @@ public class LinkedBankStorageTests
         bank.GetItemCountText(5).Should().Be("5 / 120 Items");
         bank.GetStoragePercentage(240).Should().Be(1f);
 
-        // The constants live on the instance; the static facade carries none.
+        // The constants live on the instance; the static facade is gone.
         var serviceType = typeof(BankService);
         var storageId = serviceType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
         var maxItems = serviceType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
@@ -32,45 +32,41 @@ public class LinkedBankStorageTests
         maxItems.Should().NotBeNull();
         maxItems!.IsLiteral.Should().BeTrue();
         maxItems.GetRawConstantValue().Should().Be(120);
-        typeof(Bank)
-            .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.IsLiteral)
-            .Should()
-            .BeEmpty();
+        serviceType.Assembly.GetType("SWLOR.Game.Server.Service.Bank").Should().BeNull();
     }
 
     [Test]
     public void BankService_OwnsBankOperations()
     {
-        GetPublicBankMethod(nameof(Bank.GetItemCount), typeof(string))
+        GetPublicBankMethod(nameof(BankService.GetItemCount), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(long));
-        GetPublicBankMethod(nameof(Bank.SearchItems), typeof(string), typeof(string), typeof(int))
+        GetPublicBankMethod(nameof(BankService.SearchItems), typeof(string), typeof(string), typeof(int))
             .ReturnType
             .Should()
             .Be(typeof(BankItemPage));
-        GetPublicBankMethod(nameof(Bank.GetDepositFailure), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.GetDepositFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.DepositItem), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.DepositItem), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(InventoryItem));
-        GetPublicBankMethod(nameof(Bank.WithdrawItem), typeof(uint), typeof(string))
+        GetPublicBankMethod(nameof(BankService.WithdrawItem), typeof(uint), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.GetCityBankAccessFailure), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.GetCityBankAccessFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.SetCityBankId), typeof(uint), typeof(string))
+        GetPublicBankMethod(nameof(BankService.SetCityBankId), typeof(uint), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(void));
-        GetPublicBankMethod(nameof(Bank.NormalizeStorageId), typeof(InventoryItem))
+        GetPublicBankMethod(nameof(BankService.NormalizeStorageId), typeof(InventoryItem))
             .ReturnType
             .Should()
             .Be(typeof(bool));
@@ -252,8 +248,8 @@ public class LinkedBankStorageTests
             "PropertyLayoutDefinition",
             "BankLayoutDefinition.cs"));
 
-        source.Should().Contain("Service.Bank.GetCityBankAccessFailure(player, bank)");
-        source.Should().Contain("Service.Bank.SetCityBankId(placeable, cityId)");
+        source.Should().Contain("GameServices.Bank.GetCityBankAccessFailure(player, bank)");
+        source.Should().Contain("GameServices.Bank.SetCityBankId(placeable, cityId)");
         source.Should().Contain("SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank)");
         source.Should().NotContain("GetLocalString(bank");
         source.Should().NotContain("SetLocalString(placeable");
@@ -374,9 +370,9 @@ public class LinkedBankStorageTests
 
     private static MethodInfo GetPublicBankMethod(string name, params Type[] parameterTypes)
     {
-        var method = typeof(Bank).GetMethod(
+        var method = typeof(BankService).GetMethod(
             name,
-            BindingFlags.Public | BindingFlags.Static,
+            BindingFlags.Public | BindingFlags.Instance,
             null,
             parameterTypes,
             null);

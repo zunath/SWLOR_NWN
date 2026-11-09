@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -14,11 +15,11 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The account achievements: the logic and state that used to be static in <c>Service.Achievement</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// unchanged. The event handlers run on the container's instance.
     /// </summary>
     public class AchievementService : IAchievementService
     {
-        // The name the GUI id reservation has always been made under (nameof of the facade, Service.Achievement).
+        // The name the GUI id reservation has always been made under (nameof of the former facade, Service.Achievement).
         private const string GuiReservationName = "Achievement";
 
         private readonly IDBService _db;
@@ -32,11 +33,13 @@ namespace SWLOR.Game.Server.Domain.Character
             _gui = gui;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {
             _idReservation = _gui.ReserveIds(GuiReservationName, 6);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();

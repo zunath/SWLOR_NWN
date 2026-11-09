@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -288,18 +289,18 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         guideText.Should().Contain($"up to {NotesService.MaxNumberOfCategories} categories");
         guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
 
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");
-        guideText.Should().Contain($"between 1 and {QuestContractBoard.MaxObjectives} item objectives");
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxRewardItems} reward items");
-        guideText.Should().Contain($"{QuestContractBoard.ContractDurationDays} days");
-        guideText.Should().Contain($"{QuestContractBoard.PostingFeePercent} percent");
-        guideText.Should().Contain($"minimum fee of {QuestContractBoard.MinimumPostingFee} credits");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxActiveContractsPerCDKey} published");
+        guideText.Should().Contain($"between 1 and {QuestContractBoardService.MaxObjectives} item objectives");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxRewardItems} reward items");
+        guideText.Should().Contain($"{QuestContractBoardService.ContractDurationDays} days");
+        guideText.Should().Contain($"{QuestContractBoardService.PostingFeePercent} percent");
+        guideText.Should().Contain($"minimum fee of {QuestContractBoardService.MinimumPostingFee} credits");
 
         guideText.Should().Contain($"begin with {Player.DefaultDisguiseSlotLimit} identity slot");
-        guideText.Should().Contain($"base wait between disguise activations is {Disguise.ActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"minimum wait of {Disguise.MinimumActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"{Disguise.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
-        guideText.Should().Contain($"{Disguise.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
+        guideText.Should().Contain($"base wait between disguise activations is {DisguiseService.ActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"minimum wait of {DisguiseService.MinimumActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"{DisguiseService.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
+        guideText.Should().Contain($"{DisguiseService.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
 
         guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionRegistrationDays}-day candidate-registration period");
         guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionVotingDays} days of voting");

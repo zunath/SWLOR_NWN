@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// Lists the blueprints the DM creator can spawn, grouped by the same palettes and categories as the
     /// native creator, and creates objects from them.
     /// Custom palettes are the module's *palcus files; Standard palettes are the base game's *palstd files.
-    /// The static facade <c>Service.DMBlueprintCatalog</c> forwards to the container's instance of this interface and
-    /// keeps the event handler.
+    /// Static callers reach the container's instance of this interface through <c>GameServices.DMBlueprintCatalog</c>;
+    /// the event handler is on <see cref="DMBlueprintCatalogService"/>.
     /// </summary>
     public interface IDMBlueprintCatalogService
     {

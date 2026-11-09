@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Entity;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// Loads and saves DM chat and display preferences: the logic that used to be static in <c>Service.DMPreference</c>,
-    /// moved here unchanged. The facade forwards every call to the container's instance.
+    /// Loads and saves DM chat and display preferences: the logic that used to be static in <c>DMPreference</c>,
+    /// moved here unchanged. Static callers reach the container's instance through <c>GameServices.DMPreference</c>.
     /// </summary>
     public class DMPreferenceService : IDMPreferenceService
     {

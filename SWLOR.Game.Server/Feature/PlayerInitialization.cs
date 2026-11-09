@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
-using Race = SWLOR.Game.Server.Service.Race;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;

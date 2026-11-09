@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Game.Server.Service.ResistanceService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

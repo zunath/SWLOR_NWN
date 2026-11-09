@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// A player opens a scavenge site. If they have the Gathering rank for it, the Search board opens in place of the site's inventory
-        /// (<see cref="ScavengeSessions"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
+        /// (<see cref="SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
         /// they finish. A site can be searched once (<c>FULLY_HARVESTED</c>), and one scavenger at a time.
         /// </summary>
         [NWNEventHandler(ScriptName.OnScavengeOpened)]

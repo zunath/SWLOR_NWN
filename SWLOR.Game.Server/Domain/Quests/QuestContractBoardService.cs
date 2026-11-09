@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// <summary>
     /// Lifecycle service for player-authored quest contracts: draft creation, reward escrow,
     /// publishing, takedown/cancellation, expiry, and delivery claiming. The logic that used to be static in
-    /// <c>Service.QuestContractBoard</c>, moved here unchanged; the facade keeps the event handlers and forwards
-    /// every call to the container's instance.
+    /// <c>QuestContractBoard</c>, moved here unchanged. The event handlers run on the container's instance;
+    /// static callers reach it through <c>GameServices.QuestContractBoard</c>.
     /// </summary>
     public class QuestContractBoardService : IQuestContractBoardService
     {
@@ -37,6 +37,9 @@ namespace SWLOR.Game.Server.Domain.Quests
         public const int PostingFeePercent = 5;
         public const int MinimumPostingFee = 100;
         public const int MinRewardCredits = 1;
+
+        // Only the editor window uses this one; the service logic does not.
+        public const int MaxItemSearchResults = 50;
 
         private const string DeliveriesWaitingMessage = "Contract deliveries are waiting for you. Visit any Contract Board to claim your items and credits.";
 
@@ -71,6 +74,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// running timer because the server reboots daily, so a periodic sweep would spend CPU for at
         /// most a day of extra contract lifetime.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public void RegisterContracts()
         {
             RecoverSettlements();
@@ -144,6 +148,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player enters the module, let them know if they have quest contract deliveries waiting.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void NotifyPendingDeliveries()
         {
             var player = GetEnteringObject();

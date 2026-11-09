@@ -164,7 +164,7 @@ Service/
 - Quest requirements
 - Quest rewards
 
-**Common Usage**: See `Service/Quest.cs` for quest management methods.
+**Common Usage**: See `Domain/Quests/QuestService.cs` for quest management methods.
 
 ### 6. DialogService
 

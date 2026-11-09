@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The public descriptors ("Someone" names) of players: the logic that used to be static in
-    /// <c>Service.PlayerDescriptor</c>, moved here unchanged. The facade forwards every call.
+    /// <c>Service.PlayerDescriptor</c>, moved here unchanged.
     /// </summary>
     /// <remarks>
     /// <c>PlayerName</c> and the descriptors call each other. <c>PlayerNameService</c> reaches this service through

@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Entity;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// Loads and saves DM chat and display preferences, keyed by the DM's public CD key. The static facade
-    /// <c>Service.DMPreference</c> forwards to the container's instance of this interface.
+    /// Loads and saves DM chat and display preferences, keyed by the DM's public CD key. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.DMPreference</c>.
     /// </summary>
     public interface IDMPreferenceService
     {

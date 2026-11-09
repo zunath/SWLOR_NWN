@@ -1,6 +1,7 @@
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Toolset.Domain.Conversations
 {
@@ -387,8 +388,8 @@ namespace SWLOR.Toolset.Domain.Conversations
                         // Faction points floor at zero and standing is clamped to the runtime's
                         // range, the same as Faction.AdjustPlayerFactionStanding/Points - a
                         // breaker must not write a value the game could never produce.
-                        var floor = isStanding ? Game.Server.Service.Faction.MinimumFaction : 0;
-                        var ceiling = isStanding ? Game.Server.Service.Faction.MaximumFaction : int.MaxValue;
+                        var floor = isStanding ? FactionService.MinimumFaction : 0;
+                        var ceiling = isStanding ? FactionService.MaximumFaction : int.MaxValue;
 
                         // The target's own guards on this same faction may still leave room to
                         // move within - identifier-only protection refused any move at all, even
@@ -478,7 +479,7 @@ namespace SWLOR.Toolset.Domain.Conversations
                             && int.TryParse(arguments[1], out var standingRequired))
                             IntersectFactionRange(factionStandingRanges, standingFaction, standingRequired,
                                 condition.IsNegated,
-                                Game.Server.Service.Faction.MinimumFaction, Game.Server.Service.Faction.MaximumFaction);
+                                FactionService.MinimumFaction, FactionService.MaximumFaction);
                         break;
 
                     case "condition-has-faction-points" when arguments.Length > 1:
@@ -893,7 +894,7 @@ namespace SWLOR.Toolset.Domain.Conversations
                         {
                             if (satisfy)
                                 player.WithFactionStanding(standingFaction, standing);
-                            else if (standing > Game.Server.Service.Faction.MinimumFaction)
+                            else if (standing > FactionService.MinimumFaction)
                             {
                                 // A negated standing guard is reachable at runtime with any value
                                 // below the threshold; only a threshold at the runtime minimum is

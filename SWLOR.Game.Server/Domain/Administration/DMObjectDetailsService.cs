@@ -21,15 +21,15 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Builds the icons, one-line summaries and details the DM chooser and creator show: the logic and state that used
-    /// to be static in <c>Service.DMObjectDetails</c>, moved here unchanged. The facade forwards every call to the
-    /// container's instance and repeats <see cref="NoSelectionIcon"/> and <see cref="AreaIcon"/>.
+    /// to be static in <c>DMObjectDetails</c>, moved here unchanged. Static callers reach the
+    /// container's instance through <c>GameServices.DMObjectDetails</c>.
     /// </summary>
     public class DMObjectDetailsService : IDMObjectDetailsService
     {
-        /// <summary>Shown in the details panel when nothing is selected. <c>Service.DMObjectDetails.NoSelectionIcon</c> repeats it.</summary>
+        /// <summary>Shown in the details panel when nothing is selected.</summary>
         public const string NoSelectionIcon = "dm_examine";
 
-        /// <summary>Shown for areas, which have no portrait. <c>Service.DMObjectDetails.AreaIcon</c> repeats it.</summary>
+        /// <summary>Shown for areas, which have no portrait.</summary>
         public const string AreaIcon = "dm_goto";
 
         private const string TemporaryStorageTag = "TEMP_ITEM_STORAGE";

@@ -4,7 +4,7 @@
 # Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
 # or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
 # same pull request that makes it.
-SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter
+SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAreaExit SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerAreaExit
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttacked SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerAttacked
@@ -116,6 +116,7 @@ SWLOR.Game.Server.Service.ConversationMenu.CacheData SWLOR.Game.Server.Domain.Co
 SWLOR.Game.Server.Service.ConversationMenu.StartFromLocalConversation SWLOR.Game.Server.Domain.Core.ConversationMenuService.StartFromLocalConversation
 SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent SWLOR.Game.Server.Domain.Core.ConversationMenuService.StartFromObjectEvent
 SWLOR.Game.Server.Service.DB.Load SWLOR.Game.Server.Domain.Core.DBService.Load
+SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
 SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
 SWLOR.Game.Server.Service.Death.OnPlayerDeath SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
 SWLOR.Game.Server.Service.Death.OnPlayerDying SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDying
@@ -138,6 +139,7 @@ SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip SWLOR.Game.Server.Domain.U
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
 SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnequip
+SWLOR.Game.Server.Service.Faction.LoadFactions SWLOR.Game.Server.Domain.Quests.FactionService.LoadFactions
 SWLOR.Game.Server.Service.Fishing.CacheData SWLOR.Game.Server.Domain.World.FishingService.CacheData
 SWLOR.Game.Server.Service.Fishing.ClickFishingPoint SWLOR.Game.Server.Domain.World.FishingService.ClickFishingPoint
 SWLOR.Game.Server.Service.FishingService.FishingFights.AbandonOnDeath SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnDeath
@@ -226,6 +228,21 @@ SWLOR.Game.Server.Service.Property.StartApartmentConversation SWLOR.Game.Server.
 SWLOR.Game.Server.Service.PvpCombat.EndOnDeath SWLOR.Game.Server.Domain.Combat.PvpCombatService.EndOnDeath
 SWLOR.Game.Server.Service.PvpCombat.ForgetExitingPlayer SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
 SWLOR.Game.Server.Service.PvpCombat.ReduceHealing SWLOR.Game.Server.Domain.Combat.PvpCombatService.ReduceHealing
+SWLOR.Game.Server.Service.Quest.CacheData SWLOR.Game.Server.Domain.Quests.QuestService.CacheData
+SWLOR.Game.Server.Service.Quest.CloseItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.CloseItemCollector
+SWLOR.Game.Server.Service.Quest.DisturbItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.DisturbItemCollector
+SWLOR.Game.Server.Service.Quest.EnterQuestTrigger SWLOR.Game.Server.Domain.Quests.QuestService.EnterQuestTrigger
+SWLOR.Game.Server.Service.Quest.LoadPlayerQuests SWLOR.Game.Server.Domain.Quests.QuestService.LoadPlayerQuests
+SWLOR.Game.Server.Service.Quest.OpenItemCollector SWLOR.Game.Server.Domain.Quests.QuestService.OpenItemCollector
+SWLOR.Game.Server.Service.Quest.ProgressKillTargetObjectives SWLOR.Game.Server.Domain.Quests.QuestService.ProgressKillTargetObjectives
+SWLOR.Game.Server.Service.Quest.UseQuestPlaceable SWLOR.Game.Server.Domain.Quests.QuestService.UseQuestPlaceable
+SWLOR.Game.Server.Service.QuestContractBoard.NotifyPendingDeliveries SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.NotifyPendingDeliveries
+SWLOR.Game.Server.Service.QuestContractBoard.RegisterContracts SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.RegisterContracts
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.ObjectDestroyed SWLOR.Game.Server.Domain.Quests.QuestEncounterService.ObjectDestroyed
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnAreaEnter SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnAreaEnter
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.TrackEncounterActivity SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
+SWLOR.Game.Server.Service.QuestService.QuestEncounter.UseActivator SWLOR.Game.Server.Domain.Quests.QuestEncounterService.UseActivator
 SWLOR.Game.Server.Service.Recast.CacheRecastGroups SWLOR.Game.Server.Domain.Combat.RecastService.CacheRecastGroups
 SWLOR.Game.Server.Service.Resistance.LoadResistanceTypes SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
 SWLOR.Game.Server.Service.Shuttle.EnterServer SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
@@ -260,3 +277,37 @@ SWLOR.Game.Server.Service.Weather.InitializeWeather SWLOR.Game.Server.Domain.Wor
 SWLOR.Game.Server.Service.Weather.LoadData SWLOR.Game.Server.Domain.World.WeatherService.LoadData
 SWLOR.Game.Server.Service.Weather.OnAreaEnter SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
 SWLOR.Game.Server.Service.Weather.OnModuleHeartbeat SWLOR.Game.Server.Domain.World.WeatherService.OnModuleHeartbeat
+SWLOR.Game.Server.Service.Craft.CacheData SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData
+SWLOR.Game.Server.Service.Craft.UseCraftingDevice SWLOR.Game.Server.Domain.Crafting.CraftService.UseCraftingDevice
+SWLOR.Game.Server.Service.Craft.UseRefinery SWLOR.Game.Server.Domain.Crafting.CraftService.UseRefinery
+SWLOR.Game.Server.Service.Craft.UseResearchTerminal SWLOR.Game.Server.Domain.Crafting.CraftService.UseResearchTerminal
+SWLOR.Game.Server.Service.Craft.OnRemoveProperty SWLOR.Game.Server.Domain.Crafting.CraftService.OnRemoveProperty
+SWLOR.Game.Server.Service.Currency.CacheCurrencies SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
+SWLOR.Game.Server.Service.CasinoSlot.OnUsed SWLOR.Game.Server.Domain.Economy.CasinoSlotService.OnUsed
+SWLOR.Game.Server.Service.Guild.LoadData SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
+SWLOR.Game.Server.Service.Guild.RefreshGuildTasks SWLOR.Game.Server.Domain.Economy.GuildService.RefreshGuildTasks
+SWLOR.Game.Server.Service.PlayerMarket.CacheData SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
+SWLOR.Game.Server.Service.PlayerMarket.RemoveOldListings SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
+SWLOR.Game.Server.Service.PlayerMarket.CheckMarketTill SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CheckMarketTill
+SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit
+SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerDeath SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerDeath
+SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnDeath SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnDeath
+SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnExit SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit
+SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnDeath SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnDeath
+SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnExit SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnExit
+SWLOR.Game.Server.Service.Achievement.LoadAchievements SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
+SWLOR.Game.Server.Service.Achievement.ReserveGuiIds SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
+SWLOR.Game.Server.Service.Language.LoadTranslators SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
+SWLOR.Game.Server.Service.Race.LoadRaces SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces
+SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
+SWLOR.Game.Server.Service.EspionageInfiltration.OnNpcRemoved SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnNpcRemoved
+SWLOR.Game.Server.Service.Activity.WipeStatusOnDeath SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnDeath
+SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerDeath SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerDeath
+SWLOR.Game.Server.Service.Activity.WipeStatusOnEntry SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
+SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
+SWLOR.Game.Server.Service.PlayerName.ApplyNameOverridesOnEnter SWLOR.Game.Server.Domain.Character.PlayerNameService.ApplyNameOverridesOnEnter
+SWLOR.Game.Server.Service.Race.ApplyWookieeScaling SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
+SWLOR.Game.Server.Service.PlayerIntroduction.ClearOnExit SWLOR.Game.Server.Domain.Character.PlayerIntroductionService.ClearOnExit
+SWLOR.Game.Server.Service.PlayerName.ReleaseKnownNamesOnExit SWLOR.Game.Server.Domain.Character.PlayerNameService.ReleaseKnownNamesOnExit
+SWLOR.Game.Server.Service.PlayerName.ClearAfkOnExit SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
+SWLOR.Game.Server.Service.PlayerName.PreventAmbiguousTellTargets SWLOR.Game.Server.Domain.Character.PlayerNameService.PreventAmbiguousTellTargets

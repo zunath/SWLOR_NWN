@@ -12,8 +12,8 @@ using SWLOR.Game.Server.Entity;
 namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
-/// Proves that the accessor that replaces a removed facade costs what the facade did: reading a <see cref="GameServices"/>
-/// property reads the same per-service slot (<c>FacadeCache</c>) and allocates nothing, so a call through it allocates
+/// Proves that the accessor static code uses costs what a direct call on the instance costs: reading a <see cref="GameServices"/>
+/// property reads a per-service slot (<c>FacadeCache</c>) and allocates nothing, so a call through it allocates
 /// what the call on the instance allocates.
 /// </summary>
 [TestFixture]
@@ -103,7 +103,7 @@ public class GameServicesAllocationTests
     public void The_recording_flag_every_managed_entry_reads_allocates_nothing()
     {
         // ManagedEntryDepth.Enter reads CombatRecorder.IsRecording on every managed entry point (main loop, script,
-        // closure, signal): one read of the accessor's slot and one interface call, as the facade did.
+        // closure, signal): one read of the accessor's slot and one interface call.
         var instance = _host.Provider.GetRequiredService<ICombatRecorderService>();
         var recording = true;
 

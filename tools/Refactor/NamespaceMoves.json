@@ -41,26 +41,6 @@
       "replace": "\"Domain/Abilities/AbilityBuilder.cs\","
     },
     {
-      "file": "SWLOR.Architecture.Tests/Domains/ConvertedPieces.cs",
-      "find": "ConvertedService.ServerNamespace + \".Service\" + parent",
-      "replace": "ConvertedService.ServerNamespace + \".Domain\" + parent"
-    },
-    {
-      "file": "SWLOR.Game.Server.Tests/Composition/ConvertedServiceFixtures.cs",
-      "find": "assembly.GetType($\"{ServerNamespace}.Service.{facade}\", throwOnError: true)!",
-      "replace": "assembly.GetType($\"{ServerNamespace}.Domain.{facade}\", throwOnError: true)!"
-    },
-    {
-      "file": "SWLOR.Architecture.Tests/ConvertedServiceRulesTests.cs",
-      "find": "TrackerFacade = \"AchievementService.AchievementTracker\"",
-      "replace": "TrackerFacade = \"Character.AchievementTracker\""
-    },
-    {
-      "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
-      "find": "named relative to SWLOR.Game.Server.Service:",
-      "replace": "named relative to SWLOR.Game.Server.Domain:"
-    },
-    {
       "file": "SWLOR.Architecture.Tests/ConvertedServices.json",
       "find": "\"domain\": \"Core\"",
       "replace": "\"domain\": \"Foundation\""

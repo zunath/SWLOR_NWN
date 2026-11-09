@@ -11,9 +11,9 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// <c>TemporaryStatModifier.GetStatAdjustment</c> runs on every <c>Stat.GetStatAdjustment</c>. The static path (the facade
-/// until P2-ZG, now <c>GameServices.TemporaryStatModifier</c>) must add no allocation to a read: it resolves the instance
-/// from a cache and calls it. The read itself allocates the closure of its two lambdas (32 bytes, as on master); these tests
+/// <c>TemporaryStatModifier.GetStatAdjustment</c> runs on every <c>Stat.GetStatAdjustment</c>. The static path
+/// (<c>GameServices.TemporaryStatModifier</c>) must add no allocation to a read: it resolves the instance
+/// from a per-service slot and calls it. The read itself allocates the closure of its two lambdas (32 bytes, as on master); these tests
 /// pin that figure and that the static path costs nothing on top of the instance.
 /// </summary>
 [TestFixture]

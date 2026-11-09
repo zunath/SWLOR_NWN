@@ -90,12 +90,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool ReduceAlliedCombatEffects
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public int SelectedTabId { get => Get<int>(); private set => Set(value); }
         public int TabToggleValue
         {
@@ -198,7 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ScrambleAccountName);
             WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.DisplayCooldownFloatingText);
-            WatchOnClient(model => model.ReduceAlliedCombatEffects);
             WatchOnClient(model => model.SelectedColor);
             WatchOnClient(model => model.SelfQuickCastEnabled);
             WatchOnClient(model => model.EnemyQuickCastEnabled);
@@ -258,7 +251,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
             DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
             DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;
-            ReduceAlliedCombatEffects = dbPlayer.Settings.ReduceAlliedCombatEffects;
         }
 
         private void LoadIdentityView()
@@ -370,7 +362,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(PortraitVitals));
             OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
             OnPropertyChanged(nameof(DisplayCooldownFloatingText));
-            OnPropertyChanged(nameof(ReduceAlliedCombatEffects));
             OnPropertyChanged(nameof(ShowOwnDescriptor));
             OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
             OnPropertyChanged(nameof(ScrambleAccountName));
@@ -421,8 +412,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
-            dbPlayer.Settings.ReduceAlliedCombatEffects = ReduceAlliedCombatEffects;
-            CombatEffectPreferences.SetReducing(Player, ReduceAlliedCombatEffects);
             dbPlayer.Settings.SelfQuickCastEnabled = SelfQuickCastEnabled;
             dbPlayer.Settings.EnemyQuickCastEnabled = EnemyQuickCastEnabled;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))

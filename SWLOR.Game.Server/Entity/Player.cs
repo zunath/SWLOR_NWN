@@ -355,7 +355,6 @@ namespace SWLOR.Game.Server.Entity
         public bool? ScrambleAccountName { get; set; }
         public bool? DisplayCommsOutOfRangeWarnings { get; set; }
         public bool DisplayCooldownFloatingText { get; set; }
-        public bool ReduceAlliedCombatEffects { get; set; }
         public bool SelfQuickCastEnabled { get; set; }
         public bool EnemyQuickCastEnabled { get; set; }
 

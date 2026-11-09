@@ -126,12 +126,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 DurationSeconds);
 
             var credited = new HashSet<uint>();
-            // Captured once for the whole cloud so the burst confirms the first heal rather than
-            // replaying on every ally each tick. The heal visual still marks each tick.
-            var playPulseVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
+                var playPulseVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)

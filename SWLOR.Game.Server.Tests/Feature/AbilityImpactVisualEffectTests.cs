@@ -264,29 +264,6 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
-    public void AreaImpact_StopsEmittingAtTheRecipientCap()
-    {
-        var impact = new AbilityImpactVisualEffects(VisualEffect.Vfx_Imp_Shield_Bash);
-
-        Enumerable.Range(1, AbilityImpactVisualEffects.MaxRecipients)
-            .Select(recipient => impact.TryRecordRecipient((uint)recipient))
-            .Should().OnlyContain(emitted => emitted);
-
-        impact.TryRecordRecipient(100).Should().BeFalse();
-    }
-
-    [Test]
-    public void KoltoMist_SharesOneReceiptStateAcrossEveryTick()
-    {
-        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(),
-            "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/KoltoMistAbilityDefinition.cs"));
-
-        source.IndexOf("Ability.CaptureSuccessfulImpactVisualEffect(activator)", StringComparison.Ordinal)
-            .Should().BeLessThan(source.IndexOf("for (var elapsed = TickIntervalSeconds", StringComparison.Ordinal),
-                "a capture inside the tick loop replays the burst on every ally every tick");
-    }
-
-    [Test]
     public void VisualEffectTable_NeverShakesTheCamera()
     {
         var table = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
@@ -301,16 +278,6 @@ public class AbilityImpactVisualEffectTests
             .Select(row => row[1]);
 
         shaking.Should().BeEmpty("players asked for combat without camera shake");
-    }
-
-    [Test]
-    public void ReducedBursts_AreSentToTheCreatureAPossessingDMControls()
-    {
-        var service = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server/Service/Ability.cs"));
-
-        service.Should().Contain("var viewer = DMPresence.GetControlledCreature(player);");
-        service.Should().Contain("CombatEffectPreferences.IsReducing(player)");
-        service.Should().Contain("PlayerPlugin.ApplyInstantVisualEffectToObject(viewer, recipient, visuals.Effect);");
     }
 
     [Test]

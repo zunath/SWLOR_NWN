@@ -19,11 +19,11 @@ class LiveVideoTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.fake = SimpleNamespace(evidence=self.root, compose=Mock(), ensure_owner=Mock())
 
-    def output(self, fps=60):
+    def output(self, fps=60, frames=120, duration=2):
         (self.root / 'motion.mp4').write_bytes(b'fixture-video')
         (self.root / 'motion.video.json').write_text(json.dumps({'streams': [{
             'codec_name': 'h264', 'width': 1280, 'height': 720, 'avg_frame_rate': f'{fps}/1',
-            'r_frame_rate': f'{fps}/1', 'nb_read_frames': '120', 'duration': '2.000000'}]}))
+            'r_frame_rate': f'{fps}/1', 'nb_read_frames': str(frames), 'duration': str(duration)}]}))
         return subprocess.CompletedProcess([], 0, b'', b'')
 
     def test_invalid_bounds_or_path_do_not_start_a_recorder(self):
@@ -49,6 +49,12 @@ class LiveVideoTests(unittest.TestCase):
         self.assertFalse((self.root / 'motion.mp4').exists())
         self.assertFalse((self.root / 'motion.video.json').exists())
         self.assertFalse((self.root / 'videos.jsonl').exists())
+        self.assertEqual(b'fixture-video', (self.root / 'motion.failed.mp4').read_bytes())
+
+    @patch.object(stack, 'require_running')
+    def test_frame_count_matches_actual_stream_duration_within_the_duration_tolerance(self, running):
+        self.fake.compose.side_effect = lambda *args, **kwargs: self.output(frames=117, duration=1.95)
+        self.assertTrue(stack.record_video(self.fake, 'motion', 2, 60).exists())
 
     @patch.object(stack, 'require_running')
     def test_success_checks_the_live_stack_and_records_video_hash_and_stream(self, running):

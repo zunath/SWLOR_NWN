@@ -1184,14 +1184,17 @@ def record_video(stack: Stack, label: str, seconds: int = 30, fps: int = 60) -> 
         duration = float(stream['duration'])
         if (stream['codec_name'] != 'h264' or (stream['width'], stream['height']) != WINDOW_SIZE or
                 Fraction(stream['avg_frame_rate']) != fps or Fraction(stream['r_frame_rate']) != fps or
-                abs(int(stream['nb_read_frames']) - seconds * fps) > 2 or not math.isfinite(duration) or
+                not math.isfinite(duration) or abs(int(stream['nb_read_frames']) - round(duration * fps)) > 1 or
                 abs(duration - seconds) > 0.1 or not path.is_file()):
             raise ValueError('The video did not meet its requested size, duration or frame rate.')
         digest = sha256(path)
     except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError, LiveStackError) as error:
-        path.unlink(missing_ok=True)
-        probe.unlink(missing_ok=True)
-        (stack.evidence / f'.{label}.recording.mp4').unlink(missing_ok=True)
+        for source, failed in ((path, stack.evidence / f'{label}.failed.mp4'),
+                               (probe, stack.evidence / f'{label}.failed.video.json'),
+                               (stack.evidence / f'.{label}.recording.mp4',
+                                stack.evidence / f'{label}.failed.partial.mp4')):
+            if source.exists():
+                source.replace(failed)
         raise LiveStackError(f'Video recording failed: {error}') from error
     record = {'label': label, 'file': path.name, 'started_utc': started, 'finished_utc': utc_now(),
               'sha256': digest, 'fps': fps, 'seconds': seconds, 'stream': stream,

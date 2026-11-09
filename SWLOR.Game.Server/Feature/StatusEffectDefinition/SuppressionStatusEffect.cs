@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -38,13 +39,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public void AfterRemoved(uint creature)
         {
-            Combat.ReconcileContainmentNetStatus(Source, creature);
-            Combat.ReconcileOverwatchStatus(Source);
+            GameServices.CombatSuppression.ReconcileContainmentNetStatus(Source, creature);
+            GameServices.CombatSuppression.ReconcileOverwatchStatus(Source);
         }
 
         public void AfterRestored(uint creature)
         {
-            Combat.ReconcileContainmentNetStatus(Source, creature);
+            GameServices.CombatSuppression.ReconcileContainmentNetStatus(Source, creature);
         }
     }
 }

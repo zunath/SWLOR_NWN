@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -42,8 +43,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ? AppliedResistanceType
                 : ResistanceType;
             damageAmount = Resistance.ApplyResistanceToDamage(creature, resistanceType, damageAmount);
-            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical, out var targetStatusDamageAdjustment);
-            damageAmount = Combat.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Physical,
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical, out var targetStatusDamageAdjustment);
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Physical,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damageAmount <= 0)
                 return;
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Remove(uint creature)
         {
             if (WasNaturallyExpired)
-                Combat.ApplyBleedingStatusExpiredEffects(Source);
+                GameServices.CombatAttackTiming.ApplyBleedingStatusExpiredEffects(Source);
         }
     }
 }

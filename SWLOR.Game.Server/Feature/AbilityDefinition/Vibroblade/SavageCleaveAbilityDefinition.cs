@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             var amount = secondaryTargets * 2;
             if (amount > 0)
             {
-                Combat.RestoreAbilityHitStamina(activator, summary.Ability, amount);
+                GameServices.CombatResources.RestoreAbilityHitStamina(activator, summary.Ability, amount);
             }
         }
     }

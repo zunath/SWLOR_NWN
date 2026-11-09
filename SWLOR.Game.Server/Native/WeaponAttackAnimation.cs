@@ -7,6 +7,7 @@ using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -82,7 +83,7 @@ public static unsafe class WeaponAttackAnimation
 
     public static int CalculateSwingDuration(int cycleDuration, int handCount) =>
         Math.Min(SwingDuration,
-            Math.Max(Combat.BaseAttackDelayMilliseconds, cycleDuration) / Math.Max(1, handCount) - TransitionDuration);
+            Math.Max(CombatRules.BaseAttackDelayMilliseconds, cycleDuration) / Math.Max(1, handCount) - TransitionDuration);
 
     public static int AdvanceStage(int sent, long elapsed, int swingDuration, int handCount) =>
         elapsed >= (sent % 2 == 0 ? swingDuration : TransitionDuration)
@@ -116,7 +117,7 @@ public static unsafe class WeaponAttackAnimation
     {
         var round = creature.m_pcCombatRound;
         var count = round.m_nCurrentAttack - firstAttack;
-        if (creature.GetRangeWeaponEquipped() != 0 || count <= 0 || count > Combat.MaxAttacksPerSwing * 2)
+        if (creature.GetRangeWeaponEquipped() != 0 || count <= 0 || count > CombatRules.MaxAttacksPerSwing * 2)
         {
             if (_playbacks.TryGetValue(creature.m_idSelf, out var inactive)) inactive.Cancelled = true;
             return;

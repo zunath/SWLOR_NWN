@@ -2,6 +2,7 @@ using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -42,7 +43,7 @@ public class CombatHitAndCriticalCharacterizationTests
                      new[] { -100, -10, 0, 25, 200 },
                      new[] { 20, 35 }))
         {
-            table.Add(row[0], row[1], row[2], row[3], Combat.CalculateHitRate(row[0], row[1], row[2], row[3]));
+            table.Add(row[0], row[1], row[2], row[3], CombatRules.CalculateHitRate(row[0], row[1], row[2], row[3]));
         }
 
         var boundaryPairs = new (int Accuracy, int Evasion)[]
@@ -53,14 +54,14 @@ public class CombatHitAndCriticalCharacterizationTests
         foreach (var minimum in new[] { 20, 35 })
         {
             foreach (var (accuracy, evasion) in boundaryPairs)
-                table.Add(accuracy, evasion, 0, minimum, Combat.CalculateHitRate(accuracy, evasion, 0, minimum));
+                table.Add(accuracy, evasion, 0, minimum, CombatRules.CalculateHitRate(accuracy, evasion, 0, minimum));
             foreach (var modifier in new[] { -56, -55, 20, 21 })
-                table.Add(0, 0, modifier, minimum, Combat.CalculateHitRate(0, 0, modifier, minimum));
+                table.Add(0, 0, modifier, minimum, CombatRules.CalculateHitRate(0, 0, modifier, minimum));
         }
 
         // The overload without a minimum uses the default of 20.
         foreach (var (accuracy, evasion) in boundaryPairs)
-            table.Add(accuracy, evasion, 5, -1, Combat.CalculateHitRate(accuracy, evasion, 5));
+            table.Add(accuracy, evasion, 5, -1, CombatRules.CalculateHitRate(accuracy, evasion, 5));
 
         Snapshot.Verify("Combat", "CalculateHitRate", table);
     }
@@ -85,7 +86,7 @@ public class CombatHitAndCriticalCharacterizationTests
             foreach (var rank in new[] { -10, 0, 9, 10, 55, 100, 600 })
             {
                 foreach (var modifier in new[] { -50, 0, 3, 100 })
-                    table.Add(per, vit, rank, modifier, Combat.CalculateCriticalRate(per, vit, rank, modifier));
+                    table.Add(per, vit, rank, modifier, CombatRules.CalculateCriticalRate(per, vit, rank, modifier));
             }
         }
 
@@ -103,7 +104,7 @@ public class CombatHitAndCriticalCharacterizationTests
             new[] { "criticalChance" });
 
         foreach (var adjustment in new[] { -1000, -100, -5, -1, 0, 1, 20, 44, 45, 46, 100, 1000000 })
-            table.Add(adjustment, Combat.CalculateAbilityCriticalChance(adjustment));
+            table.Add(adjustment, CombatRules.CalculateAbilityCriticalChance(adjustment));
 
         Snapshot.Verify("Combat", "CalculateAbilityCriticalChance", table);
     }
@@ -123,32 +124,32 @@ public class CombatHitAndCriticalCharacterizationTests
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {
-            (nameof(Combat.BaseAttackDelayMilliseconds), typeof(int), Combat.BaseAttackDelayMilliseconds),
-            (nameof(Combat.BaseGuardDamageReductionPercent), typeof(int), Combat.BaseGuardDamageReductionPercent),
-            (nameof(Combat.BaseHitRate), typeof(int), Combat.BaseHitRate),
-            (nameof(Combat.BossMinimumHitRate), typeof(int), Combat.BossMinimumHitRate),
-            (nameof(Combat.CombatHealingWindowSeconds), typeof(int), Combat.CombatHealingWindowSeconds),
-            (nameof(Combat.MaxAttacksPerSwing), typeof(int), Combat.MaxAttacksPerSwing),
-            (nameof(Combat.MaximumActivatedDamageHealingMaxHPPercent), typeof(int), Combat.MaximumActivatedDamageHealingMaxHPPercent),
-            (nameof(Combat.MaximumAttackDelayAdjustmentPercent), typeof(int), Combat.MaximumAttackDelayAdjustmentPercent),
-            (nameof(Combat.MaximumCombinedDamageReductionPercent), typeof(int), Combat.MaximumCombinedDamageReductionPercent),
-            (nameof(Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit), typeof(int), Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit),
-            (nameof(Combat.MaximumCriticalDamagePercentAdjustment), typeof(int), Combat.MaximumCriticalDamagePercentAdjustment),
-            (nameof(Combat.MaximumCriticalRate), typeof(int), Combat.MaximumCriticalRate),
-            (nameof(Combat.MaximumDamageBonusPercent), typeof(int), Combat.MaximumDamageBonusPercent),
-            (nameof(Combat.MaximumDamageDerivedHealingPercentPerHit), typeof(int), Combat.MaximumDamageDerivedHealingPercentPerHit),
-            (nameof(Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow), typeof(int), Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow),
-            (nameof(Combat.MaximumGuardDamageReductionPercent), typeof(int), Combat.MaximumGuardDamageReductionPercent),
-            (nameof(Combat.MaximumHitRate), typeof(int), Combat.MaximumHitRate),
-            (nameof(Combat.MaximumNormalDamageReductionPercent), typeof(int), Combat.MaximumNormalDamageReductionPercent),
-            (nameof(Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit), typeof(int), Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit),
-            (nameof(Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow), typeof(int), Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow),
-            (nameof(Combat.MeleeWeaponEngagementRange), typeof(float), Combat.MeleeWeaponEngagementRange),
-            (nameof(Combat.MinimumAttackDelayMilliseconds), typeof(int), Combat.MinimumAttackDelayMilliseconds),
-            (nameof(Combat.MinimumCriticalRate), typeof(int), Combat.MinimumCriticalRate),
-            (nameof(Combat.MinimumHitRate), typeof(int), Combat.MinimumHitRate),
-            (nameof(Combat.RangedWeaponEngagementRange), typeof(float), Combat.RangedWeaponEngagementRange),
-            (nameof(Combat.StandardCriticalRating), typeof(int), Combat.StandardCriticalRating),
+            (nameof(CombatRules.BaseAttackDelayMilliseconds), typeof(int), CombatRules.BaseAttackDelayMilliseconds),
+            (nameof(CombatDamageTakenService.BaseGuardDamageReductionPercent), typeof(int), CombatDamageTakenService.BaseGuardDamageReductionPercent),
+            (nameof(CombatRules.BaseHitRate), typeof(int), CombatRules.BaseHitRate),
+            (nameof(CombatQueriesService.BossMinimumHitRate), typeof(int), CombatQueriesService.BossMinimumHitRate),
+            (nameof(CombatResourcesService.CombatHealingWindowSeconds), typeof(int), CombatResourcesService.CombatHealingWindowSeconds),
+            (nameof(CombatRules.MaxAttacksPerSwing), typeof(int), CombatRules.MaxAttacksPerSwing),
+            (nameof(CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent), typeof(int), CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent),
+            (nameof(CombatRules.MaximumAttackDelayAdjustmentPercent), typeof(int), CombatRules.MaximumAttackDelayAdjustmentPercent),
+            (nameof(CombatRules.MaximumCombinedDamageReductionPercent), typeof(int), CombatRules.MaximumCombinedDamageReductionPercent),
+            (nameof(CombatResourcesService.MaximumCooldownDamageHealingMaxHPPercentPerHit), typeof(int), CombatResourcesService.MaximumCooldownDamageHealingMaxHPPercentPerHit),
+            (nameof(CombatRules.MaximumCriticalDamagePercentAdjustment), typeof(int), CombatRules.MaximumCriticalDamagePercentAdjustment),
+            (nameof(CombatRules.MaximumCriticalRate), typeof(int), CombatRules.MaximumCriticalRate),
+            (nameof(CombatRules.MaximumDamageBonusPercent), typeof(int), CombatRules.MaximumDamageBonusPercent),
+            (nameof(CombatRules.MaximumDamageDerivedHealingPercentPerHit), typeof(int), CombatRules.MaximumDamageDerivedHealingPercentPerHit),
+            (nameof(CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow), typeof(int), CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow),
+            (nameof(CombatDamageTakenService.MaximumGuardDamageReductionPercent), typeof(int), CombatDamageTakenService.MaximumGuardDamageReductionPercent),
+            (nameof(CombatRules.MaximumHitRate), typeof(int), CombatRules.MaximumHitRate),
+            (nameof(CombatRules.MaximumNormalDamageReductionPercent), typeof(int), CombatRules.MaximumNormalDamageReductionPercent),
+            (nameof(CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerHit), typeof(int), CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerHit),
+            (nameof(CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow), typeof(int), CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow),
+            (nameof(CombatRules.MeleeWeaponEngagementRange), typeof(float), CombatRules.MeleeWeaponEngagementRange),
+            (nameof(CombatRules.MinimumAttackDelayMilliseconds), typeof(int), CombatRules.MinimumAttackDelayMilliseconds),
+            (nameof(CombatRules.MinimumCriticalRate), typeof(int), CombatRules.MinimumCriticalRate),
+            (nameof(CombatRules.MinimumHitRate), typeof(int), CombatRules.MinimumHitRate),
+            (nameof(CombatRules.RangedWeaponEngagementRange), typeof(float), CombatRules.RangedWeaponEngagementRange),
+            (nameof(CombatRules.StandardCriticalRating), typeof(int), CombatRules.StandardCriticalRating),
         };
         FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Combat", constants.Select(constant => constant.Name));
         foreach (var (constantName, type, value) in constants)

@@ -92,6 +92,12 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
+        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
+        private readonly ICombatDamageCatalogService _damageCatalog;
+        private readonly Lazy<ICombatDamageModifiersService> _damageModifiers;
+        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
+        private readonly Lazy<ICombatQueriesService> _queries;
+        private readonly Lazy<ICombatResourcesService> _resources;
 
         public StatService(
             IDBService db,
@@ -109,7 +115,13 @@ namespace SWLOR.Game.Server.Domain.Character
             IPvpCombatService pvpCombat,
             IPerkService perk,
             ISkillService skill,
-            ITemporaryStatModifierService temporaryStatModifier)
+            ITemporaryStatModifierService temporaryStatModifier,
+            Lazy<ICombatAttackTimingService> attackTiming,
+            ICombatDamageCatalogService damageCatalog,
+            Lazy<ICombatDamageModifiersService> damageModifiers,
+            Lazy<ICombatDamageTakenService> damageTaken,
+            Lazy<ICombatQueriesService> queries,
+            Lazy<ICombatResourcesService> resources)
         {
             _db = db;
             _combatRecorder = combatRecorder;
@@ -127,6 +139,12 @@ namespace SWLOR.Game.Server.Domain.Character
             _perk = perk;
             _skill = skill;
             _temporaryStatModifier = temporaryStatModifier;
+            _attackTiming = attackTiming;
+            _damageCatalog = damageCatalog;
+            _damageModifiers = damageModifiers;
+            _damageTaken = damageTaken;
+            _queries = queries;
+            _resources = resources;
         }
 
         /// <summary>
@@ -3307,39 +3325,39 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => _skill.GetSkillDetails(skillType);
 
-        protected virtual IReadOnlyList<CombatDamageType> GetDefenseDamageTypes() => Service.Combat.GetDefenseDamageTypes();
+        protected virtual IReadOnlyList<CombatDamageType> GetDefenseDamageTypes() => _damageCatalog.GetDefenseDamageTypes();
 
-        protected virtual void ApplyFPRestoredEffects(uint creature) => Service.Combat.ApplyFPRestoredEffects(creature);
+        protected virtual void ApplyFPRestoredEffects(uint creature) => _resources.Value.ApplyFPRestoredEffects(creature);
 
-        protected virtual void ApplyStaminaRestoredEffects(uint creature) => Service.Combat.ApplyStaminaRestoredEffects(creature);
+        protected virtual void ApplyStaminaRestoredEffects(uint creature) => _resources.Value.ApplyStaminaRestoredEffects(creature);
 
         protected virtual AbilityType GetWeaponDamageAbilityType(uint creature, BaseItem weaponType) =>
-            Service.Combat.GetWeaponDamageAbilityType(creature, weaponType);
+            _queries.Value.GetWeaponDamageAbilityType(creature, weaponType);
 
         protected virtual AbilityType GetWeaponAccuracyAbilityType(uint creature, BaseItem weaponType) =>
-            Service.Combat.GetWeaponAccuracyAbilityType(creature, weaponType);
+            _queries.Value.GetWeaponAccuracyAbilityType(creature, weaponType);
 
         protected virtual int GetNearbyStatusTargetAttackAdjustment(uint creature) =>
-            Service.Combat.GetNearbyStatusTargetAttackAdjustment(creature);
+            _damageModifiers.Value.GetNearbyStatusTargetAttackAdjustment(creature);
 
-        protected virtual int GetLowHPAttackAdjustment(uint creature) => Service.Combat.GetLowHPAttackAdjustment(creature);
+        protected virtual int GetLowHPAttackAdjustment(uint creature) => _damageModifiers.Value.GetLowHPAttackAdjustment(creature);
 
-        protected virtual int GetLowFPAttackAdjustment(uint creature) => Service.Combat.GetLowFPAttackAdjustment(creature);
+        protected virtual int GetLowFPAttackAdjustment(uint creature) => _damageModifiers.Value.GetLowFPAttackAdjustment(creature);
 
-        protected virtual void TrackDeflection(uint creature, DeflectionSource source) => Service.Combat.TrackDeflection(creature, source);
+        protected virtual void TrackDeflection(uint creature, DeflectionSource source) => _damageTaken.Value.TrackDeflection(creature, source);
 
         protected virtual bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds) =>
-            Service.Combat.TryUseStatTrigger(creature, statType, cooldownSeconds);
+            _resources.Value.TryUseStatTrigger(creature, statType, cooldownSeconds);
 
         protected virtual void GrantNextSkillAbilityBonuses(uint creature, SkillType skillType, int damageBonus, int criticalRate, int durationSeconds) =>
-            Service.Combat.GrantNextSkillAbilityBonuses(creature, skillType, damageBonus, criticalRate, durationSeconds);
+            _attackTiming.Value.GrantNextSkillAbilityBonuses(creature, skillType, damageBonus, criticalRate, durationSeconds);
 
         protected virtual void GrantNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType, int criticalRate, int durationSeconds) =>
-            Service.Combat.GrantNextAutoAttackCriticalRateBonus(creature, skillType, criticalRate, durationSeconds);
+            _attackTiming.Value.GrantNextAutoAttackCriticalRateBonus(creature, skillType, criticalRate, durationSeconds);
 
         protected virtual void GrantNextAbilityNoDelay(uint creature, SkillType skillType, int durationSeconds) =>
-            Service.Combat.GrantNextAbilityNoDelay(creature, skillType, durationSeconds);
+            _attackTiming.Value.GrantNextAbilityNoDelay(creature, skillType, durationSeconds);
 
-        protected virtual bool IsRangedDamageSkill(SkillType skillType) => Service.Combat.IsRangedDamageSkill(skillType);
+        protected virtual bool IsRangedDamageSkill(SkillType skillType) => CombatRules.IsRangedDamageSkill(skillType);
     }
 }

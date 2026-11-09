@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(caster, ability.EffectiveLevelPerkType, ability.AbilityLevel);
                 ctx.SetNPCResources(caster, 1000, 1000);
                 CreaturePlugin.AddFeat(caster, FeatType.CreepingTerror3);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -150,7 +151,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Combat.SetAbilityHitResolutionOverride(null);
+                    GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 }
 
                 ctx.Assert(!StatusEffect.HasStatusEffect<HobbleStatusEffect>(holoReceiver), "the hologram is not hobbled");

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -24,8 +25,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var agility = GetIsObjectValid(Source) ? GetAbilityModifier(AbilityType.Agility, Source) : 0;
             var damageAmount = CalculateTickDamage(GetMaxHitPoints(creature), agility);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
-            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison, out var targetStatusDamageAdjustment);
-            damageAmount = Combat.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Poison,
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison, out var targetStatusDamageAdjustment);
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Poison,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damageAmount <= 0)
                 return;

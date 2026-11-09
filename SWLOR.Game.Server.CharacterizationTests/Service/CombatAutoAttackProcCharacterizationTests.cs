@@ -3,6 +3,7 @@ using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using GameRandom = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -68,7 +69,7 @@ public class CombatAutoAttackProcCharacterizationTests
                     return value;
                 }
 
-                var damage = Combat.CalculateAutoAttackProcDamage(BuildSources(sourceSet), Roll);
+                var damage = CombatRules.CalculateAutoAttackProcDamage(BuildSources(sourceSet), Roll);
                 table.Add(sourceSet, script, damage, consumed);
             }
         }
@@ -94,7 +95,7 @@ public class CombatAutoAttackProcCharacterizationTests
             var sources = BuildSources(sourceSet);
             var damage = new int[SeededTrials];
             for (var i = 0; i < damage.Length; i++)
-                damage[i] = Combat.CalculateAutoAttackProcDamage(sources, () => GameRandom.D100(1));
+                damage[i] = CombatRules.CalculateAutoAttackProcDamage(sources, () => GameRandom.D100(1));
 
             table.Add(sourceSet, damage);
         }

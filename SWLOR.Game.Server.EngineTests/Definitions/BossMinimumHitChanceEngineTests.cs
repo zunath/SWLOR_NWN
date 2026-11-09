@@ -11,6 +11,8 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -46,14 +48,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var bossAbilityRate = 0;
             var regularAbilityRate = 0;
             await ctx.ExecuteInCreatureContextAsync(boss, () =>
-                Combat.TryResolveAbilityHit(boss, target, SkillType.Vibroblade, PerkType.Invalid, out bossAbilityRate));
+                GameServices.CombatAbilityHit.TryResolveAbilityHit(boss, target, SkillType.Vibroblade, PerkType.Invalid, out bossAbilityRate));
             await ctx.ExecuteInCreatureContextAsync(regular, () =>
-                Combat.TryResolveAbilityHit(regular, target, SkillType.Vibroblade, PerkType.Invalid, out regularAbilityRate));
-            ctx.AssertEqual(Combat.BossMinimumHitRate, bossAbilityRate, "a boss's ability hit chance against overwhelming Evasion");
-            ctx.AssertEqual(Combat.MinimumHitRate, regularAbilityRate, "another creature's ability hit chance against overwhelming Evasion");
+                GameServices.CombatAbilityHit.TryResolveAbilityHit(regular, target, SkillType.Vibroblade, PerkType.Invalid, out regularAbilityRate));
+            ctx.AssertEqual(CombatQueriesService.BossMinimumHitRate, bossAbilityRate, "a boss's ability hit chance against overwhelming Evasion");
+            ctx.AssertEqual(CombatRules.MinimumHitRate, regularAbilityRate, "another creature's ability hit chance against overwhelming Evasion");
 
             // Weapon swings: every swing misses so the target stays put, and the recorder logs each roll's hit chance.
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             try
             {
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 AssignCommand(boss, () => ClearAllActions());
                 AssignCommand(regular, () => ClearAllActions());
                 if (CombatRecorder.IsRecording)
@@ -99,10 +101,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var regularSwings = SwingHitChances("Test Regular");
                 ctx.Log($"Boss swing hit chances: {string.Join(", ", bossSwings)}; other creature: {string.Join(", ", regularSwings)}");
                 ctx.Assert(bossSwings.Length > 0 && regularSwings.Length > 0, "both attackers swung at the target");
-                ctx.Assert(bossSwings.All(chance => chance == Combat.BossMinimumHitRate),
-                    $"every boss swing rolls at {Combat.BossMinimumHitRate}%: {string.Join(", ", bossSwings)}");
-                ctx.Assert(regularSwings.All(chance => chance == Combat.MinimumHitRate),
-                    $"every other swing rolls at {Combat.MinimumHitRate}%: {string.Join(", ", regularSwings)}");
+                ctx.Assert(bossSwings.All(chance => chance == CombatQueriesService.BossMinimumHitRate),
+                    $"every boss swing rolls at {CombatQueriesService.BossMinimumHitRate}%: {string.Join(", ", bossSwings)}");
+                ctx.Assert(regularSwings.All(chance => chance == CombatRules.MinimumHitRate),
+                    $"every other swing rolls at {CombatRules.MinimumHitRate}%: {string.Join(", ", regularSwings)}");
             }
             finally
             {

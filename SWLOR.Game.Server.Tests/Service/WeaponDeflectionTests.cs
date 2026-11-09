@@ -79,25 +79,25 @@ public class WeaponDeflectionTests
 
         source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
-        source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
+        source.Should().Contain("GameServices.CombatDamageTaken.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
         source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.ApplyDeflectionEffectsNative(defender, source)");
         source.Should().Contain("deflectionSource == DeflectionSource.Ranged");
-        source.Should().Contain("Combat.GetDeflectionResultName(source)");
+        source.Should().Contain("CombatRules.GetDeflectionResultName(source)");
         source.Should().NotContain("private static string GetDeflectionName");
 
         var combatSource = CombatSource.Read();
         combatSource.Should().Contain("DeflectionSource.Melee => \"melee deflect\"");
         combatSource.Should().Contain("DeflectionSource.Ranged => \"ranged deflect\"");
         combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
-        // The body lives in the damage taken part; Combat keeps the internal forwarder the native attack roll calls.
+        // The body lives in the damage taken part; the native attack roll reads it through GameServices.
         combatSource.Should().Contain("public static bool IsHostileAttackSource(uint defender, uint attacker)");
-        typeof(SWLOR.Game.Server.Service.Combat)
-            .GetMethod("IsHostileAttackSource", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, new[] { typeof(uint), typeof(uint) })!
-            .IsAssembly.Should().BeTrue("Native/ResolveAttackRoll.cs calls Combat.IsHostileAttackSource");
+        typeof(SWLOR.Game.Server.Domain.Combat.ICombatDamageTakenService)
+            .GetMethod("IsHostileAttackSource", new[] { typeof(uint), typeof(uint) })
+            .Should().NotBeNull("Native/ResolveAttackRoll.cs calls GameServices.CombatDamageTaken.IsHostileAttackSource");
         combatSource.Should().Contain("GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker)");
         combatSource.Should().Contain("var requiredSource = _stat.GetStatTypeDeflectionSource(");
         combatSource.Should().Contain("StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);");
@@ -155,9 +155,9 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
         combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         abilitySource.Should().Contain(
-            "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
+            "GameServices.CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         abilitySource.Should().Contain(
-            "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
+            "GameServices.CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
         forceSupportSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
         sentinelGuardSource.Should().Contain("Stat.GetGrantedDeflectionStatType(");
         sentinelGuardSource.Should().Contain("StatGroup.Stats[_deflectionStatType]");

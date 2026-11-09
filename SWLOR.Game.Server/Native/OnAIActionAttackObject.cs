@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -89,18 +90,18 @@ namespace SWLOR.Game.Server.Native
                 PairedRangedTraits.Reconcile(pCreature.m_idSelf);
                 OrdinaryAttackTraits.RecordTargetChange(pCreature.m_idSelf, (uint)pNode.m_pParameter[0]);
                 OrdinaryAttackTraits.Reconcile(pCreature.m_idSelf);
-                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
+                var attackSkillType = GameServices.CombatQueries.GetEquippedWeaponSkillType(pCreature.m_idSelf);
                 var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
                 var usesRangedWeapon = isPlayerCreature
                     ? pCreature.GetRangeWeaponEquipped() == 1
-                    : Combat.IsRangedWeaponSkill(attackSkillType);
+                    : CombatRules.IsRangedWeaponSkill(attackSkillType);
 
                 // Clean up attack delay entry if creature no longer exists
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
                 {
                     _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     _rangedRepositionDirections.Remove(pCreature.m_idSelf);
-                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
                 }
 
                 // This action was just run... reset
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Native
 
                     _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
-                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
 
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     _rangedRepositionDirections.Remove(pCreature.m_idSelf);
-                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
                     WeaponAttackCycle.CancelPendingHand(pCreature.m_idSelf);
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Native
                 if (!string.IsNullOrEmpty(equipmentError))
                 {
                     PairedRangedAttackCycle.Cancel(pCreature.m_idSelf);
-                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     SendMessageToPC(pCreature.m_idSelf, ColorToken.Red(equipmentError));
                     return ACTION_FAILED;
@@ -219,7 +220,7 @@ namespace SWLOR.Game.Server.Native
                             fMaxAttackRange,
                             usesRangedWeapon)
                         : ResolveWeaponEngagementRange(
-                            Combat.GetWeaponEngagementRange(attackSkillType),
+                            CombatRules.GetWeaponEngagementRange(attackSkillType),
                             fMaxAttackRange,
                             usesRangedWeapon);
                     fMaxAttackRange = ResolveMaximumAttackRange(
@@ -516,7 +517,7 @@ namespace SWLOR.Game.Server.Native
                     pCreature.m_idSelf,
                     attackSkillType,
                     out var limitedAttackNoDelayRemainingAttacks);
-                var hasArmedNoDelay = Combat.HasTemporaryNextAutoAttackNoDelay(
+                var hasArmedNoDelay = GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(
                     pCreature.m_idSelf,
                     attackSkillType);
                 var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
@@ -525,15 +526,15 @@ namespace SWLOR.Game.Server.Native
                 // instead of contributing a creature-wide AttackDelayReductionPercent stat.
                 // Target-conditional Haste (Flurry Stance against bleeding targets) is part of this
                 // swing's base delay, so it applies with and without limited Haste.
-                var targetAttackDelayReduction = Combat.GetTargetAttackDelayReduction(
+                var targetAttackDelayReduction = GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(
                     pCreature.m_idSelf, oidAttackTarget, attackSkillType);
                 var calculatedDelayWithoutLimitedReduction =
-                    Combat.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction);
+                    GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction);
                 var calculatedDelay = hasLimitedAttackDelayReduction
-                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)
+                    ? GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)
                     : calculatedDelayWithoutLimitedReduction;
-                var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
-                var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(
+                var effectiveAttackDelay = CombatRules.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
+                var effectiveDelayWithoutLimitedReduction = CombatRules.CalculateEffectiveAttackDelay(
                     calculatedDelayWithoutLimitedReduction,
                     hasArmedNoDelay);
 
@@ -549,7 +550,7 @@ namespace SWLOR.Game.Server.Native
                 // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
                 // worth an extra attack either way. Both values are equal for a build already at the
                 // floor, so the buff state has to travel separately from the delays.
-                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(
+                var unbuffedAttackDelay = CombatRules.CalculateEffectiveAttackDelay(
                     calculatedDelayWithoutLimitedReduction,
                     false);
 
@@ -561,7 +562,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     // Swings cannot animate faster than the engine's base delay. Effective delays
                     // below it are honored by resolving multiple attacks within a single swing.
-                    var swingDelay = Combat.CalculateAttackSwingDelay(effectiveAttackDelay);
+                    var swingDelay = CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay);
                     var timeSinceLastAttack = (Clock.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
                     if (timeSinceLastAttack < swingDelay)
@@ -667,7 +668,7 @@ namespace SWLOR.Game.Server.Native
                                             pCreature.SetLockOrientationToObject(oidTarget);
 
                                             // Process the attack (delay already checked at function start)
-                                            var isParalyzed = Combat.HandleParalyze(pCreature.m_idSelf);
+                                            var isParalyzed = GameServices.CombatAttackTiming.HandleParalyze(pCreature.m_idSelf);
 
                                             if (isParalyzed)
                                             {
@@ -681,7 +682,7 @@ namespace SWLOR.Game.Server.Native
                                                     pCreature.m_idSelf, attackSkillType, mainSkill, offSkill);
                                                 if (useDefaultMinimumDelay)
                                                 {
-                                                    Combat.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
+                                                    GameServices.CombatAttackTiming.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
                                                 }
 
                                                 // Haste batches timed cycles within the animation floor. A melee
@@ -691,7 +692,7 @@ namespace SWLOR.Game.Server.Native
                                                 if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
                                                     nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
                                                 {
-                                                    nAttacks = Combat.ConsumeAttacksPerSwing(
+                                                    nAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                                                         pCreature.m_idSelf,
                                                         effectiveAttackDelay,
                                                         unbuffedAttackDelay,
@@ -725,12 +726,12 @@ namespace SWLOR.Game.Server.Native
                                                 if (isTwinPistolCycle)
                                                 {
                                                     PairedRangedAttackCycle.Resolve(pCreature, oidTarget, nAttacks,
-                                                        Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
+                                                        CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
                                                 }
                                                 else if (isDualWieldCycle && nAttacks >= 2)
                                                 {
                                                     WeaponAttackCycle.ResolveDualWield(pCreature, oidTarget, nAttacks,
-                                                        Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
+                                                        CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
                                                 }
                                                 else
                                                 {
@@ -740,7 +741,7 @@ namespace SWLOR.Game.Server.Native
                                                         var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
                                                         pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
                                                         WeaponAttackAnimation.Capture(pCreature, firstAttack,
-                                                            Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
+                                                            CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
                                                     }
                                                     finally
                                                     {
@@ -795,7 +796,7 @@ namespace SWLOR.Game.Server.Native
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
                                             _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
-                                            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                                            GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }
                                     break;
@@ -808,7 +809,7 @@ namespace SWLOR.Game.Server.Native
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
                                             _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
-                                            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                                            GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }
                                     break;
@@ -995,20 +996,20 @@ namespace SWLOR.Game.Server.Native
             if (!usesRangedWeapon ||
                 !float.IsNaN(desiredAttackRange) &&
                 !float.IsInfinity(desiredAttackRange) &&
-                desiredAttackRange > Combat.MeleeWeaponEngagementRange)
+                desiredAttackRange > CombatRules.MeleeWeaponEngagementRange)
             {
                 return desiredAttackRange;
             }
 
             if (float.IsNaN(maxAttackRange) ||
                 float.IsInfinity(maxAttackRange) ||
-                maxAttackRange <= Combat.MeleeWeaponEngagementRange)
+                maxAttackRange <= CombatRules.MeleeWeaponEngagementRange)
             {
-                return Combat.RangedWeaponEngagementRange;
+                return CombatRules.RangedWeaponEngagementRange;
             }
 
             var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
-            return Math.Min(Combat.RangedWeaponEngagementRange, maximumUsableRange);
+            return Math.Min(CombatRules.RangedWeaponEngagementRange, maximumUsableRange);
         }
 
         private static float ResolveMaximumAttackRange(
@@ -1036,7 +1037,7 @@ namespace SWLOR.Game.Server.Native
 
             _creatureAttackDelays.Remove(pCreature.m_idSelf);
             _rangedRepositionDirections.Remove(pCreature.m_idSelf);
-            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
             pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
             return true;
         }

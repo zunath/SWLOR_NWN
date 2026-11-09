@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IEnmityService _enmity;
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
+        private readonly Lazy<ICombatService> _combat;
 
         public CombatDamageTakenService(
             ICombatFeedbackService feedback,
@@ -64,7 +65,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IPvpCombatService pvpCombat,
             IEnmityService enmity,
             IMessagingService messaging,
-            IPlayerNameService playerName)
+            IPlayerNameService playerName,
+            Lazy<ICombatService> combat)
         {
             _feedback = feedback;
             _queries = queries;
@@ -82,6 +84,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _enmity = enmity;
             _messaging = messaging;
             _playerName = playerName;
+            _combat = combat;
         }
 
         // CalculateDamage stays on Combat because it rolls the shared Random; guard retaliation damage reaches it through Combat.
@@ -93,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             int defenderStat,
             int critical,
             int deltaCap = 0) =>
-            Service.Combat.CalculateDamage(attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical, deltaCap);
+            _combat.Value.CalculateDamage(attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical, deltaCap);
 
         public int ApplyDamageTakenModifiers(
             uint defender,
@@ -509,6 +512,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             return true;
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
         public void ApplyDamageTakenEffects()
         {
             var defender = OBJECT_SELF;

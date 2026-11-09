@@ -30,17 +30,23 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<IAbilityService> _ability;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<ICombatActivityService> _combatActivity;
+        private readonly Lazy<ICombatResourcesService> _resources;
 
         public MeleeTechniqueService(
             Lazy<IStatService> stat,
             Lazy<IAbilityService> ability,
             ICombatRecorderService combatRecorder,
-            Lazy<IStatusEffectService> statusEffect)
+            Lazy<IStatusEffectService> statusEffect,
+            Lazy<ICombatActivityService> combatActivity,
+            Lazy<ICombatResourcesService> resources)
         {
             _stat = stat;
             _ability = ability;
             _combatRecorder = combatRecorder;
             _statusEffect = statusEffect;
+            _combatActivity = combatActivity;
+            _resources = resources;
         }
 
         /// <summary>One notification per completed, landed technique which paid stamina.</summary>
@@ -698,16 +704,16 @@ namespace SWLOR.Game.Server.Domain.Combat
             WeaponDamage.GetDamageType(weapon);
 
         protected virtual int GetPaidAbilityStaminaCost(uint creature, AbilityDetail ability) =>
-            Service.Combat.GetPaidAbilityStaminaCost(creature, ability);
+            _resources.Value.GetPaidAbilityStaminaCost(creature, ability);
 
         protected virtual int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool retainMinimumCost) =>
-            Service.Combat.RestoreAbilityHitStamina(creature, ability, requested, retainMinimumCost: retainMinimumCost);
+            _resources.Value.RestoreAbilityHitStamina(creature, ability, requested, retainMinimumCost: retainMinimumCost);
 
         protected virtual int ApplyPercentDamageAdjustment(int damage, int adjustment) =>
-            Service.Combat.ApplyPercentDamageAdjustment(damage, adjustment);
+            CombatRules.ApplyPercentDamageAdjustment(damage, adjustment);
 
         protected virtual bool HasRecentHostileCombatActivity(uint creature) =>
-            Service.Combat.HasRecentHostileCombatActivity(creature);
+            _combatActivity.Value.HasRecentHostileCombatActivity(creature);
 
         protected virtual CombatRecordAttributionScope BeginStatTriggerAttribution(uint creature, StatType stat) =>
             _combatRecorder.BeginStatTriggerAttribution(creature, stat);

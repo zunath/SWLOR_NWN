@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             Prepare(ctx, caster, target);
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 Ability.ClearLastCompletedAbilityImpactSummary(caster);
@@ -74,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Traps.ClearTraps(caster);
                 StatusEffect.RemoveAllStatusEffects(target);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -92,11 +94,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var renewal = Ability.GetAbilityDetail(FeatType.Renewal1);
             var trackerOpen = false;
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 ctx.SeedRandom(12345);
-                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, capturedDamageBonus, 0, 120);
+                GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, capturedDamageBonus, 0, 120);
                 Ability.BeginAbilityImpact(caster, trapAbility);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
@@ -106,7 +108,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, placement.AttributedDamage, "Placement queues no immediate damage");
                 ctx.AssertEqual(1000, GetCurrentHitPoints(target), "The trap waits for its arming delay");
 
-                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, newerDamageBonus, 0, 120);
+                GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, newerDamageBonus, 0, 120);
                 Ability.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
@@ -148,7 +150,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Detonation restores the newer in-progress ability tracker");
                 ctx.AssertEqual(0, restored.AttributedDamage, "The newer ability does not inherit trap damage");
                 ctx.AssertEqual(newerDamageBonus,
-                    Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.Espionage).DamageBonus,
+                    GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(caster, SkillType.Espionage).DamageBonus,
                     "The delayed trap does not consume a bonus granted after placement");
                 ctx.Log($"{feat}: native damage={detonation.AttributedDamage}, criticals={detonation.CriticalHitCount}, captured bonus={capturedDamageBonus}; newer tracker and bonus preserved");
             }
@@ -159,7 +161,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Traps.ClearTraps(caster);
                 StatusEffect.RemoveAllStatusEffects(caster);
                 StatusEffect.RemoveAllStatusEffects(target);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -170,18 +172,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             var defenderStat = GetAbilityScore(target, defenseAbility);
-            var damage = baseDamage + Combat.GetAbilityDamageBonus(caster, SkillType.Espionage);
-            var minimumCritical = wasCritical == true ? Combat.StandardCriticalRating : 0;
-            var maximumCritical = wasCritical == false ? 0 : Combat.StandardCriticalRating;
-            var (perceptionMinimum, _) = Combat.CalculateDamageRange(
+            var damage = baseDamage + GameServices.CombatAbilityBonus.GetAbilityDamageBonus(caster, SkillType.Espionage);
+            var minimumCritical = wasCritical == true ? CombatRules.StandardCriticalRating : 0;
+            var maximumCritical = wasCritical == false ? 0 : CombatRules.StandardCriticalRating;
+            var (perceptionMinimum, _) = CombatRules.CalculateDamageRange(
                 Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, minimumCritical);
-            var (_, perceptionMaximum) = Combat.CalculateDamageRange(
+            var (_, perceptionMaximum) = CombatRules.CalculateDamageRange(
                 Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, maximumCritical);
-            var (_, mightMaximum) = Combat.CalculateDamageRange(
+            var (_, mightMaximum) = CombatRules.CalculateDamageRange(
                 Stat.GetAttack(caster, AbilityType.Might, SkillType.Espionage), damage,
-                GetAbilityScore(caster, AbilityType.Might), defense, defenderStat, Combat.StandardCriticalRating);
+                GetAbilityScore(caster, AbilityType.Might), defense, defenderStat, CombatRules.StandardCriticalRating);
 
             ctx.Assert(perceptionMinimum > mightMaximum,
                 $"The fixture separates PER damage {perceptionMinimum}-{perceptionMaximum} from even critical MGT damage <= {mightMaximum}");

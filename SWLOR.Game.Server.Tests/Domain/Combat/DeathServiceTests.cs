@@ -501,7 +501,7 @@ public class DeathServiceTests
             IPropertyService property,
             IAreaService areas)
             : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(),
-                FacadeForwarder.For<IAbilityService>())
+                FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {
         }
 

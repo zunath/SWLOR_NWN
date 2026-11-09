@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 // Headless player fixtures never swing, so the enemy attacks the player.
                 await ctx.ExecuteInCreatureContextAsync(enemy, () => ActionAttack(player.Creature));
-                await ctx.WaitUntilAsync(() => Combat.HasRecentAttackActivity(enemy, 1f), 15f, "the enemy to attack the player");
+                await ctx.WaitUntilAsync(() => GameServices.CombatActivity.HasRecentAttackActivity(enemy, 1f), 15f, "the enemy to attack the player");
                 ctx.Assert(!Music.IsBattleThemePlaying(player.Creature), "no battle theme plays without one selected");
 
                 await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, theme.TrackId));
@@ -252,7 +253,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(enemy);
             try
             {
-                Combat.SetAbilityHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
                 await ctx.ExecuteInCreatureContextAsync(enemy, () =>
                     Ability.ApplyCombatImpact(enemy, player.Creature, GetLocation(player.Creature), SkillType.Force,
                         0, 0, null, false, damageType: CombatDamageType.Force));
@@ -260,7 +261,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 DestroyObject(enemy);
                 await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, null));
             }

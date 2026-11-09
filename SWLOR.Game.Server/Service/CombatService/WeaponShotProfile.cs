@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.CombatService
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             AbilityType damageAbilityOverride = AbilityType.Invalid)
         {
             var ability = damageAbilityOverride == AbilityType.Invalid
-                ? Combat.GetWeaponDamageAbilityType(actor, GetBaseItemType(weapon)) : damageAbilityOverride;
+                ? GameServices.CombatQueries.GetWeaponDamageAbilityType(actor, GetBaseItemType(weapon)) : damageAbilityOverride;
             for (var property = GetFirstItemProperty(weapon); GetIsItemPropertyValid(property);
                  property = GetNextItemProperty(weapon))
                 if (GetItemPropertyType(property) == ItemPropertyType.DamageStat)

@@ -123,7 +123,7 @@ public class ItemServiceTests
 
         _world.Add(User);
         _players.Add(User);
-        _service = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>()), _db);
+        _service = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db);
         _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IItemService>(_service)));
         _scopes.Add(_container.Install());
     }
@@ -153,7 +153,7 @@ public class ItemServiceTests
         _service.TwoHandedMeleeItemTypes.Should().Contain(BaseItem.GreatSword);
         _service.OneHandedMeleeItemTypes.Should().Contain(BaseItem.Longsword);
 
-        var other = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>()), _db);
+        var other = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db);
         other.WeaponBaseItemTypes.Should().NotBeSameAs(_service.WeaponBaseItemTypes, "each instance owns its lists");
         _service.WeaponBaseItemTypes.Should().BeSameAs(_service.WeaponBaseItemTypes, "an instance hands out the same list every time");
     }
@@ -233,7 +233,7 @@ public class ItemServiceTests
     [Test]
     public void TheDefaultDefinitionSearchFindsTheServersItemLists()
     {
-        var types = new ProbingItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>()), _db).Search().ToList();
+        var types = new ProbingItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db).Search().ToList();
 
         types.Should().NotBeEmpty();
         types.Should().OnlyContain(type => typeof(IItemListDefinition).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);

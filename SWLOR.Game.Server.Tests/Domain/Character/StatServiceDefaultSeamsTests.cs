@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
@@ -91,7 +92,7 @@ public class StatServiceDefaultSeamsTests
 
         _seams.SkillDetails(SkillType.Smithery).Should().BeSameAs(Skill.GetSkillDetails(SkillType.Smithery));
         _seams.BaseItemSkill(BaseItem.Longsword).Should().Be(Skill.GetSkillTypeByBaseItem(BaseItem.Longsword));
-        _seams.DefenseDamageTypes().Should().Equal(SWLOR.Game.Server.Service.Combat.GetDefenseDamageTypes());
+        _seams.DefenseDamageTypes().Should().Equal(GameServices.CombatDamageCatalog.GetDefenseDamageTypes());
         _seams.IsRanged(SkillType.Pistol).Should().BeTrue();
         _seams.IsRanged(SkillType.Vibroblade).Should().BeFalse();
     }
@@ -99,8 +100,8 @@ public class StatServiceDefaultSeamsTests
     [Test]
     public void TheWeaponAbilityReads_ReachCombat()
     {
-        _seams.DamageAbility(Creature, BaseItem.Longsword).Should().Be(SWLOR.Game.Server.Service.Combat.GetWeaponDamageAbilityType(Creature, BaseItem.Longsword));
-        _seams.AccuracyAbility(Creature, BaseItem.Longsword).Should().Be(SWLOR.Game.Server.Service.Combat.GetWeaponAccuracyAbilityType(Creature, BaseItem.Longsword));
+        _seams.DamageAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponDamageAbilityType(Creature, BaseItem.Longsword));
+        _seams.AccuracyAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponAccuracyAbilityType(Creature, BaseItem.Longsword));
     }
 
     [Test]
@@ -163,7 +164,7 @@ public class StatServiceDefaultSeamsTests
             IResistanceService resistance,
             IPvpCombatService pvpCombat)
             : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>())
+                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

@@ -1,4 +1,5 @@
 using System;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.CombatService
 {
@@ -26,14 +27,14 @@ namespace SWLOR.Game.Server.Service.CombatService
             AccuracyAdjustment = accuracyAdjustment;
             VolleyIndex = volleyIndex;
             VolleyCount = volleyCount;
-            Combat.SetWeaponImpactProfile(actor, this);
+            GameServices.CombatQueries.SetWeaponImpactProfile(actor, this);
         }
 
-        public static WeaponImpactProfile Get(uint actor) => Combat.GetWeaponImpactProfile(actor);
+        public static WeaponImpactProfile Get(uint actor) => GameServices.CombatQueries.GetWeaponImpactProfile(actor);
         public void Dispose()
         {
-            if (_previous != null) Combat.SetWeaponImpactProfile(_actor, _previous);
-            else Combat.RemoveWeaponImpactProfile(_actor);
+            if (_previous != null) GameServices.CombatQueries.SetWeaponImpactProfile(_actor, _previous);
+            else GameServices.CombatQueries.RemoveWeaponImpactProfile(_actor);
         }
     }
 }

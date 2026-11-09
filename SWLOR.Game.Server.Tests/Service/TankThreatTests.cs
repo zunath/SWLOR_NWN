@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -136,15 +137,15 @@ public class TankThreatTests
         var offenseAttack = attack * 125 / 100;
         double Damage(int value, int power)
         {
-            var (minimum, maximum) = Combat.CalculateDamageRange(power, value, 20, attack, 20, 0);
+            var (minimum, maximum) = CombatRules.CalculateDamageRange(power, value, 20, attack, 20, 0);
             return (minimum + maximum) / 2.0;
         }
-        double Attacks(int haste) => 60000.0 / Combat.CalculateEffectiveAttackDelay(
-            Combat.CalculateAttackDelayMilliseconds(delay, 0, haste, 0));
+        double Attacks(int haste) => 60000.0 / CombatRules.CalculateEffectiveAttackDelay(
+            CombatRules.CalculateAttackDelayMilliseconds(delay, 0, haste, 0));
         // Equal hit rate is factored into both sides. Reprisals and critical bonuses
         // are excluded; Staff includes its +20% Sentinel Guard protection rider,
         // Vibroblade includes Covering Strike's source bonus, Lightsaber its hit condition.
-        var landed = Combat.CalculateHitRate(100, 100, 0) / 100.0;
+        var landed = CombatRules.CalculateHitRate(100, 100, 0) / 100.0;
         double Threat(int power, int damageMultiplier, int percent, int haste, bool oldDuplicate, AbilityDetail rotation, int bonusDamage, double uses)
         {
             var normal = Damage(weaponDamage, power);
@@ -200,7 +201,7 @@ public class TankThreatTests
                 var power = enemyDefense * (100 + penalty) / 100;
                 double Hit(int bonus)
                 {
-                    var (low, high) = Combat.CalculateDamageRange(power, weaponDamage + bonus, 20, enemyDefense, 20, 0);
+                    var (low, high) = CombatRules.CalculateDamageRange(power, weaponDamage + bonus, 20, enemyDefense, 20, 0);
                     return (low + high) / 2.0;
                 }
                 var normal = Hit(0);

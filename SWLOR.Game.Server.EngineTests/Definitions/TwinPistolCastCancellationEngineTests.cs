@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -43,7 +44,7 @@ public static class TwinPistolCastCancellationEngineTests
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
         var earnedAt = default(DateTime);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             var (target, _, _, _) = await Prepare(ctx, player, PerkType.FinalSalvo);
@@ -91,8 +92,8 @@ public static class TwinPistolCastCancellationEngineTests
         var actor = player.Creature;
         CombatRecordWriter writer = null;
         var ability = Ability.GetAbilityDetail(feat);
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, _, _, _) = await Prepare(ctx, player, perk);
@@ -218,8 +219,8 @@ public static class TwinPistolCastCancellationEngineTests
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, main, companion, replacement) = await Prepare(ctx, player, perk);
@@ -371,13 +372,13 @@ public static class TwinPistolCastCancellationEngineTests
         CreaturePlugin.RunUnequip(actor, companion);
         ctx.Assert(CreaturePlugin.RunEquip(actor, replacement, InventorySlot.RightHand), "The actual weapon swap succeeds during casting");
         ctx.AssertEqual(replacement, GetItemInSlot(InventorySlot.RightHand, actor), "The newly equipped rifle is the current attack source");
-        ctx.Assert(Combat.CanItemTriggerWeaponAbility(replacement, SkillType.TwinPistol), "The replacement stays eligible for cross-trained Twin abilities");
+        ctx.Assert(GameServices.CombatQueries.CanItemTriggerWeaponAbility(replacement, SkillType.TwinPistol), "The replacement stays eligible for cross-trained Twin abilities");
     }
 
     private static void Cleanup(uint actor)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor);

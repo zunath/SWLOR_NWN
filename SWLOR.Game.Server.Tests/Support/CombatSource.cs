@@ -8,20 +8,18 @@ using SWLOR.Game.Server.EngineTests.Framework;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The source of <c>Service.Combat</c> wherever it lives, for the tests that guard a rule by reading the code. The combat
-/// split (<c>Readmes/MaintainabilityRefactorCombatSplit.md</c>) moved its text from <c>Service/Combat.cs</c> to the part
-/// services <c>Domain/Combat/Combat*Service.cs</c> (<c>CombatService.cs</c> holds what is left) and <c>CombatRules.cs</c>
-/// (see <see cref="CombatParts"/>), and left <c>Service/Combat.cs</c> a facade of one-line forwarders; a test calls
-/// <see cref="Read"/> and keeps its needles.
+/// The source of combat wherever it lives, for the tests that guard a rule by reading the code. The combat split
+/// (<c>Readmes/MaintainabilityRefactorCombatSplit.md</c>) moved its text from the static class to the part services
+/// <c>Domain/Combat/Combat*Service.cs</c> (<c>CombatService.cs</c> holds what is left) and <c>CombatRules.cs</c>
+/// (see <see cref="CombatParts"/>), and P2-ZP deleted the facade; a test calls <see cref="Read"/> and keeps its needles.
 /// <para>
 /// The text is combined as it is, apart from two rewrites in the part services, which change a line only where the
 /// move itself changed it: <c>static</c> is put back on a member declaration at member indentation, and a call on an
 /// injected part (<c>_queries.GetFoo(x)</c>, a field declared as <c>ICombat...Service</c> in the same file, where
 /// <c>Combat...Service</c> is a part by <see cref="CombatParts.IsPartTypeName"/>) loses its receiver (<c>GetFoo(x)</c>).
-/// A call on another injected service, <c>ICombatRecorderService</c> included, keeps it. The facade's one-line
-/// forwarders to a part are left out (<see cref="ElidePartForwarders"/>), so each member appears once, with its body.
-/// Nothing else is rewritten, so a changed condition, a removed or reordered call, or a different argument still fails a
-/// needle. <see cref="Normalise"/> is public so the tests of this helper can show that.
+/// A call on another injected service, <c>ICombatRecorderService</c> included, keeps it. Each member appears once, with
+/// its body. Nothing else is rewritten, so a changed condition, a removed or reordered call, or a different argument
+/// still fails a needle. <see cref="Normalise"/> is public so the tests of this helper can show that.
 /// </para>
 /// </summary>
 public static class CombatSource
@@ -42,7 +40,7 @@ public static class CombatSource
     /// <summary>One file of the combined source: its full path and its (normalised) text.</summary>
     public sealed record SourceFile(string FullPath, string Text);
 
-    /// <summary>The combined source of <c>Combat</c>: <c>Combat.cs</c>, then the part services.</summary>
+    /// <summary>The combined source of <c>Combat</c>: the part services, in reading order.</summary>
     public static string Read() => Combine(Loaded.Value);
 
     /// <summary>The full paths of the files <see cref="Read"/> combines, in the same order.</summary>
@@ -56,10 +54,7 @@ public static class CombatSource
         where TNode : SyntaxNode =>
         Trees().SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<TNode>());
 
-    /// <summary>
-    /// The method of this name that holds the code. A moved body keeps a forwarder of the same name on the facade (a
-    /// handler's has a block body, so it is not left out), and the declaration with the longest text is the body.
-    /// </summary>
+    /// <summary>The method of this name that holds the code: the declaration with the longest text, when a name has several overloads.</summary>
     public static MethodDeclarationSyntax Method(string name) =>
         Nodes<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.Text == name)
@@ -82,10 +77,6 @@ public static class CombatSource
     {
         var server = Path.Combine(repositoryRoot, "SWLOR.Game.Server");
         var files = new List<SourceFile>();
-
-        var facade = Path.Combine(server, "Service", "Combat.cs");
-        if (File.Exists(facade))
-            files.Add(new SourceFile(Path.GetFullPath(facade), ElidePartForwarders(File.ReadAllText(facade))));
 
         foreach (var path in Sorted(Path.Combine(server, "Domain", "Combat"), "Combat*.cs", CombatParts.IsPartTypeName))
             files.Add(new SourceFile(
@@ -140,38 +131,6 @@ public static class CombatSource
         }
 
         return builder.ToString();
-    }
-
-    /// <summary>
-    /// Drops, from the <c>Combat</c> facade, the one-line forwarders to a part service: a method whose whole body is
-    /// <c>=&gt; Part.SameName(...)</c>, where <c>Part</c> is a property of that file declared as the interface of a part
-    /// (<c>private static ICombatQueriesService Queries =&gt; ...</c>, or <c>ICombatService Instance</c>). The member's body is
-    /// in the part service, so the combined source lists it once, as the static class did. The forwarders themselves are
-    /// proven by <c>CombatPartForwardingTests</c> and <c>FacadeForwardingTests</c>; forwarders to <c>CombatRules</c> and
-    /// everything else stay.
-    /// </summary>
-    public static string ElidePartForwarders(string text)
-    {
-        var root = CSharpSyntaxTree.ParseText(text).GetRoot();
-        var parts = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
-            .Where(property => property.Modifiers.Any(SyntaxKind.StaticKeyword) &&
-                               property.Type is IdentifierNameSyntax { Identifier.Text: var type } &&
-                               type.Length > 1 && type[0] == 'I' && CombatParts.IsPartTypeName(type[1..]) &&
-                               type[1..] != CombatParts.RulesTypeName)
-            .Select(property => property.Identifier.Text)
-            .ToHashSet(StringComparer.Ordinal);
-        var forwarders = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.ExpressionBody?.Expression is InvocationExpressionSyntax
-                             {
-                                 Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax receiver } access
-                             } &&
-                             parts.Contains(receiver.Identifier.Text) &&
-                             access.Name.Identifier.Text == method.Identifier.Text)
-            .ToArray();
-
-        return forwarders.Length == 0
-            ? text
-            : root.RemoveNodes(forwarders, SyntaxRemoveOptions.KeepNoTrivia)!.ToFullString();
     }
 
     private static string RestoreStatic(string line, string typeName)

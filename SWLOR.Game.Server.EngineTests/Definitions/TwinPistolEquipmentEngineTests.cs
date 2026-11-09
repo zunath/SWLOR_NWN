@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -64,7 +65,7 @@ public static class TwinPistolEquipmentEngineTests
             ctx.Assert(TwinPistolEquipment.IsMirroredProperty(GetItemPropertyType(property)),
                 "The temporary gun contains only the real item's attack profile, with no independent enhancement slots or global bonuses");
         ctx.Assert(!EquipmentPredicates.HasSingleWeapon(actor), "A pair does not grant Single Weapon");
-        ctx.Assert(Combat.HasEquippedWeaponForAbility(actor), "The linked pair is ready for weapon abilities");
+        ctx.Assert(GameServices.CombatQueries.HasEquippedWeaponForAbility(actor), "The linked pair is ready for weapon abilities");
         AssertOwnedItems(ctx, actor, main, 1);
 
         for (var repeat = 0; repeat < 3; repeat++)
@@ -270,7 +271,7 @@ public static class TwinPistolEquipmentEngineTests
     [EngineTest("Twin Pistol generated Basic and Veteran guns retain native attribute damage caps", Category = "TwinPistolEquipment", TimeoutSeconds = 65f)]
     public static async Task GeneratedWeaponDamageCaps(EngineTestContext ctx)
     {
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             foreach (var (resref, requiredRank, cap) in new[] { ("b_twinpistol", 0, 1), ("vet_twinpistol", 15, 2) })
@@ -345,7 +346,7 @@ public static class TwinPistolEquipmentEngineTests
                 finally { RangedWeaponAttackContext.Clear(actor); }
             }
         }
-        finally { Combat.SetAutoAttackHitResolutionOverride(null); }
+        finally { GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); }
     }
 
     [EngineTest("Twin Pistol native character saves restore one upgraded owned pair over repeated reloads", Category = "TwinPistolEquipment", TimeoutSeconds = 95f)]

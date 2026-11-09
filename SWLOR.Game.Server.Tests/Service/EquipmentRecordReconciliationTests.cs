@@ -15,6 +15,7 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -123,7 +124,7 @@ public class EquipmentRecordReconciliationTests
         var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.All);
-        foreach (var type in Combat.GetDefenseDamageTypes())
+        foreach (var type in GameServices.CombatDamageCatalog.GetDefenseDamageTypes())
             record.Defenses[type].Should().Be(0, $"{type} Defense comes only from gear");
         record.Evasion.Should().Be(0);
         record.MaxFP.Should().Be(StatService.BaseFP);

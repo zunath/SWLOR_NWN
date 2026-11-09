@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 IsSingleTargetAbility = !isArea,
                 SkillType = skill
             };
-            Combat.ApplyAbilityActivatedEffects(caster, target, FeatType.Invalid, ability, new AbilityImpactSummary
+            GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, target, FeatType.Invalid, ability, new AbilityImpactSummary
             {
                 Ability = ability,
                 SkillType = skill,

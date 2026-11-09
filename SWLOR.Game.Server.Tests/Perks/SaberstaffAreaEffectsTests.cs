@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -48,13 +49,13 @@ public class SaberstaffAreaEffectsTests
         {
             var area = new AbilityDetail { SkillType = skill, IsHostileAbility = true, IsAreaAbility = true };
             var single = new AbilityDetail { SkillType = skill, IsHostileAbility = true, IsSingleTargetAbility = true };
-            Combat.ApplyAbilityShapeDamageModifier(Creature, 100, true, area).Should().Be(110);
-            Combat.ApplyAbilityShapeDamageModifier(Creature, 100, true, single).Should().Be(90);
+            GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Creature, 100, true, area).Should().Be(110);
+            GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Creature, 100, true, single).Should().Be(90);
         }
-        Combat.ApplyAbilityShapeDamageModifier(Creature, 100, false, null).Should().Be(90);
-        Combat.ApplyAbilityShapeDamageModifier(Creature, 100, true,
+        GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Creature, 100, false, null).Should().Be(90);
+        GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Creature, 100, true,
             new AbilityDetail { IsAreaAbility = true }).Should().Be(100, "friendly areas must not gain hostile damage modifiers");
-        Combat.ApplyAbilityShapeDamageModifier(Creature, 0, true,
+        GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Creature, 0, true,
             new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true }).Should().Be(0);
     }
 

@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -27,8 +29,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(singleTarget.IsSingleTargetAbility && singleTarget.IsHostileAbility, "Severing Toss is a single-target hostile ability");
             ctx.Assert(area.IsAreaAbility, "Explosive Toss is an area ability");
 
-            var reduced = Combat.ApplyPercentDamageAdjustment(100, -10);
-            var raised = Combat.ApplyPercentDamageAdjustment(100, 10);
+            var reduced = CombatRules.ApplyPercentDamageAdjustment(100, -10);
+            var raised = CombatRules.ApplyPercentDamageAdjustment(100, 10);
             ctx.AssertEqual(reduced, AutoAttack(ordnance, target, SkillType.Throwing),
                 "thrown auto-attacks are single-target thrown damage");
             ctx.AssertEqual(reduced, AbilityDamage(ordnance, target, singleTarget),
@@ -58,13 +60,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "Flurry Stance no longer grants unconditional Haste");
             ctx.AssertEqual(-10, Stat.GetStatAdjustment(flurry, StatType.DefensePercentAdjustment),
                 "Flurry Stance keeps its Defense penalty");
-            ctx.AssertEqual(10, Combat.GetTargetAttackDelayReduction(flurry, bleeding, SkillType.Throwing),
+            ctx.AssertEqual(10, GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(flurry, bleeding, SkillType.Throwing),
                 "thrown attacks at a bleeding target gain +10% Haste");
-            ctx.AssertEqual(0, Combat.GetTargetAttackDelayReduction(flurry, healthy, SkillType.Throwing),
+            ctx.AssertEqual(0, GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(flurry, healthy, SkillType.Throwing),
                 "thrown attacks at a target that is not bleeding gain nothing");
-            ctx.AssertEqual(0, Combat.GetTargetAttackDelayReduction(flurry, bleeding, SkillType.Rifle),
+            ctx.AssertEqual(0, GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(flurry, bleeding, SkillType.Rifle),
                 "other weapon skills gain nothing");
-            ctx.AssertEqual(0, Combat.GetTargetAttackDelayReduction(bleeding, flurry, SkillType.Throwing),
+            ctx.AssertEqual(0, GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(bleeding, flurry, SkillType.Throwing),
                 "a creature without the stance gains nothing");
         }
 
@@ -79,13 +81,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static int AutoAttack(uint attacker, uint target, SkillType skill)
         {
-            return Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
+            return GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, skill,
                 CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false);
         }
 
         private static int AbilityDamage(uint attacker, uint target, AbilityDetail ability)
         {
-            return Combat.ApplyDamageDealtModifiers(attacker, target, 100, SkillType.Throwing,
+            return GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, SkillType.Throwing,
                 CombatDamageType.Physical, isAbilityDamage: true, canApplyRandomFlatBonuses: false,
                 ability: ability);
         }

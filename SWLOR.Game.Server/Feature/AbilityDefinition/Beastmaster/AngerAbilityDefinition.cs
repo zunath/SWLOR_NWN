@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static float GetAngerRecastDelay(uint activator)
         {
-            return Math.Max(0f, 12f + Combat.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.Anger));
+            return Math.Max(0f, 12f + GameServices.CombatAbilityBonus.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.Anger));
         }
     }
 }

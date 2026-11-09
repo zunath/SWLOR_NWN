@@ -77,8 +77,9 @@ public class ConvertedServicesTests
     {
         var map = Map;
         var services = List.Services;
+        // A part of a split service (Combat) is an instance class too: the facade forwarded each handler to the part that owns it.
         IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServiceOf(type, map, services) is { FacadeRemoved: true } service
-            ? service.Pieces.Where(pieces => pieces.Facade is not null).Select(pieces => pieces.Instance).ToList()
+            ? service.Pieces.Select(pieces => pieces.Instance).ToList()
             : null;
 
         services.Should().Contain(service => service.FacadeRemoved, "the pilot (ServerTask, Taxi) removed its facades, so the rule has something to check");

@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 15f, "enemy to land an attack on the new tank");
             await ctx.DelaySecondsAsync(6f);
             ctx.AssertEqual(tank, GetAttackTarget(enemy), "Enemy continues attacking the table leader");
-            ctx.Assert(Combat.HasRecentAttackActivity(enemy, 3f), "Enemy continues taking attack rolls after the switch");
+            ctx.Assert(GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f), "Enemy continues taking attack rolls after the switch");
             await Activate(ctx, rival, enemy, FeatType.Provoke1);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == rival, 8f, "second tank to take the enemy");
             ctx.Assert(Enmity.GetEnmityTable(enemy)[rival] > Enmity.GetEnmityTable(enemy)[tank], "Swap changes the threat leader");
@@ -182,7 +183,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Enmity.GetEnmityTable(enemy)[tank] > 100000, "Each deficit is recovered independently");
             }
             await ctx.DelaySecondsAsync(6f);
-            ctx.Assert(enemies.All(enemy => GetAttackTarget(enemy) == tank && Combat.HasRecentAttackActivity(enemy, 3f)),
+            ctx.Assert(enemies.All(enemy => GetAttackTarget(enemy) == tank && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f)),
                 "Both enemies continue attacking the area taunter");
             var first = Enmity.GetEnmityTable(enemies[0])[tank];
             ctx.Assert(Enmity.TryTaunt(tank, enemies[0], 400), "Repeated taunt succeeds");
@@ -383,7 +384,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             try
             {
-                await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == target && Combat.HasRecentAttackActivity(enemy, 3f), seconds, "actual NPC attack target to match taunter");
+                await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == target && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f), seconds, "actual NPC attack target to match taunter");
             }
             catch (Exception error)
             {

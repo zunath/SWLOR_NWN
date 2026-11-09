@@ -29,17 +29,23 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<IAbilityService> _ability;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly ICombatQueriesService _queries;
+        private readonly Lazy<ICombatResourcesService> _resources;
 
         public PairedRangedTraitsService(
             ITwinPistolMasteryService mastery,
             Lazy<IAbilityService> ability,
             IStatService stat,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            ICombatQueriesService queries,
+            Lazy<ICombatResourcesService> resources)
         {
             _mastery = mastery;
             _ability = ability;
             _stat = stat;
             _statusEffect = statusEffect;
+            _queries = queries;
+            _resources = resources;
         }
 
         /// <summary>Reports a weapon ability's first landed hit; its chain or own grant adds Cadence once.</summary>
@@ -413,15 +419,15 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual uint GetAbilityAttackWeapon(uint actor, AbilityDetail ability) =>
-            Service.Combat.GetAbilityAttackWeapon(actor, ability.SkillType);
+            _queries.GetAbilityAttackWeapon(actor, ability.SkillType);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int GetAbilityStaminaPaid(uint actor, AbilityDetail ability) =>
-            Service.Combat.GetAbilityStaminaPaid(actor, ability);
+            _resources.Value.GetAbilityStaminaPaid(actor, ability);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int RestoreAbilityHitStamina(uint actor, AbilityDetail ability, int requested) =>
-            Service.Combat.RestoreAbilityHitStamina(actor, ability, requested);
+            _resources.Value.RestoreAbilityHitStamina(actor, ability, requested);
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>

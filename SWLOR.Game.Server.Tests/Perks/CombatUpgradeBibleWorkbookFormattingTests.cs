@@ -229,15 +229,15 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         AssertStatRange(stats, "Shield Deflection", 0, StatService.MaximumShieldDeflectionChance);
         AssertStatRange(stats, "Melee / Ranged Deflection", 0, StatService.MaximumDeflectionChanceCap);
         AssertStatRange(stats, "Guard", 0, StatService.MaximumGuardChance);
-        AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
-        AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
+        AssertStatRange(stats, "Critical Rate", CombatRules.MinimumCriticalRate, CombatRules.MaximumCriticalRate);
+        AssertStatRange(stats, "Critical Damage", 0, CombatRules.MaximumCriticalDamagePercentAdjustment);
         AssertStatRange(
             stats,
             "Enmity",
             EnmityService.MinimumEnmityPercentAdjustment,
             EnmityService.MaximumEnmityPercentAdjustment);
-        AssertStatRange(stats, "Haste", 0, Combat.MaximumAttackDelayAdjustmentPercent);
-        AssertStatRange(stats, "Slow", 0, Combat.MaximumAttackDelayAdjustmentPercent);
+        AssertStatRange(stats, "Haste", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
+        AssertStatRange(stats, "Slow", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(
             stats,
             "Movement Speed",
@@ -247,25 +247,25 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             stats,
             "Damage-Derived Healing per Hit",
             0,
-            Combat.MaximumDamageDerivedHealingPercentPerHit);
-        AssertStatRange(stats, "Hit Rate", Combat.MinimumHitRate, Combat.MaximumHitRate);
-        AssertStatRange(stats, "Damage Bonus per Hit", 0, Combat.MaximumDamageBonusPercent);
+            CombatRules.MaximumDamageDerivedHealingPercentPerHit);
+        AssertStatRange(stats, "Hit Rate", CombatRules.MinimumHitRate, CombatRules.MaximumHitRate);
+        AssertStatRange(stats, "Damage Bonus per Hit", 0, CombatRules.MaximumDamageBonusPercent);
         AssertStatRange(
             stats,
             "Single Damage Reduction Modifier",
             0,
-            Combat.MaximumNormalDamageReductionPercent);
+            CombatRules.MaximumNormalDamageReductionPercent);
         AssertStatRange(
             stats,
             "Combined Damage Reduction per Hit",
             0,
-            Combat.MaximumCombinedDamageReductionPercent);
+            CombatRules.MaximumCombinedDamageReductionPercent);
 
         stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {StatService.DefaultMeleeDeflectionChanceCap}%");
         stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
         stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
-        stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");
-        stats["Guard"]["K"].Should().Contain($"{Combat.MaximumGuardDamageReductionPercent}% hard limit");
+        stats["Guard"]["K"].Should().Contain($"reduces damage by {CombatDamageTakenService.BaseGuardDamageReductionPercent}% by default");
+        stats["Guard"]["K"].Should().Contain($"{CombatDamageTakenService.MaximumGuardDamageReductionPercent}% hard limit");
         stats["Damage-Derived Healing per Hit"]["K"].Should().Contain("after Combat Readiness and healing-received modifiers");
     }
 

@@ -35,17 +35,23 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ITwinPistolMasteryService _mastery;
         private readonly IAbilityService _ability;
         private readonly IStatusEffectService _statusEffect;
+        private readonly ICombatQueriesService _queries;
+        private readonly ICombatResourcesService _resources;
 
         public TwinPistolAbilityService(
             IPairedRangedTraitsService traits,
             ITwinPistolMasteryService mastery,
             IAbilityService ability,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            ICombatQueriesService queries,
+            ICombatResourcesService resources)
         {
             _traits = traits;
             _mastery = mastery;
             _ability = ability;
             _statusEffect = statusEffect;
+            _queries = queries;
+            _resources = resources;
         }
 
         public bool HasActiveActivation(uint actor) =>
@@ -270,19 +276,19 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual bool CanItemTriggerWeaponAbility(uint item) =>
-            Service.Combat.CanItemTriggerWeaponAbility(item, SkillType.TwinPistol);
+            _queries.CanItemTriggerWeaponAbility(item, SkillType.TwinPistol);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int GetAbilityStaminaPaid(uint actor, AbilityDetail ability) =>
-            Service.Combat.GetAbilityStaminaPaid(actor, ability);
+            _resources.GetAbilityStaminaPaid(actor, ability);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual void DeferAbilityStaminaCostContext(uint actor, AbilityDetail ability) =>
-            Service.Combat.DeferAbilityStaminaCostContext(actor, ability);
+            _resources.DeferAbilityStaminaCostContext(actor, ability);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual void CompleteDeferredAbilityStaminaCostContext(uint actor, AbilityDetail ability) =>
-            Service.Combat.CompleteDeferredAbilityStaminaCostContext(actor, ability);
+            _resources.CompleteDeferredAbilityStaminaCostContext(actor, ability);
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>

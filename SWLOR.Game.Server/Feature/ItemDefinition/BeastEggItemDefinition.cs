@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var accuracyPurity = 0;
                     var evasionPurity = 0;
                     var learningPurity = 0;
-                    var defensePurities = Combat.CreateDefaultDefenseValues();
+                    var defensePurities = CombatRules.CreateDefaultDefenseValues();
                     var resistancePurities = Resistance.CreateDefaultResistanceValues();
                     var xpPenalty = 0;
 

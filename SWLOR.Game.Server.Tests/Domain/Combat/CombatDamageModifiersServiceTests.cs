@@ -90,7 +90,7 @@ public class CombatDamageModifiersServiceTests
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityService ability,
             IPlayerFeedbackService playerFeedback)
-            : base(queries, resources, stat, statusEffect, temporaryStatModifier, ability, playerFeedback)
+            : base(queries, resources, stat, statusEffect, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
         }
 

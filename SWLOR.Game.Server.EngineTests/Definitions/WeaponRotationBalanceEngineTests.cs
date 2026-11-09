@@ -25,6 +25,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using NumericsVector3 = System.Numerics.Vector3;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -246,7 +247,7 @@ public static class WeaponRotationBalanceEngineTests
                 ConfigureWeapon(weapon);
             ctx.AssertEqual(pistol ? 36 : 22, WeaponDamage.GetEffectiveDMG(actor, main), "Single Weapon and Doublehand apply once, while paired guns retain their own DMG");
             ctx.AssertEqual(61, Stat.GetMaxStamina(actor), "The real player pool is 10 base +39 Might +12 reference gear");
-            ctx.AssertEqual(pistol ? 0 : 30, Combat.CalculateOffhandAttackDelayReduction(actor), "Armor specialization matches the equipped setup");
+            ctx.AssertEqual(pistol ? 0 : 30, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor), "Armor specialization matches the equipped setup");
             AssertWeaponTiming(ctx, actor, main, companion, pistol);
             VerifyCorridor(ctx, actor, target, center);
         });
@@ -299,8 +300,8 @@ public static class WeaponRotationBalanceEngineTests
         var inputSeconds = opening ? 12 : 120;
         var windows = new Queue<int>(opening ? new[] { 6, 12 } : new[] { 6, 12, 120 });
         var startingHP = GetCurrentHitPoints(target);
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         _actor = actor;
         _target = target;
         _attributedDamage = 0;
@@ -354,8 +355,8 @@ public static class WeaponRotationBalanceEngineTests
                         armorTrait = armor.Type.ToString(), skillRank = 50, attributeScores = 26,
                         itemDamage = 22, itemDelay = ItemDelayUnits, itemDelayUnit = "custom delay units",
                         itemDelayPropertyCost = ItemDelayPropertyCost, equippedAttackWeapons = pistol ? 1 : 2,
-                        rawAttackDelayMilliseconds = Combat.CalculateAttackDelay(actor),
-                        effectiveAttackDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor)),
+                        rawAttackDelayMilliseconds = GameServices.CombatAttackTiming.CalculateAttackDelay(actor),
+                        effectiveAttackDelayMilliseconds = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor)),
                         capstone = capstone.ToString(), acceptedCapstoneCasts = casts[capstone],
                         requestedSeconds = requested, observedSeconds = clock.Elapsed.TotalSeconds,
                         sourceAttack = Stat.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
@@ -472,8 +473,8 @@ public static class WeaponRotationBalanceEngineTests
                 TemporaryStatModifier.Clear(target);
                 SetCommandable(true, target);
             }
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
     }
 
@@ -584,15 +585,15 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(ItemDelayPropertyCost, propertyCost, "Each equipped weapon has native Delay property cost 25");
             ctx.AssertEqual(ItemDelayUnits, propertyCost * 10, "Each equipped weapon has 250 custom delay units after production cost-index conversion");
         }
-        var expectedRawDelay = Combat.CalculateAttackDelayMilliseconds(ItemDelayUnits, pistol ? 0 : ItemDelayUnits,
-            Combat.CalculateAttackDelayReduction(actor), Combat.CalculateOffhandAttackDelayReduction(actor));
-        var actualRawDelay = Combat.CalculateAttackDelay(actor);
+        var expectedRawDelay = CombatRules.CalculateAttackDelayMilliseconds(ItemDelayUnits, pistol ? 0 : ItemDelayUnits,
+            GameServices.CombatAttackTiming.CalculateAttackDelayReduction(actor), GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor));
+        var actualRawDelay = GameServices.CombatAttackTiming.CalculateAttackDelay(actor);
         ctx.AssertEqual(expectedRawDelay, actualRawDelay, "Equipped native delay matches the intended weapon and current Haste budgets");
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(actualRawDelay);
-        ctx.AssertEqual(Combat.CalculateEffectiveAttackDelay(expectedRawDelay), effectiveDelay,
+        var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(actualRawDelay);
+        ctx.AssertEqual(CombatRules.CalculateEffectiveAttackDelay(expectedRawDelay), effectiveDelay,
             "The engine cycle uses the intended effective attack delay before timing begins");
         ctx.Log($"Verified weapon timing: propertyCost={ItemDelayPropertyCost}, itemDelayUnits={ItemDelayUnits}, " +
-                $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={Combat.CalculateAttackDelayReduction(actor)}, " +
-                $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}");
+                $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={GameServices.CombatAttackTiming.CalculateAttackDelayReduction(actor)}, " +
+                $"offhandReduction={GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor)}");
     }
 }

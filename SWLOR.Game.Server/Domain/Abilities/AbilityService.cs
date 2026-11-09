@@ -61,6 +61,16 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly IStatService _stat;
         private readonly IPerkService _perk;
+        private readonly Lazy<ICombatAbilityBonusService> _abilityBonus;
+        private readonly Lazy<ICombatAbilityHitService> _abilityHit;
+        private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
+        private readonly Lazy<ICombatActivityService> _combatActivity;
+        private readonly Lazy<ICombatDamageModifiersService> _damageModifiers;
+        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
+        private readonly ICombatFeedbackService _feedback;
+        private readonly Lazy<ICombatHitEffectsService> _hitEffects;
+        private readonly ICombatQueriesService _queries;
+        private readonly Lazy<ICombatResourcesService> _resources;
 
         private readonly Dictionary<uint, AbilityActiveActivation> _activeAbilityActivations = new();
         private readonly Dictionary<uint, WeaponAbilityTraitActivation> _queuedWeaponTraits = new();
@@ -86,7 +96,17 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IStealthService stealth,
             IPairedRangedTraitsService pairedRangedTraits,
             IStatService stat,
-            IPerkService perk)
+            IPerkService perk,
+            Lazy<ICombatAbilityBonusService> abilityBonus,
+            Lazy<ICombatAbilityHitService> abilityHit,
+            Lazy<ICombatAbilityImpactService> abilityImpact,
+            Lazy<ICombatActivityService> combatActivity,
+            Lazy<ICombatDamageModifiersService> damageModifiers,
+            Lazy<ICombatDamageTakenService> damageTaken,
+            ICombatFeedbackService feedback,
+            Lazy<ICombatHitEffectsService> hitEffects,
+            ICombatQueriesService queries,
+            Lazy<ICombatResourcesService> resources)
         {
             _statusEffect = statusEffect;
             _enmity = enmity;
@@ -108,6 +128,16 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _pairedRangedTraits = pairedRangedTraits;
             _stat = stat;
             _perk = perk;
+            _abilityBonus = abilityBonus;
+            _abilityHit = abilityHit;
+            _abilityImpact = abilityImpact;
+            _combatActivity = combatActivity;
+            _damageModifiers = damageModifiers;
+            _damageTaken = damageTaken;
+            _feedback = feedback;
+            _hitEffects = hitEffects;
+            _queries = queries;
+            _resources = resources;
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
@@ -4074,144 +4104,144 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => _perk.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
 
-        protected virtual SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => Service.Combat.GetAbilitySkillType(creature, ability);
+        protected virtual SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => _queries.GetAbilitySkillType(creature, ability);
 
-        protected virtual int ConsumeNextAbilityDamageBonus(uint creature, PerkType perkType) => Service.Combat.ConsumeNextAbilityDamageBonus(creature, perkType);
+        protected virtual int ConsumeNextAbilityDamageBonus(uint creature, PerkType perkType) => _abilityBonus.Value.ConsumeNextAbilityDamageBonus(creature, perkType);
 
         protected virtual (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses(uint creature, SkillType skillType, StatusEffectCategory abilityStatusCategories) =>
-            Service.Combat.ConsumeNextSkillAbilityBonuses(creature, skillType, abilityStatusCategories);
+            _abilityBonus.Value.ConsumeNextSkillAbilityBonuses(creature, skillType, abilityStatusCategories);
 
-        protected virtual int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => Service.Combat.GetPersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
+        protected virtual int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.Value.GetPersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
         protected virtual (int DamageBonus, int CriticalRatePercentAdjustment, int CriticalDamagePercentAdjustment) ConsumeQueuedWeaponAbilityBonuses(uint creature, SkillType skillType) =>
-            Service.Combat.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
+            _abilityBonus.Value.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
 
         protected virtual (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(uint creature) =>
-            Service.Combat.ConsumeNextAttackGuardedHitBonuses(creature);
+            _abilityBonus.Value.ConsumeNextAttackGuardedHitBonuses(creature);
 
-        protected virtual int GetStatusAppliedNextAttackDamageBonus(uint creature) => Service.Combat.GetStatusAppliedNextAttackDamageBonus(creature);
+        protected virtual int GetStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.Value.GetStatusAppliedNextAttackDamageBonus(creature);
 
-        protected virtual int ConsumeStatusAppliedNextAttackDamageBonus(uint creature) => Service.Combat.ConsumeStatusAppliedNextAttackDamageBonus(creature);
+        protected virtual int ConsumeStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.Value.ConsumeStatusAppliedNextAttackDamageBonus(creature);
 
         protected virtual int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
-            Service.Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: triggeringWeaponDamage, abilityImpact: abilityImpact);
+            _queries.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: triggeringWeaponDamage, abilityImpact: abilityImpact);
 
         protected virtual CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon) =>
-            Service.Combat.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
+            _queries.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
 
-        protected virtual bool IsWeaponSkillType(SkillType skillType) => Service.Combat.IsWeaponSkillType(skillType);
+        protected virtual bool IsWeaponSkillType(SkillType skillType) => CombatRules.IsWeaponSkillType(skillType);
 
-        protected virtual int CalculateDamageEligibleForHealing(int damage, int targetHP, int pendingDamage) => Service.Combat.CalculateDamageEligibleForHealing(damage, targetHP, pendingDamage);
+        protected virtual int CalculateDamageEligibleForHealing(int damage, int targetHP, int pendingDamage) => CombatRules.CalculateDamageEligibleForHealing(damage, targetHP, pendingDamage);
 
-        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => Service.Combat.ApplyAbilityImpactEffects(activator, summary);
+        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _abilityImpact.Value.ApplyAbilityImpactEffects(activator, summary);
 
-        protected virtual int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability) => Service.Combat.RefundCriticalRangedAbilityStaminaCost(creature, ability);
+        protected virtual int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability) => _resources.Value.RefundCriticalRangedAbilityStaminaCost(creature, ability);
 
-        protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => Service.Combat.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
+        protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.Value.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
-        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => Service.Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
+        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _hitEffects.Value.ApplyNonCriticalAbilityEffects(activator, target, skillType);
 
-        protected virtual bool HasEquippedWeaponForAbility(uint creature) => Service.Combat.HasEquippedWeaponForAbility(creature);
+        protected virtual bool HasEquippedWeaponForAbility(uint creature) => _queries.HasEquippedWeaponForAbility(creature);
 
-        protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => Service.Combat.DeferAbilityStaminaCostContext(creature, ability);
+        protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.Value.DeferAbilityStaminaCostContext(creature, ability);
 
-        protected virtual void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability) => Service.Combat.CompleteDeferredAbilityStaminaCostContext(creature, ability);
+        protected virtual void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.Value.CompleteDeferredAbilityStaminaCostContext(creature, ability);
 
-        protected virtual IDisposable BeginDamageDerivedHealing(uint creature, uint target) => Service.Combat.BeginDamageDerivedHealing(creature, target);
+        protected virtual IDisposable BeginDamageDerivedHealing(uint creature, uint target) => _resources.Value.BeginDamageDerivedHealing(creature, target);
 
-        protected virtual bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target) => Service.Combat.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
+        protected virtual bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target) => _abilityImpact.Value.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
 
-        protected virtual void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) => Service.Combat.SendTemporaryHitPointDamageFeedback(attacker, defender, damage);
+        protected virtual void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) => _feedback.SendTemporaryHitPointDamageFeedback(attacker, defender, damage);
 
         protected virtual void ConsumeSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType, int damage) =>
-            Service.Combat.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
+            _damageModifiers.Value.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
 
         protected virtual void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool allowsHitProcs) =>
-            Service.Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);
+            _hitEffects.Value.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);
 
-        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => Service.Combat.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
+        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => _damageTaken.Value.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
 
         protected virtual void ApplySuccessfulAbilityImpactRiders(uint activator, uint target, AbilityDetail ability, SkillType skillType, CombatDamageType damageType, int damage, bool statusApplied, Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, bool firstHostileAbilityHitDamageBonusApplied, bool isFirstSuccessfulTarget, StatusEffectCategory appliedStatusCategories, bool allowsHitProcs, bool targetWasAttackingAlly) =>
-            Service.Combat.ApplySuccessfulAbilityImpactRiders(activator, target, ability, skillType, damageType, damage, statusApplied, primaryStatusEffect, additionalStatusEffects, firstHostileAbilityHitDamageBonusApplied, isFirstSuccessfulTarget, appliedStatusCategories, allowsHitProcs, targetWasAttackingAlly);
+            _abilityImpact.Value.ApplySuccessfulAbilityImpactRiders(activator, target, ability, skillType, damageType, damage, statusApplied, primaryStatusEffect, additionalStatusEffects, firstHostileAbilityHitDamageBonusApplied, isFirstSuccessfulTarget, appliedStatusCategories, allowsHitProcs, targetWasAttackingAlly);
 
-        protected virtual bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => Service.Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon);
+        protected virtual bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => _queries.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon);
 
         protected virtual void ApplyCriticalHitEffects(uint attacker, uint defender, int damage, int criticalRating, bool isSingleTargetImpact, SkillType skillType) =>
-            Service.Combat.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
+            _hitEffects.Value.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
 
-        protected virtual void TrackHostileAbilityActivity(uint creature) => Service.Combat.TrackHostileAbilityActivity(creature);
+        protected virtual void TrackHostileAbilityActivity(uint creature) => _combatActivity.Value.TrackHostileAbilityActivity(creature);
 
-        protected virtual void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker) => Service.Combat.TrackHostileDefensiveCombatEntryActivity(creature, attacker);
+        protected virtual void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker) => _combatActivity.Value.TrackHostileDefensiveCombatEntryActivity(creature, attacker);
 
         protected virtual int GetAbilityStatusCategoryHitChancePercentAdjustment(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) =>
-            Service.Combat.GetAbilityStatusCategoryHitChancePercentAdjustment(creature, skillType, appliedCategories);
+            _abilityBonus.Value.GetAbilityStatusCategoryHitChancePercentAdjustment(creature, skillType, appliedCategories);
 
         protected virtual bool TryResolveAbilityHit(uint attacker, uint defender, SkillType skillType, PerkType perkType, out int hitRate, int hitChancePercentAdjustment, int skillLevelOverride, AbilityType statOverride, int accuracyFlatAdjustment) =>
-            Service.Combat.TryResolveAbilityHit(attacker, defender, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, statOverride, accuracyFlatAdjustment);
+            _abilityHit.Value.TryResolveAbilityHit(attacker, defender, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, statOverride, accuracyFlatAdjustment);
 
-        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => Service.Combat.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
+        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => _abilityImpact.Value.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
 
-        protected virtual int GetAbilityStatusCategoryDamageBonus(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) => Service.Combat.GetAbilityStatusCategoryDamageBonus(creature, skillType, appliedCategories);
+        protected virtual int GetAbilityStatusCategoryDamageBonus(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) => _abilityBonus.Value.GetAbilityStatusCategoryDamageBonus(creature, skillType, appliedCategories);
 
         protected virtual string BuildAbilityCombatLogMessage(uint observer, uint attacker, uint defender, string abilityName, int attackResultType, int chanceToHit) =>
-            Service.Combat.BuildAbilityCombatLogMessage(observer, attacker, defender, abilityName, attackResultType, chanceToHit);
+            _feedback.BuildAbilityCombatLogMessage(observer, attacker, defender, abilityName, attackResultType, chanceToHit);
 
-        protected virtual string BuildAbilityNoTargetCombatLogMessage(uint observer, uint attacker, string abilityName) => Service.Combat.BuildAbilityNoTargetCombatLogMessage(observer, attacker, abilityName);
+        protected virtual string BuildAbilityNoTargetCombatLogMessage(uint observer, uint attacker, string abilityName) => _feedback.BuildAbilityNoTargetCombatLogMessage(observer, attacker, abilityName);
 
-        protected virtual int ApplyDamageDerivedHealing(uint creature, int damage, int percent) => Service.Combat.ApplyDamageDerivedHealing(creature, damage, percent);
+        protected virtual int ApplyDamageDerivedHealing(uint creature, int damage, int percent) => _resources.Value.ApplyDamageDerivedHealing(creature, damage, percent);
 
         protected virtual int ApplyDamageDealtModifiers(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool canApplyRandomFlatBonuses, bool isLandedAttack, AbilityDetail ability, out int targetStatusDamagePercentAdjustment, int abilityDamagePercentAdjustment, int lowHPAbilityDamagePercentAdjustment) =>
-            Service.Combat.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);
+            _damageModifiers.Value.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);
 
         protected virtual int ApplyIncomingPhysicalToForceConversion(uint attacker, uint defender, CombatDamageType damageType, ref int physicalDamage, int targetStatusDamagePercentAdjustment) =>
-            Service.Combat.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
+            _damageTaken.Value.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
 
-        protected virtual int ApplyTypedLeadershipDamageTakenModifier(uint defender, int damage, CombatDamageType damageType) => Service.Combat.ApplyTypedLeadershipDamageTakenModifier(defender, damage, damageType);
+        protected virtual int ApplyTypedLeadershipDamageTakenModifier(uint defender, int damage, CombatDamageType damageType) => _damageTaken.Value.ApplyTypedLeadershipDamageTakenModifier(defender, damage, damageType);
 
         protected virtual int ApplyDamageTakenModifiers(uint defender, int damage, uint attacker, CombatDamageType damageType, int targetStatusDamagePercentAdjustment, bool typedLeadershipReductionAlreadyApplied) =>
-            Service.Combat.ApplyDamageTakenModifiers(defender, damage, attacker, damageType, targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment, typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
+            _damageTaken.Value.ApplyDamageTakenModifiers(defender, damage, attacker, damageType, targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment, typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
 
         protected virtual (int DamageBonus, int HitChancePercentAdjustment, int CriticalDamagePercentAdjustment) GetIdleSkillAbilityBonuses(uint activator, SkillType skillType) =>
-            Service.Combat.GetIdleSkillAbilityBonuses(activator, skillType);
+            _combatActivity.Value.GetIdleSkillAbilityBonuses(activator, skillType);
 
-        protected virtual int GetAbilityDamageBonus(uint creature, SkillType skill) => Service.Combat.GetAbilityDamageBonus(creature, skill);
+        protected virtual int GetAbilityDamageBonus(uint creature, SkillType skill) => _abilityBonus.Value.GetAbilityDamageBonus(creature, skill);
 
-        protected virtual int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType) => Service.Combat.GetAbilityDamageFlatAdjustment(creature, perkType, skillType);
+        protected virtual int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType) => _abilityBonus.Value.GetAbilityDamageFlatAdjustment(creature, perkType, skillType);
 
-        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => Service.Combat.GetCostlyAbilityDamageBonus(activator, ability, skillType);
+        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _abilityImpact.Value.GetCostlyAbilityDamageBonus(activator, ability, skillType);
 
-        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => Service.Combat.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
+        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _damageModifiers.Value.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
 
-        protected virtual int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType) => Service.Combat.ApplyTargetStatusAttackModifiers(attacker, defender, attack, skillType);
+        protected virtual int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType) => _damageModifiers.Value.ApplyTargetStatusAttackModifiers(attacker, defender, attack, skillType);
 
-        protected virtual int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense) => Service.Combat.ApplyStatusSourceDefenseModifiers(attacker, defender, defense);
+        protected virtual int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense) => _damageModifiers.Value.ApplyStatusSourceDefenseModifiers(attacker, defender, defense);
 
         protected virtual int ApplyIncomingPhysicalToForceDefenseConversion(uint defender, CombatDamageType damageType, int physicalDefense, Func<int> forceDefenseProvider) =>
-            Service.Combat.ApplyIncomingPhysicalToForceDefenseConversion(defender, damageType, physicalDefense, forceDefenseProvider);
+            _damageTaken.Value.ApplyIncomingPhysicalToForceDefenseConversion(defender, damageType, physicalDefense, forceDefenseProvider);
 
-        protected virtual int GetAbilityDefenseIgnorePercentAdjustment(uint creature, PerkType perkType, SkillType skillType, uint defender) => Service.Combat.GetAbilityDefenseIgnorePercentAdjustment(creature, perkType, skillType, defender);
+        protected virtual int GetAbilityDefenseIgnorePercentAdjustment(uint creature, PerkType perkType, SkillType skillType, uint defender) => _abilityBonus.Value.GetAbilityDefenseIgnorePercentAdjustment(creature, perkType, skillType, defender);
 
-        protected virtual int ApplyDefenseIgnore(int defense, int defenseIgnorePercent) => Service.Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
+        protected virtual int ApplyDefenseIgnore(int defense, int defenseIgnorePercent) => CombatRules.ApplyDefenseIgnore(defense, defenseIgnorePercent);
 
         protected virtual int CalculateAbilityCriticalRating(uint attacker, SkillType skillType, bool isAreaAbility, int criticalRateAdjustment, uint defender) =>
-            Service.Combat.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
+            _abilityHit.Value.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
 
         protected virtual (int Damage, int CriticalRating, bool WasCriticalDowngraded) CalculateDamageWithCriticalMitigation(uint defender, int attackerAttack, int attackerDMG, int attackerStat, int defenderDefense, int defenderStat, int critical) =>
-            Service.Combat.CalculateDamageWithCriticalMitigation(defender, attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical);
+            _damageModifiers.Value.CalculateDamageWithCriticalMitigation(defender, attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical);
 
-        protected virtual void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender) => Service.Combat.SendIncomingCriticalHitDowngradeFeedback(attacker, defender);
+        protected virtual void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender) => _feedback.SendIncomingCriticalHitDowngradeFeedback(attacker, defender);
 
         protected virtual int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating, SkillType skillType, uint defender, int criticalDamagePercentAdjustment) =>
-            Service.Combat.ApplyCriticalDamageModifier(attacker, damage, criticalRating, skillType, defender, criticalDamagePercentAdjustment);
+            _damageModifiers.Value.ApplyCriticalDamageModifier(attacker, damage, criticalRating, skillType, defender, criticalDamagePercentAdjustment);
 
-        protected virtual void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName) => Service.Combat.SendAbilityCriticalHitFeedback(attacker, defender, abilityName);
+        protected virtual void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName) => _feedback.SendAbilityCriticalHitFeedback(attacker, defender, abilityName);
 
-        protected virtual int GetNearbyStatusTargetAttackAdjustment(uint creature) => Service.Combat.GetNearbyStatusTargetAttackAdjustment(creature);
+        protected virtual int GetNearbyStatusTargetAttackAdjustment(uint creature) => _damageModifiers.Value.GetNearbyStatusTargetAttackAdjustment(creature);
 
-        protected virtual int GetLowHPAttackAdjustment(uint attacker) => Service.Combat.GetLowHPAttackAdjustment(attacker);
+        protected virtual int GetLowHPAttackAdjustment(uint attacker) => _damageModifiers.Value.GetLowHPAttackAdjustment(attacker);
 
         protected virtual int GetAbilityStatusDurationPercentAdjustment(uint creature, PerkType perkType, SkillType skillType, Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, Func<IStatusEffect> statusEffectFactory) =>
-            Service.Combat.GetAbilityStatusDurationPercentAdjustment(creature, perkType, skillType, primaryStatusEffect, additionalStatusEffects, statusEffectFactory);
+            _abilityBonus.Value.GetAbilityStatusDurationPercentAdjustment(creature, perkType, skillType, primaryStatusEffect, additionalStatusEffects, statusEffectFactory);
 
         private sealed class TrackedAbilityImpact
         {

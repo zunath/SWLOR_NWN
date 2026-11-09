@@ -211,8 +211,8 @@ public static class PowerGlovePairEngineTests
             ctx.Assert(mainHand > 0, "The owned glove deals native ordinary damage");
             ctx.AssertEqual(mainHand, offHand, "The native off-hand roll uses the owned glove, never the cosmetic carrier");
             ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both hands' DMG");
-            ctx.AssertEqual(48, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
-            ctx.AssertEqual(24, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
+            ctx.AssertEqual(48, GameServices.CombatQueries.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
+            ctx.AssertEqual(24, GameServices.CombatQueries.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
             ctx.AssertEqual(24, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Katar), "Only Unarmed abilities count the pair");
             ctx.AssertEqual(24, Item.GetDMG(main), "Damage resolution never rewrites the real item's raw rating");
             AssertCosmeticCompanion(ctx, companion);
@@ -249,14 +249,14 @@ public static class PowerGlovePairEngineTests
                 AssertCosmeticCompanion(ctx, companion);
                 ctx.Assert(EquipmentPredicates.HasDualWield(actor), "The owned glove schedules an off-hand roll");
                 var gloveDelay = (int)WeaponDelay.GetWeaponDelay(BaseItem.PowerGlove) * 10;
-                ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(gloveDelay, gloveDelay, 0, 0), Combat.CalculateAttackDelay(actor),
+                ctx.AssertEqual(CombatRules.CalculateAttackDelayMilliseconds(gloveDelay, gloveDelay, 0, 0), GameServices.CombatAttackTiming.CalculateAttackDelay(actor),
                     "The pair uses the paired delay of two gloves, like two katars");
-                effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
+                effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
                 ctx.Assert(effectiveDelay > 1000, "The fixture has separately observable attack cycles");
             });
             _observedAttacker = actor;
             Hits.Clear();
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
             await ctx.WaitUntilAsync(() => Hits.Count > 0, 6f, "the first main-hand roll");
             var round = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcCombatRound;
@@ -275,7 +275,7 @@ public static class PowerGlovePairEngineTests
         {
             AssignCommand(actor, () => ClearAllActions());
             WeaponAttackCycle.CancelPendingHand(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             Hits.Clear();
         }
@@ -390,7 +390,7 @@ public static class PowerGlovePairEngineTests
             });
             _observedAttacker = actor;
             Hits.Clear();
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
             await ctx.WaitUntilAsync(() => Hits.Count > 0, 8f, "a real ordinary attack before forcing the pairing failure");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -488,7 +488,7 @@ public static class PowerGlovePairEngineTests
             SetCommandable(true, escrow);
             AssignCommand(actor, () => ClearAllActions());
             WeaponAttackCycle.CancelPendingHand(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             Hits.Clear();
         }

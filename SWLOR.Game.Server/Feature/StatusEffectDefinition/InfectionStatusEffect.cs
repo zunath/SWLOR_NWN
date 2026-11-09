@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -48,13 +49,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
-            var damageAmount = Combat.ApplyDamageTypeDealtModifiers(
+            var damageAmount = GameServices.CombatDamageModifiers.ApplyDamageTypeDealtModifiers(
                 source,
                 DamagePerStack * Math.Max(1, Stacks),
                 CombatDamageType.Poison);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
-            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison);
-            damageAmount = Combat.ApplyDamageTakenModifiers(
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison);
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(
                 creature,
                 damageAmount,
                 source,

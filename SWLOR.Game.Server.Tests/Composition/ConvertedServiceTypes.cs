@@ -18,4 +18,16 @@ public sealed record ConvertedServiceTypes(string Name, string Domain, Type? Fac
     /// static code reaches it through <c>GameServices</c> and its handlers are on <see cref="Instance"/>. Null otherwise.
     /// </summary>
     public string? RemovedFacade { get; init; }
+
+    /// <summary>
+    /// The name of a part of a split service, when the facade that forwarded to it was removed (P2-ZP): a part never had a
+    /// facade of its own, but static code reaches it through the <c>GameServices</c> property of this name. Null otherwise.
+    /// </summary>
+    public string? AccessorProperty { get; init; }
+
+    /// <summary>
+    /// True for the classes of a removed facade whose members went to several classes (<c>Combat</c>; the <c>"members"</c> of
+    /// its line in <c>tools/Refactor/RemovedFacades.json</c>): the facade's handlers went to the part that owns each.
+    /// </summary>
+    public bool IsSplitFacade { get; init; }
 }

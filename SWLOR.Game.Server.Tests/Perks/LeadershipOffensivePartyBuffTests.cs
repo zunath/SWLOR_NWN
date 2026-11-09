@@ -77,8 +77,7 @@ public class LeadershipOffensivePartyBuffTests
     [Test]
     public void SharedCooldown_BlocksOtherSkillsAndReopensAfter45Seconds()
     {
-        var useTrigger = CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!
-            .CreateDelegate<Func<uint, StatType, int, bool>>();
+        var useTrigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
         var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
         var key = (0xFFFFFFFEu, StatType.HostileAbilityPartyBuffDamagePercent);
         var otherKey = (0xFFFFFFFDu, key.Item2);

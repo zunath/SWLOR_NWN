@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityService _ability;
         private readonly IPlayerFeedbackService _playerFeedback;
+        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
 
         public CombatDamageModifiersService(
             ICombatQueriesService queries,
@@ -45,7 +46,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityService ability,
-            IPlayerFeedbackService playerFeedback)
+            IPlayerFeedbackService playerFeedback,
+            Lazy<ICombatDamageTakenService> damageTaken)
         {
             _queries = queries;
             _resources = resources;
@@ -54,11 +56,12 @@ namespace SWLOR.Game.Server.Domain.Combat
             _temporaryStatModifier = temporaryStatModifier;
             _ability = ability;
             _playerFeedback = playerFeedback;
+            _damageTaken = damageTaken;
         }
 
         // The damage taken part takes this part, so the area ability bonus after a deflection reads its record through Combat.
         protected virtual bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds) =>
-            Service.Combat.HasRecentDeflection(creature, source, windowSeconds);
+            _damageTaken.Value.HasRecentDeflection(creature, source, windowSeconds);
 
         private sealed class SameTargetPressureState
         {

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -112,12 +113,12 @@ public class StatAdjustmentSourceTests
             }
         }
         for (var index = 0; index < 100; index++)
-            Combat.GetHighResourceAbilityDamageBonus(Creature);
+            GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
 
         var before = GC.GetAllocatedBytesForCurrentThread();
         var adjustment = 0;
         for (var index = 0; index < 1000; index++)
-            adjustment += Combat.GetHighResourceAbilityDamageBonus(Creature);
+            adjustment += GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         adjustment.Should().Be(0);

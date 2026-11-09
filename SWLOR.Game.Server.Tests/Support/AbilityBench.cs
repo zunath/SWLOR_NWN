@@ -575,7 +575,7 @@ public sealed class TestAbilityService : AbilityService
         IPairedRangedTraitsService pairedRangedTraits)
         : base(statusEffect, enmity, combatPoint, recast, telegraph, messaging, music, namedAnimation, mimicry, activity, party,
             playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, pairedRangedTraits, FacadeForwarder.For<IStatService>(),
-            FacadeForwarder.For<IPerkService>())
+            FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
     {
         _bench = bench;
     }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using NUnit.Framework;
+using SWLOR.FacadeRemoval;
 using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Composition;
@@ -22,6 +23,8 @@ public static class ConvertedServiceFixtures
         var path = Path.Combine(FindRepositoryRoot(), "SWLOR.Architecture.Tests", "ConvertedServices.json");
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var assembly = typeof(CompositionRoot).Assembly;
+        var split = RemovedFacadeList.Load(Path.Combine(FindRepositoryRoot(), "tools", "Refactor", "RemovedFacades.json"))
+            .Where(facade => facade.IsSplit).Select(facade => facade.Facade).ToHashSet(StringComparer.Ordinal);
         var services = new List<ConvertedServiceTypes>();
 
         foreach (var element in document.RootElement.GetProperty("services").EnumerateArray())
@@ -38,7 +41,8 @@ public static class ConvertedServiceFixtures
                 assembly.GetType($"{domainNamespace}.I{name}Service", throwOnError: true)!,
                 assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!)
             {
-                RemovedFacade = removed ? $"{ServerNamespace}.Service.{name}" : null
+                RemovedFacade = removed ? $"{ServerNamespace}.Service.{name}" : null,
+                IsSplitFacade = split.Contains(name)
             };
             var extraTypes = new List<ConvertedServiceTypes>();
 
@@ -56,7 +60,9 @@ public static class ConvertedServiceFixtures
                         assembly.GetType($"{domainNamespace}.I{typeName}Service", throwOnError: true)!,
                         assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!)
                     {
-                        RemovedFacade = facade is not null && removed ? $"{ServerNamespace}.Service.{facade}" : null
+                        RemovedFacade = facade is not null && removed ? $"{ServerNamespace}.Service.{facade}" : null,
+                        AccessorProperty = facade is null && split.Contains(name) ? typeName : null,
+                        IsSplitFacade = split.Contains(name)
                     });
                 }
             }
@@ -77,9 +83,12 @@ public static class ConvertedServiceFixtures
     public static IEnumerable<TestCaseData> AsFacadeTestCases() =>
         Load().Where(service => service.Facade is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
 
-    /// <summary>The classes whose static facade the branch removed (P2-Z): static code reaches them through <c>GameServices</c>.</summary>
+    /// <summary>
+    /// The classes static code reaches through <c>GameServices</c> (P2-Z): those whose static facade the branch removed, and
+    /// the parts of a split service whose facade the branch removed (P2-ZP).
+    /// </summary>
     public static IEnumerable<TestCaseData> AsRemovedFacadeTestCases() =>
-        Load().Where(service => service.RemovedFacade is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
+        Load().Where(service => service.RemovedFacade is not null || service.AccessorProperty is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
 
     /// <summary>
     /// <c>tools/Refactor/HandlerRenames.txt</c> as (master name, branch name) pairs: a handler the branch renamed, such as

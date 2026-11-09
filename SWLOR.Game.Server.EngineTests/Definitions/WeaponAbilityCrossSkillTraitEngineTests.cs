@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -50,8 +51,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 CreaturePlugin.AddFeat(actor, FeatType.LeadShot1);
                 CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                Combat.SetAbilityHitResolutionOverride(true);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             });
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.LeadShot1, GetLocation(target)),
                 $"Lead Shot enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
@@ -190,7 +191,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             await InFrame(ctx, actor, () =>
             {
                 CreaturePlugin.AddFeat(actor, FeatType.ControlledBurst1); CreaturePlugin.AddFeat(actor, FeatType.TwinSuns);
-                Combat.SetAbilityHitResolutionOverride(true); Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor) - 100);
             });
             var stamina = Stat.GetCurrentStamina(actor);
@@ -253,7 +254,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
 
     private static void Cleanup(uint actor)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null); Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor); UsePerkFeat.InterruptAbilityActivation(actor); UsePerkFeat.ClearQueuedAbility(actor);

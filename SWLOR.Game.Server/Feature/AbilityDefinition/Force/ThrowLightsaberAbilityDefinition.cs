@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using NumericsVector3 = System.Numerics.Vector3;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 Messaging.SendMessageNearbyToPlayers(
                     activator,
-                    receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                    receiver => GameServices.CombatFeedback.BuildAbilityNoTargetCombatLogMessage(
                         receiver,
                         activator,
                         abilityName),

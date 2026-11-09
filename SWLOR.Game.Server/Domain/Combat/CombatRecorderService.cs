@@ -74,13 +74,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IDBService _db;
         private readonly Lazy<IAbilityService> _ability;
         private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<ICombatQueriesService> _queries;
 
-        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, Lazy<IAbilityService> ability, Lazy<IStatService> stat)
+        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, Lazy<IAbilityService> ability, Lazy<IStatService> stat, Lazy<ICombatQueriesService> queries)
         {
             _dmPresence = dmPresence;
             _db = db;
             _ability = ability;
             _stat = stat;
+            _queries = queries;
         }
 
         /// <summary>
@@ -1656,7 +1658,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint creature) =>
             _ability.Value.GetActiveAbilityImpactSummary(creature);
 
-        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => Service.Combat.GetEquippedWeaponSkillType(creature);
+        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => _queries.Value.GetEquippedWeaponSkillType(creature);
 
         protected virtual int GetCurrentFP(uint creature, Player dbPlayer = null) => _stat.Value.GetCurrentFP(creature, dbPlayer);
 

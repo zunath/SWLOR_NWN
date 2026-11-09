@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -66,6 +67,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
         private readonly IStatusEffectService _statusEffect;
+        private readonly Lazy<ICombatActivityService> _combatActivity;
+        private readonly Lazy<ICombatQueriesService> _queries;
 
         public CompanionControlService(
             IAIService ai,
@@ -74,7 +77,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IActivityService activity,
             IPerkService perk,
             IPlayerNameService playerName,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            Lazy<ICombatActivityService> combatActivity,
+            Lazy<ICombatQueriesService> queries)
         {
             _ai = ai;
             _beastMastery = beastMastery;
@@ -83,6 +88,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _perk = perk;
             _playerName = playerName;
             _statusEffect = statusEffect;
+            _combatActivity = combatActivity;
+            _queries = queries;
         }
 
         public bool IsRegisteredCompanion(uint creature)
@@ -1059,13 +1066,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _playerName.GetDisplayName(observer, target);
 
         protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
-            Service.Combat.GetLastOffensiveActivityAt(creature);
+            _combatActivity.Value.GetLastOffensiveActivityAt(creature);
 
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) =>
-            Service.Combat.GetEquippedWeaponSkillType(creature);
+            _queries.Value.GetEquippedWeaponSkillType(creature);
 
         protected virtual float GetWeaponEngagementRange(SkillType skill) =>
-            Service.Combat.GetWeaponEngagementRange(skill);
+            CombatRules.GetWeaponEngagementRange(skill);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
             _perk.GetPerkLevel(creature, perkType);

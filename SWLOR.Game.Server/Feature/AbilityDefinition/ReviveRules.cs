@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -138,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 // The dead never record their killing blow as recent damage, so the time they died stands in for it.
                 var recentlyHit = GetIsDead(member)
                     ? IsWithinPartyDamageWindow(GetDeathTime(GetObjectUUID(member)), DateTime.UtcNow)
-                    : Combat.HasRecentDamageTaken(member, PartyDamageWindowSeconds);
+                    : GameServices.CombatActivity.HasRecentDamageTaken(member, PartyDamageWindowSeconds);
                 if (recentlyHit)
                     return true;
             }

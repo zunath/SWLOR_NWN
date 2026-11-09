@@ -7,11 +7,11 @@ using SWLOR.Game.Server.Domain.Combat;
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
     /// <summary>
-    /// Finds the private members of <c>Combat</c> that tests reach by reflection (swing debts, activity records, trigger
-    /// cooldowns, private helpers). They were static members of <see cref="Combat"/>; as the code moves into the part
-    /// services (see <see cref="CombatParts"/>) they become instance members of a part, and only the lookup here changes:
-    /// a static member is found first, then an instance member of a part, whose value or call goes to the part's instance
-    /// in the container the facades resolve from (the server's, or the one a test installed).
+    /// Finds the private members of combat that tests reach by reflection (swing debts, activity records, trigger cooldowns,
+    /// private helpers). They were static members of the facade; now they are instance members of a part (see
+    /// <see cref="CombatParts"/>) or static members of <see cref="CombatRules"/>: a static member is found first, then an
+    /// instance member of a part, whose value or call goes to the part's instance in the container
+    /// <see cref="GameServices"/> resolves from (the server's, or the one a test installed).
     /// </summary>
     public static class CombatMembers
     {
@@ -42,14 +42,14 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// <summary>The current value of a field such as <c>_attackSwingDebts</c> (of the part's instance for an instance field).</summary>
         public static TField FieldValue<TField>(string name)
         {
-            var field = FindField(name) ?? throw new MissingFieldException(typeof(Combat).FullName, name);
+            var field = FindField(name) ?? throw new MissingFieldException("Combat", name);
             return (TField)field.GetValue(Target(field.IsStatic, field.DeclaringType));
         }
 
         /// <summary>Calls a method found by <see cref="FindMethod"/> (on the part's instance for an instance method) and returns its result.</summary>
         public static object Invoke(string name, params object[] arguments)
         {
-            var method = FindMethod(name) ?? throw new MissingMethodException(typeof(Combat).FullName, name);
+            var method = FindMethod(name) ?? throw new MissingMethodException("Combat", name);
             return method.Invoke(Target(method.IsStatic, method.DeclaringType), arguments);
         }
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public static TDelegate CreateDelegate<TDelegate>(string name, params Type[] parameterTypes)
             where TDelegate : Delegate
         {
-            var method = FindMethod(name, parameterTypes) ?? throw new MissingMethodException(typeof(Combat).FullName, name);
+            var method = FindMethod(name, parameterTypes) ?? throw new MissingMethodException("Combat", name);
             return method.IsStatic
                 ? method.CreateDelegate<TDelegate>()
                 : method.CreateDelegate<TDelegate>(Target(false, method.DeclaringType));
@@ -98,15 +98,11 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             }
         }
 
-        // Combat first, then the part types the split adds to the server assembly.
-        private static IEnumerable<Type> Owners()
-        {
-            yield return typeof(Combat);
-            foreach (var type in typeof(Combat).Assembly.GetTypes()
-                         .Where(type => type.Namespace == typeof(CombatRecorderService).Namespace &&
-                                        CombatParts.IsPartTypeName(type.Name))
-                         .OrderBy(type => type.Name, StringComparer.Ordinal))
-                yield return type;
-        }
+        // The part types and the rules class of the server assembly.
+        private static IEnumerable<Type> Owners() =>
+            typeof(CombatRecorderService).Assembly.GetTypes()
+                .Where(type => type.Namespace == typeof(CombatRecorderService).Namespace &&
+                               CombatParts.IsPartTypeName(type.Name))
+                .OrderBy(type => type.Name, StringComparer.Ordinal);
     }
 }

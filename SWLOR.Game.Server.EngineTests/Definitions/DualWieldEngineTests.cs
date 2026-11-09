@@ -23,6 +23,7 @@ using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -66,23 +67,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
                         if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
                             delayUnits += GetItemPropertyCostTableValue(ip) * 10;
-                    rawDelay = Combat.CalculateAttackDelay(attacker);
-                    ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 0), rawDelay,
+                    rawDelay = GameServices.CombatAttackTiming.CalculateAttackDelay(attacker);
+                    ctx.AssertEqual(CombatRules.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 0), rawDelay,
                         "Both ends pay the same paired-weapon delay budget as two separate weapons");
                     ctx.SetNPCPerkLevel(attacker, PerkType.DualWield, 3);
-                    ctx.AssertEqual(30, Combat.CalculateOffhandAttackDelayReduction(attacker), "Dual Wield III applies to the second end");
-                    var masteredDelay = Combat.CalculateAttackDelay(attacker);
+                    ctx.AssertEqual(30, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(attacker), "Dual Wield III applies to the second end");
+                    var masteredDelay = GameServices.CombatAttackTiming.CalculateAttackDelay(attacker);
                     ctx.Assert(masteredDelay < rawDelay, "Dual Wield III improves the shared cycle cadence");
-                    ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 30), masteredDelay,
+                    ctx.AssertEqual(CombatRules.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 30), masteredDelay,
                         "The perk reduces only the second end's delay");
                     rawDelay = masteredDelay;
-                    effectiveDelay = Combat.CalculateEffectiveAttackDelay(rawDelay);
-                    ctx.Assert(effectiveDelay > Combat.BaseAttackDelayMilliseconds, "The ordinary fixture does not batch hasted rolls");
+                    effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(rawDelay);
+                    ctx.Assert(effectiveDelay > CombatRules.BaseAttackDelayMilliseconds, "The ordinary fixture does not batch hasted rolls");
                 });
                 await ctx.WaitFrameAsync();
                 _observedAttacker = attacker;
                 _hits.Clear();
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(attacker, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the first double-weapon attack");
                 var firstHit = _hits[0].Time;
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, main, off) = await CreatePair(ctx);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _observedAttacker = attacker;
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
@@ -192,7 +193,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     _observedAttacker = attacker;
                     _hits.Clear();
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     AssignCommand(attacker, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the main-hand roll");
                     ctx.AssertEqual(1, _hits.Count, "The off hand has not resolved with the main hand");
@@ -238,7 +239,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 _observedAttacker = attacker;
                 _hits.Clear();
                 _itemHits.Clear();
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 ctx.ApplyStandardOnHitProperty(main);
                 ctx.ApplyStandardOnHitProperty(off);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
@@ -430,7 +431,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, _, _) = await CreatePair(ctx);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
@@ -567,7 +568,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, main, off) = await CreatePair(ctx);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _observedAttacker = attacker;
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
@@ -670,7 +671,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.ApplyStandardOnHitProperty(ammunition);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _observedAttacker = attacker;
                 _itemHits.Clear();
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
@@ -749,7 +750,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, main, off) = await CreatePair(ctx);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _observedAttacker = attacker;
                 foreach (var cycles in new[] { 1, 3 })
                 {
@@ -761,7 +762,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         round.StartCombatRound(target);
                         var count = WeaponAttackCycle.PrepareDualWieldAttacks(round, cycles * 2);
                         StatusEffect.BeginNativeAttackSwing(attacker);
-                        try { native.ResolveAttack(target, count, Combat.BaseAttackDelayMilliseconds); }
+                        try { native.ResolveAttack(target, count, CombatRules.BaseAttackDelayMilliseconds); }
                         finally { StatusEffect.EndNativeAttackSwing(attacker); }
                     });
                     ctx.AssertEqual(cycles * 2, _hits.Count, "Every scheduled hand deals its own damage");
@@ -779,7 +780,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, main, off) = await CreatePair(ctx);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _hits.Clear();
                 _observedAttacker = attacker;
                 AssignCommand(attacker, () => ActionAttack(target));
@@ -796,7 +797,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                (second.Time - first.Time).TotalMilliseconds < 1300,
                         "The off-hand hit follows the completed main-hand swing inside the same delay cycle");
                     if (cycle > 0)
-                        ctx.Assert((first.Time - _hits[(cycle - 1) * 2].Time).TotalMilliseconds >= Combat.BaseAttackDelayMilliseconds,
+                        ctx.Assert((first.Time - _hits[(cycle - 1) * 2].Time).TotalMilliseconds >= CombatRules.BaseAttackDelayMilliseconds,
                             "Paired attacks respect the animation floor between cycles");
                 }
             }
@@ -815,18 +816,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 _hits.Clear();
                 _observedAttacker = attacker;
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     // 140 delay units produce the minimum effective delay without any proc.
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 14), main);
-                    ctx.AssertEqual(Combat.MinimumAttackDelayMilliseconds,
-                        Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker)),
+                    ctx.AssertEqual(CombatRules.MinimumAttackDelayMilliseconds,
+                        CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker)),
                         "Unbuffed attacks are already at the minimum effective delay");
-                    Combat.ClearAttackSwingDebt(attacker);
-                    Combat.GrantNextAutoAttackNoDelay(attacker, SkillType.Vibroblade, 30);
-                    ctx.Assert(!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroknife), "Proc excludes the main-hand skill");
-                    ctx.Assert(Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "Proc is armed for the off-hand skill");
+                    GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+                    GameServices.CombatAttackTiming.GrantNextAutoAttackNoDelay(attacker, SkillType.Vibroblade, 30);
+                    ctx.Assert(!GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroknife), "Proc excludes the main-hand skill");
+                    ctx.Assert(GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "Proc is armed for the off-hand skill");
                     ActionAttack(target);
                 });
                 await ctx.WaitUntilAsync(() => _hits.Count >= 10, 15f, "the proc's six-roll batch followed by four ordinary rolls");
@@ -838,9 +839,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(3, firstBatch.Count(hit => hit.Weapon == off && hit.Type == CombatDamageType.Poison), "Proc grants the extra off-hand roll");
                 var nextBatch = _hits.Skip(6).Take(4).ToList();
                 ctx.AssertEqual(2, nextBatch.Count(hit => hit.Weapon == off), "Next batch returns to ordinary off-hand cadence");
-                ctx.Assert((nextBatch.First().Time - firstBatch.First().Time).TotalMilliseconds >= Combat.BaseAttackDelayMilliseconds,
+                ctx.Assert((nextBatch.First().Time - firstBatch.First().Time).TotalMilliseconds >= CombatRules.BaseAttackDelayMilliseconds,
                     "The proc retains the shared time gate");
-                ctx.Assert(!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "The one-shot proc was consumed");
+                ctx.Assert(!GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "The one-shot proc was consumed");
             }
             finally
             {
@@ -857,7 +858,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 _hits.Clear();
                 _observedAttacker = attacker;
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     var effect = new LimitedHasteStatusEffect(30, 4, SkillType.Vibroknife, EffectIconType.Haste, null);
@@ -879,7 +880,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 _hits.Clear();
                 _observedAttacker = attacker;
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     ctx.SetNPCResources(attacker, 100, 100);
@@ -918,7 +919,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.EquipItemAsync(defender, "qk_shield", InventorySlot.LeftHand);
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 _observedAttacker = attacker;
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
@@ -965,7 +966,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var firstAttack = round.m_nCurrentAttack;
             var count = WeaponAttackCycle.PrepareDualWieldAttacks(round, attacks);
             StatusEffect.BeginNativeAttackSwing(attacker);
-            try { native.ResolveAttack(target, count, Combat.BaseAttackDelayMilliseconds); }
+            try { native.ResolveAttack(target, count, CombatRules.BaseAttackDelayMilliseconds); }
             finally { StatusEffect.EndNativeAttackSwing(attacker); }
             return firstAttack;
         }
@@ -976,11 +977,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (attacker, target, main, _) = await CreatePair(ctx, "nw_wswls001");
             try
             {
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 30), main);
-                    var unbuffedDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker));
+                    var unbuffedDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker));
                     var effect = new LimitedHasteStatusEffect(40, 4, SkillType.Vibroblade, EffectIconType.Haste, null);
                     ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 60f), "Off-hand haste applies");
                     ctx.AssertEqual(SkillType.Vibroblade, WeaponAttackTiming.GetTimingSkill(attacker),
@@ -989,18 +990,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     typeof(CharacterSheetViewModel).GetField("_target", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(sheet, attacker);
                     var delayInfo = ((string Value, string Tooltip))typeof(CharacterSheetViewModel)
                         .GetMethod("GetAttackDelayInfo", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(sheet, null)!;
-                    var expectedDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker, 40)) / 1000f;
+                    var expectedDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker, 40)) / 1000f;
                     ctx.Assert(expectedDelay < unbuffedDelay / 1000f, "The display fixture has measurably faster off-hand haste");
                     ctx.AssertEqual($"{expectedDelay:0.##}s", delayInfo.Value, "Character sheet uses the off-hand timing effect");
                     var active = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
                     var budget = WeaponAttackTiming.GetLimitedBudget(attacker, SkillType.Vibroblade, SkillType.Vibroknife, SkillType.Vibroblade, false);
                     ctx.AssertEqual(false, budget.MainHand, "The timing charge excludes the knife");
                     ctx.AssertEqual(true, budget.OffHand, "The timing charge includes the blade");
-                    var attacks = Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2, budget);
+                    var attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2, budget);
                     ResolveCycle(attacker, target, attacks);
                     ctx.AssertEqual(3, active.RemainingAttacks, "The main-hand knife does not consume the blade's charge");
                     budget = WeaponAttackTiming.GetLimitedBudget(attacker, SkillType.Vibroblade, SkillType.Vibroknife, SkillType.Vibroblade, false);
-                    attacks = Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2, budget);
+                    attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2, budget);
                     ctx.AssertEqual(4, attacks, "Fractional haste progress schedules two pairs with only two matching charges");
                     ResolveCycle(attacker, target, attacks);
                     ctx.AssertEqual(1, active.RemainingAttacks, "Both pairs consume only their blade charges");
@@ -1037,7 +1038,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void ResetObservation()
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             _hits.Clear();
             _itemHits.Clear();

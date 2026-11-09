@@ -161,6 +161,11 @@ public class FacadeRemovalRunnerTests
     [TestCase("{ \"facades\": [ { \"facade\": \"A.Taxi\" }, { \"facade\": \"Taxi\" } ] }", "same simple name")]
     [TestCase("{ \"facades\": [ { \"facade\": \"A\", \"constants\": [ { \"name\": \"X\", \"owner\": \"N.R\" } ] }, { \"facade\": \"B\", \"constants\": [ { \"name\": \"X\", \"owner\": \"N.R\" }, { \"name\": \"X\", \"owner\": \"N.S\" } ] } ] }", "N.R.X is the owner of a constant of more than one facade")]
     [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"constants\": [ { \"name\": \"X\", \"owner\": \"N.R\" }, { \"name\": \"X\", \"owner\": \"N.S\" } ] } ] }", "the constant X is listed twice")]
+    [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"members\": {} } ] }", "\"members\" must be an array")]
+    [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"members\": [ { \"names\": [\"X\"] } ] } ] }", "every \"members\" entry needs an \"owner\"")]
+    [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"members\": [ { \"owner\": \"P\", \"names\": [\"A.X\"] } ] } ] }", "must be plain names")]
+    [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"members\": [ { \"owner\": \"P\", \"names\": [\"X\", \"X\"] } ] } ] }", "the member X of P is listed twice")]
+    [TestCase("{ \"facades\": [ { \"facade\": \"B\", \"constants\": [ { \"name\": \"X\", \"owner\": \"N.R\" } ], \"members\": [ { \"owner\": \"P\", \"names\": [\"X\"] } ] } ] }", "X is listed as a constant and as a member")]
     [TestCase("{ \"list\": [] }", "must be an object with a \"facades\" array")]
     [TestCase("{ nope", "is not valid JSON")]
     public void A_malformed_data_file_stops_the_run(string json, string problem)

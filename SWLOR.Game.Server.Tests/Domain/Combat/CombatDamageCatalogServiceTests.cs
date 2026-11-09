@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
-using CombatFacade = SWLOR.Game.Server.Service.Combat;
 using PlayerEntity = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -177,8 +177,8 @@ public class CombatDamageCatalogServiceTests
         using var installed = container.Install();
 
         container.Get<ICombatDamageCatalogService>().Should().BeOfType<CombatDamageCatalogService>();
-        CombatFacade.GetDefenseDamageTypes().Should().BeSameAs(container.Get<ICombatDamageCatalogService>().GetDefenseDamageTypes());
-        CombatFacade.GetAllDamageTypes().Should().HaveCount(7);
+        GameServices.CombatDamageCatalog.GetDefenseDamageTypes().Should().BeSameAs(container.Get<ICombatDamageCatalogService>().GetDefenseDamageTypes());
+        GameServices.CombatDamageCatalog.GetAllDamageTypes().Should().HaveCount(7);
     }
 
     [Test]
@@ -198,11 +198,11 @@ public class CombatDamageCatalogServiceTests
         using var installed = container.Install();
         var defenses = new Dictionary<CombatDamageType, int>();
 
-        CombatFacade.LoadDamageTypes();
-        CombatFacade.AddDamageTypeResistances();
-        CombatFacade.GetAllDamageTypes().Should().BeSameAs(all);
-        CombatFacade.GetDefenseDamageTypes().Should().BeSameAs(defense);
-        CombatFacade.EnsureDefenseValues(defenses, 3).Should().BeTrue();
+        GameServices.CombatDamageCatalog.LoadDamageTypes();
+        GameServices.CombatDamageCatalog.AddDamageTypeResistances();
+        GameServices.CombatDamageCatalog.GetAllDamageTypes().Should().BeSameAs(all);
+        GameServices.CombatDamageCatalog.GetDefenseDamageTypes().Should().BeSameAs(defense);
+        GameServices.CombatDamageCatalog.EnsureDefenseValues(defenses, 3).Should().BeTrue();
 
         calls.Calls.Select(call => call.Member).Should().Equal(
             nameof(ICombatDamageCatalogService.LoadDamageTypes),
@@ -216,8 +216,8 @@ public class CombatDamageCatalogServiceTests
     [Test]
     public void DefaultDefensesNeedNoContainer()
     {
-        // Entity constructors (Player through CombatRules, Beast and IncubationJob through Combat) run without one.
-        CombatFacade.CreateDefaultDefenseValues(2).Should().Equal(CombatRules.CreateDefaultDefenseValues(2));
+        // Entity constructors (Player, Beast and IncubationJob, all through CombatRules) run without one.
+        CombatRules.CreateDefaultDefenseValues(2).Values.Should().OnlyContain(value => value == 2);
         new PlayerEntity().Defenses.Keys.Should().Equal(CombatDamageType.Physical, CombatDamageType.Force);
     }
 }

@@ -144,7 +144,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
         var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
         var nextAttackBonusIndex = nativeDamage.IndexOf(
-            "Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
+            "GameServices.CombatAbilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
             StringComparison.Ordinal);
         var formulaIndex = nativeDamage.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
         nextAttackBonusIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -201,7 +201,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         statusBase.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)",
             "legacy and delivery-aware status hooks must ignore triggered and periodic damage");
         blazingSpikes.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
-        blazingSpikes.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
+        blazingSpikes.Should().Contain("GameServices.CombatHitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
         markedForDeath.Should().NotContain("ApplyTriggeredDamage",
             "Marked for Death amplifies the marker's own hits instead of adding a separate unmitigated damage instance");
         new MarkedForDeathStatusEffect().StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment]
@@ -233,7 +233,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var reflectionDispatchFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(path => !CombatSource.IsCombatFile(path))
-            .Where(path => File.ReadAllText(path).Contains("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal))
+            .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageTaken.Value.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
             .Select(path => Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
             .OrderBy(path => path)
             .ToArray();
@@ -395,9 +396,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var combat = CombatSource.Read();
 
         stamina.IndexOf("Stat.ReduceStamina(player, requiredSTM)", StringComparison.Ordinal)
-            .Should().BeLessThan(stamina.IndexOf("Combat.ApplyAbilityStaminaCostFPRestore", StringComparison.Ordinal));
+            .Should().BeLessThan(stamina.IndexOf("GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore", StringComparison.Ordinal));
         force.IndexOf("Stat.ReduceFP(player, requiredFP)", StringComparison.Ordinal)
-            .Should().BeLessThan(force.IndexOf("Combat.ApplyAbilityFPCostStaminaRestore", StringComparison.Ordinal));
+            .Should().BeLessThan(force.IndexOf("GameServices.CombatResources.ApplyAbilityFPCostStaminaRestore", StringComparison.Ordinal));
 
         ExtractMethod(combat, "public static void ApplyAbilityStaminaCostFPRestore(")
             .Should().NotContain("ApplyAbilityFPCostStaminaRestore");
@@ -473,9 +474,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         healing.Should().Contain("state.HealingApplied");
         healing.Should().Contain("CalculateCappedDamageDerivedHealingAmount");
 
-        var weaponScope = nativeDamage.IndexOf("using var damageDerivedHealing = Combat.BeginDamageDerivedHealing", StringComparison.Ordinal);
+        var weaponScope = nativeDamage.IndexOf("using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing", StringComparison.Ordinal);
         weaponScope.Should().BeGreaterThanOrEqualTo(0);
-        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("Combat.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
+        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("GameServices.CombatHitEffects.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("PublishDamageDealtEvent", weaponScope, StringComparison.Ordinal));
 
         var abilityScope = ability.IndexOf("using var damageDerivedHealing = BeginDamageDerivedHealing", StringComparison.Ordinal);
@@ -684,8 +685,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         completeDeferredCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
 
         var usePerkFeat = Read(root, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
-        usePerkFeat.Should().Contain("Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");
-        usePerkFeat.Should().Contain("Combat.CompleteAbilityStaminaCostContext(activator, ability);");
+        usePerkFeat.Should().Contain("GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");
+        usePerkFeat.Should().Contain("GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, ability);");
         usePerkFeat.IndexOf("ApplyAbilityActivatedEffects(activator, target, feat, ability, summary)", StringComparison.Ordinal)
             .Should().BeLessThan(
                 usePerkFeat.IndexOf("CompleteAbilityStaminaCostContext(activator, ability)", StringComparison.Ordinal),

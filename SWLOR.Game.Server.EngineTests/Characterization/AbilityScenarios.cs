@@ -6,6 +6,7 @@ using SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Characterization;
 
@@ -105,8 +106,8 @@ public static class AbilityScenarios
         using var clock = new FrozenClock();
         using var arena = await ScenarioArena.CreateAsync(ctx);
         var scenario = arena.Context;
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
 
         var cases = source.BuildCases();
         var table = new SnapshotTable(

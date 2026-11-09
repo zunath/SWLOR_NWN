@@ -3,6 +3,8 @@ using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -52,13 +54,13 @@ public class CombatSkillRuleCharacterizationTests
         {
             table.Add(
                 skill, (int)skill,
-                Combat.IsWeaponSkillType(skill),
-                Combat.IsMeleeWeaponSkill(skill),
-                Combat.IsRangedWeaponSkill(skill),
-                Combat.IsRangedDamageSkill(skill),
-                Combat.GetWeaponEngagementRange(skill),
-                Combat.IncludesCombatImpactWeaponDamage(skill, false),
-                Combat.IncludesCombatImpactWeaponDamage(skill, true));
+                CombatRules.IsWeaponSkillType(skill),
+                CombatRules.IsMeleeWeaponSkill(skill),
+                CombatRules.IsRangedWeaponSkill(skill),
+                CombatRules.IsRangedDamageSkill(skill),
+                CombatRules.GetWeaponEngagementRange(skill),
+                GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(skill, false),
+                GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(skill, true));
         }
 
         Snapshot.Verify("Combat", "SkillClassification", table);
@@ -77,7 +79,7 @@ public class CombatSkillRuleCharacterizationTests
         foreach (var weaponSkill in RepresentativeSkills)
         {
             foreach (var abilitySkill in RepresentativeSkills)
-                table.Add(weaponSkill, abilitySkill, Combat.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill));
+                table.Add(weaponSkill, abilitySkill, CombatRules.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill));
         }
 
         Snapshot.Verify("Combat", "CanWeaponSkillTriggerAbility", table);
@@ -111,7 +113,7 @@ public class CombatSkillRuleCharacterizationTests
                 [StatType.AutoAttackSplashSkillType] = v.Selector
             });
             foreach (var skill in new[] { SkillType.Pistol, SkillType.Rifle, SkillType.Force, SkillType.Invalid })
-                table.Add(v.Damage, v.Chance, v.Radius, v.MaxTargets, v.Selector, skill, Combat.CanTriggerAutoAttackSplash(source, skill));
+                table.Add(v.Damage, v.Chance, v.Radius, v.MaxTargets, v.Selector, skill, CombatRules.CanTriggerAutoAttackSplash(source, skill));
         }
 
         Snapshot.Verify("Combat", "CanTriggerAutoAttackSplash", table);
@@ -140,7 +142,7 @@ public class CombatSkillRuleCharacterizationTests
                 [StatType.AbilityDamageToBleedingTargetSkillType] = selector
             });
             table.Add(chance, damage, radius, maxTargets, selector, skill, bleeding,
-                roll, Combat.CanTriggerBleedingTargetAbilitySplash(source, skill, bleeding, roll));
+                roll, CombatRules.CanTriggerBleedingTargetAbilitySplash(source, skill, bleeding, roll));
         }
 
         const int throwing = (int)SkillType.Throwing;
@@ -195,7 +197,7 @@ public class CombatSkillRuleCharacterizationTests
                         foreach (var hostile in new[] { false, true })
                         {
                             table.Add(hostileOnly, rangedOnly, selector, skill, hostile,
-                                Combat.MatchesStaminaDiscount(source, skill, hostile));
+                                CombatRules.MatchesStaminaDiscount(source, skill, hostile));
                         }
                     }
                 }
@@ -229,7 +231,7 @@ public class CombatSkillRuleCharacterizationTests
             {
                 foreach (var global in new[] { false, true })
                 {
-                    table.Add(mask, skill, global, Combat.SumSkillSelectedStatAdjustment(
+                    table.Add(mask, skill, global, CombatRules.SumSkillSelectedStatAdjustment(
                         sources, skill,
                         StatType.AbilityHitChancePercentAdjustmentSkillType,
                         StatType.AbilityHitChancePercentAdjustment,
@@ -270,7 +272,7 @@ public class CombatSkillRuleCharacterizationTests
             foreach (var primary in new uint[] { 0, 101, 999 })
             {
                 foreach (var budget in new[] { -1, 0, 1, 2, 10 })
-                    table.Add(candidates, primary, budget, Combat.SelectSecondaryDamageTargets(candidates, primary, budget));
+                    table.Add(candidates, primary, budget, CombatRules.SelectSecondaryDamageTargets(candidates, primary, budget));
             }
         }
 
@@ -294,7 +296,7 @@ public class CombatSkillRuleCharacterizationTests
                 foreach (var total in new[] { -1, 0, 1, 2, 3, 10 })
                 {
                     table.Add(candidates, primary, total,
-                        Combat.SelectAutoAttackSplashSecondaryTargets(candidates, primary, total));
+                        CombatRules.SelectAutoAttackSplashSecondaryTargets(candidates, primary, total));
                 }
             }
         }

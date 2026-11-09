@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -60,8 +61,8 @@ public static class TwinPistolFatalSaveEngineTests
         var stamina = 0;
         var targetHealth = 0;
         var seededAt = DateTime.UtcNow;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var target = await Prepare(ctx, player);
@@ -150,8 +151,8 @@ public static class TwinPistolFatalSaveEngineTests
         finally
         {
             _actor = OBJECT_INVALID;
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             if (GetIsObjectValid(actor))
             {
                 AssignCommand(actor, () => ClearAllActions());

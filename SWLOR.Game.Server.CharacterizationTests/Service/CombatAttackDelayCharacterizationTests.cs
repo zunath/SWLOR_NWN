@@ -2,6 +2,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -48,7 +50,7 @@ public class CombatAttackDelayCharacterizationTests
                      new[] { -60, -25, 0, 15, 50 },
                      new[] { 0, 20, 70 }))
         {
-            table.Add(row[0], row[1], row[2], row[3], Combat.CalculateAttackDelayMilliseconds(row[0], row[1], row[2], row[3]));
+            table.Add(row[0], row[1], row[2], row[3], CombatRules.CalculateAttackDelayMilliseconds(row[0], row[1], row[2], row[3]));
         }
 
         Snapshot.Verify("Combat", "CalculateAttackDelayMilliseconds", table);
@@ -70,8 +72,8 @@ public class CombatAttackDelayCharacterizationTests
             foreach (var useDefaultMinimum in new[] { false, true })
             {
                 table.Add(delay, useDefaultMinimum,
-                    Combat.CalculateEffectiveAttackDelay(delay, useDefaultMinimum),
-                    Combat.CalculateEffectiveAttackDelay(delay));
+                    CombatRules.CalculateEffectiveAttackDelay(delay, useDefaultMinimum),
+                    CombatRules.CalculateEffectiveAttackDelay(delay));
             }
         }
 
@@ -89,7 +91,7 @@ public class CombatAttackDelayCharacterizationTests
             new[] { "swingDelay" });
 
         foreach (var delay in new[] { -1, 0, 1, 583, 584, 1000, 1749, 1750, 1751, 3500 })
-            table.Add(delay, Combat.CalculateAttackSwingDelay(delay));
+            table.Add(delay, CombatRules.CalculateAttackSwingDelay(delay));
 
         Snapshot.Verify("Combat", "CalculateAttackSwingDelay", table);
     }
@@ -108,7 +110,7 @@ public class CombatAttackDelayCharacterizationTests
         {
             foreach (var debt in new[] { -1f, 0f, 0.25f, 0.5f, 0.99f, 1f, 2.5f, 3f, 10f })
             {
-                var attacks = Combat.CalculateAttacksPerSwing(delay, debt, out var updatedDebt);
+                var attacks = CombatRules.CalculateAttacksPerSwing(delay, debt, out var updatedDebt);
                 table.Add(delay, debt, attacks, updatedDebt);
             }
         }
@@ -133,7 +135,7 @@ public class CombatAttackDelayCharacterizationTests
                      new[] { 0, 1, 4 }))
         {
             table.Add(row[0], row[1], row[2], row[3],
-                Combat.CapAttacksPerSwingForLimitedAttackEffect(row[0], row[1], row[2], row[3]));
+                CombatRules.CapAttacksPerSwingForLimitedAttackEffect(row[0], row[1], row[2], row[3]));
         }
 
         Snapshot.Verify("Combat", "CapAttacksPerSwingForLimitedAttackEffect", table);
@@ -197,13 +199,13 @@ public class CombatAttackDelayCharacterizationTests
         var reduction = reductionCharges;
         var noDelay = noDelayCharges;
 
-        Combat.ClearAttackSwingDebt(SequenceAttackerId);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(SequenceAttackerId);
         try
         {
             for (var swing = 0; swing < SwingsPerSequence; swing++)
             {
                 var firstSwing = swing == 0;
-                attacksPerSwing[swing] = Combat.ConsumeAttacksPerSwing(
+                attacksPerSwing[swing] = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                     SequenceAttackerId,
                     effectiveDelay,
                     unbuffedDelay,
@@ -219,7 +221,7 @@ public class CombatAttackDelayCharacterizationTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(SequenceAttackerId);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(SequenceAttackerId);
         }
 
         table.Add(effectiveDelay, unbuffedDelay, noDelayBuffOnFirstSwing, delayWithoutLimitedReduction,

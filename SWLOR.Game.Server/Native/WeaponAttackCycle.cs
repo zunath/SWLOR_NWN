@@ -10,6 +10,7 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -166,7 +167,7 @@ namespace SWLOR.Game.Server.Native
 
         public static int PrepareDualWieldAttacks(CNWSCombatRound round, int attacks)
         {
-            attacks = Math.Clamp(attacks, 2, Combat.MaxAttacksPerSwing * 2);
+            attacks = Math.Clamp(attacks, 2, CombatRules.MaxAttacksPerSwing * 2);
             // GetAttack has 50 slots; leave the final slot available for the engine's
             // post-roll cursor. Ordinary rounds restart well before reaching this bound.
             attacks = Math.Min(attacks, 49 - round.m_nCurrentAttack);

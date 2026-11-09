@@ -231,6 +231,60 @@ public class FacadeRemovalRewriterTests
         CallerRewriter.Apply(text, All, false).Text.Should().Be(text.Replace("Service.Combat.MaximumHitRate", "CombatRules.MaximumHitRate"));
     }
 
+    private static readonly RemovedFacade[] Split =
+    [
+        new("Combat", true, [new RemovedConstant("MaximumHitRate", "SWLOR.Game.Server.Domain.Combat.CombatRules")],
+        [
+            new RemovedMember("GetWeapon", "CombatQueries"),
+            new RemovedMember("ClearCombatState", "Combat"),
+            new RemovedMember("CalculateHitRate", "SWLOR.Game.Server.Domain.Combat.CombatRules"),
+            new RemovedMember("Apply", "CombatQueries"),
+            new RemovedMember("Apply", "SWLOR.Game.Server.Domain.Combat.CombatRules")
+        ])
+    ];
+
+    [Test]
+    public void A_member_of_a_split_facade_goes_to_the_part_or_class_that_holds_it()
+    {
+        const string text = "using SWLOR.Game.Server.Service;\nclass C { int M() => Combat.GetWeapon(1) + Combat.CalculateHitRate(1, 2) + Service.Combat.MaximumHitRate; void N() => SWLOR.Game.Server.Service.Combat.ClearCombatState(); }\n";
+
+        var result = CallerRewriter.Apply(text, Split, false);
+
+        result.Text.Should().Be("using SWLOR.Game.Server.Service;\nusing SWLOR.Game.Server.Composition;\nusing SWLOR.Game.Server.Domain.Combat;\n" +
+                                "class C { int M() => GameServices.CombatQueries.GetWeapon(1) + CombatRules.CalculateHitRate(1, 2) + CombatRules.MaximumHitRate; void N() => GameServices.Combat.ClearCombatState(); }\n");
+        result.Rewrites.Should().Be(4);
+        result.NeedsAccessorImport.Should().BeFalse("every split member names its owner");
+    }
+
+    [TestCase("class C { int M() => Combat.Apply(1, 2); }\n")]
+    [TestCase("class C { int M() => Combat.SomethingMasterAdded(1); }\n")]
+    [TestCase("namespace SWLOR.Game.Server.Domain { class C { Combat.ICombatService _combat; int M() => Combat.CombatRules.BaseHitRate; } }\n")]
+    public void A_member_of_a_split_facade_with_two_owners_or_no_owner_is_left_alone(string text)
+    {
+        var result = CallerRewriter.Apply(text, Split, false);
+
+        result.Text.Should().BeSameAs(text);
+        result.Changed(text).Should().BeFalse();
+    }
+
+    [Test]
+    public void A_member_with_two_owners_is_written_by_hand_and_the_tool_leaves_the_hand_written_call_alone()
+    {
+        const string text = "class C { int M() => GameServices.CombatQueries.Apply(1, 2) + CombatRules.Apply(1, 2); }\n";
+
+        CallerRewriter.Apply(text, Split, false).Text.Should().BeSameAs(text);
+    }
+
+    [Test]
+    public void The_reversal_of_a_split_facade_gives_back_the_facade_call()
+    {
+        const string text = "using SWLOR.Game.Server.Service;\nusing SWLOR.Game.Server.Composition;\nusing SWLOR.Game.Server.Domain.Combat;\n" +
+                            "class C { int M() => GameServices.CombatQueries.GetWeapon(1) + GameServices.Combat.CalculateDamage(1) + CombatRules.CalculateHitRate(1, 2) + CombatRules.Apply(1, 2) + CombatRules.MaximumHitRate + CombatRules.NotOnTheFacade; }\n";
+
+        CallerRewriter.Reverse(text, Split).Text.Should().Be(
+            "using SWLOR.Game.Server.Service;\nclass C { int M() => Combat.GetWeapon(1) + Combat.CalculateDamage(1) + Combat.CalculateHitRate(1, 2) + Combat.Apply(1, 2) + Combat.MaximumHitRate + CombatRules.NotOnTheFacade; }\n");
+    }
+
     [Test]
     public void The_reversal_drops_only_the_imports_of_namespaces_master_does_not_have()
     {

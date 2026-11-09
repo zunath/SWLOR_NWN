@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -29,7 +30,7 @@ public class FinalLineTests
         .GetType("SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility")!
         .GetMethod("CalculateMissingHpBonus", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<int, int, int, int>>();
-    private static readonly Func<int, int, int> Apply = Combat.ApplyPercentDamageAdjustment;
+    private static readonly Func<int, int, int> Apply = CombatRules.ApplyPercentDamageAdjustment;
 
     [TestCase(100, 0)]
     [TestCase(99, 0)]
@@ -109,7 +110,7 @@ public class FinalLineTests
     {
         var afterOtherBonuses = 200;
         var finisherDamage = Apply(afterOtherBonuses, Bonus(1, 100, 35));
-        Combat.CapOutgoingDamageBonus(100, finisherDamage, 12).Should().Be(212,
+        CombatRules.CapOutgoingDamageBonus(100, finisherDamage, 12).Should().Be(212,
             "the finisher percentage shares the +100% cap while earned flat damage remains separate");
     }
 

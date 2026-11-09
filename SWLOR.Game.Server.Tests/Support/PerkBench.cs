@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
@@ -202,7 +203,7 @@ public sealed class TestPerkService : PerkService
         IQuickCastService quickCast,
         IBeastMasteryService beastMastery,
         IStatusEffectService statusEffect)
-        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
+        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatService>())
     {
         _bench = bench;
     }
@@ -224,7 +225,7 @@ public sealed class TestPerkService : PerkService
         new() { Perks = new Dictionary<PerkType, int>(_bench.DroidPerks) };
 
     protected override void RefreshStatDrivenTrackerEffects(uint creature) =>
-        _bench.Engine.Note($"Combat.RefreshStatDrivenTrackerEffects:{creature}:saved={_bench.Db.Saved.Count}");
+        _bench.Engine.Note($"GameServices.Combat.RefreshStatDrivenTrackerEffects:{creature}:saved={_bench.Db.Saved.Count}");
 
     /// <summary>The seams' default bodies, for the test that proves each one is the original call.</summary>
     public IEnumerable<Type> DefaultPerkListDefinitionTypes() => base.GetPerkListDefinitionTypes();

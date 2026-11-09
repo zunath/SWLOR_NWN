@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// <summary>
     /// What is left of combat once its parts are split out: the death, exit and six-second handlers, the cleanup that forgets
     /// a creature's combat state in every part, the refresh of the stat-driven trackers, and the damage roll that draws from the
-    /// shared <c>Random</c>. The <c>Combat</c> facade forwards every other member straight to the part that owns it.
+    /// shared <c>Random</c>. Static code reaches every other member on the part that owns it (<c>GameServices</c>).
     /// </summary>
     public interface ICombatService
     {

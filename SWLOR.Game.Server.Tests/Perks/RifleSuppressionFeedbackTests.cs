@@ -116,14 +116,14 @@ public sealed class RifleSuppressionFeedbackTests
         killBoxStatus.Should().Contain("IRemoveWhenSourceExits");
         containmentNetStatus.Should().Contain("IRemoveWhenSourceExits");
         containmentNetStatus.Should().Contain("IStatusEffectRemovedHandler");
-        containmentNetStatus.Should().Contain("Combat.ReconcileContainmentNetStatuses(creature);");
-        suppressionStatus.Should().Contain("Combat.ReconcileContainmentNetStatus(Source, creature);");
-        suppressionStatus.Should().Contain("Combat.ReconcileOverwatchStatus(Source);");
+        containmentNetStatus.Should().Contain("GameServices.CombatSuppression.ReconcileContainmentNetStatuses(creature);");
+        suppressionStatus.Should().Contain("GameServices.CombatSuppression.ReconcileContainmentNetStatus(Source, creature);");
+        suppressionStatus.Should().Contain("GameServices.CombatSuppression.ReconcileOverwatchStatus(Source);");
         suppressionStatus.Should().NotContain("DelayCommand");
         statusEffectService.Should().Contain("NotifyStatusEffectRemoved(creature, statusEffect);");
         statusEffectService.Should().Contain("NotifyStatusEffectsRestored(player, effects);");
         statusEffectService.Should().Contain("OfType<IStatusEffectRestoredHandler>()");
-        statusEffectService.Should().NotContain("Combat.ReconcileContainmentNetStatuses");
+        statusEffectService.Should().NotContain("GameServices.CombatSuppression.ReconcileContainmentNetStatuses");
         killBox.Should().Contain("StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -38,10 +39,10 @@ public class PerCastResourceCapTests
     [TestCase(0, 6, 3, 0)]
     public void CombinedHitRefunds_CannotEraseTheActualActivationCost(int cost, int first, int second, int expected)
     {
-        var restored = Combat.CalculateAbilityHitStaminaRestore(cost, 0, first);
-        restored += Combat.CalculateAbilityHitStaminaRestore(cost, restored, second);
+        var restored = CombatRules.CalculateAbilityHitStaminaRestore(cost, 0, first);
+        restored += CombatRules.CalculateAbilityHitStaminaRestore(cost, restored, second);
         restored.Should().Be(expected);
-        Combat.CalculateAbilityHitStaminaRestore(cost, restored, 100).Should().Be(0,
+        CombatRules.CalculateAbilityHitStaminaRestore(cost, restored, 100).Should().Be(0,
             "later area phases and additional hit rewards share the same activation budget");
     }
 

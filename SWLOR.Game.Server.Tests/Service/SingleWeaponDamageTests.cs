@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -110,7 +111,7 @@ public class SingleWeaponDamageTests
     public void RatingFeedsTheDamageFormula_WithoutMultiplyingOtherDamageInputs()
     {
         var rating = WeaponDamage.CalculateEffectiveDMG(24, 60);
-        Combat.CalculateDamageRange(100, rating + 10, 26, 100, 26, 0)
+        CombatRules.CalculateDamageRange(100, rating + 10, 26, 100, 26, 0)
             .Should().Be((34, 49), "Follow-Through's +10 formula DMG is added after the weapon rating bonus");
     }
 }

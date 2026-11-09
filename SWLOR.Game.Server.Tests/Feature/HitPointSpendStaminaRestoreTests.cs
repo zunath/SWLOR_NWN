@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -34,7 +35,7 @@ public class HitPointSpendStaminaRestoreTests
         int hitPointCost,
         int expected)
     {
-        Combat.CalculateHitPointSpendStaminaRestore(maxStamina, percent, hitPointsSpent, hitPointCost)
+        CombatRules.CalculateHitPointSpendStaminaRestore(maxStamina, percent, hitPointsSpent, hitPointCost)
             .Should().Be(expected);
     }
 
@@ -44,7 +45,7 @@ public class HitPointSpendStaminaRestoreTests
     [TestCase(50, 400, 0)]
     public void HitPointsSpent_ExcludeWhatTemporaryHPAbsorbed(int payment, int temporaryHitPoints, int expected)
     {
-        Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(payment, temporaryHitPoints).Should().Be(expected);
+        CombatRules.CalculateHitPointsSpentThroughTemporaryHitPoints(payment, temporaryHitPoints).Should().Be(expected);
     }
 
     [TestCase(200, 35, 0, 50)]
@@ -52,7 +53,7 @@ public class HitPointSpendStaminaRestoreTests
     [TestCase(200, 0, 10, 10)]
     public void Restore_IsZeroWhenNothingWasPaidOrRestorable(int maxStamina, int percent, int hitPointsSpent, int hitPointCost)
     {
-        Combat.CalculateHitPointSpendStaminaRestore(maxStamina, percent, hitPointsSpent, hitPointCost)
+        CombatRules.CalculateHitPointSpendStaminaRestore(maxStamina, percent, hitPointsSpent, hitPointCost)
             .Should().Be(0);
     }
 }

@@ -415,7 +415,7 @@ public class PairedRangedTraitsServiceTests
         public bool DualWield;
 
         public TestTraits(ITwinPistolMasteryService mastery)
-            : base(mastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
+            : base(mastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

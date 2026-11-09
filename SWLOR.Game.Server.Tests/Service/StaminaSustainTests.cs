@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -143,7 +144,7 @@ public class StaminaSustainTests
                         // (5 base + skill/10 + at most 3 PER-vs-VIT), without Gambler.
                         critical |= random.NextDouble() < 0.10;
                     }
-                    if (critical) current = Math.Min(maximum, current + Combat.CalculateAbilityHitStaminaRestore(cost, 0, refund));
+                    if (critical) current = Math.Min(maximum, current + CombatRules.CalculateAbilityHitStaminaRestore(cost, 0, refund));
                     if (conduit) fp = Math.Min(70, fp + cost * 20 / 100);
                 }
             }

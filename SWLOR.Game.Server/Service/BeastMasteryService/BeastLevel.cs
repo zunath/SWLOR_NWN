@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                 {AbilityType.Social, 0}
             };
 
-            MaxDefenseBonuses = Combat.CreateDefaultDefenseValues();
+            MaxDefenseBonuses = CombatRules.CreateDefaultDefenseValues();
 
             MaxResistanceBonuses = ResistanceRules.CreateDefaultResistanceValues();
         }

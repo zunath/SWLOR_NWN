@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -71,8 +72,8 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.DoubleShot}", 3);
         ctx.SetNPCResources(caster, 100, 25);
         var starting = Stat.GetCurrentStamina(caster);
-        Combat.SetAbilityHitResolutionOverride(false);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -89,8 +90,8 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         }
         finally
         {
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
     }
 
@@ -159,16 +160,16 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
             {
                 ctx.SetResources(player, 100, 25);
                 Stat.ReduceStamina(player, cost);
-                Combat.ApplyAbilityStaminaCostFPRestore(player, ability, cost);
+                GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(player, ability, cost);
                 try
                 {
                     var before = Stat.GetCurrentStamina(player);
                     profile.AfterImpact(player, 0, 0, summary);
                     ctx.AssertEqual(before + System.Math.Min(4, System.Math.Max(0, cost - 1)), Stat.GetCurrentStamina(player), "a landed critical refunds once even when damage is fully resisted");
-                    Combat.RestoreAbilityHitStamina(player, ability, 100);
+                    GameServices.CombatResources.RestoreAbilityHitStamina(player, ability, 100);
                     ctx.AssertEqual(cost > 0 ? 24 : 25, Stat.GetCurrentStamina(player), "combined authored and perk refunds leave at least one stamina spent");
                 }
-                finally { Combat.CompleteAbilityStaminaCostContext(player, ability); }
+                finally { GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, ability); }
             }
         });
     }
@@ -191,7 +192,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         }
         TemporaryStatModifier.Add(player, StatType.AreaHitStaminaRestorePerTarget, 2, 60f, "stamina-area");
         TemporaryStatModifier.Add(player, StatType.AreaHitStaminaRestoreMaximum, 6, 60f, "stamina-area");
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -205,12 +206,12 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                 try
                 {
                     ctx.AssertEqual(3, summary.ImpactedTargetCount, "the real area hits three enemies");
-                    Combat.ApplyAbilityImpactEffects(player, summary);
+                    GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(player, summary);
                     ctx.AssertEqual(24, Stat.GetCurrentStamina(player), "nine paid, six authored plus six passive requested, eight refunded");
                 }
-                finally { Combat.CompleteAbilityStaminaCostContext(player, ability); }
+                finally { GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, ability); }
             });
         }
-        finally { Combat.SetAbilityHitResolutionOverride(null); }
+        finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
     }
 }

@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
-using CombatFacade = SWLOR.Game.Server.Service.Combat;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -354,7 +354,7 @@ public class CombatServiceTests
         cooldowns[(creature, StatType.SideAttackSkillType)] = DateTime.UtcNow;
         recentTargets[(other, creature)] = DateTime.UtcNow;
 
-        CombatFacade.ClearStatTriggerState();
+        GameServices.Combat.ClearStatTriggerState();
 
         debts.Keys.Should().Equal(other);
         attacks.Should().BeEmpty();
@@ -373,6 +373,6 @@ public class CombatServiceTests
         var direct = facades.Get<ICombatService>().CalculateDamage(100, 45, 40, 100, 10, 0, 5);
         Random.SetSeed(seed);
 
-        CombatFacade.CalculateDamage(100, 45, 40, 100, 10, 0, 5).Should().Be(direct);
+        GameServices.Combat.CalculateDamage(100, 45, 40, 100, 10, 0, 5).Should().Be(direct);
     }
 }

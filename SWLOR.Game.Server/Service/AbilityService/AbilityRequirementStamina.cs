@@ -2,6 +2,7 @@ using System;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -39,13 +40,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 Stat.ReduceStamina(player, requiredSTM);
             }
 
-            Combat.ApplyAbilityStaminaCostFPRestore(player, ability, requiredSTM);
+            GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(player, ability, requiredSTM);
         }
 
         private int GetRequiredStaminaForCheck(uint player, AbilityDetail ability)
         {
-            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
-            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && Combat.HasNextAbilityNoStaminaCost(player, abilitySkillType)
+            var abilitySkillType = GameServices.CombatQueries.GetAbilitySkillType(player, ability);
+            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && GameServices.CombatAbilityBonus.HasNextAbilityNoStaminaCost(player, abilitySkillType)
                 ? 0
                 : RequiredSTM;
 
@@ -54,8 +55,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         private int GetRequiredStaminaForActivation(uint player, AbilityDetail ability)
         {
-            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
-            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && Combat.ConsumeNextAbilityNoStaminaCost(player, abilitySkillType)
+            var abilitySkillType = GameServices.CombatQueries.GetAbilitySkillType(player, ability);
+            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && GameServices.CombatAbilityBonus.ConsumeNextAbilityNoStaminaCost(player, abilitySkillType)
                 ? 0
                 : RequiredSTM;
 
@@ -67,17 +68,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (ability == null || requiredSTM <= 0)
                 return requiredSTM;
 
-            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
+            var abilitySkillType = GameServices.CombatQueries.GetAbilitySkillType(player, ability);
             var percentAdjustment = Stat.GetStatAdjustment(player, StatType.AbilityStaminaCostPercentAdjustment);
             requiredSTM = (int)Math.Ceiling(requiredSTM * (1 + percentAdjustment / 100f));
 
-            var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability);
+            var adjustment = GameServices.CombatAbilityBonus.GetAbilityStaminaCostFlatAdjustment(player, ability);
             adjustment += consumeNextAdjustment
-                ? Combat.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility)
-                : Combat.GetNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility);
+                ? GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility)
+                : GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility);
             adjustment += consumeNextAdjustment
-                ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
-                : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
+                ? GameServices.CombatAbilityBonus.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
+                : GameServices.CombatAbilityBonus.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
             // Cool Under Fire discounts only a cost that remains positive after all
             // other adjustments. Its own discount may reduce that cost to zero.
             requiredSTM = Math.Max(0, requiredSTM + adjustment);

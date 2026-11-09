@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
@@ -107,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// <summary>Restores <paramref name="amount"/> Stamina to the caster on each successful hit.</summary>
         public static Action<uint, uint> RestoreStaminaOnHit(int amount)
         {
-            return (activator, _) => Combat.RestoreAbilityHitStamina(
+            return (activator, _) => GameServices.CombatResources.RestoreAbilityHitStamina(
                 activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
         }
 

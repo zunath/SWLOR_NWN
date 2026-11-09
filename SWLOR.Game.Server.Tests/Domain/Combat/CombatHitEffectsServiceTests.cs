@@ -102,7 +102,7 @@ public class CombatHitEffectsServiceTests
             IResistanceService resistance,
             IPartyService party)
             : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect,
-                temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party)
+                temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
             _log = log;
             _taken = taken;
@@ -1805,7 +1805,7 @@ public class CombatHitEffectsServiceTests
     public void TheDamageTakenBackEdgeKeepsTheDefaultsOfTheMemberItCalls()
     {
         var wrapper = typeof(CombatHitEffectsService).GetMethod("ApplyDamageTakenModifiers", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var target = typeof(SWLOR.Game.Server.Service.Combat).GetMethod("ApplyDamageTakenModifiers", BindingFlags.Public | BindingFlags.Static)!;
+        var target = typeof(ICombatDamageTakenService).GetMethod("ApplyDamageTakenModifiers")!;
         wrapper.IsVirtual.Should().BeTrue();
         wrapper.GetParameters().Select(parameter => (parameter.Name, parameter.ParameterType, parameter.HasDefaultValue, parameter.DefaultValue))
             .Should().Equal(target.GetParameters().Select(parameter => (parameter.Name, parameter.ParameterType, parameter.HasDefaultValue, parameter.DefaultValue)));

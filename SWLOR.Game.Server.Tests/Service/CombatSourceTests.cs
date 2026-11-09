@@ -7,6 +7,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -98,44 +99,6 @@ public class CombatSourceTests
     {
         Normalised().Should().Contain("            _other.GetWeapon(creature);",
             "only fields declared as an ICombat...Service in the same file are rewritten");
-    }
-
-    [Test]
-    public void APartsOneLineForwardersAreLeftOutAndEverythingElseStays()
-    {
-        var partial = Lines(
-            "namespace SWLOR.Game.Server.Service",
-            "{",
-            "    public static partial class Combat",
-            "    {",
-            "        private static ICombatQueriesService Queries => FacadeAccessor.Resolve<ICombatQueriesService>();",
-            "        private static ICombatRecorderService Recorder => FacadeAccessor.Resolve<ICombatRecorderService>();",
-            "",
-            "        /// <inheritdoc cref=\"ICombatQueriesService.GetWeapon\"/>",
-            "        public static uint GetWeapon(uint creature) => Queries.GetWeapon(creature);",
-            "",
-            "        private static bool IsBehind(uint a, uint b) =>",
-            "            Queries.IsBehind(a, b);",
-            "",
-            "        public static uint Renamed(uint creature) => Queries.GetWeapon(creature);",
-            "        public static int Rule(int value) => CombatRules.Rule(value);",
-            "        public static void Record(uint creature) => Recorder.Record(creature);",
-            "        public static uint Block(uint creature)",
-            "        {",
-            "            return Queries.Block(creature);",
-            "        }",
-            "    }",
-            "}");
-
-        var text = CombatSource.ElidePartForwarders(partial);
-
-        text.Should().NotContain("GetWeapon(uint creature) => Queries.GetWeapon").And.NotContain("inheritdoc").And.NotContain("IsBehind");
-        text.Should().Contain("public static uint Renamed(uint creature) => Queries.GetWeapon(creature);", "it forwards to another name");
-        text.Should().Contain("public static int Rule(int value) => CombatRules.Rule(value);", "rule forwarders stay");
-        text.Should().Contain("public static void Record(uint creature) => Recorder.Record(creature);", "the recorder is not a part");
-        text.Should().Contain("            return Queries.Block(creature);", "a block body is code, not a forwarder");
-        text.Should().Contain("private static ICombatQueriesService Queries => FacadeAccessor.Resolve<ICombatQueriesService>();");
-        CombatSource.ElidePartForwarders("namespace N { class C { int A() => B.A(); } }").Should().Be("namespace N { class C { int A() => B.A(); } }");
     }
 
     [Test]
@@ -249,7 +212,7 @@ public class CombatSourceTests
     }
 
     [Test]
-    public void CombinedSourceReadsTheFacadeThenThePartServices()
+    public void CombinedSourceReadsThePartServices()
     {
         var root = Path.Combine(Path.GetTempPath(), "mr-p2-cb0-" + Guid.NewGuid().ToString("N"));
         try
@@ -267,11 +230,10 @@ public class CombatSourceTests
             var files = CombatSource.Load(root);
 
             files.Select(file => Path.GetFileName(file.FullPath)).Should().Equal(
-                new[] { "Combat.cs", "CombatFooService.cs", "CombatRules.cs" },
-                "the partial class files are gone (P2-CB10 merged them into Combat.cs), so a stray one is not read");
+                new[] { "CombatFooService.cs", "CombatRules.cs" },
+                "P2-ZP deleted Service/Combat.cs and the partial class files are gone, so a stray one is not read");
             var text = CombatSource.Combine(files);
-            text.Should().StartWith("FACADE\r\n");
-            text.Should().NotContain("PARTIAL");
+            text.Should().NotContain("FACADE").And.NotContain("PARTIAL");
             text.Should().Contain("private static int Compute(uint creature, int damage)");
             text.Should().Contain("RULES\r\n", "a file without a final line break still ends one");
             text.Should().NotContain("INTERFACE").And.NotContain("OTHER SERVICE").And.NotContain("NOT A SERVICE").And.NotContain("ANOTHER");
@@ -283,29 +245,21 @@ public class CombatSourceTests
     }
 
     [Test]
-    public void TheRealSourceStartsWithCombatCsAndKeepsItsTextApartFromThePartForwarders()
+    public void TheRealSourceIsThePartServicesWithoutTheRemovedFacade()
     {
-        var combat = CombatSource.Paths()[0];
-
-        Path.GetFileName(combat).Should().Be("Combat.cs");
-        Path.GetFileName(Path.GetDirectoryName(combat)).Should().Be("Service");
-        var facade = File.ReadAllText(combat);
-        var kept = CombatSource.ElidePartForwarders(facade);
-        CombatSource.Read().Should().StartWith(kept);
-        kept.Should().Contain("public static int CalculateHitRate(", "rule forwarders stay");
-        kept.Should().Contain("Instance.ApplyDefeatedEnemyEffects();", "a handler's block body stays");
-        kept.Should().NotContain("=> Queries.GetRelevantSkillWeapon(", "a part forwarder is left out");
-        kept.Should().NotContain("=> Instance.RefreshStatDrivenTrackerEffects(", "a forwarder to CombatService is left out");
-        facade.Should().Contain("=> Queries.GetRelevantSkillWeapon(").And.Contain("=> Instance.RefreshStatDrivenTrackerEffects(");
-        CombatSource.IsCombatFile(combat).Should().BeTrue();
-        Directory.Exists(Path.Combine(Path.GetDirectoryName(combat)!, "CombatParts")).Should().BeFalse("P2-CB10 merged the partial class files into Combat.cs");
+        CombatSource.Paths().Should().NotContain(path => Path.GetFileName(path) == "Combat.cs");
+        Path.GetFileName(CombatSource.Paths()[0]).Should().Be("CombatAbilityActivationService.cs");
+        var source = CombatSource.Read();
+        source.Should().Contain("public static int CalculateHitRate(");
+        source.Should().Contain("uint GetRelevantSkillWeapon(");
+        source.Should().Contain("void RefreshStatDrivenTrackerEffects(");
+        CombatSource.IsCombatFile(CombatSource.Paths()[0]).Should().BeTrue();
     }
 
     [Test]
     public void TheServicesThatAreNotPartsOfCombatExistAndAreNotRead()
     {
-        var server = Path.GetDirectoryName(Path.GetDirectoryName(CombatSource.Paths()[0]))!;
-        var domain = Path.Combine(server, "Domain", "Combat");
+        var domain = Path.GetDirectoryName(CombatSource.Paths()[0])!;
 
         foreach (var name in CombatParts.OtherServices)
         {
@@ -363,9 +317,9 @@ public class CombatSourceTests
         ((object)abilities).Should().BeSameAs(typeof(CombatActivityService).GetField("_lastCombatAbilityUse", Instance)!
             .GetValue(facades.Get<ICombatActivityService>()));
 
-        SWLOR.Game.Server.Service.Combat.ConsumeAttacksPerSwing(0xFFFFFFF1, 1500);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(0xFFFFFFF1, 1500);
         debts.Should().ContainKey(0xFFFFFFF1, "the facade and the reflected table are the same instance's");
-        SWLOR.Game.Server.Service.Combat.ClearAttackSwingDebt(0xFFFFFFF1);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(0xFFFFFFF1);
         debts.Should().NotContainKey(0xFFFFFFF1);
     }
 
@@ -386,8 +340,6 @@ public class CombatSourceTests
         field!.IsStatic.Should().BeFalse();
         field.DeclaringType.Should().Be(typeof(CombatDamageModifiersService));
         CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageModifiersService>()));
-        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
-            "Combat keeps no copy");
     }
 
     [TestCase("_criticalHitSequenceStates", typeof(CombatHitEffectsService))]
@@ -416,8 +368,6 @@ public class CombatSourceTests
             CombatMembers.FieldValue<object>(name).Should().Be(field.GetValue(instance));
         else
             CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(instance));
-        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
-            "Combat keeps no copy");
     }
 
     [TestCase("_recentGuardedHits")]
@@ -436,8 +386,6 @@ public class CombatSourceTests
         field.DeclaringType.Should().Be(typeof(CombatDamageTakenService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
         table.Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageTakenService>()));
-        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
-            "Combat keeps no copy");
 
         // A record put into the reflected table is the one Combat's forwarder reads.
         var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
@@ -448,12 +396,12 @@ public class CombatSourceTests
         if (name == "_recentGuardedHits")
         {
             table[creature] = SWLOR.Game.Server.Core.Clock.UtcNow;
-            SWLOR.Game.Server.Service.Combat.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
+            GameServices.CombatDamageTaken.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
         }
         else
         {
             table[(creature, shield)] = SWLOR.Game.Server.Core.Clock.UtcNow;
-            SWLOR.Game.Server.Service.Combat.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
+            GameServices.CombatDamageTaken.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
         }
     }
 
@@ -473,20 +421,17 @@ public class CombatSourceTests
         field.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
         table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityImpactService>()));
-        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
-            "Combat keeps no copy");
 
         // The hit sequence state moved with its table; Combat keeps no copy of the type either.
-        typeof(SWLOR.Game.Server.Service.Combat).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic).Should().BeNull();
         var value = name == "_sameTargetHostileAbilityHitCounts"
             ? (object)1
             : Activator.CreateInstance(typeof(CombatAbilityImpactService).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic)!)!;
 
-        // A record put into the reflected table is the one Combat's private forget forwarder clears.
+        // A record put into the reflected table is the one the part's forget step clears.
         const uint creature = 0xFFFFFFF3;
         table[(creature, 0xFFFFFFF4u)] = value;
         table[(0xFFFFFFF5u, 0xFFFFFFF6u)] = value;
-        CombatMembers.FindMethod("ForgetImpactState")!.IsStatic.Should().BeTrue("the private forwarder on Combat is found first");
+        CombatMembers.FindMethod("ForgetImpactState")!.IsStatic.Should().BeFalse("it is the part's instance method");
         CombatMembers.Invoke("ForgetImpactState", creature);
         table.Keys.Cast<(uint, uint)>().Should().Equal((0xFFFFFFF5u, 0xFFFFFFF6u));
     }
@@ -506,7 +451,6 @@ public class CombatSourceTests
         method!.IsStatic.Should().BeFalse("only the impact part has it");
         method.IsPrivate.Should().BeTrue();
         method.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
-        typeof(SWLOR.Game.Server.Service.Combat).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull();
     }
 
     [Test]
@@ -525,10 +469,6 @@ public class CombatSourceTests
         field.DeclaringType.Should().Be(typeof(CombatAbilityActivationService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
         table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityActivationService>()));
-        typeof(SWLOR.Game.Server.Service.Combat).GetField(name, BindingFlags.NonPublic | BindingFlags.Static).Should().BeNull(
-            "Combat keeps no copy");
-        typeof(SWLOR.Game.Server.Service.Combat).GetNestedType("HostileAbilitySequenceState", BindingFlags.NonPublic).Should().BeNull(
-            "the state type moved with its table");
 
         // A record put into the reflected table is the one Combat's forget forwarder removes.
         const uint creature = 0xFFFFFFF3;
@@ -544,23 +484,23 @@ public class CombatSourceTests
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
 
-        SWLOR.Game.Server.Service.Combat.SetAbilityHitResolutionOverride(false);
-        SWLOR.Game.Server.Service.Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeFalse();
             CombatMembers.FieldValue<bool?>("_autoAttackHitResolutionOverride").Should().BeTrue();
-            SWLOR.Game.Server.Service.Combat.GetAutoAttackHitResolutionOverride().Should().BeTrue();
+            GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride().Should().BeTrue();
             facades.Get<ICombatAbilityHitService>().GetAutoAttackHitResolutionOverride().Should().BeTrue();
         }
         finally
         {
-            SWLOR.Game.Server.Service.Combat.SetAbilityHitResolutionOverride(null);
-            SWLOR.Game.Server.Service.Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
 
         CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeNull();
-        SWLOR.Game.Server.Service.Combat.GetAutoAttackHitResolutionOverride().Should().BeNull();
+        GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride().Should().BeNull();
     }
 
     [Test]
@@ -573,8 +513,8 @@ public class CombatSourceTests
         var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
         ((object)cooldowns).Should().BeSameAs(typeof(CombatResourcesService)
             .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(resources));
-        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!.IsStatic.Should().BeTrue(
-            "the static forwarder on Combat is found first");
+        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!.IsStatic.Should().BeFalse(
+            "it is the part's instance method");
         var trigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>(
             "TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
         trigger(0xFFFFFFF0, StatType.SideAttackSkillType, 30).Should().BeTrue();

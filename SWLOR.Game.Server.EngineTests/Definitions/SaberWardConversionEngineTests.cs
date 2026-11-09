@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -74,7 +75,7 @@ public static class SaberWardConversionEngineTests
             _observedAttacker = attacker;
             _observedTarget = target;
             ctx.SeedRandom(Seed);
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             AssignCommand(attacker, () => ActionAttack(target));
 
             await ctx.WaitUntilAsync(() => Impacts.Count(impact => impact.Physical > 0) >= 4, 60f,
@@ -102,7 +103,7 @@ public static class SaberWardConversionEngineTests
         }
         finally
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             if (GetIsObjectValid(attacker)) AssignCommand(attacker, () => ClearAllActions(true));
             _observedAttacker = OBJECT_INVALID;
             _observedTarget = OBJECT_INVALID;

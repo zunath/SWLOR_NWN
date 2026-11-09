@@ -1271,7 +1271,7 @@ public class CombatRecorderServiceTests
     private sealed class PlainRecorder : CombatRecorderService
     {
         public PlainRecorder(IDMPresenceService presence, IDBService db)
-            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
+            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
         {
         }
 
@@ -1295,7 +1295,7 @@ public class CombatRecorderServiceTests
         private readonly string _logDirectory;
 
         public Probe(IDMPresenceService presence, IDBService db, string logDirectory)
-            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>())
+            : base(presence, db, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
         {
             _logDirectory = logDirectory;
         }

@@ -22,6 +22,12 @@ public class ScriptRegistryInstanceHandlerTests
 
     private static MethodInfo[] TaxiMethods => typeof(TaxiService).GetMethods();
 
+    // Every handler of the game that is declared on an instance method (the facades are removed, so more of them each item).
+    private static HashSet<string> InstanceHandlerNames { get; } = MethodsOf(GameAssembly)
+        .Where(method => IsHandler(method) && !method.IsStatic && method.DeclaringType == method.ReflectedType)
+        .Select(ScriptHandlerManifest.HandlerName)
+        .ToHashSet();
+
     [Test]
     public void A_handler_on_an_instance_method_is_bound_once_to_the_containers_singleton()
     {
@@ -110,7 +116,7 @@ public class ScriptRegistryInstanceHandlerTests
         var load = () => registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, _ => null!);
 
         load.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{TaxiHandler} is an event handler on an instance method of SWLOR.Game.Server.Domain.World.TaxiService, which the service container does not register*");
+            .WithMessage("SWLOR.Game.Server.Domain.*.* is an event handler on an instance method of SWLOR.Game.Server.Domain.*, which the service container does not register*");
         registry.GetActionScriptNames().Should().BeEmpty("a load that fails registers nothing, not even the static handlers found before it");
         registry.GetConditionalScriptNames().Should().BeEmpty();
     }
@@ -122,7 +128,7 @@ public class ScriptRegistryInstanceHandlerTests
 
         var load = () => registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
 
-        load.Should().Throw<InvalidOperationException>().WithMessage($"{TaxiHandler} is an event handler on an instance method, but the script registry was loaded without a resolver*");
+        load.Should().Throw<InvalidOperationException>().WithMessage("SWLOR.Game.Server.Domain.*.* is an event handler on an instance method, but the script registry was loaded without a resolver*");
     }
 
     [Test]
@@ -145,30 +151,22 @@ public class ScriptRegistryInstanceHandlerTests
         var staticOnly = new ScriptRegistry();
         staticOnly.LoadHandlers(MethodsOf(GameAssembly).Where(method => method.IsStatic), manifest);
 
-        // The handlers on instance methods (of the services whose facades were removed) are the ones a load of static
-        // methods alone cannot find; each of their manifest lines is stale there, and every other handler keeps its place.
-        var instanceHandlers = MethodsOf(GameAssembly).Where(method => !method.IsStatic && IsHandler(method))
-            .Select(ScriptHandlerManifest.HandlerName)
-            .ToHashSet(StringComparer.Ordinal);
-        instanceHandlers.Should().Contain(TaxiHandler);
-        var instanceLines = new List<string>();
-
+        var instanceEntries = new List<string>();
         foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(all))
         {
             foreach (var conditional in new[] { false, true })
             {
-                var names = Names(all, script, conditional);
-                var expected = names.Where(name => !instanceHandlers.Contains(name));
-                Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
-                instanceLines.AddRange(names.Where(instanceHandlers.Contains)
+                instanceEntries.AddRange(Names(all, script, conditional).Where(InstanceHandlerNames.Contains)
                     .Select(name => $"{script} {(conditional ? "conditional" : "action")} {name}"));
+                var expected = Names(all, script, conditional).Where(name => !InstanceHandlerNames.Contains(name));
+                Names(staticOnly, script, conditional).Should().Equal(expected, $"{script}: static handlers keep their order without the instance ones");
             }
 
             Bound(all, script).Where(handler => handler.Method.IsStatic).Should().OnlyContain(handler => handler.Target == null, script);
         }
 
-        instanceLines.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
-        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(instanceLines);
+        instanceEntries.Should().Contain($"{ScriptName.OnModuleCacheBefore} action {TaxiHandler}");
+        staticOnly.StaleManifestEntries.Should().BeEquivalentTo(instanceEntries, "the manifest lists every instance handler, and without them each is stale");
     }
 
     private static IEnumerable<Delegate> Bound(ScriptRegistry registry, string script) =>

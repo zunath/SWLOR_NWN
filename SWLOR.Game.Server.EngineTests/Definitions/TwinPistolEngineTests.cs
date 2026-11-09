@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
@@ -23,7 +24,6 @@ using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
-using Ability = SWLOR.Game.Server.Service.Ability;
 using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor), 10f, "one queued ability consumption");
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 4f, "the remaining ordinary companion roll");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.SkillType == SkillType.Rifle && summary.AttributedDamage > 0,
                     "The queued ability keeps its captured cross-trained skill and real impact");
                 ctx.AssertEqual(0, Hits.Count(x => x.Weapon == main), "The replaced main-hand roll contributes no ordinary damage");
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.MakeHostile(target);
                     TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 30f, "TWIN_QUEUED");
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    GameServices.Ability.ClearLastCompletedAbilityImpactSummary(actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
                     PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
@@ -473,7 +473,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "The ordinary miss consumes one attempted-shot charge while leaving the replacement queued");
                 Combat.SetAutoAttackHitResolutionOverride(true);
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor), 4f, "the companion consumes the queued replacement once");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.SkillType == SkillType.Rifle && summary.AttributedDamage > 0,
                     "The companion-triggered activation retains the purchased Rifle ability identity");
                 ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(actor, main), summary.TriggeringWeaponDamage ?? -1,
@@ -715,18 +715,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
                         SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
-                        Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                        GameServices.Ability.ClearLastCompletedAbilityImpactSummary(actor);
                         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                            $"{feat} validation: {Ability.GetLastActivationDenialReason()}");
+                            $"{feat} validation: {GameServices.Ability.GetLastActivationDenialReason()}");
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor), "The cast captures its weapon and trait state");
                         TwinPistolCombatLifecycle.Reconcile();
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor),
                             "Out-of-combat reconciliation preserves an authorized cast before its first hostile impact");
                     });
                     await ctx.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) && !Activity.IsBusy(actor) &&
-                        Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                        GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
                         10f, $"{feat}'s captured paired impacts");
-                    var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                    var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                     ctx.Assert(summary.SkillType == SkillType.TwinPistol && summary.AttributedDamage > 0,
                         $"{feat} completes a paid Twin Pistol attack");
                     ctx.AssertEqual(expected, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,

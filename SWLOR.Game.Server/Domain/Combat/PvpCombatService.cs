@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// players deal to them; see <see cref="PvpCombatRules"/> for the steps. The logic that used to be static in
     /// <c>Service.PvpCombat</c> is moved here unchanged; the fights in progress and the update schedule are
     /// this instance's own fields; the step tables are immutable fields of <c>PvpCombatRules</c>. The
-    /// facade keeps the event handlers. Calls into the unconverted <c>StatusEffect</c>, <c>CombatRecorder</c> and
+    /// event handlers run on the container's instance. Calls into the unconverted <c>StatusEffect</c>, <c>CombatRecorder</c> and
     /// <c>Scheduler</c> sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
     public class PvpCombatService : IPvpCombatService
@@ -149,6 +149,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// lifesteal, consumables, rest and natural regeneration. FP and STM are not heals and are
         /// never touched.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnHealBefore)]
         public void ReduceHealing()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
@@ -171,11 +172,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                 RecordPvpHealingReduced(target, amount, reduced);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void EndOnDeath()
         {
             End(GetLastPlayerDied(), false);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {
             _states.Remove(GetExitingObject());

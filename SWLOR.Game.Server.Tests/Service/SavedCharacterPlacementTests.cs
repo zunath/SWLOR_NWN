@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class SavedCharacterPlacementTests
 {
     private const BindingFlags Members = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-    private static readonly Assembly Game = typeof(Migration).Assembly;
+    private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
     private static readonly Type Document = Game.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
     private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;

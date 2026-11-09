@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Player-placed traps: per-owner capacity, minimum spacing between any two live traps, an arming delay, a
-    /// proximity trigger, and a lifetime cap. The static facade <c>Service.Traps</c> forwards to the container's
-    /// instance of this interface and keeps the event handler.
+    /// proximity trigger, and a lifetime cap. Static callers reach the container's instance through
+    /// <c>GameServices.Traps</c>; the event handler is on <see cref="TrapsService"/>.
     /// </summary>
     public interface ITrapsService
     {

@@ -10,7 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The venue rating of a performance: the logic that used to be static in <c>Service.PerformanceService.PerformanceVenue</c>,
+    /// The venue rating of a performance: the logic that used to be static in <c>PerformanceVenue</c>,
     /// moved here unchanged. Open world is 0, an NPC cantina sets the PERFORMANCE_VENUE_RATING area variable, and a player
     /// cantina takes its city's Cantina level. Each point adds 1% skill XP, 10% banking and 12 minutes of Inspired cap.
     /// The area ratings and the Dance Floor resref this instance looks up are its own state.

@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The combat points players earn against NPCs, the skill XP they turn into when the NPC dies, and the short-lived
     /// record of the last enemy level. The logic that used to be static in <c>Service.CombatPoint</c> is moved here
     /// unchanged; the trackers and the pending weapon-attack ledger are this instance's own fields and are updated per
-    /// landed attack without being rebuilt. The facade keeps the event handlers and forwards every call to the
-    /// container's instance. Calls into the unconverted hot core sit behind one-line <c>protected virtual</c> methods
+    /// landed attack without being rebuilt. The event handlers run on the container's instance; static callers reach it
+    /// through <c>GameServices.CombatPoint</c>. Calls into the unconverted hot core sit behind one-line <c>protected virtual</c> methods
     /// whose bodies are the original calls.
     /// </summary>
     public class CombatPointService : ICombatPointService
@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public void OnHitCastSpell()
         {
             var player = OBJECT_SELF;
@@ -112,12 +113,14 @@ namespace SWLOR.Game.Server.Domain.Combat
             // A queued ability owns the replaced roll's contribution under its captured ability skill.
             if (awardPoint) RecordWeaponAttackPoint(actor, target, weapon, capturedSkill);
         }
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearPendingWeaponAttackPoints() => _weaponAttackPoints.Clear(GetExitingObject());
 
         /// <summary>
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
@@ -236,6 +239,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()
         {
             var player = GetExitingObject();

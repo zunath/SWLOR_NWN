@@ -419,7 +419,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 recipes = recipes
-                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, Cache.GetItemNameByResref))
+                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, resref => Cache.GetItemNameByResref(resref)))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 

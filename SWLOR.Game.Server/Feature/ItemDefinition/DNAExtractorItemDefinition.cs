@@ -8,6 +8,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -154,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     SetName(dna, $"Beast DNA: {beastDetail.Name}");
                     BeastStableTrials.RecordDnaExtraction(user, level, target);
                     DestroyObject(target);
-                    var body = GetLocalObject(target, Loot.CorpseBodyVariable);
+                    var body = GetLocalObject(target, LootService.CorpseBodyVariable);
                     AssignCommand(body, () => SetIsDestroyable());
                     DestroyObject(body);
                 });

@@ -105,11 +105,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var initialNativeHP = 0;
                 var initialize = typeof(Feature.PlayerInitialization);
                 var adjustStats = initialize.GetMethod("AdjustStats", BindingFlags.Static | BindingFlags.NonPublic);
-                var run = typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.Static | BindingFlags.NonPublic);
+                var run = typeof(SWLOR.Game.Server.Domain.Core.IMigrationService).GetMethod("RunPlayerInitialization");
                 initialize.GetMethod("AutoLevelPlayer", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, new object[] { owner });
 
-                void Run() => run.Invoke(null, new object[] { saved,
+                void Run() => run.Invoke(Migration, new object[] { saved,
                     (Action<Player>)(player =>
                     {
                         var firstInitialization = player.Version == 0;

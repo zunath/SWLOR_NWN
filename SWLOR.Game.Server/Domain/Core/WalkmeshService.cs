@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.Engine;
@@ -13,8 +14,8 @@ using Vector3 = System.Numerics.Vector3;
 namespace SWLOR.Game.Server.Domain.Core
 {
     /// <summary>
-    /// Walkmesh: the logic and state that used to be static in <c>Service.Walkmesh</c>, moved here unchanged. The
-    /// facade keeps the event handlers and forwards every call to the container's instance.
+    /// Walkmesh: the logic and state that used to be static in the <c>Walkmesh</c> facade, moved here unchanged. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.Walkmesh</c>.
     /// </summary>
     public class WalkmeshService : IWalkmeshService
     {
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Core
             _db = db;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Domain.Core
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RetrieveWalkmeshes()
         {
             if (_bakingRan)

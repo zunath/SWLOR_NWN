@@ -412,6 +412,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// Disarm attempt, fired when a player uses a revealed concealed trap. Success clears the
         /// trap and awards Espionage XP; failure sets it off on the would-be disarmer.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnEspionageTrapUsed)]
         public void DisarmTrap()
         {
             var marker = OBJECT_SELF;

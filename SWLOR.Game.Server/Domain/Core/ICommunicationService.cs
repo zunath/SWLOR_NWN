@@ -5,6 +5,8 @@ namespace SWLOR.Game.Server.Domain.Core
     /// <summary>
     /// Chat handling: the in-character, Comms and out-of-character channels, language coloring and translation, emote
     /// styles, and the chat-channel labels. One member per public member of the old static <c>Communication</c> class.
+    /// Static callers reach the container's instance through <c>GameServices.Communication</c>; the event handlers are on
+    /// <see cref="CommunicationService"/>.
     /// </summary>
     public interface ICommunicationService
     {

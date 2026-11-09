@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
@@ -260,7 +261,7 @@ public class MusicServiceTests
         const uint disc = 8002;
         const uint otherDisc = 8003;
         const uint sword = 8004;
-        _tags[player] = Music.MusicPlayerTag;
+        _tags[player] = MusicService.MusicPlayerTag;
         _tags[disc] = "KEY_ITEM";
         _tags[otherDisc] = "KEY_ITEM";
         _tags[sword] = "SWORD";
@@ -276,7 +277,7 @@ public class MusicServiceTests
     [Test]
     public void The_facade_repeats_the_music_player_tag()
     {
-        Music.MusicPlayerTag.Should().Be("MUSIC_PLAYER").And.Be(MusicService.MusicPlayerTag);
+        MusicService.MusicPlayerTag.Should().Be("MUSIC_PLAYER").And.Be(MusicService.MusicPlayerTag);
     }
 
     // ---- a player's collection

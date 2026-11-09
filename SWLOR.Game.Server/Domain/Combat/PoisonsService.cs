@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatPoint = combatPoint;
         }
 
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public void ConsumePoisonCoating()
         {
             var attacker = OBJECT_SELF;

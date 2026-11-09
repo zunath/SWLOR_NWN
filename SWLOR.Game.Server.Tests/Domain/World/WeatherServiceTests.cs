@@ -17,7 +17,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
-using WeatherFacade = SWLOR.Game.Server.Service.Weather;
 
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
@@ -101,16 +100,16 @@ public class WeatherServiceTests
     }
 
     [Test]
-    public void The_facade_keeps_the_handlers_of_the_old_static_class()
+    public void The_instance_carries_the_handlers_of_the_old_static_class()
     {
-        static string[] Scripts(string method) => typeof(WeatherFacade).GetMethod(method)!
+        static string[] Scripts(string method) => typeof(WeatherService).GetMethod(method)!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>().Select(handler => handler.Script).ToArray();
 
-        Scripts(nameof(WeatherFacade.LoadData)).Should().Equal(ScriptName.OnModuleCacheBefore);
-        Scripts(nameof(WeatherFacade.InitializeWeather)).Should().Equal(ScriptName.OnModuleLoad);
-        Scripts(nameof(WeatherFacade.OnAreaEnter)).Should().Equal(ScriptName.OnAreaEnter);
-        Scripts(nameof(WeatherFacade.OnModuleHeartbeat)).Should().Equal(ScriptName.OnSwlorHeartbeat);
+        Scripts(nameof(WeatherService.LoadData)).Should().Equal(ScriptName.OnModuleCacheBefore);
+        Scripts(nameof(WeatherService.InitializeWeather)).Should().Equal(ScriptName.OnModuleLoad);
+        Scripts(nameof(WeatherService.OnAreaEnter)).Should().Equal(ScriptName.OnAreaEnter);
+        Scripts(nameof(WeatherService.OnModuleHeartbeat)).Should().Equal(ScriptName.OnSwlorHeartbeat);
     }
 
     [Test]

@@ -20,9 +20,9 @@ using Random = SWLOR.Game.Server.Service.Random;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Fishing: the rod, bait and fish tables and the cast-and-reel flow that used to be static in
-    /// <c>Service.Fishing</c>, moved here unchanged. The facade still carries the event handlers and forwards every
-    /// call to the container's instance.
+    /// Fishing: the rod, bait and fish tables and the cast-and-reel flow that used to be a static class, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.Fishing</c>.
     /// </summary>
     public class FishingService : IFishingService
     {
@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
         private readonly Dictionary<FishingLocationType, List<string>> _fishResrefsByLocation = new();
 
+        public const string ActiveBaitVariable = "ACTIVE_BAIT";
         public const string RemainingBaitVariable = "REMAINING_BAIT";
         public const string LoadedBaitTypeVariable = "LOADED_BAIT_TYPE";
         private const string FishingPositionVariableX = "FISHING_POSITION_X";
@@ -80,6 +81,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             LoadFish();
@@ -254,6 +256,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnFishPoint)]
         public void ClickFishingPoint()
         {
             void CheckPosition(uint player, Vector3 startPosition, string attemptId)

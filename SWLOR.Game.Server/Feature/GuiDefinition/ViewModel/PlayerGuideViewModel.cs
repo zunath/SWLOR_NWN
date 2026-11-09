@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -775,7 +776,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Deflection",
                             $"Melee and Ranged Deflection chance each stop at {StatService.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {StatService.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent."),
                         new ArticleBlock("Resistances",
-                            $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {Resistance.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {Resistance.MaximumResistance} percent."),
+                            $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {ResistanceRules.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {ResistanceRules.MaximumResistance} percent."),
                         new ArticleBlock("Attack Speed and Movement",
                             $"Attack speed bonuses shorten your attack delay by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(StatService.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
                         new ArticleBlock("Combat Readiness",
@@ -789,7 +790,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         new QuestionAnswer("Why does my hit chance never reach 100?", $"Final hit chance stops at {Combat.MaximumHitRate} percent, so more Accuracy past that point does not help."),
                         new QuestionAnswer("What is the highest critical chance?", $"{Combat.MaximumCriticalRate} percent."),
-                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {Resistance.MaximumResistance - 1} percent outside temporary immunity effects."),
+                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {ResistanceRules.MaximumResistance - 1} percent outside temporary immunity effects."),
                         new QuestionAnswer("How high can attributes go?", "AP upgrades stop at 26. A racial bonus can raise one attribute to 27.")
                     },
                     new[] { "Combat Basics", "Attributes", "Skills", "Force Affinity", StatusEffectGuideTopics.TopicName, "PvP Combat" }),

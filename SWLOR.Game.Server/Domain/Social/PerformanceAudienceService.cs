@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Domain.Social
     /// The audience side of Performance: one module-wide tick a minute turns watching into banked Inspired, cleared XP
     /// debt, band music and Performance XP for the performers. The decisions live in pure classes (follow choice, watch plan,
     /// composition, Flourish payouts); this class reads the engine, applies the results and keeps what the next tick needs.
-    /// The logic that used to be static in <c>Service.PerformanceService.PerformanceAudience</c> is moved here unchanged, and
-    /// the watcher and performer states, the tick schedule and the tick number are this instance's own. The facade keeps the
-    /// event handlers and forwards every call to the container's instance.
+    /// The logic that used to be static in <c>PerformanceAudience</c> is moved here unchanged, and
+    /// the watcher and performer states, the tick schedule and the tick number are this instance's own. The
+    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.PerformanceAudience</c>.
     /// </summary>
     public class PerformanceAudienceService : IPerformanceAudienceService
     {
@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _statusEffect = statusEffect;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void StartAudienceTick()
         {
             _tickSchedule?.Dispose();
@@ -87,12 +88,14 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Gives a leaving watcher back the Inspired time frozen while they watched. Disconnect-before runs ahead of
         /// module exit, where StatusEffect stores the live countdown that is reconciled when the player returns.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnClientDisconnectBefore)]
         public void RestoreFrozenInspiredOnDisconnect()
         {
             if (_states.TryGetValue(OBJECT_SELF, out var state))
                 StopWatching(state);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {
             _states.Remove(GetExitingObject());
@@ -748,6 +751,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Changing area interrupts watching even when the next tick finds the player at another show, and it replaces
         /// the client's music, so the band song is sent again at the next tick.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public void StopWatchingOnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -760,6 +764,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Stepping out of every performer's range, or into combat, interrupts watching. The minute tick would miss a gap
         /// shorter than a minute, so each watcher's heartbeat checks; anyone else returns after one lookup.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public void StopWatchingWhenOutOfRange()
         {
             var player = OBJECT_SELF;
@@ -829,6 +834,7 @@ namespace SWLOR.Game.Server.Domain.Social
         }
 
         /// <summary>Death clears Inspired, so a watcher revived in range starts the warm-up over instead of resuming it.</summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void StopWatchingOnDeath()
         {
             if (_states.TryGetValue(GetLastPlayerDied(), out var state))

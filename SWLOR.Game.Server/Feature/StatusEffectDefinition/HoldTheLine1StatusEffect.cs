@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -20,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction;
             StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction;
             StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment] = reduction;
-            StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance;
-            StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance;
+            StatGroup.Resists[ResistanceType.Mind] = ResistanceRules.MaximumResistance;
+            StatGroup.Resists[ResistanceType.Mobility] = ResistanceRules.MaximumResistance;
             LeadershipDamageReductionStats = new Dictionary<StatType, int>
             {
                 [StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction,

@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
 
@@ -1272,7 +1273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 < 25 => "Slightly reduced",
                 < 45 => "Reduced",
                 < 60 => "Strongly reduced",
-                >= Resistance.MaximumResistance => "Immune",
+                >= ResistanceRules.MaximumResistance => "Immune",
                 _ => "Greatly reduced"
             };
         }

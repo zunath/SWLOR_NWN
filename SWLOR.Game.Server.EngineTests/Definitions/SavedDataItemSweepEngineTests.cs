@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Service.ResistanceService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -320,7 +321,7 @@ public static partial class MigrationEngineTests
         {
             damageType.TryGetElementalResistanceType(out var resistance);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance,
-                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, Resistance.MaximumResistance))), item);
+                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, ResistanceRules.MaximumResistance))), item);
         }
         else
             // Current constructors reject the retired elemental Defense subtypes, so they are written natively.

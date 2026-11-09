@@ -6,9 +6,9 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Chat commands: loads the command definitions, builds the help text and the emote lists, and runs the commands
-    /// players and DMs type. The static facade <c>Service.ChatCommand</c> forwards to the container's instance of this
-    /// interface and keeps the event handlers. The definitions in <c>Feature/ChatCommandDefinition</c> keep calling the
-    /// facade.
+    /// players and DMs type. Static callers reach the container's instance of this
+    /// interface through <c>GameServices.ChatCommand</c>; the event handlers are on <see cref="ChatCommandService"/>. The definitions in
+    /// <c>Feature/ChatCommandDefinition</c> keep calling it by that name.
     /// </summary>
     public interface IChatCommandService
     {

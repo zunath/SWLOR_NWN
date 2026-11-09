@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
@@ -16,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// The engine side of the four Performance windows: the logic that used to be static in
-    /// <c>Service.PerformanceService.PerformanceWindows</c>, moved here unchanged. The windows only show state; input stays
-    /// on the hot bar feats. The id reservation of the window-less cue strip is this instance's own state. The facade keeps
-    /// the module-load handler and forwards every call to the container's instance.
+    /// <c>PerformanceWindows</c>, moved here unchanged. The windows only show state; input stays
+    /// on the hot bar feats. The id reservation of the window-less cue strip is this instance's own state. The module-load
+    /// handler runs on the container's instance; static callers reach it through <c>GameServices.PerformanceWindows</c>.
     /// </summary>
     public class PerformanceWindowsService : IPerformanceWindowsService
     {
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _stat = stat;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {
             _fallbackStrip = ReserveIds(GuiSystemName, 1);
@@ -68,13 +70,13 @@ namespace SWLOR.Game.Server.Domain.Social
         public void ShowFallbackStrip(uint performer, string text, float beatSeconds)
         {
             PostString(performer, text, -text.Length / 2, FallbackStripRow, ScreenAnchor.Center,
-                beatSeconds + FallbackStripOverlapSeconds, Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+                beatSeconds + FallbackStripOverlapSeconds, GuiService.ColorWhite, GuiService.ColorWhite, _fallbackStrip.StartId, GuiService.TextName);
         }
 
         public void ClearFallbackStrip(uint performer)
         {
             PostString(performer, string.Empty, 0, FallbackStripRow, ScreenAnchor.Center, 0.1f,
-                Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+                GuiService.ColorWhite, GuiService.ColorWhite, _fallbackStrip.StartId, GuiService.TextName);
         }
 
         public GuiWindowType GetCueWindowType(PerformanceKind kind)
@@ -304,7 +306,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
-        // The main service of the Performance service, reached through its facade because it takes this one by constructor.
+        // The main service of the Performance service, reached lazily because it takes this one by constructor.
         protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
 
         protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);

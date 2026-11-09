@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// <summary>
     /// Puts a player into targeting mode and runs the action the player's next target selection answers. The logic that
     /// used to be static in <c>Service.Targeting</c> is moved here unchanged; the pending actions are this instance's own.
-    /// The facade keeps the event handler and forwards every call to the container's instance.
+    /// The event handler runs on the container's instance; static callers reach it through <c>GameServices.Targeting</c>.
     /// </summary>
     public class TargetingService : ITargetingService
     {
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModulePlayerTarget)]
         public void RunTargetedItemAction()
         {
             var player = GetLastPlayerToSelectTarget();

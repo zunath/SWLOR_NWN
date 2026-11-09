@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -80,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var isLive = Performance.TryGetSession(Player, out var live) && live.Kind == Kind;
+            var isLive = GameServices.Performance.TryGetSession(Player, out var live) && live.Kind == Kind;
             var session = isLive ? live : CreatePreviewSession();
 
             ResetShown();

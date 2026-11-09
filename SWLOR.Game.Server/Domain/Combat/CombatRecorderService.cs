@@ -234,6 +234,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             return status;
         }
 
+        [NWNEventHandler(ScriptName.OnSWLORApplicationShutdown)]
         public void StopOnShutdown()
         {
             if (IsRecording)
@@ -1465,6 +1466,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         #region Deaths and resurrections
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public void RecordCreatureDeath()
         {
             if (!IsRecording)
@@ -1473,6 +1475,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             RecordDeath(OBJECT_SELF, GetLastKiller());
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void RecordPlayerDeath()
         {
             if (!IsRecording)

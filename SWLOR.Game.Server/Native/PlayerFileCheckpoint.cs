@@ -5,6 +5,7 @@ using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Core;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Native
                 var saved = original(creature, resource, structure, associates, desiredArea, exporting, objectIds);
                 if (saved == 0)
                     return 0;
-                using var name = new CExoString(Migration.PlayerFileVersionVariable);
+                using var name = new CExoString(MigrationService.PlayerFileVersionVariable);
                 var scriptVars = CNWSCreature.FromPointer(creature).m_ScriptVars;
                 var version = scriptVars.GetInt(name);
                 if (version > 0)
@@ -135,7 +136,7 @@ namespace SWLOR.Game.Server.Native
                     .ReadFieldINT(CResStruct.FromPointer(structure), field, &found, 0);
             if (found != 0 && version > 0)
             {
-                using var name = new CExoString(Migration.PlayerFileVersionVariable);
+                using var name = new CExoString(MigrationService.PlayerFileVersionVariable);
                 creature.m_ScriptVars.SetInt(name, version);
             }
 

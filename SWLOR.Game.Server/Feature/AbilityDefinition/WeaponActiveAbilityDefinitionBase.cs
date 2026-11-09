@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             /// <summary>
             /// How long the pre-cast telegraph is shown before an area impact lands, in seconds.
             /// Leave at 0 for abilities the Bible marks "Instant" — they gate no damage and instead
-            /// get the visual-only impact flash from <see cref="Ability.ApplyTelegraphedCombatImpact"/>.
+            /// get the visual-only impact flash from <see cref="Domain.Abilities.IAbilityService.ApplyTelegraphedCombatImpact"/>.
             /// Only set this to match a Bible-granted casting time.
             /// </summary>
             public float TelegraphDuration { get; init; }

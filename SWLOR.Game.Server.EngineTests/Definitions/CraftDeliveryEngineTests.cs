@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         $"{recipe}: the whole output is in the inventory");
 
                     var made = Snapshot(player).Keys.First(item => GetResRef(item) == detail.Resref);
-                    ctx.Assert(GetLocalBool(made, Item.PlayerProducedItemVariable), $"{recipe}: the delivered item is marked as player made");
+                    ctx.Assert(GetLocalBool(made, ItemService.PlayerProducedItemVariable), $"{recipe}: the delivered item is marked as player made");
                     ctx.Assert(record.PendingCraftReturns.SelectMany(entry => entry.Items).Any(),
                         $"{recipe}: the delivered output is listed as a pending return until the character file holds it");
                 });

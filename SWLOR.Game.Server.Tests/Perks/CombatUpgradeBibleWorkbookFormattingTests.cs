@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -233,8 +234,8 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         AssertStatRange(
             stats,
             "Enmity",
-            Enmity.MinimumEnmityPercentAdjustment,
-            Enmity.MaximumEnmityPercentAdjustment);
+            EnmityService.MinimumEnmityPercentAdjustment,
+            EnmityService.MaximumEnmityPercentAdjustment);
         AssertStatRange(stats, "Haste", 0, Combat.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(stats, "Slow", 0, Combat.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(

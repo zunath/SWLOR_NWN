@@ -4,6 +4,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -17,8 +18,8 @@ public class HoloComHologramFactionTests
     {
         var factions = (JArray)ReadReputationFile()["FactionList"]!["value"]!;
 
-        factions.Count.Should().BeGreaterThan(HoloCom.HologramFactionId);
-        ((string)factions[HoloCom.HologramFactionId]["FactionName"]!["value"]!).Should().Be("Neutral");
+        factions.Count.Should().BeGreaterThan(HoloComService.HologramFactionId);
+        ((string)factions[HoloComService.HologramFactionId]["FactionName"]!["value"]!).Should().Be("Neutral");
     }
 
     [Test]
@@ -34,7 +35,7 @@ public class HoloComHologramFactionTests
                 Rep: (int)entry["FactionRep"]!["value"]!))
             .ToList();
 
-        var id = HoloCom.HologramFactionId;
+        var id = HoloComService.HologramFactionId;
         for (var other = 0; other < factionCount; other++)
         {
             if (other == id)

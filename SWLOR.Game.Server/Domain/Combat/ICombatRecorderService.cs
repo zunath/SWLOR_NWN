@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// DM-toggled recorder that writes every combat event in one area to a JSON Lines file plus a per-participant
-    /// summary. The static <c>CombatRecorder</c> facade forwards here; the hooks in the game code check
+    /// summary. Static callers reach the container's instance through <c>GameServices.CombatRecorder</c>; the hooks in the game code check
     /// <see cref="IsRecording"/> first, so nothing else runs while no recording does.
     /// </summary>
     public interface ICombatRecorderService

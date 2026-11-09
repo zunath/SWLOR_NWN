@@ -137,6 +137,41 @@ public class FacadeRemovalRewriterTests
         result.NeedsAccessorImport.Should().BeFalse();
     }
 
+    [TestCase("class C { Holder Taxi { get; } void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { Holder Taxi; void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { static class Taxi { public static void Register(int i) { } } void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { void M(Holder Taxi) { Taxi.Register(1); } }\n")]
+    [TestCase("class C { void M() { var Taxi = new Holder(); Taxi.Register(1); } }\n")]
+    [TestCase("class C { void M() { Run(Taxi => Taxi.Register(1)); } }\n")]
+    [TestCase("using Taxi = Some.Other.Type;\nclass C { void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { void M() { if (Get() is Holder Taxi) Taxi.Register(1); } }\n")]
+    [TestCase("class C { int M() => Faction.MinimumFaction; static class Faction { public const int MinimumFaction = 1; } }\n")]
+    [TestCase("class C { event Handler Taxi { add { } remove { } } void M() { Taxi.Register(1); } }\n")]
+    [TestCase("class C { object M(int[] xs) => from Taxi in xs select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs) => from x in xs let Taxi = x select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs, int[] ys) => from x in xs join Taxi in ys on x equals Taxi select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs, int[] ys) => from x in xs join y in ys on x equals y into Taxi select Taxi.Register(1); }\n")]
+    [TestCase("class C { object M(int[] xs) => from x in xs select x into Taxi select Taxi.Register(1); }\n")]
+    public void A_bare_name_the_file_declares_itself_is_not_the_facade(string text)
+    {
+        var result = CallerRewriter.Apply(text, All, false);
+
+        result.Text.Should().BeSameAs(text);
+        result.NeedsAccessorImport.Should().BeFalse();
+    }
+
+    [Test]
+    public void A_qualified_call_in_a_file_that_declares_the_name_is_written_explicitly()
+    {
+        const string text = "class C { Holder Taxi; void M() { Taxi.Register(1); Service.Taxi.Register(2); } }\n";
+
+        var result = CallerRewriter.Apply(text, All, false);
+
+        result.Text.Should().Be("using SWLOR.Game.Server.Composition;\nclass C { Holder Taxi; void M() { Taxi.Register(1); GameServices.Taxi.Register(2); } }\n");
+        result.NeedsAccessorImport.Should().BeFalse("the explicit name needs the namespace, not the static import");
+        CallerRewriter.Apply(result.Text, All, false).Text.Should().Be(result.Text);
+    }
+
     [Test]
     public void A_project_that_imports_the_accessor_globally_gets_no_using_in_the_file()
     {

@@ -2,9 +2,12 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Tests.Composition;
 
@@ -76,6 +79,37 @@ public class GameServicesAllocationTests
         statusEffect.Should().BeSameAs(_host.Provider.GetRequiredService<IStatusEffectService>());
         skill.Should().BeSameAs(_host.Provider.GetRequiredService<ISkillService>());
         perk.Should().BeSameAs(_host.Provider.GetRequiredService<IPerkService>());
+    }
+
+    [Test]
+    public void Reading_the_database_through_GameServices_allocates_nothing()
+    {
+        // DB is read on many request paths (P2-ZI): the property and a read that does not reach Redis cost nothing more
+        // than the instance.
+        var instance = _host.Provider.GetRequiredService<IDBService>();
+        IDBService db = null!;
+        long version = -1;
+
+        Allocated(() => db = GameServices.DB).Should().Be(0);
+        var throughAccessor = Allocated(() => version = GameServices.DB.GetWriteVersion<Player>());
+        var direct = Allocated(() => version = instance.GetWriteVersion<Player>());
+
+        db.Should().BeSameAs(instance);
+        throughAccessor.Should().Be(direct).And.Be(0);
+        version.Should().Be(instance.GetWriteVersion<Player>());
+    }
+
+    [Test]
+    public void The_recording_flag_every_managed_entry_reads_allocates_nothing()
+    {
+        // ManagedEntryDepth.Enter reads CombatRecorder.IsRecording on every managed entry point (main loop, script,
+        // closure, signal): one read of the accessor's slot and one interface call, as the facade did.
+        var instance = _host.Provider.GetRequiredService<ICombatRecorderService>();
+        var recording = true;
+
+        Allocated(() => recording = GameServices.CombatRecorder.IsRecording).Should().Be(0);
+        GameServices.CombatRecorder.Should().BeSameAs(instance);
+        recording.Should().Be(instance.IsRecording);
     }
 
     [Test]

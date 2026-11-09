@@ -143,7 +143,7 @@ internal static class CharacterRecalculation
     }
 
     /// <summary>
-    /// Saved-data <see cref="QuickCast.ApplyPreferences"/>: each ability feat the character knows is held in the form
+    /// Saved-data <see cref="Domain.Abilities.IQuickCastService.ApplyPreferences"/>: each ability feat the character knows is held in the form
     /// its automatic-targeting setting asks for, on the feat list and the quickbar.
     /// </summary>
     public static void ApplyQuickCastPreferences(SavedCharacter character)

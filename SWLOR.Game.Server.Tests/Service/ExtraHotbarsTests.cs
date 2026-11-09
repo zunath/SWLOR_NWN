@@ -11,6 +11,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.UI;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -39,8 +41,8 @@ public class ExtraHotbarsTests
 
         var bars = ExtraHotbars.GetBars(player);
 
-        bars.Should().HaveCount(ExtraHotbars.BarCount);
-        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbars.MaxSlots && !bar.IsVisible);
+        bars.Should().HaveCount(ExtraHotbarsService.BarCount);
+        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbarsService.MaxSlots && !bar.IsVisible);
         bars.SelectMany(bar => bar.Slots).Should().OnlyContain(slot => slot.Type == ExtraHotbarSlotType.Empty);
     }
 
@@ -65,9 +67,9 @@ public class ExtraHotbarsTests
 
         var bars = ExtraHotbars.GetBars(player);
 
-        bars[0].SlotCount.Should().Be(ExtraHotbars.MaxSlots);
+        bars[0].SlotCount.Should().Be(ExtraHotbarsService.MaxSlots);
         bars[0].Slots[0].Feat.Should().Be(FeatType.Provoke1);
-        bars[0].Slots.Should().HaveCount(ExtraHotbars.MaxSlots);
+        bars[0].Slots.Should().HaveCount(ExtraHotbarsService.MaxSlots);
     }
 
     [Test]

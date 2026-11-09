@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.Items
             _stat = stat;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void RegisterLootTables()
         {
             // Get all implementations of spawn table definitions.
@@ -82,6 +84,7 @@ namespace SWLOR.Game.Server.Domain.Items
                 .Where(w => typeof(ILootTableDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureSpawnBefore)]
         public void SpawnStealLoot()
         {
             var creature = OBJECT_SELF;
@@ -190,6 +193,7 @@ namespace SWLOR.Game.Server.Domain.Items
             }
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public void SpawnLootOnCreatureDeath()
         {
             SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
@@ -236,6 +240,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return lootTables;
         }
 
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             RecordWeaponHitFindBonuses(OBJECT_SELF, GetSpellTargetObject());
@@ -284,6 +289,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return _stat.GetStatAdjustment(creature, stat);
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public void ProcessCorpse()
         {
             var self = OBJECT_SELF;
@@ -374,6 +380,7 @@ namespace SWLOR.Game.Server.Domain.Items
             });
         }
 
+        [NWNEventHandler(ScriptName.OnCorpseClosed)]
         public void CloseCorpseContainer()
         {
             var container = OBJECT_SELF;
@@ -420,6 +427,7 @@ namespace SWLOR.Game.Server.Domain.Items
             return _beastMastery.GetBeastDetail(type);
         }
 
+        [NWNEventHandler(ScriptName.OnCorpseDisturbed)]
         public void DisturbCorpseContainer()
         {
             var looter = GetLastDisturbed();

@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// <summary>
     /// A grid DMs project over an area for space and ground battles. The logic that used to be static in
     /// <c>Service.BattleGrid</c> is moved here unchanged; the grid itself lives on the area's local variables, so the
-    /// instance holds no state of its own but the default settings. The facade keeps every constant and forwards every
-    /// call to the container's instance.
+    /// instance holds no state of its own but the default settings. Static callers reach it through
+    /// <c>GameServices.BattleGrid</c> and read its constants here.
     /// </summary>
     public class BattleGridService : IBattleGridService
     {

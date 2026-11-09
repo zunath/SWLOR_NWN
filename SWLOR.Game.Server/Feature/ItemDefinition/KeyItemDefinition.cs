@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         var keyItemType = (KeyItemType)keyItemId;
 
-                        if (Service.KeyItem.HasKeyItem(user, keyItemType))
+                        if (GameServices.KeyItem.HasKeyItem(user, keyItemType))
                         {
                             return $"You have already acquired this key item.";
                         }
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var area = GetArea(user);
                     var keyItemId = GetLocalInt(item, "KEY_ITEM_ID");
                     var keyItemType = (KeyItemType)keyItemId;
-                    Service.KeyItem.GiveKeyItem(user, keyItemType);
+                    GameServices.KeyItem.GiveKeyItem(user, keyItemType);
 
                     // If the player is within an area associated with this map, instantly explore it and ensure the minimap can be toggled.
                     if (GetLocalInt(area, "MAP_KEY_ITEM_ID") == keyItemId)

@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Data and actions behind the player list window, which replaces the native player list: per-identity flags,
-    /// rows resolved for each viewer, party controls, hostility, and tells. The static facade <c>Service.PlayerList</c>
-    /// forwards to the container's instance of this interface and keeps the event handlers.
+    /// rows resolved for each viewer, party controls, hostility, and tells. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.PlayerList</c>; the event handlers are on <see cref="PlayerListService"/>.
     /// </summary>
     public interface IPlayerListService
     {

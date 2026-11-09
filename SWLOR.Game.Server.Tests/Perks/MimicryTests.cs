@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
@@ -20,6 +21,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -1043,9 +1045,9 @@ public class MimicryTests
     [Test]
     public void Mimicry_SkillDecayHandlerRevalidatesEquippedTechniques()
     {
-        var handler = typeof(Mimicry).GetMethod(
-            nameof(Mimicry.OnMimicrySkillDecay),
-            BindingFlags.Public | BindingFlags.Static);
+        var handler = typeof(MimicryService).GetMethod(
+            nameof(MimicryService.OnMimicrySkillDecay),
+            BindingFlags.Public | BindingFlags.Instance);
 
         handler.Should().NotBeNull();
         handler!.GetCustomAttributes<NWNEventHandler>()
@@ -1073,9 +1075,9 @@ public class MimicryTests
         var equipped = new Player();
         equipped.EquippedTechniques.Add(FeatType.WardenWallStanceTechnique);
 
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallStanceTechnique).Should().BeTrue();
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnStanceTechnique).Should().BeFalse();
-        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallStanceTechnique).Should().BeFalse();
+        GameServices.Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallStanceTechnique).Should().BeTrue();
+        GameServices.Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnStanceTechnique).Should().BeFalse();
+        GameServices.Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallStanceTechnique).Should().BeFalse();
     }
 
     [Test]
@@ -1160,19 +1162,19 @@ public class MimicryTests
     {
         // Baseline: Mimicry rank at the technique requirement, no Pattern Recognition, Perception at the
         // baseline (10) contributes nothing beyond the flat 20% base chance.
-        Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
 
         // Perception above the baseline adds 1% per point.
-        Mimicry.CalculateLearnChance(0, 0, 0, 17).Should().Be(27, "7 Perception above baseline adds 7%");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 17).Should().Be(27, "7 Perception above baseline adds 7%");
 
         // Perception below the baseline never reduces the chance below the other contributions.
-        Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
 
         // Skill rank above the technique requirement adds 2% per rank; Pattern Recognition adds 10% per level.
-        Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
+        GameServices.Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
 
         // Everything is capped at the maximum learn chance.
-        Mimicry.CalculateLearnChance(45, 0, 2, 60).Should().Be(75, "combined bonuses are clamped to the cap");
+        GameServices.Mimicry.CalculateLearnChance(45, 0, 2, 60).Should().Be(75, "combined bonuses are clamped to the cap");
     }
 
     [Test]
@@ -1202,79 +1204,79 @@ public class MimicryTests
     public void ObservationXP_IsSmallRankRelativeAndStopsAtMastery(int npcLevel, int mimicryRank, int expectedXP)
     {
         Skill.CacheXPChartData();
-        Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
+        GameServices.Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
     }
 
     [Test]
     public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
     {
         Ability.CacheData();
-        Mimicry.CacheData();
+        GameServices.Mimicry.CacheData();
 
-        Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
+        GameServices.Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
 
         var singles = new Player();
         singles.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);  // Poison
         singles.EquippedTechniques.Add(FeatType.FrostSpitTechnique);  // Ice
-        Mimicry.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
+        GameServices.Mimicry.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
 
         var pair = new Player();
         pair.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);   // Poison
         pair.EquippedTechniques.Add(FeatType.ToxicCloudTechnique);  // Poison
-        Mimicry.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
+        GameServices.Mimicry.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
     }
 
     [Test]
     public void Mimicry_MaxSlotsScalesWithCombatAnalyzerAndAnalyzerMemoryPerkLevels()
     {
         var noAnalyzer = new Player();
-        Mimicry.GetMaxSlots(noAnalyzer).Should().Be(0, "players without Combat Analyzer get no technique slots");
+        GameServices.Mimicry.GetMaxSlots(noAnalyzer).Should().Be(0, "players without Combat Analyzer get no technique slots");
 
         var memoryWithoutAnalyzer = new Player();
         memoryWithoutAnalyzer.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryWithoutAnalyzer).Should().Be(0, "Analyzer Memory alone should not grant slots without Combat Analyzer");
+        GameServices.Mimicry.GetMaxSlots(memoryWithoutAnalyzer).Should().Be(0, "Analyzer Memory alone should not grant slots without Combat Analyzer");
 
         var baseAnalyzer = new Player();
         baseAnalyzer.Perks[PerkType.CombatAnalyzer] = 1;
-        Mimicry.GetMaxSlots(baseAnalyzer).Should().Be(2);
+        GameServices.Mimicry.GetMaxSlots(baseAnalyzer).Should().Be(2);
 
         var memoryLevel1 = new Player();
         memoryLevel1.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel1.Perks[PerkType.AnalyzerMemory] = 1;
-        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(4, "Analyzer Memory grants +2 slots per rank");
+        GameServices.Mimicry.GetMaxSlots(memoryLevel1).Should().Be(4, "Analyzer Memory grants +2 slots per rank");
 
         var memoryLevel2 = new Player();
         memoryLevel2.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel2.Perks[PerkType.AnalyzerMemory] = 2;
-        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(6);
+        GameServices.Mimicry.GetMaxSlots(memoryLevel2).Should().Be(6);
 
         var memoryLevel3 = new Player();
         memoryLevel3.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel3.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(8);
+        GameServices.Mimicry.GetMaxSlots(memoryLevel3).Should().Be(8);
 
         var overclocked = new Player();
         overclocked.Perks[PerkType.CombatAnalyzer] = 1;
         overclocked.Perks[PerkType.AnalyzerMemory] = 3;
         overclocked.Perks[PerkType.OverclockedAnalyzer] = 1;
-        Mimicry.GetMaxSlots(overclocked).Should().Be(10, "2 base + 6 from Analyzer Memory + 2 from the Overclocked Analyzer capstone");
+        GameServices.Mimicry.GetMaxSlots(overclocked).Should().Be(10, "2 base + 6 from Analyzer Memory + 2 from the Overclocked Analyzer capstone");
     }
 
     [Test]
     public void Mimicry_UsedSlotsSumsEquippedTechniqueSlotCosts()
     {
         Ability.CacheData();
-        Mimicry.CacheData();
+        GameServices.Mimicry.CacheData();
 
         var empty = new Player();
-        Mimicry.GetUsedSlots(empty).Should().Be(0);
+        GameServices.Mimicry.GetUsedSlots(empty).Should().Be(0);
 
         var equipped = new Player();
         equipped.EquippedTechniques.Add(FeatType.ToxicSpitTechnique); // 1 slot
         equipped.EquippedTechniques.Add(FeatType.SonicShriekTechnique); // 2 slots
         equipped.EquippedTechniques.Add(FeatType.ToxicCloudTechnique); // 3 slots
 
-        Mimicry.GetUsedSlots(equipped).Should().Be(6);
+        GameServices.Mimicry.GetUsedSlots(equipped).Should().Be(6);
     }
 
     private static Dictionary<FeatType, AbilityDetail> BuildTechnique(FeatType technique)

@@ -77,7 +77,7 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void FlightTemplateHasABoardingPointAndUsablePilotChair()
     {
-        var resref = typeof(Shuttle).GetField("ShuttleInteriorResref",
+        var resref = typeof(ShuttleService).GetField("ShuttleInteriorResref",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var area = ReadResource("are", resref!);
         var contents = ReadResource("git", resref!);

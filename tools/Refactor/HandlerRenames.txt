@@ -105,6 +105,7 @@ SWLOR.Game.Server.Service.Stealth.ResolveSpotDetection SWLOR.Game.Server.Domain.
 SWLOR.Game.Server.Service.Stealth.SuppressListenDetection SWLOR.Game.Server.Domain.Combat.StealthService.SuppressListenDetection
 SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
 SWLOR.Game.Server.Service.Area.CacheData SWLOR.Game.Server.Domain.World.AreaService.CacheData
+SWLOR.Game.Server.Service.Area.DisconnectBefore SWLOR.Game.Server.Domain.World.AreaService.DisconnectBefore
 SWLOR.Game.Server.Service.Area.EnterArea SWLOR.Game.Server.Domain.World.AreaService.EnterArea
 SWLOR.Game.Server.Service.Area.ExitArea SWLOR.Game.Server.Domain.World.AreaService.ExitArea
 SWLOR.Game.Server.Service.Area.RemoveInstancesFromCache SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache

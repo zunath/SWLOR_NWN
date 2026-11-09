@@ -528,6 +528,13 @@ namespace SWLOR.Game.Server.Domain.UI
                 }
             }
 
+            // A craft holds the player's gear, so nothing goes on or comes off either hand while any crafting window is open.
+            if (IsAnyCraftWindowOpen(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
+                return;
+            }
+
             var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
             var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
             var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
@@ -542,13 +549,6 @@ namespace SWLOR.Game.Server.Domain.UI
             // and, if the set keeps it, equipped again.
             var offHandChanges = currentOffHand != newOffHand;
             var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
-
-            // A craft holds the player's gear, so nothing comes off either hand while any crafting window is open.
-            if (IsAnyCraftWindowOpen(player))
-            {
-                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
-                return;
-            }
 
             // Nothing comes off until everything going on is known to be usable.
             foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })

@@ -2114,7 +2114,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 flashDuration,
                 true,
                 geometry.Shape,
-                null);
+                null,
+                isImpactFlash: true);
         }
 
         private int ApplyCombatImpactInShape(

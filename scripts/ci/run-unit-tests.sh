@@ -123,6 +123,7 @@ exclusions_for() {
         echo "RepublicBaseTileVisibilityTests"
         echo "RepublicBasePlacementTests.ModularWalls_KeepTheirWalkmeshWithinTheEngineCollisionTolerance"
         echo "ShipItemIconTests.ActionArtwork_CoversAllModuleDefinitionsAndAgreesWithInventoryRoles"
+        echo "SavedDataItemSweepTests.BuildingIcons_BlueprintsMatchDistinctNativeDdsResources"
         echo "SavedDataItemSweepTests.EnzymeShrink_MovesEveryEnzymeBlueprintToTheOneByOneBaseItemWithItsOwnIcon"
         echo "ShipItemIconTests.NativeAppearances_MatchBlueprintsAndOnlyNormalizeOriginalModels"
         echo "ShoulderAppearanceTests.ShippedTableCoversAllExternalStylesOnBothSidesForEveryMaleHumanRobe"

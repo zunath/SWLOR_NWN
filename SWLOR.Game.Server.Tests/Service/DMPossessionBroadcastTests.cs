@@ -249,9 +249,11 @@ public class DMPossessionBroadcastTests
     public void TelegraphSlots_PassTheAvatarBehindAPossessedCreatureForPartyColors()
     {
         var slots = InstanceMethod("Domain/Combat/TelegraphService.cs", "UpdateShaderSlotsForPlayer");
+        var candidate = InstanceMethod("Domain/Combat/TelegraphService.cs", "BuildRenderCandidate");
 
         slots.Should().Contain("var partyMember = _dmPresence.GetDM(player);")
-            .And.Contain("DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile)");
+            .And.Contain("BuildRenderCandidate(player, partyMember, telegraph)");
+        candidate.Should().Contain("DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile)");
     }
 
     [TestCase(DMPossess)]

@@ -643,13 +643,14 @@ Feature.Jukebox -> DMPresence | 1
 Feature.RoleplayXP -> DMPresence | 1
 Feature.ServerTasks -> DMPresence | 1
 
-# Gameplay -> Character (40 edges)
+# Gameplay -> Character (41 edges)
 Feature.AchievementProgression -> Achievement | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> PlayerName | 3
 Feature.BasicVibrobladeCompatibility -> Skill | 8
 Feature.BuffTimer -> StatusEffect | 3
 Feature.CivilianPatrol -> Activity | 1
+Feature.EchaniTempleMonks -> Activity | 1
 Feature.EquipmentRestrictions -> Perk | 2
 Feature.EquipmentStats -> Skill | 3
 Feature.EquipmentStats -> Stat | 23
@@ -685,8 +686,9 @@ Feature.UsePerkFeat -> Skill | 2
 Feature.UsePerkFeat -> Stat | 1
 
 ServerRestart -> StatusEffect | 1
-# Gameplay -> Combat (36 edges)
+# Gameplay -> Combat (37 edges)
 Feature.CivilianPatrol -> Enmity | 2
+Feature.EchaniTempleMonks -> Enmity | 2
 Feature.EquipmentRestrictions -> PowerGloveEquipment | 2
 Feature.EquipmentRestrictions -> TwinPistolEquipment | 1
 Feature.EquipmentStats -> Combat | 2
@@ -737,8 +739,9 @@ Feature.ScavengePoint -> Craft | 1
 Feature.ScavengePoint -> Scavenge | 3
 Feature.SlicingTerminal -> Slicing | 1
 
-# Gameplay -> Creatures (3 edges)
+# Gameplay -> Creatures (4 edges)
 Feature.CivilianPatrol -> AI | 1
+Feature.EchaniTempleMonks -> AI | 1
 Feature.ScavengePoint -> Spawn | 1
 Feature.UsePerkFeat -> CompanionControl | 5
 
@@ -775,7 +778,7 @@ Feature.UsePerkFeat -> Performance | 1
 # Gameplay -> Space (1 edge)
 Feature.PlayerStatusWindow -> Space | 1
 
-# Gameplay -> UI (17 edges)
+# Gameplay -> UI (18 edges)
 Feature.ArmorDisplay -> Feature/GuiDefinition | 1
 Feature.ArmorDisplay -> Gui | 1
 Feature.CivilianPatrol -> Gui | 1
@@ -783,6 +786,7 @@ Feature.DMActions -> Feature/GuiDefinition | 1
 Feature.DMActions -> Gui | 1
 Feature.DMToolbarWindow -> Feature/GuiDefinition | 2
 Feature.DMToolbarWindow -> Gui | 3
+Feature.EchaniTempleMonks -> Gui | 1
 Feature.EquipmentStats -> Feature/GuiDefinition | 2
 Feature.EquipmentStats -> Gui | 2
 Feature.HolonetTerminal -> Gui | 1
@@ -794,9 +798,10 @@ Feature.PlayerStatusWindow -> Gui | 16
 Feature.SlicingTerminal -> Feature/GuiDefinition | 1
 Feature.SlicingTerminal -> Gui | 1
 
-# Gameplay -> World (8 edges)
+# Gameplay -> World (9 edges)
 Feature.CZ220FlightsTerminal -> Area | 1
 Feature.CivilianPatrol -> Area | 1
+Feature.EchaniTempleMonks -> Area | 1
 Feature.EventRegistration -> Area | 1
 Feature.PersistentLocation -> Area | 2
 Feature.PersistentLocation -> Shuttle | 1

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CombatService;
@@ -93,7 +94,7 @@ public class WeatherServiceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new WeatherService(db, new WeatherWorld.StubPlanets(), new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>());
+        _ = new WeatherService(db, new WeatherWorld.StubPlanets(), new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>());
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();

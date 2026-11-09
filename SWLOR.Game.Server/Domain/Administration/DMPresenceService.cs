@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using NWN.Native.API;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -23,10 +24,13 @@ namespace SWLOR.Game.Server.Domain.Administration
         private readonly Lazy<IDMObjectSearchService> _dmObjectSearch;
         private readonly Lazy<IGuiService> _gui;
 
-        public DMPresenceService(Lazy<IDMObjectSearchService> dmObjectSearch, Lazy<IGuiService> gui)
+        private readonly Lazy<ISpaceService> _space;
+
+        public DMPresenceService(Lazy<IDMObjectSearchService> dmObjectSearch, Lazy<IGuiService> gui, Lazy<ISpaceService> space)
         {
             _dmObjectSearch = dmObjectSearch;
             _gui = gui;
+            _space = space;
         }
 
         // How far from its target the engine's jump action looks for a safe point.
@@ -151,7 +155,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             if (GetIsDMPossessed(target))
                 return "A DM is possessing that creature.";
 
-            if (GetIsPC(target) && Space.IsPlayerInSpaceMode(target))
+            if (GetIsPC(target) && _space.Value.IsPlayerInSpaceMode(target))
                 return $"{GetName(target)} is piloting a ship in space and cannot be summoned.";
 
             var controlled = GetControlledCreature(dm);

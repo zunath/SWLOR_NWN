@@ -26,7 +26,7 @@ public class ShipModuleRangeRuleTests
         [ShipModuleType.LaserBattery] = ShipModuleRangeRule.NoTarget,
     };
 
-    private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(Space).Assembly.GetTypes()
+    private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(SWLOR.Game.Server.Domain.Space.ISpaceService).Assembly.GetTypes()
         .Where(type => typeof(IShipModuleListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
         .SelectMany(type => ((IShipModuleListDefinition)Activator.CreateInstance(type)).BuildShipModules().Values)
         .ToList();

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -47,7 +48,7 @@ public class PlayerMarketServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>());
+        _service = new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<ISpaceService>());
     }
 
     [TearDown]
@@ -84,7 +85,7 @@ public class PlayerMarketServiceTests
 
         _service.CacheData();
 
-        new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
+        new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<ISpaceService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
     }
 
     [Test]

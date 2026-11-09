@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
@@ -46,12 +47,15 @@ namespace SWLOR.Game.Server.Domain.World
         // test subclass answers this instead.
         protected virtual bool IsConcealed(uint creature) => _stealth.IsConcealed(creature);
 
-        public HoloComService(IPlayerListService playerList, IDMPresenceService dmPresence, IPlayerNameService playerName, IStealthService stealth)
+        private readonly Lazy<ISpaceService> _space;
+
+        public HoloComService(IPlayerListService playerList, IDMPresenceService dmPresence, IPlayerNameService playerName, IStealthService stealth, Lazy<ISpaceService> space)
         {
             _playerList = playerList;
             _dmPresence = dmPresence;
             _playerName = playerName;
             _stealth = stealth;
+            _space = space;
         }
 
         [NWNEventHandler(ScriptName.OnModuleDeath)]
@@ -152,8 +156,8 @@ namespace SWLOR.Game.Server.Domain.World
             if (IsDMInvolved(sender, receiver) ||
                 GetCallState(sender) != PlayerListCallState.None ||
                 GetCallState(receiver) != PlayerListCallState.None ||
-                Space.IsPlayerInSpaceMode(sender) ||
-                Space.IsPlayerInSpaceMode(receiver))
+                _space.Value.IsPlayerInSpaceMode(sender) ||
+                _space.Value.IsPlayerInSpaceMode(receiver))
                 return;
 
             // Each attempt gets its own token so a delayed callback from a cancelled attempt cannot ring for a newer one.
@@ -176,13 +180,13 @@ namespace SWLOR.Game.Server.Domain.World
                 return;
 
             var callSender = GetCallSender(player);
-            if (Space.IsPlayerInSpaceMode(player))
+            if (_space.Value.IsPlayerInSpaceMode(player))
             {
                 SendMessageToPC(player, ColorToken.Red("HoloCom cannot be used in space."));
                 return;
             }
 
-            if (!GetIsObjectValid(callSender) || Space.IsPlayerInSpaceMode(callSender) || IsDMInvolved(callSender))
+            if (!GetIsObjectValid(callSender) || _space.Value.IsPlayerInSpaceMode(callSender) || IsDMInvolved(callSender))
             {
                 if (GetIsObjectValid(callSender))
                     SendMessageToPC(callSender, "Your HoloCom call went unanswered.");
@@ -256,7 +260,7 @@ namespace SWLOR.Game.Server.Domain.World
                 return;
             }
 
-            if (Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            if (_space.Value.IsPlayerInSpaceMode(sender) || _space.Value.IsPlayerInSpaceMode(receiver))
             {
                 EndAttempt(sender, receiver);
                 SendMessageToPC(sender, ColorToken.Red("HoloCom cannot be used in space."));

@@ -13,7 +13,7 @@ public class PlayerFacingNameBroadcastTests
         var paths = new List<string>
         {
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Space.cs")
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Space", "SpaceService.cs")
         };
 
         paths.AddRange(Directory.GetFiles(
@@ -24,6 +24,7 @@ public class PlayerFacingNameBroadcastTests
         {
             var source = File.ReadAllText(path);
             var rawNameBroadcastInvocations = ExtractInvocations(source, "Messaging.SendMessageNearbyToPlayers")
+                .Concat(ExtractInvocations(source, "_messaging.SendMessageNearbyToPlayers"))
                 .Where(invocation => invocation.Text.Contains("GetName("))
                 .Select(invocation => $"{Path.GetFileName(path)}:{GetLineNumber(source, invocation.StartIndex)}")
                 .ToList();
@@ -330,8 +331,9 @@ public class PlayerFacingNameBroadcastTests
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Space.cs"));
+            "Domain",
+            "Space",
+            "SpaceService.cs"));
         spaceSource.Should().Contain("var copy = CopyObject(player");
         spaceSource.Should().Contain("SetName(copy, \"Pilot\");");
     }

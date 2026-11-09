@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -33,13 +34,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
 
+        private readonly Lazy<ISpaceService> _space;
+
         public CombatPointService(
             IDBService db,
             IEnmityService enmity,
             IPartyService party,
             IBeastMasteryService beastMastery,
             ISkillService skill,
-            IStatService stat)
+            IStatService stat,
+            Lazy<ISpaceService> space)
         {
             _db = db;
             _enmity = enmity;
@@ -47,6 +51,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _beastMastery = beastMastery;
             _skill = skill;
             _stat = stat;
+            _space = space;
         }
 
         private const float ReviveSupportRangeMeters = 20f;
@@ -522,6 +527,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);
 
         /// <summary>The unconverted <c>Space</c> service.</summary>
-        protected virtual bool IsPlayerInSpaceMode(uint player) => Service.Space.IsPlayerInSpaceMode(player);
+        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.Value.IsPlayerInSpaceMode(player);
     }
 }

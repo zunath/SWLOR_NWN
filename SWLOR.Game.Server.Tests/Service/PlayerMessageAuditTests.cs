@@ -49,7 +49,7 @@ public class PlayerMessageAuditTests
     public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Service/Space.cs", "Domain/Abilities/AbilityService.cs", "Domain/Character/StatusEffectService.cs",
+        var files = new[] { "Domain/Space/SpaceService.cs", "Domain/Abilities/AbilityService.cs", "Domain/Character/StatusEffectService.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Service/QuestService/QuestObjectives.cs", "Service/QuestService/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",

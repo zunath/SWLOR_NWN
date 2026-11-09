@@ -188,7 +188,7 @@ Service/
 - Space combat mechanics
 - Ship navigation
 
-**Common Usage**: See `Service/Space.cs` for space combat methods.
+**Common Usage**: See `Domain/Space/SpaceService.cs` for space combat methods.
 
 ### 8. BeastMasteryService
 

@@ -102,6 +102,7 @@
     { "name": "Skill", "domain": "Character", "facadeRemoved": true },
     { "name": "Slicing", "domain": "Crafting", "facadeRemoved": true, "extras": [ { "facade": "SlicingService.SlicingSession" } ] },
     { "name": "Snippet", "domain": "Core", "facadeRemoved": true },
+    { "name": "Space", "domain": "Space", "facadeRemoved": true },
     { "name": "Spawn", "domain": "Creatures", "facadeRemoved": true },
     { "name": "Stat", "domain": "Character", "facadeRemoved": true },
     { "name": "StatusEffect", "domain": "Character", "facadeRemoved": true },

@@ -3899,6 +3899,21 @@
                 "value": 1
               },
               "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ES_MONK_MASTER"
+              },
+              "__struct_id": 0
             }
           ]
         },
@@ -5092,6 +5107,21 @@
                 "value": 1
               },
               "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ES_MONK_REN"
+              },
+              "__struct_id": 0
             }
           ]
         },
@@ -6283,6 +6313,21 @@
               "Value": {
                 "type": "int",
                 "value": 1
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ES_MONK_SAI"
               },
               "__struct_id": 0
             }

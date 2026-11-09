@@ -35,6 +35,9 @@ public class EchaniTempleMonksTests
             {
                 Variables(creature)["ECHANI_MONK"].GetInt32().Should().Be(1);
                 Variables(creature)["AI_FLAGS"].GetInt32().Should().Be(0);
+                Variables(creature)["VISIBILITY_OBJECT_ID"].GetString().Should().Be(tag.ToUpperInvariant(),
+                    "roaming monks must retain their instances and avoid area-bound respawn and return-home AI");
+                Variables(creature).Should().NotContainKey("VISIBILITY_HIDDEN_DEFAULT");
                 Variables(creature).Should().NotContainKey("ESHAN_PATROL_ROUTE");
                 Value(creature, "Appearance_Type").GetInt32().Should().Be(10009);
                 Value(creature, "Phenotype").GetInt32().Should().Be(0);

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Slicing: the register of the attempts in progress, by player. The attempts themselves are run by
-    /// <see cref="ISlicingSessionService"/>. The static facade <c>Service.Slicing</c> forwards to it.
+    /// <see cref="ISlicingSessionService"/>. Static callers reach the container's instance through <c>GameServices.Slicing</c>.
     /// </summary>
     public interface ISlicingService
     {

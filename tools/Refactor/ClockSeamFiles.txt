@@ -29,7 +29,7 @@ Domain/Character/StatService.cs
 Service/Perk.cs  # master-only (P2-ZD)
 Domain/Character/PerkService.cs
 Service/AbilityService/**
-Service/Craft.cs
+Service/Craft.cs  # master-only (P2-ZK)
 Domain/Crafting/CraftService.cs
 Native/PairedRangedPresentation.cs
 Native/OnAIActionAttackObject.cs

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Scavenging: owns the engine world of the scavenge sites. The visits themselves are run by
-    /// <see cref="IScavengeSessionsService"/>. The static facade <c>Service.Scavenge</c> forwards to it.
+    /// <see cref="IScavengeSessionsService"/>. Static callers reach the container's instance through <c>GameServices.Scavenge</c>.
     /// </summary>
     public interface IScavengeService
     {

@@ -401,6 +401,8 @@ namespace SWLOR.Game.Server.Domain.Crafting
             return integrity <= 0 && GetLocalInt(target, FailuresVariable) == 0 ? 100 : integrity;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()
         {
             var player = GetExitingObject();
@@ -408,6 +410,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                 Abort(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();

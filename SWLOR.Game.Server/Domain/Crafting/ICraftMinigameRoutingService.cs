@@ -6,8 +6,8 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Domain.Crafting;
 
 /// <summary>
-/// Chooses the window that crafts a skill's recipes. Every crafting skill registers an <see cref="ICraftMinigameRoute"/>. The static
-/// facade <c>Service.CraftService.Minigame.CraftMinigameRouting</c> forwards to it.
+/// Chooses the window that crafts a skill's recipes. Every crafting skill registers an <see cref="ICraftMinigameRoute"/>. Static
+/// callers reach the container's instance through <c>GameServices.CraftMinigameRouting</c>.
 /// </summary>
 public interface ICraftMinigameRoutingService
 {

@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Crafting;
 
 /// <summary>
 /// The parts of an experiment's life that need the database and the game engine: settling a player's experiments when they log in
-/// or out, and giving the Fabrication XP they and their jobs earn. The rules are in <see cref="ResearchExperimentLifecycle"/>. The
-/// static facade <c>Service.CraftService.Research.CraftResearchExperiment</c> forwards to it.
+/// or out, and giving the Fabrication XP they and their jobs earn. The rules are in <see cref="ResearchExperimentLifecycle"/>. Static
+/// callers reach the container's instance through <c>GameServices.CraftResearchExperiment</c>.
 /// </summary>
 public interface ICraftResearchExperimentService
 {

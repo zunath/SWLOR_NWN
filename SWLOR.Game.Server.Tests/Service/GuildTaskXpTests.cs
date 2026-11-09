@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -44,7 +45,7 @@ public class GuildTaskXpTests
     [Test]
     public void TheAwardIsFiftyPercentOfTheCharts()
     {
-        GuildTaskXp.XpPercent.Should().Be(50);
+        GuildTaskXpService.XpPercent.Should().Be(50);
     }
 
     [TestCase(GuildType.SmitheryGuild, SkillType.Smithery)]

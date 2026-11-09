@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The global bank: items a player has stored under their account, shared by every bank terminal. The static
-    /// facade <c>Service.Bank</c> forwards to the container's instance of this interface.
+    /// The global bank: items a player has stored under their account, shared by every bank terminal. Static
+    /// callers reach the container's instance of this interface through <c>GameServices.Bank</c>.
     /// </summary>
     public interface IBankService
     {

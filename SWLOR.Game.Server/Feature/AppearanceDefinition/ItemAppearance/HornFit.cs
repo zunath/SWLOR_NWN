@@ -23,7 +23,6 @@ public static class HornFit
     private const string AppliedYVariable = "HORN_FIT_Y";
     private const string AppliedRotateYVariable = "HORN_FIT_ROTATE_Y";
     private const string AppliedRotateZVariable = "HORN_FIT_ROTATE_Z";
-    private const string AppliedRotateXVariable = "HORN_FIT_ROTATE_X";
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -197,7 +196,7 @@ public static class HornFit
     {
         var saved = new HornFitOffset(GetLocalFloat(item, AppliedXVariable), GetLocalFloat(item, AppliedYVariable),
             GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable),
-            GetLocalFloat(item, AppliedRotateZVariable), GetLocalFloat(item, AppliedRotateXVariable));
+            GetLocalFloat(item, AppliedRotateZVariable));
         if (saved == default && fit == default)
             return;
         // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
@@ -208,7 +207,6 @@ public static class HornFit
         ApplyChannel(item, ObjectVisualTransform.TranslateZ, previous.TranslateZ, fit.TranslateZ);
         ApplyChannel(item, ObjectVisualTransform.RotateY, previous.RotateY, fit.RotateY);
         ApplyChannel(item, ObjectVisualTransform.RotateZ, previous.RotateZ, fit.RotateZ);
-        ApplyChannel(item, ObjectVisualTransform.RotateX, previous.RotateX, fit.RotateX);
         // The fit and its owner persist on the item, so reloading cannot compound the fit.
         if (fit == default)
         {
@@ -217,7 +215,6 @@ public static class HornFit
             DeleteLocalFloat(item, AppliedZVariable);
             DeleteLocalFloat(item, AppliedRotateYVariable);
             DeleteLocalFloat(item, AppliedRotateZVariable);
-            DeleteLocalFloat(item, AppliedRotateXVariable);
             DeleteLocalString(item, FittedItemVariable);
         }
         else
@@ -227,7 +224,6 @@ public static class HornFit
             SetLocalFloat(item, AppliedZVariable, fit.TranslateZ);
             SetLocalFloat(item, AppliedRotateYVariable, fit.RotateY);
             SetLocalFloat(item, AppliedRotateZVariable, fit.RotateZ);
-            SetLocalFloat(item, AppliedRotateXVariable, fit.RotateX);
             SetLocalString(item, FittedItemVariable, identity);
         }
     }

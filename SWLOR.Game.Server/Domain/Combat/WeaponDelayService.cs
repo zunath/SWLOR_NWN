@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -104,6 +105,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
         public void ApplyWeaponDelayFallback()
         {
             var item = GetPCItemLastEquipped();

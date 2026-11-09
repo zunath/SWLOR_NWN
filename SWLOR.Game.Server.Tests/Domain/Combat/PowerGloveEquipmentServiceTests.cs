@@ -110,9 +110,9 @@ public class PowerGloveEquipmentServiceTests
     {
         _world.Add(Companion, baseItem: BaseItem.CompanionPowerGlove);
         _world.Equip(Owner, InventorySlot.LeftHand, Companion);
-        _engine.SetLocalObject(Main, PowerGloveEquipment.CompanionVariable, Companion);
-        _engine.SetLocalObject(Companion, PowerGloveEquipment.MainWeaponVariable, Main);
-        _engine.SetLocalObject(Companion, PowerGloveEquipment.OwnerVariable, Owner);
+        _engine.SetLocalObject(Main, PowerGloveEquipmentService.CompanionVariable, Companion);
+        _engine.SetLocalObject(Companion, PowerGloveEquipmentService.MainWeaponVariable, Main);
+        _engine.SetLocalObject(Companion, PowerGloveEquipmentService.OwnerVariable, Owner);
     }
 
     [Test]
@@ -188,7 +188,7 @@ public class PowerGloveEquipmentServiceTests
     {
         _glove.EnsurePair(Owner);
         _world.Equip(Owner, InventorySlot.LeftHand, ItemWorld.ObjectInvalid);
-        _engine.SetLocalObject(Main, PowerGloveEquipment.CompanionVariable, ItemWorld.ObjectInvalid);
+        _engine.SetLocalObject(Main, PowerGloveEquipmentService.CompanionVariable, ItemWorld.ObjectInvalid);
         _locals.ClearCalls();
 
         _glove.EnsurePair(Owner);
@@ -389,8 +389,8 @@ public class PowerGloveEquipmentServiceTests
     public void ASavedCosmeticHandIsRebound_OnlyWhileThePlayerIsLoading()
     {
         Link();
-        _engine.SetLocalObject(Main, PowerGloveEquipment.CompanionVariable, ItemWorld.ObjectInvalid);
-        _engine.SetLocalObject(Companion, PowerGloveEquipment.MainWeaponVariable, ItemWorld.ObjectInvalid);
+        _engine.SetLocalObject(Main, PowerGloveEquipmentService.CompanionVariable, ItemWorld.ObjectInvalid);
+        _engine.SetLocalObject(Companion, PowerGloveEquipmentService.MainWeaponVariable, ItemWorld.ObjectInvalid);
         _world.SetPossessor(Companion, Owner);
         _engine.SetReturnHandler("GetArea", _ => ItemWorld.ObjectInvalid);
 
@@ -454,9 +454,9 @@ public class PowerGloveEquipmentServiceTests
     {
         _glove.GetEquipmentStatCopies(BaseItem.PowerGlove).Should().Be(2);
         _glove.GetEquipmentStatCopies(BaseItem.Pistol).Should().Be(1);
-        _glove.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipment.PairDescriptionNote);
-        _glove.GetPairDescription("Text.").Should().Be($"Text.\n{PowerGloveEquipment.PairDescriptionNote}");
-        _glove.GetPairDescription(PowerGloveEquipment.PairDescriptionNote).Should().Be(PowerGloveEquipment.PairDescriptionNote);
+        _glove.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipmentService.PairDescriptionNote);
+        _glove.GetPairDescription("Text.").Should().Be($"Text.\n{PowerGloveEquipmentService.PairDescriptionNote}");
+        _glove.GetPairDescription(PowerGloveEquipmentService.PairDescriptionNote).Should().Be(PowerGloveEquipmentService.PairDescriptionNote);
         _glove.CanRestoreSavedPair(true, false, true, true, true).Should().BeTrue();
         _glove.CanRestoreSavedPair(true, true, true, true, true).Should().BeFalse();
         _glove.IsPairItem(ItemWorld.ObjectInvalid).Should().BeFalse();

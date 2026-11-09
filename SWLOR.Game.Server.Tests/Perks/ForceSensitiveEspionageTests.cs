@@ -403,9 +403,9 @@ public class ForceSensitiveEspionageTests
             "a grant whose entry never happened still expires with its window");
         stealth.Should().Contain("var generation = ScheduleTimedExit(creature, durationSeconds);");
 
-        ReadSource("Service", "Stealth.cs").Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearGrantedStealthOnEnter()",
+        stealth.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleEnter\)\]\s+public void ClearGrantedStealthOnEnter\(\)",
             "a grant saved with the character must not survive a reconnect");
-        ReadSource("Service", "Stealth.cs").Should().Contain("[NWNEventHandler(ScriptName.OnModuleExit)]\n        public static void ClearGrantedStealthOnExit()");
+        stealth.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleExit\)\]\s+public void ClearGrantedStealthOnExit\(\)");
         var exitStart = stealth.IndexOf("public void OnStealthExited()", StringComparison.Ordinal);
         stealth[exitStart..stealth.IndexOf("public void ResolveSpotDetection()", StringComparison.Ordinal)]
             .Should().Contain("ClearGrantedStealth(creature);");

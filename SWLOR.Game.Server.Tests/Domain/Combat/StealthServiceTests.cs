@@ -163,7 +163,7 @@ public class StealthServiceTests
         _events.CountOf("SkipEvent").Should().Be(1);
         Messages.Should().Be(1);
 
-        _engine.SetLocalInt(Player, Stealth.CombatEntryWindowVariable, 1);
+        _engine.SetLocalInt(Player, StealthService.CombatEntryWindowVariable, 1);
         _stealth.GateStealthEntry();
         _events.CountOf("SkipEvent").Should().Be(1);
     }
@@ -245,7 +245,7 @@ public class StealthServiceTests
     {
         _stealthed.Add(Player);
         _inCombat.Add(Player);
-        _engine.SetLocalInt(Player, Stealth.CombatEntryWindowVariable, 1);
+        _engine.SetLocalInt(Player, StealthService.CombatEntryWindowVariable, 1);
         _stealth.RestStatus.Add(Player);
 
         _stealth.OnStealthEntered();

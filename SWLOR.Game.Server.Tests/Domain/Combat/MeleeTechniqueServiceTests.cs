@@ -18,6 +18,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -150,9 +151,9 @@ public class MeleeTechniqueServiceTests
         using var scope = facades.Install();
         _melee.PaidCost = 5;
 
-        SWLOR.Game.Server.Service.MeleeTechnique.TechniqueLanded += Handler;
+        MeleeTechnique.TechniqueLanded += Handler;
         Open(Opener());
-        SWLOR.Game.Server.Service.MeleeTechnique.TechniqueLanded -= Handler;
+        MeleeTechnique.TechniqueLanded -= Handler;
         Open(Opener());
 
         raised.Should().Equal(Enemy);

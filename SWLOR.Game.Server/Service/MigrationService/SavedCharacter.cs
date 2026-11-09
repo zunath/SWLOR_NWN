@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Node = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Node;
 using Field = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Field;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.MigrationService;
 

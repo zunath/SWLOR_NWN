@@ -32,7 +32,7 @@ public class TelegraphServiceTests
     private const uint Enemy = 10;
     private const uint FarEnemy = 11;
     private const uint DeadEnemy = 12;
-    private const int MaxRenderCount = SWLOR.Game.Server.Service.Telegraph.MaxRenderCount;
+    private const int MaxRenderCount = TelegraphService.MaxRenderCount;
 
     private readonly List<IDisposable> _scopes = new();
     private readonly Dictionary<uint, uint> _areaOf = new();

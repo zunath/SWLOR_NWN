@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -142,11 +143,11 @@ public static class TwinPistolEquipmentEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             // An off-hand gun that no longer belongs to the equipped item is a real stray.
-            DeleteLocalObject(spare, TwinPistolEquipment.MainWeaponVariable);
+            DeleteLocalObject(spare, TwinPistolEquipmentService.MainWeaponVariable);
             var judged = TwinPistolEquipmentValidation.TryGetHandErrors(actor, out _, out var companionError);
             ctx.Assert(judged, "A stray off hand is judged");
             ctx.AssertEqual(strayError, companionError, "A stray off-hand pistol is still reported");
-            SetLocalObject(spare, TwinPistolEquipment.MainWeaponVariable, main);
+            SetLocalObject(spare, TwinPistolEquipmentService.MainWeaponVariable, main);
         });
         AssertOwnedItems(ctx, actor, main, 1);
     }
@@ -232,12 +233,12 @@ public static class TwinPistolEquipmentEngineTests
         {
             await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
             spare = await WaitForPair(ctx, actor, main);
-            ctx.AssertEqual(1, OwnedItems(actor).Count(TwinPistolEquipment.IsGeneratedCompanion), "Each rapid equip leaves exactly one temporary gun");
+            ctx.AssertEqual(1, OwnedItems(actor).Count(item => TwinPistolEquipment.IsGeneratedCompanion(item)), "Each rapid equip leaves exactly one temporary gun");
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(spare));
             await WaitForRemovedPair(ctx, actor, main, spare);
-            ctx.AssertEqual(0, OwnedItems(actor).Count(TwinPistolEquipment.IsGeneratedCompanion), "Each rapid removal destroys the temporary gun");
+            ctx.AssertEqual(0, OwnedItems(actor).Count(item => TwinPistolEquipment.IsGeneratedCompanion(item)), "Each rapid removal destroys the temporary gun");
         }
-        ctx.AssertEqual(2, OwnedItems(actor).Count(TwinPistolEquipment.IsPairItem), "Transitions retain exactly the two originally acquired real items");
+        ctx.AssertEqual(2, OwnedItems(actor).Count(item => TwinPistolEquipment.IsPairItem(item)), "Transitions retain exactly the two originally acquired real items");
     }
 
     [EngineTest("Twin Pistol drop and transfer attempts cannot turn the temporary spare into an owned item", Category = "TwinPistolEquipment", TimeoutSeconds = 35f)]
@@ -262,7 +263,7 @@ public static class TwinPistolEquipmentEngineTests
         await ctx.WaitUntilAsync(() => !GetIsObjectValid(spare), 5f, "a forced transfer to destroy the temporary spare");
         await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) != main, 5f, "losing the spare to return the real item");
         ctx.AssertEqual(actor, GetItemPossessor(main), "A spare transfer preserves the real item's owner");
-        ctx.Assert(!OwnedItems(recipient).Any(TwinPistolEquipment.IsGeneratedCompanion), "The recipient retains no temporary gun");
+        ctx.Assert(!OwnedItems(recipient).Any(item => TwinPistolEquipment.IsGeneratedCompanion(item)), "The recipient retains no temporary gun");
         AssertOwnedItems(ctx, actor, main, 0);
     }
 
@@ -369,7 +370,7 @@ public static class TwinPistolEquipmentEngineTests
                 var properties = Properties(main);
                 var oldSpare = await WaitForPair(ctx, actor, main);
                 AssertMatchingRequirementsAndCaps(ctx, main, oldSpare, 0, 1);
-                player = await player.SaveAndReloadAsync(ctx, TwinPistolEquipment.ReleaseCompanions);
+                player = await player.SaveAndReloadAsync(ctx, creature => TwinPistolEquipment.ReleaseCompanions(creature));
                 actor = player.Creature;
                 await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.RestorePair(actor));
                 main = FindArchivedPair(ctx, actor, identity);
@@ -384,7 +385,7 @@ public static class TwinPistolEquipmentEngineTests
 
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(cycle == 0 ? main : spare));
                 await WaitForRemovedPair(ctx, actor, main, spare);
-                player = await player.SaveAndReloadAsync(ctx, TwinPistolEquipment.ReleaseCompanions);
+                player = await player.SaveAndReloadAsync(ctx, creature => TwinPistolEquipment.ReleaseCompanions(creature));
                 actor = player.Creature;
                 await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.RestorePair(actor));
                 main = FindArchivedPair(ctx, actor, identity);
@@ -459,7 +460,7 @@ public static class TwinPistolEquipmentEngineTests
         var items = OwnedItems(actor);
         var summary = string.Join(", ", items.Select(item =>
             $"{item:X}:{GetResRef(item)}:type={(int)GetBaseItemType(item)}:" +
-            $"pair={GetLocalInt(item, TwinPistolEquipment.PairVariable)}:archive={GetLocalString(item, "TWIN_ARCHIVE_ID")}"));
+            $"pair={GetLocalInt(item, TwinPistolEquipmentService.PairVariable)}:archive={GetLocalString(item, "TWIN_ARCHIVE_ID")}"));
         ctx.Log($"Restored owned items for {actor:X}: {summary}");
         var originals = items.Where(item => GetLocalString(item, "TWIN_ARCHIVE_ID") == identity).ToArray();
         ctx.AssertEqual(1, originals.Length, $"Native character reload retains exactly the original real item; observed={summary}");
@@ -521,8 +522,8 @@ public static class TwinPistolEquipmentEngineTests
     internal static void AssertOwnedItems(EngineTestContext ctx, uint actor, uint main, int temporaryCount)
     {
         var items = OwnedItems(actor);
-        ctx.AssertEqual(1, items.Count(TwinPistolEquipment.IsPairItem), "Exactly one originally acquired Twin Pistol item is owned");
-        ctx.AssertEqual(temporaryCount, items.Count(TwinPistolEquipment.IsGeneratedCompanion), "Only the equipped temporary spare may exist");
+        ctx.AssertEqual(1, items.Count(item => TwinPistolEquipment.IsPairItem(item)), "Exactly one originally acquired Twin Pistol item is owned");
+        ctx.AssertEqual(temporaryCount, items.Count(item => TwinPistolEquipment.IsGeneratedCompanion(item)), "Only the equipped temporary spare may exist");
         ctx.Assert(items.Contains(main), "The exact real item remains equipped or in owned storage");
         ctx.AssertEqual(actor, GetItemPossessor(main), "The real item belongs to the expected player");
         ctx.AssertEqual(1, GetItemStackSize(main), "The real item is never duplicated into a stack");

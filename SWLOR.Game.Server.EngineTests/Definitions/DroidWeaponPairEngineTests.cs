@@ -12,11 +12,11 @@ public static partial class DroidInventoryEngineTests
 {
     [EngineTest("Droids wield a Power Glove pair that rebuilds its other hand through two resummons", Category = "DroidInventory", TimeoutSeconds = 120)]
     public static Task DroidPowerGlovePair(EngineTestContext ctx) => VerifyDroidWeaponPair(ctx, "b_pglove",
-        BaseItem.CompanionPowerGlove, PowerGloveEquipment.IsActivePair);
+        BaseItem.CompanionPowerGlove, creature => PowerGloveEquipment.IsActivePair(creature));
 
     [EngineTest("Droids wield a Twin Pistols pair that rebuilds its off-hand pistol through two resummons", Category = "DroidInventory", TimeoutSeconds = 120)]
     public static Task DroidTwinPistolPair(EngineTestContext ctx) => VerifyDroidWeaponPair(ctx, "b_twinpistol",
-        BaseItem.CompanionPistol, TwinPistolEquipment.IsActivePair);
+        BaseItem.CompanionPistol, creature => TwinPistolEquipment.IsActivePair(creature));
 
     private static async Task VerifyDroidWeaponPair(EngineTestContext ctx, string resref, BaseItem companionType,
         Func<uint, bool> isActivePair)

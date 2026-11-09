@@ -1,44 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service.AnimationService;
 
 namespace SWLOR.Game.Server.Service;
-
-/// <summary>
-/// Changes the engine's swing while a weapon ability is readied; never queues an extra attack. The logic lives in
-/// <see cref="IQueuedAttackAnimationService"/>; every member forwards to the container's instance.
-/// </summary>
-public static class QueuedAttackAnimation
-{
-    private static IQueuedAttackAnimationService Instance => FacadeAccessor.Resolve<IQueuedAttackAnimationService>();
-
-    /// <summary>Equipment owners reapply their current mappings after temporary swings release.</summary>
-    public static event Action<uint> RestoreEquipmentAnimations
-    {
-        add => Instance.AddRestoreEquipmentAnimationsHandler(value);
-        remove => Instance.RemoveRestoreEquipmentAnimationsHandler(value);
-    }
-
-    /// <summary>Subscribes to <see cref="RestoreEquipmentAnimations"/>.</summary>
-    public static void AddRestoreEquipmentAnimationsHandler(Action<uint> handler) =>
-        Instance.AddRestoreEquipmentAnimationsHandler(handler);
-
-    /// <summary>Unsubscribes from <see cref="RestoreEquipmentAnimations"/>.</summary>
-    public static void RemoveRestoreEquipmentAnimationsHandler(Action<uint> handler) =>
-        Instance.RemoveRestoreEquipmentAnimationsHandler(handler);
-
-    public static void Begin(uint creature, AnimationClip clip) => Instance.Begin(creature, clip);
-
-    public static void Stop(uint creature) => Instance.Stop(creature);
-
-    /// <summary>
-    /// The swing keys a waiting queued ability owns. Its playback token is session state, so a clip
-    /// a character file brought back after a restart owns nothing.
-    /// </summary>
-    public static IReadOnlyCollection<string> GetActiveSwingKeys(uint creature) => Instance.GetActiveSwingKeys(creature);
-}
 
 /// <summary>Owns only melee swing keys, leaving ready, parry, throw, and custom emote mappings alone.</summary>
 public sealed class QueuedAttackAnimationPlayback

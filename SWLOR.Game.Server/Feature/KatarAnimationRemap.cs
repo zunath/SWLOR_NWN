@@ -26,8 +26,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterEquipmentAnimationRestoration()
         {
-            QueuedAttackAnimation.RestoreEquipmentAnimations -= RestoreCurrentEquipmentAnimations;
-            QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
+            QueuedAttackAnimation.RemoveRestoreEquipmentAnimationsHandler(RestoreCurrentEquipmentAnimations);
+            QueuedAttackAnimation.AddRestoreEquipmentAnimationsHandler(RestoreCurrentEquipmentAnimations);
         }
 
         private static void RestoreCurrentEquipmentAnimations(uint creature) =>

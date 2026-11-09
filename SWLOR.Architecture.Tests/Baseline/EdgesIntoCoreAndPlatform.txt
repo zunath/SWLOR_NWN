@@ -33,7 +33,7 @@ Ability -> Platform/Composition | 10
 Ability -> Platform/Core | 13
 AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-Feature/AbilityDefinition -> Platform/Composition | 397
+Feature/AbilityDefinition -> Platform/Composition | 400
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
@@ -109,17 +109,17 @@ Disguise -> Platform/Core | 1
 Disguise -> Platform/Entity | 27
 EspionageInfiltration -> Platform/Core | 3
 EspionageInfiltration -> Platform/Entity | 1
-Feature/AppearanceDefinition -> Platform/Composition | 36
+Feature/AppearanceDefinition -> Platform/Composition | 39
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
-Feature/PerkDefinition -> Platform/Composition | 7
+Feature/PerkDefinition -> Platform/Composition | 8
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 101
+Feature/StatusEffectDefinition -> Platform/Composition | 107
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Core | 1
 Language -> Platform/Entity | 8
-Perk -> Platform/Composition | 31
+Perk -> Platform/Composition | 32
 Perk -> Platform/Core | 4
 Perk -> Platform/Entity | 15
 Perk -> Platform/Enumeration | 10
@@ -163,7 +163,7 @@ Enmity -> Log | 1
 PowerGloveEquipment -> ColorToken | 3
 PowerGloveEquipment -> Feature/MigrationDefinition | 1
 PvpCombat -> ColorToken | 2
-QueuedAttackAnimation -> Animation | 3
+QueuedAttackAnimation -> Animation | 2
 QueuedAttackAnimation -> INamedAnimationRuntime | 1
 QueuedAttackAnimationPlayback -> Animation | 1
 QueuedAttackAnimationPlayback -> INamedAnimationRuntime | 5
@@ -179,8 +179,8 @@ TwinPistolEquipment -> ColorToken | 2
 TwinPistolEquipment -> Feature/MigrationDefinition | 1
 TwinPistolMastery -> DB | 3
 
-# Combat -> Platform (44 edges)
-Combat -> Platform/Composition | 22
+# Combat -> Platform (32 edges)
+Combat -> Platform/Composition | 23
 Combat -> Platform/Core | 53
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3
@@ -194,35 +194,23 @@ CombatRecorder -> Platform/Root | 1
 Death -> Platform/Core | 4
 Death -> Platform/Entity | 8
 Enmity -> Platform/Core | 12
-MeleeTechnique -> Platform/Composition | 1
-MeleeTechnique -> Platform/Core | 22
-OrdinaryAttackTraits -> Platform/Composition | 1
+MeleeTechnique -> Platform/Core | 20
 OrdinaryAttackTraits -> Platform/Core | 3
-PairedRangedTraits -> Platform/Composition | 1
 PairedRangedTraits -> Platform/Core | 17
 Poisons -> Platform/Core | 1
-PowerGloveEquipment -> Platform/Composition | 1
 PvpCombat -> Platform/Core | 4
-QueuedAttackAnimation -> Platform/Composition | 1
 Recast -> Platform/Core | 4
 Recast -> Platform/Entity | 3
 Recast -> Platform/Extension | 1
 Resistance -> Platform/Core | 1
 Resistance -> Platform/Entity | 4
-Stealth -> Platform/Composition | 1
 Stealth -> Platform/Core | 11
 Stealth -> Platform/Native | 1
 Targeting -> Platform/Core | 1
-Telegraph -> Platform/Composition | 1
 Telegraph -> Platform/Core | 7
 TemporaryStatModifier -> Platform/Core | 5
-TwinPistolAbility -> Platform/Composition | 1
 TwinPistolAbility -> Platform/Native | 3
-TwinPistolEquipment -> Platform/Composition | 1
-TwinPistolMastery -> Platform/Composition | 1
 TwinPistolMastery -> Platform/Entity | 1
-WeaponAttackEligibility -> Platform/Composition | 1
-WeaponDelay -> Platform/Composition | 1
 WeaponDelay -> Platform/Core | 2
 
 # Companions -> Core (7 edges)
@@ -265,7 +253,7 @@ Feature/DialogDefinition -> Platform/Composition | 29
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
-Feature/MigrationDefinition -> Platform/Composition | 51
+Feature/MigrationDefinition -> Platform/Composition | 54
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
@@ -277,7 +265,7 @@ Log -> Platform/Core | 1
 Log -> Platform/Enumeration | 34
 Log -> Platform/Extension | 1
 Log -> Platform/Root | 3
-Migration -> Platform/Composition | 15
+Migration -> Platform/Composition | 18
 Migration -> Platform/Core | 4
 Migration -> Platform/Entity | 48
 Migration -> Platform/Extension | 3
@@ -346,7 +334,7 @@ Spawn -> Random | 4
 Spawn -> Walkmesh | 3
 
 # Creatures -> Platform (9 edges)
-AI -> Platform/Composition | 7
+AI -> Platform/Composition | 9
 AI -> Platform/Core | 25
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Core | 6
@@ -452,7 +440,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (138 edges)
+# Gameplay -> Platform (140 edges)
 Feature.AchievementProgression -> Platform/Composition | 7
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
@@ -506,16 +494,17 @@ Feature.HolonetTerminal -> Platform/Core | 1
 Feature.InstantItemUse -> Platform/Core | 1
 Feature.Jukebox -> Platform/Composition | 1
 Feature.Jukebox -> Platform/Core | 1
-Feature.KatarAnimationRemap -> Platform/Composition | 3
+Feature.KatarAnimationRemap -> Platform/Composition | 5
 Feature.KatarAnimationRemap -> Platform/Core | 3
 Feature.KatarAnimationRemap -> Platform/Native | 1
+Feature.LightsaberAudio -> Platform/Composition | 2
 Feature.LightsaberAudio -> Platform/Core | 2
 Feature.MiniMaps -> Platform/Composition | 1
 Feature.MiniMaps -> Platform/Core | 3
 Feature.NaturalRegeneration -> Platform/Composition | 2
 Feature.NaturalRegeneration -> Platform/Core | 1
 Feature.NaturalRegeneration -> Platform/Entity | 2
-Feature.OrdinaryAttackCombatLifecycle -> Platform/Composition | 1
+Feature.OrdinaryAttackCombatLifecycle -> Platform/Composition | 7
 Feature.OrdinaryAttackCombatLifecycle -> Platform/Core | 7
 Feature.PersistentHitPoints -> Platform/Composition | 2
 Feature.PersistentHitPoints -> Platform/Core | 2
@@ -529,7 +518,7 @@ Feature.PersistentMapPin -> Platform/Entity | 6
 Feature.PersistentMapProgression -> Platform/Composition | 3
 Feature.PersistentMapProgression -> Platform/Core | 2
 Feature.PersistentMapProgression -> Platform/Entity | 2
-Feature.PistolAnimationRemap -> Platform/Composition | 2
+Feature.PistolAnimationRemap -> Platform/Composition | 5
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
 Feature.PistolBaseItemCompatibility -> Platform/Core | 1
@@ -549,7 +538,7 @@ Feature.PlayerStatusWindow -> Platform/Entity | 1
 Feature.PlayerTemporaryEffects -> Platform/Composition | 4
 Feature.PlayerTemporaryEffects -> Platform/Core | 2
 Feature.PlayerTemporaryEffects -> Platform/Entity | 2
-Feature.PowerGlovePairLifecycle -> Platform/Composition | 1
+Feature.PowerGlovePairLifecycle -> Platform/Composition | 15
 Feature.PowerGlovePairLifecycle -> Platform/Core | 14
 Feature.ProceduralTreasure -> Platform/Composition | 1
 Feature.ProceduralTreasure -> Platform/Core | 1
@@ -577,17 +566,18 @@ Feature.TlkOverrides -> Platform/Composition | 1
 Feature.TlkOverrides -> Platform/Core | 1
 Feature.TrashCan -> Platform/Composition | 2
 Feature.TrashCan -> Platform/Core | 4
-Feature.TwinPistolCombatLifecycle -> Platform/Composition | 1
+Feature.TwinPistolCombatLifecycle -> Platform/Composition | 7
 Feature.TwinPistolCombatLifecycle -> Platform/Core | 9
 Feature.TwinPistolCombatLifecycle -> Platform/Native | 3
-Feature.TwinPistolEquipmentValidation -> Platform/Composition | 2
+Feature.TwinPistolEquipmentValidation -> Platform/Composition | 7
 Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
-Feature.TwinPistolPairLifecycle -> Platform/Composition | 1
+Feature.TwinPistolPairLifecycle -> Platform/Composition | 9
 Feature.TwinPistolPairLifecycle -> Platform/Core | 8
-Feature.UnarmedMastery -> Platform/Composition | 1
+Feature.UnarmedMastery -> Platform/Composition | 2
 Feature.UnarmedMastery -> Platform/Core | 1
+Feature.UnarmedTechniqueProfile -> Platform/Composition | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
-Feature.UsePerkFeat -> Platform/Composition | 27
+Feature.UsePerkFeat -> Platform/Composition | 30
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerRestart -> Platform/Composition | 1
 ServerTask -> Platform/Root | 4
@@ -758,7 +748,7 @@ Gui -> Log | 1
 # UI -> Platform (14 edges)
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 700
+Feature/GuiDefinition -> Platform/Composition | 701
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21

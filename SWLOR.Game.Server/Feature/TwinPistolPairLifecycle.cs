@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature;
 
@@ -52,7 +53,7 @@ public static class TwinPistolPairLifecycle
         var item = GetModuleItemLost();
         if (TwinPistolEquipment.IsDestroyingCompanion(item)) return;
         var actor = TwinPistolEquipment.IsGeneratedCompanion(item)
-            ? GetLocalObject(item, TwinPistolEquipment.OwnerVariable) : GetModuleItemLostBy();
+            ? GetLocalObject(item, TwinPistolEquipmentService.OwnerVariable) : GetModuleItemLostBy();
         if (!TwinPistolEquipment.IsChanging(actor) &&
             (TwinPistolEquipment.IsPairItem(item) || TwinPistolEquipment.IsGeneratedCompanion(item)))
         {
@@ -66,7 +67,7 @@ public static class TwinPistolPairLifecycle
     {
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
         if (!TwinPistolEquipment.IsGeneratedCompanion(item)) return;
-        var owner = GetLocalObject(item, TwinPistolEquipment.OwnerVariable);
+        var owner = GetLocalObject(item, TwinPistolEquipmentService.OwnerVariable);
         if (!GetIsObjectValid(owner) || TwinPistolEquipment.IsChanging(owner)) return;
         EventsPlugin.SkipEvent();
         if (TwinPistolEquipment.RemovePair(owner, item)) TwinPistolEquipment.DestroySpare(item);

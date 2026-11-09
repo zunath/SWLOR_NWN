@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             bool isHostile,
             TelegraphType type,
             ApplyTelegraphEffect action,
-            bool isPersistentAreaIndicator = false);
+            bool isPersistentAreaIndicator = false,
+            bool isImpactFlash = false);
 
         /// <summary>
         /// Cancels a telegraph effect before it completes.

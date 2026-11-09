@@ -440,7 +440,7 @@ Feature.UsePerkFeat -> Messaging | 4
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (140 edges)
+# Gameplay -> Platform (142 edges)
 Feature.AchievementProgression -> Platform/Composition | 7
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
@@ -476,6 +476,8 @@ Feature.DMToolbarWindow -> Platform/Core | 6
 Feature.DisableAttackOfOpportunity -> Platform/Core | 1
 Feature.DisableDefaultGameWindows -> Platform/Core | 1
 Feature.DoorScripts -> Platform/Core | 2
+Feature.EchaniTempleMonks -> Platform/Composition | 2
+Feature.EchaniTempleMonks -> Platform/Core | 1
 Feature.EquipmentRestrictions -> Platform/Composition | 5
 Feature.EquipmentRestrictions -> Platform/Core | 4
 Feature.EquipmentStats -> Platform/Composition | 28
@@ -793,7 +795,7 @@ Weather -> DB | 3
 Weather -> Log | 1
 
 # World -> Platform (38 edges)
-Area -> Platform/Core | 4
+Area -> Platform/Core | 5
 Area -> Platform/Entity | 1
 Feature/PropertyLayoutDefinition -> Platform/Composition | 7
 Feature/PropertyLayoutDefinition -> Platform/Core | 2

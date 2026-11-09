@@ -277,6 +277,7 @@ client_conn_bef
   action      SWLOR.Game.Server.Feature.ClientVersionCheck.CheckVersion
 
 client_disc_bef
+  action      SWLOR.Game.Server.Domain.World.AreaService.DisconnectBefore
   action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.RestoreFrozenInspiredOnDisconnect
 
 condition
@@ -365,6 +366,7 @@ crea_disturb_aft
 crea_hb_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureHeartbeat
   action      SWLOR.Game.Server.Feature.CivilianPatrol.Heartbeat
+  action      SWLOR.Game.Server.Feature.EchaniTempleMonks.Heartbeat
 
 crea_leash_end
   action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip

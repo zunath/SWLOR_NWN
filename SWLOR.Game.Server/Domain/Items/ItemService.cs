@@ -1513,13 +1513,13 @@ namespace SWLOR.Game.Server.Domain.Items
                 return false;
 
             // Stack size cannot be smaller than the amount we're reducing by.
-            if (stackSize < reduceBy)
+            if (stackSize < amount)
                 return false;
 
             if (_combatRecorder.IsRecording)
                 _combatRecorder.RecordItemStackReduced(item, amount);
 
-            var remaining = stackSize - reduceBy;
+            var remaining = stackSize - amount;
             if (remaining <= 0)
             {
                 DestroyObject(item);

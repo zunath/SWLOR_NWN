@@ -35,6 +35,12 @@ Hostile telegraphs from associates tracked as party members use gray; their bene
 use green. The current ability integrations do not create a neutral, informational telegraph;
 add a fifth semantic color only if that use case is introduced.
 
+### Visibility
+
+Each viewer's shapes are chosen separately. Enemy threats claim the 16 render slots first, then
+warnings, then lingering area indicators. Impact flashes mark an area that was already struck, so a
+viewer sees only their own flashes and those from enemies.
+
 ## Usage
 
 ### Basic Telegraph Creation

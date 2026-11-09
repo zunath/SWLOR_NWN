@@ -23,6 +23,41 @@ public static partial class MigrationEngineTests
     private const string CurrentLootLabel = "already migrated loot";
     private static readonly Assembly SavedDataSweepAssembly = typeof(EquipmentTypeMigration).Assembly;
 
+    [EngineTest("Building icons match the native migration through repeated save and reload",
+        Category = "BuildingIcons", TimeoutSeconds = 120f)]
+    public static async Task BuildingIconsMatchNative(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        foreach (var (resref, model) in BuildingIconMigration.Models)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 202);
+                SetLocalString(item, "BUILDING_ICON_OWNER", resref);
+                var original = ObjectPlugin.Serialize(item);
+                ctx.Assert(EnzymeBaseItemMigration.MigrateSavedObject(original, out var data), $"{resref} saved conversion runs");
+                ctx.Assert(ItemIconMigration.MigrateObject(item), $"{resref} native conversion runs");
+                ctx.Assert(GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0) == model, $"{resref} native model");
+                ctx.Assert(Item.GetIconResref(item) == $"iit_midmisc_{model:000}", $"{resref} native icon lookup");
+                for (var pass = 0; pass < 3; pass++)
+                {
+                    var restored = ObjectPlugin.Deserialize(data);
+                    ctx.Assert(GetIsObjectValid(restored), $"{resref} reload {pass}");
+                    ctx.Assert(GetItemAppearance(restored, ItemAppearanceType.SimpleModel, 0) == model, $"{resref} saved/native parity");
+                    ctx.Assert(GetResRef(restored) == resref && GetItemStackSize(restored) == 1, $"{resref} identity and quantity");
+                    ctx.Assert(GetLocalString(restored, "BUILDING_ICON_OWNER") == resref, $"{resref} ownership marker");
+                    ctx.Assert(!EnzymeBaseItemMigration.MigrateSavedObject(data, out _), $"{resref} retry is idempotent");
+                    data = ObjectPlugin.Serialize(restored);
+                    DestroyObject(restored);
+                }
+                DestroyObject(item);
+            });
+        }
+        ctx.SetResultDetail("All 18 building blueprints: native icon lookup, saved/native model parity, identity, quantity and locals across three reloads.");
+    }
+
     /// <summary>
     /// The saved-data sweep must save what the engine sweep saves. Both converters run on the same legacy payloads,
     /// both results load into the engine, and everything the engine reads back is compared. The production-copy
@@ -72,6 +107,17 @@ public static partial class MigrationEngineTests
 
         // A catalog pistol saved with arrow ammunition from its legacy bow base item: the engine re-saves it
         // with the ammunition type it derives from the base item, the saved-data sweep keeps the saved value.
+        foreach (var resref in BuildingIconMigration.Models.Keys)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 202);
+                fixtures.Add(($"legacy building {resref}", ObjectPlugin.Serialize(item), true));
+                DestroyObject(item);
+            });
+        }
+
         var arrowPistol = await CreateItemAsync(ctx, owner, "raider_pistol", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
 /// Moves incubation enzymes from their 2x2 base items to the 1x1 <see cref="BaseItem.Enzyme"/>, with the model that
-/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>). The saved-data rule for characters and stored items.
+/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>), and updates building icons in the same saved-data visit.
 /// </summary>
 public static class EnzymeBaseItemMigration
 {
@@ -37,7 +37,7 @@ public static class EnzymeBaseItemMigration
         StoredObjectData.MigrateEnzymeData(original, out migrated);
 
     /// <summary>True for an enzyme still on its 2x2 base item; <paramref name="model"/> is its new appearance.</summary>
-    /// <summary>Moves the enzymes a character carries, wears or holds in bags to the 1x1 enzyme item.</summary>
+    /// <summary>Updates enzyme sizes and building icons in carried, worn and nested items.</summary>
     internal static void MigrateCharacter(SavedCharacter character)
     {
         var visited = new HashSet<StoredObjectData.Node>();

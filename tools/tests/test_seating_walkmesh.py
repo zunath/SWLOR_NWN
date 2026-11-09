@@ -11,7 +11,7 @@ class SeatingWalkmeshTests(unittest.TestCase):
     models = {"daf_sw068": "daf_sw068.pwk", "aswtor_125": "ASWTOR_125.pwk"}
 
     def test_fountain_and_shelter_seat_use_points_are_reachable(self):
-        objects = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())["Placeable List"]["value"]
+        objects = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text(encoding="cp1252"))["Placeable List"]["value"]
         seats = [p for p in objects if p["Appearance"]["value"] == 1604]
         seat_mesh = (ROOT / "SWLOR_Haks/sw_plc_cep/zlc_x94.pwk").read_text()
         use = re.search(r"node dummy \S+_use01\s+parent \S+\s+position (\S+) (\S+)", seat_mesh)
@@ -60,7 +60,7 @@ class SeatingWalkmeshTests(unittest.TestCase):
         use_x, use_y = map(float, use.groups())
         counts = dict.fromkeys(self.models, 0)
         for area in ("veles_exterior", "veles_sheriff"):
-            objects = json.loads((ROOT / f"Module/git/{area}.git.json").read_text())["Placeable List"]["value"]
+            objects = json.loads((ROOT / f"Module/git/{area}.git.json").read_text(encoding="cp1252"))["Placeable List"]["value"]
             seats = [p for p in objects if p["Appearance"]["value"] == 1604]
             for prop in objects:
                 model = rows[prop["Appearance"]["value"]]["ModelName"].lower()

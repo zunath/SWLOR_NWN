@@ -14,6 +14,7 @@ using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Toolset.Workspace
 {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
@@ -18,11 +19,18 @@ using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketC
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The player market: the logic and state that used to be static in <c>Service.PlayerMarket</c>, moved here
-    /// unchanged. The facade still carries the event handlers and forwards every call to the container's instance.
+    /// The player market: the logic and state that used to be a static class, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through <c>GameServices.PlayerMarket</c>.
     /// </summary>
     public class PlayerMarketService : IPlayerMarketService
     {
+        /// <summary>
+        /// A blueprint local int that keeps an item off the market.
+        /// </summary>
+        public const string NoMarketListingVariable = "NO_MARKET_LISTING";
+
+        public const int MaxListingsPerMarket = 25;
+
         private readonly IDBService _db;
         private readonly IBeastMasteryService _beastMastery;
         private readonly ICraftService _craft;
@@ -51,12 +59,14 @@ namespace SWLOR.Game.Server.Domain.Economy
             _property = property;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             LoadMarketCategories();
             LoadMarkets();
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RemoveOldListings()
         {
             var query = new DBQuery<MarketItem>()
@@ -77,6 +87,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             }
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void CheckMarketTill()
         {
             var player = GetEnteringObject();

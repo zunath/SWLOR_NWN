@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.ScavengeService;
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         public double SecondsUntilNextAction(ScavengeSession session) => Lifecycle.SecondsUntilNextAction(session);
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void AbandonOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         }
 
         /// <inheritdoc />
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void AbandonOnExit()
         {
             var player = GetExitingObject();

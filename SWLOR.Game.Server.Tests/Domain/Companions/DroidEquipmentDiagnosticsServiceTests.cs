@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Companions;
 
@@ -382,7 +383,6 @@ public class DroidEquipmentDiagnosticsServiceTests
                at SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.GetStackTrace()
                at SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.Record(String change, UInt32 droid, UInt32 item, String slot) in C:\x\DroidEquipmentDiagnosticsService.cs:line 40
                at SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnUnequipped() in C:\x\DroidEquipmentDiagnosticsService.cs:line 33
-               at SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipped() in C:\x\DroidEquipmentDiagnostics.cs:line 12
                at SWLOR.Game.Server.Core.ScriptDispatcher.Run(String script)
                at SWLOR.NWN.API.NWNX.CreaturePlugin.RunUnequip(UInt32 creature, UInt32 item)
                at SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.ReturnEquippedItem(UInt32 creature, UInt32 item, InventorySlot slot) in C:\x\T.cs:line 116
@@ -401,7 +401,7 @@ public class DroidEquipmentDiagnosticsServiceTests
     {
         const string stack = """
                at System.Environment.get_StackTrace()
-               at SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipped()
+               at SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnUnequipped()
                at SWLOR.Game.Server.Core.ScriptDispatcher.Run(String script)
             """;
 

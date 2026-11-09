@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {

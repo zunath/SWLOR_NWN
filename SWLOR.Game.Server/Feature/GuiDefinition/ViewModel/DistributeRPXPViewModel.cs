@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -232,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(Player))
                 return "Beast not found - no XP accepted";
 
-            if (dbBeast.Level >= BeastMastery.MaxLevel)
+            if (dbBeast.Level >= BeastMasteryService.MaxLevel)
                 return "Beast at max level - no XP accepted";
 
             var levelCap = BeastMastery.GetBeastLevelCap(Perk.GetPerkLevel(Player, PerkType.Tame));

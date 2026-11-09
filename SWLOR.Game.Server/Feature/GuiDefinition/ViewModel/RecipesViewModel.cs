@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -692,7 +693,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return false;
                 }
 
-                if (blueprint.Level >= Craft.MaxResearchLevel)
+                if (blueprint.Level >= CraftService.MaxResearchLevel)
                 {
                     FloatingTextStringOnCreature($"Blueprint cannot be researched any more.", Player, false);
                     return false;

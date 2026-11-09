@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
         {
             var player = GetLastUsedBy();
             var bank = OBJECT_SELF;
-            var failure = Service.Bank.GetCityBankAccessFailure(player, bank);
+            var failure = GameServices.Bank.GetCityBankAccessFailure(player, bank);
 
             if (!string.IsNullOrWhiteSpace(failure))
             {
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 SetLocalObject(waypoint, "BANK_TERMINAL_PLACEABLE", placeable);
             }
 
-            Service.Bank.SetCityBankId(placeable, cityId);
+            GameServices.Bank.SetCityBankId(placeable, cityId);
             SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
         }
 

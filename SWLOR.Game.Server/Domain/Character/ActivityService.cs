@@ -1,10 +1,11 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.ActivityService;
 
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The "busy" status of players and creatures: the logic that used to be static in <c>Service.Activity</c>,
-    /// moved here unchanged. The facade keeps the event handlers and forwards every call to the container's instance.
+    /// moved here unchanged. The event handlers run on the container's instance.
     /// </summary>
     public class ActivityService : IActivityService
     {
@@ -33,12 +34,14 @@ namespace SWLOR.Game.Server.Domain.Character
             DeleteLocalInt(target, "BUSY_TYPE");
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void WipeStatusOnEntry()
         {
             var player = GetEnteringObject();
             ClearBusy(player);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public void WipeStatusOnDeath()
         {
             var player = GetLastPlayerDied();

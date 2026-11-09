@@ -3,9 +3,9 @@ using SWLOR.Game.Server.Service.NPCService;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// The NPC groups: the display details of every <see cref="NPCGroupType"/>, cached when the module loads. The
-    /// static facade <c>Service.NPCGroup</c> forwards to the container's instance of this interface and keeps the
-    /// event handler.
+    /// The NPC groups: the display details of every <see cref="NPCGroupType"/>, cached when the module loads. Static
+    /// callers reach the container's instance through <c>GameServices.NPCGroup</c>; the event handler is on
+    /// <see cref="NPCGroupService"/>.
     /// </summary>
     public interface INPCGroupService
     {

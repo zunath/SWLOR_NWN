@@ -20,8 +20,9 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
-    /// The quest registry and the quest event handlers: the logic that used to be static in <c>Service.Quest</c>, moved here
-    /// unchanged. The facade keeps the event handlers and forwards every call to the container's instance. The quest
+    /// The quest registry and the quest event handlers: the logic that used to be static in <c>Quest</c>, moved here
+    /// unchanged. The event handlers run on the container's instance; static callers reach it through
+    /// <c>GameServices.Quest</c>. The quest
     /// caches are this instance's own state; the boot handler (<c>CacheData</c>) fills them.
     /// </summary>
     public class QuestService : IQuestService
@@ -63,6 +64,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             RegisterQuests();
@@ -150,6 +152,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LoadPlayerQuests()
         {
             var player = GetEnteringObject();
@@ -417,6 +420,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
@@ -496,6 +500,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When an item collector placeable is opened,
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestCollectOpen)]
         public void OpenItemCollector()
         {
             var container = OBJECT_SELF;
@@ -552,6 +557,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When an item collector placeable is closed, clear its inventory and destroy it.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestCollectClosed)]
         public void CloseItemCollector()
         {
             ReleaseItemCollectorPlayer(OBJECT_SELF);
@@ -569,6 +575,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When an item collector placeable is disturbed,
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestCollectDisturbed)]
         public void DisturbItemCollector()
         {
             var type = GetInventoryDisturbType();
@@ -702,6 +709,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player uses a quest placeable, handle the progression.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestPlaceable)]
         public void UseQuestPlaceable()
         {
             var player = GetLastUsedBy();
@@ -713,6 +721,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player enters a quest trigger, handle the progression.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestTrigger)]
         public void EnterQuestTrigger()
         {
             var player = GetEnteringObject();

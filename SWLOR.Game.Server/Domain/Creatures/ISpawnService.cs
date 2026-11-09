@@ -1,8 +1,9 @@
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// The spawn system: spawn tables, hand-placed and table spawns per area, queued respawns and despawns. The
-    /// static <c>Service.Spawn</c> forwards to the container's instance of this interface.
+    /// The spawn system: spawn tables, hand-placed and table spawns per area, queued respawns and despawns. Static
+    /// callers reach the container's instance through <c>GameServices.Spawn</c>; the event handlers are on
+    /// <see cref="SpawnService"/>.
     /// </summary>
     public interface ISpawnService
     {

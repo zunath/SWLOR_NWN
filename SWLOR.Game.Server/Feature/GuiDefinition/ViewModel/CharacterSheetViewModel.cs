@@ -20,6 +20,7 @@ using System.Linq;
 using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -1335,8 +1336,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = DB.Get<Beast>(beastId);
 
-                SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+                SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
                 APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
@@ -1439,8 +1440,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beastId = BeastMastery.GetBeastId(_target);
             var dbBeast = DB.Get<Beast>(beastId);
 
-            SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-            APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+            SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
             APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             RefreshCharacterStatsList();
         }

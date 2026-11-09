@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
     /// Lifecycle of player-authored quest contracts: draft creation, reward escrow, publishing, takedown and
-    /// cancellation, expiry, and delivery claiming. The static facade <c>Service.QuestContractBoard</c> forwards to the
-    /// container's instance of this interface and keeps the event handlers and the constants.
+    /// cancellation, expiry, and delivery claiming. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.QuestContractBoard</c>; the event handlers are on <see cref="QuestContractBoardService"/>.
     /// </summary>
     public interface IQuestContractBoardService
     {

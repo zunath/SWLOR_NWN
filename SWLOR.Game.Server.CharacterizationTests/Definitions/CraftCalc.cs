@@ -14,8 +14,13 @@ namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 /// </summary>
 internal static class CraftCalc
 {
+    private static readonly Assembly ServerAssembly = typeof(RecipeDetail).Assembly;
+
     private static readonly Type InstanceType =
-        typeof(Craft).Assembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftService");
+        ServerAssembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftService");
+
+    // Master's static class; the branch has none once its facade is removed.
+    private static readonly Type StaticType = ServerAssembly.GetType("SWLOR.Game.Server.Service.Craft");
 
     private static readonly object Instance = InstanceType == null
         ? null
@@ -25,13 +30,13 @@ internal static class CraftCalc
     private static object Build(Type type) =>
         Activator.CreateInstance(type, type.GetConstructors()[0].GetParameters()
             .Select(parameter => parameter.ParameterType.Name == "ISkillService"
-                ? Build(typeof(Craft).Assembly.GetType("SWLOR.Game.Server.Domain.Character.SkillService"))
+                ? Build(ServerAssembly.GetType("SWLOR.Game.Server.Domain.Character.SkillService"))
                 : null)
             .ToArray());
 
     private static object Call(string name, params object[] arguments)
     {
-        var method = (Instance == null ? typeof(Craft) : InstanceType).GetMethod(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+        var method = (Instance == null ? StaticType : InstanceType).GetMethod(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
         return method!.Invoke(Instance, arguments);
     }
 

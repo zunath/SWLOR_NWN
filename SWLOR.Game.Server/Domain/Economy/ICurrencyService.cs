@@ -3,8 +3,8 @@ using SWLOR.Game.Server.Service.CurrencyService;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The currencies a player holds. The static facade <c>Service.Currency</c> forwards to the container's instance of
-    /// this interface and keeps the event handler.
+    /// The currencies a player holds. Static callers reach the container's instance of
+    /// this interface through <c>GameServices.Currency</c>; the event handler is on <see cref="CurrencyService"/>.
     /// </summary>
     public interface ICurrencyService
     {

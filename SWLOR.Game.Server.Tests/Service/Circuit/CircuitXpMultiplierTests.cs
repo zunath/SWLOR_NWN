@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;
 

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Enumeration
         public bool TasksRefreshAfterCompletion { get; set; }
 
         /// <summary>
-        /// The skill a hand-in of one of this guild's tasks gives XP in (<see cref="SWLOR.Game.Server.Service.GuildTaskXp"/>), or
+        /// The skill a hand-in of one of this guild's tasks gives XP in (<see cref="SWLOR.Game.Server.Domain.Economy.GuildTaskXpService"/>), or
         /// <see cref="SkillType.Invalid"/> when its tasks give none, as the Hunter's Guild's do not.
         /// </summary>
         public SkillType TaskXpSkill { get; set; } = SkillType.Invalid;

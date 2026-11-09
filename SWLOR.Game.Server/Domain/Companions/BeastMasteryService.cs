@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// <summary>
     /// Beast companions: the logic and state that used to be static in <c>Service.BeastMastery</c>, moved here
     /// unchanged. The beast catalog, the roles, the foods and the incubation percentages are this instance's state,
-    /// filled by the module cache handler; the order and the number of random rolls are what they were. The facade
-    /// keeps the event handlers and forwards every call to the container's instance.
+    /// filled by the module cache handler; the order and the number of random rolls are what they were. The event
+    /// handlers run on the container's instance; static callers reach it through <c>GameServices.BeastMastery</c>.
     /// </summary>
     public class BeastMasteryService : IBeastMasteryService
     {
@@ -51,6 +51,14 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string DNAResref = "beast_dna";
         public const string BeastEggResref = "beast_egg";
         public const string EnzymeTag = "INCUBATION_ENZYME";
+
+        public const string BeastClawResref = "beast_claw";
+        public const string HydrolaseResrefPrefix = "hydrolase_";
+        public const string LyaseResrefPrefix = "lyase_";
+        public const string IsomeraseResrefPrefix = "isomerase_";
+        public const string ExtractCorpseObjectResref = "extract_corpse";
+        public const string BeastTypeVariable = "BEAST_TYPE";
+        public const string BeastLevelVariable = "BEAST_LEVEL";
 
         private readonly IDBService _db;
         private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
@@ -94,6 +102,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _statusEffect = statusEffect;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             LoadBeasts();
@@ -567,6 +576,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             return (likedFood, hatedFood);
         }
 
+        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
         public void CombatPointXPDistributed()
         {
             var player = OBJECT_SELF;
@@ -606,6 +616,8 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSpaceEnter)]
+        [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
         public void RemoveAssociate()
         {
             var player = OBJECT_SELF;
@@ -617,6 +629,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public void OnAcquireItem()
         {
             var beast = GetModuleItemAcquiredBy();
@@ -649,27 +662,32 @@ namespace SWLOR.Game.Server.Domain.Companions
             _item.Value.ReturnItem(owner, item);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastBlocked)]
         public void BeastOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
         public void BeastOnEndCombatRound()
         {
             ProcessCompanionCombatRound(OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastConversation)]
         public void BeastOnConversation()
         {
             if (!HandleCompanionConversation(OBJECT_SELF))
                 ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public void BeastOnDamaged()
         {
             RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
+        [NWNEventHandler(ScriptName.OnBeastDeath)]
         public void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
@@ -691,22 +709,26 @@ namespace SWLOR.Game.Server.Domain.Companions
             _db.Set(dbBeast);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastDisturbed)]
         public void BeastOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public void BeastOnHeartbeat()
         {
             RestoreBeastStats();
             ProcessCompanionHeartbeat(OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public void BeastOnPhysicalAttacked()
         {
             RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
+        [NWNEventHandler(ScriptName.OnBeastRest)]
         public void BeastOnRested()
         {
             var beast = OBJECT_SELF;
@@ -717,6 +739,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             ApplyRestStatusEffect(beast);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastSpawn)]
         public void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
@@ -729,17 +752,20 @@ namespace SWLOR.Game.Server.Domain.Companions
             InitializeCompanionControl(beast);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public void BeastOnSpellCastAt()
         {
             if (GetLastSpellHarmful())
                 RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
+        [NWNEventHandler(ScriptName.OnBeastUserDefined)]
         public void BeastOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
 
+        [NWNEventHandler(ScriptName.OnBeastTerminate)]
         public void OpenStablesMenu()
         {
             var player = GetLastUsedBy();
@@ -965,6 +991,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 : _incubationPercentages[itemPropertyId];
         }
 
+        [NWNEventHandler(ScriptName.OnIncubatorTerminal)]
         public void UseIncubator()
         {
             var player = GetLastUsedBy();
@@ -1179,6 +1206,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When a property is removed, also remove any associated incubation jobs.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
         public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
@@ -1195,6 +1223,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnDNAExtractUsed)]
         public void UseExtractDNAObject()
         {
             var player = GetLastUsedBy();

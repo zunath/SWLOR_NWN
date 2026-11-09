@@ -7,7 +7,8 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// <summary>
     /// Beast companions: the beast catalog, taming and leveling, spawning a beast for its master, the creature event
     /// handlers of a spawned beast, and the incubation of DNA into beast eggs.
-    /// <c>Service.BeastMastery</c> is the static facade; every member of it forwards to this interface.
+    /// Static callers reach the container's instance through <c>GameServices.BeastMastery</c>; the event handlers are on
+    /// <see cref="BeastMasteryService"/>.
     /// </summary>
     public interface IBeastMasteryService
     {

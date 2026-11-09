@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.NWN.API.NWScript.Enum;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -162,7 +163,7 @@ public class CompanionControlPolicyTests
     {
         ((int)AssociateCommand.ToggleAbilities).Should().Be(-21);
         AssociateCommand.ToggleCasting.Should().Be(AssociateCommand.ToggleAbilities);
-        CompanionControl.AssociateAbilitiesLabelStrRef.Should().Be(8127);
+        CompanionControlService.AssociateAbilitiesLabelStrRef.Should().Be(8127);
     }
 
     [Test]

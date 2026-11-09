@@ -8,12 +8,22 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// Finds areas and objects for the DM chooser: the logic that used to be static in <c>Service.DMObjectSearch</c>,
-    /// moved here unchanged. The facade forwards every call to the container's instance and keeps the two search
-    /// limits, which the logic here does not use.
+    /// Finds areas and objects for the DM chooser: the logic that used to be static in <c>DMObjectSearch</c>,
+    /// moved here unchanged. Static callers reach the container's instance through <c>GameServices.DMObjectSearch</c>;
+    /// the two search limits are constants of this class, which the logic here does not use.
     /// </summary>
     public class DMObjectSearchService : IDMObjectSearchService
     {
+        /// <summary>
+        /// Searches stop after this many matches.
+        /// </summary>
+        public const int MaxResults = 500;
+
+        /// <summary>
+        /// How many objects a search examines per server tick before it continues on the next one.
+        /// </summary>
+        public const int ObjectsPerSlice = 4000;
+
         private readonly IDMPresenceService _presence;
 
         public DMObjectSearchService(IDMPresenceService presence)

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void BeastEgg()
         {
-            _builder.Create(BeastMastery.BeastEggResref)
+            _builder.Create(BeastMasteryService.BeastEggResref)
                 .Delay(4f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>

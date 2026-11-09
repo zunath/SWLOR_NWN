@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>The game-engine side of a quick craft batch.</summary>
 public sealed class NwnQuickCraftWorld : IQuickCraftWorld
 {
-    /// <summary>The one world of the process. <see cref="Craft"/> owns it, because it keeps what the last craft created.</summary>
+    /// <summary>The one world of the process. <see cref="SWLOR.Game.Server.Domain.Crafting.CraftService"/> owns it, because it keeps what the last craft created.</summary>
     public static NwnQuickCraftWorld Instance => Craft.QuickCraftWorld;
 
     /// <summary>Counts the player's inventory items of a resref, stack sizes included.</summary>

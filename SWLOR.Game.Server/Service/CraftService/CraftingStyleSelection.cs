@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.CraftService;
 /// skill) so it outlives the status effect that carries it. Death strips every effect and a relog drops the non-persistent ones,
 /// so the effect is applied again from the record after a revive, on login and when a craft window opens, and only while the
 /// crafter still owns the style's perk. The craft window records a change, and a refunded perk or a full rebuild clears the entry.
-/// A skill's style helper lists its styles in <see cref="Definitions"/>. The parts that touch the database and the engine are in <see cref="CraftStyleEffects"/>.
+/// A skill's style helper lists its styles in <see cref="Definitions"/>. The parts that touch the database and the engine are in <see cref="SWLOR.Game.Server.Domain.Crafting.CraftStyleEffectsService"/>.
 /// </summary>
 public static class CraftingStyleSelection
 {

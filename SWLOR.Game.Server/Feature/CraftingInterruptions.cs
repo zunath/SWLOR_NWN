@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.ProspectingService;
 using SWLOR.Game.Server.Service.ScavengeService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {

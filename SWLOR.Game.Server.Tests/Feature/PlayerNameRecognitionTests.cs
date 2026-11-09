@@ -940,8 +940,8 @@ public class PlayerNameRecognitionTests
         unretireMethod.Should().Contain("WithLayoutRestore(() =>");
         unretireMethod.Should().Contain("RestoreLayoutPartials");
 
-        dialogSource.Should().Contain("Disguise.WipeCreditCost");
-        dialogSource.Should().Contain("Disguise.WipeRoleplayXPCost");
+        dialogSource.Should().Contain("DisguiseService.WipeCreditCost");
+        dialogSource.Should().Contain("DisguiseService.WipeRoleplayXPCost");
         dialogSource.Should().Contain("DisguisePaymentMethod.Credits");
         dialogSource.Should().Contain("DisguisePaymentMethod.RoleplayXP");
         dialogSource.Should().Contain("Disguise.DeleteRetiredDisguise");
@@ -977,11 +977,11 @@ public class PlayerNameRecognitionTests
         disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
 
         // Field labels spell out who sees each value; lengths come from constants, never magic numbers.
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Slot Label  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Description  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Slot Label  (only you see this)\", model => model.PrivateName, DisguiseService.MaxPrivateNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Description  (shown to others)\", model => model.Descriptor, PlayerNameService.MaxKnownNameLength);");
         disguiseDefinitionSource.Should().Contain(".SetText(\"Biography  (shown when examined)\")");
         disguiseDefinitionSource.Should().Contain(".BindValue(model => model.Biography)");
-        disguiseDefinitionSource.Should().Contain(".SetMaxLength(Disguise.MaxBiographyLength)");
+        disguiseDefinitionSource.Should().Contain(".SetMaxLength(DisguiseService.MaxBiographyLength)");
         disguiseDefinitionSource.Should().NotContain(", model => model.PrivateName, 32)");
         disguiseDefinitionSource.Should().NotContain(", model => model.Descriptor, 64)");
         disguiseDefinitionSource.Should().Contain("Hide Account Name");

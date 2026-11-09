@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 var arenaRow = GetChooserResults(model).FindIndex(result => result.Object == ctx.Arena);
                 ctx.AssertEqual(string.Empty, model.ResultInfo[arenaRow], "an area with no players leaves the Players column empty");
-                ctx.AssertEqual(DMObjectDetails.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
+                ctx.AssertEqual(DMObjectDetailsService.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
                 ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocations(ctx.Arena).First()), "area jump location");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
 
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 do
                 {
                     sliceWatch.Restart();
-                    isScanComplete = scan.Continue(DMObjectSearch.ObjectsPerSlice);
+                    isScanComplete = scan.Continue(DMObjectSearchService.ObjectsPerSlice);
                     slowestSlice = Math.Max(slowestSlice, sliceWatch.ElapsedMilliseconds);
                     slices++;
                 } while (!isScanComplete);
@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Track(bag);
             var store = CreateObject(ObjectType.Store, "nw_storemagic001", GetLocation(dm.Creature));
             ctx.Track(store);
-            ctx.Assert(new[] { bag, store, dm.Creature }.All(DMBlueprintCatalog.CanReceiveItems),
+            ctx.Assert(new[] { bag, store, dm.Creature }.All(item => DMBlueprintCatalog.CanReceiveItems(item)),
                 "creatures, stores and container items receive created items");
             await InContext(ctx, dm.Creature, () =>
             {
@@ -837,7 +837,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
 
             // More offline matches than the search shows.
-            var bulkIds = Enumerable.Range(0, DMPlayerDirectory.MaxResults + 1)
+            var bulkIds = Enumerable.Range(0, DMPlayerDirectoryService.MaxResults + 1)
                 .Select(_ => Guid.NewGuid().ToString())
                 .ToList();
             foreach (var bulkId in bulkIds)
@@ -969,7 +969,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "a word the index cannot query does not stop the other words from finding offline characters");
 
                 var bulk = DMPlayerDirectory.Search("Bulkprobe", DMPlayerSearchScope.Offline, out var bulkTruncated);
-                ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");
+                ctx.AssertEqual(DMPlayerDirectoryService.MaxResults, bulk.Count, "offline search returns up to the result limit");
                 ctx.Assert(bulkTruncated, "offline search reports matches beyond the result limit");
 
                 ctx.AssertEqual(0, DMPlayerDirectory.Search(", . *", DMPlayerSearchScope.All, out _).Count,

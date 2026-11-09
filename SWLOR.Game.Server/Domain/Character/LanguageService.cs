@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Languages: the logic and state that used to be static in <c>Service.Language</c>, moved here unchanged. The
     /// translators are stateless string functions that stay in <c>Service/LanguageService/</c>; the translator table
-    /// and the command list are instance fields. The facade keeps the module-load handler.
+    /// and the command list are instance fields. The module-load handler is here.
     /// </summary>
     public class LanguageService : ILanguageService
     {
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _stat = stat;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>

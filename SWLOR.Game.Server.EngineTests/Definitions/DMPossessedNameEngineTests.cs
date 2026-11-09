@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
 
@@ -31,8 +32,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     PlayerName.RefreshNameOverridesForPlayer(observer.Creature);
                     PlayerName.RefreshNameOverridesForObserver(observer.Creature);
                     PlayerName.RefreshNameOverridesForPlayer(target.Creature);
-                    typeof(PlayerName).GetMethod("ApplyTrueNameOverride", BindingFlags.NonPublic | BindingFlags.Static)!
-                        .Invoke(null, new object[] { observer.Creature, target.Creature });
+                    typeof(SWLOR.Game.Server.Domain.Character.PlayerNameService).GetMethod("ApplyTrueNameOverride", BindingFlags.NonPublic | BindingFlags.Instance)!
+                        .Invoke(GameServices.PlayerName, new object[] { observer.Creature, target.Creature });
 
                     ctx.AssertEqual("Fat Mac", PlayerName.GetDisplayName(observer.Creature, target.Creature), "arriving observer sees the custom NPC name");
                     ctx.AssertEqual("Fat Mac", PlayerName.GetChatDisplayName(observer.Creature, target.Creature), "chat resolves the custom NPC name");

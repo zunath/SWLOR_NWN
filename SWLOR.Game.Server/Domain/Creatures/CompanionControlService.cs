@@ -26,8 +26,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// <summary>
     /// Companion control: the follow, guard, stand-ground and attack-nearest modes of a player's droid or beast, the
     /// authorized target it may engage and its hostile abilities. Moved here unchanged from the static
-    /// <c>Service.CompanionControl</c>; the facade still carries the event handlers and forwards every call to the
-    /// container's instance.
+    /// <c>Service.CompanionControl</c>; the event handlers run on the container's instance and static callers reach it
+    /// through <c>GameServices.CompanionControl</c>.
     /// </summary>
     public class CompanionControlService : ICompanionControlService
     {
@@ -497,31 +497,37 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (IsControlledCompanion(companion))
                 ResetToFollow(companion, false, true);
         }
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RenameToggleAbilitiesCommand()
         {
             var player = GetEnteringObject();
             if (GetIsPC(player))
                 PlayerPlugin.SetTlkOverride(player, AssociateAbilitiesLabelStrRef, "abilities");
         }
+        [NWNEventHandler(ScriptName.OnPlayerAttacked)]
         public void OnOwnerAttacked()
         {
             RegisterOwnerThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public void OnOwnerDamaged()
         {
             RegisterOwnerThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
+        [NWNEventHandler(ScriptName.OnPlayerSpellCastAt)]
         public void OnHostileSpellCastAtOwner()
         {
             if (GetLastSpellHarmful())
                 RegisterOwnerThreat(OBJECT_SELF, GetLastSpellCaster());
         }
+        [NWNEventHandler(ScriptName.OnPlayerRoundEnd)]
         public void OnOwnerCombatRound()
         {
             var master = OBJECT_SELF;
             var companion = GetAssociate(AssociateType.Henchman, master);
             RegisterOwnerAttack(companion, GetAttackTarget(master));
         }
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnOwnerAreaExit()
         {
             var exitingObject = GetExitingObject();

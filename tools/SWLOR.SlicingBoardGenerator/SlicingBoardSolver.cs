@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
 
 namespace SWLOR.Game.Server.Service.SlicingService
 {

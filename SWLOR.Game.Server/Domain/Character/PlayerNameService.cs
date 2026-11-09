@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// What players see as each other's names, the known names they assign, and the AFK flag: the logic and state
-    /// that used to be static in <c>Service.PlayerName</c>, moved here unchanged. The facade keeps the event handlers
-    /// and forwards every call to the container's instance.
+    /// that used to be static in <c>Service.PlayerName</c>, moved here unchanged. The event handlers run on the
+    /// container's instance.
     /// </summary>
     /// <remarks>
     /// The descriptors call <c>PlayerName</c> back (through <see cref="IPlayerNameService"/>), so this service reaches
@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _playerDescriptor = playerDescriptor;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ReleaseKnownNamesOnExit()
         {
             var observerId = GetObjectUUID(GetExitingObject());
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 KnownNamesByObserverId.Remove(observerId);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyNameOverridesOnEnter()
         {
             var player = GetEnteringObject();
@@ -90,6 +92,7 @@ namespace SWLOR.Game.Server.Domain.Character
             DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearAfkOnExit()
         {
             RemoveAfk(GetExitingObject());
@@ -159,6 +162,7 @@ namespace SWLOR.Game.Server.Domain.Character
                    (GetActiveDisguise(player) != null ? StaffDisguiseMarker : string.Empty);
         }
 
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public void PreventAmbiguousTellTargets()
         {
             var channel = ChatPlugin.GetChannel();

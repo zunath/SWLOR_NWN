@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
@@ -10,8 +11,8 @@ namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// Logs equipment changes on player droids outside their summon restore: the logic and state that used to be
-    /// static in <c>Service.DroidEquipmentDiagnostics</c>, moved here unchanged. The facade still carries the event
-    /// handlers and forwards every call to the container's instance.
+    /// static in <c>Service.DroidEquipmentDiagnostics</c>, moved here unchanged. The event handlers run on the
+    /// container's instance; static callers reach it through <c>GameServices.DroidEquipmentDiagnostics</c>.
     /// </summary>
     public class DroidEquipmentDiagnosticsService : IDroidEquipmentDiagnosticsService
     {
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public string LastEntry { get; private set; } = string.Empty;
 
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
         public void OnEquipped()
         {
             var droid = OBJECT_SELF;
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 Record("equipped", droid, item, slot);
         }
 
+        [NWNEventHandler(ScriptName.OnEquipmentUnequipBefore)]
         public void OnUnequipping()
         {
             var droid = OBJECT_SELF;
@@ -59,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             }
         }
 
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public void OnUnequipped()
         {
             var droid = OBJECT_SELF;
@@ -71,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 Record("unequipped", droid, item, slot);
         }
 
+        [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public void CheckHands()
         {
             var droid = OBJECT_SELF;
@@ -102,6 +107,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             }
         }
 
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public void Forget()
         {
             _lastHands.Remove(OBJECT_SELF);
@@ -184,8 +190,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 if (parameters >= 0)
                     method = method[..parameters];
 
-                // Skip this logger and the shared event and script dispatch plumbing. The facade and this class both
-                // carry the name of the service.
+                // Skip this logger and the shared event and script dispatch plumbing. This class carries the name of the service.
                 if (method.Contains("DroidEquipmentDiagnostics", StringComparison.Ordinal) ||
                     method.StartsWith("SWLOR.Game.Server.Core.", StringComparison.Ordinal) ||
                     method.StartsWith("SWLOR.NWN.", StringComparison.Ordinal))

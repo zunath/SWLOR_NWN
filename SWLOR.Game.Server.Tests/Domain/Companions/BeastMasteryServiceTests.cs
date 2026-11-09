@@ -1799,10 +1799,10 @@ public class BeastMasteryServiceTests
     [Test]
     public void The_facade_repeats_the_constants_the_logic_uses()
     {
-        BeastMastery.MaxLevel.Should().Be(BeastMasteryService.MaxLevel);
-        BeastMastery.DNAResref.Should().Be(BeastMasteryService.DNAResref);
-        BeastMastery.BeastEggResref.Should().Be(BeastMasteryService.BeastEggResref);
-        BeastMastery.EnzymeTag.Should().Be(BeastMasteryService.EnzymeTag);
+        BeastMasteryService.MaxLevel.Should().Be(BeastMasteryService.MaxLevel);
+        BeastMasteryService.DNAResref.Should().Be(BeastMasteryService.DNAResref);
+        BeastMasteryService.BeastEggResref.Should().Be(BeastMasteryService.BeastEggResref);
+        BeastMasteryService.EnzymeTag.Should().Be(BeastMasteryService.EnzymeTag);
     }
 
     [Test]

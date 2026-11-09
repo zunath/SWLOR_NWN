@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.NPCService;
 
@@ -7,12 +8,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
     /// The NPC groups: the logic and state that used to be static in <c>Service.NPCGroup</c>, moved here unchanged. The
-    /// facade still carries the event handler and forwards every call to the container's instance.
+    /// event handler runs on the container's instance; static callers reach it through <c>GameServices.NPCGroup</c>.
     /// </summary>
     public class NPCGroupService : INPCGroupService
     {
         private readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new();
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             RegisterNPCGroups();

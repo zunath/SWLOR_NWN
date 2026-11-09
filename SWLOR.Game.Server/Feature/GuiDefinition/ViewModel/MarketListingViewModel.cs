@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -196,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetItemCursedFlag(item) ||
                 GetPlotFlag(item) ||
-                GetLocalInt(item, PlayerMarket.NoMarketListingVariable) > 0)
+                GetLocalInt(item, PlayerMarketService.NoMarketListingVariable) > 0)
             {
                 FloatingTextStringOnCreature("This item cannot be sold on the market.", Player, false);
                 return;

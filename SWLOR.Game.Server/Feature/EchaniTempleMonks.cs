@@ -222,41 +222,52 @@ namespace SWLOR.Game.Server.Feature
 
         private static void PlayBeat(uint[] monks, uint stop, string scene, int beat)
         {
-            if (beat > 2)
+            var host = GetUniqueObject(GetLocalString(stop, "ECHANI_HOST"));
+            var hostPresent = GetIsObjectValid(host) && GetObjectType(host) == ObjectType.Creature &&
+                              GetArea(host) == GetArea(stop) && GetDistanceBetween(host, stop) <= 8f;
+            var hostCanReply = beat == Tags.Length && hostPresent && Available(host) &&
+                               GetCurrentAction(host) == ActionType.Invalid;
+            var speakerIndex = SceneSpeakerIndex(beat, hostCanReply);
+            if (speakerIndex < 0)
             {
-                if (beat == 3 && (scene == "temple" || scene == "spa"))
-                    foreach (var monk in monks)
-                        AssignCommand(monk, () => ActionPlayAnimation(Animation.LoopingMeditate, 1f, 6f));
+                for (var index = 0; index < monks.Length; index++)
+                    if (ShouldMeditate(scene, beat, index))
+                        AssignCommand(monks[index], () => ActionPlayAnimation(Animation.LoopingMeditate, 1f, 6f));
                 return;
             }
 
-            var speaker = monks[beat];
-            var listener = monks[(beat + 1) % monks.Length];
-            var host = GetUniqueObject(GetLocalString(stop, "ECHANI_HOST"));
-            if (GetIsObjectValid(host) && GetArea(host) == GetArea(stop) && GetDistanceBetween(host, stop) <= 8f)
+            if (speakerIndex == Tags.Length)
             {
-                listener = host;
                 // Existing residents keep their movement and conversation queues.
-                if (beat == 2 && Available(host) && GetCurrentAction(host) == ActionType.Invalid)
-                {
-                    AssignCommand(host, () => SpeakString(Reply(scene)));
-                    return;
-                }
+                SetFacingPoint(GetPosition(monks[monks.Length - 1]), host);
+                AssignCommand(host, () => SpeakString(Reply(scene)));
+                return;
             }
+
+            var speaker = monks[speakerIndex];
+            var listener = hostPresent ? host : monks[(speakerIndex + 1) % monks.Length];
             SetFacingPoint(GetPosition(listener), speaker);
             AssignCommand(speaker, () =>
             {
-                SpeakString(Line(scene, beat));
+                SpeakString(Line(scene, speakerIndex));
                 ActionPlayAnimation(Animation.LoopingTalkNormal, 1f, 3f);
             });
         }
 
+        private static int SceneSpeakerIndex(int beat, bool hostCanReply) =>
+            beat >= 0 && beat < Tags.Length ? beat :
+            beat == Tags.Length && hostCanReply ? Tags.Length : -1;
+
+        private static bool ShouldMeditate(string scene, int beat, int monkIndex) =>
+            beat == 3 && (scene == "temple" || scene == "spa" || scene == "river" && monkIndex > 0);
+
         private static string Reply(string scene) => scene switch
         {
-            "errands" => "Thank you, Master. There is always another doorstep to reach.",
-            "cloth" => "Bring the torn hems by tomorrow. I will have thread ready.",
-            "teacher" => "And a patient teacher knows when to let the student answer.",
-            "sentinel" => "The road is clear, Master. Safe travels to you and your students.",
+            "errands" => "You can argue over breakfast after I've made this delivery.",
+            "cloth" => "Bring it by after practice, Ren. I'll check the seam while you move.",
+            "teacher" => "The hands can lie. Watch the heel, and give your partner room to move.",
+            "grove" => "A sound basket would help. Take mature leaves, leave the roots, and let the shoots grow.",
+            "sentinel" => "The road is clear. Keep the approach open, and safe travels to all three of you.",
             _ => "Safe travels to you."
         };
 
@@ -266,10 +277,23 @@ namespace SWLOR.Game.Server.Feature
             ("temple", 1) => "Even when the streets are crowded, Master?",
             ("temple", 2) => "Especially then. I will try to remember.",
             ("errands", 0) => "Good morning, Ilya. May your errands leave you a little time to rest.",
+            ("errands", 1) => "Still warm, Ilya? I'd be tempted to eat that bread before I reached the door.",
+            ("errands", 2) => "Then it's fortunate she's carrying it. We'll keep the lane clear for you.",
             ("cloth", 0) => "Cerin, your stitching has survived another week of practice.",
+            ("cloth", 1) => "Mine pulls across the back when I reach. Is that the coat, or my stance?",
+            ("cloth", 2) => "Both, perhaps. Would you check his sleeve before he blames our drills?",
             ("teacher", 0) => "Toren. Have these two learned to listen with their feet yet?",
+            ("teacher", 1) => "Toren, how do you spot a feint before the strike?",
+            ("teacher", 2) => "I keep watching the hands. You told us to watch where the weight settles.",
+            ("grove", 0) => "Sera, how are the beds in Veylan weathering the cold?",
+            ("grove", 1) => "Which leaves can we gather without harming the new shoots?",
+            ("grove", 2) => "And should we look for a basket in the market? Yours sounded ready to retire.",
             ("sentinel", 0) => "Sentinel Daren Or. We will take a moment here before continuing our walk.",
-            ("river", 0) => "Listen to the river before you speak. We have time.",
+            ("sentinel", 1) => "Is there much trouble on the road today, Sentinel?",
+            ("sentinel", 2) => "We'll keep clear of the shuttle approach. We're walking back through the city.",
+            ("river", 0) => "Listen to the river before you speak. Sit, and settle your breathing.",
+            ("river", 1) => "I can still hear the market from here.",
+            ("river", 2) => "Then we practice with that too.",
             ("homes", 0) => "Keep your voices low here. These are people's homes.",
             ("market", 0) => "We will pause here. Check your straps before the climb.",
             ("gardens", 0) => "A quiet garden is a good place to notice an impatient mind.",

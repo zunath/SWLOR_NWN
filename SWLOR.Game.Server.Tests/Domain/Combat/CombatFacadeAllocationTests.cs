@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
 /// The combat services run per attack and per damage event, so a call that only reads a table must not allocate:
-/// <c>GameServices</c> resolves the instance from the cache the facade used and the instance reads its own fields. These
+/// <c>GameServices</c> resolves the instance from a per-service slot and the instance reads its own fields. These
 /// tests count the bytes the current thread allocates over many calls, on the part itself and on the accessor path.
 /// </summary>
 [TestFixture]
@@ -157,7 +157,7 @@ public class CombatFacadeAllocationTests
     public void AForwarderAddsNothingWhereTheRuleItselfAllocates()
     {
         // CalculateDamageRange formats its Log.Write lines and IsWeaponSkillType reads the skill's attribute by
-        // reflection, on every call, as before the move; the forwarder must not add to that.
+        // reflection, on every call, as before the move; the GameServices call must not add to that.
         var sink = 0;
 
         var (rangeRule, rangeForwarder) = InterleavedPerCall(
@@ -194,7 +194,7 @@ public class CombatFacadeAllocationTests
         AbilityDetail Hostile, AbilityDetail Plain);
 
     // The parts of the container with an engine that answers from constants and records nothing, and a stat service whose
-    // calls into unconverted code allocate nothing, so what is counted is Combat's forwarder and the part.
+    // calls into unconverted code allocate nothing, so what is counted is the GameServices call and the part.
     private PartReads InstallPartReads(List<IDisposable> scopes)
     {
         scopes.Add(NWScriptRuntime.Override(StatReadEngine.Create(StatReadEngine.NpcAnswers())));
@@ -310,7 +310,7 @@ public class CombatFacadeAllocationTests
 
     // A container of its own, so the activity, timing and status tables start empty whatever ran before; the engine that answers
     // from constants; the clock held still, so no window or temporary modifier expires between runs; and the stat service
-    // whose calls into unconverted code allocate nothing. What is counted is Combat's forwarder and the part.
+    // whose calls into unconverted code allocate nothing. What is counted is the GameServices call and the part.
     private static TimingParts InstallTimingParts(List<IDisposable> scopes)
     {
         var container = new FacadeContainer(services =>
@@ -335,7 +335,7 @@ public class CombatFacadeAllocationTests
             scopes[i].Dispose();
     }
 
-    // Bytes per call of the part and of its forwarder, the least of three rounds taken in turn, so both are measured with the
+    // Bytes per call of the part and of its GameServices call, the least of three rounds taken in turn, so both are measured with the
     // same warm caches and table sizes.
     private static (long Part, long Forwarder) InterleavedPerCall(Action part, Action forwarder)
     {
@@ -349,10 +349,10 @@ public class CombatFacadeAllocationTests
         return (ownBytes / Calls, forwardedBytes / Calls);
     }
 
-    // A forwarder is one call with the part's parameter types (CombatPartForwardingTests checks the single call), so it can
+    // A GameServices call is one call with the part's parameter types (CombatPartForwardingTests checks the single call), so it can
     // only add to what the part allocates (a closure and its delegate are 88 bytes or more). It measures less than the part
     // when the JIT finishes optimizing the status and stat reads between the two measurements, which says nothing about the
-    // forwarder, so only the upper side is checked. The members that allocate kilobytes per call (the temporary modifier
+    // GameServices call, so only the upper side is checked. The members that allocate kilobytes per call (the temporary modifier
     // writes, the activity tables) move by up to about 4% between rounds as their tables fill, so the margin grows by a
     // twentieth of what the part allocates, which keeps it under a closure's 88 bytes for the members that allocate little.
     private static void ForwarderAddsNothing(string name, long own, long forwarded, long margin) =>
@@ -478,7 +478,7 @@ public class CombatFacadeAllocationTests
     {
         // These read the skill's attribute by reflection (IsWeaponSkillType), a creature's status effects or the temporary
         // modifiers, as before the move, so what they allocate per call moves between rounds: the runtime rebuilds its
-        // reflection cache after a collection (up to 24 bytes a call) and the tables grow. A forwarder is one call with the
+        // reflection cache after a collection (up to 24 bytes a call) and the tables grow. A GameServices call is one call with the
         // same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or more).
         // StoreAbilityActivationIdleBonuses is left out: its temporary modifier writes vary by hundreds of bytes from run to run.
         var scopes = new List<IDisposable>();
@@ -665,14 +665,14 @@ public class CombatFacadeAllocationTests
         // These read the skill's attribute by reflection (IsWeaponSkillType), a status table the status service builds for
         // an unknown creature, write temporary modifiers, or format the damage range's log lines or a perk's group name, as
         // before the move, so what they allocate per call moves between rounds and runs on the base assembly too (by up to
-        // about 70 bytes). A forwarder is one call with the same parameter types (CombatPartForwardingTests), so it could only
+        // about 70 bytes). A GameServices call is one call with the same parameter types (CombatPartForwardingTests), so it could only
         // add a closure and its delegate (88 bytes or more).
         // StoreQueuedWeaponAbilityCriticalRateBonus with a bonus is left out: its temporary modifier writes vary by up to 70
-        // bytes between part and forwarder rounds (2399 to 2466 on the base and here alike).
+        // bytes between part and GameServices rounds (2399 to 2466 on the base and here alike).
         // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of P2-CB9b the
-        // part measured 504 and the forwarder, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
+        // part measured 504 and the GameServices call, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
         // in between), so it is compared here, and its old pin stays as an upper budget for both, so an allocation the part
-        // and its forwarder gained together still fails.
+        // and its GameServices call gained together still fails.
         // Named to run last in the fixture: its million damage rolls let the JIT finish optimizing the status reads, which
         // changes what the pinned reads above allocate when they run after it.
         var scopes = new List<IDisposable>();
@@ -825,7 +825,7 @@ public class CombatFacadeAllocationTests
         // These read the skill's attribute by reflection (IsWeaponSkillType), the status table, the NPC stats of an accuracy
         // or evasion read, or run the damage taken part, as before the move. What they allocate per call depends on what the
         // JIT has done with those reads by the time they run (with tiered compilation off, the base and this head allocate the
-        // same bytes for each), so it moves with test order, and between rounds by up to about 50 bytes. A forwarder is one
+        // same bytes for each), so it moves with test order, and between rounds by up to about 50 bytes. A GameServices call is one
         // call with the same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate
         // (88 bytes or more): the margin is below that.
         // The direct auto-attack is 8 bytes more than before the move: the splash rider's closure class, created on entry,
@@ -925,7 +925,7 @@ public class CombatFacadeAllocationTests
         // per call depends on what the JIT has done with those reads by the time it runs (336 bytes on the base and 344 here
         // when run alone, with tiered compilation on or off; less after the fixture's other tests). It is 8 bytes more than
         // before the move: the closure class it creates on entry for its message builder now also holds the part, because
-        // the builder calls the part's own BuildDeflectingReturnCombatLogMessage. The forwarder is checked on the upper side
+        // the builder calls the part's own BuildDeflectingReturnCombatLogMessage. The GameServices call is checked on the upper side
         // only (ForwarderAddsNothing): it could only add a closure and its delegate (88 bytes or more).
         var scopes = new List<IDisposable>();
         try
@@ -1121,7 +1121,7 @@ public class CombatFacadeAllocationTests
         // 60 bytes on either side). The Twin Blade bonus reads the Reversal Cut temporary modifiers (96 or 168 bytes, base and here
         // alike) and the single-target Lightsaber bonus the target's status table (208 bytes in a probe of its own on both, 144
         // after this fixture's other tests). A hit with no damage records the hit and reads its riders' temporary modifiers and the
-        // skill's attribute (432 bytes in a probe on both, 432 to 456 here depending on what ran before). A forwarder is one call
+        // skill's attribute (432 bytes in a probe on both, 432 to 456 here depending on what ran before). A GameServices call is one call
         // with the same parameter types (CombatPartForwardingTests), so it could only add a closure and its delegate (88 bytes or
         // more): the margin is below that.
         var scopes = new List<IDisposable>();
@@ -1258,7 +1258,7 @@ public class CombatFacadeAllocationTests
     // The world of the activation tests (a container of its own, the constant engine, the clock held still, a status table for
     // both creatures and the stat service that allocates nothing) with an engine whose script context names the defeated or
     // exiting creature and its killer, for what is left of Combat (CombatService). P2-CB10 moved these five members from
-    // static bodies on Combat to the service, so their forwarders are the one route that changed; the tests are named to run
+    // static bodies on Combat to the service, so the call through GameServices is the one route that changed; the tests are named to run
     // after every other combat part test of the fixture, for the reason the hit part tests give.
     private static ICombatService InstallServicePart(List<IDisposable> scopes)
     {
@@ -1275,8 +1275,8 @@ public class CombatFacadeAllocationTests
     [Test]
     public void WithWhatIsLeftOfCombatTheFacingCleanupAllocatesNothingThroughCombat()
     {
-        // The facing cleanup runs per player every six seconds. It allocated nothing as a static body of Combat; through the
-        // facade it makes one more interface call and allocates nothing either.
+        // The facing cleanup runs per player every six seconds. It allocated nothing as a static body of Combat; through
+        // GameServices it makes one more interface call and allocates nothing either.
         var scopes = new List<IDisposable>();
         try
         {
@@ -1297,7 +1297,7 @@ public class CombatFacadeAllocationTests
         // The death and exit handlers forget the creature in every part (each forget step lists the keys it removes), the
         // tracker refresh schedules the idle readiness refresh in the activity part, and the damage roll's range rule writes its
         // attack log lines (as CalculateDamageRange does above): what they allocate is that work, as on the base, where the same
-        // bodies were static members of Combat that called the parts through Combat's forwarders. The forwarder could only add
+        // bodies were static members of Combat that called the parts through its forwarding members. The GameServices call could only add
         // a closure and its delegate (88 bytes or more), so it is compared with the service's own call on the upper side only,
         // interleaved (ForwarderAddsNothing).
         var scopes = new List<IDisposable>();

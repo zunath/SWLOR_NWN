@@ -4,8 +4,8 @@ namespace SWLOR.Architecture.Tests.Rules;
 
 /// <summary>
 /// No service location: game code receives its dependencies through a constructor and never asks the container for
-/// them. Only the <c>Composition</c> namespace may touch the container, and the static facades of converted services
-/// may use the one internal accessor (<c>FacadeAccessor</c>) to reach their instance.
+/// them. Only the <c>Composition</c> namespace may touch the container or use the one internal accessor
+/// (<c>FacadeAccessor</c>) that resolves from it.
 /// </summary>
 internal static class ServiceLocationRule
 {
@@ -15,14 +15,12 @@ internal static class ServiceLocationRule
     /// <param name="graph">The references between the types of the assembly.</param>
     /// <param name="facts">The uses of types from other assemblies.</param>
     /// <param name="compositionNamespace">The namespace allowed to use the container and the accessor.</param>
-    /// <param name="accessor">The facade accessor type.</param>
-    /// <param name="isFacade">True for the static facade of a converted service.</param>
+    /// <param name="accessor">The accessor type.</param>
     public static IReadOnlyList<string> Find(
         TypeReferenceGraph graph,
         AssemblyFacts facts,
         string compositionNamespace,
-        TypeKey accessor,
-        Func<TypeKey, bool> isFacade)
+        TypeKey accessor)
     {
         bool InComposition(TypeKey type) =>
             type.Namespace == compositionNamespace || type.Namespace.StartsWith(compositionNamespace + ".", StringComparison.Ordinal);
@@ -39,10 +37,10 @@ internal static class ServiceLocationRule
 
         foreach (var ((source, target), members) in graph.References)
         {
-            if (target != accessor || InComposition(source) || isFacade(source))
+            if (target != accessor || InComposition(source))
                 continue;
 
-            problems.Add($"{source} uses {accessor} ({Describe(members)}): only {compositionNamespace} and the static facades of converted services may resolve from the container. Take the dependency through the constructor.");
+            problems.Add($"{source} uses {accessor} ({Describe(members)}): only {compositionNamespace} may resolve from the container. Take the dependency through the constructor.");
         }
 
         return problems.OrderBy(message => message, StringComparer.Ordinal).ToList();

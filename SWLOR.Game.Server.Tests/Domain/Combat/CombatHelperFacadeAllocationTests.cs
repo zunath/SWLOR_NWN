@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
 /// The Combat helpers run per attack (the eligibility rules, the trait target-change hooks, the pair and grip
-/// classification, the equipment stat copies), so a facade call that only reads a table or a pure rule must not
-/// allocate: the facade resolves its instance from a cache and the instance reads its own fields. These tests count the
+/// classification, the equipment stat copies), so a call through <c>GameServices</c> that only reads a table or a pure rule must not
+/// allocate: the accessor resolves its instance from a per-service slot and the instance reads its own fields. These tests count the
 /// bytes the current thread allocates over many calls to the engine-free hot members.
 /// </summary>
 [TestFixture]

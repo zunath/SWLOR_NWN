@@ -8,8 +8,7 @@ namespace SWLOR.Architecture.Tests;
 
 /// <summary>
 /// Applies the dependency-injection rules to the real server: the services in <c>ConvertedServices.json</c> are built
-/// the way Readmes/DependencyInjection.md says, and nothing outside <c>Composition</c> and the facades locates a
-/// service. <see cref="ConvertedServiceRulesTests"/> proves the rules themselves.
+/// the way Readmes/DependencyInjection.md says, and nothing outside <c>Composition</c> locates a service. <see cref="ConvertedServiceRulesTests"/> proves the rules themselves.
 /// </summary>
 [TestFixture]
 public class ConvertedServicesTests
@@ -45,7 +44,7 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void Every_converted_service_has_a_facade_an_interface_and_an_instance_class()
+    public void Every_converted_service_has_an_interface_an_instance_class_and_a_GameServices_property()
     {
         Fail(ConvertedServiceRules.MissingPieces(List, ArchitectureProject.Facts), "A converted service is missing a piece");
     }
@@ -62,29 +61,17 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void Event_handlers_of_converted_services_stay_on_the_facade()
+    public void Event_handlers_of_converted_services_are_on_their_instance_classes()
     {
         var map = Map;
         var services = List.Services;
-
-        // A service whose facades were removed is checked by the next rule: its handlers are on the instance class.
-        Fail(ConvertedServiceRules.HandlersOffTheFacade(ArchitectureProject.Facts, type => ServiceOf(type, map, services) is { FacadeRemoved: false } service ? service.Facades : null),
-            "Event handlers of converted services stay on the static facade");
-    }
-
-    [Test]
-    public void Event_handlers_of_a_service_whose_facade_was_removed_are_on_its_instance_class()
-    {
-        var map = Map;
-        var services = List.Services;
-        // A part of a split service (Combat) is an instance class too: the facade forwarded each handler to the part that owns it.
-        IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServiceOf(type, map, services) is { FacadeRemoved: true } service
+        // A part of a split service (Combat) is an instance class too: each handler is on the part that owns it.
+        IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServiceOf(type, map, services) is { } service
             ? service.Pieces.Select(pieces => pieces.Instance).ToList()
             : null;
 
-        services.Should().Contain(service => service.FacadeRemoved, "the pilot (ServerTask, Taxi) removed its facades, so the rule has something to check");
         Fail(ConvertedServiceRules.HandlersOffTheInstance(ArchitectureProject.Facts, InstancesOf),
-            "Event handlers of a service whose facade was removed are on its instance class");
+            "Event handlers of converted services are on their instance classes");
     }
 
     [Test]
@@ -98,24 +85,15 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void An_instance_class_never_calls_the_facade_that_forwards_to_it()
+    public void Nothing_locates_a_service_outside_composition()
     {
-        Fail(ConvertedServiceRules.InstanceUsesItsFacade(ArchitectureProject.Graph, List), "An instance uses its own facade");
-    }
-
-    [Test]
-    public void Nothing_locates_a_service_outside_composition_and_the_facades_of_converted_services()
-    {
-        var facades = ConvertedServiceRules.FacadesMayLocate(List);
-
         var problems = ServiceLocationRule.Find(
             ArchitectureProject.Graph,
             ArchitectureProject.Facts,
             CompositionNamespace,
-            new TypeKey(CompositionNamespace, "FacadeAccessor"),
-            facades.Contains);
+            new TypeKey(CompositionNamespace, "FacadeAccessor"));
 
-        Fail(problems, "Service location is allowed only in Composition and in the facades of converted services");
+        Fail(problems, "Service location is allowed only in Composition");
     }
 
     [Test]

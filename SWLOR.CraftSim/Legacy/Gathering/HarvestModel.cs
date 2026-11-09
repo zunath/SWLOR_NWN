@@ -25,10 +25,10 @@ namespace SWLOR.CraftSim.Legacy.Gathering
 
         public static double ExpectedItemsPerNode(int mightModifier) => ExpectedHarvestsPerNode * ExpectedItemsPerHarvest(mightModifier);
 
-        /// <summary>The level XP is measured at: 10 x (node level - 1) + 5 (GatheringLevels.cs:20).</summary>
+        /// <summary>The level XP is measured at: 10 x (node level - 1) + 5 (GatheringLevels.cs:21).</summary>
         public static int VeinLevel(int nodeLevel) => 10 * (nodeLevel - 1) + 5;
 
-        /// <summary>XP for each item gathered, from the server's own XP chart (GatheringLevels.cs:23).</summary>
+        /// <summary>XP for each item gathered, from the server's own XP chart (GatheringLevels.cs:24).</summary>
         public static int XpPerItem(int nodeLevel, int gatheringRank) => ServerXp.ForDelta(VeinLevel(nodeLevel) - gatheringRank);
 
         public static double ExpectedXpPerNode(int nodeLevel, int gatheringRank, int mightModifier) =>

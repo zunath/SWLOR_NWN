@@ -18,7 +18,7 @@ internal sealed class ConvertedServiceList
     public IReadOnlyList<ConvertedService> Services => _services;
 
     /// <summary>
-    /// Mistakes in the file itself: a name that is not a plain identifier, a service or extra facade listed twice, an
+    /// Mistakes in the file itself: a name that is not a plain identifier, a service or extra listed twice, an
     /// unsorted list, or a top-level <c>inProgress</c> list.
     /// </summary>
     public IReadOnlyList<string> Problems => _problems;
@@ -46,8 +46,11 @@ internal sealed class ConvertedServiceList
             if (previous is not null && string.CompareOrdinal(previous, name) > 0)
                 list._problems.Add($"{name} is out of order: keep the list sorted by name so pull requests that add services do not conflict.");
 
+            if (element.TryGetProperty("facadeRemoved", out _))
+                list._problems.Add($"The \"facadeRemoved\" flag of {name} is gone (P2-ZZ): every converted service is its instance class and interface with a GameServices property.");
+
             previous = name;
-            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element), FacadeRemoved = list.ReadFacadeRemoved(name, element) });
+            list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element) });
         }
 
         // Combat was split into part services one layer at a time behind a temporary inProgress list (P2-CB0 to P2-CB10).
@@ -59,9 +62,8 @@ internal sealed class ConvertedServiceList
     }
 
     /// <summary>
-    /// The optional <c>extras</c> list of a service entry: objects with a <c>facade</c> (a type name relative to
-    /// <c>SWLOR.Game.Server.Service</c>) or a <c>part</c> (a plain name), sorted by name and without duplicates. An entry
-    /// that is not one of those is reported and left out.
+    /// The optional <c>extras</c> list of a service entry: objects with a <c>class</c> or a <c>part</c> (a plain type name),
+    /// sorted by name and without duplicates. An entry that is not one of those is reported and left out.
     /// </summary>
     private IReadOnlyList<ExtraPiece> ReadExtras(string service, JsonElement element)
     {
@@ -92,39 +94,26 @@ internal sealed class ConvertedServiceList
         return result;
     }
 
-    /// <summary>The optional <c>facadeRemoved</c> flag of a service entry (P2-Z): true or false, absent meaning false.</summary>
-    private bool ReadFacadeRemoved(string service, JsonElement element)
-    {
-        if (!element.TryGetProperty("facadeRemoved", out var flag))
-            return false;
-
-        if (flag.ValueKind is JsonValueKind.True or JsonValueKind.False)
-            return flag.GetBoolean();
-
-        _problems.Add($"The \"facadeRemoved\" of {service} must be true or false.");
-        return false;
-    }
-
     private ExtraPiece? ReadExtra(string service, JsonElement entry)
     {
-        var facade = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("facade", out var facadeName) ? facadeName.GetString() : null;
+        var className = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("class", out var classValue) ? classValue.GetString() : null;
         var part = entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty("part", out var partName) ? partName.GetString() : null;
 
-        if (facade is null == part is null)
+        if (className is null == part is null)
         {
-            _problems.Add($"An extra of {service} must be an object with either a \"facade\" or a \"part\", such as {{ \"facade\": \"QuestService.QuestEncounter\" }} or {{ \"part\": \"PropertyCatalog\" }}.");
+            _problems.Add($"An extra of {service} must be an object with either a \"class\" or a \"part\", such as {{ \"class\": \"QuestEncounter\" }} or {{ \"part\": \"PropertyCatalog\" }}.");
             return null;
         }
 
-        if (facade is not null)
+        if (className is not null)
         {
-            if (!ConvertedPieces.IsPlainFacadeName(facade))
+            if (!IsPlainName(className))
             {
-                _problems.Add($"'{facade}' (an extra facade of {service}) is not a plain type name relative to SWLOR.Game.Server.Service, such as QuestService.QuestEncounter.");
+                _problems.Add($"'{className}' (a class of {service}) is not a plain class name, such as QuestEncounter.");
                 return null;
             }
 
-            return ExtraPiece.Facade(facade);
+            return ExtraPiece.Class(className);
         }
 
         if (!IsPlainName(part!))

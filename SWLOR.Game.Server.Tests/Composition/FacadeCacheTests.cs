@@ -11,7 +11,7 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
-/// Proves the per-service cache behind the facade accessor: it returns the container's singleton, never an instance of
+/// Proves the per-service cache behind the accessor: it returns the container's singleton, never an instance of
 /// a container that is no longer current, survives container swaps, and is safe for concurrent first resolves.
 /// </summary>
 [TestFixture]
@@ -182,7 +182,7 @@ public class FacadeCacheTests
     }
 
     /// <summary>
-    /// Measurement, not a check: ns per call of a real facade member (<c>Bank.IsFull</c>: resolve the instance, call one
+    /// Measurement, not a check: ns per call of a real service member (<c>GameServices.Bank.IsFull</c>: resolve the instance, call one
     /// member), once through an installed test container and once through the server's own container. Explicit so the
     /// default run skips it, and it builds the process-wide container, so run it alone in Release:
     /// <c>dotnet test SWLOR.Game.Server.Tests -c Release --no-build --filter "FullyQualifiedName~FacadeCacheTests.Measure" --logger "console;verbosity=detailed"</c>
@@ -215,8 +215,8 @@ public class FacadeCacheTests
         var serverNs = Time(() => Bank.IsFull(1));
 
         TestContext.Out.WriteLine($"direct instance call: {directNs:F2} ns/call");
-        TestContext.Out.WriteLine($"facade, installed test container (AsyncLocal lookup): {installedNs:F2} ns/call");
-        TestContext.Out.WriteLine($"facade, server container: {serverNs:F2} ns/call");
+        TestContext.Out.WriteLine($"GameServices, installed test container (AsyncLocal lookup): {installedNs:F2} ns/call");
+        TestContext.Out.WriteLine($"GameServices, server container: {serverNs:F2} ns/call");
         sink.Should().BeGreaterThan(-1);
     }
 }

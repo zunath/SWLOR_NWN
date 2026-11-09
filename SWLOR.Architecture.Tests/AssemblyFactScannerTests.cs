@@ -55,10 +55,10 @@ public class AssemblyFactScannerTests
     public void Lists_the_methods_that_carry_the_event_handler_attribute()
     {
         var handlers = Facts.Handlers
-            .Where(handler => handler.Owner.Namespace == typeof(HandlerOnFacade).Namespace)
+            .Where(handler => handler.Owner.Namespace == typeof(HandlerOnStaticClass).Namespace)
             .Select(handler => $"{handler.Owner.Name}.{handler.Method}");
 
-        handlers.Should().BeEquivalentTo("HandlerOnInstance.Handle", "HandlerOnFacade.Handle");
+        handlers.Should().BeEquivalentTo("HandlerOnInstance.Handle", "HandlerOnStaticClass.Handle");
     }
 
     [TestCase(typeof(ProviderUser), "System.IServiceProvider", "ProviderUser::Get", TestName = "Call on IServiceProvider")]

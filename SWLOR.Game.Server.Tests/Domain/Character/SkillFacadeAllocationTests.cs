@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
 /// The skill reads run on every swing (the attack skill of the weapon) and every XP award, so a read through
-/// <see cref="GameServices.Skill"/>, which replaced the static <c>Skill</c> facade, must not allocate: the property reads
-/// the same per-service slot the facade read and the instance reads its own tables. These tests count the bytes the
+/// <see cref="GameServices.Skill"/> must not allocate: the property reads
+/// a per-service slot and the instance reads its own tables. These tests count the bytes the
 /// current thread allocates over many calls, through the accessor and on the instance, over the real catalogs. The reads
 /// that ask the engine about a creature or an item (a creature's rank, the skill of an equipped weapon) are not here: the
 /// recording engine fake allocates a record per call, so their cost says nothing about the service.

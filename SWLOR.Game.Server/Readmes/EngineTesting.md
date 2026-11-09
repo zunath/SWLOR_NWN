@@ -722,7 +722,7 @@ match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` po
 `bash scripts/ci/run-unit-tests.sh --out <dir>` ends with `tools/Refactor/check_coverage.py <dir>/coverage`, which merges the
 Cobertura files (a source line counts once, covered if any project hit it), drops the `excludes` listed in
 `tools/Refactor/CoverageFloors.json` (each with its reason) and compares the `SWLOR.Game.Server` figure and each area with the
-file's floors. Areas: each top-level folder, `Domain/<Domain>`, `Service` (facade files) and `Service/folders`, and every other
+file's floors. Areas: each top-level folder, `Domain/<Domain>`, `Service` (the files directly in the folder: static helpers and data types) and `Service/folders`, and every other
 `SWLOR.*` assembly. A drop fails the run; `--no-coverage` or naming projects skips the check. Integration-tier coverage stays
 out of the measure (it needs Docker and Redis and runs in its own job).
 

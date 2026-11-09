@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// Static code reaches each part of combat (and <c>ICombatService</c>, what is left of it) through the property of its name on
 /// <c>GameServices</c> (P2-ZP removed the facade that forwarded to them). These tests pin what the facade's callers relied
 /// on: the defaults each member binds, the handlers on the part that owns them, and the shared tables the parts read through
-/// each other. <c>FacadeForwardingTests</c> proves each <c>GameServices</c> property resolves the installed instance.
+/// each other. <c>ConvertedServiceContainerTests</c> proves each <c>GameServices</c> property resolves the installed instance.
 /// </summary>
 [TestFixture]
 public class CombatPartForwardingTests

@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Composition;
 namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
-/// Proves the server's container holder: the facade accessor fails loudly before the container is built, and a test
-/// container installed for one async flow reaches the facades and goes away when disposed.
+/// Proves the server's container holder: the accessor fails loudly before the container is built, and a test
+/// container installed for one async flow reaches GameServices and goes away when disposed.
 /// </summary>
 [TestFixture]
 public class CompositionRootTests
@@ -129,8 +129,8 @@ public class CompositionRootTests
         provider.Should().NotBeNull();
     }
 
-    // FacadeAccessor is internal to the game assembly (only facades may use it), so the test reaches it by reflection.
-    // This is the call every converted facade makes.
+    // FacadeAccessor is internal to the game assembly (only Composition may use it), so the test reaches it by reflection.
+    // This is the call every GameServices property makes.
     private static IProbe ResolveThroughTheFacadeAccessor()
     {
         var accessor = typeof(CompositionRoot).Assembly.GetType("SWLOR.Game.Server.Composition.FacadeAccessor", throwOnError: true)!;

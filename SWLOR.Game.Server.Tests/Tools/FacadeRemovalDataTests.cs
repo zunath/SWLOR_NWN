@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Tools;
 
 /// <summary>
 /// Keeps the facade removal data in step with the rest of the branch: <c>tools/Refactor/RemovedFacades.json</c> lists
-/// exactly the facades of the services marked <c>"facadeRemoved": true</c> in <c>ConvertedServices.json</c>, the names
+/// exactly the facades of the services and further classes <c>ConvertedServices.json</c> lists, the names
 /// that are also namespace segments are written explicitly, and every handler of a removed facade is renamed to a line of
 /// the handler order manifest.
 /// </summary>
@@ -22,14 +22,14 @@ public class FacadeRemovalDataTests
     private static IReadOnlyList<RemovedFacade> Data => RemovedFacadeList.Load(Path.Combine(Root, "tools", "Refactor", "RemovedFacades.json"));
 
     [Test]
-    public void The_data_lists_exactly_the_facades_of_the_services_marked_facade_removed()
+    public void The_data_lists_exactly_the_facades_of_the_converted_services()
     {
-        var marked = ConvertedServiceFixtures.Load()
+        var listed = ConvertedServiceFixtures.Load()
             .Where(service => service.RemovedFacade is not null)
             .Select(service => service.RemovedFacade!)
             .OrderBy(name => name, StringComparer.Ordinal);
 
-        Data.Select(facade => facade.FullName).Should().Equal(marked);
+        Data.Select(facade => facade.FullName).Should().Equal(listed);
         Data.Should().Contain(facade => facade.Facade == "Taxi").And.Contain(facade => facade.Facade == "ServerTask");
     }
 

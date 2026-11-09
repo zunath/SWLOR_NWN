@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
 /// Keeps the test-only container override out of game code: a scope left installed in production would make every
-/// facade resolve from a test container.
+/// GameServices property resolve from a test container.
 /// </summary>
 [TestFixture]
 public class CompositionSourceGuardTests
@@ -22,7 +22,7 @@ public class CompositionSourceGuardTests
             .Select(file => Path.GetRelativePath(serverRoot, file).Replace('\\', '/'))
             .ToList();
 
-        callers.Should().BeEmpty("only tests install a container; a scope left active would point every facade at a test container");
+        callers.Should().BeEmpty("only tests install a container; a scope left active would point every GameServices property at a test container");
     }
 
     private static bool IsBuildOutput(string serverRoot, string file)

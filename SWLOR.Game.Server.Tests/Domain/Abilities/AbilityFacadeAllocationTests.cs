@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 /// <summary>
 /// The ability reads run on every attack and activation, so a static call that only reads a table must not allocate: the
-/// accessor <c>GameServices.Ability</c> (the facade until P2-ZF) resolves its instance from the same cache the facade read and
+/// accessor <c>GameServices.Ability</c> resolves its instance from a per-service slot and
 /// the instance reads its own fields. These tests count the bytes the current thread allocates over many calls, with no
 /// impact active and with one active. The queued-attack and activation reads of <c>UsePerkFeat</c> and the quick cast map
 /// are here too, because they moved with the state.

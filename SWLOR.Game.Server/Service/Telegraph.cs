@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Service
             bool isHostile,
             TelegraphType type,
             ApplyTelegraphEffect action,
-            bool isPersistentAreaIndicator = false)
+            bool isPersistentAreaIndicator = false,
+            bool isImpactFlash = false)
         {
             var data = new TelegraphData
             {
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Service
                 Duration = duration,
                 IsHostile = isHostile,
                 IsPersistentAreaIndicator = isPersistentAreaIndicator,
+                IsImpactFlash = isImpactFlash,
                 Action = action
             };
 
@@ -555,18 +557,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
             var partyMember = DMPresence.GetDM(player);
+            var telegraphs = SelectTelegraphsForRendering(
+                _telegraphsByArea[area].Values.Select(telegraph => BuildRenderCandidate(player, partyMember, telegraph)));
 
             var i = 0;
-            foreach (var telegraph in telegraphs)
+            foreach (var candidate in telegraphs)
             {
-                var data = telegraph.Data;
+                var data = candidate.Telegraph.Data;
                 var position = data.Position;
                 var size = data.Size;
 
-                var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
-                var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
+                var packed = PackTelegraphData(data.Shape, candidate.ColorType, size, data.Rotation);
 
                 if (sent.PackedData[i] != packed)
                 {
@@ -597,10 +599,38 @@ namespace SWLOR.Game.Server.Service
             ResetTelegraphShaderSlots(player, sent, telegraphs.Length);
         }
 
-        private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
+        private static TelegraphRenderCandidate BuildRenderCandidate(uint player, uint partyMember, ActiveTelegraph telegraph)
         {
-            return telegraphs
-                .OrderBy(telegraph => telegraph.Data.IsPersistentAreaIndicator)
+            var data = telegraph.Data;
+            var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
+
+            return new TelegraphRenderCandidate(
+                telegraph,
+                colorType,
+                IsCreatorEnemyOfViewer(player, data.Creator, colorType));
+        }
+
+        // This runs per telegraph, per viewer, on every shader update, so the viewer's own, party and
+        // beneficial shapes skip the reputation lookup. Reputation is also unavailable for a creator
+        // that has since died and meaningless for a DM avatar, so a hostile color stands in for both.
+        private static bool IsCreatorEnemyOfViewer(uint player, uint creator, TelegraphColorType colorType)
+        {
+            if (colorType != TelegraphColorType.Hostile)
+                return false;
+
+            if (!GetIsObjectValid(creator) || GetIsDM(player))
+                return true;
+
+            return GetIsEnemy(player, creator);
+        }
+
+        // Only 16 shapes can render, so enemy threats claim slots first and allied shapes use the rest.
+        private static TelegraphRenderCandidate[] SelectTelegraphsForRendering(IEnumerable<TelegraphRenderCandidate> candidates)
+        {
+            return candidates
+                .Where(candidate => candidate.IsVisible)
+                .OrderByDescending(candidate => candidate.IsEnemyThreat)
+                .ThenBy(candidate => candidate.Telegraph.Data.IsPersistentAreaIndicator)
                 .Take(MaxRenderCount)
                 .ToArray();
         }

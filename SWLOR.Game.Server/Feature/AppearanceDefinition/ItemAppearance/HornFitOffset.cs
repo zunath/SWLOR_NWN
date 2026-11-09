@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
 /// <summary>
-/// A held horn's offset in item-local space: X is sideways, +Y lifts it back off the hands, +Z runs down the shaft,
-/// and Y rotation pivots at the grip (negative tips the mouth end forward).
+/// Offsets in the native item-part visual-transform axes. These axes are distinct from the posed hand attachment.
 /// </summary>
-public readonly record struct HornFitOffset(float TranslateX, float TranslateY, float TranslateZ, float RotateY);
+public readonly record struct HornFitOffset(float TranslateX, float TranslateY, float TranslateZ, float RotateY,
+    float RotateZ = 0f, float RotateX = 0f);

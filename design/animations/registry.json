@@ -3470,106 +3470,6 @@
     "ProjectPath": "design/animations/performance/HornLoop.swlanim"
   },
   {
-    "Name": "PipesLoop",
-    "AnimationName": "sw_pip_loop",
-    "Duration": 5.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PipesLoop.swlanim"
-  },
-  {
-    "Name": "PipesLow",
-    "AnimationName": "sw_pip_low",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PipesLow.swlanim"
-  },
-  {
-    "Name": "PipesMid",
-    "AnimationName": "sw_pip_mid",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PipesMid.swlanim"
-  },
-  {
-    "Name": "PipesHigh",
-    "AnimationName": "sw_pip_high",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PipesHigh.swlanim"
-  },
-  {
-    "Name": "PipesFlourish",
-    "AnimationName": "sw_pip_flour",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PipesFlourish.swlanim"
-  },
-  {
-    "Name": "TambourineLoop",
-    "AnimationName": "sw_tam_loop",
-    "Duration": 5.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/TambourineLoop.swlanim"
-  },
-  {
-    "Name": "TambourineLow",
-    "AnimationName": "sw_tam_low",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/TambourineLow.swlanim"
-  },
-  {
-    "Name": "TambourineMid",
-    "AnimationName": "sw_tam_mid",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/TambourineMid.swlanim"
-  },
-  {
-    "Name": "TambourineHigh",
-    "AnimationName": "sw_tam_high",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/TambourineHigh.swlanim"
-  },
-  {
-    "Name": "TambourineFlourish",
-    "AnimationName": "sw_tam_flour",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/TambourineFlourish.swlanim"
-  },
-  {
     "Name": "VocalsLoop",
     "AnimationName": "sw_voc_loop",
     "Duration": 5.2,
@@ -3668,5 +3568,105 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/ViolinFlourish.swlanim"
+  },
+  {
+    "Name": "TambourineLoop",
+    "AnimationName": "sw_tam_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineLoop.swlanim"
+  },
+  {
+    "Name": "TambourineLow",
+    "AnimationName": "sw_tam_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineLow.swlanim"
+  },
+  {
+    "Name": "TambourineHigh",
+    "AnimationName": "sw_tam_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineHigh.swlanim"
+  },
+  {
+    "Name": "TambourineFlourish",
+    "AnimationName": "sw_tam_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineFlourish.swlanim"
+  },
+  {
+    "Name": "TambourineMid",
+    "AnimationName": "sw_tam_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineMid.swlanim"
+  },
+  {
+    "Name": "PipesLoop",
+    "AnimationName": "sw_pip_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesLoop.swlanim"
+  },
+  {
+    "Name": "PipesLow",
+    "AnimationName": "sw_pip_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesLow.swlanim"
+  },
+  {
+    "Name": "PipesMid",
+    "AnimationName": "sw_pip_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesMid.swlanim"
+  },
+  {
+    "Name": "PipesHigh",
+    "AnimationName": "sw_pip_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesHigh.swlanim"
+  },
+  {
+    "Name": "PipesFlourish",
+    "AnimationName": "sw_pip_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesFlourish.swlanim"
   }
 ]

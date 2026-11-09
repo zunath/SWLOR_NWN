@@ -377,6 +377,11 @@ its refresh on the looping carrier. The mapping is owned by the playback and res
 or equipment changes; other animation callers keep their existing torch behavior.
 Panpipes, tambourines and violin bows lift the polearm carry layer at the opening, then stay
 on the looping carrier. All clips in each new family return to their common playing hold.
+The pipes use an outer-edge grip with the row turned inward by a native item-part Z rotation,
+with Human offsets in `HornFit` checked from front and side against the default male and female heads.
+These middle-part offsets apply only while music
+plays and are removed on stop or unequip. Tambourine clips hold the upper rim near the ribs,
+with free-hand taps and small shakes.
 
 Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
 strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain

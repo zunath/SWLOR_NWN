@@ -1,13 +1,67 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class PerformanceInstrumentEngineTests
 {
+    [EngineTest("Panpipe playing fits preserve cosmetics on stop and unequip", Category = "PerformanceInstruments", TimeoutSeconds = 90f)]
+    public static async Task PanpipeFitRestoresCosmetics(EngineTestContext ctx)
+    {
+        const ObjectVisualTransformDataScopeType scope =
+            (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2;
+        var channels = new[] { ObjectVisualTransform.TranslateX, ObjectVisualTransform.TranslateY, ObjectVisualTransform.TranslateZ,
+            ObjectVisualTransform.RotateY, ObjectVisualTransform.RotateZ, ObjectVisualTransform.RotateX };
+        var authored = new[] { .011f, -.012f, .013f, 4f, 7f, 3f };
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            try
+            {
+                SetCreatureAppearanceType(player, AppearanceType.Human);
+                SetGender(player, gender);
+                SetPhenoType(PhenoType.Normal, player);
+                fixture.Update(record => record.Perks[PerkType.PlayInstrument] = 1);
+                var item = await ctx.EquipItemAsync(player, "panpipes", InventorySlot.RightHand);
+                for (var i = 0; i < channels.Length; i++)
+                    SetObjectVisualTransform(item, channels[i], authored[i], nScope: scope);
+                Performance.SetRoleplay(player, true);
+                await ctx.ExecuteInCreatureContextAsync(player, () => Performance.TogglePlayInstrument(player, 1));
+                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, "panpipes to start performing");
+                var fitted = channels.Select(channel => GetObjectVisualTransform(item, channel, nScope: scope)).ToArray();
+                ctx.Assert(fitted.Where((value, i) => Math.Abs(value - authored[i]) > .0001f).Any(), "the playing fit is applied");
+                for (var refresh = 0; refresh < 5; refresh++) HornFit.Apply(player);
+                for (var i = 0; i < channels.Length; i++)
+                    ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - fitted[i]) < .0001f,
+                        "repeated fit refresh does not compound its offset");
+                if (gender == Gender.Male)
+                    Performance.EndPerformance(player, PerformanceEndReason.Stopped);
+                else
+                {
+                    AssignCommand(player, () => { ClearAllActions(); ActionUnequipItem(item); });
+                    await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player) != item, 8f, "panpipes to be unequipped");
+                }
+                await ctx.WaitUntilAsync(() => !Performance.TryGetSession(player, out _), 8f, "the performance to stop");
+                for (var i = 0; i < channels.Length; i++)
+                    ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - authored[i]) < .0001f,
+                        "stopping or unequipping removes only the playing fit");
+            }
+            finally
+            {
+                if (Performance.TryGetSession(player, out _)) Performance.EndPerformance(player, PerformanceEndReason.Invalid);
+                AssignCommand(player, () => DestroyObject(player));
+            }
+        }
+    }
+
     [EngineTest("Performance recognizes existing microphones pipes tambourine and paired violins", Category = "PerformanceInstruments", TimeoutSeconds = 180f)]
     public static async Task ExistingPropsPerformAndStopWhenRemoved(EngineTestContext ctx)
     {

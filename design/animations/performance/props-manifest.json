@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "bd00a96320e4494b82af3ca4a8a9a72b427d62dbf8992a0fc10726d0cdd8325c",
+  "RecipeSha256": "a08aa8f1626db3bec4309637d78c7597597c39515f911450e983b3de3f7ba5ad",
   "Notes": "Authored prop clips retain their recipe timing. Installation and client verification are separate steps.",
   "Animations": [
     {
@@ -20,7 +20,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5288108e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5288108E-07,
       "Beats": [
         {
           "Time": 0,
@@ -458,7 +458,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.1793994e-07,
+      "MdlRoundTripMaximumErrorMetres": 3.1793994E-07,
       "Beats": [
         {
           "Time": 0,
@@ -520,7 +520,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2644054e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2644054E-07,
       "Beats": [
         {
           "Time": 0,
@@ -582,7 +582,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4600097e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4600097E-07,
       "Beats": [
         {
           "Time": 0,
@@ -644,7 +644,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6987152e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6987152E-07,
       "Beats": [
         {
           "Time": 0,
@@ -778,7 +778,7 @@
       "Name": "Pipes Loop",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Pipes performance with the existing held prop.",
+      "Observation": "Corrected playing hold for the existing panpipes model.",
       "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -786,7 +786,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5156055e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5484906E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1209,14 +1209,14 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "b9bbe52e7158a5255205a4eadc93370246cdf92b1d50d22eeb02fbe1be3f4430"
+      "ProjectSha256": "bc54bb61a6f704d96496aa3b2b3cdadd0ea2cda4bc36573636d57e59ed582fee"
     },
     {
       "Id": "PipesLow",
       "Name": "Pipes Low",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Pipes performance with the existing held prop.",
+      "Observation": "Corrected playing hold for the existing panpipes model.",
       "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -1224,7 +1224,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4751397e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.6049042E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1271,14 +1271,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "dbd4efc43baec1a9551a0edfe96fc836055ac2c08e108b859ae026717ad649c3"
+      "ProjectSha256": "6624527023625f5a8f31b85add57a75c767ab4ba6bed80d629443b5daf97249f"
     },
     {
       "Id": "PipesMid",
       "Name": "Pipes Mid",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Pipes performance with the existing held prop.",
+      "Observation": "Corrected playing hold for the existing panpipes model.",
       "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -1286,7 +1286,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2818464e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4770201E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1333,14 +1333,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "5afa1c381073ad626f716c730d394f3462b4068204573b2740a6630db87268a2"
+      "ProjectSha256": "6226ec6f46cee3f02c63d4087b49114d6cda30c06e198093a06b86928585dbc0"
     },
     {
       "Id": "PipesHigh",
       "Name": "Pipes High",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Pipes performance with the existing held prop.",
+      "Observation": "Corrected playing hold for the existing panpipes model.",
       "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -1348,7 +1348,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4978897e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.1023975E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1395,14 +1395,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "85b8cbb712a83451659501e107006ebc9195db3c0b301d985f5364f07fcf0128"
+      "ProjectSha256": "83d3742533c68676e55854f110ca7d8974d5b759acbec03ddd08cc49b9c22ba1"
     },
     {
       "Id": "PipesFlourish",
       "Name": "Pipes Flourish",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Pipes performance with the existing held prop.",
+      "Observation": "Corrected playing hold for the existing panpipes model.",
       "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -1410,7 +1410,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3899995e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4665812E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1537,7 +1537,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "d00e21d482d36c0275568d40ec4f8bb4bda3b348aaa77102e6d8177e854a267f"
+      "ProjectSha256": "65ecfeb962ee48c50a6c962a7376a91f114e6415249b094c5b4449e173c2372b"
     },
     {
       "Id": "ViolinLoop",
@@ -1552,7 +1552,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1990,7 +1990,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2052,7 +2052,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2114,7 +2114,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714e-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2176,7 +2176,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.1696418e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.1696418E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2310,7 +2310,7 @@
       "Name": "Tambourine Loop",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Tambourine performance with the existing held prop.",
+      "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
       "Interpretation": "A closed tambourine playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -2318,7 +2318,7 @@
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9556887e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.691506E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2741,14 +2741,14 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "a8a7121fb40166564d4d2aa6cfe5a82ada2ace1690103a59bb453f8be4b3af98"
+      "ProjectSha256": "a48a4245c39852cb90e9fec115f6be59dc583eeb95de75854f2af78757ebd9f0"
     },
     {
       "Id": "TambourineLow",
       "Name": "Tambourine Low",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Tambourine performance with the existing held prop.",
+      "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
       "Interpretation": "A closed tambourine playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -2756,7 +2756,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2644054e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2803,14 +2803,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "486646852097651517b1887995e7b2a8fa6d889e29462cd65de465b3a3b2f712"
+      "ProjectSha256": "8739e2e9cd5f8fc4192be1b6eace096b16566a9853ff027b94736e1823a929aa"
     },
     {
       "Id": "TambourineMid",
       "Name": "Tambourine Mid",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Tambourine performance with the existing held prop.",
+      "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
       "Interpretation": "A closed tambourine playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -2818,7 +2818,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2128666e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2865,14 +2865,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "f9d759811a5c50d509888e9d2ed0eee1b24fada23acd8ee2be9825c0c6ada0b6"
+      "ProjectSha256": "2662b9b14a8f3f83b05a80073a155239740c2a0b23982d60a4fd3dabc6a0af58"
     },
     {
       "Id": "TambourineHigh",
       "Name": "Tambourine High",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Tambourine performance with the existing held prop.",
+      "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
       "Interpretation": "A closed tambourine playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -2880,7 +2880,7 @@
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4439723e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2927,14 +2927,14 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "00d6174b16feddaf0ce6e3ccb91bb779849d54dc9b733b1043c10d3504eb3727"
+      "ProjectSha256": "dc6d758e6be17f7804fb708cc62254189ef4dfeb0c08f92306b5b4e53cdc4ce7"
     },
     {
       "Id": "TambourineFlourish",
       "Name": "Tambourine Flourish",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "Tambourine performance with the existing held prop.",
+      "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
       "Interpretation": "A closed tambourine playing pose with grounded feet and a continuous hand gesture.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
@@ -2942,7 +2942,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9314112e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5122932E-07,
       "Beats": [
         {
           "Time": 0,
@@ -3069,7 +3069,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "42a05ba579cb3169502ff642d3ac7d70bbb2a5bf9435db8cd0d1a6c21d6c367d"
+      "ProjectSha256": "109ba5afd87e58bfd9c731af0852b13769d4e7edc8fa1a4d62a371411f4b5080"
     }
   ]
 }

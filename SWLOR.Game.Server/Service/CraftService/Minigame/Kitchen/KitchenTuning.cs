@@ -75,6 +75,9 @@ public static class KitchenTuning
     /// <summary>The Doneness multiplier moves by this much per skill rank above (or below) the recipe's level.</summary>
     public const double LevelFactorPerRank = 0.05;
 
+    /// <summary>The share of its Doneness an action gives on a recipe above <see cref="TopRecipeRules.LastOrdinaryLevel"/>.</summary>
+    public const double TopRecipeDonenessFactor = 0.8;
+
     public const double LevelFactorMin = 0.75;
     public const double LevelFactorMax = 1.5;
 

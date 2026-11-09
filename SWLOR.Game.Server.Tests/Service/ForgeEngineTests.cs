@@ -140,7 +140,17 @@ public class ForgeEngineTests
         ForgeRules.EnhancementShapePercent(37, 20).Should().Be(50);
         ForgeRules.EnhancementShapePercent(0, 20).Should().Be(0);
         ForgeRules.EnhancementShapePercent(-10, 20).Should().Be(0);
-        ForgeRules.EnhancementShapePercent(100, 500).Should().BeGreaterThan(0, "a level past the chart uses its last row");
+        ForgeRules.EnhancementShapePercent(100, 500).Should().BeGreaterThan(0, "a level past the chart uses the last compared row");
+    }
+
+    [TestCase(50)]
+    [TestCase(51)]
+    [TestCase(52)]
+    [TestCase(53)]
+    public void AnEnhancementCostsTheTopRecipesTheSameShapeAsALevel50Recipe(int recipeLevel)
+    {
+        // Level 50's chart row has 186 progress, so two penalties of 80 are 86% of it.
+        ForgeRules.EnhancementShapePercent(160, recipeLevel).Should().Be(86);
     }
 
     [TestCase(0, 0, 0)]

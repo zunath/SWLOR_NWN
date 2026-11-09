@@ -230,6 +230,18 @@ public class TelegraphTests
         SelectForRendering(new[] { flash }).Should().HaveCount(expectedVisible ? 1 : 0);
     }
 
+    [TestCase(TelegraphColorType.Self)]
+    [TestCase(TelegraphColorType.Beneficial)]
+    [TestCase(TelegraphColorType.PartyMember)]
+    public void NonHostileColors_NeverReachTheReputationLookup(TelegraphColorType colorType)
+    {
+        var method = typeof(Telegraph)
+            .GetMethod("IsCreatorEnemyOfViewer", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        // No engine is running here, so any lookup past the color check would throw.
+        method.Invoke(null, new object[] { 1u, 2u, colorType }).Should().Be(false);
+    }
+
     [Test]
     public void AlliedWarningsAndLingeringAreas_StayVisible()
     {

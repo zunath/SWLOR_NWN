@@ -610,12 +610,16 @@ namespace SWLOR.Game.Server.Service
                 IsCreatorEnemyOfViewer(player, data.Creator, colorType));
         }
 
-        // Reputation is unavailable for a creator that has since died and meaningless for a DM avatar,
-        // so both fall back to the color already chosen for that viewer.
+        // This runs per telegraph, per viewer, on every shader update, so the viewer's own, party and
+        // beneficial shapes skip the reputation lookup. Reputation is also unavailable for a creator
+        // that has since died and meaningless for a DM avatar, so a hostile color stands in for both.
         private static bool IsCreatorEnemyOfViewer(uint player, uint creator, TelegraphColorType colorType)
         {
+            if (colorType != TelegraphColorType.Hostile)
+                return false;
+
             if (!GetIsObjectValid(creator) || GetIsDM(player))
-                return colorType == TelegraphColorType.Hostile;
+                return true;
 
             return GetIsEnemy(player, creator);
         }

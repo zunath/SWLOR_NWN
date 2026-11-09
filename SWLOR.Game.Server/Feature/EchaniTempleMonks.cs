@@ -12,6 +12,13 @@ namespace SWLOR.Game.Server.Feature
         private const string StopKey = "ECHANI_MONK_STOP";
         private const string BeatKey = "ECHANI_MONK_BEAT";
         private const string MovingKey = "ECHANI_MONK_MOVING";
+        private const string LastStopKey = "ECHANI_MONK_LAST_STOP";
+        private const string RecoveryKey = "ECHANI_MONK_RECOVERY";
+        private const string StalledKey = "ECHANI_MONK_STALLED";
+        private const string RetriesKey = "ECHANI_MONK_RETRIES";
+        private const string PositionXKey = "ECHANI_MONK_POS_X";
+        private const string PositionYKey = "ECHANI_MONK_POS_Y";
+        private const float PathArrivalDistance = 0.75f;
 
         [NWNEventHandler(ScriptName.OnCreatureHeartbeatAfter)]
         public static void Heartbeat()
@@ -26,36 +33,48 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var tag = GetLocalString(leader, StopKey);
-            var stop = GetUniqueObject(string.IsNullOrEmpty(tag) ? FirstStop : tag);
-            if (!GetIsObjectValid(stop) || GetObjectType(stop) != ObjectType.Waypoint) return;
-            if (monks.Any(monk => GetArea(monk) != GetArea(stop))) return;
-
-            var arrived = true;
-            foreach (var monk in monks)
+            var initialTag = GetLocalString(leader, StopKey);
+            if (string.IsNullOrEmpty(initialTag)) initialTag = FirstStop;
+            var stops = new uint[monks.Length];
+            for (var index = 0; index < monks.Length; index++)
             {
-                if (GetDistanceBetween(monk, stop) <= 3f)
-                {
-                    StopMovement(monk);
-                    continue;
-                }
-                arrived = false;
-                if (GetCurrentAction(monk) != ActionType.Invalid) continue;
-                SetLocalInt(monk, MovingKey, 1);
-                AssignCommand(monk, () => ActionMoveToLocation(GetLocation(stop)));
+                var tag = GetLocalString(monks[index], StopKey);
+                if (string.IsNullOrEmpty(tag)) tag = initialTag;
+                SetLocalString(monks[index], StopKey, tag);
+                stops[index] = GetUniqueObject(tag);
+                if (!IsRoutePoint(stops[index], GetArea(monks[index]))) return;
             }
-            if (!arrived) return;
+
+            var arrived = new bool[monks.Length];
+            for (var index = 0; index < monks.Length; index++)
+            {
+                var monk = monks[index];
+                var point = stops[index];
+                arrived[index] = MoveToStop(monk, point);
+                if (!arrived[index] || IsGroupStop(point)) continue;
+                var following = GetUniqueObject(GetLocalString(point, "ECHANI_NEXT"));
+                if (!IsRoutePoint(following, GetArea(point))) continue;
+                SetLocalString(monk, StopKey, GetTag(following));
+                MoveToStop(monk, following);
+                arrived[index] = false;
+            }
+
+            if (!CanStartGroupStop(stops, arrived) || !IsGroupStop(stops[0])) return;
             if (monks.Any(monk => GetCurrentAction(monk) != ActionType.Invalid)) return;
 
+            var stop = stops[0];
             var next = GetUniqueObject(GetLocalString(stop, "ECHANI_NEXT"));
-            if (!GetIsObjectValid(next)) return;
+            if (!GetIsObjectValid(next) || GetObjectType(next) != ObjectType.Waypoint) return;
             var transfer = GetLocalString(stop, "ECHANI_TRANSFER");
             if (!string.IsNullOrEmpty(transfer))
             {
                 var destination = GetUniqueObject(transfer);
-                if (!GetIsObjectValid(destination) || GetArea(destination) != GetArea(next)) return;
+                if (!IsRoutePoint(destination, GetArea(next))) return;
                 foreach (var monk in monks)
+                {
+                    DeleteLocalObject(monk, LastStopKey);
                     AssignCommand(monk, () => JumpToLocation(GetLocation(destination)));
+                }
             }
             else
             {
@@ -73,7 +92,103 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
             DeleteLocalInt(leader, BeatKey);
-            SetLocalString(leader, StopKey, GetTag(next));
+            foreach (var monk in monks) SetLocalString(monk, StopKey, GetTag(next));
+        }
+
+        private static bool IsRoutePoint(uint point, uint area) =>
+            GetIsObjectValid(point) && GetObjectType(point) == ObjectType.Waypoint && GetArea(point) == area;
+
+        private static bool IsGroupStop(uint point) =>
+            !string.IsNullOrEmpty(GetLocalString(point, "ECHANI_SCENE")) ||
+            !string.IsNullOrEmpty(GetLocalString(point, "ECHANI_TRANSFER"));
+
+        private static bool CanStartGroupStop(uint[] stops, bool[] arrived) =>
+            stops.Length > 0 && stops.Length == arrived.Length &&
+            stops.All(stop => stop == stops[0]) && arrived.All(value => value);
+
+        private static bool CanManageMovement(ActionType action, bool owned) =>
+            action == ActionType.Invalid || owned && action == ActionType.MoveToPoint;
+
+        private static (int Stalled, int Retries, bool Repath, bool Backtrack) EvaluateMovement(
+            float distanceMovedSquared, int stalled, int retries)
+        {
+            if (distanceMovedSquared >= 0.25f * 0.25f) return (0, 0, false, false);
+            if (++stalled < 3) return (stalled, retries, false, false);
+            return (0, Math.Min(retries + 1, 2), true, retries >= 1);
+        }
+
+        private static bool MoveToStop(uint monk, uint stop)
+        {
+            var action = GetCurrentAction(monk);
+            var owned = GetLocalInt(monk, MovingKey) == 1;
+            if (!CanManageMovement(action, owned))
+            {
+                ResetMovement(monk);
+                return false;
+            }
+
+            var recovery = GetLocalInt(monk, RecoveryKey) == 1;
+            var previous = GetLocalObject(monk, LastStopKey);
+            if (recovery && !IsRoutePoint(previous, GetArea(monk)))
+            {
+                StopMovement(monk);
+                recovery = false;
+                owned = false;
+                action = GetCurrentAction(monk);
+            }
+            var target = recovery ? previous : stop;
+            var arrivalDistance = recovery || !IsGroupStop(stop) ? PathArrivalDistance : 3f;
+            if (GetDistanceBetween(monk, target) <= arrivalDistance)
+            {
+                StopMovement(monk);
+                if (recovery) return false;
+                SetLocalObject(monk, LastStopKey, stop);
+                return true;
+            }
+
+            var position = GetPosition(monk);
+            var updatePosition = !owned;
+            if (owned)
+            {
+                var x = position.X - GetLocalFloat(monk, PositionXKey);
+                var y = position.Y - GetLocalFloat(monk, PositionYKey);
+                var decision = EvaluateMovement(x * x + y * y,
+                    GetLocalInt(monk, StalledKey), GetLocalInt(monk, RetriesKey));
+                SetLocalInt(monk, StalledKey, decision.Stalled);
+                SetLocalInt(monk, RetriesKey, decision.Retries);
+                updatePosition = decision.Stalled == 0;
+                if (decision.Repath)
+                {
+                    if (action == ActionType.MoveToPoint) ClearAllActions(false, monk);
+                    if (decision.Backtrack)
+                    {
+                        recovery = !recovery && IsRoutePoint(previous, GetArea(monk)) &&
+                                   GetDistanceBetween(monk, previous) > PathArrivalDistance;
+                        SetLocalInt(monk, RecoveryKey, recovery ? 1 : 0);
+                        SetLocalInt(monk, RetriesKey, 0);
+                        target = recovery ? previous : stop;
+                    }
+                    action = ActionType.Invalid;
+                }
+            }
+            if (updatePosition)
+            {
+                SetLocalFloat(monk, PositionXKey, position.X);
+                SetLocalFloat(monk, PositionYKey, position.Y);
+            }
+            if (action != ActionType.Invalid) return false;
+            var destination = GetLocation(target);
+            SetLocalInt(monk, MovingKey, 1);
+            AssignCommand(monk, () => ActionMoveToLocation(destination));
+            return false;
+        }
+
+        private static void ResetMovement(uint creature)
+        {
+            DeleteLocalInt(creature, MovingKey);
+            DeleteLocalInt(creature, StalledKey);
+            DeleteLocalInt(creature, RetriesKey);
+            DeleteLocalInt(creature, RecoveryKey);
         }
 
         private static uint GetUniqueObject(string tag)
@@ -102,7 +217,7 @@ namespace SWLOR.Game.Server.Feature
                 GetLocalInt(creature, MovingKey) == 1 &&
                 GetCurrentAction(creature) == ActionType.MoveToPoint)
                 ClearAllActions(false, creature);
-            DeleteLocalInt(creature, MovingKey);
+            ResetMovement(creature);
         }
 
         private static void PlayBeat(uint[] monks, uint stop, string scene, int beat)
@@ -141,6 +256,7 @@ namespace SWLOR.Game.Server.Feature
             "errands" => "Thank you, Master. There is always another doorstep to reach.",
             "cloth" => "Bring the torn hems by tomorrow. I will have thread ready.",
             "teacher" => "And a patient teacher knows when to let the student answer.",
+            "sentinel" => "The road is clear, Master. Safe travels to you and your students.",
             _ => "Safe travels to you."
         };
 
@@ -152,6 +268,7 @@ namespace SWLOR.Game.Server.Feature
             ("errands", 0) => "Good morning, Ilya. May your errands leave you a little time to rest.",
             ("cloth", 0) => "Cerin, your stitching has survived another week of practice.",
             ("teacher", 0) => "Toren. Have these two learned to listen with their feet yet?",
+            ("sentinel", 0) => "Sentinel Daren Or. We will take a moment here before continuing our walk.",
             ("river", 0) => "Listen to the river before you speak. We have time.",
             ("homes", 0) => "Keep your voices low here. These are people's homes.",
             ("market", 0) => "We will pause here. Check your straps before the climb.",

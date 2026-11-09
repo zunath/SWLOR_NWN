@@ -191,6 +191,34 @@ public class EchaniTempleMonksTests
     }
 
     [Test]
+    public void Highcrest_VisitsTheSentinelWithoutUsingTheUpperShuttle()
+    {
+        var area = Read("Module/git/pw_ar_sc_eshancm.git.json");
+        var sentinel = Value(area, "Creature List").EnumerateArray()
+            .Single(creature => Value(creature, "Tag").GetString() == "hc_daren");
+        var route = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToArray();
+        var visit = route.Single(point => Variables(point).TryGetValue("ECHANI_HOST", out var host)
+                                         && host.GetString() == "hc_daren");
+        Variables(visit)["ECHANI_SCENE"].GetString().Should().NotBeNullOrEmpty();
+        Variables(visit).Should().NotContainKey("ECHANI_TRANSFER",
+            "the sentinel conversation must run before the monks return through Highcrest");
+        var distanceSquared = new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+            Math.Pow(Value(visit, field).GetDouble() - Value(sentinel, field).GetDouble(), 2));
+        distanceSquared.Should().BeLessThanOrEqualTo(64,
+            "the controller only includes a host within eight meters of the scene waypoint");
+
+        foreach (var point in route)
+        {
+            var variables = Variables(point);
+            if (variables.TryGetValue("ECHANI_TRANSFER", out var destination))
+                destination.GetString().Should().Be("WP_eshan_cityside2",
+                    "the monks leave Highcrest by the city road, never the upper shuttle");
+        }
+    }
+
+    [Test]
     public void Route_IsOneClosedLoopAndEveryAreaChangeHasAnExistingTransferDestination()
     {
         var points = new Dictionary<string, (string Area, JsonElement Point)>();

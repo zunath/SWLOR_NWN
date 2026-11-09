@@ -165,13 +165,21 @@ public class FabricatorPerkTests
     [TestCase(12, 50, 2)]
     [TestCase(1, 25, 1)]
     [TestCase(1, 50, 1)]
-    [TestCase(53, 50, 5)]
+    [TestCase(50, 50, 5)]
     public void QuickChange_TakesAPercentOffARetoolsCp_ToTheNearestCp_AndNeverBelowOne(int level, int percent, int expected)
     {
         var setup = Perked(new FabricatorPerkStats(RetoolCpReductionPercent: percent), level: level);
 
         setup.RetoolCp.Should().Be(expected);
         Engine(setup).Preview(FabricatorActionIds.RetoolCutter).CpCost.Should().Be(expected);
+    }
+
+    [Test]
+    public void QuickChange_IsWorthAQuarterOnATopRecipe()
+    {
+        var setup = Perked(new FabricatorPerkStats(RetoolCpReductionPercent: 50), level: 53);
+
+        setup.RetoolCp.Should().Be(8);
     }
 
     [TestCase(25, 0, 10)]

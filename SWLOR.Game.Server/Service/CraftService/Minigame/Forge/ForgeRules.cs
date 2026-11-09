@@ -170,7 +170,7 @@ public static class ForgeRules
     /// The highest recipe level whose progress an enhancement's penalty is compared with. The chart's progress jumps from 186 at level 50 to
     /// 503 at level 52, which would make the same enhancements far cheaper on the top recipes than on level 50 ones.
     /// </summary>
-    public const int EnhancementProgressMaxLevel = 50;
+    public const int EnhancementProgressMaxLevel = TopRecipeRules.LastOrdinaryLevel;
 
     /// <summary>
     /// How much more Shape the recipe needs for the enhancements' progress penalty. The penalty is in the original crafting

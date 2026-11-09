@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.IntegrationTests.Support;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.IntegrationTests.Chains;
 
@@ -21,7 +22,7 @@ public class PlayerFirstEntryTests : IntegrationTestBase
         ConfigurePlayer();
         Engine.SetReturn("GetHitDice", 40);
         Engine.SetReturn("GetRacialType", RacialType.Human);
-        SWLOR.Game.Server.Service.Race.LoadRaces();
+        Race.LoadRaces();
         Engine.SetReturn("GetClassByPosition", ClassType.Standard);
         GiveTheEngineItemCreation();
     }

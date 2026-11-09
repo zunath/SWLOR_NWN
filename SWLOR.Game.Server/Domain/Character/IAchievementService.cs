@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.AchievementService;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Account achievements: which ones exist, and granting them to a player's account. The static facade
-    /// <c>Service.Achievement</c> forwards to the container's instance of this interface and keeps the event handlers.
+    /// Account achievements: which ones exist, and granting them to a player's account. Reached
+    /// through <c>GameServices.Achievement</c> from static code.
     /// </summary>
     public interface IAchievementService
     {

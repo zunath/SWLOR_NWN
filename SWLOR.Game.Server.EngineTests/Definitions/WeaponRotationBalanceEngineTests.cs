@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -12,7 +13,6 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using Activity = SWLOR.Game.Server.Service.Activity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -384,7 +384,7 @@ public static class WeaponRotationBalanceEngineTests
                 }
                 for (var index = 0; index < feats.Length; index++)
                 {
-                    if (elapsed < next[index] || Activity.IsBusy(actor)) continue;
+                    if (elapsed < next[index] || GameServices.Activity.IsBusy(actor)) continue;
                     var feat = feats[index];
                     var ability = Ability.GetAbilityDetail(feat);
                     if (Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1) continue;
@@ -408,7 +408,7 @@ public static class WeaponRotationBalanceEngineTests
                         }
                     });
                 }
-                if (Activity.IsBusy(actor))
+                if (GameServices.Activity.IsBusy(actor))
                 {
                     // Let the normal post-cast resume callback settle first.
                     nextAttackResumeCheck = clock.Elapsed.TotalSeconds + .25d;

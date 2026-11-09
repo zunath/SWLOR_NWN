@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Introductions between players: the logic and state that used to be static in <c>Service.PlayerIntroduction</c>,
-    /// moved here unchanged. The facade keeps the event handler and forwards every call to the container's instance.
+    /// moved here unchanged. The event handler runs on the container's instance.
     /// </summary>
     public class PlayerIntroductionService : IPlayerIntroductionService
     {
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _recast = recast;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearOnExit()
         {
             var playerId = GetObjectUUID(GetExitingObject());

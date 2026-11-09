@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;
 

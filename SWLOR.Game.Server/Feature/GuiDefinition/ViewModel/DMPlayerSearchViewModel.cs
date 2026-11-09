@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -524,14 +525,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // The target is exact, so a chat-portrait click the DM left unsent never blocks it.
                 var speaker = DMPresence.GetDM(Player);
-                SetLocalBool(speaker, PlayerName.DirectTellVariable, true);
+                SetLocalBool(speaker, PlayerNameService.DirectTellVariable, true);
                 try
                 {
                     ChatPlugin.SendMessage(ChatChannel.DMTell, message, speaker, target);
                 }
                 finally
                 {
-                    DeleteLocalBool(speaker, PlayerName.DirectTellVariable);
+                    DeleteLocalBool(speaker, PlayerNameService.DirectTellVariable);
                 }
                 DMPresence.SendMessage(Player, $"To {result.Name}: {message}");
                 Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(Player)} messaged {result.Name} ({result.PlayerId}): {message}");

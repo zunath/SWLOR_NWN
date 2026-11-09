@@ -65,6 +65,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<uint, AIState> _states = new();
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
+        private readonly Lazy<IDroidService> _droid;
+
         public AIService(
             IPartyService party,
             IBeastMasteryService beastMastery,
@@ -79,8 +81,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Lazy<IPerkService> perk,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
-            Lazy<IStealthService> stealth)
+            Lazy<IStealthService> stealth,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _party = party;
             _beastMastery = beastMastery;
             _dmPresence = dmPresence;
@@ -1137,7 +1141,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (_beastMastery.IsPlayerBeast(creature))
                 return AIProfileType.BeastCompanion;
 
-            if (Droid.IsDroid(creature))
+            if (_droid.Value.IsDroid(creature))
                 return AIProfileType.DroidCompanion;
 
             return AIProfileType.Generic;

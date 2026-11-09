@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Beast companions: the catalog, taming, spawning and incubation (the static class <c>BeastMastery</c> until P2-ZO).</summary>
         public static IBeastMasteryService BeastMastery => FacadeAccessor.Resolve<IBeastMasteryService>();
 
+        /// <summary>Player droids: spawning, the saved equipment snapshot and the droid event handlers (the static class <c>Droid</c> until P2-B12).</summary>
+        public static IDroidService Droid => FacadeAccessor.Resolve<IDroidService>();
+
         /// <summary>The droid equipment diagnostics log (the static class <c>DroidEquipmentDiagnostics</c> until P2-ZO).</summary>
         public static IDroidEquipmentDiagnosticsService DroidEquipmentDiagnostics => FacadeAccessor.Resolve<IDroidEquipmentDiagnosticsService>();
 

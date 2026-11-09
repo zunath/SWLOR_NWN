@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -926,7 +927,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
             {
-                var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
+                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, Player);
                 SetName(controller, $"Droid Controller: {Name}");
 
                 var constructedDroid = Droid.LoadConstructedDroid(controller);

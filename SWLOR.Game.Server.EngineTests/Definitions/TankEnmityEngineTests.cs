@@ -19,6 +19,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -351,7 +352,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner.Creature, () =>
             {
                 var cpu = CreateItemOnObject("d_bl_cpu2_m", owner.Creature);
-                var controller = CreateItemOnObject(Droid.DroidControlItemResref, owner.Creature);
+                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner.Creature);
                 ctx.Track(cpu);
                 ctx.Track(controller);
                 ctx.Assert(GetIsObjectValid(cpu) && GetIsObjectValid(controller), "Droid controller fixtures exist");

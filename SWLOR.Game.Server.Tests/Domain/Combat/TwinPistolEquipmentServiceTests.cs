@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.Testing;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -445,7 +446,7 @@ public class TwinPistolEquipmentServiceTests
         public uint DroidOwner;
 
         public TestEquipment(IItemService item, ItemWorld world)
-            : base(item, FacadeForwarder.LazyFor<ISkillService>())
+            : base(item, FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<IDroidService>())
         {
             _itemWorld = world;
         }

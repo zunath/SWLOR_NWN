@@ -45,6 +45,8 @@ namespace SWLOR.Game.Server.Domain.Items
         private readonly Lazy<ISkillService> _skill;
         private readonly Lazy<ITwinPistolEquipmentService> _twinPistolEquipment;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public ItemService(
             IBeastMasteryService beastMastery,
             IDBService db,
@@ -54,8 +56,10 @@ namespace SWLOR.Game.Server.Domain.Items
             Lazy<IPerkService> perk,
             IRecastService recast,
             Lazy<ISkillService> skill,
-            Lazy<ITwinPistolEquipmentService> twinPistolEquipment)
+            Lazy<ITwinPistolEquipmentService> twinPistolEquipment,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _beastMastery = beastMastery;
             _db = db;
             _activity = activity;
@@ -609,7 +613,7 @@ namespace SWLOR.Game.Server.Domain.Items
         public string CanEquip(uint creature, uint item, InventorySlot? prospectiveSlot = null)
         {
             var isPlayer = GetIsPC(creature);
-            var isDroid = Droid.IsDroid(creature);
+            var isDroid = _droid.Value.IsDroid(creature);
             var itemType = GetBaseItemType(item);
             var hands = prospectiveSlot.HasValue
                 ? _twinPistolEquipment.Value.GetProspectiveHands(creature, item, prospectiveSlot.Value)
@@ -706,7 +710,7 @@ namespace SWLOR.Game.Server.Domain.Items
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return true;
 
-            if (Droid.IsDroid(creature) ||
+            if (_droid.Value.IsDroid(creature) ||
                 _beastMastery.GetBeastType(creature) != BeastType.Invalid)
             {
                 return false;
@@ -1432,7 +1436,7 @@ namespace SWLOR.Game.Server.Domain.Items
         public string CanBePersistentlyStored(uint player, uint item)
         {
             var resref = GetResRef(item);
-            string[] disallowedResrefs = { Droid.DroidControlItemResref };
+            string[] disallowedResrefs = { DroidService.DroidControlItemResref };
 
             if (GetItemPossessor(item) != player)
             {

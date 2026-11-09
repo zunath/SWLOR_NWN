@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.Testing;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -486,7 +487,7 @@ public class PowerGloveEquipmentServiceTests
         public uint DroidMaster;
 
         public TestGlove(IItemService item, ItemWorld world)
-            : base(item)
+            : base(item, FacadeForwarder.LazyFor<IDroidService>())
         {
             _itemWorld = world;
         }

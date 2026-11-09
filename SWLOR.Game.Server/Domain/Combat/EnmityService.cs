@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<ICombatAttackTimingService> _attackTiming;
         private readonly Lazy<ICombatQueriesService> _queries;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public EnmityService(
             IAIService ai,
             IActivityService activity,
@@ -52,8 +54,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             Lazy<ICombatActivityService> combatActivity,
             Lazy<ICombatAttackTimingService> attackTiming,
-            Lazy<ICombatQueriesService> queries)
+            Lazy<ICombatQueriesService> queries,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _ai = ai;
             _activity = activity;
             _party = party;
@@ -1199,7 +1203,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual bool IsHiddenFrom(uint observer, uint target) => _stealth.IsHiddenFrom(observer, target);
 
         /// <summary>The unconverted <c>Droid</c> service.</summary>
-        protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
 
         /// <summary>The companion-control service.</summary>
         protected virtual bool IsRegisteredCompanion(uint creature) => _companionControl.IsRegisteredCompanion(creature);

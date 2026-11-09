@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -119,7 +120,7 @@ public static class SingleWeaponEngineTests
     public static async Task DroidOwnership(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        var droid = ctx.SpawnCreature(Droid.DroidResref, 2f);
+        var droid = ctx.SpawnCreature(DroidService.DroidResref, 2f);
         await ctx.WaitFrameAsync();
         ctx.AssertEqual(0, WeaponDamage.GetNaturalSingleWeaponPercent(droid), "An unowned authored droid has no natural bonus");
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () => AddHenchman(player.Creature, droid));

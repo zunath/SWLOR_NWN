@@ -25,7 +25,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
   action      SWLOR.Game.Server.Domain.Core.ConversationMenuService.CacheData
   action      SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
-  action      SWLOR.Game.Server.Service.Droid.CacheData
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.CacheData
   action      SWLOR.Game.Server.Domain.Quests.FactionService.LoadFactions
   action      SWLOR.Game.Server.Domain.World.FishingService.CacheData
   action      SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
@@ -140,7 +140,7 @@ appear
   conditional SWLOR.Game.Server.Domain.Core.SnippetService.ConversationAppearsWhen
 
 appearance_edit
-  action      SWLOR.Game.Server.Service.Droid.EditDroidAppearance
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.EditDroidAppearance
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEdit
 
 appears
@@ -197,7 +197,7 @@ asso_add_bef
 
 asso_rem_bef
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
-  action      SWLOR.Game.Server.Service.Droid.RemoveAssociate
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate
   action      SWLOR.Game.Server.Domain.Social.PartyService.AssociateLeaveParty
 
 assoc_stateffect
@@ -471,47 +471,47 @@ door_relock_shut
   action      SWLOR.Game.Server.Feature.DoorScripts.RelockClosedDoor
 
 droid_ass_used
-  action      SWLOR.Game.Server.Service.Droid.UseDroidAssemblyTerminal
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.UseDroidAssemblyTerminal
 
 droid_attacked
-  action      SWLOR.Game.Server.Service.Droid.DroidOnPhysicalAttacked
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnPhysicalAttacked
 
 droid_blocked
-  action      SWLOR.Game.Server.Service.Droid.DroidOnBlocked
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnBlocked
 
 droid_convers
-  action      SWLOR.Game.Server.Service.Droid.DroidOnConversation
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnConversation
 
 droid_damaged
-  action      SWLOR.Game.Server.Service.Droid.DroidOnDamaged
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnDamaged
 
 droid_death
-  action      SWLOR.Game.Server.Service.Droid.DroidOnDeath
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnDeath
 
 droid_disturbed
-  action      SWLOR.Game.Server.Service.Droid.DroidOnDisturbed
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnDisturbed
 
 droid_hb
-  action      SWLOR.Game.Server.Service.Droid.DroidOnHeartbeat
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnHeartbeat
   action      SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.CheckHands
 
 droid_rest
-  action      SWLOR.Game.Server.Service.Droid.DroidOnRested
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnRested
 
 droid_roundend
-  action      SWLOR.Game.Server.Service.Droid.DroidOnEndCombatRound
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnEndCombatRound
 
 droid_spawn
-  action      SWLOR.Game.Server.Service.Droid.DroidOnSpawn
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
 droid_spellcast
-  action      SWLOR.Game.Server.Service.Droid.DroidOnSpellCastAt
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnSpellCastAt
 
 droid_userdef
-  action      SWLOR.Game.Server.Service.Droid.DroidOnUserDefined
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnUserDefined
 
 effect_app_aft
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerTemporaryHitPointsChanged
@@ -600,7 +600,7 @@ item_drop_bef
   action      SWLOR.Game.Server.Feature.TrashCan.PreventItemDrops
 
 item_eqp_bef
-  action      SWLOR.Game.Server.Service.Droid.OnEquipItem
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnEquipItem
   action      SWLOR.Game.Server.Domain.Core.NamedAnimationService.OnEquipmentChanging
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ApplyEquipTriggers
   action      SWLOR.Game.Server.Feature.EquipmentStats.ApplyStats
@@ -610,7 +610,7 @@ item_eqp_bef
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipBefore
 
 item_eqpval_aft
-  action      SWLOR.Game.Server.Service.Droid.OnEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnEquipmentChanged
   action      SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnEquipped
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshCombatReadinessAfterEquipmentChange
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshMaxHPAfterEquipmentChange
@@ -633,7 +633,7 @@ item_on_hit
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ProcessQueuedWeaponAbility
 
 item_uneqp_aft
-  action      SWLOR.Game.Server.Service.Droid.OnEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnEquipmentChanged
   action      SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnUnequipped
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshCombatReadinessAfterEquipmentChange
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshMaxHPAfterEquipmentChange
@@ -649,7 +649,7 @@ item_uneqp_aft
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
 
 item_uneqp_bef
-  action      SWLOR.Game.Server.Service.Droid.OnUnequipItem
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnUnequipItem
   action      SWLOR.Game.Server.Domain.Core.NamedAnimationService.OnEquipmentChanging
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ApplyUnequipTriggers
   action      SWLOR.Game.Server.Feature.EquipmentStats.RemoveStats
@@ -680,7 +680,7 @@ mappin_rem_bef
 
 mod_acquire
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnAcquireItem
-  action      SWLOR.Game.Server.Service.Droid.OnAcquireItem
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnAcquireItem
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnAcquire
   action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureAcquiredItemActivation
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnAcquire
@@ -803,7 +803,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.ClearPendingWeaponAttackPoints
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.OnPlayerExit
-  action      SWLOR.Game.Server.Service.Droid.OnPlayerExit
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
   action      SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit
@@ -879,7 +879,7 @@ mod_rest
   action      SWLOR.Game.Server.Feature.PlayerRest.HandleRest
 
 mod_unacquire
-  action      SWLOR.Game.Server.Service.Droid.OnLostItem
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.OnLostItem
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
@@ -1099,7 +1099,7 @@ slice_terminal
 space_enter
   action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnSpaceEntry
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
-  action      SWLOR.Game.Server.Service.Droid.RemoveAssociate
+  action      SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition
 
 space_exit

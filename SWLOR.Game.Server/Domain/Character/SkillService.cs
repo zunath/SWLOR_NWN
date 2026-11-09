@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -43,13 +44,17 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
         private readonly Lazy<IStatService> _stat;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public SkillService(
             IDBService db,
             IGuiService gui,
             IPlayerFeedbackService playerFeedback,
             ITwinPistolEquipmentService twinPistolEquipment,
-            Lazy<IStatService> stat)
+            Lazy<IStatService> stat,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _db = db;
             _gui = gui;
             _playerFeedback = playerFeedback;
@@ -1117,14 +1122,14 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Whether the creature is a droid (the unconverted <c>Droid</c>).</summary>
         protected virtual bool IsDroid(uint creature)
         {
-            return Droid.IsDroid(creature);
+            return _droid.Value.IsDroid(creature);
         }
 
         /// <summary>The rank a droid's controller item gives in a skill, 0 when it has none (the unconverted <c>Droid</c>).</summary>
         protected virtual int GetDroidSkillRank(uint creature, SkillType skillType)
         {
-            var controller = Droid.GetControllerItem(creature);
-            var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+            var controller = _droid.Value.GetControllerItem(creature);
+            var droidDetails = _droid.Value.LoadDroidItemPropertyDetails(controller);
 
             return droidDetails.Skills.TryGetValue(skillType, out var droidSkillRank)
                 ? droidSkillRank

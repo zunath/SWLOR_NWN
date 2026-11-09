@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -58,7 +59,7 @@ public static partial class MigrationEngineTests
         var owner = ctx.SpawnCreature("nw_rat001");
         await ctx.WaitFrameAsync();
         var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
         var nested = await CreateItemAsync(ctx, owner, "b_longsword", bag);
         string saved = null;

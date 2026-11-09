@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -294,7 +295,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var controller = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                controller = CreateItemOnObject(Droid.DroidControlItemResref, owner);
+                controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner);
                 ctx.Assert(GetIsObjectValid(controller), "The controller exists");
                 foreach (var (stat, value) in new[]
                          {

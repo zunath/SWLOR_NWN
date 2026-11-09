@@ -22,14 +22,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-    "Line": 3174,
+    "Line": 3175,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f,\n                activator)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-    "Line": 3194,
+    "Line": 3195,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
@@ -106,7 +106,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PerkService.cs",
-    "Line": 1436,
+    "Line": 1440,
     "Member": "RemovePerkLevelOnSkillDecay",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"
@@ -148,77 +148,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 63,
+    "Line": 68,
     "Member": "",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {GetSkillDetails(skill).Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 312,
+    "Line": 317,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 314,
+    "Line": 319,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 338,
+    "Line": 343,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 361,
+    "Line": 366,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 366,
+    "Line": 371,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 390,
+    "Line": 395,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 425,
+    "Line": 430,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/SkillService.cs",
-    "Line": 490,
+    "Line": 495,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatService.cs",
-    "Line": 441,
+    "Line": 445,
     "Member": "RestoreFP",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.SendResourceRestored(creature, restored, \"FP\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatService.cs",
-    "Line": 550,
+    "Line": 554,
     "Member": "RestoreStamina",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.SendResourceRestored(creature, restored, \"STM\")"
@@ -582,21 +582,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
-    "Line": 211,
+    "Line": 215,
     "Member": "EnsurePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"The Power Glove could not equip both hands. Free inventory or bag space and try again.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
-    "Line": 245,
+    "Line": 249,
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before removing the Power Glove.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs",
-    "Line": 268,
+    "Line": 272,
     "Member": "RestorePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
@@ -659,14 +659,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs",
-    "Line": 157,
+    "Line": 161,
     "Member": "EnsurePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(ex.Message))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs",
-    "Line": 233,
+    "Line": 237,
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
@@ -747,6 +747,55 @@
     "Member": "UseExtractDNAObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 247,
+    "Member": "AcquireDroidItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(master, giveItemMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 261,
+    "Member": "AcquireDroidItem",
+    "Delivery": "Retained",
+    "Call": "SpeakString(\"I'm sorry master. I cannot carry any more items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 744,
+    "Member": "SpawnDroid",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.GreetingPhrase())"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 796,
+    "Member": "SpawnDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Make room in your inventory and summon your droid again to recover its returned items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 956,
+    "Member": "RestoreDroidItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(GetMaster(droid), \"Some droid items could not be restored. They remain saved and will be retried on the next summon.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 988,
+    "Member": "DespawnDroid",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.DismissedPhrase())"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 1273,
+    "Member": "DroidOnDeath",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
@@ -967,14 +1016,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1578,
+    "Line": 1582,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs",
-    "Line": 1036,
+    "Line": 1040,
     "Member": "SendResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"
@@ -1016,63 +1065,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 347,
+    "Line": 351,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(actionUser, \"You move and interrupt your action.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 379,
+    "Line": 383,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You do not meet the requirements to use this item.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 386,
+    "Line": 390,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You are busy.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 396,
+    "Line": 400,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"This item can be used in {timeToWait}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 406,
+    "Line": 410,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, validationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 416,
+    "Line": 420,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, initializationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 428,
+    "Line": 432,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your target is too far away.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 436,
+    "Line": 440,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"That location is too far away.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Items/ItemService.cs",
-    "Line": 488,
+    "Line": 492,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, validationMessage)"
@@ -1625,7 +1674,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs",
-    "Line": 549,
+    "Line": 534,
     "Member": "EquipHands",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Items cannot be equipped while crafting.\"))"
@@ -1648,14 +1697,14 @@
     "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
     "Line": 299,
     "Member": "HandleNuiEvents",
-    "Delivery": "Shared transport; policy at caller",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(uiTarget, ColorToken.Red($\"You have moved too far away from the {GetName(viewModel.TetherObject)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
     "Line": 805,
     "Member": "Draw",
-    "Delivery": "Shared transport; policy at caller",
+    "Delivery": "Retained",
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
   },
   {
@@ -3451,6 +3500,20 @@
     "Call": "SendMessageToPC(dm, \"The Teleport All command is permanently disabled and cannot be used.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/EchaniTempleMonks.cs",
+    "Line": 128,
+    "Member": "PlayBeat",
+    "Delivery": "Retained",
+    "Call": "SpeakString(Reply(scene))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/EchaniTempleMonks.cs",
+    "Line": 135,
+    "Member": "PlayBeat",
+    "Delivery": "Retained",
+    "Call": "SpeakString(Line(scene, beat))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/EquipmentRestrictions.cs",
     "Line": 93,
     "Member": "ValidateItemEquip",
@@ -4103,7 +4166,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAssemblyViewModel.cs",
-    "Line": 649,
+    "Line": 650,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ItemService.ItemsHeldMessage)"
@@ -6172,55 +6235,6 @@
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 191,
-    "Member": "AcquireDroidItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(master, giveItemMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 205,
-    "Member": "AcquireDroidItem",
-    "Delivery": "Retained",
-    "Call": "SpeakString(\"I'm sorry master. I cannot carry any more items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 688,
-    "Member": "SpawnDroid",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.GreetingPhrase())"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 740,
-    "Member": "SpawnDroid",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Make room in your inventory and summon your droid again to recover its returned items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 900,
-    "Member": "RestoreDroidItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(GetMaster(droid), \"Some droid items could not be restored. They remain saved and will be retried on the next summon.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 932,
-    "Member": "DespawnDroid",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.DismissedPhrase())"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 1217,
-    "Member": "DroidOnDeath",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
     "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",

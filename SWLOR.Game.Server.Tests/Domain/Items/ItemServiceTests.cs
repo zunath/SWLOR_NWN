@@ -784,7 +784,7 @@ public class ItemServiceTests
     [Test]
     public void CanEquip_AppliesTheLimitsToADroidTooAndIgnoresAPlainCreature()
     {
-        _world.Add(Other, resref: Droid.DroidResref);
+        _world.Add(Other, resref: DroidService.DroidResref);
         _races[Other] = RacialType.Droid;
         _world.Add(ItemA, baseItem: BaseItem.Armor);
 
@@ -897,7 +897,7 @@ public class ItemServiceTests
     [Test]
     public void CanEquipForceSensitiveWeapon_IsFalseForDroidsAndBeasts()
     {
-        _world.Add(Other, resref: Droid.DroidResref);
+        _world.Add(Other, resref: DroidService.DroidResref);
         _service.CanEquipForceSensitiveWeapon(Other).Should().BeFalse();
 
         _world.Add(ItemA);
@@ -930,7 +930,7 @@ public class ItemServiceTests
         const uint beast = 1003;
         const uint plainCreature = 1004;
         _world.Add(ItemA, baseItem: BaseItem.Saberstaff);
-        _world.Add(Other, resref: Droid.DroidResref);
+        _world.Add(Other, resref: DroidService.DroidResref);
         _world.Add(beast);
         _engine.SetLocalInt(beast, "BEAST_TYPE", (int)Enum.GetValues<BeastType>().First(type => type != BeastType.Invalid));
         _world.Add(plainCreature);
@@ -1279,7 +1279,7 @@ public class ItemServiceTests
         _engine.SetReturnHandler("GetItemCursedFlag", args => (uint)args[0]! == ItemB);
         _service.CanBePersistentlyStored(User, ItemB).Should().Be("That item cannot be stored.");
 
-        _world.Add(ItemC, baseItem: BaseItem.MiscSmall, resref: Droid.DroidControlItemResref);
+        _world.Add(ItemC, baseItem: BaseItem.MiscSmall, resref: DroidService.DroidControlItemResref);
         _world.Carry(User, ItemC);
         _service.CanBePersistentlyStored(User, ItemC).Should().Be("That item cannot be stored.");
     }
@@ -1438,7 +1438,7 @@ public class ItemServiceTests
     private sealed class TestItemService : ItemService
     {
         public TestItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>(), FacadeForwarder.LazyFor<IDroidService>())
         {
         }
 
@@ -1467,7 +1467,7 @@ public class ItemServiceTests
     private sealed class ProbingItemService : ItemService
     {
         public ProbingItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>(), FacadeForwarder.LazyFor<IDroidService>())
         {
         }
 

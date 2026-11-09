@@ -4,7 +4,13 @@ using NWNXLib = NWN.Native.API.NWNXLib;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -18,14 +24,64 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Companions
 {
-    public class Droid
+    /// <summary>
+    /// Player droids: the logic and state that used to be static in <c>Service.Droid</c>, moved here unchanged. The event
+    /// handlers run on the container's instance; static callers reach it through <c>GameServices.Droid</c>.
+    /// </summary>
+    public class DroidService : IDroidService
     {
-        private static readonly Dictionary<int, int> _levelsByTier = new();
-        private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
+        private readonly IAIService _ai;
+        private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICompanionControlService _companionControl;
+        private readonly IDroidEquipmentDiagnosticsService _diagnostics;
+        private readonly IGuiService _gui;
+        private readonly IItemService _item;
+        private readonly IPerkService _perk;
+        private readonly IPowerGloveEquipmentService _powerGloveEquipment;
+        private readonly IRaceService _race;
+        private readonly IRecastService _recast;
+        private readonly IResistanceService _resistance;
+        private readonly IStatService _stat;
+        private readonly IStatusEffectService _statusEffect;
+        private readonly ITwinPistolEquipmentService _twinPistolEquipment;
+
+        public DroidService(
+            IAIService ai,
+            ICombatRecorderService combatRecorder,
+            ICompanionControlService companionControl,
+            IDroidEquipmentDiagnosticsService diagnostics,
+            IGuiService gui,
+            IItemService item,
+            IPerkService perk,
+            IPowerGloveEquipmentService powerGloveEquipment,
+            IRaceService race,
+            IRecastService recast,
+            IResistanceService resistance,
+            IStatService stat,
+            IStatusEffectService statusEffect,
+            ITwinPistolEquipmentService twinPistolEquipment)
+        {
+            _ai = ai;
+            _combatRecorder = combatRecorder;
+            _companionControl = companionControl;
+            _diagnostics = diagnostics;
+            _gui = gui;
+            _item = item;
+            _perk = perk;
+            _powerGloveEquipment = powerGloveEquipment;
+            _race = race;
+            _recast = recast;
+            _resistance = resistance;
+            _stat = stat;
+            _statusEffect = statusEffect;
+            _twinPistolEquipment = twinPistolEquipment;
+        }
+
+        private readonly Dictionary<int, int> _levelsByTier = new();
+        private readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
         public const string DroidResref = "pc_droid";
         public const string DroidControlItemResref = "droid_control";
@@ -39,7 +95,7 @@ namespace SWLOR.Game.Server.Service
         private const string PendingItemRestorePrefix = "DROID_RESTORE_ITEM:";
         private const float RecastDelaySeconds = 1800f;
 
-        public static string GetInstructionDiscValidationError(uint user, uint item)
+        public string GetInstructionDiscValidationError(uint user, uint item)
         {
             if (!GetIsObjectValid(item) || GetItemPossessor(item) != user)
                 return "Select an instruction disc from your inventory.";
@@ -60,13 +116,13 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void CacheData()
+        public void CacheData()
         {
             CacheDroidLevels();
             CachePersonalities();
         }
 
-        private static void CacheDroidLevels()
+        private void CacheDroidLevels()
         {
             _levelsByTier[1] = 5;
             _levelsByTier[2] = 15;
@@ -75,7 +131,7 @@ namespace SWLOR.Game.Server.Service
             _levelsByTier[5] = 45;
         }
 
-        private static void CachePersonalities()
+        private void CachePersonalities()
         {
             _droidPersonalities[DroidPersonalityType.Geeky] = new DroidGeekyPersonality();
             _droidPersonalities[DroidPersonalityType.Prissy] = new DroidPrissyPersonality();
@@ -90,7 +146,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if droid, false otherwise</returns>
-        public static bool IsDroid(uint creature)
+        public bool IsDroid(uint creature)
         {
             return GetResRef(creature) == DroidResref;
         }
@@ -99,7 +155,7 @@ namespace SWLOR.Game.Server.Service
         /// Whether a creature is an enemy or NPC machine (droid, robot, or construct) and so cannot bleed.
         /// Player characters and player droids keep their normal Bleed behavior.
         /// </summary>
-        public static bool IsBloodlessMachine(uint creature)
+        public bool IsBloodlessMachine(uint creature)
         {
             if (GetIsPC(creature) || IsDroid(creature))
                 return false;
@@ -113,7 +169,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whether a droid is still being summoned and restoring its saved equipment.
         /// </summary>
-        public static bool IsSpawning(uint droid) => GetLocalBool(droid, DroidIsSpawning);
+        public bool IsSpawning(uint droid) => GetLocalBool(droid, DroidIsSpawning);
 
         /// <summary>
         /// Retrieves the controller item associated with a droid.
@@ -121,7 +177,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="droid">The droid to check</param>
         /// <returns>The controller item or OBJECT_INVALID.</returns>
-        public static uint GetControllerItem(uint droid)
+        public uint GetControllerItem(uint droid)
         {
             return GetLocalObject(droid, DroidControlItemVariable);
         }
@@ -130,26 +186,26 @@ namespace SWLOR.Game.Server.Service
         /// When a player uses a droid assembly terminal, displays the UI.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDroidAssociateUsed)]
-        public static void UseDroidAssemblyTerminal()
+        public void UseDroidAssemblyTerminal()
         {
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
+            _gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
         /// <summary>
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
-        public static void OnPlayerExit()
+        public void OnPlayerExit()
         {
             var player = GetExitingObject();
             DespawnDroid(player, applyRecastDelay: !ServerRestart.IsRestarting);
         }
 
-        private static string CanGiveItemToDroid(uint item)
+        private string CanGiveItemToDroid(uint item)
         {
             if (GetHasInventory(item))
             {
@@ -168,13 +224,13 @@ namespace SWLOR.Game.Server.Service
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleAcquire)]
-        public static void OnAcquireItem()
+        public void OnAcquireItem()
         {
             var droid = GetModuleItemAcquiredBy();
             AcquireDroidItem(droid, GetModuleItemAcquired());
         }
 
-        private static void AcquireDroidItem(uint droid, uint item)
+        private void AcquireDroidItem(uint droid, uint item)
         {
             if (!IsDroid(droid))
                 return;
@@ -190,7 +246,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(master, giveItemMessage);
                 AssignCommand(droid, () => ClearAllActions());
-                Item.ReturnItem(master, item);
+                _item.ReturnItem(master, item);
                 return;
             }
 
@@ -204,7 +260,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     SpeakString("I'm sorry master. I cannot carry any more items.");
                 });
-                Item.ReturnItem(master, item);
+                _item.ReturnItem(master, item);
                 return;
             }
 
@@ -216,7 +272,7 @@ namespace SWLOR.Game.Server.Service
         /// When a droid loses an item, it is removed from the persistent variable on the controller item.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleUnacquire)]
-        public static void OnLostItem()
+        public void OnLostItem()
         {
             var droid = GetModuleItemLostBy();
             if (GetResRef(droid) != DroidResref)
@@ -232,7 +288,7 @@ namespace SWLOR.Game.Server.Service
         /// Hides a droid's native helmet model before equipping it.
         /// </summary>
         [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
-        public static void OnEquipItem()
+        public void OnEquipItem()
         {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
@@ -251,7 +307,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="droid">The droid wearing the item.</param>
         /// <param name="item">The equipped item to serialize.</param>
-        public static void UpdateEquippedItemSnapshot(uint droid, uint item)
+        public void UpdateEquippedItemSnapshot(uint droid, uint item)
         {
             if (!IsDroid(droid) || !GetIsObjectValid(item))
                 return;
@@ -260,7 +316,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(controller))
                 return;
 
-            var slot = Item.GetItemSlot(droid, item);
+            var slot = _item.GetItemSlot(droid, item);
             if (slot == InventorySlot.Invalid)
                 return;
 
@@ -276,7 +332,7 @@ namespace SWLOR.Game.Server.Service
         /// Restores a droid helmet's native model before unequipping it.
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
-        public static void OnUnequipItem()
+        public void OnUnequipItem()
         {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
@@ -295,7 +351,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
-        public static void OnEquipmentChanged()
+        public void OnEquipmentChanged()
         {
             SaveItemSnapshot(OBJECT_SELF);
         }
@@ -305,7 +361,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>Droid item property details.</returns>
-        public static DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
+        public DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
         {
             var details = new DroidItemPropertyDetails();
             for (var ip = GetFirstItemProperty(controller); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(controller))
@@ -439,7 +495,7 @@ namespace SWLOR.Game.Server.Service
             return details;
         }
 
-        private static void AddSkillBonus(IDictionary<SkillType, int> skills, SkillType skill, int value)
+        private void AddSkillBonus(IDictionary<SkillType, int> skills, SkillType skill, int value)
         {
             if (!skills.ContainsKey(skill))
                 skills[skill] = value;
@@ -447,7 +503,7 @@ namespace SWLOR.Game.Server.Service
                 skills[skill] += value;
         }
 
-        private static void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value)
+        private void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value)
         {
             if (!resistances.ContainsKey(type))
                 resistances[type] = value;
@@ -460,7 +516,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The part item to read from</param>
         /// <returns>Droid part item property details</returns>
-        public static DroidPartItemPropertyDetails LoadDroidPartItemPropertyDetails(uint item)
+        public DroidPartItemPropertyDetails LoadDroidPartItemPropertyDetails(uint item)
         {
             var details = new DroidPartItemPropertyDetails();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -592,7 +648,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to retrieve from</param>
         /// <returns>The droid object or OBJECT_INVALID.</returns>
-        public static uint GetDroid(uint player)
+        public uint GetDroid(uint player)
         {
             var droid = GetLocalObject(player, DroidObjectVariable);
 
@@ -604,12 +660,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player spawning the droid.</param>
         /// <param name="controller">The controller item</param>
-        public static void SpawnDroid(uint player, uint controller)
+        public void SpawnDroid(uint player, uint controller)
         {
             // Close AI programming if open.
-            if (Gui.IsWindowOpen(player, GuiWindowType.DroidAI))
+            if (_gui.IsWindowOpen(player, GuiWindowType.DroidAI))
             {
-                Gui.CloseWindow(player, GuiWindowType.DroidAI, player);
+                _gui.CloseWindow(player, GuiWindowType.DroidAI, player);
             }
 
             var details = LoadDroidItemPropertyDetails(controller);
@@ -634,7 +690,7 @@ namespace SWLOR.Game.Server.Service
             // Controller HP is the base contribution. Preserve the native Vitality
             // bonus in the final skin budget used by spawning and equipment changes.
             var maxHP = details.HP + GetAbilityModifier(AbilityType.Vitality, droid) * GetHitDice(droid);
-            Stat.SetNPCMaxHitPoints(droid, maxHP, true);
+            _stat.SetNPCMaxHitPoints(droid, maxHP, true);
             CreaturePlugin.SetBaseAC(droid, 10);
             CreaturePlugin.SetBaseAttackBonus(droid, 1);
 
@@ -652,7 +708,7 @@ namespace SWLOR.Game.Server.Service
                 var resistanceIP = ItemPropertyCustom(
                     ItemPropertyType.Resistance,
                     (int)resistance,
-                    Resistance.EncodeItemPropertyCostTableValue(value));
+                    _resistance.EncodeItemPropertyCostTableValue(value));
                 BiowareXP2.IPSafeAddItemProperty(skin, resistanceIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
 
@@ -666,10 +722,10 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                Perk.SyncGrantedFeats(droid, perk, level, false);
+                _perk.SyncGrantedFeats(droid, perk, level, false);
             }
 
-            AI.SetAIProfile(droid, AIProfileType.DroidCompanion);
+            _ai.SetAIProfile(droid, AIProfileType.DroidCompanion);
 
             // Scripts
             SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
@@ -748,7 +804,7 @@ namespace SWLOR.Game.Server.Service
             SaveConstructedDroid(controller, constructedDroid);
 
             // Appearance
-            var defaultDroid = Race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
+            var defaultDroid = _race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
 
             SetCreatureBodyPart(CreaturePart.Head,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
@@ -861,25 +917,25 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
 
             // Generated off hands are never saved; rebuild them from the restored Power Glove or Twin Pistols item.
-            PowerGloveEquipment.EnsurePair(droid);
-            TwinPistolEquipment.EnsurePair(droid);
+            _powerGloveEquipment.EnsurePair(droid);
+            _twinPistolEquipment.EnsurePair(droid);
 
             DeleteLocalBool(droid, DroidIsSpawning);
-            DroidEquipmentDiagnostics.RememberHands(droid);
+            _diagnostics.RememberHands(droid);
             SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
             {
                 DelayCommand(4f, () =>
                 {
-                    using var recorderAttribution = CombatRecorder.BeginSetupAttribution(droid);
+                    using var recorderAttribution = _combatRecorder.BeginSetupAttribution(droid);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });
         }
 
-        internal static string GetPendingItemRestoreKey(InventorySlot slot, string id) => PendingItemRestorePrefix + (int)slot + ":" + id;
+        public string GetPendingItemRestoreKey(InventorySlot slot, string id) => PendingItemRestorePrefix + (int)slot + ":" + id;
 
-        private static void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
+        private void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
             InventorySlot slot, string id = null, uint item = OBJECT_INVALID)
         {
             if (!GetIsObjectValid(item))
@@ -907,7 +963,7 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.RunEquip(droid, item, slot);
         }
 
-        private static void ClearTemporaryData(uint player, uint droid)
+        private void ClearTemporaryData(uint player, uint droid)
         {
             var item = GetControllerItem(droid);
             SetItemCursedFlag(item, false);
@@ -917,7 +973,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalObject(droid, DroidControlItemVariable);
         }
 
-        private static void DespawnDroid(uint player, bool applyRecastDelay = true)
+        private void DespawnDroid(uint player, bool applyRecastDelay = true)
         {
             var droid = GetDroid(player);
             if (!GetIsObjectValid(droid))
@@ -932,14 +988,14 @@ namespace SWLOR.Game.Server.Service
                 SpeakString(personality.DismissedPhrase());
             });
 
-            CompanionControl.Clear(droid);
+            _companionControl.Clear(droid);
             ReturnRejectedItems(droid, player);
             SaveItemSnapshot(droid);
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
             if (applyRecastDelay)
-                Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
+                _recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 
@@ -947,7 +1003,7 @@ namespace SWLOR.Game.Server.Service
         /// When the appearance of a droid is changed, update the data on the local variable.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAppearanceEdit)]
-        public static void EditDroidAppearance()
+        public void EditDroidAppearance()
         {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
@@ -977,10 +1033,10 @@ namespace SWLOR.Game.Server.Service
             SaveConstructedDroid(controller, constructedDroid);
         }
 
-        private static void CloseAppearanceEditor(uint player)
+        private void CloseAppearanceEditor(uint player)
         {
-            if(Gui.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
-                Gui.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
+            if(_gui.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
+                _gui.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
         }
 
         /// <summary>
@@ -988,13 +1044,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [NWNEventHandler(ScriptName.OnSpaceEnter)]
         [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
-        public static void RemoveAssociate()
+        public void RemoveAssociate()
         {
             var player = OBJECT_SELF;
             DespawnDroid(player);
         }
 
-        private static string GetDroidItemId(uint item)
+        private string GetDroidItemId(uint item)
         {
             if (string.IsNullOrWhiteSpace(GetLocalString(item, DroidItemId)))
             {
@@ -1004,7 +1060,7 @@ namespace SWLOR.Game.Server.Service
             return GetLocalString(item, DroidItemId);
         }
 
-        private static string GetDroidItemId(uint item, HashSet<string> itemIds)
+        private string GetDroidItemId(uint item, HashSet<string> itemIds)
         {
             var itemId = GetDroidItemId(item);
             while (!itemIds.Add(itemId))
@@ -1015,7 +1071,7 @@ namespace SWLOR.Game.Server.Service
             return itemId;
         }
 
-        private static bool IsStoredItem(uint item)
+        private bool IsStoredItem(uint item)
         {
             var itemType = GetBaseItemType(item);
             return itemType != BaseItem.CreatureBludgeonWeapon &&
@@ -1028,7 +1084,7 @@ namespace SWLOR.Game.Server.Service
                    itemType != BaseItem.CreatureItem;
         }
 
-        private static void ReturnRejectedItems(uint droid, uint player)
+        private void ReturnRejectedItems(uint droid, uint player)
         {
             var controller = GetControllerItem(droid);
             if (!GetIsObjectValid(controller))
@@ -1057,7 +1113,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static HashSet<uint> GetGeneratedAmmunition(uint droid)
+        private HashSet<uint> GetGeneratedAmmunition(uint droid)
         {
             var generatedItems = new HashSet<uint>();
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
@@ -1081,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
         /// Saves the droid's equipped and carried items onto its controller, keeping pending restore and return entries.
         /// </summary>
         /// <param name="droid">The droid whose items are saved.</param>
-        public static void SaveItemSnapshot(uint droid)
+        public void SaveItemSnapshot(uint droid)
         {
             if (!IsDroid(droid) || GetLocalBool(droid, DroidIsSpawning))
                 return;
@@ -1130,7 +1186,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>A ConstructedDroid object.</returns>
-        public static ConstructedDroid LoadConstructedDroid(uint controller)
+        public ConstructedDroid LoadConstructedDroid(uint controller)
         {
             var constructedDroid = new ConstructedDroid();
             var serialized = GetLocalString(controller, ConstructedDroidVariable);
@@ -1154,13 +1210,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to write to.</param>
         /// <param name="constructedDroid">The constructed droid data to save.</param>
-        public static void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
+        public void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
         {
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
 
-        public static void SaveInstructions(uint controller, ConstructedDroid constructedDroid)
+        public void SaveInstructions(uint controller, ConstructedDroid constructedDroid)
         {
             // JSON is the authoritative loadout; properties mirror it for item inspection.
             var properties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
@@ -1176,38 +1232,38 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler(ScriptName.OnDroidBlocked)]
-        public static void DroidOnBlocked()
+        public void DroidOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
-        public static void DroidOnEndCombatRound()
+        public void DroidOnEndCombatRound()
         {
-            CompanionControl.ProcessCombatRound(OBJECT_SELF);
+            _companionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidConversation)]
-        public static void DroidOnConversation()
+        public void DroidOnConversation()
         {
-            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+            if (!_companionControl.HandleConversation(OBJECT_SELF))
                 ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDamaged)]
-        public static void DroidOnDamaged()
+        public void DroidOnDamaged()
         {
-            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
+            _companionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidDeath)]
-        public static void DroidOnDeath()
+        public void DroidOnDeath()
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
             ReturnRejectedItems(droid, player);
             SaveItemSnapshot(droid);
-            CompanionControl.Clear(droid);
+            _companionControl.Clear(droid);
             ExecuteScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
@@ -1216,12 +1272,12 @@ namespace SWLOR.Game.Server.Service
 
             SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
+            _recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDisturbed)]
-        public static void DroidOnDisturbed()
+        public void DroidOnDisturbed()
         {
             var droid = OBJECT_SELF;
             var item = GetInventoryDisturbItem(droid);
@@ -1239,55 +1295,55 @@ namespace SWLOR.Game.Server.Service
             // The stock henchman reaction can switch ranged weapons to melee.
             // Preserve theft retaliation through the companion's combat handlers.
             if (disturbType == DisturbType.Stolen)
-                CompanionControl.RegisterDefensiveThreat(droid, GetLastDisturbed());
+                _companionControl.RegisterDefensiveThreat(droid, GetLastDisturbed());
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
-        public static void DroidOnHeartbeat()
+        public void DroidOnHeartbeat()
         {
-            Stat.RestoreNPCStats(false);
-            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
+            _stat.RestoreNPCStats(false);
+            _companionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]
-        public static void DroidOnPhysicalAttacked()
+        public void DroidOnPhysicalAttacked()
         {
-            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
+            _companionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidRest)]
-        public static void DroidOnRested()
+        public void DroidOnRested()
         {
             var droid = OBJECT_SELF;
             ExecuteScript("x0_ch_hen_rest", droid);
 
             AssignCommand(droid, () => ClearAllActions());
 
-            StatusEffect.ApplyStatusEffect(droid, droid, typeof(RestStatusEffect), 0f);
+            _statusEffect.ApplyStatusEffect(droid, droid, typeof(RestStatusEffect), 0f);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpawn)]
-        public static void DroidOnSpawn()
+        public void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
             });
-            Stat.LoadNPCStats();
-            Stat.ApplyCreatureMovementRate(droid);
-            CompanionControl.Initialize(droid, true);
+            _stat.LoadNPCStats();
+            _stat.ApplyCreatureMovementRate(droid);
+            _companionControl.Initialize(droid, true);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]
-        public static void DroidOnSpellCastAt()
+        public void DroidOnSpellCastAt()
         {
             if (GetLastSpellHarmful())
-                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
+                _companionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnDroidUserDefined)]
-        public static void DroidOnUserDefined()
+        public void DroidOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
 

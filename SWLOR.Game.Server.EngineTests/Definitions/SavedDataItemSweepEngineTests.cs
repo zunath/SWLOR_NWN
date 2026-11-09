@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service.ResistanceService;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -169,7 +170,7 @@ public static partial class MigrationEngineTests
         // Droid parts and controllers saved before the Unarmed and Twin Pistol skills: a CPU, and a controller with
         // a boosted Katar and zero ranged skills that saves that CPU.
         var legacyCpu = await CreateItemAsync(ctx, owner, LegacyDroidCpu, owner);
-        var legacyController = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var legacyController = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             StampLegacyDroidCpu(legacyCpu);
@@ -219,7 +220,7 @@ public static partial class MigrationEngineTests
         var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
         var nestedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, bag);
         var nestedArtwork = await CreateItemAsync(ctx, owner, "aen_hp1", bag);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         var creatureGloves = await CreateItemAsync(ctx, savedCreature, RevisedGloves, savedCreature);
         var creatureArtwork = await CreateItemAsync(ctx, savedCreature, "aen_hp1", savedCreature);
         var creaturePistol = await CreateItemAsync(ctx, savedCreature, "b_pistol", savedCreature);

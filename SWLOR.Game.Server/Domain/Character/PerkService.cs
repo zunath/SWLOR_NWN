@@ -107,6 +107,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatService> _combat;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public PerkService(
             IDBService db,
             IQuickCastService quickCast,
@@ -114,8 +116,10 @@ namespace SWLOR.Game.Server.Domain.Character
             IStatusEffectService statusEffect,
             Lazy<IAbilityService> ability,
             Lazy<IStatService> stat,
-            Lazy<ICombatService> combat)
+            Lazy<ICombatService> combat,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _db = db;
             _quickCast = quickCast;
             _beastMastery = beastMastery;
@@ -1480,17 +1484,17 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual bool IsDroid(uint creature)
         {
-            return Droid.IsDroid(creature);
+            return _droid.Value.IsDroid(creature);
         }
 
         protected virtual uint GetDroidControllerItem(uint droid)
         {
-            return Droid.GetControllerItem(droid);
+            return _droid.Value.GetControllerItem(droid);
         }
 
         protected virtual DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
         {
-            return Droid.LoadDroidItemPropertyDetails(controller);
+            return _droid.Value.LoadDroidItemPropertyDetails(controller);
         }
 
         protected virtual void RefreshStatDrivenTrackerEffects(uint creature)

@@ -1160,6 +1160,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Class 3 shuttle centered in the eastern starport hangar (100, 80, 0)."
+        }
       }
     ]
   },
@@ -1212,6 +1219,34 @@
         "Comment": {
           "type": "cexostring",
           "value": "On the Advanced tab, replace <Place text here> with whatever information you wish to appear on the Map of an area."
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Local /stuck recovery at the area entrance or medical terminal"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_053"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_054"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_055"
         }
       }
     ]

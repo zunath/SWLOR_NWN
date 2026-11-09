@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     /// <summary>
     /// The Plasma Forge window. It binds <see cref="ForgeEngine"/> and forwards clicks to it; every rule, cost and result the
     /// window shows comes from the engine's own previews. Starting, finishing and settling a craft go through
-    /// <see cref="CraftSessions"/>.
+    /// <see cref="SWLOR.Game.Server.Domain.Crafting.CraftSessionsService"/>.
     /// </summary>
     public class ForgeViewModel : CraftMinigameViewModel<ForgeViewModel, CraftPayload>
     {

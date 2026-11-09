@@ -4,7 +4,7 @@
 # Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
 # or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
 # same pull request that makes it.
-SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Service.Craft.RestoreCraftingStylesOnEnter
+SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAreaExit SWLOR.Game.Server.Service.CompanionControl.OnOwnerAreaExit
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand SWLOR.Game.Server.Service.CompanionControl.RenameToggleAbilitiesCommand
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttacked SWLOR.Game.Server.Service.CompanionControl.OnOwnerAttacked
@@ -209,6 +209,24 @@ SWLOR.Game.Server.Service.Weather.InitializeWeather SWLOR.Game.Server.Domain.Wor
 SWLOR.Game.Server.Service.Weather.LoadData SWLOR.Game.Server.Domain.World.WeatherService.LoadData
 SWLOR.Game.Server.Service.Weather.OnAreaEnter SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
 SWLOR.Game.Server.Service.Weather.OnModuleHeartbeat SWLOR.Game.Server.Domain.World.WeatherService.OnModuleHeartbeat
+SWLOR.Game.Server.Service.Craft.CacheData SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData
+SWLOR.Game.Server.Service.Craft.UseCraftingDevice SWLOR.Game.Server.Domain.Crafting.CraftService.UseCraftingDevice
+SWLOR.Game.Server.Service.Craft.UseRefinery SWLOR.Game.Server.Domain.Crafting.CraftService.UseRefinery
+SWLOR.Game.Server.Service.Craft.UseResearchTerminal SWLOR.Game.Server.Domain.Crafting.CraftService.UseResearchTerminal
+SWLOR.Game.Server.Service.Craft.OnRemoveProperty SWLOR.Game.Server.Domain.Crafting.CraftService.OnRemoveProperty
+SWLOR.Game.Server.Service.Currency.CacheCurrencies SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
+SWLOR.Game.Server.Service.CasinoSlot.OnUsed SWLOR.Game.Server.Domain.Economy.CasinoSlotService.OnUsed
+SWLOR.Game.Server.Service.Guild.LoadData SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
+SWLOR.Game.Server.Service.Guild.RefreshGuildTasks SWLOR.Game.Server.Domain.Economy.GuildService.RefreshGuildTasks
+SWLOR.Game.Server.Service.PlayerMarket.CacheData SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
+SWLOR.Game.Server.Service.PlayerMarket.RemoveOldListings SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
+SWLOR.Game.Server.Service.PlayerMarket.CheckMarketTill SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CheckMarketTill
+SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit
+SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerDeath SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerDeath
+SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnDeath SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnDeath
+SWLOR.Game.Server.Service.ProspectingService.ProspectingSessions.AbandonOnExit SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit
+SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnDeath SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnDeath
+SWLOR.Game.Server.Service.ScavengeService.ScavengeSessions.AbandonOnExit SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnExit
 SWLOR.Game.Server.Service.Achievement.LoadAchievements SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
 SWLOR.Game.Server.Service.Achievement.ReserveGuiIds SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
 SWLOR.Game.Server.Service.Language.LoadTranslators SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators

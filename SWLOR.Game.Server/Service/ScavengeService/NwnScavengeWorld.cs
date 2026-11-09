@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     /// <summary>The game-engine side of a visit to a scavenge site. The rules it carries out are in <see cref="ScavengeLifecycle"/>.</summary>
     public sealed class NwnScavengeWorld : IScavengeWorld
     {
-        /// <summary>The one world of the process. <see cref="Scavenge"/> owns it.</summary>
+        /// <summary>The one world of the process. <see cref="SWLOR.Game.Server.Domain.Crafting.ScavengeService"/> owns it.</summary>
         public static NwnScavengeWorld Instance => Scavenge.World;
 
         private readonly IDBService _db;

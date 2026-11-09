@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

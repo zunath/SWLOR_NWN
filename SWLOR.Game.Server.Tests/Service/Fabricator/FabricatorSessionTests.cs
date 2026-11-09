@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Tests.Service.Fabricator.FabricatorTestData;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Fabricator;
 

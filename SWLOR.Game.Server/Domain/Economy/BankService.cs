@@ -12,8 +12,8 @@ using SWLOR.NWN.API.NWNX;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The global bank: the logic that used to be static in <c>Service.Bank</c>, moved here unchanged. The facade still
-    /// forwards every call to the container's instance.
+    /// The global bank: the logic that used to be a static class, moved here unchanged. Static callers reach the
+    /// container's instance through <c>GameServices.Bank</c>.
     /// </summary>
     public class BankService : IBankService
     {

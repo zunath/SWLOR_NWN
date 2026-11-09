@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
     /// The player market: its categories and regions, and the checks that run when the module loads and when a player
-    /// enters. The static facade <c>Service.PlayerMarket</c> forwards to the container's instance of this interface and
-    /// keeps the event handlers and the constants.
+    /// enters. Static callers reach the container's instance of this interface through
+    /// <c>GameServices.PlayerMarket</c>; the event handlers and the constants are on <see cref="PlayerMarketService"/>.
     /// </summary>
     public interface IPlayerMarketService
     {

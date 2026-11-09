@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 using SWLOR.CraftSim.Report;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -128,7 +129,7 @@ namespace SWLOR.CraftSim.Progression
             var mid = CraftingGearCatalog.MidGearName;
             text.AppendLine("## Decisions applied (owner, October 2026)");
             text.AppendLine();
-            text.AppendLine($"1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay {GuildTaskXp.XpPercent}% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill " +
+            text.AppendLine($"1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay {GuildTaskXpService.XpPercent}% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill " +
                             "(`GuildTaskXp`), with the task level the recipe level for a crafted item and the `FishType` level for a catch task. It goes through the crafting XP path, so Social and food bonuses apply, and the chart's cutoff stays: " +
                             "a hand-in five or more levels below the rank pays nothing, as crafting and quick craft (rank at least level + 5) do. The Hunter's Guild gives none.");
             text.AppendLine($"2. **Crafting XP x{Number(CraftMinigameXp.CraftingPaceMultiplier, 2)}.** `CraftMinigameXp.CraftingPaceMultiplier` multiplies the base XP of crafts in Smithery, Engineering, Fabrication and Agriculture's cooking, on top of each minigame's gate-6 band multiplier. " +
@@ -146,7 +147,7 @@ namespace SWLOR.CraftSim.Progression
             foreach (var skill in skills)
             {
                 var before = model.Path(skill, mid, today);
-                var plan = GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), GuildTaskXp.XpPercent / 100.0);
+                var plan = GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), GuildTaskXpService.XpPercent / 100.0);
                 var path = model.Path(skill, mid, after, plan);
                 todayHours.Add(before.TotalHours);
                 afterHours.Add(path.TotalHours);

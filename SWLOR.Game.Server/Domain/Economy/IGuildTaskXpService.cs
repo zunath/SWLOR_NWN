@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
-    /// The skill XP a crafting guild hand-in gives. The static facade <c>Service.GuildTaskXp</c> forwards to the
-    /// container's instance of this interface.
+    /// The skill XP a crafting guild hand-in gives. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.GuildTaskXp</c>.
     /// </summary>
     public interface IGuildTaskXpService
     {

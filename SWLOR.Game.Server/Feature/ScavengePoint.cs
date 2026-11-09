@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.ScavengeService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else if (GetLocalBool(placeable, "FULLY_HARVESTED"))
             {
-                Spawn.ScheduleResourceDespawn(placeable, TimeSpan.FromMinutes(Spawn.LeftoverResourceDespawnMinutes));
+                Spawn.ScheduleResourceDespawn(placeable, TimeSpan.FromMinutes(SpawnService.LeftoverResourceDespawnMinutes));
             }
         }
     }

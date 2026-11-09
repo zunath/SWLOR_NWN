@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -443,7 +444,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
                 AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbBeast.Level} / {BeastMastery.MaxLevel}";
+                TotalSP = $"Total SP: {dbBeast.Level} / {BeastMasteryService.MaxLevel}";
                 WindowTitle = $"Beast Perks - {dbBeast.UnallocatedSP} SP available";
             }
 

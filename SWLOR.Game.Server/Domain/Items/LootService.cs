@@ -309,8 +309,8 @@ namespace SWLOR.Game.Server.Domain.Items
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
-            SetLocalInt(container, BeastMastery.BeastTypeVariable, GetLocalInt(self, BeastMastery.BeastTypeVariable));
-            SetLocalInt(container, BeastMastery.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, BeastMasteryService.BeastTypeVariable, GetLocalInt(self, BeastMasteryService.BeastTypeVariable));
+            SetLocalInt(container, BeastMasteryService.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -386,8 +386,8 @@ namespace SWLOR.Game.Server.Domain.Items
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
-            var beastTypeId = GetLocalInt(container, BeastMastery.BeastTypeVariable);
-            var level = GetLocalInt(container, BeastMastery.BeastLevelVariable);
+            var beastTypeId = GetLocalInt(container, BeastMasteryService.BeastTypeVariable);
+            var level = GetLocalInt(container, BeastMasteryService.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
@@ -404,10 +404,10 @@ namespace SWLOR.Game.Server.Domain.Items
                 {
                     var beastType = (BeastType)beastTypeId;
                     var beastDetail = GetBeastDetail(beastType);
-                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMastery.ExtractCorpseObjectResref, GetLocation(container));
+                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMasteryService.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
-                    SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
-                    SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
+                    SetLocalInt(extractCorpse, BeastMasteryService.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, BeastMasteryService.BeastLevelVariable, level);
 
                     AssignCommand(extractCorpse, () =>
                     {

@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
     /// Creature AI: the creature event entry points, the combat leash, the aggro aura, the ally cache and the profile
-    /// decision engine (profiles, per-creature state, action selection). The static <c>Service.AI</c> forwards to the
-    /// container's instance of this interface.
+    /// decision engine (profiles, per-creature state, action selection). Static callers reach the container's
+    /// instance through <c>GameServices.AI</c>; the event handlers are on <see cref="AIService"/>.
     /// </summary>
     public interface IAIService
     {

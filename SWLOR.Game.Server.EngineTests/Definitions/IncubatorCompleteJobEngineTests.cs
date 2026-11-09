@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -36,10 +37,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     ctx.Assert(model.IsCompleteJobEnabled, "Complete Job stays enabled after the window reopens");
 
-                    var eggs = CountCarried(player, BeastMastery.BeastEggResref);
+                    var eggs = CountCarried(player, BeastMasteryService.BeastEggResref);
                     model.OnClickCompleteJob()();
                     model.OnModalConfirmClick()();
-                    ctx.AssertEqual(eggs + 1, CountCarried(player, BeastMastery.BeastEggResref), "Completing the job gives the egg");
+                    ctx.AssertEqual(eggs + 1, CountCarried(player, BeastMasteryService.BeastEggResref), "Completing the job gives the egg");
                     ctx.Assert(!DB.Exists<IncubationJob>(job.Id), "Completing the job removes it");
                 });
             }
@@ -64,10 +65,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     ctx.Assert(!model.IsCompleteJobEnabled, "Complete Job is disabled while the last stage runs");
 
-                    var eggs = CountCarried(player, BeastMastery.BeastEggResref);
+                    var eggs = CountCarried(player, BeastMasteryService.BeastEggResref);
                     model.OnClickCompleteJob()();
                     model.OnModalConfirmClick()();
-                    ctx.AssertEqual(eggs, CountCarried(player, BeastMastery.BeastEggResref), "A running job gives no egg");
+                    ctx.AssertEqual(eggs, CountCarried(player, BeastMasteryService.BeastEggResref), "A running job gives no egg");
                     ctx.Assert(DB.Exists<IncubationJob>(running.Id), "A running job stays");
 
                     running.CurrentStage = 1;

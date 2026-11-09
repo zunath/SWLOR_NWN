@@ -3,11 +3,13 @@ using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
 /// <summary>
-/// Locks the number-in, number-out formulas of <see cref="Stat"/>: maximum FP and stamina, the Attack, Accuracy, Evasion,
+/// Locks the number-in, number-out formulas of <c>Stat</c>: maximum FP and stamina, the Attack, Accuracy, Evasion,
 /// Defense, Detection and Stealth ratings, healing amounts, effect scaling and the beast regeneration rules. None of them
 /// touches the engine or random numbers.
 /// </summary>
@@ -44,21 +46,21 @@ public class StatFormulaCharacterizationTests
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {
-            (nameof(Stat.BaseFP), typeof(int), Stat.BaseFP),
-            (nameof(Stat.BaseHP), typeof(int), Stat.BaseHP),
-            (nameof(Stat.BaseSTM), typeof(int), Stat.BaseSTM),
-            (nameof(Stat.BeastNaturalRegenStatDivisor), typeof(int), Stat.BeastNaturalRegenStatDivisor),
-            (nameof(Stat.BeastNaturalStaminaRegenDelaySeconds), typeof(float), Stat.BeastNaturalStaminaRegenDelaySeconds),
-            (nameof(Stat.DefaultMeleeDeflectionChanceCap), typeof(int), Stat.DefaultMeleeDeflectionChanceCap),
-            (nameof(Stat.DefaultRangedDeflectionChanceCap), typeof(int), Stat.DefaultRangedDeflectionChanceCap),
-            (nameof(Stat.MaximumCombatReadinessPercent), typeof(int), Stat.MaximumCombatReadinessPercent),
-            (nameof(Stat.MaximumDeflectionChanceCap), typeof(int), Stat.MaximumDeflectionChanceCap),
-            (nameof(Stat.MaximumGuardChance), typeof(int), Stat.MaximumGuardChance),
-            (nameof(Stat.MaximumMovementSpeedMultiplier), typeof(float), Stat.MaximumMovementSpeedMultiplier),
-            (nameof(Stat.MaximumNPCDetection), typeof(int), Stat.MaximumNPCDetection),
-            (nameof(Stat.MaximumShieldDeflectionChance), typeof(int), Stat.MaximumShieldDeflectionChance),
-            (nameof(Stat.MinimumMovementSpeedMultiplier), typeof(float), Stat.MinimumMovementSpeedMultiplier),
-            (nameof(Stat.SuppressNaturalRegenVariable), typeof(string), Stat.SuppressNaturalRegenVariable),
+            (nameof(StatService.BaseFP), typeof(int), StatService.BaseFP),
+            (nameof(StatService.BaseHP), typeof(int), StatService.BaseHP),
+            (nameof(StatService.BaseSTM), typeof(int), StatService.BaseSTM),
+            (nameof(StatService.BeastNaturalRegenStatDivisor), typeof(int), StatService.BeastNaturalRegenStatDivisor),
+            (nameof(StatService.BeastNaturalStaminaRegenDelaySeconds), typeof(float), StatService.BeastNaturalStaminaRegenDelaySeconds),
+            (nameof(StatService.DefaultMeleeDeflectionChanceCap), typeof(int), StatService.DefaultMeleeDeflectionChanceCap),
+            (nameof(StatService.DefaultRangedDeflectionChanceCap), typeof(int), StatService.DefaultRangedDeflectionChanceCap),
+            (nameof(StatService.MaximumCombatReadinessPercent), typeof(int), StatService.MaximumCombatReadinessPercent),
+            (nameof(StatService.MaximumDeflectionChanceCap), typeof(int), StatService.MaximumDeflectionChanceCap),
+            (nameof(StatService.MaximumGuardChance), typeof(int), StatService.MaximumGuardChance),
+            (nameof(StatService.MaximumMovementSpeedMultiplier), typeof(float), StatService.MaximumMovementSpeedMultiplier),
+            (nameof(StatService.MaximumNPCDetection), typeof(int), StatService.MaximumNPCDetection),
+            (nameof(StatService.MaximumShieldDeflectionChance), typeof(int), StatService.MaximumShieldDeflectionChance),
+            (nameof(StatService.MinimumMovementSpeedMultiplier), typeof(float), StatService.MinimumMovementSpeedMultiplier),
+            (nameof(StatService.SuppressNaturalRegenVariable), typeof(string), StatService.SuppressNaturalRegenVariable),
         };
         FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Stat", constants.Select(constant => constant.Name));
         foreach (var (constantName, type, value) in constants)

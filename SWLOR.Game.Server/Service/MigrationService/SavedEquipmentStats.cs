@@ -117,7 +117,7 @@ internal static class SavedEquipmentStats
     };
 
     /// <summary>
-    /// <see cref="Stat.GetMaxFP(uint, Entity.Player)"/> from saved data: the record's base, plus Willpower from
+    /// <see cref="Domain.Character.IStatService.GetMaxFP(uint, Entity.Player)"/> from saved data: the record's base, plus Willpower from
     /// the saved score and equipped ability bonuses. Status-effect adjustments only exist on a live character.
     /// </summary>
     public static int GetMaxFP(SavedCharacter character) =>

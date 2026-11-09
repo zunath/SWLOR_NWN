@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -28,7 +30,7 @@ public class CombatReleaseBalanceAuditTests : SkillFacadeFixture
     [TearDown]
     public void RemoveFacades() => _facadeScope.Dispose();
 
-    private const int SkillPointCap = Skill.TotalSkillPointCap;
+    private const int SkillPointCap = SkillService.TotalSkillPointCap;
     private const int DefaultWeaponDeflectionCap = 50;
 
     private static readonly PerkCategoryType[] WeaponPackages =

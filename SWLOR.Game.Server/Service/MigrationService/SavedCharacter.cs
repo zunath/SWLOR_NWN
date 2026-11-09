@@ -675,7 +675,7 @@ internal sealed class SavedCharacter
             SavedEquipmentStats.Apply(this, item, type, subtype, amount, isAdding);
     }
 
-    /// <summary>Saved-data <see cref="Stat.RefreshCombatReadinessEquipment"/>: the record holds the equipped total.</summary>
+    /// <summary>Saved-data <see cref="Domain.Character.IStatService.RefreshCombatReadinessEquipment"/>: the record holds the equipped total.</summary>
     public void RefreshCombatReadinessEquipment()
     {
         if (!AppliesRecordEffects) return;
@@ -685,7 +685,7 @@ internal sealed class SavedCharacter
     }
 
     /// <summary>
-    /// Saved-data <see cref="Stat.AdjustPlayerMaxHP"/>: changes the record's maximum and spreads it over the
+    /// Saved-data <see cref="Domain.Character.IStatService.AdjustPlayerMaxHP"/>: changes the record's maximum and spreads it over the
     /// character's native levels, at least one HP per level and at most 255.
     /// </summary>
     public void AdjustPlayerMaxHP(int adjustBy)

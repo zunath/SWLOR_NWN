@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
@@ -164,7 +165,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_npc_attack_formula_is_stats()
     {
-        Run("GetAttack", 10, 12, 3).Should().Be(SWLOR.Game.Server.Service.Stat.GetAttack(10, 12, 3));
+        Run("GetAttack", 10, 12, 3).Should().Be(Stat.GetAttack(10, 12, 3));
     }
 
     [Test]

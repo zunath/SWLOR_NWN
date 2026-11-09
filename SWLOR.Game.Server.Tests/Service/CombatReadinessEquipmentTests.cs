@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -65,7 +66,7 @@ public class CombatReadinessEquipmentTests
             public static class ReadinessHarness
             {
                 private const int NumberOfInventorySlots = 18;
-                private const int MaximumCombatReadinessPercent = {{Stat.MaximumCombatReadinessPercent}};
+                private const int MaximumCombatReadinessPercent = {{StatService.MaximumCombatReadinessPercent}};
                 private static readonly uint[] Slots = new uint[NumberOfInventorySlots];
                 private static readonly Dictionary<uint, List<(ItemPropertyType Type, int Amount)>> Properties = new();
                 private static readonly Dictionary<uint, BaseItem> BaseItems = new();
@@ -158,7 +159,7 @@ public class CombatReadinessEquipmentTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(InventorySlot).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("CombatReadinessEquipmentHarness",

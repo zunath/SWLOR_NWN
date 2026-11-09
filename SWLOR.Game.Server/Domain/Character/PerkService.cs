@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Perks: the definition caches, a creature's perk levels, the stat bonuses and granted feats that follow from them,
-    /// and refunds. The logic that used to be static in <c>Service.Perk</c> is moved here unchanged; the facade keeps the
-    /// event handlers and forwards every call to the container's instance. Calls into the unconverted <c>Stat</c>,
+    /// and refunds. The logic that used to be static in the facade <c>Perk</c> is moved here unchanged; the event handlers
+    /// run on the container's instance, and static callers reach it through <c>GameServices.Perk</c>. Calls into <c>Stat</c>,
     /// <c>Ability</c>, <c>Droid</c> and <c>Combat</c>, and the definition search, sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
@@ -124,12 +124,14 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
             CachePerks();
             CacheCharacterTypes();
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CachePerkFeatData()
         {
             CachePerkFeatLookups();
@@ -1386,6 +1388,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// When a skill receives decay, any perks tied to that skill should be checked.
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
         public void RemovePerkLevelOnSkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));

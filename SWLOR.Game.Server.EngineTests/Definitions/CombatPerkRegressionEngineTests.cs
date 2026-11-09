@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -495,15 +496,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var maxSTM = Stat.GetMaxStamina(beast);
             SetLocalInt(beast, "FP", maxFP - 1);
             SetLocalInt(beast, "STAMINA", maxSTM - 1);
-            DeleteLocalInt(beast, Stat.SuppressNaturalRegenVariable);
+            DeleteLocalInt(beast, StatService.SuppressNaturalRegenVariable);
             SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", DateTime.UtcNow.AddMinutes(1).Ticks.ToString());
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP regenerates while stamina is delayed");
             ctx.AssertEqual(maxSTM - 1, Stat.GetCurrentStamina(beast), "Spending stamina delays its regeneration");
             DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina regenerates when its delay expires");
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP stays capped");
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina stays capped");
         }

@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Legacy;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {
@@ -82,7 +83,7 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void RankFiftyCostsTheXpTheOwnerQuotes()
         {
-            Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP).Should().Be(411_125);
+            Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(level => Skill.GetRequiredXP(level)).Should().Be(411_125);
         }
     }
 }

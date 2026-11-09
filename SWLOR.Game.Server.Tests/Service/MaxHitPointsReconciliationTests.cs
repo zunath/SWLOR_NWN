@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -70,7 +71,7 @@ public class MaxHitPointsReconciliationTests
             public static class HitPointHarness
             {
                 private const int NumberOfInventorySlots = 18;
-                public const int BaseHP = {{Stat.BaseHP}};
+                public const int BaseHP = {{StatService.BaseHP}};
                 private const uint OBJECT_SELF = 1;
                 private static readonly uint[] Slots = new uint[NumberOfInventorySlots];
                 private static readonly Dictionary<uint, List<(ItemPropertyType Type, int Amount)>> Properties = new();
@@ -204,7 +205,7 @@ public class MaxHitPointsReconciliationTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(InventorySlot).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("MaxHitPointsReconciliationHarness",
@@ -217,7 +218,7 @@ public class MaxHitPointsReconciliationTests
     }
 
     [SetUp]
-    public void Reset() => Call("Reset", Stat.BaseHP, 0);
+    public void Reset() => Call("Reset", StatService.BaseHP, 0);
 
     [Test]
     public void ReportedDriftedRecord_HidesTheFirstGearHPBehindTheLevelFloor()
@@ -238,14 +239,14 @@ public class MaxHitPointsReconciliationTests
     {
         Call("Reset", DriftedRecordMaxHP, 0);
         Equip(InventorySlot.Chest, 125);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125);
         MaxHP().Should().Be(355, "the 125 HP piece adds all of its HP to the 230 HP naked maximum");
         Call("Refreshes").Should().Be(1, "the status window shows the corrected maximum");
         Equip(InventorySlot.Cloak, 120);
         MaxHP().Should().Be(475);
         Equip(InventorySlot.Cloak, 0);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
         MaxHP().Should().Be(230);
     }
 
@@ -260,7 +261,7 @@ public class MaxHitPointsReconciliationTests
 
         // Saved gear loads without equip events, so the login refresh repairs the record itself.
         Call("RefreshPlayerMaxHP", 1u);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 245);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 245);
         MaxHP().Should().Be(475);
         Call("Writes").Should().Be(1);
         Call("RefreshPlayerMaxHP", 1u);
@@ -270,9 +271,9 @@ public class MaxHitPointsReconciliationTests
     [Test]
     public void ActiveFoodHP_StaysInTheRecord()
     {
-        Call("Reset", Stat.BaseHP + 30, 30);
+        Call("Reset", StatService.BaseHP + 30, 30);
         Equip(InventorySlot.Chest, 125);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125 + 30);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125 + 30);
         Call("Writes").Should().Be(1, "only the equip delta is written; reconciliation finds nothing to change");
         Call("Refreshes").Should().Be(0);
     }
@@ -283,11 +284,11 @@ public class MaxHitPointsReconciliationTests
         Equip(InventorySlot.Chest, 125);
         // The before handler removes the HP, then the native unequip fails and the item stays worn.
         Call("BeforeChange", (int)InventorySlot.Chest, false);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
         Call("AfterChange", (int)InventorySlot.Chest);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
     }
 
     [Test]
@@ -296,7 +297,7 @@ public class MaxHitPointsReconciliationTests
         Equip(InventorySlot.Chest, 125);
         Call("SetHP", (int)InventorySlot.Chest, 160);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP, "removing the larger value must not push the record below the base");
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP, "removing the larger value must not push the record below the base");
     }
 
     [Test]

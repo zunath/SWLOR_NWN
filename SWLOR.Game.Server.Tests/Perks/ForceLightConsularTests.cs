@@ -19,6 +19,8 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -294,13 +296,13 @@ public class ForceLightConsularTests
                 physical ? squellbugPhysicalDefense : squellbugForceDefense,
                 physical ? squellbugVitality : squellbugWillpower, abilityHitRate, affinityMagnitude));
         }).ToArray();
-        spentSP.Should().BeLessThanOrEqualTo(level + Skill.StartingSkillPoints);
+        spentSP.Should().BeLessThanOrEqualTo(level + SkillService.StartingSkillPoints);
 
         // One caster, three buttons, no simultaneous casts, no regeneration or consumables.
         var readyAt = new double[rotation.Length];
         var seconds = 0d;
         var damage = 0d;
-        var fp = Stat.GetMaxFP(Stat.BaseFP, attackerWillpower, 0);
+        var fp = Stat.GetMaxFP(StatService.BaseFP, attackerWillpower, 0);
         var casts = 0;
         while (damage < squellbugHP && seconds < 60d)
         {

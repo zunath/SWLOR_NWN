@@ -21,12 +21,12 @@ Service/CombatPoint.cs  # master-only (P2-ZG)
 Domain/Combat/OrdinaryAttackTraitsService.cs
 Domain/Combat/PairedRangedTraitsService.cs
 Domain/Combat/TemporaryStatModifierService.cs
-Service/StatusEffect.cs
+Service/StatusEffect.cs  # master-only (P2-ZD)
 Domain/Character/StatusEffectService.cs
 Service/StatusEffectService/**
-Service/Stat.cs
+Service/Stat.cs  # master-only (P2-ZD)
 Domain/Character/StatService.cs
-Service/Perk.cs
+Service/Perk.cs  # master-only (P2-ZD)
 Domain/Character/PerkService.cs
 Service/AbilityService/**
 Service/Craft.cs

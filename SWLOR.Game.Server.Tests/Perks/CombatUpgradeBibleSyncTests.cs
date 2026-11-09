@@ -23,6 +23,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -1529,7 +1530,7 @@ public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
             var row = discsByResref[item.Resref];
             var detail = perks[item.Perk];
             var level = detail.PerkLevels[item.Level];
-            var tier = Server.Service.Perk.GetPerkLevelTier(item.Perk, item.Level);
+            var tier = Perk.GetPerkLevelTier(item.Perk, item.Level);
             var skill = detail.PerkLevels.Values.SelectMany(rank => rank.Requirements)
                 .OfType<PerkRequirementSkill>().First().Type;
             var name = item.Name["Instruction Disc: ".Length..];

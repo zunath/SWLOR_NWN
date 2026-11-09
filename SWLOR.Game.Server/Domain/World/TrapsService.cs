@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IPvpCombatService _pvpCombat;
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
+        private readonly IStatusEffectService _statusEffect;
 
         public TrapsService(
             IDBService db,
@@ -91,7 +92,8 @@ namespace SWLOR.Game.Server.Domain.World
             IPerkService perk,
             IPvpCombatService pvpCombat,
             ISkillService skill,
-            IStatService stat)
+            IStatService stat,
+            IStatusEffectService statusEffect)
         {
             _db = db;
             _ability = ability;
@@ -101,6 +103,7 @@ namespace SWLOR.Game.Server.Domain.World
             _pvpCombat = pvpCombat;
             _skill = skill;
             _stat = stat;
+            _statusEffect = statusEffect;
         }
 
         public int GetTrapCapacity(uint owner)
@@ -512,7 +515,7 @@ namespace SWLOR.Game.Server.Domain.World
         // subclass answers this instead.
         protected virtual void ApplyBleed(uint owner, uint victim)
         {
-            StatusEffect.ApplyStatusEffect<BleedStatusEffect>(owner, victim, KitTrapStatusDurationSeconds);
+            _statusEffect.ApplyStatusEffect<BleedStatusEffect>(owner, victim, KitTrapStatusDurationSeconds);
         }
 
         private void Expire(TrapRecord record)

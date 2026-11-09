@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using Player = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -36,18 +37,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ring = await CreateHitPointItemAsync(ctx, player, "absdef_l6", RingHitPoints);
 
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
-            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints, Record(player).MaxHP, "the record is rebuilt from its sources");
-            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints, Record(player).MaxHP, "the record is rebuilt from its sources");
+            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "the 125 HP belt adds all of its HP to the naked maximum (355 for the reported character, not 200)");
 
             await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
-            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "the 120 HP ring adds all of its HP (475 for the reported character, not 315)");
 
             await UnequipAsync(ctx, player, ring);
             await UnequipAsync(ctx, player, belt);
-            ctx.AssertEqual(Stat.BaseHP, Record(player).MaxHP, "unequipping returns the record to the base");
-            ctx.AssertEqual(Stat.BaseHP + 40 * perLevel, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base (230 reported)");
+            ctx.AssertEqual(StatService.BaseHP, Record(player).MaxHP, "unequipping returns the record to the base");
+            ctx.AssertEqual(StatService.BaseHP + 40 * perLevel, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base (230 reported)");
         }
 
         [EngineTest("Login rebuilds a drifted max HP record from worn gear and food", Category = Category, TimeoutSeconds = 60f)]
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PreparePlayer(ctx);
             var player = fixture.Creature;
-            await SetRecordAsync(ctx, player, Stat.BaseHP);
+            await SetRecordAsync(ctx, player, StatService.BaseHP);
             var belt = await CreateHitPointItemAsync(ctx, player, "advent_belt", BeltHitPoints);
             var ring = await CreateHitPointItemAsync(ctx, player, "absdef_l6", RingHitPoints);
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
@@ -71,8 +72,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerMaxHP(player));
             await ctx.WaitFrameAsync();
-            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints, Record(player).MaxHP, "the record is rebuilt at login");
-            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints, Record(player).MaxHP, "the record is rebuilt at login");
+            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "every source counts in full");
         }
 

@@ -778,7 +778,7 @@ public class PerformanceAudienceServiceTests
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
             IPerformanceInspiredService inspired)
-            : base(db, venue, windows, music, songs, snapshots, inspired, FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
+            : base(db, venue, windows, music, songs, snapshots, inspired, FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

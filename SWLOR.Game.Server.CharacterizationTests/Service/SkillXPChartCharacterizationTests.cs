@@ -2,13 +2,14 @@ using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
 /// <summary>
 /// Locks the skill XP chart and the XP lookups built on it: the XP needed per rank, the cumulative XP, the reverse lookup
 /// from total XP to rank, the rank-difference XP table and the practice and Espionage XP rules. All of it is plain
-/// data and arithmetic once <see cref="Skill.CacheXPChartData"/> has built the cumulative table.
+/// data and arithmetic once <c>Skill.CacheXPChartData</c> has built the cumulative table.
 /// </summary>
 [NonParallelizable]
 public class SkillXPChartCharacterizationTests : FacadeFixture

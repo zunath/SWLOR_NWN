@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using Player = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -60,16 +61,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the drifted record pulls naked Force DEF below Physical DEF");
 
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
-            AssertRecord(ctx, player, physical: 11, force: 9, evasion: 10, fp: Stat.BaseFP - 18, stamina: Stat.BaseSTM,
+            AssertRecord(ctx, player, physical: 11, force: 9, evasion: 10, fp: StatService.BaseFP - 18, stamina: StatService.BaseSTM,
                 "the belt rebuilds Defense and Evasion; it carries no FP or STM, so those records wait for gear that does");
 
             await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
-            AssertRecord(ctx, player, physical: 21, force: 19, evasion: 10, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+            AssertRecord(ctx, player, physical: 21, force: 19, evasion: 10, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8,
                 "the ring's FP and STM rebuild those records from both worn pieces");
 
             await UnequipAsync(ctx, player, ring);
             await UnequipAsync(ctx, player, belt);
-            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
+            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: StatService.BaseFP, stamina: StatService.BaseSTM,
                 "unequipping returns every record to its base");
             ctx.AssertEqual(willpower - vitality, ForceGap(player), "naked Force DEF sits Willpower minus Vitality above Physical DEF");
         }
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(player, () => corrected = Stat.RefreshPlayerEquipmentStats(player));
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(EquipmentRecordStats.All, corrected, "every drifted record is reported corrected");
-            AssertRecord(ctx, player, physical: 21, force: 19, evasion: 10, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+            AssertRecord(ctx, player, physical: 21, force: 19, evasion: 10, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8,
                 "the records are rebuilt from the worn gear at login");
             ctx.AssertEqual(Stat.GetMaxFP(player), Record(player).FP, "current FP is capped at the corrected maximum");
 
@@ -140,18 +141,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // The fixture seeds Evasion without gear, and the first ring carries none to rebuild it from.
             fixture.Update(record => record.Evasion = 0);
             await EquipAsync(ctx, player, first, InventorySlot.RightRing);
-            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8, "the first ring");
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8, "the first ring");
 
             // The equip validator cancels an equip into an occupied slot before any stats move.
             await ctx.ExecuteInCreatureContextAsync(player, () => ActionEquipItem(second, InventorySlot.RightRing));
             for (var frame = 0; frame < 30; frame++)
                 await ctx.WaitFrameAsync();
             ctx.AssertEqual(first, GetItemInSlot(InventorySlot.RightRing, player), "the occupied-slot equip is canceled");
-            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8,
                 "a canceled equip leaves the first ring's records");
 
             await UnequipAsync(ctx, player, first);
-            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
+            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: StatService.BaseFP, stamina: StatService.BaseSTM,
                 "nothing worn leaves every record at its base");
         }
 
@@ -169,7 +170,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var armor = await CreateItemAsync(ctx, player, "ec_armor", RingProperties);
             fixture.Update(record => record.Evasion = 0);
             await EquipAsync(ctx, player, armor, InventorySlot.Chest);
-            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8, "the original armor");
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8, "the original armor");
 
             var copy = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -185,7 +186,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"Force {afterDestroy.Defenses[CombatDamageType.Force]}, max FP {afterDestroy.MaxFP}, max STM {afterDestroy.MaxStamina}.");
 
             await EquipAsync(ctx, player, copy, InventorySlot.Chest);
-            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: StatService.BaseFP + 8, stamina: StatService.BaseSTM + 8,
                 "equipping the copy rebuilds the records from the worn copy");
 
             // Destroying the worn copy leaves nothing worn.
@@ -196,7 +197,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Log($"After destroying the worn copy: Physical {stale.Defenses[CombatDamageType.Physical]}, max FP {stale.MaxFP}.");
             await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerEquipmentStats(player));
             await ctx.WaitFrameAsync();
-            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
+            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: StatService.BaseFP, stamina: StatService.BaseSTM,
                 "the records match the gear actually worn after a login rebuild");
         }
 
@@ -442,9 +443,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             record.Defenses[CombatDamageType.Physical] = DriftedPhysical;
             record.Defenses[CombatDamageType.Force] = DriftedForce;
             record.Evasion = 3;
-            record.MaxFP = Stat.BaseFP - 18;
+            record.MaxFP = StatService.BaseFP - 18;
             record.FP = 0;
-            record.MaxStamina = Stat.BaseSTM;
+            record.MaxStamina = StatService.BaseSTM;
             record.Control[SkillType.Smithery] = DriftedSmitheryControl;
             record.Craftsmanship[SkillType.Smithery] = DriftedSmitheryCraftsmanship;
             record.CPBonus[SkillType.Smithery] = DriftedSmitheryCPBonus;

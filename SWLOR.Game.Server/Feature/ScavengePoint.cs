@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.ScavengeService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Skill = SWLOR.Game.Server.Service.Skill;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature

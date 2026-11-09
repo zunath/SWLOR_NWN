@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 
 /// <summary>
-/// Fills the skill detail cache that <see cref="Skill.GetSkillDetails"/> reads with the attribute data of every
+/// Fills the skill detail cache that <c>Skill.GetSkillDetails</c> reads with the attribute data of every
 /// <see cref="SkillType"/>, the same data <c>Skill.CacheData</c> caches at module load, and restores the previous
 /// contents when disposed. <c>Skill.CacheData</c> itself signals an engine event and cannot run outside the engine.
 /// The cache is process-wide, so a fixture that uses this scope must be <c>[NonParallelizable]</c>.

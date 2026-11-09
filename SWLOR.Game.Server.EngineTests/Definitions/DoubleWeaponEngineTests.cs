@@ -11,6 +11,8 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -37,8 +39,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     originalImpact(activator, selectedTarget, level, location);
                 };
                 Observe(attacker);
-                Combat.SetAutoAttackHitResolutionOverride(true);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 Ability.ClearLastCompletedAbilityImpactSummary(attacker);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
 
                     Observe(attacker);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     AssignCommand(attacker, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the first end's damage roll");
                     ctx.AssertEqual(1, _hits.Count, "The second end is still pending");
@@ -155,10 +157,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(53, GetPropertyTotal(weapon, ItemPropertyType.DMG), "The Sentinel's authored DMG budget is preserved");
                     var delayUnits = GetPropertyTotal(weapon, ItemPropertyType.Delay) * 10;
                     ctx.AssertEqual(290, delayUnits, "The Sentinel's explicit delay is preserved");
-                    ctx.AssertEqual(0, Combat.CalculateOffhandAttackDelayReduction(attacker), "An untrained NPC has no Dual Wield reduction");
-                    var formerSingleCycle = Combat.CalculateEffectiveAttackDelay(
-                        Combat.CalculateAttackDelayMilliseconds(delayUnits, 0, 0, 0));
-                    pairedCycle = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker));
+                    ctx.AssertEqual(0, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(attacker), "An untrained NPC has no Dual Wield reduction");
+                    var formerSingleCycle = CombatRules.CalculateEffectiveAttackDelay(
+                        CombatRules.CalculateAttackDelayMilliseconds(delayUnits, 0, 0, 0));
+                    pairedCycle = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker));
                     ctx.AssertEqual(2 * formerSingleCycle, pairedCycle,
                         "Two full-damage ends pay twice the former single-roll cycle");
                     ctx.Assert(Math.Abs(2.0 * 53 / pairedCycle - 53.0 / formerSingleCycle) < 0.0001,
@@ -166,7 +168,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
 
                 Observe(attacker);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(attacker, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => _hits.Count >= 2, 6f, "the NPC's two striking ends");
                 ctx.AssertEqual(2, _hits.Count, "The NPC gets exactly two rolls in its opening cycle");
@@ -259,8 +261,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void ResetObservation()
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             _hits.Clear();
             _itemHits.Clear();

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
             RangedWeaponAttackContext.Clear(actor);
             PairedRangedTraits.ClearCombatState(actor);
             TwinPistolMastery.ClearTrialState(actor);
-            Combat.ClearAttackSwingDebt(actor);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         }
 
         private static void ClearEquipment(uint actor)
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Feature
             TwinPistolAbility.Cancel(actor);
             RangedWeaponAttackContext.Clear(actor);
             TwinPistolMastery.RecordTargetChange(actor, OBJECT_INVALID);
-            Combat.ClearAttackSwingDebt(actor);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         }
     }
 }

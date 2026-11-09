@@ -24,6 +24,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Testing;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -119,7 +120,7 @@ public class CombatDamageTakenServiceTests
             IMessagingService messaging,
             IPlayerNameService playerName)
             : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat,
-                statusEffect, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName)
+                statusEffect, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
         {
             _log = log;
             _calculated = calculated;
@@ -2096,7 +2097,7 @@ public class CombatDamageTakenServiceTests
     public void TheDamageRollRunsOnCombatWithTheSharedRandom()
     {
         Random.SetSeed(21);
-        var expected = SWLOR.Game.Server.Service.Combat.CalculateDamage(100, 8, 14, 60, 12, 0);
+        var expected = GameServices.Combat.CalculateDamage(100, 8, 14, 60, 12, 0);
         Random.SetSeed(21);
 
         _service.BaseCalculateDamage(100, 8, 14, 60, 12, 0).Should().Be(expected);
@@ -2106,7 +2107,7 @@ public class CombatDamageTakenServiceTests
     public void TheDamageRollWrapperKeepsTheDefaultsOfCombat()
     {
         var wrapper = typeof(CombatDamageTakenService).GetMethod("CalculateDamage", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var target = typeof(SWLOR.Game.Server.Service.Combat).GetMethod("CalculateDamage", BindingFlags.Public | BindingFlags.Static)!;
+        var target = typeof(ICombatService).GetMethod("CalculateDamage")!;
 
         wrapper.IsVirtual.Should().BeTrue();
         wrapper.GetParameters().Select(parameter => (parameter.Name, parameter.ParameterType, parameter.HasDefaultValue, parameter.DefaultValue))
@@ -2122,7 +2123,7 @@ public class CombatDamageTakenServiceTests
         part.Should().BeOfType<CombatDamageTakenService>();
         part.HasRecentGuardedHit(Defender, 6f).Should().BeFalse();
         part.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f).Should().BeFalse();
-        SWLOR.Game.Server.Service.Combat.BaseGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.BaseGuardDamageReductionPercent);
-        SWLOR.Game.Server.Service.Combat.MaximumGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.MaximumGuardDamageReductionPercent).And.Be(55);
+        CombatDamageTakenService.BaseGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.BaseGuardDamageReductionPercent);
+        CombatDamageTakenService.MaximumGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.MaximumGuardDamageReductionPercent).And.Be(55);
     }
 }

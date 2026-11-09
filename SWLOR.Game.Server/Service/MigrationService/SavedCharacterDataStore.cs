@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.MigrationService;
 
@@ -62,7 +63,7 @@ public sealed class SavedCharacterDataStore
         // These caches fill on first use; fill them before worker threads read them.
         Resistance.IsValidResistanceType(ResistanceType.Fire);
         Resistance.GetAllResistanceTypes();
-        Combat.GetDefenseDamageTypes();
+        GameServices.CombatDamageCatalog.GetDefenseDamageTypes();
         Perk.GetAllActiveAbilityFeats(PerkType.Invalid);
 
         var packages = new Dictionary<int, int>();

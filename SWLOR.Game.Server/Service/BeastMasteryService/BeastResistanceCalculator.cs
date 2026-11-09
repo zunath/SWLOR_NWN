@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
@@ -16,14 +18,14 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             int minimumInclusive = 0,
             int maximumExclusive = 10)
         {
-            return Combat.GetDefenseDamageTypes()
+            return GameServices.CombatDamageCatalog.GetDefenseDamageTypes()
                 .ToDictionary(type => type, _ => Random.Next(minimumInclusive, maximumExclusive));
         }
 
         public static Dictionary<CombatDamageType, int> CreateDefensePurities(
             IReadOnlyDictionary<CombatDamageType, int> defensePurities)
         {
-            var purities = Combat.CreateDefaultDefenseValues();
+            var purities = CombatRules.CreateDefaultDefenseValues();
 
             foreach (var type in purities.Keys.ToList())
             {
@@ -86,7 +88,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
         public static IEnumerable<IncubationStatType> GetDefensePurityIncubationStatTypes()
         {
-            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            foreach (var damageType in GameServices.CombatDamageCatalog.GetDefenseDamageTypes())
             {
                 if (TryGetDefensePurityIncubationStatType(damageType, out var incubationStatType))
                     yield return incubationStatType;

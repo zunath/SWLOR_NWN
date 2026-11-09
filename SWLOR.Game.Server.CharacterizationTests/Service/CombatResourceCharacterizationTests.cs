@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -37,7 +38,7 @@ public class CombatResourceCharacterizationTests
                      new[] { -100, 0, 1, 70, 999, 1000, 1000000000 },
                      new[] { -5, 0, 3, 6, 12, 15, 24, 50, 100 }))
         {
-            table.Add(row[0], row[1], Combat.CalculateMaxHPHealingBudget(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.CalculateMaxHPHealingBudget(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "CalculateMaxHPHealingBudget", table);
@@ -58,7 +59,7 @@ public class CombatResourceCharacterizationTests
                      new[] { -5, 0, 20, 100, 1000 },
                      new[] { -5, 0, 40, 100, 2000 }))
         {
-            table.Add(row[0], row[1], row[2], Combat.CalculateDamageEligibleForHealing(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRules.CalculateDamageEligibleForHealing(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Combat", "CalculateDamageEligibleForHealing", table);
@@ -79,7 +80,7 @@ public class CombatResourceCharacterizationTests
                      new[] { -10, 0, 25, 50, 500 },
                      new[] { -5, 0, 1, 25, 60, 10000 }))
         {
-            table.Add(row[0], row[1], row[2], Combat.CalculateCappedDamageDerivedHealingAmount(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRules.CalculateCappedDamageDerivedHealingAmount(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Combat", "CalculateCappedDamageDerivedHealingAmount", table);
@@ -99,7 +100,7 @@ public class CombatResourceCharacterizationTests
                      new[] { -10, 0, 1, 50, 100, 5000 },
                      new[] { -10, 0, 1, 30, 100, 6000 }))
         {
-            table.Add(row[0], row[1], Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.CalculateHitPointsSpentThroughTemporaryHitPoints(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "CalculateHitPointsSpentThroughTemporaryHitPoints", table);
@@ -121,7 +122,7 @@ public class CombatResourceCharacterizationTests
                      new[] { 0, 1, 25, 50, 100 },
                      new[] { 0, 50, 100 }))
         {
-            table.Add(row[0], row[1], row[2], row[3], Combat.CalculateHitPointSpendStaminaRestore(row[0], row[1], row[2], row[3]));
+            table.Add(row[0], row[1], row[2], row[3], CombatRules.CalculateHitPointSpendStaminaRestore(row[0], row[1], row[2], row[3]));
         }
 
         Snapshot.Verify("Combat", "CalculateHitPointSpendStaminaRestore", table);
@@ -142,7 +143,7 @@ public class CombatResourceCharacterizationTests
                      new[] { -5, 0, 3, 9, 10, 50 },
                      new[] { -5, 0, 1, 5, 100 }))
         {
-            table.Add(row[0], row[1], row[2], Combat.CalculateAbilityHitStaminaRestore(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRules.CalculateAbilityHitStaminaRestore(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Combat", "CalculateAbilityHitStaminaRestore", table);

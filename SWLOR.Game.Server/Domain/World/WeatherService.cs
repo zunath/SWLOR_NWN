@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IPropertyService _property;
         private readonly IResistanceService _resistance;
         private readonly IStatService _stat;
+        private readonly ICombatDamageTakenService _damageTaken;
 
         public WeatherService(
             IDBService db,
@@ -66,7 +67,8 @@ namespace SWLOR.Game.Server.Domain.World
             IDMPresenceService presence,
             IPropertyService property,
             IResistanceService resistance,
-            IStatService stat)
+            IStatService stat,
+            ICombatDamageTakenService damageTaken)
         {
             _db = db;
             _planets = planets;
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.World
             _stat = stat;
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
             _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
+            _damageTaken = damageTaken;
         }
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -339,10 +342,10 @@ namespace SWLOR.Game.Server.Domain.World
             if (damage <= 0 || GetObjectType(target) != ObjectType.Creature) return Math.Max(0, damage);
             var typedAdjustment = damageType.IsPhysicalDamageType()
                 ? _stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment) : 0;
-            var adjusted = Service.Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
+            var adjusted = CombatRules.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
             damage = _resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage);
             if (damage <= 0) return 0;
-            return Service.Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
+            return _damageTaken.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
                 targetStatusDamagePercentAdjustment: adjusted.Adjustment);
         }
 

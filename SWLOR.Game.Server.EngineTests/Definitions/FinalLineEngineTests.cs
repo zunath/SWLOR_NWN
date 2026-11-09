@@ -5,6 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -37,8 +38,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ramp = (Func<uint, int>)field.GetValue(closure);
             ctx.Assert(ramp != null, "Final Line must have a damage bonus");
             ctx.AssertEqual(0, ramp(OBJECT_INVALID), "invalid target bonus");
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var percent in new[] { 100, 80, 75, 60, 50, 40, 25, 20, 10, 1, 100 })
@@ -87,8 +88,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 field.SetValue(closure, ramp);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

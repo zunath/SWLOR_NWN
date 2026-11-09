@@ -11,8 +11,20 @@ namespace SWLOR.FacadeRemoval;
 /// callers write <c>GameServices.Combat.X</c>, because a namespace of the same name would hide the imported property.
 /// </param>
 /// <param name="Constants">The facade's public constants and the classes that now hold them.</param>
-internal sealed record RemovedFacade(string Facade, bool Explicit, IReadOnlyList<RemovedConstant> Constants)
+/// <param name="Members">
+/// Null for a facade that became one service. For a facade whose members went to several classes (<c>Combat</c>), where each
+/// of its public and internal members went: a call to a member this list does not name is not rewritten.
+/// </param>
+internal sealed record RemovedFacade(string Facade, bool Explicit, IReadOnlyList<RemovedConstant> Constants, IReadOnlyList<RemovedMember>? Members = null)
 {
+    private readonly ILookup<string, RemovedMember>? _owners = Members?.ToLookup(member => member.Name);
+
+    /// <summary>True when the facade's members went to more than one class, so a caller's text depends on the member.</summary>
+    public bool IsSplit => Members != null;
+
+    /// <summary>The classes that hold a member of a split facade: none for a name the list does not have, two for an overload on each.</summary>
+    public IReadOnlyList<RemovedMember> OwnersOf(string name) => _owners == null ? [] : _owners[name].ToList();
+
     public const string ServiceNamespace = "SWLOR.Game.Server.Service";
 
     /// <summary>The simple name callers write and the name of the <c>GameServices</c> property.</summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -78,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 _protectedHitDamageBonus,
                 Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityDamageBonus));
             var window = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityWindowSeconds);
-            Combat.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
+            GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
         }
 
         private bool IsSourceInRange(uint creature)

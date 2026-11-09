@@ -115,6 +115,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _resources.RestoreAbilityHitStaminaFromStat(attacker, StatType.FirstCombatAttackStaminaRestore, staminaRestore);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
         public void PurgeInvalidOffensiveActivity()
         {
             // Area despawns destroy creatures without firing death or player-exit events.
@@ -629,6 +630,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.AbilityActivationIdleSkillType);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreIdleReadinessOnPlayerEnter()
         {
             var creature = GetEnteringObject();

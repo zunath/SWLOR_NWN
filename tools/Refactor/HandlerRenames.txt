@@ -114,6 +114,14 @@ SWLOR.Game.Server.Service.ChatCommand.OnModuleLoad SWLOR.Game.Server.Domain.Soci
 SWLOR.Game.Server.Service.ChatPortraitTells.CheckPortraitClick SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.CheckPortraitClick
 SWLOR.Game.Server.Service.ChatPortraitTells.ForgetExitingPlayer SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.ForgetExitingPlayer
 SWLOR.Game.Server.Service.ChatPortraitTells.RememberEnteringPlayer SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.RememberEnteringPlayer
+SWLOR.Game.Server.Service.Combat.AddDamageTypeResistances SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.AddDamageTypeResistances
+SWLOR.Game.Server.Service.Combat.ApplyDamageTakenEffects SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService.ApplyDamageTakenEffects
+SWLOR.Game.Server.Service.Combat.ApplyDefeatedEnemyEffects SWLOR.Game.Server.Domain.Combat.CombatService.ApplyDefeatedEnemyEffects
+SWLOR.Game.Server.Service.Combat.ClearCombatState SWLOR.Game.Server.Domain.Combat.CombatService.ClearCombatState
+SWLOR.Game.Server.Service.Combat.ClearStatTriggerState SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
+SWLOR.Game.Server.Service.Combat.LoadDamageTypes SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
+SWLOR.Game.Server.Service.Combat.PurgeInvalidOffensiveActivity SWLOR.Game.Server.Domain.Combat.CombatActivityService.PurgeInvalidOffensiveActivity
+SWLOR.Game.Server.Service.Combat.RestoreIdleReadinessOnPlayerEnter SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter
 SWLOR.Game.Server.Service.CombatPoint.ClearPendingWeaponAttackPoints SWLOR.Game.Server.Domain.Combat.CombatPointService.ClearPendingWeaponAttackPoints
 SWLOR.Game.Server.Service.CombatPoint.OnCreatureDeath SWLOR.Game.Server.Domain.Combat.CombatPointService.OnCreatureDeath
 SWLOR.Game.Server.Service.CombatPoint.OnHitCastSpell SWLOR.Game.Server.Domain.Combat.CombatPointService.OnHitCastSpell

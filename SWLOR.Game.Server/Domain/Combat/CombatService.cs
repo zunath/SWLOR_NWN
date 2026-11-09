@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service.StatService;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
@@ -6,9 +7,9 @@ using Random = SWLOR.Game.Server.Service.Random;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// What is left of <c>Combat</c> once its parts are split out: the bodies of the death, exit and six-second handlers
-    /// (which stay on the facade under their names), the cleanup that forgets a creature's combat state in every part in a
-    /// fixed order, the refresh of the stat-driven trackers, and the damage roll that draws from the shared <c>Random</c>.
+    /// What is left of <c>Combat</c> once its parts are split out: the death, exit and six-second handlers, the cleanup that
+    /// forgets a creature's combat state in every part in a fixed order, the refresh of the stat-driven trackers, and the
+    /// damage roll that draws from the shared <c>Random</c>.
     /// It holds no state; every table it clears belongs to a part.
     /// </summary>
     public class CombatService : ICombatService
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _temporaryStatModifier = temporaryStatModifier;
         }
 
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public void ApplyDefeatedEnemyEffects()
         {
             var defeated = OBJECT_SELF;
@@ -68,6 +70,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             RemoveStatTriggerCooldowns(defeated);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearStatTriggerState()
         {
             var creature = GetExitingObject();
@@ -145,6 +148,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         public void ClearCombatState()
         {
             uint player = OBJECT_SELF;

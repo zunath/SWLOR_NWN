@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -91,14 +92,14 @@ public class SkillSelectorStackingTests
         var ricochetToss = PerkSource<ThrowingPerkDefinition>("RicochetToss", PerkType.RicochetToss, 1);
         var sources = new[] { flurryBleed, ricochetToss };
 
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
                 sources,
                 SkillType.Throwing,
                 StatType.AbilityDamageToBleedingTargetSkillType,
                 StatType.AbilityDamageToBleedingTargetBonus)
             .Should().Be(12, "Flurry Bleed III still grants its authored +12 DMG alongside Ricochet Toss");
 
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
                 sources,
                 SkillType.Throwing,
                 StatType.AbilityDamageToBleedingTargetSkillType,
@@ -107,7 +108,7 @@ public class SkillSelectorStackingTests
 
         foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Pistol, SkillType.Force })
         {
-            Combat.SumSkillSelectedStatAdjustment(
+            CombatRules.SumSkillSelectedStatAdjustment(
                     sources,
                     skill,
                     StatType.AbilityDamageToBleedingTargetSkillType,
@@ -116,7 +117,7 @@ public class SkillSelectorStackingTests
         }
 
         // Ricochet Toss gates its own splash on the same selector.
-        Combat.CanTriggerBleedingTargetAbilitySplash(ricochetToss, SkillType.Throwing, true, 25)
+        CombatRules.CanTriggerBleedingTargetAbilitySplash(ricochetToss, SkillType.Throwing, true, 25)
             .Should().BeTrue();
     }
 
@@ -149,7 +150,7 @@ public class SkillSelectorStackingTests
 
         foreach (var skill in new[] { SkillType.Throwing, SkillType.Vibroblade })
         {
-            Combat.SumSkillSelectedStatAdjustment(
+            CombatRules.SumSkillSelectedStatAdjustment(
                     new[] { unscoped },
                     skill,
                     StatType.AbilityDamageToBleedingTargetSkillType,
@@ -223,7 +224,7 @@ public class SkillSelectorStackingTests
     }
 
     private static int Sum(IReadOnlyList<StatAdjustmentSource> sources, SkillType skillType) =>
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
             sources,
             skillType,
             StatType.AbilityHitChancePercentAdjustmentSkillType,
@@ -231,7 +232,7 @@ public class SkillSelectorStackingTests
             unselectedSourcesApplyToEverySkill: true);
 
     private static int SumCritical(IReadOnlyList<StatAdjustmentSource> sources, SkillType skillType) =>
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
             sources,
             skillType,
             StatType.AbilityCriticalRatePercentAdjustmentSkillType,

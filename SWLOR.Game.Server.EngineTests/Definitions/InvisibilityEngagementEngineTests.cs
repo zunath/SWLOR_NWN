@@ -4,6 +4,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -42,8 +43,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var (enemy, _) in enemies)
                 ctx.SuppressNPCNaturalRegen(enemy);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var (enemy, _) in enemies)
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         // The activator is the only creature on each enemy's table, so any swing
                         // would be at it.
-                        ctx.Assert(GetAttackTarget(enemy) != caster && !Combat.HasRecentAttackActivity(enemy, window),
+                        ctx.Assert(GetAttackTarget(enemy) != caster && !GameServices.CombatActivity.HasRecentAttackActivity(enemy, window),
                             $"sample {sample}: {label} is still attacking the invisible activator. {Describe(caster, enemies)}");
                         ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(caster),
                             $"sample {sample}: {label} must keep its enmity toward the hidden activator");
@@ -103,8 +104,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
 
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // Attack activity is recorded by the native attack-roll hook, so it reflects real swings.
         private static bool IsSwingingAt(uint enemy, uint target)
         {
-            return GetAttackTarget(enemy) == target && Combat.HasRecentAttackActivity(enemy, 3f);
+            return GetAttackTarget(enemy) == target && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f);
         }
 
         private static string Describe(uint caster, (uint Creature, string Label)[] enemies)
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var (enemy, label) in enemies)
             {
                 parts.Add($"{label}: action {GetCurrentAction(enemy)}, targeting activator {GetAttackTarget(enemy) == caster}, " +
-                          $"in combat {GetIsInCombat(enemy)}, swung in last 1s {Combat.HasRecentAttackActivity(enemy, 1f)}, " +
+                          $"in combat {GetIsInCombat(enemy)}, swung in last 1s {GameServices.CombatActivity.HasRecentAttackActivity(enemy, 1f)}, " +
                           $"AI level {GetAILevel(enemy)}, enmity entries {Enmity.GetEnmityTable(enemy).Count}, " +
                           $"distance {GetDistanceBetween(enemy, caster):0.0}m");
             }

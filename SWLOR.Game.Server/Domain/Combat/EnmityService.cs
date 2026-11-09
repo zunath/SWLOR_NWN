@@ -36,6 +36,9 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStealthService _stealth;
         private readonly ICompanionControlService _companionControl;
         private readonly IStatusEffectService _statusEffect;
+        private readonly Lazy<ICombatActivityService> _combatActivity;
+        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
+        private readonly Lazy<ICombatQueriesService> _queries;
 
         public EnmityService(
             IAIService ai,
@@ -46,7 +49,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             Lazy<IStatService> stat,
             IStealthService stealth,
             ICompanionControlService companionControl,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            Lazy<ICombatActivityService> combatActivity,
+            Lazy<ICombatAttackTimingService> attackTiming,
+            Lazy<ICombatQueriesService> queries)
         {
             _ai = ai;
             _activity = activity;
@@ -57,6 +63,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stealth = stealth;
             _companionControl = companionControl;
             _statusEffect = statusEffect;
+            _combatActivity = combatActivity;
+            _attackTiming = attackTiming;
+            _queries = queries;
         }
 
         public const int MinimumEnmityPercentAdjustment = -50;
@@ -1203,28 +1212,28 @@ namespace SWLOR.Game.Server.Domain.Combat
             _companionControl.CanIssueAttackCommand(companion, target);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => Service.Combat.GetEquippedWeaponSkillType(creature);
+        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => _queries.Value.GetEquippedWeaponSkillType(creature);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual float GetWeaponEngagementRange(SkillType skillType) => Service.Combat.GetWeaponEngagementRange(skillType);
+        protected virtual float GetWeaponEngagementRange(SkillType skillType) => CombatRules.GetWeaponEngagementRange(skillType);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual bool IsRangedWeaponSkill(SkillType skillType) => Service.Combat.IsRangedWeaponSkill(skillType);
+        protected virtual bool IsRangedWeaponSkill(SkillType skillType) => CombatRules.IsRangedWeaponSkill(skillType);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual bool HasRecentAttackActivity(uint creature, float windowSeconds) =>
-            Service.Combat.HasRecentAttackActivity(creature, windowSeconds);
+            _combatActivity.Value.HasRecentAttackActivity(creature, windowSeconds);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual int CalculateAttackDelay(uint attacker) => Service.Combat.CalculateAttackDelay(attacker);
+        protected virtual int CalculateAttackDelay(uint attacker) => _attackTiming.Value.CalculateAttackDelay(attacker);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds) =>
-            Service.Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds);
+            CombatRules.CalculateEffectiveAttackDelay(attackerDelayMilliseconds);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int CalculateAttackSwingDelay(int effectiveDelayMilliseconds) =>
-            Service.Combat.CalculateAttackSwingDelay(effectiveDelayMilliseconds);
+            CombatRules.CalculateAttackSwingDelay(effectiveDelayMilliseconds);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual HashSet<IStatusEffect> GetAllStatusEffects(uint creature) =>

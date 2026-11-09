@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -67,11 +68,11 @@ public static class UnarmedMasteryEngineTests
         void TrackPayment(uint player, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
         {
             if (player == owner.Creature && enemy == target && ability.EffectiveLevelPerkType == PerkType.Uppercut)
-                notifiedPayments.Add(Combat.GetPaidAbilityStaminaCost(player, uppercut));
+                notifiedPayments.Add(GameServices.CombatResources.GetPaidAbilityStaminaCost(player, uppercut));
         }
         MeleeTechnique.TechniqueLanded += TrackPayment;
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             foreach (var player in new[] { owner, other })
@@ -112,8 +113,8 @@ public static class UnarmedMasteryEngineTests
             context.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target),
                 "The counter survives switching back to Power Gloves before the free heavy strike.");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.
-            await context.ExecuteInCreatureContextAsync(owner.Creature, () => Combat.TrackAvoidedAttack(owner.Creature, target));
-            context.AssertEqual(-4, Combat.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "Opportunist's Flow applies its global discount while Power Gloves are equipped.");
+            await context.ExecuteInCreatureContextAsync(owner.Creature, () => GameServices.CombatDamageTaken.TrackAvoidedAttack(owner.Creature, target));
+            context.AssertEqual(-4, GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "Opportunist's Flow applies its global discount while Power Gloves are equipped.");
             await context.DelaySecondsAsync(1.05f);
             var freeStamina = Stat.GetCurrentStamina(owner.Creature);
             var freeImpact = await Cast(context, owner.Creature, target, FeatType.Uppercut1);
@@ -121,7 +122,7 @@ public static class UnarmedMasteryEngineTests
             context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target), "A valid free heavy strike still spends its optional counter.");
             context.Assert(freeImpact.ImpactedTargetCount > 0 && freeImpact.AttributedDamage > 0, "The free cast still lands and deals its normal combat damage.");
             context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The free heavy strike needs no setup.");
-            context.AssertEqual(0, Combat.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "The real discount is consumed once.");
+            context.AssertEqual(0, GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "The real discount is consumed once.");
             context.AssertEqual(0, notifiedPayments.Count, "A free landed heavy strike does not emit a paid mastery notification.");
             var unchanged = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(owner.Id));
             context.AssertEqual(40, unchanged.Quests[questId].CombatProgresses[objective], "The accepted trial persists no credit for the free cast.");
@@ -148,8 +149,8 @@ public static class UnarmedMasteryEngineTests
         finally
         {
             MeleeTechnique.TechniqueLanded -= TrackPayment;
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(owner.Creature, () => ClearAllActions());
         }
     }
@@ -192,8 +193,8 @@ public static class UnarmedMasteryEngineTests
         var originalAccount = DB.Get<Account>(cdKey);
         DB.Set(new Account(cdKey));
         var gate = new PerkRequirementQuest(questId);
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             await context.ExecuteInCreatureContextAsync(owner.Creature, () =>
@@ -248,8 +249,8 @@ public static class UnarmedMasteryEngineTests
         }
         finally
         {
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(owner.Creature, () => ClearAllActions());
             if (originalAccount == null)
                 DB.Delete<Account>(cdKey);

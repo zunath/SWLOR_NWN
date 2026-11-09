@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Characterization;
 
@@ -98,8 +99,8 @@ public static class WeaponAttackScenarios
         using var clock = new FrozenClock();
         using var arena = await ScenarioArena.CreateAsync(ctx);
         var scenario = arena.Context;
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
 
         var distance = weaponClass.Ranged ? RangedDistance : MeleeDistance;
         var attacker = await ScenarioActors.SpawnQuietAsync(scenario, ScenarioActors.Humanoid, -0.5f, 0f);

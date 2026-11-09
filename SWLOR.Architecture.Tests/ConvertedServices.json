@@ -20,7 +20,7 @@
     { "name": "CasinoSlot", "domain": "Economy", "facadeRemoved": true },
     { "name": "ChatCommand", "domain": "Social", "facadeRemoved": true },
     { "name": "ChatPortraitTells", "domain": "Social", "facadeRemoved": true },
-    { "name": "Combat", "domain": "Combat", "extras": [ { "part": "CombatAbilityActivation" }, { "part": "CombatAbilityBonus" }, { "part": "CombatAbilityHit" }, { "part": "CombatAbilityImpact" }, { "part": "CombatActivity" }, { "part": "CombatAttackTiming" }, { "part": "CombatDamageCatalog" }, { "part": "CombatDamageModifiers" }, { "part": "CombatDamageTaken" }, { "part": "CombatFeedback" }, { "part": "CombatHitEffects" }, { "part": "CombatQueries" }, { "part": "CombatResources" }, { "part": "CombatSuppression" } ] },
+    { "name": "Combat", "domain": "Combat", "facadeRemoved": true, "extras": [ { "part": "CombatAbilityActivation" }, { "part": "CombatAbilityBonus" }, { "part": "CombatAbilityHit" }, { "part": "CombatAbilityImpact" }, { "part": "CombatActivity" }, { "part": "CombatAttackTiming" }, { "part": "CombatDamageCatalog" }, { "part": "CombatDamageModifiers" }, { "part": "CombatDamageTaken" }, { "part": "CombatFeedback" }, { "part": "CombatHitEffects" }, { "part": "CombatQueries" }, { "part": "CombatResources" }, { "part": "CombatSuppression" } ] },
     { "name": "CombatPoint", "domain": "Combat", "facadeRemoved": true },
     { "name": "CombatRecorder", "domain": "Combat", "facadeRemoved": true },
     { "name": "Communication", "domain": "Core", "facadeRemoved": true },

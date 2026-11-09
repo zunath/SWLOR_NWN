@@ -22,6 +22,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Vector3 = System.Numerics.Vector3;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -1680,7 +1681,7 @@ namespace SWLOR.Game.Server.Service
             var attackerAccuracy = GetShipAccuracy(attacker);
             var defenderEvasion = GetShipEvasion(defender);
 
-            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+            return CombatRules.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
         }
 
         /// <summary>

@@ -490,7 +490,7 @@ public class EnmityTests
     [Test]
     public void GetStaleAttackRecoverySeconds_UsesShorterWindowForMultiAttackSwingCadence()
     {
-        var recoverySeconds = GetStaleAttackRecoverySeconds(Combat.MinimumAttackDelayMilliseconds);
+        var recoverySeconds = GetStaleAttackRecoverySeconds(CombatRules.MinimumAttackDelayMilliseconds);
 
         recoverySeconds.Should().BeApproximately(4.5f, 0.01f);
         recoverySeconds.Should().BeLessThan(6f);
@@ -507,12 +507,12 @@ public class EnmityTests
     [Test]
     public void GetWeaponEngagementRange_UsesTheEquippedWeaponSkill()
     {
-        Combat.GetWeaponEngagementRange(SkillType.Rifle).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Pistol).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Throwing).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Lightsaber).Should().Be(1.5f);
-        Combat.GetWeaponEngagementRange(SkillType.Katar).Should().Be(1.5f);
-        Combat.GetWeaponEngagementRange(SkillType.Invalid).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Rifle).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Pistol).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Throwing).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Lightsaber).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Katar).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Invalid).Should().Be(1.5f);
     }
 
     [Test]
@@ -531,13 +531,13 @@ public class EnmityTests
             "Combat",
             "EnmityService.cs"));
 
-        nativeSource.Should().Contain("Combat.GetWeaponEngagementRange(attackSkillType)");
-        nativeSource.Should().Contain("Combat.IsRangedWeaponSkill(attackSkillType)");
+        nativeSource.Should().Contain("CombatRules.GetWeaponEngagementRange(attackSkillType)");
+        nativeSource.Should().Contain("CombatRules.IsRangedWeaponSkill(attackSkillType)");
         nativeSource.Should().Contain("var isPlayerCreature = pCreature.m_bPlayerCharacter == 1");
         nativeSource.Should().Contain("? pCreature.GetRangeWeaponEquipped() == 1");
         nativeSource.Should().Contain("? ResolveEngineDesiredAttackRange(");
         nativeSource.Should().Contain(": ResolveWeaponEngagementRange(");
-        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().Contain("CombatRules.GetWeaponEngagementRange(skillType)");
         enmitySource.Should().NotContain("GetPreferredAttackDistance");
 
         ResolveNativeWeaponEngagementRange(10f, 30f, true).Should().Be(10f);

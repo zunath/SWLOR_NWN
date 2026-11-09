@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(evasionBefore >= 150, $"The target starts with high Evasion: {evasionBefore}");
 
             // Every hit roll misses, so only an impact without one can apply the debuff.
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 var attempted = false;
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
 
             var evasionAfter = Stat.GetEvasion(target, SkillType.Invalid);

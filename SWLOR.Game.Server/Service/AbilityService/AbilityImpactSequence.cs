@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -23,8 +24,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (requested <= 0)
                 return 0;
 
-            _damageHealingMaximum ??= Combat.CalculateMaxHPHealingBudget(
-                maximumHP, Combat.MaximumActivatedDamageHealingMaxHPPercent);
+            _damageHealingMaximum ??= CombatRules.CalculateMaxHPHealingBudget(
+                maximumHP, CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent);
             var amount = Math.Clamp(requested, 0, Math.Max(0, _damageHealingMaximum.Value - _damageHealingApplied));
             _damageHealingApplied += amount;
             return amount;

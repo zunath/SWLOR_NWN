@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task HeldHostileAbility_GoesOffWhenTheDelayEnds(EngineTestContext ctx)
         {
             var (caster, target) = await SpawnAsync(ctx);
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 var firstUsedAt = DateTime.UtcNow;
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task LaterHostileAbility_ReplacesTheHeldOne(EngineTestContext ctx)
         {
             var (caster, target) = await SpawnAsync(ctx);
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 await UseAbilityAsync(ctx, caster, target, FeatType.ForceTouch1);
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task HostileAbilityAfterTheDelay_ReplacesAPressStillWaiting(EngineTestContext ctx)
         {
             var (caster, target) = await SpawnAsync(ctx);
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 await UseAbilityAsync(ctx, caster, target, FeatType.ForceTouch1);
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task AbilityThatIsNotHostile_DoesNotWait(EngineTestContext ctx)
         {
             var (caster, target) = await SpawnAsync(ctx);
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 var hostileUsedAt = DateTime.UtcNow;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -190,7 +191,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var slam = Ability.GetAbilityDetail(FeatType.Slam1);
             CombatRecordWriter writer = null;
             Ability.ClearLastCompletedAbilityImpactSummary(player);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -200,7 +201,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     writer = CombatRecorder.LastWriter;
                 });
                 var recastDelays = new[] { ribBreaker, slam }.Select(ability =>
-                    (Ability: ability, Delay: Combat.ApplyAbilityRecastDelayModifiers(player, ability,
+                    (Ability: ability, Delay: GameServices.CombatAbilityBonus.ApplyAbilityRecastDelayModifiers(player, ability,
                         ability.RecastDelay?.Invoke(player) ?? 0f))).ToArray();
                 var startedAt = DateTime.UtcNow;
                 DateTime? ribBreakerAt = null;
@@ -288,7 +289,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 if (writer != null)
                 {
                     if (CombatRecorder.IsRecording && ReferenceEquals(CombatRecorder.LastWriter, writer))

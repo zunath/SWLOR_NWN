@@ -23,6 +23,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -220,12 +221,12 @@ public static class TwinPistolCompanionArrivalEngineTests
                 native.m_pcCombatRound.StartCombatRound(target);
                 native.m_pcCombatRound.m_nCurrentAttack = 0;
                 native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 native.ResolveAttackRoll(defender);
                 ctx.AssertEqual(4, native.m_pcCombatRound.GetAttack(0).m_nAttackResult, "The real main launcher misses before the companion launches");
                 ctx.Assert(UsePerkFeat.HasQueuedWeaponAbility(actor), "The main miss leaves Headshot readied");
                 capturedMainDamage = WeaponDamage.GetEffectiveDMG(actor, main);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 flight = Launch(ctx, actor, target, companion);
                 var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
                 ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 }, "The companion reserves one replacement without ordinary damage");
@@ -378,8 +379,8 @@ public static class TwinPistolCompanionArrivalEngineTests
         _actor = actor;
         _target = target;
         _damageEvents = 0;
-        Combat.SetAutoAttackHitResolutionOverride(true);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         return (target, main, companion);
     }
 
@@ -488,8 +489,8 @@ public static class TwinPistolCompanionArrivalEngineTests
     private static void Cleanup(uint actor, uint target)
     {
         _actor = _target = OBJECT_INVALID;
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (GetIsObjectValid(actor))
         {
             AssignCommand(actor, () => ClearAllActions());

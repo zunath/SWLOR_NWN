@@ -9,7 +9,9 @@ using SWLOR.FacadeRemoval;
  *   - a file that calls a removed facade (Taxi.X) gets `using static SWLOR.Game.Server.Composition.GameServices;`, or its
  *     project's GlobalUsings.cs gets the global form when it imports SWLOR.Game.Server.Service globally;
  *   - a qualified call (Service.Taxi.X) loses its qualifier; an explicit name (Combat) is written GameServices.Combat.X;
- *     a moved constant (Combat.MaximumHitRate) is read from its owner (CombatRules.MaximumHitRate);
+ *     a moved constant (Combat.MaximumHitRate) is read from its owner (CombatRules.MaximumHitRate); a member of a facade
+ *     split over several classes (Combat) goes to the part or class its "members" line names (GameServices.CombatQueries.X,
+ *     CombatRules.X), and a name with two owners or none is left alone for a person;
  *   - a bare name the file declares itself (a property named Snippet) and every file of a project that does not reference
  *     the server (SWLOR.BackgroundServices) are left alone: they are not callers of a facade;
  *   - each manifest line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt that names a removed facade's handler takes the

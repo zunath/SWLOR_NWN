@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service.ResistanceService;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -59,7 +60,7 @@ public class CombatDamageTests
     [Test]
     public void CalculateDamageRange_FloorsPositiveDmgHitsAtOne()
     {
-        var (minDamage, maxDamage) = Combat.CalculateDamageRange(
+        var (minDamage, maxDamage) = CombatRules.CalculateDamageRange(
             attackerAttack: 1,
             attackerDMG: 18,
             attackerStat: 10,
@@ -81,7 +82,7 @@ public class CombatDamageTests
     public void OrdinaryAttackDamageMultiplier_AppliesAfterEarnedBonuses(
         int damageAfterOutgoingBonuses, int percentAdjustment, int expected)
     {
-        Combat.ApplyOrdinaryAttackDamageMultiplier(damageAfterOutgoingBonuses, percentAdjustment)
+        CombatRules.ApplyOrdinaryAttackDamageMultiplier(damageAfterOutgoingBonuses, percentAdjustment)
             .Should().Be(expected);
     }
 
@@ -108,7 +109,7 @@ public class CombatDamageTests
     [Test]
     public void CalculateDamageRange_PreservesZeroDmgImpacts()
     {
-        var (minDamage, maxDamage) = Combat.CalculateDamageRange(
+        var (minDamage, maxDamage) = CombatRules.CalculateDamageRange(
             attackerAttack: 1,
             attackerDMG: 0,
             attackerStat: 10,
@@ -130,7 +131,7 @@ public class CombatDamageTests
         int requestedHealing,
         int expectedHealing)
     {
-        Combat.CalculateCappedDamageDerivedHealingAmount(damage, healingAlreadyApplied, requestedHealing)
+        CombatRules.CalculateCappedDamageDerivedHealingAmount(damage, healingAlreadyApplied, requestedHealing)
             .Should()
             .Be(expectedHealing);
     }
@@ -182,15 +183,15 @@ public class CombatDamageTests
     [Test]
     public void CombatSystemLimits_ClampToDocumentedBounds()
     {
-        Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);
-        Combat.CalculateHitRate(0, 1000, 0, Combat.BossMinimumHitRate).Should().Be(Combat.BossMinimumHitRate);
-        Combat.CalculateHitRate(1000, 0, 0, Combat.BossMinimumHitRate).Should().Be(Combat.MaximumHitRate);
-        Combat.CalculateHitRate(1000, 0, 0).Should().Be(Combat.MaximumHitRate);
-        Combat.CalculateCriticalRate(0, 1000, 0, -100).Should().Be(Combat.MinimumCriticalRate);
-        Combat.CalculateCriticalRate(1000, 0, 1000, 1000).Should().Be(Combat.MaximumCriticalRate);
-        Combat.ClampCriticalDamagePercentAdjustment(500)
+        CombatRules.CalculateHitRate(0, 1000, 0).Should().Be(CombatRules.MinimumHitRate);
+        CombatRules.CalculateHitRate(0, 1000, 0, CombatQueriesService.BossMinimumHitRate).Should().Be(CombatQueriesService.BossMinimumHitRate);
+        CombatRules.CalculateHitRate(1000, 0, 0, CombatQueriesService.BossMinimumHitRate).Should().Be(CombatRules.MaximumHitRate);
+        CombatRules.CalculateHitRate(1000, 0, 0).Should().Be(CombatRules.MaximumHitRate);
+        CombatRules.CalculateCriticalRate(0, 1000, 0, -100).Should().Be(CombatRules.MinimumCriticalRate);
+        CombatRules.CalculateCriticalRate(1000, 0, 1000, 1000).Should().Be(CombatRules.MaximumCriticalRate);
+        CombatRules.ClampCriticalDamagePercentAdjustment(500)
             .Should()
-            .Be(Combat.MaximumCriticalDamagePercentAdjustment);
+            .Be(CombatRules.MaximumCriticalDamagePercentAdjustment);
         Enmity.ClampEnmityPercentAdjustment(-500)
             .Should()
             .Be(EnmityService.MinimumEnmityPercentAdjustment);
@@ -290,21 +291,21 @@ public class CombatDamageTests
     [Test]
     public void WeaponAbilities_AcceptEveryWeaponSkillRegardlessOfTheirDeclaredSkill()
     {
-        var weaponSkills = Enum.GetValues<SkillType>().Where(Combat.IsWeaponSkillType).ToArray();
+        var weaponSkills = Enum.GetValues<SkillType>().Where(CombatRules.IsWeaponSkillType).ToArray();
         weaponSkills.Should().NotBeEmpty();
         foreach (var abilitySkill in weaponSkills)
         {
             foreach (var weaponSkill in weaponSkills)
             {
-                Combat.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill).Should().BeTrue(
+                CombatRules.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill).Should().BeTrue(
                     $"{abilitySkill} abilities must work with {weaponSkill} weapons");
             }
 
-            Combat.CanWeaponSkillTriggerAbility(SkillType.Invalid, abilitySkill).Should().BeFalse();
-            Combat.CanWeaponSkillTriggerAbility(SkillType.Armor, abilitySkill).Should().BeFalse();
+            CombatRules.CanWeaponSkillTriggerAbility(SkillType.Invalid, abilitySkill).Should().BeFalse();
+            CombatRules.CanWeaponSkillTriggerAbility(SkillType.Armor, abilitySkill).Should().BeFalse();
         }
 
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Invalid).Should().BeTrue();
+        CombatRules.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Invalid).Should().BeTrue();
 
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
@@ -314,8 +315,8 @@ public class CombatDamageTests
         abilitySource.Should().NotContain("You must equip a {skillName} weapon to use this ability.");
         abilitySource.Should().Contain("!HasEquippedWeaponForAbility(activator)");
         abilitySource.Should().Contain("You must equip a weapon to use this ability.");
-        usePerkFeatSource.Should().Contain("Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType)");
-        usePerkFeatSource.Should().Contain("Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType)");
+        usePerkFeatSource.Should().Contain("GameServices.CombatQueries.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType)");
+        usePerkFeatSource.Should().Contain("CombatRules.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType)");
     }
 
     [Test]
@@ -341,10 +342,10 @@ public class CombatDamageTests
         abilitySource.Should().Contain("damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? GetWeaponDamageType(triggeringWeapon);");
         abilitySource.Should().Contain("TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType");
-        Combat.IncludesCombatImpactWeaponDamage(SkillType.Pistol, false).Should().BeTrue();
-        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, true).Should().BeTrue("queued natural weapons add their DMG");
-        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, false).Should().BeFalse();
-        Combat.IncludesCombatImpactWeaponDamage(SkillType.Force, false).Should().BeFalse();
+        GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(SkillType.Pistol, false).Should().BeTrue();
+        GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, true).Should().BeTrue("queued natural weapons add their DMG");
+        GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, false).Should().BeFalse();
+        GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(SkillType.Force, false).Should().BeFalse();
     }
 
     [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Fire, CombatDamageType.Fire)]
@@ -372,9 +373,9 @@ public class CombatDamageTests
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)");
         abilitySource.Should().Contain("? GetAbilityDMG(activator, triggeringWeapon, ability.SkillType)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
-        Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
-        Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
-        Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
+        GameServices.CombatQueries.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
+        GameServices.CombatQueries.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
+        GameServices.CombatQueries.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
         abilitySource.Should().Contain("TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage");
         abilitySource.Should().Contain("triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage");
         combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
@@ -392,28 +393,28 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
-        attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
+        attackSource.Should().Contain("GameServices.CombatQueries.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
         attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
-        attackSource.Should().Contain("Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Pistol).Should().Be(AbilityType.Agility);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Invalid);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
+        attackSource.Should().Contain("GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Pistol).Should().Be(AbilityType.Agility);
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Invalid);
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
+        GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
         attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
-        attackSource.Should().Contain("Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
+        attackSource.Should().Contain("GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"ApplySideAttackEvasionIgnore\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"queuedAbility == null \? 0 : Combat\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType,\s*queuedAbility\)")
+            @"queuedAbility == null \? 0 : GameServices\.CombatAbilityBonus\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType,\s*queuedAbility\)")
             .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
-        attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
-        attackSource.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         var accuracy = ExtractMethod(statSource, "public int GetAccuracyNative");
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");
         accuracy.Should().Contain("GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",
@@ -504,22 +505,22 @@ public class CombatDamageTests
         abilitySource.Should().Contain("ApplyCriticalDamageModifier(");
         abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
         abilitySource.Should().Contain("GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
-        damageRollSource.Should().Contain("Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
+        damageRollSource.Should().Contain("GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
         damageRollSource.Should().Contain("openingCriticalDamageAdjustment);");
-        damageRollSource.Should().Contain("Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
-        damageRollSource.Should().Contain("Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
+        damageRollSource.Should().Contain("GameServices.CombatQueries.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
+        damageRollSource.Should().Contain("GameServices.CombatDamageModifiers.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
         damageRollSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
-        attackRollSource.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
+        attackRollSource.Should().Contain("GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
     }
 
     [Test]
     public void RangedWeaponSkillScope_ExcludesDevices()
     {
-        Combat.IsRangedWeaponSkill(SkillType.Pistol).Should().BeTrue();
-        Combat.IsRangedWeaponSkill(SkillType.Rifle).Should().BeTrue();
-        Combat.IsRangedWeaponSkill(SkillType.Throwing).Should().BeTrue();
-        Combat.IsRangedWeaponSkill(SkillType.Devices).Should().BeFalse();
+        CombatRules.IsRangedWeaponSkill(SkillType.Pistol).Should().BeTrue();
+        CombatRules.IsRangedWeaponSkill(SkillType.Rifle).Should().BeTrue();
+        CombatRules.IsRangedWeaponSkill(SkillType.Throwing).Should().BeTrue();
+        CombatRules.IsRangedWeaponSkill(SkillType.Devices).Should().BeFalse();
         Stat.GetStatTypeCategory(StatType.RangedAttackDamageFlatAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.RangedAttackDefenseIgnorePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
     }
@@ -580,7 +581,7 @@ public class CombatDamageTests
             "QueueWeaponAbility(activator, target, ability, feat);",
             StringComparison.Ordinal);
         var queueActivityIndex = usePerkFeatSource.IndexOf(
-            "Combat.TrackQueuedWeaponAbilityUse(activator, ability);",
+            "GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(activator, ability);",
             StringComparison.Ordinal);
         activationIndex.Should().BeGreaterThanOrEqualTo(0);
         queueActivityIndex.Should().BeGreaterThan(queueIndex,
@@ -597,22 +598,22 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(");
         combatSource.Should().NotContain("GetSuppressionRangedAttackAccuracyAdjustment");
-        nativeSource.Should().Contain("Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
-        nativeSource.Should().NotContain("Combat.GetSuppressionRangedAttackAccuracyAdjustment(");
+        nativeSource.Should().Contain("GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
+        nativeSource.Should().NotContain("GameServices.CombatSuppression.GetSuppressionRangedAttackAccuracyAdjustment(");
         var overwatchIndex = nativeSource.IndexOf(
-            "Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            "GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
             StringComparison.Ordinal);
         var hitChanceIndex = nativeSource.IndexOf(
             "var hitChanceModifier =",
             StringComparison.Ordinal);
         var hitRateIndex = nativeSource.IndexOf(
-            "var hitRate = Combat.CalculateHitRate(",
+            "var hitRate = CombatRules.CalculateHitRate(",
             StringComparison.Ordinal);
         overwatchIndex.Should().BeGreaterThan(hitChanceIndex,
             "Overwatch's percentage bonus must enter the hit-chance modifier path");
         overwatchIndex.Should().BeLessThan(hitRateIndex);
         nativeSource.Should().NotContain(
-            "accuracyModifiers += Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            "accuracyModifiers += GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
             "native Overwatch accuracy is a percentage modifier, not raw attack accuracy");
     }
 
@@ -627,7 +628,7 @@ public class CombatDamageTests
         prepare.Should().Contain("GetLastCompletedOffensiveActivityAt(attacker)",
             "a completed hostile ability must restart Steady Aim and Dead Center's idle window");
         nativeSource.Should().MatchRegex(
-            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?Combat\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
+            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?GameServices\.CombatAbilityBonus\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
             "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
         new OpeningAttackReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
         var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
@@ -637,10 +638,10 @@ public class CombatDamageTests
     [Test]
     public void MeleeAutoAttackScope_AllowsCrossSkillMeleeTraitsWithoutAffectingRangedWeapons()
     {
-        Combat.IsMeleeWeaponSkill(SkillType.Vibroblade).Should().BeTrue();
-        Combat.IsMeleeWeaponSkill(SkillType.Spear).Should().BeTrue();
-        Combat.IsMeleeWeaponSkill(SkillType.Rifle).Should().BeFalse();
-        Combat.IsMeleeWeaponSkill(SkillType.Devices).Should().BeFalse();
+        CombatRules.IsMeleeWeaponSkill(SkillType.Vibroblade).Should().BeTrue();
+        CombatRules.IsMeleeWeaponSkill(SkillType.Spear).Should().BeTrue();
+        CombatRules.IsMeleeWeaponSkill(SkillType.Rifle).Should().BeFalse();
+        CombatRules.IsMeleeWeaponSkill(SkillType.Devices).Should().BeFalse();
 
         Stat.GetStatTypeCategory(StatType.MeleeAutoAttackCycleRequiredCount)
             .Should().Be(StatTypeCategory.NonBeneficial);
@@ -678,10 +679,10 @@ public class CombatDamageTests
     [Test]
     public void TargetLowHPDamageAdjustment_AppliesAtTheExecutionerThreshold()
     {
-        Combat.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 8).Should().Be(108);
-        Combat.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 10).Should().Be(110);
-        Combat.ApplyTargetHPDamageAdjustment(100, 26, 100, 25, 10).Should().Be(100);
-        Combat.ApplyTargetHPDamageAdjustment(7, 1, 100, 25, 8).Should().Be(8);
+        CombatRules.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 8).Should().Be(108);
+        CombatRules.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 10).Should().Be(110);
+        CombatRules.ApplyTargetHPDamageAdjustment(100, 26, 100, 25, 10).Should().Be(100);
+        CombatRules.ApplyTargetHPDamageAdjustment(7, 1, 100, 25, 8).Should().Be(8);
     }
 
     [Test]
@@ -732,18 +733,18 @@ public class CombatDamageTests
         preparedAutoAttackCleanupBody.Should().Contain("ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);");
         preparedAutoAttackCleanupBody.Should().Contain("StatType.NextAutoAttackDamageBonus");
         damageRollSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
-        damageRollSource.Should().Contain("Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
+        damageRollSource.Should().Contain("GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
         var queuedAbilitySuppressionIndex = damageRollSource.IndexOf(
             "UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)",
             StringComparison.Ordinal);
         var queuedAbilityCleanupIndex = damageRollSource.IndexOf(
-            "Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
+            "GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
             StringComparison.Ordinal);
         var calculateDamageIndex = damageRollSource.IndexOf(
             "var damage = CalculateTargetSpecificDamage",
             StringComparison.Ordinal);
         var guardedHitIndex = damageRollSource.IndexOf(
-            "Combat.ApplyGuardedHitModifiers(",
+            "GameServices.CombatDamageTaken.ApplyGuardedHitModifiers(",
             StringComparison.Ordinal);
 
         queuedAbilitySuppressionIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -762,9 +763,9 @@ public class CombatDamageTests
         attackRollSource.Should().Contain("private static string BuildAttackFeedbackMessage");
         attackRollSource.Should().Contain("IsSuccessfulAttackResult(attackResultType)");
         attackRollSource.Should().Contain("UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)");
-        attackRollSource.Should().Contain("Combat.BuildAbilityCombatLogMessage(");
+        attackRollSource.Should().Contain("GameServices.CombatFeedback.BuildAbilityCombatLogMessage(");
         attackRollSource.Should().Contain("queuedAbility.Name");
-        attackRollSource.Should().Contain("Combat.BuildCombatLogMessageNative(");
+        attackRollSource.Should().Contain("GameServices.CombatFeedback.BuildCombatLogMessageNative(");
         var queuedWeaponHitBranchIndex = attackRollSource.IndexOf(
             "if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))",
             StringComparison.Ordinal);
@@ -782,8 +783,8 @@ public class CombatDamageTests
             nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
         queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
         queuedWeaponHitBranchBody.Should().Contain("else");
-        queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareQueuedWeaponAbilityOpeningAttack");
-        queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareOpeningAutoAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack");
         queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
         abilitySource.Should().Contain("ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
@@ -796,7 +797,7 @@ public class CombatDamageTests
             "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs"));
         weaponAbilityBaseSource.Should().Contain(
-            "Combat.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
+            "GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
         combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
@@ -807,9 +808,9 @@ public class CombatDamageTests
             "criticalDamage += _temporaryStatModifier.Consume(",
             "the same Dead Center rider must not stack through both opening-attack channels");
         var queuedAccuracyIndex = attackRollSource.IndexOf(
-            "Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
+            "GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
             StringComparison.Ordinal);
-        var hitRateIndex = attackRollSource.IndexOf("Combat.CalculateHitRate(", StringComparison.Ordinal);
+        var hitRateIndex = attackRollSource.IndexOf("CombatRules.CalculateHitRate(", StringComparison.Ordinal);
         queuedAccuracyIndex.Should().BeGreaterThanOrEqualTo(0);
         queuedAccuracyIndex.Should().BeLessThan(hitRateIndex,
             "Patience Accuracy must affect the native roll that lands a queued Headshot");
@@ -1018,7 +1019,7 @@ public class CombatDamageTests
             "AbilityDefinition",
             "HeavyVibroblade",
             "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
-        heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        heavyVibrobladeSource.Should().Contain("GameServices.CombatResources.ApplyDamageDerivedHealing(");
         heavyVibrobladeSource.Should().Contain("isActivatedHealing: true");
         var damageHealing = ExtractMethod(CombatSource.Read(),
             "public static int ApplyDamageDerivedHealing(");
@@ -1026,8 +1027,8 @@ public class CombatDamageTests
             "damage-derived healing already inherits Combat Readiness through its damage");
         var forceDrain = File.ReadAllText(Path.Combine(root.FullName,
             "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"));
-        forceDrain.Should().Contain("Combat.BeginDamageDerivedHealing(activator, target)");
-        forceDrain.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        forceDrain.Should().Contain("GameServices.CombatResources.BeginDamageDerivedHealing(activator, target)");
+        forceDrain.Should().Contain("GameServices.CombatResources.ApplyDamageDerivedHealing(");
         forceDrain.Should().NotContain("EffectHeal(");
         forceDrain.Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
 
@@ -1111,7 +1112,7 @@ public class CombatDamageTests
         combatSource.Should().MatchRegex(@"ApplyTriggeredDamage\(\s*attacker,\s*target,\s*cycleDamage,\s*CombatDamageType\.Physical,\s*skillType\);");
         combatSource.Should().NotContain("ApplyDamageDealtEffects(attacker, target, cycleDamage, skillType);");
         forceDotSource.Should().Contain("CombatDamageDeliveryType.DamageOverTime");
-        forceDotSource.Should().NotContain("Combat.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);");
+        forceDotSource.Should().NotContain("GameServices.CombatHitEffects.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);");
     }
 
     [Test]
@@ -1125,7 +1126,7 @@ public class CombatDamageTests
         combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
         combatSource.Should().Contain("GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints");
         abilitySource.Should().Contain("SendTemporaryHitPointDamageFeedback(activator, target, damage);");
-        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);");
+        damageRollSource.Should().Contain("GameServices.CombatFeedback.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);");
     }
 
     [Test]
@@ -1148,9 +1149,9 @@ public class CombatDamageTests
         abilitySource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
         abilitySource.Should().Contain("SendIncomingCriticalHitDowngradeFeedback(activator, target);");
         damageRollSource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
-        damageRollSource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);");
-        resolveAttackRollSource.Should().Contain("Combat.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1)");
-        resolveAttackRollSource.Should().NotContain("Combat.SendIncomingCriticalHitDowngradeFeedback");
+        damageRollSource.Should().Contain("GameServices.CombatFeedback.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);");
+        resolveAttackRollSource.Should().Contain("GameServices.CombatDamageModifiers.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1)");
+        resolveAttackRollSource.Should().NotContain("GameServices.CombatFeedback.SendIncomingCriticalHitDowngradeFeedback");
 
         combatSource.Should().NotContain("PerkType.CriticalWard");
         abilitySource.Should().NotContain("PerkType.CriticalWard");
@@ -2036,11 +2037,11 @@ public class CombatDamageTests
     [Test]
     public void IsWeaponSkillType_UsesSkillCombatPointMetadata()
     {
-        Combat.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();
-        Combat.IsWeaponSkillType(SkillType.Rifle).Should().BeTrue();
-        Combat.IsWeaponSkillType(SkillType.Force).Should().BeFalse();
-        Combat.IsWeaponSkillType(SkillType.Devices).Should().BeFalse();
-        Combat.IsWeaponSkillType(SkillType.Invalid).Should().BeFalse();
+        CombatRules.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();
+        CombatRules.IsWeaponSkillType(SkillType.Rifle).Should().BeTrue();
+        CombatRules.IsWeaponSkillType(SkillType.Force).Should().BeFalse();
+        CombatRules.IsWeaponSkillType(SkillType.Devices).Should().BeFalse();
+        CombatRules.IsWeaponSkillType(SkillType.Invalid).Should().BeFalse();
     }
 
     private static DirectoryInfo FindRepositoryRoot()

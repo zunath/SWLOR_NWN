@@ -21,6 +21,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -263,7 +264,7 @@ public class ForceLightConsularTests
             source.Should().NotContain("hitChancePercentAdjustment", $"{abilityType.Name} should use the shared Force accuracy formula");
         }
 
-        var hitRate = Combat.CalculateHitRate(
+        var hitRate = CombatRules.CalculateHitRate(
             attackerAccuracy,
             squellbugEvasion,
             fullLightAffinityHitChance);
@@ -287,7 +288,7 @@ public class ForceLightConsularTests
             var ability = power.Item3[feat];
             var physical = power.Item1 == PerkType.ThrowRock;
             var abilityHitRate = physical
-                ? Combat.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
+                ? CombatRules.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
                 : hitRate;
             var affinityMagnitude = physical ? 1d : fullLightAffinityMagnitude;
             return (Ability: ability, Damage: ExpectedDamagePerUse(
@@ -491,7 +492,7 @@ public class ForceLightConsularTests
         int hitRate,
         double affinityMagnitude)
     {
-        var (minimumDamage, maximumDamage) = Combat.CalculateDamageRange(
+        var (minimumDamage, maximumDamage) = CombatRules.CalculateDamageRange(
             attackerAttack,
             baseDamage,
             attackerStat,

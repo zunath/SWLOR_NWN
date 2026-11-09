@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -372,13 +373,13 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     [Test]
     public void AssaultGadgetCriticalChance_IsAdditiveAndObservable()
     {
-        Combat.CalculateAbilityCriticalChance(0).Should().Be(5);
-        Combat.CalculateAbilityCriticalChance(8).Should().Be(13,
+        CombatRules.CalculateAbilityCriticalChance(0).Should().Be(5);
+        CombatRules.CalculateAbilityCriticalChance(8).Should().Be(13,
             "Gadget Harness adds eight points to the five-percent ability baseline");
-        Combat.CalculateAbilityCriticalChance(13).Should().Be(18,
+        CombatRules.CalculateAbilityCriticalChance(13).Should().Be(18,
             "Gadget Harness and Tactical Uplink stack additively");
-        Combat.CalculateAbilityCriticalChance(100).Should().Be(50);
-        Combat.CalculateAbilityCriticalChance(-100).Should().Be(5);
+        CombatRules.CalculateAbilityCriticalChance(100).Should().Be(50);
+        CombatRules.CalculateAbilityCriticalChance(-100).Should().Be(5);
 
         var root = FindRepositoryRoot();
         var characterSheet = File.ReadAllText(

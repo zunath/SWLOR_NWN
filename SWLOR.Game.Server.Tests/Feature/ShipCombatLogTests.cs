@@ -21,7 +21,7 @@ public class ShipCombatLogTests
             var source = File.ReadAllText(file.FullName);
 
             source.Should().NotContain(
-                "var combatLogMessage = Combat.BuildCombatLogMessage",
+                "var combatLogMessage = GameServices.CombatFeedback.BuildCombatLogMessage",
                 $"{file.Name} should not broadcast one observer's combat-log text to every nearby player");
             source.Should().NotContain(
                 "SendMessageNearbyToPlayers(target, combatLogMessage",

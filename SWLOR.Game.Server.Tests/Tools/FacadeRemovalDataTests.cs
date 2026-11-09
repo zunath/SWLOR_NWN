@@ -41,6 +41,27 @@ public class FacadeRemovalDataTests
     }
 
     [Test]
+    public void Every_member_of_a_split_facade_is_a_member_of_its_owner()
+    {
+        var combat = Data.Single(facade => facade.Facade == "Combat");
+        combat.IsSplit.Should().BeTrue("Combat's members went to its parts, its service and its rules");
+        var assembly = typeof(SWLOR.Game.Server.Composition.CompositionRoot).Assembly;
+
+        foreach (var member in combat.Members!)
+        {
+            var owner = member.IsAccessorProperty
+                ? assembly.GetType($"SWLOR.Game.Server.Domain.Combat.I{member.Owner}Service", throwOnError: true)!
+                : assembly.GetType(member.Owner, throwOnError: true)!;
+            owner.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance)
+                .Should().Contain(method => method.Name == member.Name,
+                $"{member.Owner} holds {member.Name}, which the tool rewrites the call to");
+        }
+
+        foreach (var constant in combat.Constants)
+            assembly.GetType(constant.Owner, throwOnError: true)!.GetField(constant.Name).Should().NotBeNull($"{constant.Owner} holds the constant {constant.Name}");
+    }
+
+    [Test]
     public void Every_handler_of_a_removed_facade_is_renamed_to_a_line_of_the_manifest()
     {
         var manifest = File.ReadAllLines(Path.Combine(Root, "SWLOR.Game.Server", "Core", "ScriptHandlerOrder.txt"))

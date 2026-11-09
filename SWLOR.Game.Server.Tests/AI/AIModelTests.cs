@@ -692,7 +692,7 @@ public class AIModelTests
             .BeGreaterThan(issueBody.LastIndexOf("_ai.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
-        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().Contain("CombatRules.GetWeaponEngagementRange(skillType)");
         enmitySource.Should().NotContain("GetPreferredAttackDistance");
     }
 
@@ -735,7 +735,7 @@ public class AIModelTests
             activeTargetIndex,
             StringComparison.Ordinal);
         var equippedWeaponFallbackIndex = source.IndexOf(
-            "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
+            "var attackSkillType = GameServices.CombatQueries.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
             StringComparison.Ordinal);
         var currentSwingWeaponIndex = source.IndexOf(
             "var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(",

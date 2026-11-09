@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -144,7 +145,7 @@ public static class SlamActivationEngineTests
         var staminaBefore = Stat.GetCurrentStamina(player);
         var hpBefore = GetCurrentHitPoints(target);
         Ability.ClearLastCompletedAbilityImpactSummary(player);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -168,7 +169,7 @@ public static class SlamActivationEngineTests
         }
         finally
         {
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
     }
 }

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -64,11 +65,11 @@ public class MimicryPotencyTests
         foreach (var skill in Enum.GetValues<SkillType>())
         {
             // An invalid engine object also proves excluded paths do not query native stats.
-            Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, false)
+            GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, false)
                 .Should().Be(100, $"{skill} auto-attacks are not Mimicry technique damage");
             if (skill != SkillType.Mimicry)
             {
-                Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, true)
+                GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, true)
                     .Should().Be(100, $"{skill} abilities, including NPC originals, are excluded");
             }
         }
@@ -78,7 +79,7 @@ public class MimicryPotencyTests
     [Test]
     public void PotencyDamageModifier_PreservesControlOnlyAndImmuneImpacts()
     {
-        Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 0, SkillType.Mimicry, true)
+        GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 0, SkillType.Mimicry, true)
             .Should().Be(0, "potency must never create damage for a zero-damage impact");
     }
 }

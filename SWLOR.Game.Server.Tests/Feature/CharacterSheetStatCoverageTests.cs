@@ -49,8 +49,8 @@ public class CharacterSheetStatCoverageTests
     {
         var viewModel = ReadViewModel();
 
-        viewModel.Should().Contain("AddStat(\"Haste\", FormatPercent(Combat.CalculateAttackDelayReduction(_target))");
-        viewModel.Should().Contain("AddStat(\"Off-Hand Haste\", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target))");
+        viewModel.Should().Contain("AddStat(\"Haste\", FormatPercent(GameServices.CombatAttackTiming.CalculateAttackDelayReduction(_target))");
+        viewModel.Should().Contain("AddStat(\"Off-Hand Haste\", FormatPercent(GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target))");
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class CharacterSheetStatCoverageTests
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
+        viewModel.Should().Contain("GameServices.CombatResources.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
 
     }
 
@@ -127,7 +127,7 @@ public class CharacterSheetStatCoverageTests
 
         // Guard reduction is adjustable via GuardDamageReductionPercentAdjustment, so the tooltip
         // must not claim a fixed 20% and the real value gets its own row.
-        viewModel.Should().Contain("AddStat(\"Guard Reduction\", FormatPercent(Combat.GetGuardDamageReductionPercent(_target))");
+        viewModel.Should().Contain("AddStat(\"Guard Reduction\", FormatPercent(GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(_target))");
         viewModel.Should().NotContain("Chance to reduce damage by 20% and increase enmity gain.");
     }
 

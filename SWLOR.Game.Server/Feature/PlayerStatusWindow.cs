@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
+            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 

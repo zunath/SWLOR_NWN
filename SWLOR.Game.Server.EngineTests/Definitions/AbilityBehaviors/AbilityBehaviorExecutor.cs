@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             // attack 0.1s after casting, and an ordinary melee hit would satisfy a damage
             // assertion (caster is the last damager) before the ability's own impact lands.
             // Both overrides are always restored afterward.
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 for (var index = 0; index < cases.Count; index++)
@@ -129,8 +129,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
 
             var skipped = skippedFeats.Count;
@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         // ability's completed impact, never an earlier case's.
                         Ability.ClearLastCompletedAbilityImpactSummary(caster);
 
-                        Combat.SetAutoAttackHitResolutionOverride(true);
+                        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                         try
                         {
                             AssignCommand(caster, () => ActionAttack(hitTarget));
@@ -576,7 +576,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         }
                         finally
                         {
-                            Combat.SetAutoAttackHitResolutionOverride(false);
+                            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                             AssignCommand(caster, () => ClearAllActions());
                         }
 
@@ -1007,7 +1007,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     {
                         var percent = Stat.GetStatAdjustment(caster, StatType.AbilityStaminaCostPercentAdjustment);
                         var cost = (int)Math.Ceiling(stmRequirement.RequiredSTM * (1 + percent / 100f));
-                        cost += Combat.GetAbilityStaminaCostFlatAdjustment(caster, ability);
+                        cost += GameServices.CombatAbilityBonus.GetAbilityStaminaCostFlatAdjustment(caster, ability);
                         expectedSTM += Math.Max(0, cost);
                         break;
                     }

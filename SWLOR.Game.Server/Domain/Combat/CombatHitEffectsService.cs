@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICapstoneProofService _capstoneProof;
         private readonly IResistanceService _resistance;
         private readonly IPartyService _party;
+        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
 
         public CombatHitEffectsService(
             ICombatQueriesService queries,
@@ -68,7 +69,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatRecorderService combatRecorder,
             ICapstoneProofService capstoneProof,
             IResistanceService resistance,
-            IPartyService party)
+            IPartyService party,
+            Lazy<ICombatDamageTakenService> damageTaken)
         {
             _queries = queries;
             _resources = resources;
@@ -86,6 +88,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _capstoneProof = capstoneProof;
             _resistance = resistance;
             _party = party;
+            _damageTaken = damageTaken;
         }
 
         // The damage taken part takes this part, so triggered damage runs the target's damage taken modifiers through Combat.
@@ -98,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             int targetStatusDamagePercentAdjustment = 0,
             bool isLandedAttack = true,
             bool typedLeadershipReductionAlreadyApplied = false) =>
-            Service.Combat.ApplyDamageTakenModifiers(
+            _damageTaken.Value.ApplyDamageTakenModifiers(
                 defender,
                 damage,
                 attacker,

@@ -9,9 +9,10 @@
     tools/Refactor/HandlerRenames.txt. A run:
       * adds `using static SWLOR.Game.Server.Composition.GameServices;` to each file that calls a removed facade (or the
         global form to a project whose GlobalUsings.cs imports SWLOR.Game.Server.Service globally), drops the qualifier
-        of a qualified call, writes an explicit name as GameServices.<Name>, and reads a moved constant from its owner
-        (a bare name the file declares itself, and every file of a project that does not reference the server, is not a
-        caller and is left alone);
+        of a qualified call, writes an explicit name as GameServices.<Name>, reads a moved constant from its owner, and
+        sends a member of a split facade (Combat) to the part or class its "members" line names, leaving a name with two
+        owners or none for a person (a bare name the file declares itself, and every file of a project that does not
+        reference the server, is not a caller and is left alone);
       * renames, in place, each line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt that names a removed facade's
         handler, to the branch name HandlerRenames.txt gives it (a line with no rename stops the run).
     A tree without SWLOR.Game.Server/Composition/GameServices.cs (master, the parity copy) is skipped entirely, and so

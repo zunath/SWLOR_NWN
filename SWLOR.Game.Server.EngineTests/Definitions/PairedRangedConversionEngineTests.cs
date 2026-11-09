@@ -21,6 +21,7 @@ using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -111,7 +112,7 @@ public static class PairedRangedConversionEngineTests
             Impacts.Clear();
             _observedActor = actor;
             _observedTarget = target;
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             var resolveCompanion = typeof(PairedRangedAttackCycle).GetMethod("ResolveCompanion", BindingFlags.NonPublic | BindingFlags.Static);
             ctx.Assert(resolveCompanion != null, "The existing production companion resolver is available");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -223,7 +224,7 @@ public static class PairedRangedConversionEngineTests
             if (writer != null && CombatRecorder.IsRecording) CombatRecorder.Stop("Paired projectile conversion regression", out _);
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             StatusEffect.RemoveStatusEffect(target, typeof(ProjectileConversionProbeStatusEffect), actor, false);
             StatusEffect.RemoveStatusEffect(actor, typeof(BloodWeaponStatusEffect), actor, false);
             ReviveRulesEngineTests.DestroyCorpsePlaceable(target);

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Core;
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// Cache all valid character and defense damage types before module load.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadDamageTypes()
         {
             _allValidDamageTypes.Clear();
@@ -51,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a player enters the server, apply any defense and resistance entries they don't already have.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void AddDamageTypeResistances()
         {
             var player = GetEnteringObject();

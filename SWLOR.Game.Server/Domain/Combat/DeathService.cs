@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IAbilityService _ability;
+        private readonly ICombatDamageTakenService _damageTaken;
 
         public DeathService(
             IDBService db,
@@ -49,7 +50,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IAreaService area,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
-            IAbilityService ability)
+            IAbilityService ability,
+            ICombatDamageTakenService damageTaken)
         {
             _db = db;
             _namedAnimation = namedAnimation;
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
             _ability = ability;
+            _damageTaken = damageTaken;
         }
 
         [NWNEventHandler(ScriptName.OnModuleDying)]
@@ -341,7 +344,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         protected virtual bool TryPreventFatalDamageAndGrantTemporaryHP(uint defender, int damage, bool restoreToOneHP) =>
-            Service.Combat.TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP);
+            _damageTaken.TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP);
 
         protected virtual void ClearQueuedAbility(uint player) => Feature.UsePerkFeat.ClearQueuedAbility(player);
 

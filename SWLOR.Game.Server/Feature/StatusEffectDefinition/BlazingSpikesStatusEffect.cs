@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (reflectedDamage <= 0)
                 return;
 
-            Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);
+            GameServices.CombatHitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);
         }
     }
 }

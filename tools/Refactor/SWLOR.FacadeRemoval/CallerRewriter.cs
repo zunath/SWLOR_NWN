@@ -77,6 +77,26 @@ internal static class CallerRewriter
                 if (constant.OwnerNamespace.Length > 0)
                     namespaces.Add(constant.OwnerNamespace);
             }
+            else if (facade.IsSplit)
+            {
+                // The member names its owner. An unknown name is not the facade's (a namespace segment that reads the same,
+                // or a member master added, which needs a line in the data), and a name with two owners is an overload on
+                // each: syntax cannot tell them apart, so the call stays, does not compile, and a person picks the owner.
+                var owners = facade.OwnersOf(member);
+                if (owners.Count != 1)
+                    continue;
+
+                if (owners[0].IsAccessorProperty)
+                {
+                    edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, AccessorClass + "." + owners[0].Owner));
+                    needsComposition = true;
+                }
+                else
+                {
+                    edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, owners[0].OwnerName));
+                    namespaces.Add(owners[0].OwnerNamespace);
+                }
+            }
             else if (facade.Explicit || shadowed)
             {
                 edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, AccessorClass + "." + facade.Name));
@@ -117,7 +137,12 @@ internal static class CallerRewriter
     /// <summary>Undoes <see cref="Apply"/> on a file written for the branch, so it compiles against master.</summary>
     public static RewriteResult Reverse(string text, IReadOnlyList<RemovedFacade> facades)
     {
-        var owners = facades.SelectMany(facade => facade.Constants.Select(constant => (Facade: facade, Constant: constant))).ToList();
+        // A member a split facade handed to a class reads like a moved constant: Owner.Name goes back to Facade.Name.
+        var owners = facades
+            .SelectMany(facade => facade.Constants.Select(constant => (Facade: facade, Constant: constant))
+                .Concat((facade.Members ?? []).Where(member => !member.IsAccessorProperty)
+                    .Select(member => (Facade: facade, Constant: new RemovedConstant(member.Name, member.Owner)))))
+            .ToList();
         if (!text.Contains(AccessorClass, StringComparison.Ordinal) &&
             !text.Contains(AccessorNamespace, StringComparison.Ordinal) &&
             !owners.Any(owner => text.Contains(owner.Constant.OwnerName, StringComparison.Ordinal)))
@@ -155,7 +180,8 @@ internal static class CallerRewriter
                 continue;
 
             var member = access.Name.Identifier.ValueText;
-            var viaAccessor = facades.FirstOrDefault(facade => Names(AccessorType + "." + facade.Name, prefix) && prefix.Contains(AccessorClass + ".", StringComparison.Ordinal));
+            var viaAccessor = facades.FirstOrDefault(facade => prefix.Contains(AccessorClass + ".", StringComparison.Ordinal) &&
+                (Names(AccessorType + "." + facade.Name, prefix) || (facade.Members ?? []).Any(candidate => candidate.IsAccessorProperty && Names(AccessorType + "." + candidate.Owner, prefix))));
             if (viaAccessor != null)
             {
                 edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, viaAccessor.Name));

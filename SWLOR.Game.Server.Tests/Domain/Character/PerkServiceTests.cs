@@ -694,7 +694,7 @@ public class PerkServiceTests
         Sequence().Should().Equal(
             $"StatusEffect.Remove:{PerkBench.Player}:String:saved=0",
             $"StatusEffect.RemoveBySource:{PerkBench.Player}:Int32:Two:saved=0",
-            $"Combat.RefreshStatDrivenTrackerEffects:{PerkBench.Player}:saved=0");
+            $"GameServices.Combat.RefreshStatDrivenTrackerEffects:{PerkBench.Player}:saved=0");
     }
 
     [Test]
@@ -814,7 +814,7 @@ public class PerkServiceTests
             // Then the save, and everything after it sees the saved player.
             $"StatusEffect.Remove:{PerkBench.Player}:String:saved=1",
             $"StatusEffect.RemoveBySource:{PerkBench.Player}:Int32:Two:saved=1",
-            $"Combat.RefreshStatDrivenTrackerEffects:{PerkBench.Player}:saved=1",
+            $"GameServices.Combat.RefreshStatDrivenTrackerEffects:{PerkBench.Player}:saved=1",
             $"RefundTrigger:{PerkBench.Player}:saved=1",
             "ExportSingleCharacter");
         _bench.Db.Saved.Should().Equal(new EntityBase[] { player });

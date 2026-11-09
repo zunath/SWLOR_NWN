@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -38,8 +39,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
             var amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, _damage);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Fire);
+            amount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
+            amount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Fire);
             if (amount <= 0)
                 return;
 

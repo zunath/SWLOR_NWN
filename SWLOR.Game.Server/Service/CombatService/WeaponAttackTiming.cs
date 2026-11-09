@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Service.CombatService
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         {
             var main = GetItemInSlot(InventorySlot.RightHand, attacker);
             if (!EquipmentPredicates.HasDualWield(attacker) || GetWeaponRanged(main))
-                return Combat.GetEquippedWeaponSkillType(attacker);
+                return GameServices.CombatQueries.GetEquippedWeaponSkillType(attacker);
 
             var off = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
             return SelectTimingSkill(attacker, Skill.GetSkillTypeByBaseItem(GetBaseItemType(main)),
@@ -25,8 +26,8 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (mainSkill == offSkill)
                 return mainSkill;
 
-            var mainNoDelay = Combat.HasNextAutoAttackNoDelay(attacker, mainSkill);
-            var offNoDelay = Combat.HasNextAutoAttackNoDelay(attacker, offSkill);
+            var mainNoDelay = GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(attacker, mainSkill);
+            var offNoDelay = GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(attacker, offSkill);
             if (mainNoDelay != offNoDelay)
                 return offNoDelay ? offSkill : mainSkill;
 
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         public static LimitedAttackTimingBudget GetLimitedBudget(
             uint attacker, SkillType timingSkill, SkillType mainSkill, SkillType offSkill, bool noDelay)
         {
-            if (Combat.IsAttackDelayReductionSuppressed(attacker))
+            if (GameServices.CombatAttackTiming.IsAttackDelayReductionSuppressed(attacker))
                 return default;
 
             var effects = StatusEffect.GetCreatureStatusEffects(attacker).GetAllEffects();
@@ -58,12 +59,12 @@ namespace SWLOR.Game.Server.Service.CombatService
         public static LimitedAttackTimingBudget GetTemporaryNoDelayBudget(
             uint attacker, SkillType timingSkill, SkillType mainSkill, SkillType offSkill)
         {
-            if (!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, timingSkill))
+            if (!GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, timingSkill))
                 return default;
 
             return new LimitedAttackTimingBudget(1,
-                Combat.HasTemporaryNextAutoAttackNoDelay(attacker, mainSkill),
-                offSkill != SkillType.Invalid && Combat.HasTemporaryNextAutoAttackNoDelay(attacker, offSkill));
+                GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, mainSkill),
+                offSkill != SkillType.Invalid && GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(attacker, offSkill));
         }
     }
 }

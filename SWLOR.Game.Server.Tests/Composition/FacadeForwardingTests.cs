@@ -14,9 +14,8 @@ namespace SWLOR.Game.Server.Tests.Composition;
 /// that the container holds exactly one instance of it. The architecture tests prove the shape (static state,
 /// handlers, service location); these prove the behaviour of the forwarding.
 /// <para>
-/// The facade of a service split into parts (<c>Combat</c>) forwards a member a part owns straight to that part's
-/// interface, and a member of the service's pure static rules class (<c>Domain.Combat.CombatRules</c>) straight to the
-/// rule, so a call goes through no other service first. Every member of the main interface stays on the facade.
+/// A removed facade whose members went to several classes (<c>Combat</c>) has one <c>GameServices</c> property per part, so a
+/// call goes through no other service first; its pure members are on its rules class (<c>Domain.Combat.CombatRules</c>).
 /// </para>
 /// </summary>
 [TestFixture]
@@ -261,19 +260,22 @@ public class FacadeForwardingTests
     {
         const string HandlerAttribute = "NWNEventHandler";
 
-        if (service.RemovedFacade is { } removed)
+        if (service.RemovedFacade is not null || service.AccessorProperty is not null)
         {
             // The facade is gone (P2-Z): its handlers moved onto the instance methods it forwarded to, each renamed in
             // tools/Refactor/HandlerRenames.txt, and the script registry binds them to the container's singleton. A line
             // names master's handler, which for an earlier move is not on the removed facade
             // (Service.CombatService.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a
-            // line belongs to this service when its master name is on the removed facade or its branch name on the instance.
+            // line belongs to this service when its master name is on the removed facade or its branch name on the instance;
+            // of a split service (Combat), only a line whose branch name is on this class: the facade's handlers went to the
+            // parts that own them.
             var moved = service.Instance.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
                 .ToList();
+            var isSplit = service.IsSplitFacade;
             moved.Select(method => service.Instance.FullName + "." + method.Name).Should().BeEquivalentTo(
                 ConvertedServiceFixtures.HandlerRenames()
-                    .Where(rename => rename.Master.StartsWith(removed + ".", StringComparison.Ordinal) ||
+                    .Where(rename => (!isSplit && rename.Master.StartsWith(service.RemovedFacade + ".", StringComparison.Ordinal)) ||
                                      rename.Branch.StartsWith(service.Instance.FullName + ".", StringComparison.Ordinal))
                     .Select(rename => rename.Branch),
                 "the instance keeps exactly the handlers its facade had, under the names HandlerRenames.txt gives them");
@@ -296,9 +298,9 @@ public class FacadeForwardingTests
     [TestCaseSource(nameof(RemovedFacades))]
     public void The_accessor_property_of_a_removed_facade_returns_the_installed_containers_instance(ConvertedServiceTypes service)
     {
-        var name = service.Name[(service.Name.LastIndexOf('.') + 1)..];
+        var name = service.AccessorProperty ?? service.Name[(service.Name.LastIndexOf('.') + 1)..];
         var property = typeof(GameServices).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
-        property.Should().NotBeNull($"GameServices.{name} replaces the removed facade {service.RemovedFacade}");
+        property.Should().NotBeNull($"GameServices.{name} replaces the removed facade {service.RemovedFacade}, or the facade of the service {name} is a part of");
         property!.PropertyType.Should().Be(service.Contract);
 
         var proxyInstance = RecordingProxy.Create(service.Contract, out var proxy);
@@ -322,13 +324,13 @@ public class FacadeForwardingTests
     public void GameServices_has_a_property_for_each_removed_facade_and_nothing_else()
     {
         const BindingFlags Declared = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-        var removed = ConvertedServiceFixtures.Load().Where(service => service.RemovedFacade is not null)
-            .Select(service => $"{service.Contract.Name} {service.Name[(service.Name.LastIndexOf('.') + 1)..]}")
+        var removed = ConvertedServiceFixtures.Load().Where(service => service.RemovedFacade is not null || service.AccessorProperty is not null)
+            .Select(service => $"{service.Contract.Name} {service.AccessorProperty ?? service.Name[(service.Name.LastIndexOf('.') + 1)..]}")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")
             .OrderBy(text => text, StringComparer.Ordinal)
-            .Should().Equal(removed, "the accessor has one property per removed facade, named like it and typed as its interface");
+            .Should().Equal(removed, "the accessor has one property per removed facade and per part of a split service, named like it and typed as its interface");
         typeof(GameServices).GetFields(Declared).Should().BeEmpty("the accessor holds no state; its properties only resolve");
         typeof(GameServices).GetMethods(Declared).Should().OnlyContain(method => method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal));
     }
@@ -362,21 +364,14 @@ public class FacadeForwardingTests
     }
 
     [Test]
-    public void The_combat_facade_forwards_to_its_parts_its_service_and_its_rules()
+    public void Combat_lists_its_fourteen_parts_and_each_part_has_a_GameServices_property()
     {
-        // Combat is the one service whose facade forwards part members straight to the part and rules straight to
-        // CombatRules; the cases above would pass vacuously if the list lost its parts or the rules class its name.
+        // The cases above would pass vacuously if the list lost its parts.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
+        combat.Facade.Should().BeNull("P2-ZP removed the facade");
         combat.Parts.Should().HaveCount(14);
         Rules(combat).Should().NotBeNull();
-
-        var methods = FacadeMethods(combat.Facade!).ToArray();
-        var owners = methods.Select(method => Owner(combat, method)).ToArray();
-        owners.Count(owner => owner == combat.Contract).Should().Be(ContractMethods(combat.Contract).Count());
-        owners.Where(owner => owner != null && owner != combat.Contract).Distinct().Should().HaveCount(14, "every part has members on the facade");
-        var ruleForwarders = methods.Where((_, index) => owners[index] is null).Select(Text).ToHashSet(StringComparer.Ordinal);
-        RuleMethods(Rules(combat)).Where(rule => rule.IsPublic).Select(Text).Should().OnlyContain(text => ruleForwarders.Contains(text),
-            "Combat keeps a forwarder for every public rule, and no interface claims it");
+        combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }
 
     // A generic facade member (Gui.PublishRefreshEvent<T>) is closed over the first type of the server assembly that meets

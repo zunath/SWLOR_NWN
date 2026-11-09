@@ -29,11 +29,11 @@ Mimicry -> Random | 1
 QuickCast -> DB | 3
 
 # Abilities -> Platform (14 edges)
-Ability -> Platform/Composition | 10
+Ability -> Platform/Composition | 12
 Ability -> Platform/Core | 13
 AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
-Feature/AbilityDefinition -> Platform/Composition | 400
+Feature/AbilityDefinition -> Platform/Composition | 410
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
@@ -114,7 +114,7 @@ Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Platform/Composition | 8
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 107
+Feature/StatusEffectDefinition -> Platform/Composition | 113
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Core | 1
@@ -180,7 +180,7 @@ TwinPistolEquipment -> Feature/MigrationDefinition | 1
 TwinPistolMastery -> DB | 3
 
 # Combat -> Platform (32 edges)
-Combat -> Platform/Composition | 23
+Combat -> Platform/Composition | 12
 Combat -> Platform/Core | 53
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3
@@ -223,7 +223,7 @@ DroidEquipmentDiagnostics -> Log | 1
 IncubationFieldNote -> Log | 1
 
 # Companions -> Platform (8 edges)
-BeastMastery -> Platform/Composition | 11
+BeastMastery -> Platform/Composition | 13
 BeastMastery -> Platform/Core | 22
 BeastMastery -> Platform/Entity | 45
 BeastMastery -> Platform/Extension | 1
@@ -577,7 +577,7 @@ Feature.UnarmedMastery -> Platform/Composition | 2
 Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Composition | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
-Feature.UsePerkFeat -> Platform/Composition | 30
+Feature.UsePerkFeat -> Platform/Composition | 32
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerRestart -> Platform/Composition | 1
 ServerTask -> Platform/Root | 4
@@ -748,7 +748,7 @@ Gui -> Log | 1
 # UI -> Platform (14 edges)
 ExtraHotbars -> Platform/Core | 8
 ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 701
+Feature/GuiDefinition -> Platform/Composition | 702
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -164,8 +165,8 @@ public static class ForceEspionageEngineTests
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             StatusEffect.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
 
-        ctx.AssertEqual(184, Combat.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
-        ctx.AssertEqual(200, Combat.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
+        ctx.AssertEqual(184, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
+        ctx.AssertEqual(200, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
     }
 
     [EngineTest("Shared Presence hides a party member without the Stealth perk, without upkeep, for its window",

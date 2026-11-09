@@ -19,6 +19,7 @@ using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -158,7 +159,7 @@ namespace SWLOR.Game.Server.Native
                 damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 
                 var critical = bCritical == 1
-                    ? Combat.StandardCriticalRating
+                    ? CombatRules.StandardCriticalRating
                     : 0;
                 // Force-typed swings (e.g. Imbuement Stance) use Force Attack so the attack side lines up
                 // with the Force Defense the damage is mitigated against.
@@ -226,12 +227,12 @@ namespace SWLOR.Game.Server.Native
                     void ApplyWeaponHitEffects(int rolledDamage)
                     {
                         if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
-                        using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attackerId, defenderId);
+                        using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing(attackerId, defenderId);
                         if (creatureTarget)
                         {
                             if (rolledDamage > 0)
-                                Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);
-                            Combat.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
+                                GameServices.CombatFeedback.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);
+                            GameServices.CombatHitEffects.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
                         }
                         if (rolledDamage > 0 && damageableTarget)
                         {
@@ -306,7 +307,7 @@ namespace SWLOR.Game.Server.Native
 
             if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
-                Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
+                GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
             }
 
@@ -340,7 +341,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     if (resolvedDamage <= 0 || !GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
                     StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, resolvedDamage, rolledType);
-                    Combat.ApplyDamageReflectionEffects(attackerId, defenderId, resolvedDamage, rolledType);
+                    GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(attackerId, defenderId, resolvedDamage, rolledType);
                 }
                 if (weaponImpactScheduler == null) ApplyPreDamageEffects(damage);
                 else weaponImpactScheduler(ApplyPreDamageEffects);
@@ -367,11 +368,11 @@ namespace SWLOR.Game.Server.Native
             var adjustedDamage = damage;
             if (damage > 0 && capturedDamagePercentAdjustment != 0)
             {
-                var adjustment = Math.Max(capturedDamagePercentAdjustment, -Combat.MaximumNormalDamageReductionPercent);
+                var adjustment = Math.Max(capturedDamagePercentAdjustment, -CombatRules.MaximumNormalDamageReductionPercent);
                 adjustedDamage = Math.Max(1, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
             }
-            adjustedDamage = Combat.CapOutgoingDamageBonus(damage, adjustedDamage, 0);
-            return Combat.ApplyOrdinaryAttackDamageMultiplier(adjustedDamage, ordinaryDamagePercentAdjustment);
+            adjustedDamage = CombatRules.CapOutgoingDamageBonus(damage, adjustedDamage, 0);
+            return CombatRules.ApplyOrdinaryAttackDamageMultiplier(adjustedDamage, ordinaryDamagePercentAdjustment);
         }
 
         private static void AddDamageToAttackData(void* pAttackData, CombatDamageType damageType, int damage)
@@ -503,7 +504,7 @@ namespace SWLOR.Game.Server.Native
                 }
             }
 
-            return Combat.GetWeaponDamageAbilityType(attacker, (BaseItem)weapon.m_nBaseItem);
+            return GameServices.CombatQueries.GetWeaponDamageAbilityType(attacker, (BaseItem)weapon.m_nBaseItem);
         }
 
         private static int GetWeaponDeltaCap(CNWSItem weapon)
@@ -590,12 +591,12 @@ namespace SWLOR.Game.Server.Native
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return GameServices.Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         plc.m_nHardness, plc.m_nHardness, critical);
 
                 case (int)ObjectType.Door:
                     var door = CNWSDoor.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return GameServices.Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         door.m_nHardness, door.m_nHardness, critical);
 
                 default:
@@ -616,41 +617,41 @@ namespace SWLOR.Game.Server.Native
             var defenderStat = Stat.GetStatValueNative(target, defenderAbility);
             var damagePower = ResolveDamagePower(attacker, target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
-            defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
-            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+            defense = GameServices.CombatDamageModifiers.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
+            defense = GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceDefenseConversion(
                 target.m_idSelf,
                 damageType,
                 defense,
-                () => Combat.ApplyStatusSourceDefenseModifiers(
+                () => GameServices.CombatDamageModifiers.ApplyStatusSourceDefenseModifiers(
                     attacker.m_idSelf,
                     target.m_idSelf,
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
-            defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
+            defense = GameServices.CombatDamageModifiers.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
             // Discarded swings must not burn one-shot buffs or advance cycle counters — the engine
             // rolls damage for attacks it then throws away, so every consuming rider gates on the
             // attack having actually landed.
             var guardedHitBonuses = isLandedAttack
-                ? Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf)
+                ? GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf)
                 : default;
             var statusAppliedNextAttackDamageBonus = isLandedAttack
-                ? Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)
+                ? GameServices.CombatAbilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)
                 : 0;
             var cycleDamageBonus = isLandedAttack
-                ? Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
+                ? GameServices.CombatHitEffects.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
                 : 0;
             var attackDamage = damageProfile.Damage +
                                MeleeTechnique.TakeOrdinaryPower(attacker.m_idSelf, target.m_idSelf, skillType,
                                    attacker.m_pcCombatRound.m_nCurrentAttack, isLandedAttack) +
-                               Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
+                               GameServices.CombatQueries.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
                                cycleDamageBonus +
                                guardedHitBonuses.DMGBonus +
                                statusAppliedNextAttackDamageBonus;
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
-            attackerAttack = Combat.ApplyTargetStatusAttackModifiers(attacker.m_idSelf, target.m_idSelf, attackerAttack, skillType);
+            attackerAttack = GameServices.CombatDamageModifiers.ApplyTargetStatusAttackModifiers(attacker.m_idSelf, target.m_idSelf, attackerAttack, skillType);
 
-            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+            var damageRoll = GameServices.CombatDamageModifiers.CalculateDamageWithCriticalMitigation(
                 target.m_idSelf,
                 attackerAttack,
                 attackDamage,
@@ -663,13 +664,13 @@ namespace SWLOR.Game.Server.Native
             effectiveCritical = damageRoll.CriticalRating;
             if (damageRoll.WasCriticalDowngraded)
             {
-                Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
+                GameServices.CombatFeedback.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
             }
 
             var openingCriticalDamageAdjustment = isLandedAttack
-                ? Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)
+                ? GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)
                 : 0;
-            damage = Combat.ApplyCriticalDamageModifier(
+            damage = GameServices.CombatDamageModifiers.ApplyCriticalDamageModifier(
                 attacker.m_idSelf,
                 damage,
                 effectiveCritical,
@@ -679,13 +680,13 @@ namespace SWLOR.Game.Server.Native
 
             if (isLandedAttack)
             {
-                damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+                damage = GameServices.CombatHitEffects.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             }
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
             var pairedShot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, target.m_idSelf,
                 attacker.m_pcCombatRound.m_nCurrentAttack);
 
-            damage = Combat.ApplyDamageDealtModifiers(
+            damage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(
                 attacker.m_idSelf,
                 target.m_idSelf,
                 damage,
@@ -706,11 +707,11 @@ namespace SWLOR.Game.Server.Native
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             if (isLandedAttack)
             {
-                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
+                GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
             }
 
             // Conversion must split first so each portion receives only its own typed Leadership channel.
-            damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType);
+            damage = GameServices.CombatDamageTaken.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType);
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -769,7 +770,7 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            damage = Combat.ApplyGuardedHitModifiers(
+            damage = GameServices.CombatDamageTaken.ApplyGuardedHitModifiers(
                 target.m_idSelf,
                 attacker.m_idSelf,
                 damage,
@@ -777,10 +778,10 @@ namespace SWLOR.Game.Server.Native
                 isLandedAttack);
             if (isLandedAttack && damage > 0 && attackType == (uint)AttackType.Melee)
             {
-                Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
+                GameServices.CombatDamageTaken.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            damage = Combat.ApplyDamageTakenModifiers(
+            damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(
                 target.m_idSelf,
                 damage,
                 attacker.m_idSelf,
@@ -790,7 +791,7 @@ namespace SWLOR.Game.Server.Native
                 typedLeadershipReductionAlreadyApplied: true);
             if (isLandedAttack)
             {
-                Combat.ApplyNextAttackGuardedHitEnmityBonus(
+                GameServices.CombatAbilityBonus.ApplyNextAttackGuardedHitEnmityBonus(
                     attacker.m_idSelf,
                     target.m_idSelf,
                     guardedHitEnmityBonus);
@@ -843,7 +844,7 @@ namespace SWLOR.Game.Server.Native
 
         private static void PublishDamageDealtEvent(uint attacker, uint defender, uint weapon, int damage, SkillType skillType, CombatDamageType damageType)
         {
-            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
             EventsPlugin.PushEventData("WEAPON", ObjectToString(weapon));

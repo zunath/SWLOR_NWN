@@ -426,7 +426,7 @@ internal sealed class WeatherWorld : IDisposable
     public sealed class WeatherServiceUnderTest : WeatherService
     {
         public WeatherServiceUnderTest(IDBService db, IPlanetService planets)
-            : base(db, planets, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>())
+            : base(db, planets, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {
         }
 

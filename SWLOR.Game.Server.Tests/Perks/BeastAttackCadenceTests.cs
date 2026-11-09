@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -100,9 +101,9 @@ public class BeastAttackCadenceTests
         ItemPropertyAttackDelay delay,
         int expectedMilliseconds)
     {
-        var calculatedDelay = Combat.CalculateAttackDelayMilliseconds((int)delay * 10, 0, 0, 0);
+        var calculatedDelay = CombatRules.CalculateAttackDelayMilliseconds((int)delay * 10, 0, 0, 0);
 
-        Combat.CalculateEffectiveAttackDelay(calculatedDelay).Should().Be(expectedMilliseconds);
+        CombatRules.CalculateEffectiveAttackDelay(calculatedDelay).Should().Be(expectedMilliseconds);
     }
 
     [Test]

@@ -810,7 +810,7 @@ public class MeleeTechniqueServiceTests
     private sealed class TestMelee : MeleeTechniqueService
     {
         public TestMelee()
-            : base(FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<IStatusEffectService>())
+            : base(FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

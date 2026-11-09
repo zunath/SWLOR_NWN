@@ -7,14 +7,59 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The DM battle grids of the areas (the facade <c>Service.BattleGrid</c> until P2-ZG).</summary>
         public static IBattleGridService BattleGrid => FacadeAccessor.Resolve<IBattleGridService>();
 
+        /// <summary>What is left of combat once its parts are split out: the damage roll and the stat-driven tracker refresh (the facade <c>Service.Combat</c> until P2-ZP). Combat has one property per part below, because its members live on the parts; no call goes through another service first.</summary>
+        public static ICombatService Combat => FacadeAccessor.Resolve<ICombatService>();
+
+        /// <summary>The ability activation part of combat, a part of combat.</summary>
+        public static ICombatAbilityActivationService CombatAbilityActivation => FacadeAccessor.Resolve<ICombatAbilityActivationService>();
+
+        /// <summary>The ability and attack bonuses of combat, a part of combat.</summary>
+        public static ICombatAbilityBonusService CombatAbilityBonus => FacadeAccessor.Resolve<ICombatAbilityBonusService>();
+
+        /// <summary>The ability hit roll of combat, a part of combat.</summary>
+        public static ICombatAbilityHitService CombatAbilityHit => FacadeAccessor.Resolve<ICombatAbilityHitService>();
+
+        /// <summary>The ability impact part of combat, a part of combat.</summary>
+        public static ICombatAbilityImpactService CombatAbilityImpact => FacadeAccessor.Resolve<ICombatAbilityImpactService>();
+
+        /// <summary>The combat activity records, a part of combat.</summary>
+        public static ICombatActivityService CombatActivity => FacadeAccessor.Resolve<ICombatActivityService>();
+
+        /// <summary>The attack timing of combat, a part of combat.</summary>
+        public static ICombatAttackTimingService CombatAttackTiming => FacadeAccessor.Resolve<ICombatAttackTimingService>();
+
+        /// <summary>The damage type catalog, a part of combat.</summary>
+        public static ICombatDamageCatalogService CombatDamageCatalog => FacadeAccessor.Resolve<ICombatDamageCatalogService>();
+
+        /// <summary>The damage roll modifiers, a part of combat.</summary>
+        public static ICombatDamageModifiersService CombatDamageModifiers => FacadeAccessor.Resolve<ICombatDamageModifiersService>();
+
+        /// <summary>The damage taken part of combat, a part of combat.</summary>
+        public static ICombatDamageTakenService CombatDamageTaken => FacadeAccessor.Resolve<ICombatDamageTakenService>();
+
+        /// <summary>The combat log lines, a part of combat.</summary>
+        public static ICombatFeedbackService CombatFeedback => FacadeAccessor.Resolve<ICombatFeedbackService>();
+
+        /// <summary>The hit effects of combat, a part of combat.</summary>
+        public static ICombatHitEffectsService CombatHitEffects => FacadeAccessor.Resolve<ICombatHitEffectsService>();
+
         /// <summary>The combat points players earn against NPCs (the facade <c>Service.CombatPoint</c> until P2-ZG).</summary>
         public static ICombatPointService CombatPoint => FacadeAccessor.Resolve<ICombatPointService>();
+
+        /// <summary>The combat queries, a part of combat.</summary>
+        public static ICombatQueriesService CombatQueries => FacadeAccessor.Resolve<ICombatQueriesService>();
 
         /// <summary>
         /// The DM-toggled combat recorder (the facade <c>Service.CombatRecorder</c> until P2-ZG). The hooks read
         /// <c>CombatRecorder.IsRecording</c> first, through this property, which reads the same per-service slot the facade read.
         /// </summary>
         public static ICombatRecorderService CombatRecorder => FacadeAccessor.Resolve<ICombatRecorderService>();
+
+        /// <summary>The resource bookkeeping of combat, a part of combat.</summary>
+        public static ICombatResourcesService CombatResources => FacadeAccessor.Resolve<ICombatResourcesService>();
+
+        /// <summary>The Suppression stacks, a part of combat.</summary>
+        public static ICombatSuppressionService CombatSuppression => FacadeAccessor.Resolve<ICombatSuppressionService>();
 
         /// <summary>Player death, respawn and the respawn point (the facade <c>Service.Death</c> until P2-ZG).</summary>
         public static IDeathService Death => FacadeAccessor.Resolve<IDeathService>();

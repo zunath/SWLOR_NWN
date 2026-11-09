@@ -30,7 +30,7 @@ public class AbilityDamageBudgetOrderTests
             using System.Collections.Generic;
             using SWLOR.Game.Server.Service.CombatService;
             using SWLOR.Game.Server.Service.SkillService;
-            using RuntimeCombat = SWLOR.Game.Server.Service.Combat;
+            using RuntimeCombat = SWLOR.Game.Server.Domain.Combat.CombatRules;
 
             public sealed class ImpactHarness
             {

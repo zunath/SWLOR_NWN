@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             var bloom = Ability.GetAbilityDetail(FeatType.TempestBloom1);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     finally { Ability.EndAbilityImpact(caster); }
                 });
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(8, Stat.GetStatAdjustment(caster, StatType.AreaAbilityPulseDamage), "Tempest Bloom's real area impact grants the pulse buff");
             ctx.AssertEqual(5, Stat.GetStatAdjustment(caster, StatType.AreaAbilityPulseRadiusMeters), "the buff uses the approved 5m radius");
@@ -181,20 +181,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds, 6, 45f);
             var beforeFP = Stat.GetCurrentFP(caster);
             var area = new AbilityDetail { SkillType = SkillType.Force, IsHostileAbility = true, IsAreaAbility = true };
-            Combat.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid, area, new AbilityImpactSummary());
+            GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid, area, new AbilityImpactSummary());
             ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, StatType.RangedDeflection), "all three deflection sources stack after an empty Force area cast");
             ctx.AssertEqual(beforeFP + 6, Stat.GetCurrentFP(caster), "Saber Cyclone and Force Gyre refund FP");
             area.SkillType = SkillType.Mimicry;
-            Combat.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid, area, new AbilityImpactSummary());
+            GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid, area, new AbilityImpactSummary());
             ctx.AssertEqual(beforeFP + 10, Stat.GetCurrentFP(caster), "next area refunds four FP while Force Gyre remains on cooldown");
 
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment, 10, 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityAfterDeflectionWindowSeconds, 30, 45f);
-            Combat.TrackDeflection(caster, DeflectionSource.Ranged);
+            GameServices.CombatDamageTaken.TrackDeflection(caster, DeflectionSource.Ranged);
             foreach (var skill in new[] { SkillType.Force, SkillType.Saberstaff, SkillType.TwinBlade, SkillType.Mimicry })
             {
-                ctx.AssertEqual(110, Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(caster, skill, 100, true), $"Tempest Focus boosts {skill} areas");
-                ctx.AssertEqual(100, Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(caster, skill, 100, false), "single-target damage is excluded");
+                ctx.AssertEqual(110, GameServices.CombatDamageModifiers.ApplyAreaAbilityAfterDeflectionDamageModifier(caster, skill, 100, true), $"Tempest Focus boosts {skill} areas");
+                ctx.AssertEqual(100, GameServices.CombatDamageModifiers.ApplyAreaAbilityAfterDeflectionDamageModifier(caster, skill, 100, false), "single-target damage is excluded");
             }
         }
 
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 foreach (var scenario in new (bool Lands, bool Immune)[] { (true, false), (true, true), (false, true) })
                 {
-                    Combat.SetAbilityHitResolutionOverride(scenario.Lands);
+                    GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(scenario.Lands);
                     TemporaryStatModifier.Replace(target, StatType.PhysicalDamageImmunity, scenario.Immune ? 1 : 0, 30f);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     });
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
 
             ctx.AssertEqual(4, Stat.GetStatAdjustment(caster, StatType.RangedDeflection), "Circle Slash grants its self-buff");
         }
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.MakeHostile(target);
                     AssignCommand(caster, () => AddHenchman(caster, ally));
                     await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party link");
-                    Combat.SetAbilityHitResolutionOverride(scenario.Lands);
+                    GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(scenario.Lands);
                     TemporaryStatModifier.Add(target, StatType.PhysicalDamageImmunity, scenario.Immune ? 1 : 0, 30f);
                     var ability = ImpactModifierTestAbility.Build(isArea);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await ctx.WaitFrameAsync();
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         private sealed class ImpactModifierTestAbility : WeaponActiveAbilityDefinitionBase
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally { Ability.EndAbilityImpact(caster); }
             });
-            Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
+            GameServices.CombatAbilityBonus.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
 
             // A pulse can also be forced while a different ability is being resolved.
             // Keep that tracker alive across the timer to verify that it is restored.
@@ -406,7 +406,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 16, 8f, "the second scheduled pulse of each channel");
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "later ticks do not restart the once-per-cast bonus");
-            ctx.AssertEqual(100, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
+            ctx.AssertEqual(100, GameServices.CombatAbilityBonus.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
             ctx.Assert(Ability.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
 
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -436,15 +436,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 return Ability.EndAbilityImpact(caster);
             }
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Force, SkillType.Devices })
                 {
                     var summary = Cast(skill);
                     ctx.AssertEqual(0, summary.CriticalHitCount, $"{skill} impact is non-critical");
-                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Rifle), $"{skill} does not build Deadeye stacks");
-                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, skill), $"{skill} receives no Deadeye bonus");
+                    ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Rifle), $"{skill} does not build Deadeye stacks");
+                    ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(caster, skill), $"{skill} receives no Deadeye bonus");
                     ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(CriticalRateStackTrackerStatusEffect)), $"{skill} shows no Deadeye tracker");
                 }
 
@@ -455,13 +455,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(0, summary.CriticalHitCount, $"{skill} impact is non-critical");
                     expected = System.Math.Min(expected + 5, 15);
                     foreach (var ranged in new[] { SkillType.Rifle, SkillType.Throwing, SkillType.TwinPistol, SkillType.Pistol })
-                        ctx.AssertEqual(expected, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, ranged), $"{skill} builds a bonus {ranged} can use");
-                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Vibroblade), "melee abilities cannot use the bonus");
-                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Force), "Force abilities cannot use the bonus");
+                        ctx.AssertEqual(expected, GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(caster, ranged), $"{skill} builds a bonus {ranged} can use");
+                    ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Vibroblade), "melee abilities cannot use the bonus");
+                    ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Force), "Force abilities cannot use the bonus");
                     ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(CriticalRateStackTrackerStatusEffect)), $"{skill} shows the Deadeye tracker");
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Resource damage bonuses retain independent strict thresholds", Category = "PerkTracker", TimeoutSeconds = 30f)]
@@ -485,7 +485,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     Stat.ReduceFP(caster, Stat.GetCurrentFP(caster) - resource);
                     Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - resource);
-                    ctx.AssertEqual(expected, Combat.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
+                    ctx.AssertEqual(expected, GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
                     ctx.Assert(ReferenceEquals(sources, Ability.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus)),
                         "resource thresholds are evaluated per target while source descriptions are reused");
                 }
@@ -508,8 +508,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffect.ApplyStatusEffect(beast, beast, new EvasiveChallenge1SelfStatusEffect(), 30f);
             var effect = StatusEffect.GetStatusEffect(beast, typeof(EvasiveChallenge1SelfStatusEffect));
             var duration = effect.DurationTicks;
-            Combat.TrackAvoidedAttack(beast, attacker);
-            Combat.TrackAvoidedAttack(beast, attacker);
+            GameServices.CombatDamageTaken.TrackAvoidedAttack(beast, attacker);
+            GameServices.CombatDamageTaken.TrackAvoidedAttack(beast, attacker);
             ctx.AssertEqual(startingStamina + 1, Stat.GetCurrentStamina(beast), "only the first evasion restores stamina");
             ctx.AssertEqual(8, Stat.GetStatAdjustment(beast, StatType.EvasionPercentAdjustment), "evasion remains after the refund");
             ctx.Assert(ReferenceEquals(effect, StatusEffect.GetStatusEffect(beast, typeof(EvasiveChallenge1SelfStatusEffect))), "original status instance remains active");
@@ -539,7 +539,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // A native knockdown exercises pulling an incapacitated creature.
             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), ordinary, 3f);
             var maul = Ability.GetAbilityDetail(FeatType.WardenMaulTechnique);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             Ability.BeginAbilityImpact(caster, maul);
             try
             {
@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 Ability.EndAbilityImpact(caster);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
             await ctx.DelaySecondsAsync(1f);
             ctx.Assert(GetDistanceBetween(caster, beast) > 3f, "Warden Maul cannot pull an immune beast adjacent to its source");
@@ -577,7 +577,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var chain = (Action<uint, uint>)closure.GetType()
                 .GetField("afterSuccessfulHit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
                 .GetValue(closure);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             Ability.BeginAbilityImpact(caster, burst);
             try
             {
@@ -592,7 +592,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 Ability.EndAbilityImpact(caster);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
             await ctx.WaitUntilAsync(() => targets.Any(target => GetCurrentHitPoints(target) < initialHP[target]), 5f, "the chain damage to resolve");
             ctx.AssertEqual(2, targets.Count(target => GetCurrentHitPoints(target) < initialHP[target]), "the cast has two total extra arcs, not two per primary hit");
@@ -628,21 +628,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedEvasionDurationSeconds, 30, 45f);
             Stat.ReduceStamina(caster, 50);
             var before = Stat.GetCurrentStamina(caster);
-            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 4 });
             ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "four targets grant one Momentum stack and three independent Spinning Rhythm stacks");
             ctx.AssertEqual(before + 6, Stat.GetCurrentStamina(caster), "Sweeping Advance caps four targets at six STM");
-            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 1 });
             ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "one struck enemy grants no haste stack");
             ctx.AssertEqual(before + 8, Stat.GetCurrentStamina(caster), "one target restores two STM across skills");
-            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 2 });
             ctx.AssertEqual(22, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "Momentum gains its second stack while Spinning Rhythm remains capped");
-            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 6 });
             ctx.AssertEqual(27, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "both perks reach their own caps");
-            Combat.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid,
+            GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid,
                 new AbilityDetail { SkillType = SkillType.Force, IsAreaAbility = true, IsHostileAbility = true }, new AbilityImpactSummary());
             ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "Flowing Footwork triggers on an empty Force area cast");
         }
@@ -655,7 +655,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             PrepareStationaryCreature(ctx, caster);
             ctx.SetNPCResources(caster, 100, 100);
             var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 for (var count = 1; count <= 4; count++)
@@ -667,19 +667,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Stat.ReduceStamina(caster, 20);
                     var before = Stat.GetCurrentStamina(caster);
                     var hp = GetCurrentHitPoints(target);
-                    Combat.ApplyAbilityStaminaCostFPRestore(caster, ability, 9);
+                    GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, ability, 9);
                     Ability.BeginAbilityImpact(caster, ability);
                     try { await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, 1, GetLocation(caster))); }
                     finally
                     {
                         Ability.EndAbilityImpact(caster);
-                        Combat.CompleteAbilityStaminaCostContext(caster, ability);
+                        GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, ability);
                     }
                     await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 5f, "the area impact to land");
                     ctx.AssertEqual(before + (count >= 3 ? 6 : 0), Stat.GetCurrentStamina(caster), $"{count} targets must refund once only at the three-target threshold");
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Finishing Drive reaches three stacks through its real cooldown", Category = "PerkTracker", TimeoutSeconds = 40f)]
@@ -753,7 +753,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Ground Quake converts Dazed into Knockdown while preserving immune targets", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task GroundQuakeControlConversion(EngineTestContext ctx)
         {
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 foreach (var feat in new[] { FeatType.GroundQuake1, FeatType.GroundQuake2 })
@@ -788,7 +788,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await ctx.WaitFrameAsync();
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Ranked self-buffs replace weaker effects and reject downgrades", Category = "PerkTracker", TimeoutSeconds = 30f)]

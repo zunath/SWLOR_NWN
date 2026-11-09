@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -138,7 +139,7 @@ public class LeadershipCombatUpgradeTests
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
         var affectedTargetGuard = breakMorale.IndexOf("if (affected.Count <= 0)", StringComparison.Ordinal);
-        var markTargetRider = breakMorale.IndexOf("Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
+        var markTargetRider = breakMorale.IndexOf("GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
         affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
             "Break Morale must grant Mark Target once after at least one direct status application succeeds");
@@ -340,7 +341,7 @@ public class LeadershipCombatUpgradeTests
             .Should().Be(74,
                 "direct Other damage that already received Leadership must receive only the generic stage");
 
-        var forcePortion = Combat.GetIncomingPhysicalToForceConversionPortion(100, 40);
+        var forcePortion = CombatRules.GetIncomingPhysicalToForceConversionPortion(100, 40);
         var physicalPortion = 100 - forcePortion;
         var adjustedPhysicalPortion = ApplyTypedLeadershipDamageTakenPercentageModifier(
                 physicalPortion,

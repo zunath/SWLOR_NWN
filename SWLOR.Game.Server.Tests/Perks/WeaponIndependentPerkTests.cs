@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -84,7 +85,7 @@ public class WeaponIndependentPerkTests : SkillFacadeFixture
     {
         var effect = new DeadMansHandStatusEffect();
         foreach (var skill in Enum.GetValues<SkillType>())
-            effect.AppliesToSkill(skill).Should().Be(Combat.IsWeaponSkillType(skill));
+            effect.AppliesToSkill(skill).Should().Be(CombatRules.IsWeaponSkillType(skill));
         effect.OnAttackAttemptedEffect(1, SkillType.Force, null);
         effect.RemainingAttacks.Should().Be(3);
         foreach (var skill in new[] { SkillType.Lightsaber, SkillType.Rifle, SkillType.Throwing })

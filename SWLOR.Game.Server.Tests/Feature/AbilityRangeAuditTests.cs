@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -35,7 +36,7 @@ public class AbilityRangeAuditTests
                 entry.Value.RequiresTarget &&
                 entry.Value.IsHostileAbility &&
                 !entry.Value.IsAreaAbility &&
-                Combat.IsMeleeWeaponSkill(entry.Value.SkillType))
+                CombatRules.IsMeleeWeaponSkill(entry.Value.SkillType))
             .ToArray();
 
         auditedAbilities.Should().NotBeEmpty();

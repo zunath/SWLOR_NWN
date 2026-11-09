@@ -20,6 +20,7 @@ using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -339,14 +340,14 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         var text = string.Join("\n", GetAllText(topic));
 
         text.Where(character => character > 127).Should().BeEmpty("guide text must use ASCII punctuation");
-        text.Should().Contain($"between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent");
-        text.Should().Contain($"at most {Combat.MaximumCriticalRate} percent");
-        text.Should().Contain($"+{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
-        text.Should().Contain($"at most +{Combat.MaximumDamageBonusPercent} percent");
-        text.Should().Contain($"stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined");
+        text.Should().Contain($"between {CombatRules.MinimumHitRate} and {CombatRules.MaximumHitRate} percent");
+        text.Should().Contain($"at most {CombatRules.MaximumCriticalRate} percent");
+        text.Should().Contain($"+{CombatRules.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
+        text.Should().Contain($"at most +{CombatRules.MaximumDamageBonusPercent} percent");
+        text.Should().Contain($"stop at {CombatRules.MaximumCombinedDamageReductionPercent} percent combined");
         text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
         text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
-        text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
+        text.Should().Contain($"at most {CombatDamageTakenService.MaximumGuardDamageReductionPercent} percent");
         text.Should().Contain($"up to {StatService.MaximumDeflectionChanceCap} percent");
         text.Should().Contain($"Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent");
         text.Should().Contain($"stop at {ResistanceRules.MaximumResistance - 1} percent for players");

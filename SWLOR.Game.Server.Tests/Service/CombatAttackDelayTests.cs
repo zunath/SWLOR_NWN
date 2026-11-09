@@ -19,6 +19,8 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -46,32 +48,32 @@ public class CombatAttackDelayTests
     public void TemporaryNoDelayAtMinimumDelay_GrantsTheMatchingHandAnExtraRoll(bool main, bool off, int expected)
     {
         const uint attacker = 0x7F000025;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            var delay = Combat.MinimumAttackDelayMilliseconds;
-            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 0, 0, 2,
+            var delay = CombatRules.MinimumAttackDelayMilliseconds;
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 0, 0, 2,
                 temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected,
                 "an off-hand proc cannot be spent on the odd extra main-hand roll");
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [Test]
     public void TemporaryOffHandNoDelay_IsNotCappedByAnExpiringHasteEffect()
     {
         const uint attacker = 0x7F000026;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            var delay = Combat.MinimumAttackDelayMilliseconds;
-            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 1, 0, 2,
+            var delay = CombatRules.MinimumAttackDelayMilliseconds;
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 1, 0, 2,
                 limitedReductionBudget: new LimitedAttackTimingBudget(1, false, true),
                 temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, false, true)).Should().Be(6);
-            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2).Should().Be(4,
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2).Should().Be(4,
                 "expiring haste must not restore fractional progress already spent by the temporary bonus");
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [TestCase(true, false)]
@@ -79,20 +81,20 @@ public class CombatAttackDelayTests
     public void MixedDualWieldHaste_CountsOnlyTheMatchingHandAndKeepsItsDebt(bool main, bool off)
     {
         const uint attacker = 0x7F000023;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2,
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2,
                 new LimitedAttackTimingBudget(4, main, off)).Should().Be(2);
-            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2,
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2,
                 new LimitedAttackTimingBudget(3, main, off)).Should().Be(4,
                 "the first pair spent only one charge, so fractional accelerated progress remains available");
-            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 1, 0, 2,
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 1, 0, 2,
                 new LimitedAttackTimingBudget(1, main, off)).Should().Be(main ? 2 : 3);
-            Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2)
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2)
                 .Should().Be(2, "acceleration ends when the matching hand spends its last charge");
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [TestCase(true, false, 3)]
@@ -101,13 +103,13 @@ public class CombatAttackDelayTests
     public void ScopedNoDelay_GrantsAnExtraRollToTheMatchingHand(bool main, bool off, int expected)
     {
         const uint attacker = 0x7F000024;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2,
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2,
                 limitedNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected);
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [TestCase(3500, 2)]
@@ -116,13 +118,13 @@ public class CombatAttackDelayTests
     public void DualWieldCycles_ScheduleBothHandsOnTheSharedTimer(int delay, int expected)
     {
         const uint attacker = 0x7F000020;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2)
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2)
                 .Should().Be(expected);
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [TestCase(1, 2)]
@@ -132,63 +134,63 @@ public class CombatAttackDelayTests
     public void DualWieldLimitedHaste_CapsActualWeaponRolls(int charges, int expected)
     {
         const uint attacker = 0x7F000021;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            Combat.ConsumeAttacksPerSwing(attacker, 750, 1750, false, 1750, charges, 0, 2)
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 750, 1750, false, 1750, charges, 0, 2)
                 .Should().Be(expected, "baseline hands remain available but haste cannot double its charged rolls");
-            var next = Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2);
+            var next = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2);
             next.Should().Be(2, "expired acceleration must not leak into the next cycle");
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [Test]
     public void DualWieldFinalNoDelayCharge_GrantsOneExtraRollInsteadOfAnExtraPair()
     {
         const uint attacker = 0x7F000022;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         try
         {
-            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2)
+            GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2)
                 .Should().Be(3);
         }
-        finally { Combat.ClearAttackSwingDebt(attacker); }
+        finally { GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker); }
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_UsesSingleWeaponDelay()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
+        var delay = CombatRules.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
 
         delay.Should().Be(3500);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(1750);
+        CombatRules.CalculateEffectiveAttackDelay(delay).Should().Be(1750);
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_DualWieldCountsDefaultDelayOnce()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 0, 0);
+        var delay = CombatRules.CalculateAttackDelayMilliseconds(210, 210, 0, 0);
 
         delay.Should().Be(5250);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(3500);
+        CombatRules.CalculateEffectiveAttackDelay(delay).Should().Be(3500);
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_AppliesOffhandReductionBeforeCombiningDualWieldDelay()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 0, 30);
+        var delay = CombatRules.CalculateAttackDelayMilliseconds(210, 210, 0, 30);
 
         delay.Should().Be(4200);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(2450);
+        CombatRules.CalculateEffectiveAttackDelay(delay).Should().Be(2450);
     }
 
     [Test]
     public void CalculateEffectiveAttackDelay_SubtractsDefaultDelayFromHigherAttackerDelay()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2500;
+        var attackerDelay = CombatRules.BaseAttackDelayMilliseconds + 2500;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+        var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(attackerDelay);
 
         effectiveDelay.Should().Be(2500);
     }
@@ -196,9 +198,9 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateEffectiveAttackDelay_AllowsDelaysBelowDefaultAfterBaselineSubtraction()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 1250;
+        var attackerDelay = CombatRules.BaseAttackDelayMilliseconds + 1250;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+        var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(attackerDelay);
 
         effectiveDelay.Should().Be(1250);
     }
@@ -206,28 +208,28 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttackDelayMilliseconds_FastestWeaponDelayCanBenefitFromHaste()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
+        var unmodifiedDelay = CombatRules.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
+        var hastenOneDelay = CombatRules.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
+        var hastenTwoDelay = CombatRules.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(hastenOneDelay));
+        CombatRules.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(CombatRules.BaseAttackDelayMilliseconds);
+        CombatRules.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(CombatRules.MinimumAttackDelayMilliseconds);
+        CombatRules.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(CombatRules.MinimumAttackDelayMilliseconds);
+        CombatRules.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(CombatRules.CalculateEffectiveAttackDelay(unmodifiedDelay));
+        CombatRules.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(CombatRules.CalculateEffectiveAttackDelay(hastenOneDelay));
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_NegativeHasteIncreasesDelay()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
-        var slowedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, -10, 0);
+        var unmodifiedDelay = CombatRules.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
+        var slowedDelay = CombatRules.CalculateAttackDelayMilliseconds(210, 0, -10, 0);
 
         unmodifiedDelay.Should().Be(3500);
         slowedDelay.Should().Be(3850);
-        Combat.CalculateEffectiveAttackDelay(slowedDelay)
+        CombatRules.CalculateEffectiveAttackDelay(slowedDelay)
             .Should()
-            .BeGreaterThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
+            .BeGreaterThan(CombatRules.CalculateEffectiveAttackDelay(unmodifiedDelay));
     }
 
     [Test]
@@ -246,13 +248,13 @@ public class CombatAttackDelayTests
             WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(ItemPropertyAttackDelay.Delay240);
         }
 
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
+        var unmodifiedDelay = CombatRules.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
+        var hastenOneDelay = CombatRules.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
+        var hastenTwoDelay = CombatRules.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
+        CombatRules.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
+        CombatRules.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
+        CombatRules.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
     }
 
     [Test]
@@ -264,9 +266,9 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateEffectiveAttackDelay_DualWieldPreservesItsRateAdvantageAtTheSingleWeaponFloor()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
+        var delay = CombatRules.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(818);
+        CombatRules.CalculateEffectiveAttackDelay(delay).Should().Be(818);
     }
 
     [Test]
@@ -275,41 +277,41 @@ public class CombatAttackDelayTests
         var attackerDelays = new[]
         {
             0,
-            Combat.BaseAttackDelayMilliseconds - 1,
-            Combat.BaseAttackDelayMilliseconds
+            CombatRules.BaseAttackDelayMilliseconds - 1,
+            CombatRules.BaseAttackDelayMilliseconds
         };
 
         foreach (var attackerDelay in attackerDelays)
         {
-            var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+            var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(attackerDelay);
 
-            effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+            effectiveDelay.Should().Be(CombatRules.BaseAttackDelayMilliseconds);
         }
     }
 
     [Test]
     public void MinimumAttackDelay_SupportsMaxAttacksPerSwingWithoutOverflow()
     {
-        Combat.MinimumAttackDelayMilliseconds.Should().Be(584);
-        (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds)
+        CombatRules.MinimumAttackDelayMilliseconds.Should().Be(584);
+        (CombatRules.BaseAttackDelayMilliseconds / (float)CombatRules.MinimumAttackDelayMilliseconds)
             .Should()
-            .BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+            .BeLessThanOrEqualTo(CombatRules.MaxAttacksPerSwing);
     }
 
     [Test]
     public void CalculateAttackSwingDelay_FloorsAtBaseDelay()
     {
-        Combat.CalculateAttackSwingDelay(584).Should().Be(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateAttackSwingDelay(Combat.BaseAttackDelayMilliseconds).Should().Be(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateAttackSwingDelay(2500).Should().Be(2500);
+        CombatRules.CalculateAttackSwingDelay(584).Should().Be(CombatRules.BaseAttackDelayMilliseconds);
+        CombatRules.CalculateAttackSwingDelay(CombatRules.BaseAttackDelayMilliseconds).Should().Be(CombatRules.BaseAttackDelayMilliseconds);
+        CombatRules.CalculateAttackSwingDelay(2500).Should().Be(2500);
     }
 
     [Test]
     public void CalculateAttacksPerSwing_ResolvesOneAttackWhenDelayAtOrAboveSwingFloor()
     {
-        foreach (var effectiveDelay in new[] { Combat.BaseAttackDelayMilliseconds, 2500, 5000 })
+        foreach (var effectiveDelay in new[] { CombatRules.BaseAttackDelayMilliseconds, 2500, 5000 })
         {
-            var attacks = Combat.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
+            var attacks = CombatRules.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
 
             attacks.Should().Be(1);
             attackDebt.Should().Be(0f);
@@ -319,7 +321,7 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttacksPerSwing_ResolvesTwoAttacksWhenDelayIsHalfSwingFloor()
     {
-        var attacks = Combat.CalculateAttacksPerSwing(Combat.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
+        var attacks = CombatRules.CalculateAttacksPerSwing(CombatRules.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
 
         attacks.Should().Be(2);
         attackDebt.Should().BeApproximately(0f, 0.01f);
@@ -336,10 +338,10 @@ public class CombatAttackDelayTests
 
         for (var i = 0; i < swings; i++)
         {
-            totalAttacks += Combat.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
+            totalAttacks += CombatRules.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
         }
 
-        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)effectiveDelay);
+        var expectedAttacks = swings * (CombatRules.BaseAttackDelayMilliseconds / (float)effectiveDelay);
         totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
@@ -355,23 +357,23 @@ public class CombatAttackDelayTests
     public void ConsumeAttacksPerSwing_NoDelayBuffAlwaysBeatsTheUnbuffedSwing(int unbuffedDelay)
     {
         const uint attacker = 0x7F000001;
-        Combat.ClearAttackSwingDebt(attacker);
-        var unbuffed = Combat.ConsumeAttacksPerSwing(attacker, unbuffedDelay, unbuffedDelay, false);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        var unbuffed = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, unbuffedDelay, unbuffedDelay, false);
 
-        Combat.ClearAttackSwingDebt(attacker);
-        var buffed = Combat.ConsumeAttacksPerSwing(
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        var buffed = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
             attacker,
-            Combat.MinimumAttackDelayMilliseconds,
+            CombatRules.MinimumAttackDelayMilliseconds,
             unbuffedDelay,
             true);
 
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         buffed.Should().BeGreaterThan(
             unbuffed,
             "a no-delay buff must be worth at least one extra attack even when the attacker is " +
             "already at the attack-delay floor");
-        buffed.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+        buffed.Should().BeLessThanOrEqualTo(CombatRules.MaxAttacksPerSwing);
     }
 
     [Test]
@@ -382,21 +384,21 @@ public class CombatAttackDelayTests
         // Both delays are genuinely equal here, which is what the real attack path produces for this
         // build - so the buff state has to travel as its own flag rather than be inferred.
         const uint attacker = 0x7F000002;
-        Combat.ClearAttackSwingDebt(attacker);
-        var unbuffed = Combat.ConsumeAttacksPerSwing(
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        var unbuffed = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
             attacker,
-            Combat.MinimumAttackDelayMilliseconds,
-            Combat.MinimumAttackDelayMilliseconds,
+            CombatRules.MinimumAttackDelayMilliseconds,
+            CombatRules.MinimumAttackDelayMilliseconds,
             false);
 
-        Combat.ClearAttackSwingDebt(attacker);
-        var buffed = Combat.ConsumeAttacksPerSwing(
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        var buffed = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
             attacker,
-            Combat.MinimumAttackDelayMilliseconds,
-            Combat.MinimumAttackDelayMilliseconds,
+            CombatRules.MinimumAttackDelayMilliseconds,
+            CombatRules.MinimumAttackDelayMilliseconds,
             true);
 
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         unbuffed.Should().Be(2);
         buffed.Should().Be(3);
@@ -408,15 +410,15 @@ public class CombatAttackDelayTests
         // The guarantee must only engage when a no-delay buff is actually active, so ordinary swings
         // keep their existing attack counts and debt accounting.
         const uint attacker = 0x7F000003;
-        foreach (var delay in new[] { 3500, 1750, 875, Combat.MinimumAttackDelayMilliseconds })
+        foreach (var delay in new[] { 3500, 1750, 875, CombatRules.MinimumAttackDelayMilliseconds })
         {
-            Combat.ClearAttackSwingDebt(attacker);
-            var viaOverload = Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+            var viaOverload = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay, delay, false);
 
-            Combat.ClearAttackSwingDebt(attacker);
-            var viaOriginal = Combat.ConsumeAttacksPerSwing(attacker, delay);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+            var viaOriginal = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, delay);
 
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
             viaOverload.Should().Be(viaOriginal, $"delay {delay} should be unaffected by the guarantee");
         }
     }
@@ -431,7 +433,7 @@ public class CombatAttackDelayTests
         int remainingAttacks,
         int expectedAttacks)
     {
-        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+        CombatRules.CapAttacksPerSwingForLimitedAttackEffect(
                 acceleratedAttacks,
                 baselineAttacks,
                 remainingAttacks)
@@ -447,7 +449,7 @@ public class CombatAttackDelayTests
         int remainingAttacks,
         int expectedAttacks)
     {
-        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+        CombatRules.CapAttacksPerSwingForLimitedAttackEffect(
                 acceleratedAttacks,
                 baselineAttacks,
                 0,
@@ -462,9 +464,9 @@ public class CombatAttackDelayTests
         const int acceleratedDelay = 750;
         const int baselineDelay = 1750;
         const int remainingCharges = 2;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
-        var attacks = Combat.ConsumeAttacksPerSwing(
+        var attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
             attacker,
             acceleratedDelay,
             baselineDelay,
@@ -481,7 +483,7 @@ public class CombatAttackDelayTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
@@ -491,7 +493,7 @@ public class CombatAttackDelayTests
         const uint attacker = 0x7F000007;
         const int acceleratedDelay = 875;
         const int baselineDelay = 1750;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
@@ -501,7 +503,7 @@ public class CombatAttackDelayTests
             // rolls. The one remaining charge is consumed by the first baseline roll, so it must
             // not add a third roll to the count passed to ResolveAttack.
             debts[attacker] = 1f;
-            var attacks = Combat.ConsumeAttacksPerSwing(
+            var attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
                 acceleratedDelay,
                 baselineDelay,
@@ -515,7 +517,7 @@ public class CombatAttackDelayTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
@@ -523,25 +525,25 @@ public class CombatAttackDelayTests
     public void ConsumeAttacksPerSwing_FinalLimitedNoDelayChargeStillGrantsAnExtraFloorRoll()
     {
         const uint attacker = 0x7F000009;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         try
         {
-            var attacks = Combat.ConsumeAttacksPerSwing(
+            var attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
-                Combat.MinimumAttackDelayMilliseconds,
-                Combat.MinimumAttackDelayMilliseconds,
+                CombatRules.MinimumAttackDelayMilliseconds,
+                CombatRules.MinimumAttackDelayMilliseconds,
                 true,
-                Combat.MinimumAttackDelayMilliseconds,
+                CombatRules.MinimumAttackDelayMilliseconds,
                 0,
                 1);
 
-            attacks.Should().Be(Combat.MaxAttacksPerSwing,
+            attacks.Should().Be(CombatRules.MaxAttacksPerSwing,
                 "the final Dead Man's Hand charge guarantees one extra roll even when baseline cadence is already at the floor");
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
@@ -577,9 +579,9 @@ public class CombatAttackDelayTests
         const int acceleratedDelay = 750;
         const int baselineDelay = 1750;
         const int remainingCharges = 3;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
-        var attacks = Combat.ConsumeAttacksPerSwing(
+        var attacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
             attacker,
             acceleratedDelay,
             baselineDelay,
@@ -588,7 +590,7 @@ public class CombatAttackDelayTests
             remainingCharges);
 
         var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
-        Combat.CalculateAttacksPerSwing(acceleratedDelay, 0f, out var expectedAcceleratedDebt);
+        CombatRules.CalculateAttacksPerSwing(acceleratedDelay, 0f, out var expectedAcceleratedDebt);
 
         try
         {
@@ -598,7 +600,7 @@ public class CombatAttackDelayTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
@@ -608,13 +610,13 @@ public class CombatAttackDelayTests
         const uint attacker = 0x7F000006;
         const int acceleratedDelay = 1400;
         const int baselineDelay = 1750;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
         try
         {
-            var firstSwingAttacks = Combat.ConsumeAttacksPerSwing(
+            var firstSwingAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
                 acceleratedDelay,
                 baselineDelay,
@@ -625,7 +627,7 @@ public class CombatAttackDelayTests
             debts[attacker].Should().BeApproximately(0.25f, 0.0001f,
                 "the first accelerated one-roll swing carries fractional debt while one charge remains");
 
-            var finalSwingAttacks = Combat.ConsumeAttacksPerSwing(
+            var finalSwingAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
                 acceleratedDelay,
                 baselineDelay,
@@ -638,7 +640,7 @@ public class CombatAttackDelayTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
@@ -648,13 +650,13 @@ public class CombatAttackDelayTests
         const uint attacker = 0x7F000008;
         const int acceleratedDelay = 1000;
         const int baselineDelay = 1400;
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
         var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
 
         try
         {
-            var acceleratedAttacks = Combat.ConsumeAttacksPerSwing(
+            var acceleratedAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
                 acceleratedDelay,
                 baselineDelay,
@@ -664,7 +666,7 @@ public class CombatAttackDelayTests
             acceleratedAttacks.Should().Be(1);
             debts[attacker].Should().BeApproximately(0.75f, 0.0001f);
 
-            var suppressedAttacks = Combat.ConsumeAttacksPerSwing(
+            var suppressedAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
                 attacker,
                 baselineDelay,
                 baselineDelay,
@@ -679,17 +681,17 @@ public class CombatAttackDelayTests
         }
         finally
         {
-            Combat.ClearAttackSwingDebt(attacker);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
         }
     }
 
     [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
-        var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
+        var attacks = CombatRules.CalculateAttacksPerSwing(CombatRules.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
 
-        attacks.Should().Be(Combat.MaxAttacksPerSwing);
-        attackDebt.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+        attacks.Should().Be(CombatRules.MaxAttacksPerSwing);
+        attackDebt.Should().BeLessThanOrEqualTo(CombatRules.MaxAttacksPerSwing);
     }
 
     [Test]
@@ -701,10 +703,10 @@ public class CombatAttackDelayTests
 
         for (var i = 0; i < swings; i++)
         {
-            totalAttacks += Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
+            totalAttacks += CombatRules.CalculateAttacksPerSwing(CombatRules.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
         }
 
-        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds);
+        var expectedAttacks = swings * (CombatRules.BaseAttackDelayMilliseconds / (float)CombatRules.MinimumAttackDelayMilliseconds);
         totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
@@ -715,16 +717,16 @@ public class CombatAttackDelayTests
         const uint attackerTwo = 200;
         const int effectiveDelay = 1000;
 
-        Combat.ClearAttackSwingDebt(attackerOne);
-        Combat.ClearAttackSwingDebt(attackerTwo);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attackerOne);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attackerTwo);
 
-        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
-        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
-        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
-        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
 
-        Combat.ClearAttackSwingDebt(attackerOne);
-        Combat.ClearAttackSwingDebt(attackerTwo);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attackerOne);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attackerTwo);
     }
 
     [Test]
@@ -733,29 +735,29 @@ public class CombatAttackDelayTests
         const uint attacker = 300;
         const int effectiveDelay = 1000;
 
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
-        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
-        Combat.ClearAttackSwingDebt(attacker);
-        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
 
-        Combat.ClearAttackSwingDebt(attacker);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(attacker);
     }
 
     [Test]
     public void CalculateEffectiveAttackDelay_UsesFastestFloorWhenNoDelayAttackIsQueued()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2000;
+        var attackerDelay = CombatRules.BaseAttackDelayMilliseconds + 2000;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay, true);
+        var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(attackerDelay, true);
 
-        effectiveDelay.Should().Be(Combat.MinimumAttackDelayMilliseconds);
+        effectiveDelay.Should().Be(CombatRules.MinimumAttackDelayMilliseconds);
     }
 
     [Test]
     public void CanConsumeNextAbilityNoDelay_RequiresHostileAbility()
     {
-        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        CombatRules.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
             IsHostileAbility = true,
             SkillType = SkillType.Pistol
@@ -763,14 +765,14 @@ public class CombatAttackDelayTests
             .Should()
             .BeTrue();
 
-        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        CombatRules.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
             IsHostileAbility = false
         })
             .Should()
             .BeFalse();
 
-        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        CombatRules.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
             IsHostileAbility = true,
             SkillType = SkillType.Invalid
@@ -784,13 +786,13 @@ public class CombatAttackDelayTests
     {
         const uint creature = 310;
 
-        Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+        GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
         {
             IsHostileAbility = true,
             SkillType = SkillType.Pistol
         }).Should().Be(0);
 
-        Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+        GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
         {
             IsHostileAbility = false,
             SkillType = SkillType.Pistol
@@ -806,7 +808,7 @@ public class CombatAttackDelayTests
             SkillType = SkillType.Invalid
         };
 
-        Combat.ConsumeNextAbilityDelayReductionPercent(310, skilllessHostileAbility)
+        GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(310, skilllessHostileAbility)
             .Should()
             .Be(0);
     }
@@ -840,7 +842,7 @@ public class CombatAttackDelayTests
             .ToArray();
         skilllessHostileCasts.Should().NotBeEmpty("Provoke-style hostile casts are intentionally skillless");
         skilllessHostileCasts.Should().OnlyContain(ability =>
-            !Combat.CanConsumeNextAbilityNoDelay(ability.Detail));
+            !CombatRules.CanConsumeNextAbilityNoDelay(ability.Detail));
     }
 
     [Test]
@@ -935,7 +937,7 @@ public class CombatAttackDelayTests
                 EffectIconType.ReloadTempoStatusEffect,
                 new AbilityImpactSummary()));
 
-            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
             {
                 IsHostileAbility = true,
                 SkillType = SkillType.Pistol
@@ -949,8 +951,8 @@ public class CombatAttackDelayTests
                 .Should()
                 .BeTrue();
             noDelayRemainingAttacks.Should().Be(3);
-            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeTrue();
-            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeTrue();
+            GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
             {
                 IsHostileAbility = true,
                 SkillType = SkillType.Pistol
@@ -980,9 +982,9 @@ public class CombatAttackDelayTests
                 .Should()
                 .BeFalse();
             noDelayRemainingAttacks.Should().Be(0);
-            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
-            Combat.ConsumeNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
-            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
+            GameServices.CombatAttackTiming.ConsumeNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
+            GameServices.CombatAttackTiming.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
             {
                 IsHostileAbility = true,
                 SkillType = SkillType.Pistol
@@ -1051,7 +1053,7 @@ public class CombatAttackDelayTests
             landedDamageHandlingStart,
             StringComparison.Ordinal);
         var landedDamageHandling = damageRoll[landedDamageHandlingStart..landedDamageHandlingEnd];
-        landedDamageHandling.Should().Contain("Combat.ApplyCriticalHitEffects(");
+        landedDamageHandling.Should().Contain("GameServices.CombatHitEffects.ApplyCriticalHitEffects(");
         landedDamageHandling.Should().NotContain("if (isLandedAttack && totalDamage > 0)",
             "a fully mitigated landed native critical must still notify critical-hit effects");
     }

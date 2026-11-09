@@ -206,6 +206,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IQuickCastService _quickCast;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
+        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
 
         public StatusEffectService(
             IResistanceService resistance,
@@ -220,7 +222,9 @@ namespace SWLOR.Game.Server.Domain.Character
             IDBService db,
             IQuickCastService quickCast,
             Lazy<IStatService> stat,
-            Lazy<IAbilityService> ability)
+            Lazy<IAbilityService> ability,
+            Lazy<ICombatAbilityImpactService> abilityImpact,
+            Lazy<ICombatAttackTimingService> attackTiming)
         {
             _resistance = resistance;
             _pvpCombat = pvpCombat;
@@ -235,6 +239,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _quickCast = quickCast;
             _stat = stat;
             _ability = ability;
+            _abilityImpact = abilityImpact;
+            _attackTiming = attackTiming;
         }
 
         /// <summary>
@@ -2703,15 +2709,15 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual void ApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory appliedCategories)
         {
-            Service.Combat.ApplyStatusAppliedTargetStaminaDrain(activator, target, appliedCategories);
+            _abilityImpact.Value.ApplyStatusAppliedTargetStaminaDrain(activator, target, appliedCategories);
         }
 
         protected virtual void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied)
         {
-            Service.Combat.ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
+            _abilityImpact.Value.ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
         }
 
-        protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => Service.Combat.IsAttackDelayReductionSuppressed(creature);
+        protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => _attackTiming.Value.IsAttackDelayReductionSuppressed(creature);
 
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint target) => TemporaryHitPointEffects.ScheduleLimitCheck(target);
 

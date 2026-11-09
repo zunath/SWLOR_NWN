@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -195,13 +196,13 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void ForceConversionSplit_RoundsAndClampsConvertedPortion()
     {
-        Combat.GetIncomingPhysicalToForceConversionPortion(100, 15).Should().Be(15);
-        Combat.GetIncomingPhysicalToForceConversionPortion(100, 30).Should().Be(30);
-        Combat.GetIncomingPhysicalToForceConversionPortion(10, 25).Should().Be(3); // 2.5 rounds away from zero
-        Combat.GetIncomingPhysicalToForceConversionPortion(0, 30).Should().Be(0);
-        Combat.GetIncomingPhysicalToForceConversionPortion(50, 0).Should().Be(0);
-        Combat.GetIncomingPhysicalToForceConversionPortion(50, 150).Should().Be(50); // percent clamps to 100
-        Combat.GetIncomingPhysicalToForceConversionPortion(7, 100).Should().Be(7);
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(100, 15).Should().Be(15);
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(100, 30).Should().Be(30);
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(10, 25).Should().Be(3); // 2.5 rounds away from zero
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(0, 30).Should().Be(0);
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(50, 0).Should().Be(0);
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(50, 150).Should().Be(50); // percent clamps to 100
+        CombatRules.GetIncomingPhysicalToForceConversionPortion(7, 100).Should().Be(7);
     }
 
     [Test]
@@ -236,10 +237,10 @@ public class LightsaberPerkBehaviorTests
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         var nativeConversion = native.IndexOf(
-            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
+            "GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
             StringComparison.Ordinal);
         var nativeLeadership = native.IndexOf(
-            "Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
+            "GameServices.CombatDamageTaken.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
             StringComparison.Ordinal);
         var nativeResistance = native.IndexOf(
             "Resistance.ApplyResistanceToDamageNative(target, damageType, damage)",
@@ -299,28 +300,28 @@ public class LightsaberPerkBehaviorTests
     public void DeflectingReturn_ReflectsCappedShareOfWeaponDamage()
     {
         // 20% of a 50-DMG attack = 10, under the 50% cap of a 60-DMG saber (30).
-        Combat.GetRangedDeflectionReflectionAmount(50, 20, 60, 50).Should().Be(10);
+        CombatRules.GetRangedDeflectionReflectionAmount(50, 20, 60, 50).Should().Be(10);
         // Cap binds: 40% of 100 = 40, capped at 100% of 20 = 20.
-        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 100).Should().Be(20);
+        CombatRules.GetRangedDeflectionReflectionAmount(100, 40, 20, 100).Should().Be(20);
         // No reflection without a percent or without incoming damage.
-        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 50).Should().Be(0);
-        Combat.GetRangedDeflectionReflectionAmount(0, 20, 60, 50).Should().Be(0);
+        CombatRules.GetRangedDeflectionReflectionAmount(50, 0, 60, 50).Should().Be(0);
+        CombatRules.GetRangedDeflectionReflectionAmount(0, 20, 60, 50).Should().Be(0);
         // No cap applied when the cap percent is 0.
-        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 0).Should().Be(40);
+        CombatRules.GetRangedDeflectionReflectionAmount(100, 40, 20, 0).Should().Be(40);
     }
 
     [Test]
     public void DeflectingReturn_UsesEmbattledBonusAndPerfectAegisFinalOverrides()
     {
-        Combat.GetRangedDeflectionReflectionRates(40, 100, 2, 3, 4, 0, 0)
+        CombatRules.GetRangedDeflectionReflectionRates(40, 100, 2, 3, 4, 0, 0)
             .Should().Be((40, 100));
-        Combat.GetRangedDeflectionReflectionRates(40, 100, 3, 3, 4, 0, 0)
+        CombatRules.GetRangedDeflectionReflectionRates(40, 100, 3, 3, 4, 0, 0)
             .Should().Be((44, 100));
 
         // Stat totals remain additive globally, so Perfect Aegis uses separate final-override stats.
         // This prevents its documented 50% / 125% ceiling from becoming 94% / 225% when the
         // permanent Deflecting Return III values are also present.
-        Combat.GetRangedDeflectionReflectionRates(40, 100, 5, 3, 4, 50, 125)
+        CombatRules.GetRangedDeflectionReflectionRates(40, 100, 5, 3, 4, 50, 125)
             .Should().Be((50, 125));
     }
 
@@ -332,7 +333,7 @@ public class LightsaberPerkBehaviorTests
 
         // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
         resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");
-        resolve.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        resolve.Should().Contain("GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         CombatSource.Read()
             .Should().Contain("GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender))");
     }

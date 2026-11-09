@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -218,8 +219,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var damage = Ability.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
-            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
+            damage = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
+            damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime,
                 targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage < 0)

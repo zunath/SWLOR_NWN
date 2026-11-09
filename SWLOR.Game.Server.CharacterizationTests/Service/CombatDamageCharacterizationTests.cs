@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
@@ -52,7 +54,7 @@ public class CombatDamageCharacterizationTests
 
         void AddRow(int attack, int dmg, int attackerStat, int defense, int defenderStat, int critical, int deltaCap)
         {
-            var (min, max) = Combat.CalculateDamageRange(attack, dmg, attackerStat, defense, defenderStat, critical, deltaCap);
+            var (min, max) = CombatRules.CalculateDamageRange(attack, dmg, attackerStat, defense, defenderStat, critical, deltaCap);
             table.Add(attack, dmg, attackerStat, defense, defenderStat, critical, deltaCap, min, max);
         }
 
@@ -111,10 +113,10 @@ public class CombatDamageCharacterizationTests
         foreach (var c in cases)
         {
             random.Reseed(DamageRollSeed);
-            var (min, max) = Combat.CalculateDamageRange(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
+            var (min, max) = CombatRules.CalculateDamageRange(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
             var rolls = new int[DamageRollsPerCase];
             for (var i = 0; i < rolls.Length; i++)
-                rolls[i] = Combat.CalculateDamage(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
+                rolls[i] = GameServices.Combat.CalculateDamage(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
 
             table.Add(c[0], c[1], c[2], c[3], c[4], c[5], c[6], min, max, rolls);
         }
@@ -142,7 +144,7 @@ public class CombatDamageCharacterizationTests
             {
                 var rolls = new int[LongRunChunk];
                 for (var i = 0; i < rolls.Length; i++)
-                    rolls[i] = Combat.CalculateDamage(100, 45, 40, 100, 10, critical, 5);
+                    rolls[i] = GameServices.Combat.CalculateDamage(100, 45, 40, 100, 10, critical, 5);
 
                 table.Add(label, start, rolls);
             }
@@ -162,7 +164,7 @@ public class CombatDamageCharacterizationTests
             new[] { "clamped" });
 
         foreach (var adjustment in new[] { int.MinValue, -1000, -100, -1, 0, 1, 50, 199, 200, 201, 1000, int.MaxValue })
-            table.Add(adjustment, Combat.ClampCriticalDamagePercentAdjustment(adjustment));
+            table.Add(adjustment, CombatRules.ClampCriticalDamagePercentAdjustment(adjustment));
 
         Snapshot.Verify("Combat", "ClampCriticalDamagePercentAdjustment", table);
     }
@@ -181,7 +183,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -5, 0, 1, 7, 27, 100, 1000, int.MaxValue },
                      new[] { -1000, -100, -50, -15, -1, 0, 25, 100, 300 }))
         {
-            table.Add(row[0], row[1], Combat.ApplyOrdinaryAttackDamageMultiplier(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.ApplyOrdinaryAttackDamageMultiplier(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "ApplyOrdinaryAttackDamageMultiplier", table);
@@ -203,7 +205,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -20, 0, 5 },
                      new[] { 100, 25, 0 }))
         {
-            table.Add(row[0], row[1], row[2], row[3], Combat.CapOutgoingDamageBonus(row[0], row[1], row[2], row[3]));
+            table.Add(row[0], row[1], row[2], row[3], CombatRules.CapOutgoingDamageBonus(row[0], row[1], row[2], row[3]));
         }
 
         Snapshot.Verify("Combat", "CapOutgoingDamageBonus", table);
@@ -224,7 +226,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -120, -85, -40, 0, 30 },
                      new[] { -120, -95, -50, -10, 0, 60 }))
         {
-            table.Add(row[0], row[1], row[2], Combat.ApplyCombinedDamageTakenAdjustment(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRules.ApplyCombinedDamageTakenAdjustment(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Combat", "ApplyCombinedDamageTakenAdjustment", table);
@@ -244,7 +246,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -5, 0, 1, 2, 3, 10, 99, 100, 1001, 1000000 },
                      new[] { -1000, -100, -95, -50, -33, -1, 0, 1, 33, 100, 250 }))
         {
-            table.Add(row[0], row[1], Combat.ApplyPercentDamageAdjustment(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.ApplyPercentDamageAdjustment(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "ApplyPercentDamageAdjustment", table);
@@ -271,7 +273,7 @@ public class CombatDamageCharacterizationTests
                 foreach (var row in Grid.Cross(new[] { 0, 30, 100 }, new[] { 0, -40, 50 }))
                 {
                     table.Add(damage, current, max, row[0], row[1],
-                        Combat.ApplyTargetHPDamageAdjustment(damage, current, max, row[0], row[1]));
+                        CombatRules.ApplyTargetHPDamageAdjustment(damage, current, max, row[0], row[1]));
                 }
             }
         }
@@ -293,7 +295,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -5, 0, 1, 3, 10, 99, 100, 1000, 100000 },
                      new[] { -10, 0, 1, 10, 33, 50, 99, 100, 150 }))
         {
-            table.Add(row[0], row[1], Combat.ApplyDefenseIgnore(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.ApplyDefenseIgnore(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "ApplyDefenseIgnore", table);
@@ -313,7 +315,7 @@ public class CombatDamageCharacterizationTests
                      new[] { -5, 0, 1, 2, 3, 5, 10, 33, 100, 1001 },
                      new[] { -10, 0, 1, 15, 25, 33, 50, 75, 100, 150 }))
         {
-            table.Add(row[0], row[1], Combat.GetIncomingPhysicalToForceConversionPortion(row[0], row[1]));
+            table.Add(row[0], row[1], CombatRules.GetIncomingPhysicalToForceConversionPortion(row[0], row[1]));
         }
 
         Snapshot.Verify("Combat", "GetIncomingPhysicalToForceConversionPortion", table);
@@ -335,7 +337,7 @@ public class CombatDamageCharacterizationTests
                      new[] { 0, 10, 30 },
                      new[] { 0, 40, 100 }))
         {
-            table.Add(row[0], row[1], row[2], row[3], Combat.GetRangedDeflectionReflectionAmount(row[0], row[1], row[2], row[3]));
+            table.Add(row[0], row[1], row[2], row[3], CombatRules.GetRangedDeflectionReflectionAmount(row[0], row[1], row[2], row[3]));
         }
 
         Snapshot.Verify("Combat", "GetRangedDeflectionReflectionAmount", table);
@@ -360,7 +362,7 @@ public class CombatDamageCharacterizationTests
                      new[] { 0, 25 }, new[] { -10, 50 }, new[] { 4, 5 }, new[] { 0, 5 },
                      new[] { -10, 15 }, new[] { 0, 80 }, new[] { 0, 60 }))
         {
-            var (reflect, cap) = Combat.GetRangedDeflectionReflectionRates(row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
+            var (reflect, cap) = CombatRules.GetRangedDeflectionReflectionRates(row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
             table.Add(row[0], row[1], row[2], row[3], row[4], row[5], row[6], reflect, cap);
         }
 

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -55,7 +56,7 @@ internal static class CharacterRecalculation
             record.Accuracy = 0;
             record.ForceAttack = 0;
             record.CombatReadiness = 0;
-            foreach (var defense in Combat.GetDefenseDamageTypes())
+            foreach (var defense in GameServices.CombatDamageCatalog.GetDefenseDamageTypes())
                 record.Defenses[defense] = 0;
             foreach (var resistance in Resistance.GetAllResistanceTypes())
                 record.Resistances[resistance] = 0;

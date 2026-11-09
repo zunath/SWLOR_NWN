@@ -4,6 +4,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -109,14 +110,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SeedRandom(4417);
             var ability = new ShadowStepAbilityDefinition().BuildAbilities()[feat];
 
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 // Mid-fight: an engaged target keeps turning toward whoever it is fighting, which
                 // is the situation the tester reported.
                 Enmity.ModifyEnmity(caster, target, 100);
                 var engageDeadline = DateTime.UtcNow.AddSeconds(15);
-                while (!(GetAttackTarget(target) == caster && Combat.HasRecentAttackActivity(target, 3f) &&
+                while (!(GetAttackTarget(target) == caster && GameServices.CombatActivity.HasRecentAttackActivity(target, 3f) &&
                          FacingDrift(target, BearingTo(target, caster)) < MaximumFacingDriftDegrees))
                 {
                     if (DateTime.UtcNow >= engageDeadline)
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssignCommand(caster, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(
                         () => GetCurrentAction(caster) == ActionType.AttackObject &&
-                              Combat.HasRecentAttackActivity(caster, 3f),
+                              GameServices.CombatActivity.HasRecentAttackActivity(caster, 3f),
                         10f, $"the caster to be swinging in melee before {feat}");
                     ctx.Assert(GetDistanceBetween(caster, target) < 2f, "The caster starts in melee range");
                 }
@@ -174,14 +175,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var drift = FacingDrift(target, facingAtCast);
                     ctx.Assert(drift < MaximumFacingDriftDegrees,
                         $"sample {sample}: the stunned target turned {drift:0}° away from its cast-time facing {facingAtCast:0}° (now {GetFacing(target):0}°)");
-                    ctx.Assert(Combat.IsAttackerBehindTarget(caster, target),
+                    ctx.Assert(GameServices.CombatQueries.IsAttackerBehindTarget(caster, target),
                         $"sample {sample}: the activator must be behind the target (target facing {GetFacing(target):0}°, bearing to activator {BearingTo(target, caster):0}°)");
                     await ctx.DelaySecondsAsync(0.25f);
                 }
             }
             finally
             {
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
 
@@ -190,7 +191,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var enmity = Enmity.GetEnmityTable(target)
                 .Select(entry => $"{(entry.Key == caster ? "caster" : GetResRef(entry.Key))}={entry.Value}");
             return $"target action {GetCurrentAction(target)}, targeting caster {GetAttackTarget(target) == caster}, " +
-                   $"swung in last 3s {Combat.HasRecentAttackActivity(target, 3f)}, " +
+                   $"swung in last 3s {GameServices.CombatActivity.HasRecentAttackActivity(target, 3f)}, " +
                    $"target facing {GetFacing(target):0}° vs bearing to caster {BearingTo(target, caster):0}°, " +
                    $"distance {GetDistanceBetween(caster, target):0.0}m, caster action {GetCurrentAction(caster)}, " +
                    $"enmity table [{string.Join(", ", enmity)}]";

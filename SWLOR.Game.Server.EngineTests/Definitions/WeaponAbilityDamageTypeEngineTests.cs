@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -160,8 +161,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Ability.ClearLastCompletedAbilityImpactSummary(caster);
             _observedAttacker = caster;
             _autoAttackDamageEvents = 0;
-            Combat.SetAutoAttackHitResolutionOverride(true);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -186,8 +187,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 AssignCommand(caster, () => ClearAllActions());
-                Combat.SetAutoAttackHitResolutionOverride(null);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 _observedTarget = OBJECT_INVALID;
                 _observedAttacker = OBJECT_INVALID;
             }
@@ -260,7 +261,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task ObserveImpact(EngineTestContext ctx, uint target, Func<Task> impact)
         {
             ResetDamage(target);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await impact();
@@ -269,7 +270,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 _observedTarget = OBJECT_INVALID;
             }
         }

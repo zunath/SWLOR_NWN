@@ -141,13 +141,13 @@ internal static class ConvertedServiceRules
 
     /// <summary>
     /// Once a service's facades are removed, its <c>[NWNEventHandler]</c> methods are on the instance classes the facades
-    /// forwarded to (the script registry binds them to the container's singleton), never on a part, a support type or a
-    /// leftover static class.
+    /// forwarded to, or on the part of a split service that owns the handler (the script registry binds them to the
+    /// container's singleton), never on a support type or a leftover static class.
     /// </summary>
     /// <param name="facts">The compiled assembly.</param>
     /// <param name="instancesOf">
-    /// For a type of a service whose facades were removed, the instance classes that had a facade (the main one and those of
-    /// its further facades); null for other types.
+    /// For a type of a service whose facades were removed, the instance classes of the service (the main one, those of its
+    /// further facades and its parts); null for other types.
     /// </param>
     public static IReadOnlyList<string> HandlersOffTheInstance(AssemblyFacts facts, Func<TypeKey, IReadOnlyList<TypeKey>?> instancesOf)
     {

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public bool AppliesToSkill(SkillType skillType)
         {
-            return Combat.IsWeaponSkillType(skillType);
+            return CombatRules.IsWeaponSkillType(skillType);
         }
 
         public void OnAttackAttemptedEffect(

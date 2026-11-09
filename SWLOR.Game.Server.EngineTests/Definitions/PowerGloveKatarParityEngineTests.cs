@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.EngineTests.Definitions.PowerGlovePairEngineTests;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -125,7 +126,7 @@ public static class PowerGloveKatarParityEngineTests
                 WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed),
                 Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 1)),
                 Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 2)),
-                Sample(0), Sample(1), Combat.CalculateAttackDelay(actor));
+                Sample(0), Sample(1), GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
         });
         return result;
     }

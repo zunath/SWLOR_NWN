@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
@@ -104,6 +105,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IStatusEffectService _statusEffect;
         private readonly Lazy<IAbilityService> _ability;
         private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<ICombatService> _combat;
 
         public PerkService(
             IDBService db,
@@ -111,7 +113,8 @@ namespace SWLOR.Game.Server.Domain.Character
             IBeastMasteryService beastMastery,
             IStatusEffectService statusEffect,
             Lazy<IAbilityService> ability,
-            Lazy<IStatService> stat)
+            Lazy<IStatService> stat,
+            Lazy<ICombatService> combat)
         {
             _db = db;
             _quickCast = quickCast;
@@ -119,6 +122,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _statusEffect = statusEffect;
             _ability = ability;
             _stat = stat;
+            _combat = combat;
         }
 
         /// <summary>
@@ -1491,7 +1495,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual void RefreshStatDrivenTrackerEffects(uint creature)
         {
-            Service.Combat.RefreshStatDrivenTrackerEffects(creature);
+            _combat.Value.RefreshStatDrivenTrackerEffects(creature);
         }
     }
 }

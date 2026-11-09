@@ -145,7 +145,7 @@ public class AbilityDamageQueueTests
 
         File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityActiveActivation.cs"))
             .Should().Contain("public bool IsAwaitingImpact { get; set; }");
-        source.Should().Contain("if (activation.IsAwaitingImpact)\n                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
+        source.Should().Contain("if (activation.IsAwaitingImpact)\n                GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
 
         var delayedTargetValidation = source.Substring(
             source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal),
@@ -548,7 +548,7 @@ public class AbilityDamageQueueTests
         hostileImpactSetup.Should().Contain("Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(");
         hostileImpactSetup.Should().Contain("profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot)",
             "the activation's defense-ignore snapshot must join the current tracked impact before instant or delayed damage resolves");
-        weaponAbilitySource.Should().NotContain("Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
+        weaponAbilitySource.Should().NotContain("GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
             "granting a next-ability rider after BeginAbilityImpact would leak defense ignore to a later ability");
         abilitySource.Should().Contain("NextAbilityDefenseIgnorePercentAdjustment += adjustment;");
     }

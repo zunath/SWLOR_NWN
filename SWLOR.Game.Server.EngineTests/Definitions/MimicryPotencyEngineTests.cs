@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = await CreateCasterAsync(ctx);
             var momentum = Ability.GetAbilityDetail(FeatType.FinishingDriveTechnique);
             var overload = Ability.GetAbilityDetail(FeatType.Overload);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 // The two reported failures cover the innate single-target and area factories;
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         $"{feat} adds 50% Overload to 24% Momentum before applying the multiplier");
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         /// <summary>Checks primary and secondary chain damage independently to detect missing or duplicate potency scaling.</summary>
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task PrimaryAndChainDamageReceiveOnePotencyBonus(EngineTestContext ctx)
         {
             var caster = await CreateCasterAsync(ctx);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 ctx.Log("Testing Inner Circle Surge primary and chain impacts with zero and three Momentum stacks.");
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(expected, boosted[index], $"impact {index} gains exactly 24%");
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         /// <summary>Verifies live potency aggregation, rounding, skill and attack exclusions, and the shared outgoing damage cap.</summary>
@@ -89,17 +90,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffect.ApplyStatusEffect(caster, caster, new OverloadStatusEffect(), 30f);
             ctx.Log($"Rounding and exclusion setup: caster={caster}, target={target}, stacks=3, Overload active, potency={Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent)}%, expected potency=74%.");
             ctx.AssertEqual(74, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "potency sources add");
-            var roundedDamage = Combat.ApplyMimicryAbilityDamageModifier(caster, 9, SkillType.Mimicry, true);
+            var roundedDamage = GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(caster, 9, SkillType.Mimicry, true);
             ctx.Log($"Fractional bonus: baseline=9, actual={roundedDamage}, expected=16.");
             ctx.AssertEqual(16, roundedDamage, "fractional bonuses round up once");
-            var autoAttackDamage = Combat.ApplyMimicryAbilityDamageModifier(caster, 100, SkillType.Mimicry, false);
+            var autoAttackDamage = GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(caster, 100, SkillType.Mimicry, false);
             ctx.Log($"Auto-attack exclusion: baseline=100, actual={autoAttackDamage}, expected=100.");
             ctx.AssertEqual(100, autoAttackDamage, "auto-attacks remain unchanged");
-            var npcAbilityDamage = Combat.ApplyMimicryAbilityDamageModifier(caster, 100, SkillType.BeastMastery, true);
+            var npcAbilityDamage = GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(caster, 100, SkillType.BeastMastery, true);
             ctx.Log($"NPC skill exclusion: skill=BeastMastery, baseline=100, actual={npcAbilityDamage}, expected=100.");
             ctx.AssertEqual(100, npcAbilityDamage, "NPC originals remain unchanged");
             TemporaryStatModifier.Add(caster, StatType.DamageDealtPercentAdjustment, 100, 30f);
-            var cappedDamage = Combat.ApplyDamageDealtModifiers(caster, target, 100, SkillType.Mimicry, CombatDamageType.Physical,
+            var cappedDamage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(caster, target, 100, SkillType.Mimicry, CombatDamageType.Physical,
                 isAbilityDamage: true, canApplyRandomFlatBonuses: false);
             ctx.Log($"Outgoing cap: potency=74%, generic damage bonus=100%, baseline=100, actual={cappedDamage}, expected=200.");
             ctx.AssertEqual(200, cappedDamage, "combined buffs obey the shared 100% outgoing damage bonus cap");

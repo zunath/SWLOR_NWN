@@ -79,7 +79,7 @@ public class ForceUniversalTests
         source.Should().Contain("SkillType.Force,\n                ForcePush3BaseDamage,");
         source.Split("useUnscaledDamage: true", StringSplitOptions.None)
             .Should().HaveCount(4, "all three Force Push ranks must bypass stat and critical scaling");
-        source.Should().NotContain("Combat.ApplyTriggeredDamage(",
+        source.Should().NotContain("GameServices.CombatHitEffects.ApplyTriggeredDamage(",
             "Force Push damage should retain the primary ability-damage pipeline");
     }
 
@@ -141,7 +141,7 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
 
         source.Should().Contain("candidate => candidate == target || IsTargetAlongPath");
-        source.Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        source.Should().Contain("GameServices.CombatFeedback.BuildAbilityNoTargetCombatLogMessage");
     }
 
     [Test]

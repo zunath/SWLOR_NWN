@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 int DamageTo(uint target, uint source) =>
-                    Combat.ApplyDamageTakenModifiers(target, 100, source, CombatDamageType.Physical, isLandedAttack: false);
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, 100, source, CombatDamageType.Physical, isLandedAttack: false);
 
                 var npcDamageBeforeTheFight = DamageTo(npc, defender.Creature);
                 PvpCombat.SetCombatSecondsForTesting(defender.Creature, 0);
@@ -99,13 +99,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 PvpCombat.EndForTesting(protector.Creature);
                 ctx.Assert(!PvpCombat.IsInPvpCombat(protector.Creature), "the protector starts outside PvP combat");
 
-                var transferred = Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                var transferred = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
                     CombatDamageType.Physical, CombatDamageDeliveryType.Transferred);
                 ctx.Assert(PvpCombat.IsInPvpCombat(protector.Creature), "the protector enters PvP combat");
                 ctx.Assert(PvpCombat.IsInPvpCombat(attacker.Creature), "the attacker stays in PvP combat");
 
                 PvpCombat.SetCombatSecondsForTesting(protector.Creature, 300);
-                ctx.AssertEqual(transferred, Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                ctx.AssertEqual(transferred, GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
                         CombatDamageType.Physical, CombatDamageDeliveryType.Transferred, isLandedAttack: false),
                     "damage passed on is not doubled again, however long the protector has fought");
             }
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task HitAsync(EngineTestContext ctx, uint attacker, uint target)
         {
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
-                Combat.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
+                GameServices.CombatHitEffects.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
         }
 
         private static async Task HealAsync(EngineTestContext ctx, uint healer, uint target, int amount)

@@ -123,8 +123,8 @@ public class CharacterSheetCombatUpgradeTests
         refresh.Should().Contain("offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target)");
         refresh.Should().Contain("GetEquipmentDamageAbility(_target, item)");
         refresh.Should().Contain("PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target))");
-        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min)");
-        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, max)");
+        refresh.Should().Contain("GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, min)");
+        refresh.Should().Contain("GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, max)");
         refresh.Should().Contain("StatType.OrdinaryAttackDamagePercentAdjustment");
         refresh.Should().NotContain("if (skill == SkillType.TwinPistol)\n                {", "ordinary trait bonuses must apply across weapon skills");
         refresh.Should().NotContain("CaptureOrdinary", "opening the sheet cannot capture or commit an attack");
@@ -297,7 +297,7 @@ public class CharacterSheetCombatUpgradeTests
         attackDelay.Should().Contain("WeaponAttackTiming.GetTimingSkill(_target)");
         attackDelay.Should().Contain("StatusEffect.TryGetLimitedAttackDelayReduction(");
         attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
-        attackDelay.Should().Contain("Combat.CalculateAttackDelay(");
+        attackDelay.Should().Contain("GameServices.CombatAttackTiming.CalculateAttackDelay(");
 
         var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -325,10 +325,10 @@ public class CharacterSheetCombatUpgradeTests
             "the sheet must mirror runtime's separate multiplicative typed and Leadership stages");
 
         var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
-        criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
+        criticalRate.Should().Contain("GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
         criticalRate.Should().NotContain("GetPersistentNextSkillAbilityCriticalRateBonus");
         viewModel.Should().Contain("AddStat(\"Next Ability Crit\"");
-        viewModel.Should().Contain("Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
+        viewModel.Should().Contain("GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
     }
 
     [Test]
@@ -341,7 +341,7 @@ public class CharacterSheetCombatUpgradeTests
             "Feature",
             "PlayerStatusWindow.cs"));
         var method = ExtractMethod(source, "public static void PlayerDamaged()");
-        var sharedDamageEffects = "Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
+        var sharedDamageEffects = "GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
         var sheetRefresh = "Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));";
 
         method.Should().Contain(sharedDamageEffects);

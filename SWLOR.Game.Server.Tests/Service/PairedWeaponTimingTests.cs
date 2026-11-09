@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -28,8 +29,8 @@ public class PairedWeaponTimingTests
     [TestCase(240)]
     public void OrdinaryHaste_PreservesTheUnhastedPerkAdvantage(int weaponDelay)
     {
-        int Effective(int offhand, int haste, int perk) => Combat.CalculateEffectiveAttackDelay(
-            Combat.CalculateAttackDelayMilliseconds(weaponDelay, offhand, haste, perk));
+        int Effective(int offhand, int haste, int perk) => CombatRules.CalculateEffectiveAttackDelay(
+            CombatRules.CalculateAttackDelayMilliseconds(weaponDelay, offhand, haste, perk));
         foreach (var perk in new[] { 0, 10, 20, 30 })
         {
             var baseline = 2d * Effective(0, 0, 0) / Effective(weaponDelay, 0, perk);
@@ -50,10 +51,10 @@ public class PairedWeaponTimingTests
             var previous = int.MaxValue;
             for (var haste = -50; haste <= 50; haste++)
             {
-                var delay = Combat.CalculateEffectiveAttackDelay(
-                    Combat.CalculateAttackDelayMilliseconds(main, offhand, haste, 30));
+                var delay = CombatRules.CalculateEffectiveAttackDelay(
+                    CombatRules.CalculateAttackDelayMilliseconds(main, offhand, haste, 30));
                 delay.Should().BeLessThanOrEqualTo(previous);
-                delay.Should().BeGreaterThanOrEqualTo(Combat.MinimumAttackDelayMilliseconds);
+                delay.Should().BeGreaterThanOrEqualTo(CombatRules.MinimumAttackDelayMilliseconds);
                 previous = delay;
             }
         }
@@ -64,10 +65,10 @@ public class PairedWeaponTimingTests
     {
         for (var haste = -50; haste <= 50; haste++)
         {
-            var forwardBase = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(220, 240, 0, 30));
-            var reverseBase = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(240, 220, 0, 30));
-            var forward = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(220, 240, haste, 30));
-            var reverse = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(240, 220, haste, 30));
+            var forwardBase = CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(220, 240, 0, 30));
+            var reverseBase = CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(240, 220, 0, 30));
+            var forward = CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(220, 240, haste, 30));
+            var reverse = CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(240, 220, haste, 30));
             (forward / (double)forwardBase).Should().BeApproximately(reverse / (double)reverseBase, 0.001);
         }
     }

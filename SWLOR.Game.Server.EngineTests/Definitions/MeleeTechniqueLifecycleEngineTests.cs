@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -83,8 +84,8 @@ public static class MeleeTechniqueLifecycleEngineTests
         await context.EquipItemAsync(counterOwner, "t_pglove", InventorySlot.RightHand);
         StatusEffect.ApplyStatusEffect(killer.Creature, killer.Creature, new FlowStanceStatusEffect(), -1);
         StatusEffect.ApplyStatusEffect(counterOwner, counterOwner, new BruiserStanceStatusEffect(), -1);
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             await Cast(context, counterOwner, victim.Creature, FeatType.Jab1);
@@ -154,8 +155,8 @@ public static class MeleeTechniqueLifecycleEngineTests
         {
             _deathObserver = null;
             _watchedVictim = OBJECT_INVALID;
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(killer.Creature, () => ClearAllActions());
             AssignCommand(counterOwner, () => ClearAllActions());
         }

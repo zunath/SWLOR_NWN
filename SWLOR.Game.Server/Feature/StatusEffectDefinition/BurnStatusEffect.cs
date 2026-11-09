@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -41,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var might = GetAbilityModifier(AbilityType.Might, Source);
             var amount = System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire);
+            amount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
+            amount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire);
             if (amount <= 0)
                 return;
 

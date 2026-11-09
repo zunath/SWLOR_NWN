@@ -8,7 +8,8 @@ namespace SWLOR.FacadeRemoval;
 /// <code>
 /// { "facades": [
 ///     { "facade": "Taxi" },
-///     { "facade": "Combat", "explicit": true, "constants": [ { "name": "MaximumHitRate", "owner": "SWLOR.Game.Server.Domain.Combat.CombatRules" } ] }
+///     { "facade": "Combat", "explicit": true, "constants": [ { "name": "MaximumHitRate", "owner": "SWLOR.Game.Server.Domain.Combat.CombatRules" } ],
+///       "members": [ { "owner": "CombatQueries", "names": [ "GetMinimumHitRate" ] }, { "owner": "SWLOR.Game.Server.Domain.Combat.CombatRules", "names": [ "CalculateHitRate" ] } ] }
 /// ] }
 /// </code>
 /// </summary>
@@ -85,6 +86,8 @@ internal static class RemovedFacadeList
                     }
                 }
 
+                var members = ReadMembers(facade, element, constants, problems);
+
                 if (result.Any(known => known.Facade == facade))
                 {
                     problems.Add($"{facade} is listed twice.");
@@ -97,7 +100,7 @@ internal static class RemovedFacadeList
                 if (result.Any(known => known.Name == facade[(facade.LastIndexOf('.') + 1)..]))
                     problems.Add($"{facade}: another removed facade has the same simple name, so GameServices cannot have a property for each.");
 
-                result.Add(new RemovedFacade(facade, isExplicit, constants));
+                result.Add(new RemovedFacade(facade, isExplicit, constants, members));
             }
 
             // A reversal maps Owner.Name back to one facade, so two facades cannot hand the same constant to one owner.
@@ -114,6 +117,47 @@ internal static class RemovedFacadeList
 
             return result;
         }
+    }
+
+    // The optional "members" of a facade split over several classes: one object per owner, with the owner (a GameServices
+    // property or a full class name) and the names of its members. A name under two owners is an overload on each.
+    private static IReadOnlyList<RemovedMember>? ReadMembers(string facade, JsonElement element, IReadOnlyList<RemovedConstant> constants, List<string> problems)
+    {
+        if (!element.TryGetProperty("members", out var membersElement))
+            return null;
+
+        if (membersElement.ValueKind != JsonValueKind.Array)
+        {
+            problems.Add($"{facade}: \"members\" must be an array.");
+            return null;
+        }
+
+        var members = new List<RemovedMember>();
+        foreach (var entry in membersElement.EnumerateArray())
+        {
+            var owner = StringProperty(entry, "owner");
+            if (owner == null || !IsDottedName(owner) || entry.ValueKind != JsonValueKind.Object ||
+                !entry.TryGetProperty("names", out var names) || names.ValueKind != JsonValueKind.Array)
+            {
+                problems.Add($"{facade}: every \"members\" entry needs an \"owner\" (a GameServices property, or the full name of a class) and an array of \"names\".");
+                continue;
+            }
+
+            foreach (var name in names.EnumerateArray())
+            {
+                var memberName = name.ValueKind == JsonValueKind.String ? name.GetString() : null;
+                if (memberName == null || !IsDottedName(memberName) || memberName.Contains('.'))
+                    problems.Add($"{facade}: the members of {owner} must be plain names.");
+                else if (constants.Any(constant => constant.Name == memberName))
+                    problems.Add($"{facade}: {memberName} is listed as a constant and as a member.");
+                else if (members.Any(known => known.Name == memberName && known.Owner == owner))
+                    problems.Add($"{facade}: the member {memberName} of {owner} is listed twice.");
+                else
+                    members.Add(new RemovedMember(memberName, owner));
+            }
+        }
+
+        return members;
     }
 
     // A string property of an object, or null when the element is not an object or the property is missing or not a string

@@ -22,7 +22,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CacheData
   action      SWLOR.Game.Server.Domain.Core.CacheService.CacheData
   action      SWLOR.Game.Server.Domain.Social.ChatCommandService.OnModuleLoad
-  action      SWLOR.Game.Server.Service.Combat.LoadDamageTypes
+  action      SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
   action      SWLOR.Game.Server.Domain.Core.ConversationMenuService.CacheData
   action      SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
   action      SWLOR.Game.Server.Service.Droid.CacheData
@@ -327,7 +327,7 @@ crea_convo_bef
 
 crea_damaged_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDamaged
-  action      SWLOR.Game.Server.Service.Combat.ApplyDamageTakenEffects
+  action      SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService.ApplyDamageTakenEffects
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnDirectDamageApplied
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
 
@@ -351,7 +351,7 @@ crea_death_aft
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnDeath
 
 crea_death_bef
-  action      SWLOR.Game.Server.Service.Combat.ApplyDefeatedEnemyEffects
+  action      SWLOR.Game.Server.Domain.Combat.CombatService.ApplyDefeatedEnemyEffects
   action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordCreatureDeath
   action      SWLOR.Game.Server.Domain.Items.LootService.SpawnLootOnCreatureDeath
   action      SWLOR.Game.Server.Domain.Items.LootService.ProcessCorpse
@@ -582,7 +582,7 @@ input_atk_bef
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnAttack
 
 interval_pc_6s
-  action      SWLOR.Game.Server.Service.Combat.ClearCombatState
+  action      SWLOR.Game.Server.Domain.Combat.CombatService.ClearCombatState
   action      SWLOR.Game.Server.Domain.World.MusicService.StopBattleThemeAfterCombat
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.Reconcile
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.Reconcile
@@ -726,8 +726,8 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals
   action      SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.RememberEnteringPlayer
-  action      SWLOR.Game.Server.Service.Combat.AddDamageTypeResistances
-  action      SWLOR.Game.Server.Service.Combat.RestoreIdleReadinessOnPlayerEnter
+  action      SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.AddDamageTypeResistances
+  action      SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter
   action      SWLOR.Game.Server.Domain.Core.CommunicationService.ApplyCommsChannelName
   action      SWLOR.Game.Server.Domain.Core.CommunicationService.ApplyShoutChannelName
   action      SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
@@ -798,7 +798,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.ForgetExitingPlayer
-  action      SWLOR.Game.Server.Service.Combat.ClearStatTriggerState
+  action      SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.ClearPendingWeaponAttackPoints
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.OnPlayerExit
   action      SWLOR.Game.Server.Service.Droid.OnPlayerExit
@@ -850,7 +850,7 @@ mod_gui_event
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExamineDisabledPlayerPanel
 
 mod_heartbeat
-  action      SWLOR.Game.Server.Service.Combat.PurgeInvalidOffensiveActivity
+  action      SWLOR.Game.Server.Domain.Combat.CombatActivityService.PurgeInvalidOffensiveActivity
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RefreshAll
   action      SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.PurgeAllExpired
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.RemoveAbandonedAnchors

@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "b331f534bf51fa18f3d7ca24d665f69f7512ff4f55d64790e85f9bf5d38e3178",
+  "RecipeSha256": "4a04644be96d61da9802ff4feb8cdccfb3484e548911610415056f58e4ae4f94",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -13,14 +13,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The left hand keeps the microphone at the lips; the free right wrist follows its forearm without a sword-aim twist.",
+      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsLoop.swlanim",
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4575624E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.5886748E-07,
       "Beats": [
         {
           "Time": 0,
@@ -443,7 +443,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "f0046e7fb59d29b3891adc608361ffb70b38cc8f1f8cf83f2366b86acaafac76"
+      "ProjectSha256": "5b524483ea6fbfc4aa5191c88881765a1523f346436e7d1f6806ac70203ba7f6"
     },
     {
       "Id": "VocalsLow",
@@ -451,14 +451,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The left hand keeps the microphone at the lips; the free right wrist follows its forearm without a sword-aim twist.",
+      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.1793994E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2489448E-07,
       "Beats": [
         {
           "Time": 0,
@@ -505,7 +505,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "6d7a48bbb4474073d59a9d797694c1245391baa97fe3795a3752f74d76c3f470"
+      "ProjectSha256": "6503c6fab061fcd64e7ada65a3f55faa6472c45c365919aaf8690f67183baf70"
     },
     {
       "Id": "VocalsMid",
@@ -513,14 +513,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The left hand keeps the microphone at the lips; the free right wrist follows its forearm without a sword-aim twist.",
+      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2287812E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
       "Beats": [
         {
           "Time": 0,
@@ -567,7 +567,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "b91957f9bb3e41ebe67f64a7a1a2246e60a8e8c5d17177a927e9a1c164c89b75"
+      "ProjectSha256": "d581cd36ade4ede3d8bfdb72714934eaeede5043f2b57d8698fe5ac90e76fafb"
     },
     {
       "Id": "VocalsHigh",
@@ -575,14 +575,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The left hand keeps the microphone at the lips; the free right wrist follows its forearm without a sword-aim twist.",
+      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4901161E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.3411045E-07,
       "Beats": [
         {
           "Time": 0,
@@ -629,7 +629,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "96501e4d753d3605efbcc967deb5c749d73157d8193a1da8d05978f1c8d32d02"
+      "ProjectSha256": "33f9f895df107bdddbcbf7a3490485c533464082ff50929078267dfb57e8bfd6"
     },
     {
       "Id": "VocalsFlourish",
@@ -637,14 +637,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The left hand keeps the microphone at the lips; the free right wrist follows its forearm without a sword-aim twist.",
+      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.8626451E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.9599418E-07,
       "Beats": [
         {
           "Time": 0,
@@ -771,7 +771,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "0764ab3ca23a96d023fcdb091c6a442f24cb58a6a44720d428116bb5eee8a517"
+      "ProjectSha256": "6ca62d531cef906082fb43c4b7b77810a14888ee76e14464e8e0c56e72311203"
     },
     {
       "Id": "PipesLoop",
@@ -1545,14 +1545,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted left-hand placement while the bow slides along its own length with a fixed bowing angle.",
+      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinLoop.swlanim",
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.8468628E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1975,7 +1975,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "40867d0c01f3034da34bb707a03ab8e201dc29962b6a959b1ad09d03305d8c11"
+      "ProjectSha256": "8ae349dab3a8e79acba86d055addf89da71792b42dff71946d54f326b41c1897"
     },
     {
       "Id": "ViolinLow",
@@ -1983,14 +1983,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted left-hand placement while the bow slides along its own length with a fixed bowing angle.",
+      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.048571E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2037,7 +2037,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "73a1a3b02d44bd710ce346f7491d2f09aa4bae9d3cc74aaf9828eeec79364af3"
+      "ProjectSha256": "aaa458a4f41c03c76f473d0e8dd9165ac1f85eb285a19271a87e965539c85a5b"
     },
     {
       "Id": "ViolinMid",
@@ -2045,14 +2045,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted left-hand placement while the bow slides along its own length with a fixed bowing angle.",
+      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.6118071E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.9992005E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2099,7 +2099,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "9fd0e0740293ba346e8f0640a273b361cdef903150932f1484692b5fe54c0a4f"
+      "ProjectSha256": "c58435ae51b12b5f82e644386c8b386a025d06537b910b2349c713f4e84b7070"
     },
     {
       "Id": "ViolinHigh",
@@ -2107,14 +2107,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted left-hand placement while the bow slides along its own length with a fixed bowing angle.",
+      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.1126043E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.7441361E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2161,7 +2161,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "eb149530565cda68b824ec4e31eb6ff75a170a37dc82e3003b74a983ca62eaa8"
+      "ProjectSha256": "c3db8b69e4c0efaa12510b31310609f03e3d20db1c438da4f71ee716020abdb8"
     },
     {
       "Id": "ViolinFlourish",
@@ -2169,14 +2169,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted left-hand placement while the bow slides along its own length with a fixed bowing angle.",
+      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.8115454E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.6660005E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2303,7 +2303,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "d33da64cb6c059b9e74bfb3b1262980ac6bdb4b4afe5cda497ac57672bdd8f33"
+      "ProjectSha256": "1e9a4c5182eddedeab93b1c83b35eca72702d6793c7156021ff6b0477968e53e"
     },
     {
       "Id": "TambourineLoop",
@@ -2311,14 +2311,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "The playing face points outward with ribbons hanging down; the free hand approaches that face for taps.",
+      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineLoop.swlanim",
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.751676E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5375763E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2741,7 +2741,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "f4e695d1921d1893de7d5c9cf042ef818283c820211ebd5115f3b7efcd478979"
+      "ProjectSha256": "1cdc06d3ea13555aa37b169e8e277f30897fde56c3f08147f945b092a3b97d9b"
     },
     {
       "Id": "TambourineLow",
@@ -2749,14 +2749,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "The playing face points outward with ribbons hanging down; the free hand approaches that face for taps.",
+      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3888379E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2803,7 +2803,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "e2816d15e5934a9a4622e50b89d09ccecff5d1d2135fbf784f86f35d5c7dcacf"
+      "ProjectSha256": "866fe96896899bdc24c3c557c9e201b01c264ed6a5fa4574bda700293d5ce181"
     },
     {
       "Id": "TambourineMid",
@@ -2811,14 +2811,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "The playing face points outward with ribbons hanging down; the free hand approaches that face for taps.",
+      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4600097E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2865,7 +2865,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "b10174ceeee71cdfa4c5587eee3501f8f5e122af189b37b59e8220fe78d7393d"
+      "ProjectSha256": "2d8e391ab8d2efd22d00745dd9895cfbf7efea0218946ab252c483432fde9bf6"
     },
     {
       "Id": "TambourineHigh",
@@ -2873,14 +2873,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "The playing face points outward with ribbons hanging down; the free hand approaches that face for taps.",
+      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3888379E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
       "Beats": [
         {
           "Time": 0,
@@ -2927,7 +2927,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "9c4431208170458e3334ff3f42bfb5e59b7608db478fc83985118281e490a7dd"
+      "ProjectSha256": "90363bae5b3725d422dca1a7bbc6d24daaa5c44179816e6baf180c1d2ad84fd1"
     },
     {
       "Id": "TambourineFlourish",
@@ -2935,14 +2935,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "The playing face points outward with ribbons hanging down; the free hand approaches that face for taps.",
+      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.6049042E-07,
       "Beats": [
         {
           "Time": 0,
@@ -3069,7 +3069,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "cf78fb09c2a438d6d3b30cb3c26ee373784fd580b22cf105bbcf5d189f1db474"
+      "ProjectSha256": "651e1a415723b7e2ec32f0162fb8924ccc72077c496e170a13388c4741cf5cf6"
     }
   ]
 }

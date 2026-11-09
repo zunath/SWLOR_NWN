@@ -13,7 +13,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 public static class PerformanceInstrumentEngineTests
 {
     [EngineTest("Panpipe playing fits preserve cosmetics on stop and unequip", Category = "PerformanceInstruments", TimeoutSeconds = 90f)]
-    public static async Task PanpipeFitRestoresCosmetics(EngineTestContext ctx)
+    public static Task PanpipeFitRestoresCosmetics(EngineTestContext ctx) => PlayingFitRestoresCosmetics(ctx, "panpipes");
+
+    [EngineTest("Tambourine animation preserves cosmetics during play stop and unequip", Category = "PerformanceInstruments", TimeoutSeconds = 90f)]
+    public static Task TambourineFitRestoresCosmetics(EngineTestContext ctx) => PlayingFitRestoresCosmetics(ctx, "tambourine");
+
+    private static async Task PlayingFitRestoresCosmetics(EngineTestContext ctx, string resref)
     {
         const ObjectVisualTransformDataScopeType scope =
             (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2;
@@ -30,14 +35,18 @@ public static class PerformanceInstrumentEngineTests
                 SetGender(player, gender);
                 SetPhenoType(PhenoType.Normal, player);
                 fixture.Update(record => record.Perks[PerkType.PlayInstrument] = 1);
-                var item = await ctx.EquipItemAsync(player, "panpipes", InventorySlot.RightHand);
+                var item = await ctx.EquipItemAsync(player, resref, InventorySlot.RightHand);
                 for (var i = 0; i < channels.Length; i++)
                     SetObjectVisualTransform(item, channels[i], authored[i], nScope: scope);
                 Performance.SetRoleplay(player, true);
                 await ctx.ExecuteInCreatureContextAsync(player, () => Performance.TogglePlayInstrument(player, 1));
-                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, "panpipes to start performing");
+                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, "instrument to start performing");
                 var fitted = channels.Select(channel => GetObjectVisualTransform(item, channel, nScope: scope)).ToArray();
-                ctx.Assert(fitted.Where((value, i) => Math.Abs(value - authored[i]) > .0001f).Any(), "the playing fit is applied");
+                if (resref == "panpipes")
+                    ctx.Assert(fitted.Where((value, i) => Math.Abs(value - authored[i]) > .0001f).Any(), "the playing fit is applied");
+                else
+                    for (var i = 0; i < channels.Length; i++)
+                        ctx.Assert(Math.Abs(fitted[i] - authored[i]) < .0001f, "the authored drum grip does not change item cosmetics");
                 for (var refresh = 0; refresh < 5; refresh++) HornFit.Apply(player);
                 for (var i = 0; i < channels.Length; i++)
                     ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - fitted[i]) < .0001f,
@@ -47,7 +56,7 @@ public static class PerformanceInstrumentEngineTests
                 else
                 {
                     AssignCommand(player, () => { ClearAllActions(); ActionUnequipItem(item); });
-                    await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player) != item, 8f, "panpipes to be unequipped");
+                    await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player) != item, 8f, "instrument to be unequipped");
                 }
                 await ctx.WaitUntilAsync(() => !Performance.TryGetSession(player, out _), 8f, "the performance to stop");
                 for (var i = 0; i < channels.Length; i++)

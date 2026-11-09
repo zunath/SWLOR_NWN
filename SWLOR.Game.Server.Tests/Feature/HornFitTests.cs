@@ -46,6 +46,8 @@ public class HornFitTests
     [TestCase("slitherhorn", AppearanceType.Human, 0, Gender.None)]
     [TestCase("bandfill", AppearanceType.Human, 0, Gender.Female)]
     [TestCase("guitar", AppearanceType.Cathar, 0, Gender.Male)]
+    [TestCase("tambourine", AppearanceType.Human, 0, Gender.Female)]
+    [TestCase("tambourine", AppearanceType.Cathar, 0, Gender.Male)]
     [TestCase("panpipes", AppearanceType.Human, 2, Gender.Female)]
     [TestCase("panpipes", AppearanceType.Human, 0, Gender.None)]
     [TestCase("", AppearanceType.Human, 0, Gender.Male)]

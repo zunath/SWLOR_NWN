@@ -3520,66 +3520,6 @@
     "ProjectPath": "design/animations/performance/PipesFlourish.swlanim"
   },
   {
-    "Name": "VocalsLoop",
-    "AnimationName": "sw_voc_loop",
-    "Duration": 5.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VocalsLoop.swlanim"
-  },
-  {
-    "Name": "VocalsLow",
-    "AnimationName": "sw_voc_low",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VocalsLow.swlanim"
-  },
-  {
-    "Name": "VocalsMid",
-    "AnimationName": "sw_voc_mid",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VocalsMid.swlanim"
-  },
-  {
-    "Name": "VocalsHigh",
-    "AnimationName": "sw_voc_high",
-    "Duration": 0.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VocalsHigh.swlanim"
-  },
-  {
-    "Name": "VocalsFlourish",
-    "AnimationName": "sw_voc_flour",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VocalsFlourish.swlanim"
-  },
-  {
-    "Name": "ViolinLoop",
-    "AnimationName": "sw_vio_loop",
-    "Duration": 5.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/ViolinLoop.swlanim"
-  },
-  {
     "Name": "ViolinLow",
     "AnimationName": "sw_vio_low",
     "Duration": 0.5,
@@ -3618,6 +3558,16 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/ViolinFlourish.swlanim"
+  },
+  {
+    "Name": "ViolinLoop",
+    "AnimationName": "sw_vio_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/ViolinLoop.swlanim"
   },
   {
     "Name": "TambourineLoop",
@@ -3668,5 +3618,55 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/TambourineMid.swlanim"
+  },
+  {
+    "Name": "VocalsLoop",
+    "AnimationName": "sw_voc_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLoop.swlanim"
+  },
+  {
+    "Name": "VocalsLow",
+    "AnimationName": "sw_voc_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLow.swlanim"
+  },
+  {
+    "Name": "VocalsMid",
+    "AnimationName": "sw_voc_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsMid.swlanim"
+  },
+  {
+    "Name": "VocalsHigh",
+    "AnimationName": "sw_voc_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsHigh.swlanim"
+  },
+  {
+    "Name": "VocalsFlourish",
+    "AnimationName": "sw_voc_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsFlourish.swlanim"
   }
 ]

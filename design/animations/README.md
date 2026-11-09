@@ -371,6 +371,12 @@ aims the right-hand prop. Recipes without it retain their native left wrist orie
 of assuming the sword's +Y axis. The tool accounts for the native `rhand` attachment when
 aiming it along `blade`. The violin bow uses its measured diagonal axis; other recipes keep
 their prior grip and output bytes.
+`rightHandAttachment` optionally supplies a constant unit quaternion on the native `rhand`
+hook. The drum uses this to keep the wrist neutral while aiming its measured face and ribbon
+direction; it does not rotate the inventory item. `leftElbow` and `rightElbow` optionally set
+the bend planes for instrument contact. Omitted controls preserve existing recipes.
+`leftPalmFacing`, together with `leftGrip`, aims the tapping palm's native +X normal;
+forearm roll carries the twist while the wrist follows the contact angle.
 Microphones and violins occupy the left hand; a violin also requires its bow in the right.
 Singing clears the microphone's native `torchl` arm layer once at the opening, then suppresses
 its refresh on the looping carrier. The mapping is owned by the playback and restored on exit

@@ -1164,13 +1164,19 @@ def record_video(stack: Stack, label: str, seconds: int = 30, fps: int = 60) -> 
         raise LiveStackError('Video duration must be 1..120 seconds and frame rate 15, 30 or 60.')
     path = stack.evidence / f'{label}.mp4'
     probe = stack.evidence / f'{label}.video.json'
-    if path.exists() or probe.exists():
+    recorder = stack.evidence / f'{label}.recorder.sh'
+    if any(p.exists() for p in (path, probe, recorder, stack.evidence / f'{label}.ffmpeg.log')):
         raise LiveStackError('Video label already exists; use a new label.')
     stack.ensure_owner()
     require_running(stack, 'before the video')
     started = utc_now()
     try:
-        stack.ui('record', label, str(seconds), str(fps), timeout=seconds + 60)
+        recorder.write_bytes((PACKAGE_DIR / 'record-video.sh').read_bytes().replace(b'\r\n', b'\n'))
+        result = stack.compose('exec', '-T', 'client', '/bin/bash', f'/verify/{recorder.name}',
+                               label, str(seconds), str(fps), client=True, check=False, capture=True,
+                               timeout=seconds + 60)
+        if result.returncode != 0:
+            raise LiveStackError((result.stdout + result.stderr).decode('utf-8', 'replace').strip())
         stack.ensure_owner()
         require_running(stack, 'during the video')
         data = json.loads(probe.read_text('utf-8'))
@@ -1189,7 +1195,17 @@ def record_video(stack: Stack, label: str, seconds: int = 30, fps: int = 60) -> 
         raise LiveStackError(f'Video recording failed: {error}') from error
     record = {'label': label, 'file': path.name, 'started_utc': started, 'finished_utc': utc_now(),
               'sha256': digest, 'fps': fps, 'seconds': seconds, 'stream': stream,
+              'recorder_sha256': sha256(recorder),
               'source': 'private NWN client window; no audio or frame interpolation'}
+    encoder_log = stack.evidence / f'{label}.ffmpeg.log'
+    if encoder_log.is_file():
+        final = [line for line in encoder_log.read_text('utf-8', errors='replace').replace('\r', '\n').splitlines()
+                 if 'Lsize=' in line]
+        if final:
+            duplicated = re.search(r'\bdup=\s*(\d+)', final[-1])
+            dropped = re.search(r'\bdrop=\s*(\d+)', final[-1])
+            record['duplicated_frames'] = int(duplicated[1]) if duplicated else 0
+            record['dropped_frames'] = int(dropped[1]) if dropped else 0
     with (stack.evidence / 'videos.jsonl').open('a', encoding='utf-8') as manifest:
         manifest.write(json.dumps(record) + '\n')
     log(f'{path} fps={fps} frames={stream["nb_read_frames"]} sha256={digest}')

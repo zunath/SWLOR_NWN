@@ -169,6 +169,25 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var area = OBJECT_SELF;
+            RemoveFromCache(player, area);
+        }
+
+        /// <summary>
+        /// When a player or DM disconnects, remove them from the cache.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnClientDisconnectBefore)]
+        public static void DisconnectBefore()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player))
+                return;
+
+            var area = GetArea(player);
+            RemoveFromCache(player, area);
+        }
+
+        private static void RemoveFromCache(uint player, uint area)
+        {
             if (!PlayersByArea.ContainsKey(area))
                 PlayersByArea[area] = new List<uint>();
 

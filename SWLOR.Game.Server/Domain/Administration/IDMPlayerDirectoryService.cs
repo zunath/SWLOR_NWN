@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// <summary>
     /// Finds online and offline characters for the DM player search.
     /// This is a staff surface, so it shows canonical names, account names, and CD keys.
-    /// The static facade <c>Service.DMPlayerDirectory</c> forwards to the container's instance of this interface.
+    /// Static callers reach the container's instance of this interface through <c>GameServices.DMPlayerDirectory</c>.
     /// </summary>
     public interface IDMPlayerDirectoryService
     {

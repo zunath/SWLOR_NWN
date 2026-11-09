@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Administration;
 
 namespace SWLOR.Game.Server.Service.DMToolService
 {
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Service.DMToolService
 
         private void Add(DMObjectSearchResult result)
         {
-            if (_results.Count >= DMObjectSearch.MaxResults)
+            if (_results.Count >= DMObjectSearchService.MaxResults)
             {
                 IsTruncated = true;
                 Complete();

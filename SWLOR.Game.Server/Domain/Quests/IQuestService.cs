@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
     /// The quest registry (every quest definition, plus the quests contracts register at runtime), accepting and
-    /// advancing quests, the item collector placeables and the kill and trigger progression. The static facade
-    /// <c>Service.Quest</c> forwards to the container's instance of this interface and keeps the event handlers.
+    /// advancing quests, the item collector placeables and the kill and trigger progression. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.Quest</c>; the event handlers are on <see cref="QuestService"/>.
     /// </summary>
     public interface IQuestService
     {

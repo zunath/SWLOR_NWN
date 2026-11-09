@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
@@ -15,12 +16,12 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Lists the blueprints the DM creator can spawn and creates objects from them: the logic and state that used to be
-    /// static in <c>Service.DMBlueprintCatalog</c>, moved here unchanged. The facade still carries the event handler,
-    /// forwards every call to the container's instance and repeats <see cref="NotInPaletteCategory"/>.
+    /// static in <c>DMBlueprintCatalog</c>, moved here unchanged. The event handler runs on the container's instance;
+    /// static callers reach it through <c>GameServices.DMBlueprintCatalog</c>.
     /// </summary>
     public class DMBlueprintCatalogService : IDMBlueprintCatalogService
     {
-        /// <summary>The category that holds module blueprints no palette lists. <c>Service.DMBlueprintCatalog.NotInPaletteCategory</c> repeats it.</summary>
+        /// <summary>The category that holds module blueprints no palette lists.</summary>
         public const string NotInPaletteCategory = "Not in palette";
 
         private const float TriggerSize = 4f;
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             _spawn = spawn;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void LoadCustomPalettes()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();

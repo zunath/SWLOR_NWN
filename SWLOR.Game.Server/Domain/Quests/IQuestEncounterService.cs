@@ -6,9 +6,9 @@ namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
     /// Quest encounters: placeables that spawn a creature for a player who is on the right quest state, the cooldown
-    /// and idle despawn of that creature, and the kill credit its participants receive. The static facade
-    /// <c>Service.QuestService.QuestEncounter</c> forwards to the container's instance of this interface and keeps the
-    /// event handlers.
+    /// and idle despawn of that creature, and the kill credit its participants receive. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.QuestEncounter</c>; the event handlers are on
+    /// <see cref="QuestEncounterService"/>.
     /// </summary>
     public interface IQuestEncounterService
     {

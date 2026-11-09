@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Loads and saves each DM's Creature Manager favorites: the logic that used to be static in
-    /// <c>Service.DMCreatureManagerFavorite</c>, moved here unchanged. The facade forwards every call to the
-    /// container's instance.
+    /// <c>DMCreatureManagerFavorite</c>, moved here unchanged. Static callers reach the
+    /// container's instance through <c>GameServices.DMCreatureManagerFavorite</c>.
     /// </summary>
     public class DMCreatureManagerFavoriteService : IDMCreatureManagerFavoriteService
     {

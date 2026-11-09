@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// Builds the icons, one-line summaries and details the DM chooser and creator show.
     /// Blueprints are read from their templates; items and stat skins are briefly created in the
     /// no-access temporary storage container so the same code that reads live objects can read them.
-    /// The static facade <c>Service.DMObjectDetails</c> forwards to the container's instance of this interface.
+    /// Static callers reach the container's instance of this interface through <c>GameServices.DMObjectDetails</c>.
     /// </summary>
     public interface IDMObjectDetailsService
     {

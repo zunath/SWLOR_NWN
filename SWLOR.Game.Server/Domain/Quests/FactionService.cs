@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -8,15 +9,15 @@ using SWLOR.Game.Server.Service.FactionService;
 namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
-    /// Factions: the logic and state that used to be static in <c>Service.Faction</c>, moved here unchanged. The facade
-    /// still carries the event handler and forwards every call to the container's instance.
+    /// Factions: the logic and state that used to be static in <c>Faction</c>, moved here unchanged. The event
+    /// handler runs on the container's instance; static callers reach it through <c>GameServices.Faction</c>.
     /// </summary>
     public class FactionService : IFactionService
     {
-        /// <summary>The lowest standing a player can have with a faction. <c>Service.Faction.MinimumFaction</c> repeats it.</summary>
+        /// <summary>The lowest standing a player can have with a faction.</summary>
         public const int MinimumFaction = -5000;
 
-        /// <summary>The highest standing a player can have with a faction. <c>Service.Faction.MaximumFaction</c> repeats it.</summary>
+        /// <summary>The highest standing a player can have with a faction.</summary>
         public const int MaximumFaction = 5000;
 
         private readonly IDBService _db;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             _db = db;
         }
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadFactions()
         {
             var factionTypes = Enum.GetValues(typeof(FactionType)).Cast<FactionType>();

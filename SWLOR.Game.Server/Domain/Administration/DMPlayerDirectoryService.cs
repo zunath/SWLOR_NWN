@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Finds online and offline characters for the DM player search: the logic that used to be static in
-    /// <c>Service.DMPlayerDirectory</c>, moved here unchanged. The facade forwards every call to the container's
-    /// instance and repeats <see cref="MaxResults"/>.
+    /// <c>DMPlayerDirectory</c>, moved here unchanged. Static callers reach the container's
+    /// instance through <c>GameServices.DMPlayerDirectory</c>.
     /// </summary>
     public class DMPlayerDirectoryService : IDMPlayerDirectoryService
     {
-        /// <summary>Searches return at most this many characters. <c>Service.DMPlayerDirectory.MaxResults</c> repeats it.</summary>
+        /// <summary>Searches return at most this many characters.</summary>
         public const int MaxResults = 200;
         private const int CandidatePageSize = 200;
         // Keeps a search whose words are all common from loading most of the character records.

@@ -37,7 +37,7 @@ public static class SlamActivationEngineTests
             .GetGameObject(active).AsNWSPlaceable();
         native.OpenInventory(player);
         await ctx.WaitUntilAsync(() => Activity.IsBusy(player), 3f, "opening the active collector");
-        await ctx.ExecuteInCreatureContextAsync(stale, Quest.CloseItemCollector);
+        await ctx.ExecuteInCreatureContextAsync(stale, () => Quest.CloseItemCollector());
         ctx.AssertEqual(ActivityStatusType.Quest, Activity.GetBusyType(player), "A stale collector cannot unlock the current collector.");
         native.CloseInventory(player);
         await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 3f, "closing the active collector to release busy state");

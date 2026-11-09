@@ -16,7 +16,7 @@ internal sealed record ConvertedPieces(string Label, TypeKey? Facade, TypeKey In
 {
     /// <summary>
     /// The pieces of an extra, named after the type it stands for: <c>QuestService.QuestEncounter</c> is the facade
-    /// <c>Service.QuestService.QuestEncounter</c>, a part <c>PropertyCatalog</c> has no facade, and both have the
+    /// <c>Service.&lt;Name&gt;Service.&lt;Type&gt;</c>, a part <c>PropertyCatalog</c> has no facade, and both have the
     /// interface <c>I&lt;Type&gt;Service</c> and the instance class <c>&lt;Type&gt;Service</c> in the domain of the service.
     /// </summary>
     public static ConvertedPieces ForExtra(ConvertedService service, ExtraPiece extra)

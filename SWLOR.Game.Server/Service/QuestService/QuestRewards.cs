@@ -165,13 +165,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             Faction = faction;
             Amount = amount;
 
-            var factionDetail = Service.Faction.GetFactionDetail(Faction);
+            var factionDetail = GameServices.Faction.GetFactionDetail(Faction);
             MenuName = $"{factionDetail.Name} standing";
         }
 
         public void GiveReward(uint player)
         {
-            Service.Faction.AdjustPlayerFactionStanding(player, Faction, Amount);
+            GameServices.Faction.AdjustPlayerFactionStanding(player, Faction, Amount);
         }
     }
     public class FactionPointsReward : IQuestReward
@@ -187,13 +187,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             Faction = faction;
             Amount = Math.Abs(amount);
 
-            var factionDetail = Service.Faction.GetFactionDetail(Faction);
+            var factionDetail = GameServices.Faction.GetFactionDetail(Faction);
             MenuName = $"{factionDetail.Name} points";
         }
 
         public void GiveReward(uint player)
         {
-            Service.Faction.AdjustPlayerFactionPoints(player, Faction, Amount);
+            GameServices.Faction.AdjustPlayerFactionPoints(player, Faction, Amount);
         }
     }
 }

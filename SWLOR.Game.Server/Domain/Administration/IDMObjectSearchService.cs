@@ -5,8 +5,8 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// Finds areas and objects for the DM chooser. The static facade <c>Service.DMObjectSearch</c> forwards to the
-    /// container's instance of this interface.
+    /// Finds areas and objects for the DM chooser. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.DMObjectSearch</c>.
     /// </summary>
     public interface IDMObjectSearchService
     {

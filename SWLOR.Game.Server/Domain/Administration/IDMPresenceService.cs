@@ -5,8 +5,8 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
-    /// DM avatar visibility and movement used by the NUI DM toolbar windows. The static facade
-    /// <c>Service.DMPresence</c> forwards to the container's instance of this interface.
+    /// DM avatar visibility and movement used by the NUI DM toolbar windows. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.DMPresence</c>.
     /// </summary>
     public interface IDMPresenceService
     {

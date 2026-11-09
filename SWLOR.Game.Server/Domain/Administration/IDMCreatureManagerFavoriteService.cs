@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// Loads and saves each DM's Creature Manager favorites, keyed by the DM's public CD key. Favorites are personal:
-    /// they never change the saved creatures other DMs see. The static facade <c>Service.DMCreatureManagerFavorite</c>
-    /// forwards to the container's instance of this interface.
+    /// they never change the saved creatures other DMs see. Static callers reach the
+    /// container's instance of this interface through <c>GameServices.DMCreatureManagerFavorite</c>.
     /// </summary>
     public interface IDMCreatureManagerFavoriteService
     {

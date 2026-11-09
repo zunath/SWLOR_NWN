@@ -13,13 +13,13 @@ namespace SWLOR.Game.Server.Domain.Quests
 {
     /// <summary>
     /// Tracks which capstone mechanics each player has used: the logic and state that used to be static in
-    /// <c>Service.CapstoneProof</c>, moved here unchanged. Enemy proofs live on the enemy until it dies; support proofs
-    /// (heals and buffs on allies) stay on the player for a short window. The facade still forwards every call to the
-    /// container's instance.
+    /// <c>CapstoneProof</c>, moved here unchanged. Enemy proofs live on the enemy until it dies; support proofs
+    /// (heals and buffs on allies) stay on the player for a short window. Static callers reach the container's
+    /// instance through <c>GameServices.CapstoneProof</c>.
     /// </summary>
     public class CapstoneProofService : ICapstoneProofService
     {
-        /// <summary>How long a support proof holds. <c>Service.CapstoneProof.SupportWindowSeconds</c> repeats it.</summary>
+        /// <summary>How long a support proof holds.</summary>
         public const float SupportWindowSeconds = 30f;
 
         private const string EnemyProofPrefix = "CAPSTONE_PROOF_";

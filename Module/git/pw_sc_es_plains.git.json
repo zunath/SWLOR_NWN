@@ -120579,6 +120579,67 @@
           "type": "float",
           "value": -0.6400032043457031
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - The Winter Marches"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 75.02581024169922
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 103.8555603027344
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.82802
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.541428310757299e-43
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
       }
     ]
   }

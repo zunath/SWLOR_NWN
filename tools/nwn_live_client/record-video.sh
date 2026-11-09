@@ -14,7 +14,7 @@ mapfile -t windows < <(xdotool search --onlyvisible --pid "$pid" 2>/dev/null || 
 [ "${#windows[@]}" -eq 1 ] || die "Expected one visible NWN client window"
 w=${windows[0]}
 xdotool windowfocus --sync "$w"
-trap 'rm -f "$partial"' EXIT
+# Leave failed acquisition/probe output for the host to quarantine with its logs.
 # A dedicated input queue keeps encoder work from delaying X11 acquisition.
 # No audio input, host desktop capture, interpolation, or synthetic motion.
 timeout --signal=INT --kill-after=5 "$(($2 + 30))" ffmpeg -hide_banner -loglevel info -nostdin -n \

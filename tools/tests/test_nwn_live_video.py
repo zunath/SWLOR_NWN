@@ -1,6 +1,8 @@
 """Recording must stay bounded, retain provenance, and reject incomplete output."""
 import json
+import os
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import subprocess
@@ -77,6 +79,54 @@ class LiveVideoTests(unittest.TestCase):
         with self.assertRaisesRegex(stack.LiveStackError, 'server stopped'):
             stack.record_video(self.fake, 'motion', 2, 60)
         self.assertFalse((self.root / 'motion.mp4').exists())
+
+    @patch.object(stack, 'require_running')
+    def test_unsuccessful_recorder_quarantines_the_partial_video(self, running):
+        partial = self.root / '.motion.recording.mp4'
+
+        def fail(*args, **kwargs):
+            partial.write_bytes(b'unfinished-video')
+            return subprocess.CompletedProcess([], 7, b'', b'encoder failed')
+
+        self.fake.compose.side_effect = fail
+        with self.assertRaisesRegex(stack.LiveStackError, 'encoder failed'):
+            stack.record_video(self.fake, 'motion', 2, 60)
+        self.assertEqual(b'unfinished-video', (self.root / 'motion.failed.partial.mp4').read_bytes())
+        self.assertFalse((self.root / 'videos.jsonl').exists())
+
+
+class RecorderShellFailureTests(unittest.TestCase):
+    def check_failure(self, encoder_status, probe_status):
+        bash = (str(Path(os.environ.get('ProgramFiles', 'C:/Program Files')) / 'Git/bin/bash.exe')
+                if os.name == 'nt' else shutil.which('bash'))
+        if not bash or not Path(bash).is_file():
+            self.skipTest('Bash is required for recorder shell-path tests')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            # Redirect only the container's fixed mount/PID paths into the fixture.
+            script = (stack.PACKAGE_DIR / 'record-video.sh').read_text().replace('/verify/', './')
+            script = script.replace('/tmp/client.pid', './client.pid')
+            (root / 'recorder.sh').write_text(script, newline='\n')
+            (root / 'client.pid').write_text('123')
+            driver = '''
+export DISPLAY=:fixture
+xdotool() { if [ "$1" = search ]; then echo 123; fi; }
+timeout() { shift 3; "$@"; }
+ffmpeg() { printf 'unfinished-video' > "${@: -1}"; return ENCODER_STATUS; }
+ffprobe() { printf '{'; return PROBE_STATUS; }
+source ./recorder.sh motion 2 60
+'''.replace('ENCODER_STATUS', str(encoder_status)).replace('PROBE_STATUS', str(probe_status))
+            result = subprocess.run([bash, '-c', driver], cwd=root, capture_output=True, timeout=10)
+            self.assertEqual(encoder_status or probe_status, result.returncode, result.stderr.decode())
+            self.assertEqual(b'unfinished-video', (root / '.motion.recording.mp4').read_bytes())
+            self.assertTrue((root / 'motion.ffmpeg.log').is_file())
+            self.assertFalse((root / 'motion.mp4').exists())
+
+    def test_encoder_failure_preserves_partial_recording(self):
+        self.check_failure(7, 0)
+
+    def test_probe_failure_preserves_partial_recording(self):
+        self.check_failure(0, 8)
 
 
 if __name__ == '__main__':

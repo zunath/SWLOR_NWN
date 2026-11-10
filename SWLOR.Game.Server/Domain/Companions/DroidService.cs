@@ -1116,21 +1116,36 @@ namespace SWLOR.Game.Server.Domain.Companions
         private HashSet<uint> GetGeneratedAmmunition(uint droid)
         {
             var generatedItems = new HashSet<uint>();
-            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
-            if (native == null)
+            var flags = ReadGeneratedAmmunitionFlags(droid);
+            if (flags == null)
                 return generatedItems;
 
             foreach (var (slot, generated) in new[]
                      {
-                         (InventorySlot.Arrows, native.m_bMagicalArrowsEquipped != 0),
-                         (InventorySlot.Bullets, native.m_bMagicalBulletsEquipped != 0),
-                         (InventorySlot.Bolts, native.m_bMagicalBoltsEquipped != 0)
+                         (InventorySlot.Arrows, flags.Value.Arrows),
+                         (InventorySlot.Bullets, flags.Value.Bullets),
+                         (InventorySlot.Bolts, flags.Value.Bolts)
                      })
             {
                 if (generated)
                     generatedItems.Add(GetItemInSlot(slot, droid));
             }
             return generatedItems;
+        }
+
+        /// <summary>
+        /// The native creature's flags for generated (magical) ammunition, or null when the creature is not loaded.
+        /// Reads the native engine, so a test subclass answers it.
+        /// </summary>
+        protected virtual (bool Arrows, bool Bullets, bool Bolts)? ReadGeneratedAmmunitionFlags(uint droid)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
+            if (native == null)
+                return null;
+
+            return (native.m_bMagicalArrowsEquipped != 0,
+                    native.m_bMagicalBulletsEquipped != 0,
+                    native.m_bMagicalBoltsEquipped != 0);
         }
 
         /// <summary>

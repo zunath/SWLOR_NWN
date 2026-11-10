@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Domain.Economy;
 
@@ -239,7 +240,7 @@ public class BankServiceTests
     public void GetDepositFailure_refuses_a_droid_controller()
     {
         _engine.Engine.SetReturn("GetItemPossessor", PlayerObject);
-        _engine.Engine.SetReturn("GetResRef", SWLOR.Game.Server.Service.Droid.DroidControlItemResref);
+        _engine.Engine.SetReturn("GetResRef", DroidService.DroidControlItemResref);
 
         _service.GetDepositFailure(PlayerObject, ItemObject).Should().Be("That item cannot be stored.");
     }

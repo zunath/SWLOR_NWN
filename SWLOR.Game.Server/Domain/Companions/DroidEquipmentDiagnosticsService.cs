@@ -18,11 +18,13 @@ namespace SWLOR.Game.Server.Domain.Companions
     {
         private readonly IActivityService _activity;
         private readonly IItemService _item;
+        private readonly Lazy<IDroidService> _droid;
 
-        public DroidEquipmentDiagnosticsService(IActivityService activity, IItemService item)
+        public DroidEquipmentDiagnosticsService(IActivityService activity, IItemService item, Lazy<IDroidService> droid)
         {
             _activity = activity;
             _item = item;
+            _droid = droid;
         }
 
         private const int MaxStackFrames = 8;
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         public void OnEquipped()
         {
             var droid = OBJECT_SELF;
-            if (!Droid.IsDroid(droid))
+            if (!_droid.Value.IsDroid(droid))
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
@@ -50,7 +52,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             var droid = OBJECT_SELF;
             try
             {
-                if (!Droid.IsDroid(droid))
+                if (!_droid.Value.IsDroid(droid))
                     return;
 
                 var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
@@ -71,7 +73,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 ? pending.Slot
                 : InventorySlot.Invalid;
             // An item still in a slot was not unequipped.
-            if (Droid.IsDroid(droid) && _item.GetItemSlot(droid, item) == InventorySlot.Invalid)
+            if (_droid.Value.IsDroid(droid) && _item.GetItemSlot(droid, item) == InventorySlot.Invalid)
                 Record("unequipped", droid, item, slot);
         }
 
@@ -81,7 +83,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             var droid = OBJECT_SELF;
             try
             {
-                if (!Droid.IsDroid(droid) || Droid.IsSpawning(droid))
+                if (!_droid.Value.IsDroid(droid) || _droid.Value.IsSpawning(droid))
                     return;
 
                 var hands = DescribeHands(droid);
@@ -118,7 +120,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         {
             try
             {
-                if (!Droid.IsDroid(droid) || Droid.IsSpawning(droid))
+                if (!_droid.Value.IsDroid(droid) || _droid.Value.IsSpawning(droid))
                     return;
 
                 Write(change, droid, item, slot, string.Empty);

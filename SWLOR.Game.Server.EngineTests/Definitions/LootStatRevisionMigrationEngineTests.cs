@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -298,7 +299,7 @@ public static partial class MigrationEngineTests
         var owner = ctx.SpawnCreature("nw_rat001");
         await ctx.WaitFrameAsync();
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         string saved = null;
         string identity = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>

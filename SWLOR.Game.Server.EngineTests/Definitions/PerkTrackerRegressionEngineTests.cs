@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -739,7 +740,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 disc = CreateItemOnObject("id_adrenal1", programmer);
                 otherDisc = CreateItemOnObject("id_adrenal1", other);
                 weapon = CreateItemOnObject("nw_wswss001", programmer);
-                controller = CreateItemOnObject(Droid.DroidControlItemResref, programmer);
+                controller = CreateItemOnObject(DroidService.DroidControlItemResref, programmer);
             });
             foreach (var item in new[] { disc, otherDisc, weapon, controller })
                 ctx.Assert(GetIsObjectValid(item), "the programming fixture item exists");

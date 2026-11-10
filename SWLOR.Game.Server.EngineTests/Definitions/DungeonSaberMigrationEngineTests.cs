@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -27,7 +28,7 @@ public static partial class MigrationEngineTests
         var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
         await CreateItemAsync(ctx, owner, "sabcycl_l2", bag);
         var normal = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         var root = await CreateItemAsync(ctx, owner, "eclipse_w1", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
@@ -58,7 +59,7 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual("b_longsword", GetResRef(SavedCharacterMigration.FindItem(character, "b_longsword")),
                 "Unrelated weapon remains untouched");
             var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(
-                SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref), "CONSTRUCTED_DROID"));
+                SavedCharacterMigration.FindItem(character, DroidService.DroidControlItemResref), "CONSTRUCTED_DROID"));
             ctx.AssertEqual(0, droid.EquippedItems.Count, "Droid weapon slot is cleared");
             ctx.AssertEqual("eclipse_w3", GetResRef(Deserialize(ctx, droid.Inventory["dungeon-saber-fixture"])),
                 "Droid keeps the replacement under its original inventory ID");

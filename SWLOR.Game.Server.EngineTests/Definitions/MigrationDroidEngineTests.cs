@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var part = await CreateItemAsync(ctx, owner, "d_hd_mpv1", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, 15), part);
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)PerkType.MedKit, 2), controller);
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var tier = 1; tier <= 5; tier++)
             {
                 var cpu = await CreateItemAsync(ctx, owner, $"d_bl_cpu{tier}_m", owner);
-                var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+                var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
                 var droid = OBJECT_INVALID;
                 DroidItemPropertyDetails expected = null;
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -164,7 +165,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
             var cpu = await CreateItemAsync(ctx, owner, "d_bl_cpu5_m", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             var droid = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {

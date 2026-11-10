@@ -99,6 +99,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Lazy<ICombatQueriesService> _queries;
         private readonly Lazy<ICombatResourcesService> _resources;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public StatService(
             IDBService db,
             ICombatRecorderService combatRecorder,
@@ -121,8 +123,10 @@ namespace SWLOR.Game.Server.Domain.Character
             Lazy<ICombatDamageModifiersService> damageModifiers,
             Lazy<ICombatDamageTakenService> damageTaken,
             Lazy<ICombatQueriesService> queries,
-            Lazy<ICombatResourcesService> resources)
+            Lazy<ICombatResourcesService> resources,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _db = db;
             _combatRecorder = combatRecorder;
             _playerFeedback = playerFeedback;
@@ -3317,7 +3321,7 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint creature) =>
             TemporaryHitPointEffects.ScheduleLimitCheck(creature);
 
-        protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
 
         protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => _skill.GetSkillTypeByBaseItem(baseItem);
 

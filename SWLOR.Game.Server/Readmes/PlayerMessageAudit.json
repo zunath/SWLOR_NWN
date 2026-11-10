@@ -749,6 +749,55 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 247,
+    "Member": "AcquireDroidItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(master, giveItemMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 261,
+    "Member": "AcquireDroidItem",
+    "Delivery": "Retained",
+    "Call": "SpeakString(\"I'm sorry master. I cannot carry any more items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 744,
+    "Member": "SpawnDroid",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.GreetingPhrase())"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 796,
+    "Member": "SpawnDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Make room in your inventory and summon your droid again to recover its returned items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 956,
+    "Member": "RestoreDroidItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(GetMaster(droid), \"Some droid items could not be restored. They remain saved and will be retried on the next summon.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 988,
+    "Member": "DespawnDroid",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.DismissedPhrase())"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/DroidService.cs",
+    "Line": 1273,
+    "Member": "DroidOnDeath",
+    "Delivery": "Retained",
+    "Call": "SpeakString(personality.DeathPhrase())"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
     "Line": 223,
     "Member": "ProcessChatMessage",
@@ -6298,55 +6347,6 @@
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 191,
-    "Member": "AcquireDroidItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(master, giveItemMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 205,
-    "Member": "AcquireDroidItem",
-    "Delivery": "Retained",
-    "Call": "SpeakString(\"I'm sorry master. I cannot carry any more items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 688,
-    "Member": "SpawnDroid",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.GreetingPhrase())"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 740,
-    "Member": "SpawnDroid",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Make room in your inventory and summon your droid again to recover its returned items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 900,
-    "Member": "RestoreDroidItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(GetMaster(droid), \"Some droid items could not be restored. They remain saved and will be retried on the next summon.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 932,
-    "Member": "DespawnDroid",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.DismissedPhrase())"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 1217,
-    "Member": "DroidOnDeath",
-    "Delivery": "Retained",
-    "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
     "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",

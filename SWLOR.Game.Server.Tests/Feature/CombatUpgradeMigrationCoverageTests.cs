@@ -293,7 +293,7 @@ public class CombatUpgradeMigrationCoverageTests
             "StoredItemDataMigration.cs"));
         migration.Should().Contain("DroidStatSubType.Armor");
         migration.Should().Contain("DroidPartItemPropertySubType.CPU");
-        migration.Should().Contain("Droid.DroidControlItemResref");
+        migration.Should().Contain("DroidService.DroidControlItemResref");
         migration.Should().Contain("GetTierArmorSkillRank");
     }
 

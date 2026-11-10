@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Node = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Node;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -198,7 +199,7 @@ internal static class SavedDroidBoostItemMigration
         }
 
         var isConstructedDroidController =
-            item.ResRef == Droid.DroidControlItemResref &&
+            item.ResRef == DroidService.DroidControlItemResref &&
             !string.IsNullOrWhiteSpace(item.GetLocalString(ConstructedDroidVariable));
         var addedArmorStat = AddArmorSkillRankIfNeeded(item, isDroidCpu || isConstructedDroidController, hasArmorStat, tier);
 

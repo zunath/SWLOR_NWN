@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -35,8 +36,11 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     private readonly IItemService _item;
     private readonly Lazy<ISkillService> _skill;
 
-    public TwinPistolEquipmentService(IItemService item, Lazy<ISkillService> skill)
+    private readonly Lazy<IDroidService> _droid;
+
+    public TwinPistolEquipmentService(IItemService item, Lazy<ISkillService> skill, Lazy<IDroidService> droid)
     {
+        _droid = droid;
         _item = item;
         _skill = skill;
     }
@@ -372,7 +376,7 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     }
 
     /// <summary>The unconverted <c>Droid</c> service.</summary>
-    protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
+    protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
 
     /// <summary>The equipment storage that returns an item to the owner's inventory.</summary>
     protected virtual bool TryUnequip(uint creature, uint item, InventorySlot slot, bool allowRecoveryBag) =>

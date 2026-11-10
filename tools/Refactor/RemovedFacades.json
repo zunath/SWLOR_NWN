@@ -45,6 +45,7 @@
     { "facade": "DMPresence" },
     { "facade": "Death" },
     { "facade": "Disguise", "constants": [ { "name": "IdentityKeyPrefix", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "WipeCreditCost", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "WipeRoleplayXPCost", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "ActivationDelayMinutes", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "MinimumActivationDelayMinutes", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "MaxPrivateNameLength", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" }, { "name": "MaxBiographyLength", "owner": "SWLOR.Game.Server.Domain.Character.DisguiseService" } ] },
+    { "facade": "Droid", "constants": [ { "name": "DroidResref", "owner": "SWLOR.Game.Server.Domain.Companions.DroidService" }, { "name": "DroidControlItemResref", "owner": "SWLOR.Game.Server.Domain.Companions.DroidService" } ] },
     { "facade": "DroidEquipmentDiagnostics" },
     { "facade": "Enmity", "constants": [ { "name": "MinimumEnmityPercentAdjustment", "owner": "SWLOR.Game.Server.Domain.Combat.EnmityService" }, { "name": "MaximumEnmityPercentAdjustment", "owner": "SWLOR.Game.Server.Domain.Combat.EnmityService" }, { "name": "SecureThreatLeadPercent", "owner": "SWLOR.Game.Server.Domain.Combat.EnmityService" } ] },
     { "facade": "EquipmentUnequip" },

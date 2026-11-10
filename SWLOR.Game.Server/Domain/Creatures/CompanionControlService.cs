@@ -70,6 +70,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Lazy<ICombatActivityService> _combatActivity;
         private readonly Lazy<ICombatQueriesService> _queries;
 
+        private readonly Lazy<IDroidService> _droid;
+
         public CompanionControlService(
             IAIService ai,
             IBeastMasteryService beastMastery,
@@ -79,8 +81,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IPlayerNameService playerName,
             IStatusEffectService statusEffect,
             Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatQueriesService> queries)
+            Lazy<ICombatQueriesService> queries,
+            Lazy<IDroidService> droid)
         {
+            _droid = droid;
             _ai = ai;
             _beastMastery = beastMastery;
             _ability = ability;
@@ -1042,7 +1046,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
 
-        protected virtual bool IsDroid(uint creature) => Droid.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
 
         protected virtual bool IsBusy(uint target) => _activity.IsBusy(target);
 

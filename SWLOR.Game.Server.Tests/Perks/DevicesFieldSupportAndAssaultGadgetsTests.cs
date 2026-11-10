@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -162,12 +163,13 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         // stuck at the minimum Gadget DMG.
         Enum.GetNames(typeof(DroidStatSubType)).Should().NotContain("Devices");
 
-        var cacheDroidLevels = typeof(Droid).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Static);
+        var droid = _facades.Get<IDroidService>();
+        var cacheDroidLevels = typeof(DroidService).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Instance);
         cacheDroidLevels.Should().NotBeNull();
-        cacheDroidLevels!.Invoke(null, null);
-        var levelsByTier = (Dictionary<int, int>)typeof(Droid)
-            .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        cacheDroidLevels!.Invoke(droid, null);
+        var levelsByTier = (Dictionary<int, int>)typeof(DroidService)
+            .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(droid)!;
 
         var gadgetDMGByTier = levelsByTier.OrderBy(tier => tier.Key).ToDictionary(
             tier => tier.Key,

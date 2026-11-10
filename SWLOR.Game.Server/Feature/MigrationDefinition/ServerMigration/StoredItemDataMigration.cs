@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -1326,7 +1327,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
 
                 var isConstructedDroidController =
-                    GetResRef(item) == Droid.DroidControlItemResref &&
+                    GetResRef(item) == DroidService.DroidControlItemResref &&
                     !string.IsNullOrWhiteSpace(GetLocalString(item, "CONSTRUCTED_DROID"));
                 var addedArmorStat = AddArmorSkillRankIfNeeded(item, isDroidCpu || isConstructedDroidController, hasArmorStat, tier);
 

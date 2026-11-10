@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             var cpu = await CreateItemAsync(ctx, owner, "d_bl_cpu1_m", owner);
             var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 ClearProperties(cpu);
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var blueprint = await CreateItemAsync(ctx, owner, "blueprint", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", 3488);
@@ -239,7 +240,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
             var saber = await CreateItemAsync(ctx, owner, "b_longsword", bag);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 ItemPlugin.SetBaseItemType(saber, BaseItem.Lightsaber);

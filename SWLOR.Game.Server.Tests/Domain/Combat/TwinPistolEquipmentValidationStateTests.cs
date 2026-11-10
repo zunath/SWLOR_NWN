@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 [TestFixture]
 public class TwinPistolEquipmentValidationStateTests
 {
-    private static TwinPistolEquipmentService Create() => new(null!, FacadeForwarder.LazyFor<ISkillService>());
+    private static TwinPistolEquipmentService Create() => new(null!, FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<IDroidService>());
 
     [Test]
     public void Revalidation_DoesNotNestAndEndsPerCreature()

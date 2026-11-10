@@ -1044,7 +1044,7 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapService.cs");
-        var droidSource = ReadSource("SWLOR.Game.Server", "Service", "Droid.cs");
+        var droidSource = ReadSource("SWLOR.Game.Server", "Domain", "Companions", "DroidService.cs");
         var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
         var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
         var equipmentChangedMethod = FindMethod(droidSource, "OnEquipmentChanged");

@@ -372,12 +372,39 @@ of assuming the sword's +Y axis. The tool accounts for the native `rhand` attach
 aiming it along `blade`. The violin bow uses its measured diagonal axis; other recipes keep
 their prior grip and output bytes.
 `rightHandAttachment` optionally supplies a constant unit quaternion on the native `rhand`
-hook. The drum uses this to keep the wrist neutral while aiming its measured face and ribbon
-direction; it does not rotate the inventory item. `leftElbow` and `rightElbow` optionally set
+hook. The drum and violin bow use this to keep the wrist neutral while aiming the measured
+prop frame; it does not rotate the inventory item. `leftElbow` and `rightElbow` optionally set
 the bend planes for instrument contact. Omitted controls preserve existing recipes.
 `leftPalmFacing`, together with `leftGrip`, aims the tapping palm's native +X normal;
 forearm roll carries the twist while the wrist follows the contact angle.
 Microphones and violins occupy the left hand; a violin also requires its bow in the right.
+Violin play retains the native `torchl` hold on the left arm. Fit its bow against that
+composed hold, not the draft's hidden left-arm pose. `RefinePerformancePropMotion.py`
+pins the native carry and item models, composes their actual attachment transforms, and
+keeps playable bow hair at the string surface near the bridge. Its violin solve keys run
+at 60 Hz to preserve contact between short accent keys; this is separate from measured
+client video FPS. Check the installed male and female rigs and native front/side motion,
+including frog/tip clearance, wrist bend and elbow clearance throughout the stroke.
+
+After installing the five violin projects, run `tools/PublishViolinBowMotion.py`
+with the pre-correction asset `--baseline`, a staging `--output` and `--apply`,
+then compile `an_a_ba` and `an_a_fa`. This copies only the four bow-arm rotation
+tracks into the pinned body banks; dense solve keys must not resample body translations.
+Revise the existing robe extensions with `ExtendRobeAnimations.py --revise-rotations`
+before fitting other bodies.
+
+`SWLOR_Haks/tools/GenerateViolinBowContact.py` fits the normal E/D/O bodies and
+female Human/Droid offsets against their own static torch carry and arm lengths.
+Generate its eight `a_vio_*` banks in a staging `--output`, install and compile
+those banks, then run `--finalize`. The inheritance is body -> existing rifle bank
+-> violin bank -> original ancestor: body roots and rifle clips stay intact.
+Run `--update-robes --output <new-output> --apply` to copy only the three right-arm
+rotations into the seven affected robe extensions. The shared weapon hook and
+garment skeletons stay unchanged. Run `TestViolinBowContact.py` with `NWN_GAME_DATA`
+set to the installed KEY/BIF directory, and `ExtendRobeAnimations.py --check` with
+`--game-data`, before rebuilding the body and both animation HAKs. Confirm the
+compiled native motion on all normal body families and both genders.
+
 Singing clears the microphone's native `torchl` arm layer once at the opening, then suppresses
 its refresh on the looping carrier. The mapping is owned by the playback and restored on exit
 or equipment changes; other animation callers keep their existing torch behavior.
@@ -800,8 +827,8 @@ name. Package `sw_anim_m`, `sw_anim_f` and `sw_pt_root` with the changed body ba
 
 For a rotation-only correction to clips already in an extension, use
 `--revise-rotations --baseline <pre-correction-sha> --clip <internal-name> --output <new-output> --apply`
-with `--game-data`. It requires identical body nodes, channel layouts, key times, clip
-headers and rig data. Only selected quaternion values may change. The old layer's values
+with `--game-data`. It requires identical body nodes, channel layouts, non-rotation tracks, clip
+headers and rig data. Selected quaternion tracks may gain solve samples. The old layer's values
 must match the pinned body bank, and every unselected native component stays byte-identical.
 All extension body poses are checked again before installation. Then rerun `--check`.
 

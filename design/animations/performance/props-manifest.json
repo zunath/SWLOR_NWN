@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "4a04644be96d61da9802ff4feb8cdccfb3484e548911610415056f58e4ae4f94",
+  "RecipeSha256": "36632d7f311dbcf9e2d7e2c3c9b91e846dbc1eaaeb0d2eb8052cd0620fecb483",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -1545,17 +1545,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
+      "Interpretation": "The bow hair remains on the violin string near the bridge throughout the draw; the accepted violin hold is preserved.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinLoop.swlanim",
       "Duration": 5.2,
-      "Keyframes": 105,
+      "Keyframes": 313,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.8165595E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Playing"
         },
         {
@@ -1563,7 +1571,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Playing"
         },
         {
@@ -1571,7 +1595,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Playing"
         },
         {
@@ -1579,7 +1619,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Playing"
         },
         {
@@ -1587,7 +1643,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Playing"
         },
         {
@@ -1595,7 +1667,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.51666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.53333336,
           "Label": "Playing"
         },
         {
@@ -1603,7 +1691,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.56666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.6166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.6333333,
           "Label": "Playing"
         },
         {
@@ -1611,7 +1715,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.68333334,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.71666664,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.73333335,
           "Label": "Playing"
         },
         {
@@ -1619,7 +1739,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.76666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.78333336,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.81666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.8333333,
           "Label": "Playing"
         },
         {
@@ -1627,7 +1763,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.8666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.8833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.93333334,
           "Label": "Playing"
         },
         {
@@ -1635,7 +1787,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.96666664,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.98333335,
+          "Label": "Playing"
+        },
+        {
           "Time": 1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0333333,
           "Label": "Playing"
         },
         {
@@ -1643,7 +1811,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.0666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1333333,
           "Label": "Playing"
         },
         {
@@ -1651,7 +1835,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.1666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2333333,
           "Label": "Playing"
         },
         {
@@ -1659,7 +1859,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3333334,
           "Label": "Playing"
         },
         {
@@ -1667,7 +1883,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.3666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4333333,
           "Label": "Playing"
         },
         {
@@ -1675,7 +1907,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5333333,
           "Label": "Playing"
         },
         {
@@ -1683,7 +1931,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.5666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6333333,
           "Label": "Playing"
         },
         {
@@ -1691,7 +1955,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.6666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7333333,
           "Label": "Playing"
         },
         {
@@ -1699,7 +1979,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8333334,
           "Label": "Playing"
         },
         {
@@ -1707,7 +2003,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.8666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9333333,
           "Label": "Playing"
         },
         {
@@ -1715,7 +2027,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0333333,
           "Label": "Playing"
         },
         {
@@ -1723,7 +2051,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1333334,
           "Label": "Playing"
         },
         {
@@ -1731,7 +2075,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.1666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2333333,
           "Label": "Playing"
         },
         {
@@ -1739,7 +2099,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3333333,
           "Label": "Playing"
         },
         {
@@ -1747,7 +2123,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.3666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4333334,
           "Label": "Playing"
         },
         {
@@ -1755,7 +2147,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5333333,
           "Label": "Playing"
         },
         {
@@ -1763,7 +2171,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6333334,
           "Label": "Playing"
         },
         {
@@ -1771,7 +2195,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7333333,
           "Label": "Playing"
         },
         {
@@ -1779,7 +2219,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8333333,
           "Label": "Playing"
         },
         {
@@ -1787,7 +2243,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.8666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9333334,
           "Label": "Playing"
         },
         {
@@ -1795,7 +2267,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0333333,
           "Label": "Playing"
         },
         {
@@ -1803,7 +2291,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1333334,
           "Label": "Playing"
         },
         {
@@ -1811,7 +2315,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.1666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2333333,
           "Label": "Playing"
         },
         {
@@ -1819,7 +2339,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3333333,
           "Label": "Playing"
         },
         {
@@ -1827,7 +2363,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.3666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4333334,
           "Label": "Playing"
         },
         {
@@ -1835,7 +2387,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5333333,
           "Label": "Playing"
         },
         {
@@ -1843,7 +2411,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6333334,
           "Label": "Playing"
         },
         {
@@ -1851,7 +2435,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7333333,
           "Label": "Playing"
         },
         {
@@ -1859,7 +2459,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8333333,
           "Label": "Playing"
         },
         {
@@ -1867,7 +2483,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.8666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9333334,
           "Label": "Playing"
         },
         {
@@ -1875,7 +2507,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.016667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.0333333,
           "Label": "Playing"
         },
         {
@@ -1883,7 +2531,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.0833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.116667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.133333,
           "Label": "Playing"
         },
         {
@@ -1891,7 +2555,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.1666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.233333,
           "Label": "Playing"
         },
         {
@@ -1899,7 +2579,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.266667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.3333335,
           "Label": "Playing"
         },
         {
@@ -1907,7 +2603,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.366667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.383333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.4166665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.4333334,
           "Label": "Playing"
         },
         {
@@ -1915,7 +2627,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.483333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.516667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.5333333,
           "Label": "Playing"
         },
         {
@@ -1923,7 +2651,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.5833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.616667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.633333,
           "Label": "Playing"
         },
         {
@@ -1931,7 +2675,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.6666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.733333,
           "Label": "Playing"
         },
         {
@@ -1939,7 +2699,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.766667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.8333335,
           "Label": "Playing"
         },
         {
@@ -1947,7 +2723,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.866667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.883333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.9166665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.9333334,
           "Label": "Playing"
         },
         {
@@ -1955,7 +2747,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.983333,
+          "Label": "Playing"
+        },
+        {
           "Time": 5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.016667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.0333333,
           "Label": "Playing"
         },
         {
@@ -1963,7 +2771,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 5.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.0833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 5.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.116667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.133333,
           "Label": "Playing"
         },
         {
@@ -1971,11 +2795,19 @@
           "Label": "Playing"
         },
         {
+          "Time": 5.1666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 5.2,
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "8ae349dab3a8e79acba86d055addf89da71792b42dff71946d54f326b41c1897"
+      "ProjectSha256": "0cb6a45cfcd638627877cc01ee457d293aa81a3cedeb4373ff8fcb52d7dfb7fd"
     },
     {
       "Id": "ViolinLow",
@@ -1983,17 +2815,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
+      "Interpretation": "The bow hair remains on the violin string near the bridge throughout the draw; the accepted violin hold is preserved.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinLow.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.048571E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -2001,7 +2841,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -2009,7 +2865,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -2017,7 +2889,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -2025,7 +2913,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -2033,11 +2937,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "aaa458a4f41c03c76f473d0e8dd9165ac1f85eb285a19271a87e965539c85a5b"
+      "ProjectSha256": "c5254d1bcc95bea577a1fa87b123d1c299880cd131b7779f5d53bb9af8fc2207"
     },
     {
       "Id": "ViolinMid",
@@ -2045,17 +2957,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
+      "Interpretation": "The bow hair remains on the violin string near the bridge throughout the draw; the accepted violin hold is preserved.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinMid.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9992005E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -2063,7 +2983,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -2071,7 +3007,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -2079,7 +3031,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -2087,7 +3055,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -2095,11 +3079,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "c58435ae51b12b5f82e644386c8b386a025d06537b910b2349c713f4e84b7070"
+      "ProjectSha256": "a560344a4a7d29dd26e209a3d46fedc7d4322984ed2bc2a97fcb9671fe188a2f"
     },
     {
       "Id": "ViolinHigh",
@@ -2107,17 +3099,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
+      "Interpretation": "The bow hair remains on the violin string near the bridge throughout the draw; the accepted violin hold is preserved.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinHigh.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.7441361E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -2125,7 +3125,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -2133,7 +3149,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -2141,7 +3173,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -2149,7 +3197,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -2157,11 +3221,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "c3db8b69e4c0efaa12510b31310609f03e3d20db1c438da4f71ee716020abdb8"
+      "ProjectSha256": "d69247e9bce250ecddb9e8425c2dcf378d31930a5f8847bd81c1bd32e84cd7ae"
     },
     {
       "Id": "ViolinFlourish",
@@ -2169,17 +3241,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Violin performance with the existing held prop.",
-      "Interpretation": "The violin retains its accepted placement; the bow draws down and outward along the hair, with the elbow beside the ribs instead of crossing the face.",
+      "Interpretation": "The bow hair remains on the violin string near the bridge throughout the draw; the accepted violin hold is preserved.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "ViolinFlourish.swlanim",
       "Duration": 1.5,
-      "Keyframes": 31,
+      "Keyframes": 91,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.6660005E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -2187,7 +3267,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -2195,7 +3291,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -2203,7 +3315,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -2211,7 +3339,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -2219,7 +3363,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.51666665,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.53333336,
           "Label": "Accent"
         },
         {
@@ -2227,7 +3387,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.56666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.5833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.6,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.6166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.6333333,
           "Label": "Accent"
         },
         {
@@ -2235,7 +3411,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.6666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.68333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.7,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.71666664,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.73333335,
           "Label": "Accent"
         },
         {
@@ -2243,7 +3435,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.76666665,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.78333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.8,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.81666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.8333333,
           "Label": "Accent"
         },
         {
@@ -2251,7 +3459,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.8666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.8833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.9,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.9166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.93333334,
           "Label": "Accent"
         },
         {
@@ -2259,7 +3483,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.96666664,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.98333335,
+          "Label": "Accent"
+        },
+        {
           "Time": 1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0333333,
           "Label": "Accent"
         },
         {
@@ -2267,7 +3507,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.0666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0833334,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1333333,
           "Label": "Accent"
         },
         {
@@ -2275,7 +3531,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.1666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2333333,
           "Label": "Accent"
         },
         {
@@ -2283,7 +3555,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.2666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3333334,
           "Label": "Accent"
         },
         {
@@ -2291,7 +3579,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.3666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4166666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4333333,
           "Label": "Accent"
         },
         {
@@ -2299,11 +3603,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.4666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "1e9a4c5182eddedeab93b1c83b35eca72702d6793c7156021ff6b0477968e53e"
+      "ProjectSha256": "971fa4e74c5677a071c82957e3aa41f46ea5633bd3bba8aa68abb7d98fc80629"
     },
     {
       "Id": "TambourineLoop",

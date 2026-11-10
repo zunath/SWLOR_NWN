@@ -1,6 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 
 namespace SWLOR.Toolset.Tests;
@@ -8,7 +10,12 @@ namespace SWLOR.Toolset.Tests;
 public class PerformancePropMotionTests
 {
     private static readonly string[] States = ["Loop", "Low", "Mid", "High", "Flourish"];
-    private static readonly Vector3 BowDirection = Vector3.Normalize(new(-.6f, .35f, .72f));
+    // Measured on the native bow hair and the fingerboard-to-bridge string surface.
+    private static readonly Vector3 BowHairStart = new(.0023665f, .0244655f, .0301885f);
+    private static readonly Vector3 BowHairEnd = new(-.344768f, .213982f, .4864385f);
+    private static readonly Vector3 ViolinStringContact = new(.17881617f, .04933465f, .245f);
+    private static readonly Vector3 ViolinStringDirection = Vector3.Normalize(new(.57010706f, .13283711f, .81076029f));
+    private static readonly HashSet<string> TorchJoints = ["lbicep_g", "lforearm_g", "lforearm", "lhand_g", "lhand", "lshould_g"];
     private static readonly Vector3 DrumNormal = Vector3.Normalize(new(.0660850566f, -.2372743147f, .9691922745f));
     private static readonly Vector3 RibbonDirection = Vector3.Normalize(new(.7167083083f, -.6646320291f, -.2111716523f));
 
@@ -26,30 +33,47 @@ public class PerformancePropMotionTests
         File.ReadAllText(Path.Combine(Root, "design/animations/performance", family + state + ".swlanim")));
 
     [TestCaseSource(nameof(States))]
-    public void ViolinBowSlidesAlongItsLengthWithVisibleVerticalTravel(string state)
+    public void ViolinBowHairStaysOnTheStringThroughoutTheStroke(string state)
     {
         var project = Project("Violin", state);
         var hand = project.Joints.FindIndex(j => j.Name == "rhand");
-        var violin = project.Joints.FindIndex(j => j.Name == "lhand_g");
+        var violin = project.Joints.FindIndex(j => j.Name == "lhand");
+        var support = project.Joints.FindIndex(j => j.Name == "lhand_g");
         var elbow = project.Joints.FindIndex(j => j.Name == "rforearm_g");
-        var worlds = project.Keys.Select(k => AnimationRig.World(project.Joints, k.Pose)).ToArray();
-        var origin = worlds[0][hand].Translation;
+        var native = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba_non_combat.mdl")));
+        var torch = MdlAnimationPose.Sample(native.Animations.Single(a => a.Name == "torchl"), 0, MdlAnimationPose.BindPose(native));
+        var worlds = Enumerable.Range(0, (int)MathF.Ceiling(project.Duration * 120) + 1)
+            .Select(i =>
+            {
+                var pose = project.Sample(MathF.Min(i / 120f, project.Duration));
+                Vector3.Distance(AnimationRig.World(project.Joints, pose)[support].Translation, new(-.25f, .22f, 1.26f))
+                    .Should().BeLessThan(.001f, "the draft's left-arm inputs must remain unchanged");
+                // BowedStrings keeps the native left torch hold, unlike Vocals. Test
+                // contact with the rendered violin rather than the hidden draft arm.
+                for (var joint = 0; joint < project.Joints.Count; joint++)
+                    if (TorchJoints.Contains(project.Joints[joint].Name))
+                        pose[joint] = pose[joint] with { Orientation = torch[project.Joints[joint].Name].Orientation };
+                return AnimationRig.World(project.Joints, pose);
+            }).ToArray();
+        var fractions = new List<float>();
         foreach (var world in worlds)
         {
-            var delta = world[hand].Translation - origin;
-            (delta - BowDirection * Vector3.Dot(delta, BowDirection)).Length().Should().BeLessThan(.001f,
-                "a bow stroke must slide along the hair, rather than waving across the strings");
-            Vector3.Distance(world[violin].Translation, new(-.25f, .22f, 1.26f)).Should().BeLessThan(.001f,
-                "the accepted violin placement must stay put");
-            Vector3.Distance(Vector3.TransformNormal(Vector3.UnitY, world[hand]),
-                Vector3.TransformNormal(Vector3.UnitY, worlds[0][hand])).Should().BeLessThan(.001f,
-                "the bow must retain its angle through each stroke");
+            var start = Vector3.Transform(BowHairStart, world[hand]);
+            var end = Vector3.Transform(BowHairEnd, world[hand]);
+            var direction = Vector3.Normalize(end - start);
+            var target = Vector3.Transform(ViolinStringContact, world[violin]);
+            var along = Vector3.Dot(target - start, direction);
+            (target - start - direction * along).Length().Should().BeLessThan(.003f,
+                "moving the bow along its own axis is insufficient if its hair misses the strings");
+            var fraction = along / Vector3.Distance(start, end);
+            fraction.Should().BeInRange(.15f, .90f, "the string must remain on playable hair, clear of frog and tip");
+            fractions.Add(fraction);
+            MathF.Abs(Vector3.Dot(direction, Vector3.Normalize(Vector3.TransformNormal(ViolinStringDirection, world[violin]))))
+                .Should().BeLessThan(.03f, "the draw must cross the string instead of following it");
             world[elbow].Translation.X.Should().BeGreaterThan(.20f,
                 "the bow elbow must stay beside the player rather than crossing the chest");
-            world[hand].Translation.Z.Should().BeLessThan(worlds[0][hand].Translation.Z + .001f,
-                "the draw must use the bow hair above the grip, rather than lifting its frog past the strings");
         }
-        (worlds.Max(w => w[hand].Translation.Z) - worlds.Min(w => w[hand].Translation.Z)).Should().BeGreaterThan(.15f);
+        (fractions.Max() - fractions.Min()).Should().BeGreaterThan(.35f, "the bow must visibly draw in both directions");
         var wrist = project.Joints.FindIndex(j => j.Name == "rhand_g");
         foreach (var key in project.Keys) WristAngle(project, key.Pose[wrist].Orientation, wrist).Should().BeLessThan(60);
     }

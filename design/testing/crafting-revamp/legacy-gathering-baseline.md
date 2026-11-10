@@ -19,12 +19,12 @@ Rules ported, each checked against the source by `LegacySourceTests`:
 | Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:23-34` |
 | Scavenge second attempt | `ScavengeQuickSearch.cs:82-84` |
 | Scavenge success roll and DC | `ScavengeQuickSearch.cs:86-93` |
-| Scavenge XP level | `ScavengePoint.cs:111` |
+| Scavenge XP level | `ScavengePoint.cs:109` |
 | Ore tiers and XP per unit | `RefineryViewModel.cs:37-54` |
-| Refinery batch size | `RefineryViewModel.cs:64` |
+| Refinery batch size | `RefineryViewModel.cs:63` |
 | Power cores per batch | `RefineryViewModel.cs:174-179` |
-| Refining XP | `RefineryViewModel.cs:367-371` |
-| Fishing XP per bite | `FishingFightLifecycle.cs:61-71` |
+| Refining XP | `RefineryViewModel.cs:366-370` |
+| Fishing XP per bite | `FishingFightLifecycle.cs:62-72` |
 
 Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) was in `HarvesterItemDefinition.cs` until Prospecting replaced it. It is ported here from that file at commit 64b712fc8, where it was checked against the source, and is no longer checked. Refining still pays each ore's flat XP per unit (25 to 150 by ore tier), scaled by the rank: `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, so it is the flat XP at the ore's level (`GatheringLevels.RefiningXp`).
 

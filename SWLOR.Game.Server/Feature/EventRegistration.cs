@@ -594,7 +594,7 @@ namespace SWLOR.Game.Server.Feature
         {
             // Application Shutdown events
             EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
-            ProcessEvents.SubscribeProcessExit(SignalApplicationShutdown);
+            ServerManager.Bootstrapper.ProcessEvents.SubscribeProcessExit(SignalApplicationShutdown);
 
             EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
             EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);

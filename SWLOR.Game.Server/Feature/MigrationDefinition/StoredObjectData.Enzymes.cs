@@ -39,6 +39,14 @@ internal sealed partial class StoredObjectData
                 WriteSimpleModel(node, model);
                 changed = true;
             }
+            var staffParts = GaderffiiAppearanceMigration.GetUpdatedParts(ReadResRef(node), ReadBaseItem(node),
+                ReadAppearanceParts(node, 3));
+            if (staffParts != null)
+            {
+                for (var index = 0; index < staffParts.Length; index++)
+                    WritePart(node, PartLabel(staffParts.Length, index), staffParts[index]);
+                changed = true;
+            }
             var droid = FindLocal(node, ConstructedDroidVariable, 3);
             if (droid != null)
             {

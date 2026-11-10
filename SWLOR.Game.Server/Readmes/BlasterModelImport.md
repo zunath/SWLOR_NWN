@@ -532,6 +532,32 @@ decor, so a station gets its own row and the blueprint resref, tag, scripts and 
 need a module repack and the new resources need a hak rebuild. Player structures spawn from the blueprint, so they follow
 the new appearance after both.
 
+`--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
+Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+
+### Meshy placeables
+
+The Trophy Stands came from Meshy (opt-in and paid; see the weapon section above for the approval rule) with one owner-made
+concept image each, `model_type: smart-topology`, `ai_model: meshy-t2`, `target_polycount: 8000`, `texture_model: meshy-7`
+and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS output in three ways:
+
+- **Winding.** Meshy builds a model from separate open parts (a skull, a chain, a cloth). An open part has no meaningful
+  signed volume, so `near_closed` rejects good models, and `reorient: propagate` turned 18-23 percent of their area against
+  the normals. Use `double_sided_policy: "authored_winding"`, which keeps Meshy's winding (it agrees with Meshy's normals
+  on all but 0.01-3.2 percent of the area) and applies only `max_defect_fraction` (the stands needed 0.5-25 percent: the
+  cloth-draped Veilcarved stand is the high one) and `max_opposed_fraction`. Check open parts such as cloth and wings from
+  behind in the client.
+- **Normals.** Meshy ships a tangent-space normal map for its own mesh. Reprojection fails (faces with no texel-center
+  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`).
+- **Tangents.** Meshy GLBs carry no `TANGENT` attribute. When the computed MikkTSpace tangents differ between corners of
+  one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
+  with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
+  perpendicular to its normal ("Degenerate/nonfinite tangent basis" names it; one per model on two stands), then record the
+  new file's `sha256` in the manifest.
+
+Meshy faces the front of the concept image toward -Y after import; `yaw_degrees: 180` turns it to +Y, which points along
+the placeable's `GetFacing`.
+
 ### Offline render of a station
 
 Verify with `tools/VerifyNwnVisuals.py` on the real area that holds the stations (`dan_crafterbase` has all but the

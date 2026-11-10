@@ -1774,14 +1774,14 @@
     "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
     "Line": 299,
     "Member": "HandleNuiEvents",
-    "Delivery": "Retained",
+    "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(uiTarget, ColorToken.Red($\"You have moved too far away from the {GetName(viewModel.TetherObject)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",
     "Line": 805,
     "Member": "Draw",
-    "Delivery": "Retained",
+    "Delivery": "Shared transport; policy at caller",
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
   },
   {

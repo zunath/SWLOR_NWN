@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -41,7 +42,7 @@ public class EmotesWindowLifecycleTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _presence = new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>());
+        _presence = new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>());
         _gui = new TestGuiService(_db, _presence, typeof(FakeEmotesDefinition));
         _facades = new FacadeContainer(services =>
         {

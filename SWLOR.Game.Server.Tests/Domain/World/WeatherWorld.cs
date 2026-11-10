@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Tests.Support;
@@ -426,7 +427,7 @@ internal sealed class WeatherWorld : IDisposable
     public sealed class WeatherServiceUnderTest : WeatherService
     {
         public WeatherServiceUnderTest(IDBService db, IPlanetService planets)
-            : base(db, planets, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>())
+            : base(db, planets, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {
         }
 

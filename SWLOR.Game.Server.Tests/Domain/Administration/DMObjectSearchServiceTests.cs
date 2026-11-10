@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
@@ -37,7 +38,7 @@ public class DMObjectSearchServiceTests
     public void SetUp()
     {
         _world = new DMPossessionEngine();
-        _service = new DMObjectSearchService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()));
+        _service = new DMObjectSearchService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()));
         _objects.Clear();
         _cursor.Clear();
         _world.Engine.SetReturnSequence("GetFirstArea", Cantina);

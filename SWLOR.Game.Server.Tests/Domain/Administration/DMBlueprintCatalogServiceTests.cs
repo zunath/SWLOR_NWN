@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
@@ -65,7 +66,7 @@ public class DMBlueprintCatalogServiceTests
         _utilScope = UtilPluginRuntime.Override(_util);
         _objectScope = ObjectPluginRuntime.Override(_objectPlugin);
         _world.Engine.SetReturnHandler("GetStringByStrRef", arguments => "text " + arguments[0]);
-        _service = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>()), FacadeForwarder.For<ISpawnService>());
+        _service = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<ISpawnService>());
     }
 
     [TearDown]

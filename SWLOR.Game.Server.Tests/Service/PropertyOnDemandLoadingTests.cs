@@ -236,16 +236,17 @@ public class PropertyOnDemandLoadingTests
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Space.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Space",
+            "SpaceService.cs")).Replace("\r\n", "\n");
         var structureSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Service",
             "PropertyService",
             "StructureChangedAction.cs")).Replace("\r\n", "\n");
-        var registerBody = ExtractMethod(spaceSource, "public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)");
-        var removeBody = ExtractMethod(spaceSource, "public static void RemoveLandingPointByPropertyId(string propertyId)");
+        var registerBody = ExtractMethod(spaceSource, "public void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)");
+        var removeBody = ExtractMethod(spaceSource, "public void RemoveLandingPointByPropertyId(string propertyId)");
         var retrieveBody = ExtractMethod(structureSource, "private static Action<WorldProperty, uint> RetrieveStarport()");
 
         registerBody.Should().Contain("RemoveLandingPointByPropertyId(propertyId);");

@@ -102,6 +102,7 @@
     { "name": "Skill", "domain": "Character" },
     { "name": "Slicing", "domain": "Crafting", "extras": [ { "class": "SlicingSession" } ] },
     { "name": "Snippet", "domain": "Core" },
+    { "name": "Space", "domain": "Space" },
     { "name": "Spawn", "domain": "Creatures" },
     { "name": "Stat", "domain": "Character" },
     { "name": "StatusEffect", "domain": "Character" },

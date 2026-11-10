@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -41,6 +42,8 @@ namespace SWLOR.Game.Server.Domain.Economy
         private Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new Dictionary<MarketCategoryType, MarketCategoryAttribute>();
         private readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new Dictionary<MarketRegionType, MarketRegionAttribute>();
 
+        private readonly ISpaceService _space;
+
         public PlayerMarketService(
             IDBService db,
             IBeastMasteryService beastMastery,
@@ -48,7 +51,8 @@ namespace SWLOR.Game.Server.Domain.Economy
             IFishingService fishing,
             IItemService item,
             IMusicService music,
-            IPropertyService property)
+            IPropertyService property,
+            ISpaceService space)
         {
             _db = db;
             _beastMastery = beastMastery;
@@ -57,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             _item = item;
             _music = music;
             _property = property;
+            _space = space;
         }
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -236,9 +241,9 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return MarketCategoryType.Enhancement;
 
             // Ship Deeds
-            if (Service.Space.IsItemShip(item))
+            if (_space.IsItemShip(item))
                 return MarketCategoryType.Starship;
-            if (Service.Space.IsItemShipModule(item))
+            if (_space.IsItemShipModule(item))
                 return MarketCategoryType.StarshipParts;
 
             // Structures
@@ -270,7 +275,7 @@ namespace SWLOR.Game.Server.Domain.Economy
                 return MarketCategoryType.Blueprint;
 
             //Starship Ammo
-            if (Service.Space.IsStarshipAmmo(item))
+            if (_space.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
 
             // Song discs and music players

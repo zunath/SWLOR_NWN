@@ -7,12 +7,16 @@
     Dot-source RefactorCommon.ps1 first, then this file. See Test-MaintainabilityParity.ps1 for how the pieces fit.
 
     The copy is a detached git worktree of master in a folder outside the repository. It is never committed from and is
-    always removed by Remove-MasterCopy (callers use try/finally). What is applied to it:
-      * the seams listed in tools/Refactor/ParitySeams.txt (cherry-picks and new files),
+    always removed by Remove-MasterCopy (callers use try/finally). What is applied to it, in this order:
+      * the seams listed in tools/Refactor/ParitySeams.txt (cherry-picks and new files); master's handler order is read
+        here (Invoke-HandlerReference), before the mechanical scripts, because Move-SupportNamespaces.ps1 relocates
+        master's files and reflection order follows the compiler's file order (Convert-HandlerOrderNames maps the
+        pre-move names);
       * every mechanical script in tools/Refactor/MechanicalScripts.txt (Apply-FacadeRemoval.ps1 changes nothing on a tree
-        without the GameServices accessor),
+        without the GameServices accessor; Move-SupportNamespaces.ps1 moves master's support namespaces with the branch's
+        domain map),
       * on the copied characterization project only, Apply-FacadeRemoval.ps1 -Reverse, so the branch's tests compile
-        against master's facades (P2-Z).
+        against master's facades (P2-Z); it keeps the imports of the Domain.<Domain> namespaces the copy now declares.
     The SWLOR_Haks submodule is a sparse worktree (sw_2da, sw_tlk, sw_ability) at the commit master pins.
 #>
 

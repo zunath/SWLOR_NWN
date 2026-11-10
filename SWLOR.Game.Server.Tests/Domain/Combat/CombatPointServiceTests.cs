@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -538,7 +539,7 @@ public class CombatPointServiceTests
     private sealed class TestCombatPoint : CombatPointService
     {
         public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyService party, IBeastMasteryService beastMastery)
-            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
+            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }
 

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
@@ -59,7 +60,7 @@ public class HoloComServiceTests
     private sealed class TestHoloCom : HoloComService
     {
         public TestHoloCom(IPlayerListService playerList)
-            : base(playerList, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>())
+            : base(playerList, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }
 
@@ -264,7 +265,7 @@ public class HoloComServiceTests
     {
         _service.StartCall(Alice, Bob);
 
-        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>());
+        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.LazyFor<ISpaceService>());
         other.StartCall(Carol, Bob);
 
         _locals.Int(Carol, Token).Should().Be(1, "the token counter lives on the instance, not in a static field");

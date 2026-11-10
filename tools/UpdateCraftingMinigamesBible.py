@@ -73,6 +73,7 @@ SOURCE_FILES = {
     "perks_angler": PERKS / "AgricultureAnglerPerkDefinition.cs",
     "perks_gathering": PERKS / "GatheringPerkDefinition.cs",
     "forge_perk_rules": MINIGAME / "Forge" / "ForgePerkRules.cs",
+    "top_recipe": MINIGAME / "TopRecipeRules.cs",
     "gathering_styles": MINIGAME / "Gathering" / "GatheringStyles.cs",
 }
 
@@ -250,6 +251,7 @@ def recipe_bands(source: Source, names) -> list[tuple[str, float]]:
 
 
 def fabricator_entry(src: dict[str, Source]) -> str:
+    top = src["top_recipe"]
     rules, heads, sub_assemblies = src["fabricator"], src["fabricator_heads"], src["fabricator_parts"]
     parts = sub_assemblies.enum_names("SubAssembly")
     tools = heads.enum_names("FabricatorHead")
@@ -271,11 +273,14 @@ def fabricator_entry(src: dict[str, Source]) -> str:
         f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}."
         f" Above recipe level {number(rules.const('DifficultyStartLevel'))} each level adds {number(rules.const('QualityDifficultyPerLevel') * 100)}% to the quality a"
         f" recipe needs, {number(rules.const('WearDifficultyPerLevel') * 100)}% to wear and {number(rules.const('ServiceCpPerLevel'))} CP to Service, so a full set of"
-        " top-tier gear with both slots of the best mods is the target for the top recipes.")
+        " top-tier gear with both slots of the best mods is the target for the top recipes."
+        f" On recipes above level {number(top.const('LastOrdinaryLevel'))} Control above {number(top.const('ControlSoftCap'))} counts for"
+        f" {percent(top.const('ControlAboveSoftCapValue'))}, and the numeric bonuses of Builder perks are worth {percent(rules.const('TopRecipePerkValue'))} of their listed amount.")
 
 
 def kitchen_entry(src: dict[str, Source]) -> str:
     tuning = src["kitchen"]
+    top = src["top_recipe"]
     flavors = src["kitchen_axis"].enum_names("KitchenAxis")
     heats = src["kitchen_heat"].enum_names("KitchenHeat")
     bands = recipe_bands(tuning, ("XpMultiplierLevels1To10", "XpMultiplierLevels11To20", "XpMultiplierLevels21To30",
@@ -286,7 +291,9 @@ def kitchen_entry(src: dict[str, Source]) -> str:
         " the flavor drifts, and Freshness falls every turn. The dish is finished when Doneness is full and ruined if Freshness"
         " reaches 0, and its quality is 100% inside the perfect distance of the target and falls to 0% at the outer distance."
         f" Enhancements add {percent(tuning.const('EnhancementDonenessPerPenalty'))} of their progress penalty to the Doneness the"
-        " dish needs. Every craft's base XP, for a finished dish and a failure alike, is multiplied by"
+        " dish needs."
+        f" On recipes above level {number(top.const('LastOrdinaryLevel'))} each action gives {percent(tuning.const('TopRecipeDonenessFactor'))} of its usual Doneness."
+        " Every craft's base XP, for a finished dish and a failure alike, is multiplied by"
         f" {multiplier_text(bands, 'recipe levels')}, {XP_GATE}.")
 
 

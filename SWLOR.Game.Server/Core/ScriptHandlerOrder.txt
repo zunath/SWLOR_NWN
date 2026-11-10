@@ -46,7 +46,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Character.SkillService.LoadMappings
   action      SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
   action      SWLOR.Game.Server.Domain.Core.SnippetService.CacheData
-  action      SWLOR.Game.Server.Service.Space.LoadSpaceSystem
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.CacheData
   action      SWLOR.Game.Server.Domain.Character.StatService.CacheData
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
@@ -87,7 +87,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces
   action      SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
   action      SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
-  action      SWLOR.Game.Server.Service.Space.LoadLandingPoints
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
   action      SWLOR.Game.Server.Domain.Core.WalkmeshService.RetrieveWalkmeshes
   action      SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
   action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StartAudienceTick
@@ -154,7 +154,7 @@ area_enter
   action      SWLOR.Game.Server.Domain.World.MusicService.ApplyPlayerMusic
   action      SWLOR.Game.Server.Domain.World.PropertyService.EnterPropertyInstance
   action      SWLOR.Game.Server.Domain.World.PropertyService.ShowPropertyDescription
-  action      SWLOR.Game.Server.Service.Space.UpdateSpacePosition
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.UpdateSpacePosition
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.SpawnArea
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.OnAreaEnter
   action      SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
@@ -182,7 +182,7 @@ area_exit
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnAreaExit
   action      SWLOR.Game.Server.Domain.World.PropertyService.ExitPropertyInstance
   action      SWLOR.Game.Server.Domain.World.ShuttleService.HandleShuttleAreaExit
-  action      SWLOR.Game.Server.Service.Space.ClearTargetOnAreaExit
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.ClearTargetOnAreaExit
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.QueueDespawnArea
   action      SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerAreaExit
@@ -343,7 +343,7 @@ crea_death_aft
   action      SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnNpcRemoved
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnDeath
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnCreatureDeath
-  action      SWLOR.Game.Server.Service.Space.CreatureDeath
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.CreatureDeath
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.QueueRespawn
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnCreatureDeath
   action      SWLOR.Game.Server.Feature.CreatureDeathAnimation.OnDeath
@@ -369,10 +369,10 @@ crea_hb_aft
   action      SWLOR.Game.Server.Feature.EchaniTempleMonks.Heartbeat
 
 crea_leash_end
-  action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.RestoreLeashedShip
 
 crea_leash_start
-  action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.RestoreLeashedShip
 
 crea_perc_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreaturePerception
@@ -393,7 +393,7 @@ crea_spawn_aft
 
 crea_spawn_bef
   action      SWLOR.Game.Server.Domain.Items.LootService.SpawnStealLoot
-  action      SWLOR.Game.Server.Service.Space.CreatureSpawn
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.CreatureSpawn
 
 crea_splcast_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpellCastAt
@@ -539,8 +539,8 @@ examine_aft
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExaminePlayer
 
 examine_bef
-  action      SWLOR.Game.Server.Service.Space.ExamineShipModuleItem
-  action      SWLOR.Game.Server.Service.Space.ExamineShipItem
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.ExamineShipModuleItem
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.ExamineShipItem
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.MarkLegacyOffHandPistolOnExamine
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnExamine
 
@@ -555,7 +555,7 @@ explore_trigger
 
 feat_use_bef
   action      SWLOR.Game.Server.Domain.World.PropertyService.PropertyMenu
-  action      SWLOR.Game.Server.Service.Space.HandleShipModuleFeats
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.HandleShipModuleFeats
   action      SWLOR.Game.Server.Feature.UsePerkFeat.UseFeat
 
 fish_point
@@ -580,7 +580,7 @@ incubator_term
 
 input_atk_bef
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnAttack
-  action      SWLOR.Game.Server.Service.Space.SelectTarget
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.SelectTarget
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnAttack
 
 interval_pc_6s
@@ -705,7 +705,7 @@ mod_death
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnPlayerDeath
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnDeath
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.EndOnDeath
-  action      SWLOR.Game.Server.Service.Space.ApplyDeath
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.ApplyDeath
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnDeath
   action      SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerDeath
   action      SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnDeath
@@ -750,7 +750,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
   action      SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
-  action      SWLOR.Game.Server.Service.Space.EnterServer
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.StatService.ApplyPlayerStats
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
@@ -820,7 +820,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
-  action      SWLOR.Game.Server.Service.Space.ExitServer
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
   action      SWLOR.Game.Server.Domain.Character.StatService.ForgetOutOfCombatMovementState
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
@@ -1088,7 +1088,7 @@ scav_opened
   action      SWLOR.Game.Server.Feature.ScavengePoint.OnOpened
 
 ship_computer
-  action      SWLOR.Game.Server.Service.Space.UseShipComputer
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.UseShipComputer
 
 sit
   action      SWLOR.Game.Server.Feature.PlaceableScripts.Sit
@@ -1110,7 +1110,7 @@ spawn_despawn
   action      SWLOR.Game.Server.Feature.ItemDefinition.HarvesterItemDefinition.CleanupResourcePropPlaceables
 
 spc_target
-  action      SWLOR.Game.Server.Service.Space.TargetSpaceObject
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.TargetSpaceObject
 
 start_convo
   action      SWLOR.Game.Server.Domain.Core.ConversationMenuService.StartFromLocalConversation
@@ -1128,7 +1128,7 @@ stlent_add_aft
   action      SWLOR.Game.Server.Domain.Combat.StealthService.OnStealthEntered
 
 stlent_add_bef
-  action      SWLOR.Game.Server.Service.Space.PreventSpaceStealth
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.PreventSpaceStealth
   action      SWLOR.Game.Server.Domain.Combat.StealthService.GateStealthEntry
 
 stlex_add_aft

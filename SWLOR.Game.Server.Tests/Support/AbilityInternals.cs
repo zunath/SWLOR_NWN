@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
@@ -23,12 +24,12 @@ public static class AbilityInternals
     /// <summary>An instance with no neighbours.</summary>
     public static AbilityService NoNeighbours() =>
         new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!,
-            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>());
+            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>());
 
     /// <summary>An instance whose only neighbour is the party, for a test of party changes that reach the aura code.</summary>
     public static AbilityService WithParty(IPartyService party) =>
         new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, party, null!, null!, null!, null!, null!, null!, null!,
-            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>());
+            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>());
 
     /// <summary>A new tracker of <paramref name="service"/>; the arguments follow the service in its constructor.</summary>
     public static object NewTrackedImpact(AbilityService service, params object?[] arguments)

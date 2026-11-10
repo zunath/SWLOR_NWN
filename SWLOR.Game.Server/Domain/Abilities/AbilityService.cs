@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -76,6 +77,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly Dictionary<uint, WeaponAbilityTraitActivation> _queuedWeaponTraits = new();
         private readonly Dictionary<uint, AbilityQueuedWeaponAttack> _queuedWeaponAttacks = new();
 
+        private readonly Lazy<ISpaceService> _space;
+
         public AbilityService(
             IStatusEffectService statusEffect,
             IEnmityService enmity,
@@ -106,7 +109,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatFeedbackService feedback,
             Lazy<ICombatHitEffectsService> hitEffects,
             ICombatQueriesService queries,
-            Lazy<ICombatResourcesService> resources)
+            Lazy<ICombatResourcesService> resources,
+            Lazy<ISpaceService> space)
         {
             _statusEffect = statusEffect;
             _enmity = enmity;
@@ -138,6 +142,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _hitEffects = hitEffects;
             _queries = queries;
             _resources = resources;
+            _space = space;
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
@@ -4064,7 +4069,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual CombatDamageType GetWeaponDamageType(uint weapon) => WeaponDamage.GetDamageType(weapon);
 
-        protected virtual bool IsPlayerInSpaceMode(uint player) => Service.Space.IsPlayerInSpaceMode(player);
+        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.Value.IsPlayerInSpaceMode(player);
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) => _stat.GetStatSources(creature, payloadStat);
 

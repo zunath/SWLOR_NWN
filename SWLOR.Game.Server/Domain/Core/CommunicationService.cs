@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -54,6 +55,8 @@ namespace SWLOR.Game.Server.Domain.Core
         private readonly ILanguageService _language;
         private readonly IPlayerNameService _playerName;
 
+        private readonly ISpaceService _space;
+
         public CommunicationService(
             IDBService db,
             IDMPresenceService dmPresence,
@@ -65,7 +68,8 @@ namespace SWLOR.Game.Server.Domain.Core
             IPropertyService property,
             IActivityService activity,
             ILanguageService language,
-            IPlayerNameService playerName)
+            IPlayerNameService playerName,
+            ISpaceService space)
         {
             _db = db;
             _dmPresence = dmPresence;
@@ -78,6 +82,7 @@ namespace SWLOR.Game.Server.Domain.Core
             _activity = activity;
             _language = language;
             _playerName = playerName;
+            _space = space;
         }
 
         private class CommunicationComponent
@@ -1042,7 +1047,7 @@ namespace SWLOR.Game.Server.Domain.Core
         /// <summary>True when the player is flying their ship: <c>Space.IsPlayerInSpaceMode</c>, which reads the static database.</summary>
         protected virtual bool IsPlayerInSpaceMode(uint player)
         {
-            return Service.Space.IsPlayerInSpaceMode(player);
+            return _space.IsPlayerInSpaceMode(player);
         }
 
         public EmoteStyle GetEmoteStyle(uint player)

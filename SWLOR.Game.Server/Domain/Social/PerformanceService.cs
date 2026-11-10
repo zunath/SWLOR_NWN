@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -80,6 +81,8 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
 
+        private readonly ISpaceService _space;
+
         public PerformanceService(
             IDBService db,
             INamedAnimationService namedAnimation,
@@ -89,7 +92,8 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceRiderService riders,
             ICraftService craft,
             IActivityService activity,
-            IPerkService perk)
+            IPerkService perk,
+            ISpaceService space)
         {
             _db = db;
             _namedAnimation = namedAnimation;
@@ -100,6 +104,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _craft = craft;
             _activity = activity;
             _perk = perk;
+            _space = space;
         }
 
         public IReadOnlyList<PerformanceSongOption> GetAvailableSongs(string playerId)
@@ -970,7 +975,7 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual void ClearBusy(uint target) => _activity.ClearBusy(target);
 
-        protected virtual bool IsPlayerInSpaceMode(uint player) => Space.IsPlayerInSpaceMode(player);
+        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.IsPlayerInSpaceMode(player);
 
         public virtual int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong) =>
             _songs.ChooseSong(playerId, preferredTrackId);

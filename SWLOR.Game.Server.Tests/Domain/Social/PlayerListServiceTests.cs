@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Tests.Support;
@@ -161,7 +162,7 @@ public class PlayerListServiceTests
     private class TestableService : PlayerListService
     {
         public TestableService(IDBService db, IPartyService party)
-            : base(db, party, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IHoloComService>(), FacadeForwarder.LazyFor<IPlayerNameService>())
+            : base(db, party, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IHoloComService>(), FacadeForwarder.LazyFor<IPlayerNameService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }
 
@@ -858,7 +859,7 @@ public class PlayerListServiceTests
     private sealed class LandableDMPresenceService : DMPresenceService
     {
         public LandableDMPresenceService()
-            : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>())
+            : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }
 

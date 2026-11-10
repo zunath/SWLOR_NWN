@@ -5,6 +5,7 @@ using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
@@ -1164,7 +1165,7 @@ public class PerformanceServiceTests
             IPerformanceWindowsService windows,
             IPerformanceSongService songs,
             IPerformanceRiderService riders)
-            : base(db, animation, audience, windows, songs, riders, null!, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>())
+            : base(db, animation, audience, windows, songs, riders, null!, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISpaceService>())
         {
         }
 

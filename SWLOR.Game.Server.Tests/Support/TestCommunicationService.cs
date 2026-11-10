@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -24,7 +25,7 @@ public sealed class TestCommunicationService : CommunicationService
         IPlanetService planet,
         IAreaService area,
         IPropertyService property)
-        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>())
+        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISpaceService>())
     {
     }
 

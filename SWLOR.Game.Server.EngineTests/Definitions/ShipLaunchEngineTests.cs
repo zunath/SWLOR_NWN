@@ -331,12 +331,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>Reads live reservations so tests can assert cleanup without exposing production test seams.</summary>
-        private static IDictionary PendingLaunches() => (IDictionary)typeof(Space)
-            .GetField("_pendingShipLaunches", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        private static IDictionary PendingLaunches() => (IDictionary)typeof(SWLOR.Game.Server.Domain.Space.SpaceService)
+            .GetField("_pendingShipLaunches", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Space);
 
         /// <summary>Reads the live ship clone registry to exercise emergency towing with a real NPC ship.</summary>
-        private static IDictionary ShipClones() => (IDictionary)typeof(Space)
-            .GetField("_shipClones", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        private static IDictionary ShipClones() => (IDictionary)typeof(SWLOR.Game.Server.Domain.Space.SpaceService)
+            .GetField("_shipClones", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Space);
 
         /// <summary>Advances only the request's timeout to test expiry without a thirty-second wall-clock delay.</summary>
         private static void ExpirePendingLaunch(PlayerAbilityFixture actor)

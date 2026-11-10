@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 
@@ -178,6 +179,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IQuestService, QuestService>();
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
             services.AddSingleton<IQuestEncounterService, QuestEncounterService>();
+
+            // Space
+            services.AddSingleton<ISpaceService, SpaceService>();
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();

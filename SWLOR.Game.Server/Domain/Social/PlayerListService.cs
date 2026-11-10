@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -43,6 +44,8 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly HashSet<uint> _exitingPlayers = new();
         private bool _isRefreshQueued;
 
+        private readonly Lazy<ISpaceService> _space;
+
         public PlayerListService(
             IDBService db,
             IPartyService party,
@@ -50,7 +53,8 @@ namespace SWLOR.Game.Server.Domain.Social
             Lazy<IDisguiseService> disguise,
             IGuiService gui,
             Lazy<IHoloComService> holoCom,
-            Lazy<IPlayerNameService> playerName)
+            Lazy<IPlayerNameService> playerName,
+            Lazy<ISpaceService> space)
         {
             _db = db;
             _party = party;
@@ -59,6 +63,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _gui = gui;
             _holoCom = holoCom;
             _playerName = playerName;
+            _space = space;
         }
 
         public IReadOnlyCollection<PlayerListFlagType> GetFlags(uint player)
@@ -457,7 +462,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 ViewerIsDM = viewerIsDM,
                 ViewerIsInParty = viewerIsInParty,
                 ViewerIsPartyLeader = viewerIsInParty && viewerSubject.PartyLeader == viewer,
-                ViewerIsInSpace = Service.Space.IsPlayerInSpaceMode(viewer),
+                ViewerIsInSpace = _space.Value.IsPlayerInSpaceMode(viewer),
                 ViewerCallState = viewerIsDM ? PlayerListCallState.None : _holoCom.Value.GetCallState(viewer),
                 HasTarget = true,
                 TargetIsSelf = isSelf,
@@ -466,7 +471,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 TargetIsInOtherParty = !isSelf && !isInViewerParty && !subject.IsDM && subject.PartyPlayerCount >= 2,
                 TargetIsPartyLeader = !subject.IsDM && subject.PartyPlayerCount >= 2 && subject.PartyLeader == subject.Player,
                 ViewerDislikesTarget = !isSelf && !viewerIsDM && !subject.IsDM && IsHostileTo(viewer, subject.Player),
-                TargetIsInSpace = !subject.IsDM && Service.Space.IsPlayerInSpaceMode(subject.Player),
+                TargetIsInSpace = !subject.IsDM && _space.Value.IsPlayerInSpaceMode(subject.Player),
                 TargetIsInCall = !subject.IsDM && _holoCom.Value.GetCallState(subject.Player) != PlayerListCallState.None,
             };
         }

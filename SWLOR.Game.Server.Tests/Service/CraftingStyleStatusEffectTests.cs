@@ -191,7 +191,7 @@ public class CraftingStyleStatusEffectTests
             .OrderBy(name => name)
             .ToList();
 
-        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "Space.cs");
+        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "SpaceService.cs");
     }
 
     private static List<MethodDeclarationSyntax> StatusEffectMethods()

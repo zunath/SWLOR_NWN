@@ -558,6 +558,16 @@ class Stack:
 
     def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
                 timeout: float = 600) -> subprocess.CompletedProcess:
+        # Existing-container operations do not need Compose to re-evaluate mounts
+        # and GPU configuration. On a busy host that can consume the capture's
+        # entire startup deadline before ffmpeg runs.
+        if len(arguments) >= 3 and arguments[:2] == ('exec', '-T'):
+            self.ensure_owner()
+            service = self.service_info(arguments[2])
+            if service is None or not service['running']:
+                raise LiveStackError(f'The {arguments[2]} container is not running.')
+            return run(['docker', 'exec', service['id'], *arguments[3:]],
+                       check=check, capture=capture, timeout=timeout)
         files = [value for path in self.compose_files for value in ('-f', str(path))]
         command = ['docker', 'compose', '-p', self.project, *files,
                    '--env-file', str(self.run_dir / 'compose.env')]
@@ -565,10 +575,31 @@ class Stack:
             command += ['--profile', 'client']
         return run(command + list(arguments), check=check, capture=capture, timeout=timeout)
 
+    def service_info(self, service: str) -> dict | None:
+        """Inspect one generated service and reject a foreign container with that name."""
+        if not re.fullmatch(r'[a-z0-9][a-z0-9-]*', service):
+            raise LiveStackError('Invalid live-stack service name.')
+        template = '{"id":"{{.Id}}","running":{{.State.Running}},"labels":{{json .Config.Labels}}}'
+        result = run(['docker', 'container', 'inspect', '--format', template,
+                      f'{self.project}-{service}-1'], check=False, capture=True, timeout=60)
+        if result.returncode != 0:
+            return None
+        try:
+            info = json.loads(result.stdout)
+            if not isinstance(info, dict):
+                raise ValueError('Invalid service metadata')
+            labels = info.get('labels') or {}
+            if (not isinstance(labels, dict) or not re.fullmatch(r'[0-9a-f]{64}', info['id']) or type(info['running']) is not bool
+                    or labels.get('com.docker.compose.project') != self.project
+                    or labels.get('com.docker.compose.service') != service):
+                raise ValueError('Service identity mismatch')
+        except (ValueError, KeyError, TypeError) as error:
+            raise LiveStackError(f'Cannot verify this run\'s {service} container identity.') from error
+        return info
+
     def running(self, service: str) -> bool:
-        result = self.compose('ps', '--status', 'running', '-q', service, client=service == 'client',
-                              check=False, capture=True, timeout=60)
-        return result.returncode == 0 and bool(result.stdout.strip())
+        info = self.service_info(service)
+        return info is not None and info['running']
 
     @property
     def server_log(self) -> Path:

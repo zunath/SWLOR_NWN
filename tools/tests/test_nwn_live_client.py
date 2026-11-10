@@ -1,5 +1,6 @@
 """Pure helpers of the live-server client stack; the Docker run itself is verified in-engine."""
 from pathlib import Path
+import json
 import struct
 import subprocess
 import sys
@@ -305,6 +306,47 @@ class LiveClientHelperTests(unittest.TestCase):
             self.assertIn(str(owned.run_dir / 'compose.yml'), command)
             self.assertEqual(bool(gpu), str(owned.run_dir / 'compose.gpu.yml') in command)
             self.assertEqual(bool(gpu), 'compose.gpu.yml' in owned.compose_command('ps'))
+
+    def owned_stack(self):
+        directory = self.root / 'direct-run'
+        directory.mkdir()
+        (directory / 'state.json').write_text('{"project":"swlor-live-direct"}')
+        return stack.Stack(directory)
+
+    def service_reply(self, project='swlor-live-direct', service='client', running=True):
+        data = {'id': 'a' * 64, 'running': running,
+                'labels': {'com.docker.compose.project': project, 'com.docker.compose.service': service}}
+        return subprocess.CompletedProcess([], 0, json.dumps(data).encode(), b'')
+
+    def test_capture_exec_uses_verified_container_without_reloading_compose(self):
+        owned = self.owned_stack()
+        with patch.object(owned, 'ensure_owner') as owner, patch.object(stack, 'run', side_effect=[
+                self.service_reply(), subprocess.CompletedProcess([], 0, b'done', b'')]) as run:
+            result = owned.compose('exec', '-T', 'client', '/bin/bash', '/tool/ui.sh', 'capture', 'pose',
+                                   client=True, capture=True, timeout=105)
+        owner.assert_called_once_with()
+        self.assertEqual(b'done', result.stdout)
+        self.assertEqual(['docker', 'exec', 'a' * 64, '/bin/bash', '/tool/ui.sh', 'capture', 'pose'],
+                         run.call_args.args[0])
+        self.assertEqual(105, run.call_args.kwargs['timeout'])
+
+    def test_direct_service_inspection_rejects_a_foreign_container(self):
+        owned = self.owned_stack()
+        for reply in (self.service_reply(project='another-run'), self.service_reply(service='redis')):
+            with self.subTest(reply=reply.stdout), patch.object(stack, 'run', return_value=reply):
+                with self.assertRaisesRegex(LiveStackError, 'identity'):
+                    owned.running('client')
+
+    def test_direct_exec_refuses_stopped_or_reassigned_services(self):
+        owned = self.owned_stack()
+        with patch.object(owned, 'ensure_owner'), patch.object(stack, 'run', return_value=self.service_reply(running=False)) as run:
+            with self.assertRaisesRegex(LiveStackError, 'not running'):
+                owned.compose('exec', '-T', 'client', '/tool/ui.sh', 'capture', 'pose')
+            self.assertEqual(1, run.call_count)
+        with patch.object(stack, 'reservation_holder', return_value=str(self.root / 'other')), patch.object(stack, 'run') as run:
+            with self.assertRaisesRegex(LiveStackError, 'refusing'):
+                owned.compose('exec', '-T', 'client', '/tool/ui.sh', 'capture', 'pose')
+            run.assert_not_called()
 
     def test_gpu_backend_does_not_mount_a_host_display_or_publish_ports(self):
         text = (stack.PACKAGE_DIR / 'compose.gpu.yml').read_text()

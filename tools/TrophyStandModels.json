@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "notes": "Furniture Trophy Stand placeables, one Meshy model per furniture set. Same format as StationModels.json: each blueprint (resref = model) points at its own placeables.2da row, appended by PlaceableAppearanceTool install-haks.",
+  "stations": [
+    {
+      "blueprint": "swc_tro_ash",
+      "structure_type": "AshmarkTrophyStand",
+      "model": "swc_tro_ash",
+      "label": "[SWLOR] Furniture - Ashmark Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_gutter",
+      "structure_type": "GuttermarkTrophyStand",
+      "model": "swc_tro_gutter",
+      "label": "[SWLOR] Furniture - Guttermark Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_trail",
+      "structure_type": "TrailmarkTrophyStand",
+      "model": "swc_tro_trail",
+      "label": "[SWLOR] Furniture - Trailmark Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_stone",
+      "structure_type": "StonewakeTrophyStand",
+      "model": "swc_tro_stone",
+      "label": "[SWLOR] Furniture - Stonewake Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_aegis",
+      "structure_type": "AegislineTrophyStand",
+      "model": "swc_tro_aegis",
+      "label": "[SWLOR] Furniture - Aegisline Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_veil",
+      "structure_type": "VeilcarvedTrophyStand",
+      "model": "swc_tro_veil",
+      "label": "[SWLOR] Furniture - Veilcarved Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_surge",
+      "structure_type": "SurgewakeTrophyStand",
+      "model": "swc_tro_surge",
+      "label": "[SWLOR] Furniture - Surgewake Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_reson",
+      "structure_type": "ResonantTrophyStand",
+      "model": "swc_tro_reson",
+      "label": "[SWLOR] Furniture - Resonant Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_field",
+      "structure_type": "FieldlineTrophyStand",
+      "model": "swc_tro_field",
+      "label": "[SWLOR] Furniture - Fieldline Trophy Stand",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_tro_cmd",
+      "structure_type": "CommandlineTrophyStand",
+      "model": "swc_tro_cmd",
+      "label": "[SWLOR] Furniture - Commandline Trophy Stand",
+      "sound_app_type": null
+    }
+  ]
+}

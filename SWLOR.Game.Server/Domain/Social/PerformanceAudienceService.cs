@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _statusEffect = statusEffect;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void StartAudienceTick()
         {

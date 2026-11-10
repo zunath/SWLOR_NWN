@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module caches, status effects will be discovered and cached.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -2687,7 +2688,7 @@ namespace SWLOR.Game.Server.Domain.Character
         // The search over every loaded assembly finds the definitions the module cache registers.
         protected virtual IEnumerable<Type> GetStatusEffectTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(StatusEffectBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

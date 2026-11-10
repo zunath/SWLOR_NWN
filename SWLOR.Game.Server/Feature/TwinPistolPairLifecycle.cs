@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature;
 /// <summary>The second gun exists only while its owned Twin Pistols item is equipped.</summary>
 public static class TwinPistolPairLifecycle
 {
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterUnequipGuard() => EquipmentUnequip.RegisterGuard("TwinPistol", TryHandleUnequip);
 

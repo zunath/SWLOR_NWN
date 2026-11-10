@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
 /// Proves the seams added to <see cref="ScriptRegistry"/> for <see cref="ScriptHandlerOrderTests"/> change nothing the
-/// server does: <c>LoadHandlersFromAssembly</c> (what <c>ServerBootstrapper</c> calls) still scans every assembly loaded
+/// server does: <c>LoadHandlersFromAssembly</c> (what <c>ServerBootstrapper</c> calls) still scans every assembly of the game build
 /// in the AppDomain, and the registry holds exactly the handlers the discovery code it replaced produced. The order
 /// they run in is the manifest's (<see cref="ScriptHandlerManifestOrderTests"/>).
 /// </summary>
@@ -17,7 +17,7 @@ public class ScriptHandlerSeamTests
     private static Assembly GameAssembly => typeof(ScriptRegistry).Assembly;
 
     [Test]
-    public void LoadHandlersFromAssemblyScansEveryAssemblyLoadedInTheAppDomain()
+    public void LoadHandlersFromAssemblyScansEveryAssemblyOfTheGameBuild()
     {
         // Make sure the second assembly with handlers is loaded, so the scan has something besides the game assembly.
         var engineTests = Assembly.Load(new AssemblyName("SWLOR.Game.Server.EngineTests"));
@@ -33,13 +33,13 @@ public class ScriptHandlerSeamTests
                 break;
         }
 
-        var loaded = AppDomain.CurrentDomain.GetAssemblies();
+        var loaded = GameAssemblies.GetAssemblies();
         var viaServerEntryPoint = new ScriptRegistry();
         viaServerEntryPoint.LoadHandlersFromAssembly(ScriptHandlerTestSupport.OwnersAndTestFixtures);
         var viaExplicitList = new ScriptRegistry();
         viaExplicitList.LoadHandlersFromAssemblies(loaded, ScriptHandlerTestSupport.OwnersAndTestFixtures);
 
-        AppDomain.CurrentDomain.GetAssemblies().Should().HaveCount(loaded.Length,
+        GameAssemblies.GetAssemblies().Should().HaveCount(loaded.Length,
             "the scans must not have loaded another assembly, or the two registries saw different sets");
         Describe(viaServerEntryPoint).Should().NotBeEmpty();
         Describe(viaServerEntryPoint).Should().Equal(Describe(viaExplicitList));

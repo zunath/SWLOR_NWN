@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Native
         private static FunctionHook* _compareHook;
         [ThreadStatic] private static int _loadDepth;
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {

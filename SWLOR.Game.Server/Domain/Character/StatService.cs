@@ -146,6 +146,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// Builds the stat type metadata, which announces itself on the console the first time it is read. At boot this
         /// is the first read; recorded boots print the line once, here.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         protected virtual IEnumerable<Type> GetSpawnListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ISpawnListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Log.Write(LogGroup.Error, message);
         }
 
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

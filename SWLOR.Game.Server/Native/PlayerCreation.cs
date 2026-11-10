@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Native
     {
         private static FunctionHook* _creationHook;
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {

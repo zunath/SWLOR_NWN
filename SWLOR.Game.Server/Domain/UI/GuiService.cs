@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// </summary>
         protected virtual IEnumerable<Type> GetWindowDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IGuiWindowDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

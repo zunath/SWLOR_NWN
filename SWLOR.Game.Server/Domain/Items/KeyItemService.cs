@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Items
             _objectVisibility = objectVisibility;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {

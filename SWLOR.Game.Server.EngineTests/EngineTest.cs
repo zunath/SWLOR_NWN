@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.EngineTests
 
         private static List<(MethodInfo Method, EngineTestAttribute Attribute)> DiscoverTests(string filter)
         {
-            var tests = AppDomain.CurrentDomain.GetAssemblies()
+            var tests = GameAssemblies.GetAssemblies()
                 .SelectMany(a =>
                 {
                     try

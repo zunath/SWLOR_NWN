@@ -47,6 +47,7 @@ public static class AnimationPreviewCatalog
     /// <summary>
     /// Builds the catalog once when the module caches, so a duplicate or invalid entry stops the boot as it always did.
     /// </summary>
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void CacheCategories() => _ = Entries;
 

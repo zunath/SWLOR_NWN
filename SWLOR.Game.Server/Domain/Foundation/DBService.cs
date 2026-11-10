@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         }
 
         /// <inheritdoc/>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public void Load()
         {

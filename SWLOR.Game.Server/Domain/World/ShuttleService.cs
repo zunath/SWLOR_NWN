@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// When the module loads, recover in-transit flights from the database and
         /// begin processing the flight schedule.
         /// </summary>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadShuttleFlights()
         {

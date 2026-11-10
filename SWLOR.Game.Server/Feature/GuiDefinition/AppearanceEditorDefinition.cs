@@ -34,22 +34,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float EditorHeight = 680f;
         public const float TileSize = 96f; // pictures are 96x96; drawn 1:1 so they stay sharp
         public const float PreviewColumnWidth = 150f;
-        /// <summary>Holds three item swatches and their row number, or two body swatches.</summary>
-        private const float SwatchesColumnWidth = 196f;
+        /// <summary>Holds two labelled colour swatches beside the selected-part preview.</summary>
+        private const float SwatchesColumnWidth = 208f;
         private const float BodySwatchesWidth = 208f;
         private const float PreviewArrowWidth = 30f;
         private const float PreviewViewButtonWidth = 56f;
         private const float SlotSize = 52f;
-        /// <summary>A swatch is about as wide as its Leather / Cloth / Metal heading.</summary>
-        private const float SwatchWidth = 52f;
-        private const float SwatchHeight = 24f;
-        private const float SwatchRowLabelWidth = 20f;
-        private const float SwatchCodeHeight = 16f;
+        /// <summary>The same labelled button width used for head colours.</summary>
+        private const float SwatchWidth = 94f;
+        private const float SwatchHeight = 20f;
         /// <summary>
-        /// The item swatches and the selected part's rows: heading, two item swatch rows, and two
-        /// part code and swatch rows.
+        /// Whole-item and selected-part headings, each followed by three paired colour rows.
         /// </summary>
-        public const float ItemSwatchesHeight = 208f;
+        public const float ItemSwatchesHeight = 196f;
         /// <summary>A body colour's name ("Tattoo 1") is wider than its swatch.</summary>
         private const float BodySwatchColumnWidth = 72f;
         private const float PickerWidth = 196f;
@@ -438,7 +435,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         buildSwatches(swatches);
                         swatches.AddRow(fill => fill.AddSpacer());
                     }).SetWidth(swatchesWidth);
-                    row.AddColumn(AddPartPreview).SetWidth(PreviewColumnWidth);
+                    row.AddColumn(AddPartPreview).SetWidth(swatchesHeight > 0f ? PreviewColumnWidth - 12f : PreviewColumnWidth);
                     row.AddSpacer();
                     // NUI does not grow the row to a column taller than the picture beside it.
                     if (swatchesHeight > 0f)
@@ -451,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindIsVisible(model => model.IsColorPickerVisible);
                     row.AddSpacer();
                 });
-                BuildCustomTintEditor(col);
+                BuildCustomTintEditor(col, swatchesHeight > 0f);
                 col.AddRow(fill => fill.AddSpacer());
             });
         }
@@ -480,14 +477,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetBounds(5f, 3f, TileSize - 10f, 16f)
                         .SetColor(220, 220, 220)));
                 row.AddSpacer();
-            });
+            }).SetMargin(0f).SetHeight(TileSize + 4f);
             col.AddRow(row =>
             {
-                row.AddLabel()
-                    .BindText(model => model.PartPreviewLabel)
-                    .SetHeight(18f)
+                row.AddLabel().BindText(model => model.PartPreviewLabel).SetHeight(14f).SetMargin(0f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Center);
-            });
+            }).SetMargin(0f).SetHeight(14f);
+            col.AddRow(row =>
+            {
+                row.AddLabel().BindText(model => model.PartPreviewDetail).SetHeight(14f).SetMargin(0f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
+            }).SetMargin(0f).SetHeight(14f);
             col.AddRow(row =>
             {
                 row.AddSpacer();
@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(28f)
                     .BindOnClicked(model => model.OnClickNextPart());
                 row.AddSpacer();
-            });
+            }).SetMargin(0f).SetHeight(32f);
         }
 
         /// <summary>
@@ -525,86 +525,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// </summary>
         private void BuildItemSwatches(GuiColumn<AppearanceEditorViewModel> col)
         {
-            col.AddRow(row =>
-            {
-                row.AddSpacer().SetWidth(SwatchRowLabelWidth);
-                foreach (var label in new[] { "Leather", "Cloth", "Metal" })
-                {
-                    row.AddLabel().SetText(label).SetWidth(SwatchWidth + 4f).SetHeight(20f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                }
-                row.AddSpacer();
-            });
-            AddItemSwatchRow(col, null, "Global", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
-                AppearanceArmorColor.Metal1, partRow: false);
-            AddItemSwatchRow(col, null, "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
-                AppearanceArmorColor.Metal2, partRow: false);
-            AddItemSwatchRow(col, "1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
-                AppearanceArmorColor.Metal1, partRow: true);
-            AddItemSwatchRow(col, "2", "SelectedPart", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
-                AppearanceArmorColor.Metal2, partRow: true);
+            AddItemSwatchSection(col, "Whole body", false);
+            AddItemSwatchSection(col, "Selected part", true);
         }
 
-        /// <param name="label">"1" or "2" before a part row; item rows leave the space empty.</param>
-        private void AddItemSwatchRow(GuiColumn<AppearanceEditorViewModel> col, string label, string prefix,
-            AppearanceArmorColor leather, AppearanceArmorColor cloth, AppearanceArmorColor metal, bool partRow)
-        {
-            // A part swatch's palette code (P4) or "RGB", over the swatch.
-            if (partRow)
-                AddSwatchCodeRow(col, prefix, leather, cloth, metal);
-            col.AddRow(row =>
-            {
-                if (partRow)
-                    row.BindIsVisible(model => model.IsPartColorsVisible);
-                if (label == null)
-                    row.AddSpacer().SetWidth(SwatchRowLabelWidth);
-                else
-                    row.AddLabel().SetText(label).SetWidth(SwatchRowLabelWidth).SetHeight(SwatchHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                foreach (var channel in new[] { leather, cloth, metal })
-                {
-                    var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
-                        ? "gui_pal_armor01"
-                        : "gui_pal_tattoo";
-                    var name = $"{prefix}{channel}";
-                    var copy = channel;
-                    var button = AddSwatch(row, texture, name);
-                    if (partRow)
-                    {
-                        button.SetId($"ae_part_swatch_{channel}")
-                            .BindOnClicked(model => model.OnClickPartSwatch(copy))
-                            .BindOnMouseDown(model => model.OnMouseDownPartSwatch(copy))
-                            .SetTooltip("Colours only this part. Empty uses the outfit colour; right-click to empty it.");
-                    }
-                    else
-                    {
-                        button.SetId($"ae_base_swatch_{channel}")
-                            .SetTooltip("Colours the whole item. Parts with an empty swatch use this colour.")
-                            .BindOnClicked(model => model.OnClickBaseSwatch(copy));
-                    }
-                }
-                row.AddSpacer();
-            });
-        }
-
-        private static void AddSwatchCodeRow(GuiColumn<AppearanceEditorViewModel> col, string prefix,
-            AppearanceArmorColor leather, AppearanceArmorColor cloth, AppearanceArmorColor metal)
+        private void AddItemSwatchSection(GuiColumn<AppearanceEditorViewModel> col, string title, bool partRow)
         {
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsPartColorsVisible);
-                row.AddSpacer().SetWidth(SwatchRowLabelWidth);
-                foreach (var channel in new[] { leather, cloth, metal })
+                if (partRow) row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddLabel().SetText(title).SetHeight(14f).SetMargin(0f).SetHorizontalAlign(NuiHorizontalAlign.Left);
+            }).SetMargin(0f);
+            col.AddRow(row =>
+            {
+                if (partRow) row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddList(template =>
                 {
-                    row.AddLabel()
-                        .BindText(Bind<string>($"{prefix}{channel}Code"))
-                        .SetWidth(SwatchWidth + 4f)
-                        .SetHeight(SwatchCodeHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
-                }
-                row.AddSpacer();
-            });
+                    foreach (var side in new[] { "Left", "Right" })
+                    {
+                        var column = side == "Left" ? 0 : 1;
+                        var name = (partRow ? "PartSwatch" : "ItemSwatch") + side;
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(96f);
+                            var button = AddEquipmentSwatch(cell, name)
+                                .SetId((partRow ? "ae_part_swatch_" : "ae_base_swatch_") + side.ToLowerInvariant())
+                                .BindTooltip(Bind<GuiBindingList<string>>(name + "Tooltip"))
+                                .BindOnClicked(model => model.OnClickEquipmentColorSwatch(partRow, column));
+                            if (partRow)
+                                button.BindOnMouseDown(model => model.OnMouseDownEquipmentColorSwatch(column));
+                        });
+                    }
+                }).SetId(partRow ? "ae_part_color_swatches" : "ae_item_color_swatches")
+                    .BindRowCount(Bind<GuiBindingList<string>>((partRow ? "PartSwatch" : "ItemSwatch") + "LeftLabel"))
+                    .SetRowHeight(SwatchHeight).SetHeight(76f).SetMargin(0f)
+                    .SetShowBorders(false).SetScrollbars(NuiScrollbars.None);
+            }).SetMargin(0f);
         }
 
         /// <summary>Two labelled swatches per row; only channels used by the current head are listed.</summary>
@@ -671,32 +628,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// A swatch button: the palette crop, the exact RGB fill when custom, and a highlight outline
         /// when it is the colour being edited.
         /// </summary>
-        private GuiButton<AppearanceEditorViewModel> AddSwatch(GuiRow<AppearanceEditorViewModel> row, string texture, string name)
+        private GuiButton<AppearanceEditorViewModel> AddEquipmentSwatch(GuiTemplateCell<AppearanceEditorViewModel> cell, string name)
         {
-            var selected = Bind<bool>(name + "Selected");
-            var button = row.AddButton()
+            var selected = Bind<GuiBindingList<bool>>(name + "Selected");
+            var button = cell.AddButton()
                 .SetText("")
                 .SetWidth(SwatchWidth)
                 .SetHeight(SwatchHeight)
-                .SetMargin(2f)
+                .SetMargin(0f)
                 .BindIsEncouraged(selected)
                 .AddDrawList(list =>
                 {
+                    list.AddText(text => text.BindText(Bind<GuiBindingList<string>>(name + "Label")).SetBounds(4f, 1f, 64f, 18f).SetColor(255, 255, 255));
                     list.AddImage(image => image
-                        .SetResref(texture)
-                        .SetPosition(3f, 3f, SwatchWidth - 6f, SwatchHeight - 6f)
+                        .BindResref(Bind<GuiBindingList<string>>(name + "Texture"))
+                        .SetPosition(70f, 4f, 20f, 12f)
                         .SetAspect(NuiAspect.Stretch)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                         .SetVerticalAlign(NuiVerticalAlign.Top)
-                        .BindDrawTextureRegion(Bind<GuiRectangle>(name + "Region")));
+                        .BindDrawTextureRegion(Bind<GuiBindingList<GuiRectangle>>(name + "Region")));
                     list.AddPolyLine(fill => fill
-                        .BindIsEnabled(Bind<bool>(name + "Custom"))
-                        .BindColor(Bind<GuiColor>(name + "Tint"))
+                        .BindIsEnabled(Bind<GuiBindingList<bool>>(name + "Custom"))
+                        .BindColor(Bind<GuiBindingList<GuiColor>>(name + "Tint"))
                         .SetIsFilled(true)
-                        .AddPoint(3f, 3f)
-                        .AddPoint(SwatchWidth - 3f, 3f)
-                        .AddPoint(SwatchWidth - 3f, SwatchHeight - 3f)
-                        .AddPoint(3f, SwatchHeight - 3f));
+                        .AddPoint(70f, 4f).AddPoint(90f, 4f)
+                        .AddPoint(90f, 16f).AddPoint(70f, 16f));
                     AddOutlineItems(list, SwatchWidth, SwatchHeight, selected, 2f);
                 });
             return button;
@@ -809,12 +765,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClicked(onClickBind);
         }
 
-        private void BuildCustomTintEditor(GuiColumn<AppearanceEditorViewModel> col)
+        private void BuildCustomTintEditor(GuiColumn<AppearanceEditorViewModel> col, bool compact)
         {
             col.AddRow(row =>
             {
                 row.BindIsVisible(model => model.IsCustomTintAvailable);
-                row.AddLabel().SetText("Custom Colour (RGB)").SetHeight(20f)
+                row.AddLabel().SetText("Custom Colour (RGB)").SetHeight(compact ? 16f : 20f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
             col.AddRow(row =>
@@ -828,23 +784,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnMouseDown(model => model.OnMouseDownTintPicker())
                     .BindOnMouseUp(model => model.OnMouseUpTintPicker())
                     .SetWidth(PickerWidth)
-                    .SetHeight(PickerHeight);
+                    .SetHeight(compact ? 96f : PickerHeight)
+                    .SetMargin(compact ? 0f : 2f);
                 row.AddColumn(fields =>
                 {
-                    AddRgbField(fields, "R", model => model.CustomTintRed);
-                    AddRgbField(fields, "G", model => model.CustomTintGreen);
-                    AddRgbField(fields, "B", model => model.CustomTintBlue);
-                }).SetWidth(96f);
+                    AddRgbField(fields, "R", model => model.CustomTintRed, compact);
+                    AddRgbField(fields, "G", model => model.CustomTintGreen, compact);
+                    AddRgbField(fields, "B", model => model.CustomTintBlue, compact);
+                }).SetWidth(96f).SetMargin(compact ? 0f : 2f);
                 row.AddSpacer();
             });
         }
 
         private static void AddRgbField(GuiColumn<AppearanceEditorViewModel> col, string channel,
-            Expression<System.Func<AppearanceEditorViewModel, string>> binding)
+            Expression<System.Func<AppearanceEditorViewModel, string>> binding, bool compact)
         {
-            col.AddRow(row =>
+            var fieldRow = col.AddRow(row =>
             {
-                row.AddLabel().SetText(channel).SetWidth(18f).SetHeight(30f)
+                row.AddLabel().SetText(channel).SetWidth(18f).SetHeight(compact ? 26f : 30f).SetMargin(compact ? 0f : 2f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Right)
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                 row.AddTextEdit()
@@ -853,9 +810,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindTooltip(model => model.CustomTintTooltip)
                     .SetMaxLength(3)
                     .SetWidth(58f)
-                    .SetHeight(30f);
+                    .SetHeight(compact ? 26f : 30f).SetMargin(compact ? 0f : 2f);
                 row.AddSpacer();
             });
+            if (compact) fieldRow.SetHeight(26f).SetMargin(0f);
         }
 
         // ---------------------------------------------------------------- highlights

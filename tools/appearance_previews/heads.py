@@ -107,7 +107,9 @@ def bake_head(source, palette, text, inputs, defaults):
         rgb = base * (1 - coverage[..., None]) + lips * coverage[..., None]
     if params.get("detailDiffuse", 0) > 0.5 and 8 in sampled and 0 in sampled:
         detail = sampled[8][..., 0, None]
-        rgb = rgb * (1 - detail) + sampled[0][..., :3] * detail
+        detail_color = sampled[0][..., :3].copy()
+        detail_color[layer == 0] *= params.get("detailSkinGain", 1)
+        rgb = rgb * (1 - detail) + detail_color * detail
     alpha = np.ones(layer.shape)
     if params.get("useTexture1Alpha", 0) > 0.5 and 1 in sampled:
         alpha *= sampled[1][..., 3] >= 0.2

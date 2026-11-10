@@ -204,17 +204,17 @@ public class TintMapReviewTests
         definitionMethods["BuildWeaponEditor"].ToString().Should().NotContain("BuildColours",
             "weapons have no colour channels");
         var colours = definitionMethods["BuildColours"].ToString();
-        colours.Should().Contain("BuildCustomTintEditor(col)",
+        colours.Should().Contain("BuildCustomTintEditor(col, swatchesHeight > 0f)",
             "the picker lives in the colour column below the fixed-size palette group");
         colours.IndexOf("BuildColorPalette", StringComparison.Ordinal).Should()
-            .BeLessThan(colours.IndexOf("BuildCustomTintEditor(col)", StringComparison.Ordinal));
+            .BeLessThan(colours.IndexOf("BuildCustomTintEditor(col, swatchesHeight > 0f)", StringComparison.Ordinal));
         definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
             "placing the picker inside the palette group clips it at the group boundary");
         var customTintEditor = definitionMethods["BuildCustomTintEditor"].ToString();
         customTintEditor.Should().Contain("BindIsVisible(model => model.IsCustomTintAvailable)",
             "unavailable custom controls must collapse instead of reserving dead space");
         customTintEditor.Should().Contain(".SetWidth(PickerWidth)");
-        customTintEditor.Should().Contain(".SetHeight(PickerHeight)");
+        customTintEditor.Should().Contain(".SetHeight(compact ? 96f : PickerHeight)");
         definition.Should().Contain("private const float PickerWidth = 196f;");
         definition.Should().Contain("private const float PickerHeight = 100f;",
             "the picker should leave room for the palette in the colour column");

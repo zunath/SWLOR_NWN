@@ -210,6 +210,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             GetEffectiveColor(creature, selection, layer));
                 }
             }
+            HeadLodColorRefresh.Update(creature, selections);
+        }
+
+        internal static void RefreshLodHeadColors(uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections, int sequence)
+        {
+            foreach (var selection in selections.Where(HeadTintChannels.IsHead))
+            {
+                foreach (var layer in selection.Material.Layers)
+                    WriteMaterialColor(creature, selection.Material.Resref, layer,
+                        GetEffectiveColor(creature, selection, layer), sequence);
+            }
         }
 
         private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
@@ -1822,7 +1834,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creature,
             string materialResref,
             TintMapLayerType layer,
-            TintMapColorSelection color)
+            TintMapColorSelection color,
+            int refreshSequence = 0)
         {
             // Complete refreshes clear legacy parameters once, then only write rows. The native
             // material-name-null tweak replaces existing matching rows without needing a reset.
@@ -1835,11 +1848,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // Preserve the proven scalar MTR transport. RGB occupies a separate lossless
             // range; palette rows and the native robe fallback retain their existing values.
+            // The scalar MTR ignores Y; changing it replays the same color on a newly loaded LOD.
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                shaderColor);
+                shaderColor,
+                refreshSequence);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

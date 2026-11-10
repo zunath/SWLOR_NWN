@@ -209,6 +209,18 @@ class HeadPreviewTests(unittest.TestCase):
                             {6: self.mask}, {})
         np.testing.assert_array_equal(rgba[..., 3], [[255, 0], [255, 255]])
 
+    def test_fixed_diffuse_skin_brightness_preserves_non_skin_details(self):
+        from appearance_previews.heads import bake_head
+        diffuse = self.root / "diffuse.png"
+        detail = self.root / "detail.png"
+        Image.new("RGB", (2, 2), (100, 80, 60)).save(diffuse)
+        Image.new("RGB", (2, 2), (255, 255, 255)).save(detail)
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float detailDiffuse 1\nparameter float detailSkinGain 1.82\n",
+                            {0: diffuse, 8: detail}, {})
+        np.testing.assert_allclose(rgba[[0, 1], [0, 1], :3], [[182, 145, 109]] * 2, atol=1)
+        np.testing.assert_allclose(rgba[[0, 1], [1, 0], :3], [[100, 80, 60]] * 2, atol=1)
+
     def test_head_tint_maps_do_not_require_a_tm_filename_prefix(self):
         from appearance_previews.__main__ import prepare_textures
         raw = self.root / "raw"

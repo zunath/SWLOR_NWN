@@ -17,6 +17,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview
 
         /// <summary>The longest name that fits under a part picture.</summary>
         public const int MaxLength = 13;
+        public const int MaxHeadLength = MaxLength * 2 + 1;
+
+        public static (string First, string Second) CaptionLines(string name)
+        {
+            if (string.IsNullOrEmpty(name) || name.Length <= MaxLength)
+                return (name ?? string.Empty, string.Empty);
+            var split = name.IndexOf(" (", StringComparison.Ordinal);
+            if (split < 1 || split > MaxLength || name.Length - split - 1 > MaxLength)
+                split = name.LastIndexOf(' ', Math.Min(MaxLength, name.Length - 1));
+            return split > 0 ? (name.Substring(0, split), name.Substring(split + 1)) : (name, string.Empty);
+        }
 
         private static readonly Regex BodyPart = new("^p[fm][a-z]0_([a-z]+?)([lr]?)(\\d{3})$", RegexOptions.Compiled);
         private static readonly HashSet<string> SidedStems = new(StringComparer.Ordinal)

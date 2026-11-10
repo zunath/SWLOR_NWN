@@ -50,9 +50,14 @@ public class AppearancePartNamesTests
         AppearancePartNames.All.Should().NotBeEmpty();
         foreach (var (key, name) in AppearancePartNames.All)
         {
-            name.Length.Should().BeInRange(1, AppearancePartNames.MaxLength, key);
-            // Letters only: a number would read as the part number drawn on the tile.
-            Regex.IsMatch(name, "^[A-Za-z][A-Za-z '\\-]*$").Should().BeTrue($"{key} is \"{name}\"");
+            var head = key.Contains("_head", StringComparison.Ordinal);
+            name.Length.Should().BeInRange(1, head ? AppearancePartNames.MaxHeadLength : AppearancePartNames.MaxLength, key);
+            Regex.IsMatch(name, head ? "^[A-Za-z][A-Za-z '&(),\\-]*$" : "^[A-Za-z][A-Za-z '\\-]*$")
+                .Should().BeTrue($"{key} is \"{name}\"");
+            var caption = AppearancePartNames.CaptionLines(name);
+            caption.First.Length.Should().BeLessThanOrEqualTo(AppearancePartNames.MaxLength, key);
+            caption.Second.Length.Should().BeLessThanOrEqualTo(AppearancePartNames.MaxLength, key);
+            (caption.First + (caption.Second.Length > 0 ? " " + caption.Second : string.Empty)).Should().Be(name, key);
             name.Should().Be(name.Trim(), key);
             name.Should().NotContain("  ", key);
         }
@@ -62,12 +67,24 @@ public class AppearancePartNamesTests
     public void NamesAreUniqueWithinOneBrowserList()
     {
         // A browser list is one slot (or head body model, or weapon part class).
-        var lists = AppearancePartNames.All.GroupBy(entry => ListOf(entry.Key));
+        // Head captions may share a descriptor; their numbered picture identifies the variant.
+        var lists = AppearancePartNames.All.Where(entry => !entry.Key.Contains("_head", StringComparison.Ordinal))
+            .GroupBy(entry => ListOf(entry.Key));
         foreach (var list in lists)
         {
             var duplicates = list.GroupBy(entry => entry.Value).Where(group => group.Count() > 1).Select(group => group.Key).ToList();
             duplicates.Should().BeEmpty(list.Key);
         }
+    }
+
+    [TestCase("pmh0_head312", "Low Ponytail (Scars)", "Low Ponytail", "(Scars)")]
+    [TestCase("pfh0_head318", "Cyborg (Eyes, Jaw)", "Cyborg", "(Eyes, Jaw)")]
+    [TestCase("pmh0_head336", "Tats & Scars", "Tats & Scars", "")]
+    [TestCase("pmh0_head339", "Headpiece", "Headpiece", "")]
+    public void NewHeadNamesKeepTheRequestedTextInTwoCaptions(string key, string expected, string first, string second)
+    {
+        AppearancePartNames.Get(key, "?").Should().Be(expected);
+        AppearancePartNames.CaptionLines(expected).Should().Be((first, second));
     }
 
     private static string ListOf(string nameKey) => Regex.Replace(nameKey, "\\d+$", string.Empty);

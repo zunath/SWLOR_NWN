@@ -94,10 +94,17 @@ are recorded and checked in the head manifest. Changed playable
 head models are checked against the per-model budgets in the manifest. The 60 CU
 heads restored from the initial 10,000-triangle reduction have a 30,000-triangle
 LOD 0 target; the other changed heads retain their 10,000 budget. ContentStandards
-also requires LOD 1 at 10,000 and LOD 2 at 3,000 for every head above 10,000.
-The restored heads remain work in progress until those levels preserve native
-palette and RGB overrides in the client; a passing LOD 0 audit alone does not
-satisfy that requirement.
+currently requires LOD 1 at 10,000 and LOD 2 at 3,000 for every head above
+10,000. The owner's maintainer guidance instead specifies a 30,000-triangle
+close-model ceiling with LODs for performance. This update preserves that close
+ceiling and includes the 16 requested three-level sets, checked by
+`SWLOR_Haks/tools/HeadLodAssets.py`. It does not reduce other close models to
+10,000 or expand the requested LOD batch. The additional 49 catalog heads between
+10,000 and 30,000 without LODs are a guidance difference to clarify with the
+maintainer, rather than an agreed additional reduction task. The submission stays
+a draft pending that clarification. The scoped color replay below keeps loaded
+levels current, with a brief cached-color flash still possible on first load or
+helmet removal.
 
 When resizing packed head shades, use `HeadTintResampling.resize_shades` before
 encoding BC5. Lanczos on a floating-point plane can produce negative values and
@@ -985,6 +992,35 @@ Generated MTRs declare the active row uniforms, mask dimensions, and applicable
 cutout settings. Obsolete RGB and custom-mode parameters are removed when
 refreshing materials; declaring uniforms absent from the shader creates repeated
 link warnings during model loading.
+
+### Keep head LOD colors current
+
+`HeadLodColorRefresh` replays only the named tint rows of normal-phenotype heads
+with a deployed `.lod` resource. It uses one half-second scheduler per affected
+creature, caches the head's material selections, and reads effective palette/RGB
+colors through `TintMapService` on every tick. Materials also used by non-head
+parts are excluded so this refresh cannot take over equipment dye ownership.
+Ordinary heads do not start a scheduler. Visible helmets, head/species/gender
+changes, logout, destruction, and module reload cancel the old scheduler.
+Helmet removal also publishes the eligible head's current tint rows in the
+post-unequip event and restores its head projection, before the normal deferred
+equipment refresh. The module unequip event is too early to inspect the changed
+head slot reliably. This removes an avoidable server-side delay, but the Windows
+helmet-removal check still shows initial head colors before replay corrects them.
+The timing change is not a complete visual fix.
+
+The first transport component retains the exact existing palette coordinate or
+encoded RGB scalar. A bounded positive counter in the unused second component
+makes an otherwise identical native override record change, so the client applies
+it to the active LOD. Keep the MTR declaration scalar: its GPU upload still uses
+only the first component. The periodic pass must not reset shaders, write a
+wildcard row, rebuild appearance, alter saved colors, or refresh outfit materials.
+Settled color matching does not establish transition latency; client checks must
+cover zooming, observers, all used layers, palette reset, and helmet/head changes.
+The initial appearance of an inactive LOD can still show a cached color until the
+next replay. A shorter replay interval alone cannot guarantee a correct first
+frame. Record this separately from sustained color divergence when reviewing
+client recordings, and do not mark transitions approved from settled screenshots.
 
 The `Tint` native engine tests cover automatic civilian spawn, repeated complete
 refreshes, and individual color edits. They inspect the native parameter list,

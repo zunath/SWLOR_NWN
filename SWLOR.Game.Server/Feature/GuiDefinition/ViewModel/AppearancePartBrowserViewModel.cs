@@ -165,6 +165,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile38Label { get => Get<string>(); set => Set(value); }
         public string Tile39Label { get => Get<string>(); set => Set(value); }
 
+        public string Tile0Detail { get => Get<string>(); set => Set(value); }
+        public string Tile1Detail { get => Get<string>(); set => Set(value); }
+        public string Tile2Detail { get => Get<string>(); set => Set(value); }
+        public string Tile3Detail { get => Get<string>(); set => Set(value); }
+        public string Tile4Detail { get => Get<string>(); set => Set(value); }
+        public string Tile5Detail { get => Get<string>(); set => Set(value); }
+        public string Tile6Detail { get => Get<string>(); set => Set(value); }
+        public string Tile7Detail { get => Get<string>(); set => Set(value); }
+        public string Tile8Detail { get => Get<string>(); set => Set(value); }
+        public string Tile9Detail { get => Get<string>(); set => Set(value); }
+        public string Tile10Detail { get => Get<string>(); set => Set(value); }
+        public string Tile11Detail { get => Get<string>(); set => Set(value); }
+        public string Tile12Detail { get => Get<string>(); set => Set(value); }
+        public string Tile13Detail { get => Get<string>(); set => Set(value); }
+        public string Tile14Detail { get => Get<string>(); set => Set(value); }
+        public string Tile15Detail { get => Get<string>(); set => Set(value); }
+        public string Tile16Detail { get => Get<string>(); set => Set(value); }
+        public string Tile17Detail { get => Get<string>(); set => Set(value); }
+        public string Tile18Detail { get => Get<string>(); set => Set(value); }
+        public string Tile19Detail { get => Get<string>(); set => Set(value); }
+        public string Tile20Detail { get => Get<string>(); set => Set(value); }
+        public string Tile21Detail { get => Get<string>(); set => Set(value); }
+        public string Tile22Detail { get => Get<string>(); set => Set(value); }
+        public string Tile23Detail { get => Get<string>(); set => Set(value); }
+        public string Tile24Detail { get => Get<string>(); set => Set(value); }
+        public string Tile25Detail { get => Get<string>(); set => Set(value); }
+        public string Tile26Detail { get => Get<string>(); set => Set(value); }
+        public string Tile27Detail { get => Get<string>(); set => Set(value); }
+        public string Tile28Detail { get => Get<string>(); set => Set(value); }
+        public string Tile29Detail { get => Get<string>(); set => Set(value); }
+        public string Tile30Detail { get => Get<string>(); set => Set(value); }
+        public string Tile31Detail { get => Get<string>(); set => Set(value); }
+        public string Tile32Detail { get => Get<string>(); set => Set(value); }
+        public string Tile33Detail { get => Get<string>(); set => Set(value); }
+        public string Tile34Detail { get => Get<string>(); set => Set(value); }
+        public string Tile35Detail { get => Get<string>(); set => Set(value); }
+        public string Tile36Detail { get => Get<string>(); set => Set(value); }
+        public string Tile37Detail { get => Get<string>(); set => Set(value); }
+        public string Tile38Detail { get => Get<string>(); set => Set(value); }
+        public string Tile39Detail { get => Get<string>(); set => Set(value); }
+
         public string Tile0Number { get => Get<string>(); set => Set(value); }
         public string Tile1Number { get => Get<string>(); set => Set(value); }
         public string Tile2Number { get => Get<string>(); set => Set(value); }
@@ -304,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(string.Empty, $"Tile{tile}Image");
                 Set(string.Empty, $"Tile{tile}Label");
+                Set(string.Empty, $"Tile{tile}Detail");
                 Set(string.Empty, $"Tile{tile}Number");
                 Set(false, $"Tile{tile}Selected");
                 Set(false, $"Tile{tile}Visible");
@@ -389,7 +431,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var id = visible ? _ids[position] : -1;
                 SetIfChanged($"Tile{tile}Visible", visible);
                 SetIfChanged($"Tile{tile}Image", visible ? AppearancePreview.Picture(_key(id), _view) : string.Empty);
-                SetIfChanged($"Tile{tile}Label", visible ? _label(id) : string.Empty);
+                var caption = AppearancePartNames.CaptionLines(visible ? _label(id) : string.Empty);
+                SetIfChanged($"Tile{tile}Label", caption.First);
+                SetIfChanged($"Tile{tile}Detail", caption.Second);
                 SetIfChanged($"Tile{tile}Number", visible && id > 0 ? id.ToString() : string.Empty);
                 SetIfChanged($"Tile{tile}Selected", visible && id == _current);
             }

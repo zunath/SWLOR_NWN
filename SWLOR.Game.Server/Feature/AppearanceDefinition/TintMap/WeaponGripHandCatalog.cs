@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 public sealed class WeaponGripHandCatalog
 {
     private static readonly Regex Source = new(@"^(p[mf][hedoz]0_hand[rl])(\d{3})$", RegexOptions.IgnoreCase);
-    private static readonly Regex Render = new(@"^(p[mf][hedoz]0_hand[rl])(\d{4,5})$", RegexOptions.IgnoreCase);
+    private static readonly Regex Render = new(@"^(p[mf][hedoz]0_hand[rl])(\d{3,5})$", RegexOptions.IgnoreCase);
     private readonly Dictionary<string, string> _renders = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<(string Source, BaseItem Weapon, int Model), string> _weaponRenders = new();
     private readonly Dictionary<string, string> _sources = new(StringComparer.OrdinalIgnoreCase);
@@ -28,7 +28,8 @@ public sealed class WeaponGripHandCatalog
             if (!original.Success || !posed.Success ||
                 !original.Groups[1].Value.Equals(posed.Groups[1].Value, StringComparison.OrdinalIgnoreCase) ||
                 !ushort.TryParse(original.Groups[2].Value, out var sourceId) || sourceId == 0 ||
-                !ushort.TryParse(posed.Groups[2].Value, out var id) || id < 1000 ||
+                !ushort.TryParse(posed.Groups[2].Value, out var id) ||
+                (id < 1000 && !source.Equals(render, StringComparison.OrdinalIgnoreCase)) ||
                 model < 0 || model > 65535 ||
                 weapon != (BaseItem)(-1) && CanonicalWeapon(weapon) is not (BaseItem.Sling or BaseItem.Rifle) ||
                 weapon == (BaseItem)(-1) && model != 0 ||

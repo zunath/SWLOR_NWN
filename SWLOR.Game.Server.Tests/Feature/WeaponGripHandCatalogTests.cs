@@ -130,4 +130,29 @@ public class WeaponGripHandCatalogTests
         duplicate.Should().Throw<ArgumentException>();
         ambiguous.Should().Throw<ArgumentException>();
     }
+    [Test]
+    public void ModelCanKeepItsAuthoredHandInsteadOfTheDefaultGrasp()
+    {
+        var catalog = new WeaponGripHandCatalog(new[]
+        {
+            new WeaponGripHandRow("pfe0_handr260", "pfe0_handr51260", BaseItem.Rifle),
+            new WeaponGripHandRow("pfe0_handr260", "pfe0_handr260", BaseItem.Rifle, 307)
+        });
+        catalog.ResolveStyle("pfe0_handr", 260, BaseItem.Rifle, "r", 101).Should().Be(51260);
+        catalog.ResolveStyle("pfe0_handr", 51260, BaseItem.Rifle, "r", 307).Should().Be(260);
+        catalog.ResolveStyle("pfe0_handr", 260, BaseItem.Rifle, "r", 101).Should().Be(51260);
+        catalog.ResolveStyle("pfe0_handr", 51260, (BaseItem)(-1), "r").Should().Be(260);
+        catalog.AuthoredStyle("pfe0_handr", 260).Should().Be(260);
+    }
+
+    [Test]
+    public void AuthoredOverrideCannotSelectAnotherExistingHandStyle()
+    {
+        Action load = () => _ = new WeaponGripHandCatalog(new[]
+        {
+            new WeaponGripHandRow("pfe0_handr260", "pfe0_handr259", BaseItem.Rifle, 307)
+        });
+        load.Should().Throw<ArgumentException>();
+    }
+
 }

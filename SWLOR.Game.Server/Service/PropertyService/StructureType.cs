@@ -1998,7 +1998,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkSignalLamp = 332,
 
         [Structure("Ashmark Trophy Stand",
-            "plc_pedestal",
+            "zep_spearrack",
             "",
             true,
             1)]
@@ -2068,7 +2068,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         GuttermarkSignalLamp = 342,
 
         [Structure("Guttermark Trophy Stand",
-            "plc_pedestal",
+            "nwn2armorsta006",
             "",
             true,
             1)]
@@ -2138,7 +2138,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         TrailmarkSignalLamp = 352,
 
         [Structure("Trailmark Trophy Stand",
-            "plc_pedestal",
+            "zep_mi_wpr_001",
             "",
             true,
             1)]
@@ -2208,7 +2208,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         StonewakeSignalLamp = 362,
 
         [Structure("Stonewake Trophy Stand",
-            "plc_pedestal",
+            "zep_column007",
             "",
             true,
             1)]
@@ -2278,7 +2278,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AegislineSignalLamp = 372,
 
         [Structure("Aegisline Trophy Stand",
-            "plc_pedestal",
+            "daf_sw319",
             "",
             true,
             1)]
@@ -2348,7 +2348,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         VeilcarvedSignalLamp = 382,
 
         [Structure("Veilcarved Trophy Stand",
-            "plc_pedestal",
+            "swlor_0838",
             "",
             true,
             1)]
@@ -2418,7 +2418,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeSignalLamp = 392,
 
         [Structure("Surgewake Trophy Stand",
-            "plc_pedestal",
+            "swd_trdum01",
             "",
             true,
             1)]
@@ -2488,7 +2488,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ResonantSignalLamp = 402,
 
         [Structure("Resonant Trophy Stand",
-            "plc_pedestal",
+            "swlor_0850",
             "",
             true,
             1)]
@@ -2558,7 +2558,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         FieldlineSignalLamp = 412,
 
         [Structure("Fieldline Trophy Stand",
-            "plc_pedestal",
+            "swlor_0972",
             "",
             true,
             1)]
@@ -2628,7 +2628,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CommandlineSignalLamp = 422,
 
         [Structure("Commandline Trophy Stand",
-            "plc_pedestal",
+            "_mdrn_pl_wpnrck4",
             "",
             true,
             1)]

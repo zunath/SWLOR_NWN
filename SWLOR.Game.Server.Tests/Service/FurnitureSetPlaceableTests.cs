@@ -47,6 +47,36 @@ public class FurnitureSetPlaceableTests
             "each name was chosen for the placeable it shows, checked in the client");
     }
 
+    [Test]
+    public void TrophyStands_EachHaveTheirOwnPlaceable()
+    {
+        var stands = Enum.GetValues<StructureType>().Where(t => t.ToString().EndsWith(TrophyStandSuffix)).ToList();
+
+        stands.Should().HaveCount(10);
+        stands.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's Trophy Stand has its own look");
+        stands.Select(ResrefOf).Should().NotContain(ResrefOf(StructureType.Pedestal),
+            "the stands used to share the plain Pedestal's look");
+        stands.Select(ResrefOf).Should().NotIntersectWith(DisplayPieceResrefs.Values,
+            "no Trophy Stand may look like any set's display piece");
+        stands.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(TrophyStandResrefs,
+            "each stand's placeable was chosen for its set's theme, checked in the client");
+    }
+
+    // The placeable each set's Trophy Stand shows.
+    private static readonly Dictionary<StructureType, string> TrophyStandResrefs = new()
+    {
+        [StructureType.AshmarkTrophyStand] = "zep_spearrack",
+        [StructureType.GuttermarkTrophyStand] = "nwn2armorsta006",
+        [StructureType.TrailmarkTrophyStand] = "zep_mi_wpr_001",
+        [StructureType.StonewakeTrophyStand] = "zep_column007",
+        [StructureType.AegislineTrophyStand] = "daf_sw319",
+        [StructureType.VeilcarvedTrophyStand] = "swlor_0838",
+        [StructureType.SurgewakeTrophyStand] = "swd_trdum01",
+        [StructureType.ResonantTrophyStand] = "swlor_0850",
+        [StructureType.FieldlineTrophyStand] = "swlor_0972",
+        [StructureType.CommandlineTrophyStand] = "_mdrn_pl_wpnrck4",
+    };
+
     // The placeable each renamed display piece was named after.
     private static readonly Dictionary<StructureType, string> DisplayPieceResrefs = new()
     {

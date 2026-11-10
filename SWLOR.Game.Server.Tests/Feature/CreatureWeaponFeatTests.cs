@@ -12,6 +12,9 @@ public class CreatureWeaponFeatTests
     private const int RightHandSlotStructId = 16;
     private const int LeftHandSlotStructId = 32;
 
+    /// <summary>
+    /// Every creature blueprint that holds a weapon has at least one feat baseitems.2da requires for it.
+    /// </summary>
     [Test]
     public void CreatureBlueprints_HaveAFeatEachHeldWeaponRequires()
     {
@@ -49,16 +52,23 @@ public class CreatureWeaponFeatTests
         unarmed.Should().BeEmpty();
     }
 
+    /// <summary>Feat IDs in a creature blueprint's FeatList, or an empty set when it has none.</summary>
     private static HashSet<int> GetCreatureFeats(JsonElement utc) =>
         utc.TryGetProperty("FeatList", out var feats)
             ? feats.GetProperty("value").EnumerateArray().Select(entry => entry.GetProperty("Feat").GetProperty("value").GetInt32()).ToHashSet()
             : new HashSet<int>();
 
+    /// <summary>
+    /// Maps each baseitems.2da row with at least one ReqFeat column set to those feat IDs. Throws when the header
+    /// lacks a ReqFeat column, so a changed file cannot make the guard pass without checking anything.
+    /// </summary>
     private static Dictionary<int, HashSet<int>> ReadWeaponRequiredFeats(DirectoryInfo root)
     {
         var lines = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "baseitems.2da"));
         var header = lines.First(line => line.Contains("ReqFeat0")).Split((char[])null!, System.StringSplitOptions.RemoveEmptyEntries);
         var columns = Enumerable.Range(0, 5).Select(i => System.Array.IndexOf(header, $"ReqFeat{i}") + 1).ToArray();
+        if (columns.Any(column => column == 0))
+            throw new InvalidDataException("baseitems.2da is missing one or more ReqFeat columns.");
         var result = new Dictionary<int, HashSet<int>>();
 
         foreach (var line in lines)
@@ -72,9 +82,13 @@ public class CreatureWeaponFeatTests
                 result[row] = feats;
         }
 
+        if (result.Count == 0)
+            throw new InvalidDataException("baseitems.2da lists no feat requirements.");
+
         return result;
     }
 
+    /// <summary>The repository root, found by walking up from the test directory to the solution file.</summary>
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

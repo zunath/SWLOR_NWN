@@ -109,6 +109,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadSpaceSystem()
         {
@@ -149,6 +150,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// <summary>
         /// When the module loads,
         /// </summary>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadLandingPoints()
         {

@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module caches, status effects will be discovered and cached.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

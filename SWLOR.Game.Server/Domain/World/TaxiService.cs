@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.World
             _db = db;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadTaxiDestinations()
         {

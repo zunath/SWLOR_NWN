@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

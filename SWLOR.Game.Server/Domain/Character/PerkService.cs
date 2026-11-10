@@ -127,6 +127,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -134,6 +135,7 @@ namespace SWLOR.Game.Server.Domain.Character
             CacheCharacterTypes();
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CachePerkFeatData()
         {

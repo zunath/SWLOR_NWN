@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static readonly ImmutableArray<AppearanceArmor> Parts =
             ImmutableArray.Create(AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder);
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {

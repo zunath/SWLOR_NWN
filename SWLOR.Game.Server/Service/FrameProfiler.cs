@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Service
         public static bool IsEnabled { get; private set; }
         public static bool IsCapturing => _capturing;
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void Load()
         {

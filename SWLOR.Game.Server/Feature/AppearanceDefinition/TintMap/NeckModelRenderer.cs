@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private static NeckModelCatalog Catalog => AppearanceRenderState.GetNeckCatalog();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Items
             _stat = stat;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void RegisterLootTables()
         {

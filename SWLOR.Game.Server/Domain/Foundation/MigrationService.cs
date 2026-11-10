@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         public SavedCharacterDataStore CharacterData { get; } = new();
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public void AfterDatabaseLoaded()
         {
@@ -78,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             RunServerMigrationsPostDatabase();
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void AfterCacheLoaded()
         {

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadRaces()
         {

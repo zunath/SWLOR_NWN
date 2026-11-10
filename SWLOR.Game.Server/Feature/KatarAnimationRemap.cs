@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature
         private const string SwordItemClassPrefix = "WSw";
         private static readonly FrozenSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterEquipmentAnimationRestoration()
         {

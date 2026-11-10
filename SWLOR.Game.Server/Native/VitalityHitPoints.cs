@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Native
 
         [ThreadStatic] private static VitalityRecalculation _recalculation;
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHooks()
         {

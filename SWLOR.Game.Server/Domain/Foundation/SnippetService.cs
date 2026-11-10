@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _conversation = conversation;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

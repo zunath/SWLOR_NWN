@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // constructor free of work.
         private static ApplicationSettings AppSettings => ApplicationSettings.Get();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void OnModuleLoad()
         {

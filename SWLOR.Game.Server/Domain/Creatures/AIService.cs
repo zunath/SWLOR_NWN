@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _stealth = stealth;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheAIData()
         {

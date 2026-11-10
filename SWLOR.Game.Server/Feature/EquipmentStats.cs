@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterStatActions()
         {

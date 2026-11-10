@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static AIActionAttackObjectHook _callOriginal;
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {

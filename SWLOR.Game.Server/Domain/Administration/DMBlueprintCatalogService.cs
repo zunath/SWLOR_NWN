@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             _spawn = spawn;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void LoadCustomPalettes()
         {

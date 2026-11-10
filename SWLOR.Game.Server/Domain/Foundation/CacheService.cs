@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

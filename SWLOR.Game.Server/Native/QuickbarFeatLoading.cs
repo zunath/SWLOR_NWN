@@ -13,6 +13,7 @@ public static unsafe class QuickbarFeatLoading
 {
     private static FunctionHook* _loadHook;
 
+    [BootPhase(BootReload.NativeHook)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void RegisterHook()
     {

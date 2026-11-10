@@ -104,7 +104,7 @@ internal sealed class TypeMoveData
     private static string Text(JsonElement element, string property, string source)
     {
         if (!element.TryGetProperty(property, out var value) || value.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(value.GetString()))
-            throw new TypeMoveException($"{source}: an entry has no \"{property}\".");
+            throw new TypeMoveException($"{source}: \"{property}\" is missing or empty.");
 
         return value.GetString()!;
     }

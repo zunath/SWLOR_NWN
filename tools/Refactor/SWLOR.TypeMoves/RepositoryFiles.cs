@@ -89,7 +89,7 @@ internal static class RepositoryFiles
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-            foreach (var argument in new[] { "add", "-A", "--" }.Concat(chunk))
+            foreach (var argument in new[] { "--literal-pathspecs", "add", "-A", "--" }.Concat(chunk))
                 start.ArgumentList.Add(argument);
 
             using var process = Process.Start(start) ?? throw new TypeMoveException("git could not be started.");

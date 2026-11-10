@@ -4,8 +4,9 @@ namespace SWLOR.FacadeRemoval;
 
 /// <summary>
 /// Runs the tool over a tree: every <c>.cs</c> file outside build output and data folders (except in a project that neither
-/// is the server nor references it), the global usings of projects that import <c>SWLOR.Game.Server.Service</c> globally,
-/// and the handler order manifest. What the command line and the tests call.
+/// is the server nor references it), the global usings of projects that import <c>SWLOR.Game.Server.Service</c> globally
+/// (a project that imports the <c>GameServices</c> properties globally is served by that import), and the handler order
+/// manifest. What the command line and the tests call.
 /// </summary>
 internal static class FacadeRemovalRunner
 {
@@ -93,7 +94,7 @@ internal static class FacadeRemovalRunner
                 if (project != null && !SeesServer(project, seesServer))
                     continue;
 
-                var imported = project != null && ImportsServiceGlobally(project);
+                var imported = project != null && ImportsGlobally(project);
                 var source = SourceFile.Read(path);
                 var result = CallerRewriter.Apply(source.Text, active, imported);
                 if (result.NeedsAccessorImport && imported)
@@ -278,10 +279,19 @@ internal static class FacadeRemovalRunner
         return result;
     }
 
-    private static bool ImportsServiceGlobally(string project)
+    /// <summary>
+    /// True when the project's <c>GlobalUsings.cs</c> imports the <c>GameServices</c> properties globally, or imports
+    /// <c>SWLOR.Game.Server.Service</c> globally (master's shape, where it then gets the accessor's global form too). Since
+    /// P2-Z3 the branch's projects no longer import <c>Service</c>; the accessor's global import stays.
+    /// </summary>
+    private static bool ImportsGlobally(string project)
     {
         var path = Path.Combine(project, "GlobalUsings.cs");
-        return File.Exists(path) && GlobalServiceImport.IsMatch(SourceFile.Read(path).Text);
+        if (!File.Exists(path))
+            return false;
+
+        var text = SourceFile.Read(path).Text;
+        return GlobalServiceImport.IsMatch(text) || text.Contains(CallerRewriter.GlobalUsingStatic, StringComparison.Ordinal);
     }
 
     private static string Describe(int usings, int rewrites)

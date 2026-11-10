@@ -65,7 +65,8 @@ public class TypeMovesDataTests
             .Should().BeEmpty("no manifest line keeps a moved type's old name");
     }
 
-    [TestCase("{ \"types\": [] }", "an entry has no \"from\"")]
+    [TestCase("{ \"types\": [] }", "\"from\" is missing or empty")]
+    [TestCase("{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ { \"type\": \"A\" } ] }", "\"to\" is missing or empty")]
     [TestCase("{ \"from\": \"Elsewhere.Service\", \"types\": [] }", "\"from\" must be a namespace below SWLOR.Game.Server")]
     [TestCase("{ \"from\": \"SWLOR.Game.Server.Service\" }", "has no \"types\" list")]
     [TestCase("{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ { \"type\": \"A\", \"to\": \"SWLOR.Game.Server.Service.Inner\" } ] }", "A must move to a namespace below SWLOR.Game.Server outside SWLOR.Game.Server.Service")]

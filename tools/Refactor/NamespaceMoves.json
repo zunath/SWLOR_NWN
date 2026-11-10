@@ -64,6 +64,36 @@
       "file": "tools/UpdateProgressionPaceBible.py",
       "find": "SERVICE / \"CraftService\" / \"Research\" / \"ResearchXpRules.cs\"",
       "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Research\" / \"ResearchXpRules.cs\""
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "using static SWLOR.Game.Server.Composition.GameServices;",
+      "replace": "using SWLOR.Game.Server.Composition;\r\nusing static SWLOR.Game.Server.Composition.GameServices;"
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "if (!Space.IsRegisteredShipModule(",
+      "replace": "if (!GameServices.Space.IsRegisteredShipModule("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "var shipModule = Space.GetShipModuleDetailByItemTag(",
+      "replace": "var shipModule = GameServices.Space.GetShipModuleDetailByItemTag("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "using static SWLOR.Game.Server.Composition.GameServices;",
+      "replace": "using SWLOR.Game.Server.Composition;\r\nusing static SWLOR.Game.Server.Composition.GameServices;"
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "                Space.RemoveLandingPointByPropertyId(",
+      "replace": "                GameServices.Space.RemoveLandingPointByPropertyId("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "                Space.RemoveLandingPoint(dockPoint,",
+      "replace": "                GameServices.Space.RemoveLandingPoint(dockPoint,"
     }
   ]
 }

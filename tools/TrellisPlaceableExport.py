@@ -24,8 +24,10 @@ Schema 1 assets (all paths relative to the manifest):
   wear (0..1, default 0): light grime (darker, warmer seams and soft blotches) for a texture that came out too clean;
   greeble (0..1, default 0): vent slots, rows of small square buttons and panel outlines drawn on flat texture cells, with
     matching normal bevels, for a texture of plain flat panels;
-  double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
-    most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
+  double_sided_policy: reject, closed_surface (exact closure, as weapons), near_closed (outward-wound shells with at
+    most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals) or
+    authored_winding (Meshy's open, part-separated meshes: the generated winding is kept and only the open-edge and
+    wound-against-normals limits apply, because an open shell has no meaningful signed volume);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
     0.5..90: up to 2 for compiler normal quantization; blocky hard-edged consoles measured up to 80 (probably a neighbouring
     source face matched at a crease; the package report lists the maxima), so read the report and the render before widening it;
@@ -314,7 +316,9 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..90')
     if item.get('reorient') not in (None, 'propagate'):
         raise ValueError(f'{asset}: reorient must be "propagate" when given')
-    if item.get('double_sided_policy', 'reject') not in ('reject', 'closed_surface', 'near_closed'):
+    if item.get('reorient') and item.get('double_sided_policy') == 'authored_winding':
+        raise ValueError(f'{asset}: authored_winding keeps the generated winding, so it cannot be reoriented')
+    if item.get('double_sided_policy', 'reject') not in ('reject', 'closed_surface', 'near_closed', 'authored_winding'):
         raise ValueError(f'{asset}: unknown double_sided_policy')
     return item
 
@@ -674,6 +678,33 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
             'shell_count': len(shells), 'enclosed_cavities_removed': removed_cavities}
 
 
+def authored_winding_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED_FRACTION):
+    """Culling-safety check for Meshy meshes, which are built from separate open parts (a skull, a chain, a cloth).
+
+    An open part has no meaningful signed volume, so near_closed's outward-volume proof rejects good Meshy output, and
+    propagating a winding from that volume turned 18-23 percent of the area against its normals on the trophy stands.
+    Meshy winds its triangles with its own corner normals (0.01-3.2 percent opposed on those ten), so the winding is kept
+    as generated. Single-sided culling then hides only faces seen from behind: the open-edge and wound-against-normals
+    limits bound what may go missing, and the client review decides whether an open part (a cloth or wing seen from its
+    back) needs another treatment."""
+    vertices, faces, origin, directed, undirected, roots = shell_analysis(weapon, objects)
+    boundary = sum(1 for count in undirected.values() if count == 1)
+    nonmanifold = sum(1 for count in undirected.values() if count > 2)
+    same_direction = sum(1 for (u, v), count in directed.items()
+                         if count == 2 and undirected[(u, v) if u < v else (v, u)] == 2)
+    defects = boundary + same_direction
+    if defects > max_defect_fraction * max(len(undirected), 1):
+        raise ValueError(f'Authored winding: {defects} open or inconsistent edges of {len(undirected)} exceed {max_defect_fraction:.4f} (boundary {boundary}, same-direction {same_direction})')
+    opposed = opposed_fraction(weapon, objects)
+    if opposed > max_opposed:
+        raise ValueError(f'Authored winding: {opposed:.3%} of the surface area is wound against its authored normals (limit {max_opposed:.1%})')
+    return {'conversion': 'doubleSided=true to native single-sided; generated winding kept', 'triangles': len(faces),
+            'edges': len(undirected), 'boundary_edges': boundary, 'nonmanifold_edges': nonmanifold,
+            'same_direction_edges': same_direction, 'defect_fraction': defects / max(len(undirected), 1),
+            'opposed_area_fraction': opposed, 'max_defect_fraction': max_defect_fraction,
+            'shell_count': len(set(roots.tolist()))}
+
+
 def repair_exported_normals(weapon, fit, doc, binary, exported):
     """Blender's glTF import can leave a corner normal at zero (it merges coincident vertices that carry different custom
     normals). Take such a vertex's normal from the glTF vertex at the same source position instead, carried through the
@@ -731,7 +762,7 @@ def import_glb(weapon, item, out, mode):
     if mode == 'export' and item.get('reorient') == 'propagate':
         binary, item['_reoriented_triangles'] = reorient_gltf(weapon, doc, binary)
     if mode == 'export':
-        weapon.validate_glb_geometry(doc, policy in ('closed_surface', 'near_closed'))
+        weapon.validate_glb_geometry(doc, policy in ('closed_surface', 'near_closed', 'authored_winding'))
     imported = json.loads(json.dumps(doc))
     weapon.tag_import_materials(imported)
     import_path = cache / 'import.glb'
@@ -1068,7 +1099,9 @@ def export_asset(weapon, item, repo, out, mode, helpers):
     surface_conversion = None
     if mode == 'export' and any(mat.get('doubleSided', False) for mat in doc['materials']):
         double_sided = {i for i, mat in enumerate(doc['materials']) if mat.get('doubleSided', False)}
-        if item.get('double_sided_policy') == 'near_closed':
+        if item.get('double_sided_policy') == 'authored_winding':
+            surface_conversion = authored_winding_report(weapon, objects, item.get('max_defect_fraction', DEFECT_FRACTION), item.get('max_opposed_fraction', OPPOSED_FRACTION))
+        elif item.get('double_sided_policy') == 'near_closed':
             surface_conversion = near_closed_report(weapon, objects, item.get('max_defect_fraction', DEFECT_FRACTION), item.get('max_opposed_fraction', OPPOSED_FRACTION))
         else:
             surface_conversion = weapon.closed_surface_report(objects, double_sided, len(doc['materials']))

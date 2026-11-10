@@ -426,11 +426,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A bar turned on or resized in setup must not land on another bar. Title bars that appear when setup
             // opens are cleared by ExtraHotbars once every bar has one.
-            ResizeToFit(isUnlocked, isUnlocked && isNewSize);
+            ResizeToFit(isUnlocked, isNewSize, isUnlocked && isNewSize);
         }
 
         // The title bar grows the bar upward so its slots stay put while it is unlocked.
-        private void ResizeToFit(bool hasTitleBar, bool keepClear)
+        private void ResizeToFit(bool hasTitleBar, bool isNewSize, bool keepClear)
         {
             var width = GetWidth(_bar.SlotCount, _bar.Layout);
             var height = GetHeight(_bar.SlotCount, _bar.Layout, hasTitleBar);
@@ -441,11 +441,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
             var scale = GetScale();
+            // Only a new spot or a new size is a new placement. A refresh that only redraws slots or adds or drops
+            // the title bar keeps the spot the bar follows the screen from.
+            var isNewPlacement = isNewSize || _useDefaultSpot || WasDragged();
 
             if (hasTitleBar != _hasTitleBar)
             {
-                y += (hasTitleBar ? -TitleBarHeight : TitleBarHeight) * scale;
+                var titleShift = hasTitleBar ? -TitleBarHeight : TitleBarHeight;
+                y += titleShift * scale;
                 _hasTitleBar = hasTitleBar;
+                if (!isNewPlacement)
+                    ShiftAnchor(titleShift);
             }
 
             if (screenWidth > 0 && screenHeight > 0)
@@ -472,7 +478,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (keepClear)
                 (x, y) = FindClearSpot(x, y, width * scale, height * scale, GetOtherBarBounds(scale), screenWidth, screenHeight);
 
-            Place(new GuiRectangle(x, y, width, height));
+            Place(new GuiRectangle(x, y, width, height), isNewPlacement);
+        }
+
+        // True when the player dragged the bar since the server last placed it.
+        private bool WasDragged() =>
+            System.Math.Abs(_shownX - _placedX) >= 0.5f || System.Math.Abs(_shownY - _placedY) >= 0.5f;
+
+        // Moves the remembered spot with a title bar that grows the bar upward or goes away.
+        private void ShiftAnchor(float titleShift)
+        {
+            if (_anchor != null)
+                _anchor.Y += titleShift * ToScale(_anchorScreen.Scale);
         }
 
         /// <summary>
@@ -633,7 +650,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A bar the player dragged since the server last placed it follows from where they left it. The client
             // reports some passing spots while a bar opens, so a drag only counts once the screen changes.
-            if (System.Math.Abs(_shownX - _placedX) >= 0.5f || System.Math.Abs(_shownY - _placedY) >= 0.5f)
+            if (WasDragged())
                 SetAnchor(new GuiRectangle(_shownX, _shownY, Geometry.Width, Geometry.Height), _placedScreen);
 
             // The bar's own size, since the client can report its window a few pixels off.
@@ -710,12 +727,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_hasTitleBar || _bar == null)
                 return;
 
+            // Locking is not a new placement unless the player dragged the bar while it was unlocked.
+            var wasDragged = WasDragged();
             _hasTitleBar = false;
+            if (!wasDragged)
+                ShiftAnchor(TitleBarHeight);
             Place(new GuiRectangle(
                 Geometry.X,
                 Geometry.Y + TitleBarHeight * GetScale(),
                 GetWidth(_bar.SlotCount, _bar.Layout),
-                GetHeight(_bar.SlotCount, _bar.Layout, false)));
+                GetHeight(_bar.SlotCount, _bar.Layout, false)), wasDragged);
         }
 
         private float GetScale()

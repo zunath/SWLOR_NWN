@@ -127,6 +127,16 @@ public class ConvertedServicesTests
     }
 
     [Test]
+    public void Only_GameAssemblies_lists_the_assemblies_of_the_process()
+    {
+        var helper = new TypeKey("SWLOR.Game.Server.Core", "GameAssemblies");
+        ArchitectureProject.Facts.Types.Should().Contain(type => type.Key == helper, "the rule names the real helper");
+
+        Fail(AssemblyScanRule.Find(ArchitectureProject.Facts, helper),
+            "Discovery scans list assemblies through GameAssemblies only, so a retired build is never searched");
+    }
+
+    [Test]
     public void Service_classes_in_a_domain_namespace_are_pieces_of_converted_services()
     {
         // Since P2-Z2 a domain's support types share its namespace with its services, so only the types named like a

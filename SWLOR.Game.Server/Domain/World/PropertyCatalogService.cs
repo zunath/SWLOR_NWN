@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.World;
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         private void CachePropertyLayoutTypes()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPropertyLayoutListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

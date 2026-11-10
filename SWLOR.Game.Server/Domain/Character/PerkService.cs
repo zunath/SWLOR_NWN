@@ -1457,7 +1457,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The perk list definitions of every loaded assembly, found lazily as the cache builds.</summary>
         protected virtual IEnumerable<Type> GetPerkListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

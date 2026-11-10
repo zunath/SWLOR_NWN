@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShips()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IShipListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShipModules()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IShipModuleListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
@@ -329,7 +329,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShipEnemies()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ISpaceObjectListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

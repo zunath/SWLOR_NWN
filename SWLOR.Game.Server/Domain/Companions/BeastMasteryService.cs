@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual IEnumerable<Type> GetBeastListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IBeastListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

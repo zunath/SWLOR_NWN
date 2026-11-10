@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         protected virtual IEnumerable<Type> GetSpawnListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ISpawnListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

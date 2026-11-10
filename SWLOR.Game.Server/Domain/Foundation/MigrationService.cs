@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>Finds and creates every server migration the assemblies hold.</summary>
         protected virtual IEnumerable<IServerMigration> CreateServerMigrations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

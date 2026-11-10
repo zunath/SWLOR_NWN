@@ -88,6 +88,20 @@ shared robe `rhand` joint. Rerun the generator whenever those clips, body roots 
 default hands change, then follow the compile and robe refresh steps in its
 docstring.
 
+Specialized rifle profiles are selected by the actual rendered right hand, left
+hand and rifle model. Their public motion source is
+`SWLOR_Haks/tools/RifleGripProfileMotions.json`; private contact measurements are
+not generation inputs. `GenerateRifleGripProfiles.py --game-dir <installed EE
+directory> --output <review folder>` reproduces the native banks and verifies
+their pinned hashes. After source and client verification, use `--apply` to
+install them and `--check` to check the installed payloads. The generic hold
+generator excludes these registered banks during generation and finalization.
+Each profile retains the original three stock clips, bone lengths and local
+`rhand` hook tracks. Only its support-arm and right-wrist rotation keys differ.
+Refresh the owning robe generator for every new `rf...` clip, preserving each
+robe's cloth motion and skeleton bindings. A bank hash or a source contact audit
+does not establish live hand contact or combat entry and exit behavior.
+
 `tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
 Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,
 `--animation <ASCII a_ba_non_combat.mdl>` for `--pose xbowr`, or `a_ba.mdl` for

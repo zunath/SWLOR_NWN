@@ -52,8 +52,9 @@ public static class WeaponFitEngineTests
             foreach (var animation in new[] { 1, 9, 0, 1, 0 })
             {
                 native.SetAnimation(animation);
-                AssertVector(ctx, ReadTranslation(rifle), authored + (animation is 1 or 9 ? ready : idle),
-                    "The native hold refreshes without accumulating an offset");
+                var actualAnimation = native.m_nAnimation;
+                AssertVector(ctx, ReadTranslation(rifle), authored + (actualAnimation is 1 or 9 ? ready : idle),
+                    $"The actual native hold {actualAnimation} after request {animation} refreshes without accumulating an offset");
                 ctx.AssertEqual(1.03f, GetObjectVisualTransform(rifle, ObjectVisualTransform.Scale),
                     "Native hold changes preserve the authored gun size");
             }

@@ -38,8 +38,11 @@ public static unsafe class RifleGripAnimation
             var item = creature.m_pInventory?.GetItemInSlot((uint)EquipmentSlot.RightHand);
             if (item == null || (BaseItem)item.m_nBaseItem != BaseItem.Rifle) return;
             _refreshing = true;
+            // Native playback can reject or coerce the requested hold. Seat the
+            // weapon against the animation the engine actually retained.
+            var actualAnimation = creature.m_nAnimation;
             ServerManager.Executor.ExecuteInScriptContext(() =>
-                WeaponFit.ApplyRifleAnimation(creature.m_idSelf, animation));
+                WeaponFit.ApplyRifleAnimation(creature.m_idSelf, actualAnimation));
         }
         catch (Exception exception) { Log.WriteError(exception, "Could not refresh the rifle grip hold"); }
         finally { _refreshing = false; }

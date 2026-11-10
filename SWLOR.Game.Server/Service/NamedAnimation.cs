@@ -10,7 +10,10 @@ namespace SWLOR.Game.Server.Service;
 public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
-    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose);
+    public static bool IsPlaybackActive(uint creature) => !string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable));
+    public static event Action<uint> EquipmentMappingsReleased;
+    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
+        creature => EquipmentMappingsReleased?.Invoke(creature));
 
     /// <summary>
     /// Queues a clip without clearing existing actions. Native mappings are restored at

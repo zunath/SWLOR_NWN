@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Native;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature
 
             KatarAnimationRemap.SynchronizeOnLogin(player);
             PistolAnimationRemap.SynchronizeOnLogin(player);
+            RifleSupportAnimation.Apply(player);
         }
     }
 }

@@ -408,6 +408,27 @@ public class NamedAnimationPlaybackTests
         if (valid) new AnimationClip(name, 1).EndName.Length.Should().BeLessThanOrEqualTo(16);
         else { Action create = () => new AnimationClip(name, 1); create.Should().Throw<ArgumentException>(); }
     }
+    [Test]
+    public void EquipmentMappingOwnerRunsOnlyAfterTemporaryMappingsAndTokenAreReleased()
+    {
+        var runtime = new Runtime();
+        var restored = 0;
+        var playback = new NamedAnimationPlayback(runtime, restoreEquipmentMappings: creature =>
+        {
+            creature.Should().Be(1);
+            runtime.Token.Should().BeEmpty();
+            runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().BeEmpty();
+            restored++;
+        });
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
+        playback.Complete(1, token);
+        restored.Should().Be(0);
+        runtime.Callbacks[^1]();
+        restored.Should().Be(1);
+        runtime.Callbacks[^1]();
+        restored.Should().Be(1);
+    }
+
     private sealed class Runtime : INamedAnimationRuntime
     {
         public string Token = "";

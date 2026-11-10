@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using FitVector = System.Numerics.Vector3;
@@ -90,28 +91,64 @@ public class WeaponFitTests
             .Select(Path.GetFileNameWithoutExtension).Select(name => name!.ToLowerInvariant())
             .Where(name => Regex.IsMatch(name, "^p[mf][heodz]0_hand[rl][0-9]{3}$")).ToArray();
         var selected = ReachableHands(root, hands.ToHashSet());
-        foreach (var columns in File.ReadLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "griprender.2da"))
-                     .Skip(3).Where(line => !string.IsNullOrWhiteSpace(line)).Select(line => Regex.Split(line.Trim(), @"\s+")))
-        {
-            columns.Should().HaveCount(3);
-            if (selected.Contains(columns[1].ToLowerInvariant())) selected.Add(columns[2].ToLowerInvariant());
-        }
+        var handRows = File.ReadLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "griprender.2da"))
+            .Skip(3).Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .Select(columns =>
+            {
+                (columns.Length is 3 or 5).Should().BeTrue("the hand table supports legacy and weapon/model selectors");
+                return new WeaponGripHandRow(columns[1], columns[2], columns.Length == 3 || columns[3] == "****"
+                        ? (BaseItem)(-1) : Enum.Parse<BaseItem>(columns[3], true),
+                    columns.Length == 3 || columns[4] == "****" ? 0 : int.Parse(columns[4]));
+            }).ToArray();
+        var handCatalog = new WeaponGripHandCatalog(handRows);
         hands.Should().NotBeEmpty();
         selected.Should().NotBeEmpty();
-        foreach (var hand in selected)
-        foreach (var model in new PistolAppearanceDefinition().MiddleParts)
+        var placements = typeof(WeaponFit).Assembly.GetType(
+            "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacements")!;
+        var field = placements.GetField("_catalog", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var previous = field.GetValue(null);
+        try
         {
-            var args = new object[] { BaseItem.Sling, model, 101, 101, hand, "", null! };
-            Invoke<bool>(Catalog, "TryGetPlacement", args).Should().BeTrue($"{hand}, pistol {model} needs a measurement");
-            var fit = (WeaponGripFit)args[6];
-            fit.Scale.Should().Be(1f, "grip placement retains authored weapon size");
-            foreach (var value in new[] { fit.Translation.X, fit.Translation.Y, fit.Translation.Z,
-                         fit.Rotation.X, fit.Rotation.Y, fit.Rotation.Z })
-                float.IsFinite(value).Should().BeTrue();
-            Placement(BaseItem.Sling, model, 101, 101, hand.ToUpperInvariant()).Should().Be(fit);
-            foreach (var alias in new[] { BaseItem.Pistol, BaseItem.LegacyPistol, BaseItem.CompanionPistol })
-                Placement(alias, model, 101, 101, hand).Should().Be(fit);
+            var table = Path.Combine(root, "SWLOR_Haks", "sw_2da", "weaponfits.2da");
+            if (File.Exists(table)) field.SetValue(null, ReadPlacementTable(table));
+            foreach (var source in selected)
+            foreach (var model in new PistolAppearanceDefinition().MiddleParts)
+            {
+                var hand = handCatalog.Resolve(source, BaseItem.Sling, source[9].ToString(), model);
+                var args = new object[] { BaseItem.Sling, model, 101, 101, hand, "", null! };
+                Invoke<bool>(Catalog, "TryGetPlacement", args).Should().BeTrue($"{source} renders {hand} for pistol {model}, which needs a measurement");
+                var fit = (WeaponGripFit)args[6];
+                fit.Scale.Should().Be(1f, "grip placement retains authored weapon size");
+                foreach (var value in new[] { fit.Translation.X, fit.Translation.Y, fit.Translation.Z,
+                             fit.Rotation.X, fit.Rotation.Y, fit.Rotation.Z })
+                    float.IsFinite(value).Should().BeTrue();
+                Placement(BaseItem.Sling, model, 101, 101, hand.ToUpperInvariant()).Should().Be(fit);
+                foreach (var alias in new[] { BaseItem.Pistol, BaseItem.LegacyPistol, BaseItem.CompanionPistol })
+                    Placement(alias, model, 101, 101, hand).Should().Be(fit);
+            }
         }
+        finally { field.SetValue(null, previous); }
+    }
+
+    private static object ReadPlacementTable(string path)
+    {
+        var assembly = typeof(WeaponFit).Assembly;
+        var rowType = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacementRow")!;
+        var holdType = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripHold")!;
+        var catalogType = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacementCatalog")!;
+        var parse = rowType.GetMethod("FromColumns", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var rows = new List<object>();
+        foreach (var line in File.ReadLines(path).Skip(3).Where(line => !string.IsNullOrWhiteSpace(line)))
+        {
+            var columns = Regex.Split(line.Trim(), @"\s+");
+            columns.Should().HaveCount(10);
+            rows.AddRange(((System.Collections.IEnumerable)parse.Invoke(null, new object[]
+                { columns[1], Enum.Parse(holdType, columns[3], true), columns[2], columns.Skip(4).ToArray() })!).Cast<object>());
+        }
+        var values = Array.CreateInstance(rowType, rows.Count);
+        for (var index = 0; index < rows.Count; index++) values.SetValue(rows[index], index);
+        return catalogType.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic).Single().Invoke(new object[] { values });
     }
 
     [Test]

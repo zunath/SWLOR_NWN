@@ -103,6 +103,7 @@ public static class WeaponFit
         ApplyHand(creature, right, rightHand, leftHand, HeldRight,
             RifleGripFits.IsReadyAnimation(ObjectPlugin.GetCurrentAnimation(creature)));
         ApplyHand(creature, left, leftHand, rightHand, HeldLeft);
+        RifleSupportAnimation.Apply(creature);
     }
 
     private static bool IsCreature(uint creature) =>

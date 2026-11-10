@@ -19,8 +19,8 @@ public class ProcessWideRegistrationTests
     /// <summary>The one type that subscribes to the process: it holds the two subscriptions the server keeps.</summary>
     private static readonly TypeKey[] Subscribers = [new TypeKey(Core, "AppDomainProcessEventSource")];
 
-    /// <summary>The combat record writer's thread, until P4-6 moves it to the pool and removes this entry.</summary>
-    private static readonly TypeKey[] ThreadStarters = [new TypeKey("SWLOR.Game.Server.Domain.Combat", "CombatRecordWriter")];
+    /// <summary>No type may start a thread: the combat record writer runs on the pool since P4-6.</summary>
+    private static readonly TypeKey[] ThreadStarters = [];
 
     private static readonly AssemblyFacts FixtureFacts = AssemblyFactScanner.Scan(typeof(ProcessWideRegistrationTests).Assembly.Location);
 
@@ -80,15 +80,12 @@ public class ProcessWideRegistrationTests
     [Test]
     public void The_server_starts_a_thread_only_where_the_allow_list_says()
     {
-        ArchitectureProject.Facts.ExternalMemberUses.Should().Contain(
-            use => use.Source == ThreadStarters[0] && use.ExternalType == "System.Threading.Thread" && use.MemberName == ".ctor",
-            "the rule sees the combat record writer's thread, so an empty result is not a blind scan");
-
+        // The fixture test above proves the rule sees a thread start, so an empty result here is not a blind scan.
         var problems = ProcessWideRegistrationRule.Find(ArchitectureProject.Facts, Subscribers, ThreadStarters)
             .Where(problem => problem.Contains("starts a thread"))
             .ToList();
 
-        Fail(problems, "Threads started outside the allow list");
+        Fail(problems, "Threads started in the server (the allow list is empty)");
     }
 
     private static void Fail(IReadOnlyList<string> problems, string headline)

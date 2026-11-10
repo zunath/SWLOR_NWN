@@ -64,6 +64,7 @@ edits must account for specialized owners and their derived robe aliases too.
 | Modular skirts/capes listed in the chest manifest (capes hang like the coats, not from the cloak bones; belt 19's male taper) | `ChestSkirtBindings.py` / `.json`, `TestChestSkirtBindings.py` |
 | Neck and shoulder parts hanging below the hips on rigid or upper-body-only binding | `HangingPartAudit.py` / `.json` (inventory of parts found when the audit was added), `TestHangingPartAudit.py` |
 | Missing fingers on the 19 diagnosed normal-phenotype cuff-only hand 100/111 assets | `RepairMissingGripHands.py` / `.json`, `TestMissingGripHands.py`; pinned same-body style-110 fingers, original cuffs and dye bindings preserved |
+| Colliding child-node names on the four normal Droid hand 218 assets | `RepairHandNodeNames.py` / `.json`, `TestHandNodeNames.py`; only child-name bytes change, preserving all geometry and native bindings |
 | Gun-grasp hand pose variants | `GenerateWeaponGripHands.py` / `.json`, `TestWeaponGripHands.py`, `griprender.2da`; preserve authored cuffs, UVs, materials and saved styles; rifle support hands keep their authored pose |
 | Robe 236's native models (pinned Combat Upgrade release) | `RestoreRobe236Release.py`, `TestRobe236Release.py` |
 | Robe 236's generated skirt bindings | `RobeSkirtBindings.py`, `TestRobeSkirtBindings.py` |

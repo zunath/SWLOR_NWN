@@ -49,6 +49,23 @@ public class EchaniMonkDialogueTests
     private static int Speaker(int beat, bool hostCanReply) =>
         Invoke<int>("SceneSpeakerIndex", beat, hostCanReply);
 
+    [TestCase("homes")]
+    [TestCase("market")]
+    [TestCase("gardens")]
+    [TestCase("ward")]
+    [TestCase("port")]
+    [TestCase("practice")]
+    [TestCase("heights")]
+    [TestCase("peaks")]
+    public void WalkingStopsGiveBothDisciplesTheirOwnExchange(string scene)
+    {
+        var ren = Invoke<string>("Line", scene, 1);
+        var sai = Invoke<string>("Line", scene, 2);
+        ren.Should().NotBeNullOrWhiteSpace().And.NotBe(Invoke<string>("Line", "unknown", 1));
+        sai.Should().NotBeNullOrWhiteSpace().And.NotBe(Invoke<string>("Line", "unknown", 2)).And.NotBe(ren);
+        Enumerable.Range(0, 3).Select(beat => Speaker(beat, false)).Should().Equal(0, 1, 2);
+    }
+
     [Test]
     public void RiverMeditationFollowsDialogueAndIncludesBothDisciples()
     {

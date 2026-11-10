@@ -271,6 +271,39 @@ public class EchaniTempleMonksTests
             "the existing resident visits and Sera's grove conversation precede the tunnel departure");
     }
 
+    [TestCase("es_monk_path_064", "es_monk_path_068")]
+    [TestCase("es_monk_path_072", "es_monk_path_075")]
+    public void KeshPeaks_WalksTheEntranceAndClimbInBothDirections(string start, string finish)
+    {
+        var area = Read("Module/git/pw_sc_eskeshpeak.git.json");
+        var points = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToDictionary(point => Value(point, "Tag").GetString()!);
+        var visited = new HashSet<string>();
+        var current = start;
+        while (current != finish)
+        {
+            visited.Add(current).Should().BeTrue("the mountain walk must reach its destination");
+            var point = points[current];
+            var variables = Variables(point);
+            variables.Should().NotContainKey("ECHANI_TRANSFER",
+                "the climb uses the connected mountainside, not the separate lower approach's teleporters");
+            Value(point, "YPosition").GetDouble().Should().BeGreaterThan(70,
+                "the entrance and spa are connected across the northern mountainside");
+            var next = variables["ECHANI_NEXT"].GetString()!;
+            points.Should().ContainKey(next);
+            var distance = Math.Sqrt(new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+                Math.Pow(Value(point, field).GetDouble() - Value(points[next], field).GetDouble(), 2)));
+            distance.Should().BeLessThan(16, "short walking targets keep the group on the authored climb");
+            current = next;
+        }
+        visited.Count.Should().BeGreaterThan(10, "the old route attempted long moves between disconnected approaches");
+        if (start == "es_monk_path_064")
+            Variables(points["es_monk_path_065"])["ECHANI_SCENE"].GetString().Should().Be("peaks");
+        else
+            Variables(points[finish])["ECHANI_TRANSFER"].GetString().Should().Be("WP_eshan_to_keshpeaks");
+    }
+
     [Test]
     public void Route_IsOneClosedLoopAndEveryAreaChangeHasAnExistingTransferDestination()
     {

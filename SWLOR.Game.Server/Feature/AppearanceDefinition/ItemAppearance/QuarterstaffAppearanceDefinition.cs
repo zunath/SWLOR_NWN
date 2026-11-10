@@ -2,12 +2,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 {
     public class QuarterstaffAppearanceDefinition : WeaponAppearanceBaseDefinition
     {
+        /// <summary>Model 6 color 2 in every role is the Tusken Gaderffii: spike and hammer head on top, a plain shaft below.</summary>
+        public const int GaderffiiPart = 206;
+
         public override bool IsSimple => false;
 
         public override int[] TopParts { get; } =
         {
             101, 102, 103, 104, // Color #1
-            201, 202, 203, 204, // Color #2
+            201, 202, 203, 204, 206, // Color #2
             302, 303, 304, 305, 325, // Color #3
             401, 402, 403, 404, // Color #4
             // Color #5
@@ -19,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         public override int[] MiddleParts { get; } =
         {
             101, 102, 103, 104, 105, // Color #1
-            201, 202, 203, 204, 225, // Color #2
+            201, 202, 203, 204, 206, 225, // Color #2
             302, 303, 304, // Color #3
             401, 402, 403, 404, // Color #4
             // Color #5
@@ -31,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         public override int[] BottomParts { get; } =
         {
             101, 102, 103, 104, // Color #1
-            201, 202, 203, 204, // Color #2
+            201, 202, 203, 204, 206, // Color #2
             301, 302, 303, 304, 305, 325, // Color #3
             402, 403, 404, // Color #4
             // Color #5

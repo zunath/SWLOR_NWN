@@ -1129,7 +1129,10 @@ its frames, lenses and collar to their own materials (`p?h0_n152fr`, `ln`, `nk`:
 Metal 1, Leather 1, Cloth 1), so the old single neck palette must not replace
 them. Their `TintMapSources.json` entries set `explicitMeshMaterial`; the generator
 then keeps each mesh's material and writes one `tintmap.2da` row per material.
-The source conversion preserves the flag.
+The source conversion preserves the flag. The lens materials add `transparency 1`
+and `sample_framebuffer 1` (and keep `twosided 0`) so the partly transparent
+lenses draw after the head; without them, heads with alpha-cutout hair or fur
+showed a white fill through the lenses. The generator keeps both directives.
 
 A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female

@@ -302,8 +302,8 @@ class LiveClientHelperTests(unittest.TestCase):
                 owned.compose('ps', client=True)
             command = run.call_args.args[0]
             self.assertEqual(2 if gpu else 1, command.count('-f'))
-            self.assertIn(str(directory / 'compose.yml'), command)
-            self.assertEqual(bool(gpu), str(directory / 'compose.gpu.yml') in command)
+            self.assertIn(str(owned.run_dir / 'compose.yml'), command)
+            self.assertEqual(bool(gpu), str(owned.run_dir / 'compose.gpu.yml') in command)
             self.assertEqual(bool(gpu), 'compose.gpu.yml' in owned.compose_command('ps'))
 
     def test_gpu_backend_does_not_mount_a_host_display_or_publish_ports(self):

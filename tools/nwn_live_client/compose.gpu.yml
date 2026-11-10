@@ -1,7 +1,12 @@
 # Optional WSL2 D3D12 backend; the display and all input remain in the client container.
 services:
     client:
-        gpus: all
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - count: all
+                          capabilities: [gpu]
         environment:
             # Xvfb uses Mesa's DRI software loader; Gallium below selects the hardware backend.
             LIBGL_ALWAYS_SOFTWARE: "true"

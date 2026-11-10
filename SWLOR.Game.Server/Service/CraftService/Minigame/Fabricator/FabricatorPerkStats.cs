@@ -35,6 +35,28 @@ public sealed record FabricatorPerkStats(
     /// <summary>True when any number differs from the Fabricator as tuned.</summary>
     public bool HasAny => this != None;
 
+    /// <summary>The stats that apply to a recipe of the level: on a top recipe the numeric bonuses are worth <see cref="FabricatorRules.TopRecipePerkValue"/> of their listed amount.</summary>
+    public FabricatorPerkStats ForRecipeLevel(int recipeLevel)
+    {
+        if (!TopRecipeRules.IsTopRecipe(recipeLevel))
+            return this;
+
+        return this with
+        {
+            RunPowerPercent = TopRecipeValue(RunPowerPercent),
+            PrecisionPowerPercent = TopRecipeValue(PrecisionPowerPercent),
+            WearReduction = TopRecipeValue(WearReduction),
+            RetoolCpReductionPercent = TopRecipeValue(RetoolCpReductionPercent),
+            ServiceRestoreBonus = TopRecipeValue(ServiceRestoreBonus),
+            ServiceCpReduction = TopRecipeValue(ServiceCpReduction),
+            PrimeBonusPercentBonus = TopRecipeValue(PrimeBonusPercentBonus),
+            AssembleCapBonusPoints = TopRecipeValue(AssembleCapBonusPoints)
+        };
+    }
+
+    private static int TopRecipeValue(int value) =>
+        (int)Math.Round(value * FabricatorRules.TopRecipePerkValue, MidpointRounding.AwayFromZero);
+
     /// <summary>Reads the record from a crafter's stat totals, one lookup per stat.</summary>
     /// <param name="total">The crafter's total for a stat, such as <c>Stat.GetStatAdjustment</c> for the crafting player.</param>
     public static FabricatorPerkStats FromStatTotals(Func<StatType, int> total)

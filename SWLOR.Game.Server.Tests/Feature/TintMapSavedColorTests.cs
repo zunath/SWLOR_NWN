@@ -53,6 +53,7 @@ public class TintMapSavedColorTests
             public static class SavedColorHarness
             {
                 public static readonly Dictionary<string, int> Locals = new();
+                public static readonly Dictionary<string, int> EquippedArmorLocals = new();
                 public static readonly List<TintMapMaterialSelection> Selections = new();
                 public static Entity.Player Player = new("test-player");
                 public static bool ExplicitPreset;
@@ -64,7 +65,8 @@ public class TintMapSavedColorTests
                 private static int Get2DARowCount(string table) => HeadDefaults.Count;
                 private static string Get2DAString(string table, string column, int row) =>
                     HeadDefaults[row][column switch { "MODEL" => 0, "MATERIAL" => 1, "LAYER" => 2, "COLOR" => 3, _ => throw new Exception(column) }];
-                private static int GetLocalInt(uint item, string name) => Locals.GetValueOrDefault(name);
+                private static int GetLocalInt(uint item, string name) =>
+                    (HasArmor && item == 200u ? EquippedArmorLocals : Locals).GetValueOrDefault(name);
                 private static void SetLocalInt(uint item, string name, int value) => Locals[name] = value;
                 private static void DeleteLocalInt(uint item, string name) => Locals.Remove(name);
                 private static bool GetIsObjectValid(uint item) => item != 0;
@@ -72,7 +74,7 @@ public class TintMapSavedColorTests
                 private static bool GetIsDM(uint item) => false;
                 private static bool GetIsDMPossessed(uint item) => false;
                 private static string GetObjectUUID(uint item) => "test-player";
-                private static ObjectType GetObjectType(uint item) => ObjectType.Item;
+                private static ObjectType GetObjectType(uint item) => item == 1u ? ObjectType.Creature : ObjectType.Item;
                 private static bool HasExplicitItemPresetColor(TintMapMaterialSelection selection,
                     TintMapLayerType layer, int savedColor) => ExplicitPreset;
                 private static Dictionary<string, int> GetItemTintOverrides(uint item) => Locals;
@@ -122,6 +124,7 @@ public class TintMapSavedColorTests
     public void ClearColorState()
     {
         Locals.Clear();
+        EquippedArmorLocals.Clear();
         Selections.Clear();
         _harness.GetField("Player")!.SetValue(null, new SWLOR.Game.Server.Entity.Player("test-player"));
         _harness.GetField("ExplicitPreset")!.SetValue(null, false);
@@ -263,6 +266,23 @@ public class TintMapSavedColorTests
             Locals.Should().NotContainKey(TintMapVariable.GetHeadColorStateName(layer));
         }
 
+        var globalKey = TintMapVariable.GetItemGlobalColorStateName(layer);
+        Locals[globalKey] = new TintMapColor(81, 56, 21).ToStoredValue();
+        var inheritedColors = new[] { new TintMapColor(214, 92, 17), new TintMapColor(0, 0, 0) };
+        foreach (var color in inheritedColors)
+        {
+            EquippedArmorLocals[globalKey] = color.ToStoredValue();
+            var effective = (TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer);
+            effective.Should().Be(new TintMapColorSelection(
+                TintMapPaletteColors.GetClosestColorId(layer, color), color));
+            Locals.Should().NotContainKey(TintMapVariable.GetHeadColorStateName(layer));
+        }
+
+        EquippedArmorLocals[globalKey] = 17;
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+            .Should().Be(new TintMapColorSelection(82 + channel, null), "an invalid RGB value falls back to the native palette");
+
+        EquippedArmorLocals[globalKey] = inheritedColors[0].ToStoredValue();
         Invoke("SetPaletteColor", 1u, head, layer, 0);
         _harness.GetField("ArmorDye")!.SetValue(null, 21);
         ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
@@ -288,8 +308,15 @@ public class TintMapSavedColorTests
         _harness.GetField("HasArmor")!.SetValue(null, true);
         _harness.GetField("ArmorDye")!.SetValue(null, 37);
         Invoke("CaptureCurrentHeadColors", 1u);
+        var stateKey = TintMapVariable.GetHeadColorStateName(layer);
         var expected = 38 + (int)Enum.Parse<AppearanceArmorColor>(layer.ToString());
-        Locals[TintMapVariable.GetHeadColorStateName(layer)].Should().Be(expected);
+        Locals[stateKey].Should().Be(expected);
+
+        Locals.Remove(stateKey);
+        var outfitColor = new TintMapColor(214, 92, 17).ToStoredValue();
+        EquippedArmorLocals[TintMapVariable.GetItemGlobalColorStateName(layer)] = outfitColor;
+        Invoke("CaptureCurrentHeadColors", 1u);
+        Locals[stateKey].Should().Be(outfitColor);
     }
 
     [Test]
@@ -310,6 +337,10 @@ public class TintMapSavedColorTests
                 ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
                     .CustomColor.Should().Be(natural, row[0] + "/" + row[1]);
             }
+            EquippedArmorLocals[TintMapVariable.GetItemGlobalColorStateName(layer)] =
+                new TintMapColor(214, 92, 17).ToStoredValue();
+            ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+                .CustomColor.Should().Be(natural, "an authored lip default takes precedence over the outfit's RGB");
             Read(head, layer).Should().Be(0, "an authored default is not a saved player override");
             foreach (var palette in new[] { 0, 31 })
             {
@@ -345,6 +376,8 @@ public class TintMapSavedColorTests
     }
 
     private Dictionary<string, int> Locals => (Dictionary<string, int>)_harness.GetField("Locals")!.GetValue(null)!;
+    private Dictionary<string, int> EquippedArmorLocals =>
+        (Dictionary<string, int>)_harness.GetField("EquippedArmorLocals")!.GetValue(null)!;
     private List<TintMapMaterialSelection> Selections =>
         (List<TintMapMaterialSelection>)_harness.GetField("Selections")!.GetValue(null)!;
     private object Invoke(string method, params object[] arguments) => _harness.GetMethod(method)!.Invoke(null, arguments)!;

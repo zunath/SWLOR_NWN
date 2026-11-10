@@ -1544,8 +1544,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (savedColor == 0 && HeadTintDefaults.TryGetColor(selection, layer, out var authoredColor))
                 return authoredColor;
 
-            var standardColor = GetStandardColor(creature, selection, layer);
-            if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
+            var storedRgb = savedColor;
+            if (savedColor == 0 && HeadTintChannels.IsHead(selection))
+            {
+                var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                if (GetIsObjectValid(armor))
+                    storedRgb = GetLocalInt(armor, TintMapVariable.GetItemGlobalColorStateName(layer));
+            }
+
+            if (TintMapColor.TryFromStoredValue(storedRgb, out var customColor))
             {
                 return new TintMapColorSelection(
                     TintMapPaletteColors.GetClosestColorId(layer, customColor),
@@ -1555,7 +1562,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // Values 1-176 are the palette-index format used by the original tint-map branch.
             var paletteColor = savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount
                 ? savedColor - 1
-                : standardColor;
+                : GetStandardColor(creature, selection, layer);
             return new TintMapColorSelection(paletteColor, null);
         }
 

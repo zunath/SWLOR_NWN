@@ -31,11 +31,8 @@ internal sealed class CompilationSet
         foreach (var project in graph.Ordered)
         {
             var references = new List<MetadataReference>(resolver.For(project, warnings));
-            foreach (var referenced in project.ProjectReferences)
-            {
-                if (byFile.TryGetValue(referenced, out var other))
-                    references.Add(asReference[other]);
-            }
+            foreach (var other in Referenced(project, byFile))
+                references.Add(asReference[other]);
 
             var generated = CSharpSyntaxTree.ParseText(project.GeneratedSource, project.ParseOptions, Path.Combine(project.Folder, "obj", "TypeMoves.Generated.cs"));
             var options = new CSharpCompilationOptions(
@@ -76,9 +73,9 @@ internal sealed class CompilationSet
                 }
             }
 
-            foreach (var referenced in project.ProjectReferences)
+            foreach (var other in Referenced(project, byFile))
             {
-                if (byFile.TryGetValue(referenced, out var other) && !ReferenceEquals(asReference[other], _asReference[other]))
+                if (!ReferenceEquals(asReference[other], _asReference[other]))
                     compilation = compilation.ReplaceReference(_asReference[other], asReference[other]);
             }
 
@@ -87,5 +84,28 @@ internal sealed class CompilationSet
         }
 
         return new CompilationSet(_graph, compilations, asReference);
+    }
+
+    /// <summary>
+    /// The compiled projects a project references, directly or through another project (an SDK project reference flows on,
+    /// so a test project of the simulator sees the server), each once.
+    /// </summary>
+    private static List<ProjectInfo> Referenced(ProjectInfo project, IReadOnlyDictionary<string, ProjectInfo> byFile)
+    {
+        var result = new List<ProjectInfo>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var pending = new Stack<string>(project.ProjectReferences);
+        while (pending.Count > 0)
+        {
+            var file = pending.Pop();
+            if (!seen.Add(file) || !byFile.TryGetValue(file, out var other))
+                continue;
+
+            result.Add(other);
+            foreach (var next in other.ProjectReferences)
+                pending.Push(next);
+        }
+
+        return result;
     }
 }

@@ -212,20 +212,37 @@ public class TypeMovesRunnerTests
     }
 
     [Test]
-    public void A_tree_without_the_old_files_or_the_new_ones_skips_those_types()
+    public void A_listed_type_whose_file_the_tree_lacks_is_not_moved_even_when_another_file_declares_it()
     {
+        // Master declares some listed types in another file of Service: there they are no move, and their references stay.
         File.Delete(Full("SWLOR.Game.Server/Service/Menu.cs"));
-        File.WriteAllText(Full("SWLOR.Game.Server/Service/Log.cs"), LogSource.Replace(" + Menu.Title", string.Empty));
-        File.WriteAllText(Full("SWLOR.Game.Server/Feature/User.cs"), UserSource
-            .Replace("using static SWLOR.Game.Server.Service.Menu;\n", string.Empty)
-            .Replace("Title + ", string.Empty)
-            .Replace(" + SWLOR.Game.Server.Service.Menu.Title", string.Empty));
+        Write("SWLOR.Game.Server/Service/Panels.cs", MenuSource);
         var log = new StringWriter();
 
         Run(RunMode.Apply, log).Should().Be(TypeMoveRunner.Ok, log.ToString());
 
         log.ToString().Should().Contain("Skipped Menu: neither SWLOR.Game.Server/Service/Menu.cs nor SWLOR.Game.Server/Domain/Economy/Menu.cs exists in this tree.");
-        File.Exists(Full("SWLOR.Game.Server/Domain/Foundation/Log.cs")).Should().BeTrue();
+        Text("SWLOR.Game.Server/Service/Panels.cs").Should().Be(MenuSource);
+        Text("SWLOR.Game.Server/Domain/Foundation/Log.cs").Should().Contain("using System;\nusing SWLOR.Game.Server.Service;\n\nnamespace SWLOR.Game.Server.Domain.Foundation",
+            "Log still reaches Stay and Menu in Service");
+        Text("SWLOR.Game.Server/Feature/User.cs").Should().Contain("using static SWLOR.Game.Server.Service.Menu;")
+            .And.Contain("SWLOR.Game.Server.Service.Menu.Title").And.Contain("Domain.Foundation.Random.Next(4)");
+        Text("docs/Guide.md").Should().Contain("`SWLOR.Game.Server.Service.Menu`").And.Contain("`Domain.Foundation.Random`");
+        Run(RunMode.Check).Should().Be(TypeMoveRunner.Ok);
+    }
+
+    [Test]
+    public void A_tree_that_holds_none_of_the_files_is_left_alone()
+    {
+        foreach (var name in new[] { "Random", "Log", "Menu" })
+            File.Delete(Full($"SWLOR.Game.Server/Service/{name}.cs"));
+        var before = Snapshot();
+        var log = new StringWriter();
+
+        Run(RunMode.Check, log).Should().Be(TypeMoveRunner.Ok);
+
+        log.ToString().Should().Contain("Nothing to change: this tree holds none of the listed files.");
+        Snapshot().Should().BeEquivalentTo(before);
     }
 
     private int Run(RunMode mode, TextWriter? log = null) =>

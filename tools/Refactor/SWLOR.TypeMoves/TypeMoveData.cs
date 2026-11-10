@@ -98,6 +98,16 @@ internal sealed class TypeMoveData
         }
     }
 
+    /// <summary>
+    /// The same data with only the given moves: the ones a tree holds. A listed type whose file a tree has at neither path
+    /// (master without it) is no move there, even when a type of that name is declared in another file of the old namespace.
+    /// </summary>
+    public TypeMoveData Only(IEnumerable<TypeMove> moves)
+    {
+        var kept = moves.ToHashSet();
+        return new TypeMoveData(From, Moves.Where(kept.Contains).ToList(), TextExcludes);
+    }
+
     /// <summary>True when the repository path (forward slashes) matches one of <see cref="TextExcludes"/>.</summary>
     public bool IsExcluded(string relativePath) => TextExcludes.Any(pattern => PathPattern.Matches(pattern, relativePath));
 

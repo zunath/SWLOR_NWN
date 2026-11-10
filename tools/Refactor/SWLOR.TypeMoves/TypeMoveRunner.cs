@@ -47,12 +47,13 @@ internal static class TypeMoveRunner
     {
         var clock = Stopwatch.StartNew();
         var root = Path.GetFullPath(options.Root);
-        var data = TypeMoveData.Load(options.DataPath);
+        var listed = TypeMoveData.Load(options.DataPath);
 
         // Which files still have to move, which moved already (a later run, or the sync after a master merge).
         var pending = new Dictionary<string, TypeMove>(StringComparer.OrdinalIgnoreCase);
         var done = new List<TypeMove>();
-        foreach (var file in data.Files)
+        var active = new List<TypeMove>();
+        foreach (var file in listed.Files)
         {
             var move = file.First();
             var source = Full(root, move.SourcePath);
@@ -66,8 +67,22 @@ internal static class TypeMoveRunner
             else if (hasTarget)
                 done.Add(move);
             else
+            {
                 log.WriteLine($"Skipped {string.Join(", ", file.Select(entry => entry.Name))}: neither {move.SourcePath} nor {move.TargetPath} exists in this tree.");
+                continue;
+            }
+
+            active.AddRange(file);
         }
+
+        if (active.Count == 0)
+        {
+            log.WriteLine("Nothing to change: this tree holds none of the listed files.");
+            return Ok;
+        }
+
+        // Only the moves this tree holds count (a type master declares in another file of Service is not moved there).
+        var data = listed.Only(active);
 
         var graph = ProjectGraph.Load(root);
         var warnings = new SortedSet<string>(StringComparer.Ordinal);

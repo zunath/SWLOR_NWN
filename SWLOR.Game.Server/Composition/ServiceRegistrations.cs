@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
@@ -31,6 +32,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton(typeof(Lazy<>), typeof(ContainerLazy<>));
 
             // Core
+            // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).
+            services.AddSingleton<IRedisConnectionSource, RedisConnectionSource>();
             services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();

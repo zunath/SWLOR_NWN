@@ -1,13 +1,15 @@
 # SWLOR boot handler classification for hot reload: SWLOR.Game.Server only
 # One line per handler of a boot script, in the order the registry runs them: class, then Namespace.Type.Method.
-# Classes (BootReload): Rerun = the new build runs it again; BootOnly = never again after boot; Split = mixed, to be split;
+# Classes (BootReload): Rerun = the new build runs it again; BootOnly = never again after boot (a mixed handler is split into the two);
 # NativeHook = installs a native hook; Retire = runs at shutdown and when a generation retires. UNCLASSIFIED fails EveryBootHandlerHasABootPhase.
 # The rule and the reasons are in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md section 2.
 # Regenerate (build first so the handlers are current): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~BootHandlerClassificationTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)   (build SWLOR.Game.Server.Tests first so the generator sees your handler)
 
-mod_preload (3)
-  Split       SWLOR.Game.Server.Domain.Foundation.DBService.Load
-  Split       SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+mod_preload (5)
+  Rerun       SWLOR.Game.Server.Domain.Foundation.DBService.Connect
+  BootOnly    SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
+  Rerun       SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents
+  BootOnly    SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
   BootOnly    SWLOR.Game.Server.Feature.ServerTasks.ProcessBootStart
 
 db_loaded (1)
@@ -16,7 +18,7 @@ db_loaded (1)
 mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
-mod_cache_bef (43)
+mod_cache_bef (44)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
@@ -48,7 +50,8 @@ mod_cache_bef (43)
   Rerun       SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
   Rerun       SWLOR.Game.Server.Domain.Foundation.SnippetService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
-  Split       SWLOR.Game.Server.Domain.Creatures.SpawnService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
+  BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
   Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
   Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
@@ -78,7 +81,7 @@ mod_cache_aft (15)
   Rerun       SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
   Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
 
-mod_load (42)
+mod_load (46)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   Rerun       SWLOR.Game.Server.Service.FrameProfiler.Load
@@ -87,8 +90,10 @@ mod_load (42)
   BootOnly    SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
   Rerun       SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces
   Rerun       SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
-  Split       SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
-  Split       SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
+  Rerun       SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
+  BootOnly    SWLOR.Game.Server.Domain.World.ShuttleService.DeliverOfflinePassengers
+  BootOnly    SWLOR.Game.Server.Domain.Space.SpaceService.AssignLandingPointIds
+  Rerun       SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
   Rerun       SWLOR.Game.Server.Domain.Foundation.WalkmeshService.RetrieveWalkmeshes
   BootOnly    SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
   Rerun       SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StartAudienceTick
@@ -115,8 +120,10 @@ mod_load (42)
   BootOnly    SWLOR.Game.Server.Feature.FeatConfiguration.ConfigureFeats
   BootOnly    SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbackMessages
   Rerun       SWLOR.Game.Server.Feature.RoleplayXP.LoadOOCDetection
-  Split       SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
-  Split       SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
+  BootOnly    SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
+  Rerun       SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
+  Rerun       SWLOR.Game.Server.Feature.StoreManagement.LoadStores
+  BootOnly    SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
   BootOnly    SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
@@ -127,8 +134,7 @@ app_shutdown (2)
   Retire      SWLOR.Game.Server.Service.Log.OnApplicationShutdown
 
 == TOTALS ==
-BootOnly    12
+BootOnly    19
 NativeHook  15
-Rerun       71
+Rerun       78
 Retire      2
-Split       7

@@ -180,8 +180,11 @@ public class ScriptHandlerManifestFormatTests
 
         manifest.ScriptNames.Should().Contain(ScriptName.OnModulePreload);
         var preload = manifest.GetHandlers(ScriptName.OnModulePreload, false).ToList();
-        preload.IndexOf("SWLOR.Game.Server.Domain.Foundation.DBService.Load").Should().BeGreaterThanOrEqualTo(0);
-        preload.IndexOf("SWLOR.Game.Server.Domain.Foundation.DBService.Load")
+        // DB.Load is two handlers since P4-8, which run first: Connect, then SyncIndexes.
+        preload.Take(2).Should().Equal(
+            new[] { "SWLOR.Game.Server.Domain.Foundation.DBService.Connect", "SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes" },
+            "the database connects first and its indexes are current before anything reads it");
+        preload.IndexOf("SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes")
             .Should().BeLessThan(preload.IndexOf("SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload"),
                 "DB.Load connects Redis, which OnModulePreload reads");
     }

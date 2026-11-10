@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Core
         /// <summary>Changes the world, saved data or engine state that survives a reload. It never runs again after boot.</summary>
         BootOnly = 1,
 
-        /// <summary>Mixes both. It is split into a rerun part and a boot-only part before reload can use it.</summary>
-        Split = 2,
+        // 2 was Split, a handler that mixed both. P4-8 split each one into a Rerun handler and a BootOnly handler that run
+        // back to back, so a boot handler is never mixed; a new one that would be is split the same way.
 
         /// <summary>Installs a native function hook. Hooks persist in the engine and are handled by the native hook work, not by rerunning.</summary>
         NativeHook = 3,

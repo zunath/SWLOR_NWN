@@ -21,10 +21,11 @@ namespace SWLOR.Game.Server.Feature
         };
 
         /// <summary>
-        /// Fires on the module PreLoad event. This event should be specified in the environment variables.
-        /// This will hook all module/global events.
+        /// Fires on the module PreLoad event, after <see cref="StartServerEvents"/>. This event should be specified in the
+        /// environment variables. This will hook all module/global events, which stay bound in the engine, run
+        /// mod_content_chg when the module file changed and run the cache scripts. Boot only: a hot reload never runs it again.
         /// </summary>
-        [BootPhase(BootReload.Split)]
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
@@ -587,12 +588,8 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static void HookApplicationEvents()
         {
-            // Application Shutdown events
+            // Application Shutdown events. StartServerEvents signals the event when the process exits.
             EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
-            };
 
             EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
             EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);
@@ -603,6 +600,20 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
             EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
             EventsPlugin.SubscribeEvent("SWLOR_ON_DAMAGE", ScriptName.OnSWLORDamage);
+        }
+
+        /// <summary>
+        /// Fires on the module PreLoad event, before <see cref="OnModulePreload"/>: signals APPLICATION_SHUTDOWN when the
+        /// process exits and starts the 6-second SWLOR heartbeat. Both live in the game build, so a hot reload runs it again.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public static void StartServerEvents()
+        {
+            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
+            {
+                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
+            };
 
             Scheduler.ScheduleRepeating(() =>
             {

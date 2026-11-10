@@ -13,9 +13,15 @@ namespace SWLOR.Game.Server.Domain.World
     {
         /// <summary>
         /// When the module loads, recover in-transit flights from the database and
-        /// begin processing the flight schedule.
+        /// begin processing the flight schedule. Writes nothing; a hot reload runs it again.
         /// </summary>
         void LoadShuttleFlights();
+
+        /// <summary>
+        /// At boot, right after <see cref="LoadShuttleFlights"/>: delivers the passengers whose flight landed while the
+        /// server was down to their destination on their offline record.
+        /// </summary>
+        void DeliverOfflinePassengers();
 
         /// <summary>
         /// Retrieves a player's active shuttle ride, or null if they have none.

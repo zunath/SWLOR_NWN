@@ -113,19 +113,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Log.Write(LogGroup.Error, message);
         }
 
-        [BootPhase(BootReload.Split)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public void CacheData()
-        {
-            LoadSpawnTables();
-            StoreSpawns();
-        }
-
         /// <summary>
         /// When the module loads, all spawn tables are loaded with reflection and stored into a dictionary cache.
-        /// If any spawn tables with the same ID are found, an exception will be raised.
+        /// If any spawn tables with the same ID are found, an exception will be raised. It only fills the cache, so a hot
+        /// reload runs it again; <see cref="StoreSpawns"/> runs right after it at boot.
         /// </summary>
-        private void LoadSpawnTables()
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void LoadSpawnTables()
         {
             // Get all implementations of spawn table definitions.
             var types = GetSpawnListDefinitionTypes();
@@ -160,8 +155,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// Spawns can be hand placed creatures, waypoints, or marked as a local variable on the area.
         /// Resource spawn tables use 'RESOURCE_SPAWN_TABLE_ID' for the table name and 'RESOURCE_SPAWN_COUNT' for the number of spawns.
         /// Creature spawn tables use 'CREATURE_SPAWN_TABLE_ID' for the table name and 'CREATURE_SPAWN_COUNT' for the number of spawns.
+        /// Runs after <see cref="LoadSpawnTables"/>. Boot only: it destroys the hand-placed creatures and gives every spawn a
+        /// new id, so a second run would capture and destroy the creatures the spawn system placed.
         /// </summary>
-        private void StoreSpawns()
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void StoreSpawns()
         {
             void RegisterAreaSpawnTable(uint area, string variableName, int spawnCount)
             {

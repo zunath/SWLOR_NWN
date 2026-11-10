@@ -953,6 +953,8 @@ public class SkillServiceTests
         public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
 
         public void Load() => _inner.Load();
+        public void Connect() => _inner.Connect();
+        public void SyncIndexes() => _inner.SyncIndexes();
 
         public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key,
             StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>

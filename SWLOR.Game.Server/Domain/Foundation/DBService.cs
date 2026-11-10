@@ -20,9 +20,10 @@ namespace SWLOR.Game.Server.Domain.Foundation
     /// <summary>
     /// The persistence layer: the Redis connection, the per-script-context entity cache, the search indexes and every
     /// read and write of the entities. The logic that used to be static in the <c>DB</c> facade, moved here unchanged. The
-    /// <c>OnModulePreload</c> handler runs on the container's instance; static callers reach it through
-    /// <c>GameServices.DB</c>. The Redis, engine and settings calls sit behind the protected virtual methods at the end of
-    /// the class, so a test can run the service without a server.
+    /// two <c>mod_preload</c> handlers run on the container's instance, <see cref="Connect"/> (reruns after a hot reload)
+    /// then <see cref="SyncIndexes"/> (boot only); static callers reach it through <c>GameServices.DB</c>, and tools call
+    /// <see cref="Load"/>, which runs both. The connection comes from <see cref="IRedisConnectionSource"/>; the engine
+    /// calls sit behind the protected virtual methods at the end of the class, so a test can run the service without a server.
     /// </summary>
     public class DBService : IDBService
     {
@@ -48,7 +49,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _cachedEntities.Remove(id);
         }
 
-        private ApplicationSettings _appSettings;
+        private readonly IRedisConnectionSource _connectionSource;
+        // The entity types Connect registered, in registration order; SyncIndexes brings their indexes up to date in that order.
+        private readonly List<Type> _entityTypes = new();
         private readonly Dictionary<Type, string> _keyPrefixByType = new();
         private readonly Dictionary<Type, Client> _searchClientsByType = new();
         private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
@@ -62,8 +65,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private readonly Dictionary<string, string> _jsonAcrossFrames = new();
         private readonly HashSet<Type> _jsonCachedTypes = new();
 
-        public DBService()
+        public DBService(IRedisConnectionSource connectionSource)
         {
+            _connectionSource = connectionSource;
             _waitBeforeSearchRetry = delayMilliseconds =>
             {
                 FrameProfiler.Count(FrameMetric.DBSearchRetry);
@@ -75,33 +79,37 @@ namespace SWLOR.Game.Server.Domain.Foundation
         }
 
         /// <inheritdoc/>
-        [BootPhase(BootReload.Split)]
-        [NWNEventHandler(ScriptName.OnModulePreload)]
         public void Load()
         {
-            _appSettings = GetApplicationSettings();
+            Connect();
+            SyncIndexes();
+        }
 
-            var options = new ConfigurationOptions
-            {
-                AbortOnConnectFail = false,
-                // NRediSearch decodes search results using the RESP2 array layout.
-                Protocol = RedisProtocol.Resp2,
-                EndPoints = { _appSettings.RedisIPAddress }
-            };
+        /// <inheritdoc/>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public void Connect()
+        {
+            _multiplexer = _connectionSource.Open();
 
-            _multiplexer = Connect(options);
-
-            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
-            DBStartupWait.Until(() => _multiplexer.IsConnected, "database connection", TimeSpan.FromMinutes(10));
-            Console.WriteLine($"Database connection established.");
-
-            LoadEntities();
+            RegisterEntityTypes();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
             SubscribeScriptContextEnd(() =>
             {
                 _cachedEntities.Clear();
             });
+        }
+
+        /// <inheritdoc/>
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public void SyncIndexes()
+        {
+            foreach (var type in _entityTypes)
+            {
+                ProcessIndex(type);
+            }
 
             // CLI tools also use this class and don't have access to the NWN context.
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
@@ -140,16 +148,10 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// Makes sure the entity's search index matches the current schema. The index is only rebuilt
         /// when its definition changed or the live index is not the one this code creates.
         /// </summary>
-        /// <param name="entity"></param>
-        private void ProcessIndex(EntityBase entity)
+        /// <param name="type">An entity type <see cref="RegisterEntityTypes"/> registered.</param>
+        private void ProcessIndex(Type type)
         {
-            var type = entity.GetType();
-            var indexedProperties = type.GetProperties()
-                .Where(prop => prop.GetCustomAttribute(typeof(IndexedAttribute)) != null)
-                .ToList();
-
-            // Cache the indexed properties for quick look-up later.
-            _indexedPropertiesByName[type] = indexedProperties.Select(prop => prop.Name).ToList();
+            var indexedProperties = IndexedProperties(type);
 
             var createArgs = SearchIndexDefinition.BuildCreateArgs(
                 type.Name,
@@ -395,10 +397,12 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>
         /// When initialized, the assembly will be searched for all implementations of the EntityBase object.
         /// The KeyPrefix value of each of these will be stored into a dictionary for quick retrievals later.
-        /// This is intended to abstract key building away from the consumer of this class.
+        /// This is intended to abstract key building away from the consumer of this class. It only fills the service's own
+        /// lookups and sends nothing to Redis; <see cref="SyncIndexes"/> brings the search indexes up to date.
         /// </summary>
-        private void LoadEntities()
+        private void RegisterEntityTypes()
         {
+            _entityTypes.Clear();
             foreach (var entity in CreateEntityInstances())
             {
                 var type = entity.GetType();
@@ -409,10 +413,21 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
                 // Register the search client.
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
-                ProcessIndex(entity);
+
+                // Cache the indexed properties for quick look-up later.
+                _indexedPropertiesByName[type] = IndexedProperties(type).Select(prop => prop.Name).ToList();
+                _entityTypes.Add(type);
 
                 Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {type.Name}");
             }
+        }
+
+        /// <summary>The properties of an entity type that its search index holds, in reflection order.</summary>
+        private static List<PropertyInfo> IndexedProperties(Type type)
+        {
+            return type.GetProperties()
+                .Where(prop => prop.GetCustomAttribute(typeof(IndexedAttribute)) != null)
+                .ToList();
         }
 
         /// <summary>
@@ -711,19 +726,8 @@ namespace SWLOR.Game.Server.Domain.Foundation
             }
         }
 
-        // The calls below reach outside the service (settings, Redis, the engine). A test overrides them to run without a server.
-
-        /// <summary>The application settings: <c>ApplicationSettings.Get</c>.</summary>
-        protected virtual ApplicationSettings GetApplicationSettings()
-        {
-            return ApplicationSettings.Get();
-        }
-
-        /// <summary>Opens the Redis connection: <c>ConnectionMultiplexer.Connect</c>.</summary>
-        protected virtual IConnectionMultiplexer Connect(ConfigurationOptions options)
-        {
-            return ConnectionMultiplexer.Connect(options);
-        }
+        // The calls below reach outside the service (the engine, the assembly). A test overrides them to run without a server;
+        // the connection comes from the IRedisConnectionSource the constructor takes.
 
         /// <summary>Registers a handler for the end of every script context: <c>ServerManager.OnScriptContextEnd</c>.</summary>
         protected virtual void SubscribeScriptContextEnd(Action handler)

@@ -47,8 +47,26 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         // The members below are what the static DB facade forwarded.
 
-        /// <summary>Connects to Redis, registers the entity types and builds their search indexes. Same as <c>DB.Load</c>.</summary>
+        /// <summary>
+        /// Connects to Redis, registers the entity types and builds their search indexes: <see cref="Connect"/> then
+        /// <see cref="SyncIndexes"/>. Same as <c>DB.Load</c>; tools without a game server call it, the server runs the two
+        /// handlers.
+        /// </summary>
         void Load();
+
+        /// <summary>
+        /// The <c>mod_preload</c> handler that reruns after a hot reload: takes the open connection from the connection
+        /// source, registers every entity type (key prefix, search client, indexed properties) and clears the entity cache
+        /// at the end of every script context. Writes nothing to Redis.
+        /// </summary>
+        void Connect();
+
+        /// <summary>
+        /// The boot-only <c>mod_preload</c> handler that follows <see cref="Connect"/>: brings each registered type's search
+        /// index up to date (rebuilding one whose definition changed, which writes Redis), then runs <c>db_loaded</c> in the
+        /// game server.
+        /// </summary>
+        void SyncIndexes();
 
         /// <summary>Appends an entry to a Redis stream and waits for the reply. Same as <c>DB.StreamAdd</c>.</summary>
         RedisValue StreamAdd(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);

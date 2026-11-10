@@ -8,9 +8,15 @@ namespace SWLOR.Game.Server.Domain.Creatures
     public interface ISpawnService
     {
         /// <summary>
-        /// When the module loads, the spawn tables are loaded and the spawns of every area are stored.
+        /// When the module loads, the spawn tables are loaded into the cache. Writes nothing; a hot reload runs it again.
         /// </summary>
-        void CacheData();
+        void LoadSpawnTables();
+
+        /// <summary>
+        /// At boot, right after <see cref="LoadSpawnTables"/>: the spawns of every area are stored and the hand-placed
+        /// creatures are destroyed so the spawn system places them.
+        /// </summary>
+        void StoreSpawns();
 
         /// <summary>
         /// When a player or DM enters an area with no active or queued spawns, every spawn of the area is queued.

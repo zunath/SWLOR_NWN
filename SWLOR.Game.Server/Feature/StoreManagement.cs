@@ -16,11 +16,12 @@ namespace SWLOR.Game.Server.Feature
         private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
 
         /// <summary>
-        /// When the module loads, place all stores inside the cache and schedule the cleanup process.
+        /// When the module loads, place all stores inside the cache and schedule the cleanup process. It only reads the
+        /// world, so a hot reload runs it again; <see cref="ProcessStores"/> runs right after it.
         /// </summary>
-        [BootPhase(BootReload.Split)]
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void ProcessStores()
+        public static void LoadStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -29,17 +30,29 @@ namespace SWLOR.Game.Server.Feature
                     if (GetObjectType(store) != ObjectType.Store)
                         continue;
 
-                    for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
-                    {
-                        SetLocalBool(item, StoreServiceItem, true);
-                        ApplyIncreasedPriceItemProperty(item);
-                    }
-
                     _stores.Add(store);
                 }
             }
 
             Scheduler.ScheduleRepeating(DoCleanStores, TimeSpan.FromHours(IntervalHours));
+        }
+
+        /// <summary>
+        /// After <see cref="LoadStores"/>, marks every item the stores of the module hold as a store item and adds its
+        /// increased price to its base value. Boot only: a second run would raise the prices again.
+        /// </summary>
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void ProcessStores()
+        {
+            foreach (var store in _stores)
+            {
+                for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
+                {
+                    SetLocalBool(item, StoreServiceItem, true);
+                    ApplyIncreasedPriceItemProperty(item);
+                }
+            }
         }
 
         /// <summary>

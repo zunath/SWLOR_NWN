@@ -117,26 +117,26 @@ namespace SWLOR.CraftSim.Legacy
             "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
 
         public static readonly SourceReference ScavengeXp = new(
-            "Scavenge XP level", ScavengeSite, 109, 109,
+            "Scavenge XP level", ScavengeSite, 108, 108,
             "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
-            "Ore tiers and XP per unit", Refinery, 37, 54,
+            "Ore tiers and XP per unit", Refinery, 36, 53,
             "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\", 25)}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\", 50)}",
             "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\", 75)}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\", 100)}",
             "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\", 125)}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
 
         public static readonly SourceReference RefineryBatch = new(
-            "Refinery batch size", Refinery, 63, 63,
+            "Refinery batch size", Refinery, 62, 62,
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
-            "Power cores per batch", Refinery, 174, 179,
+            "Power cores per batch", Refinery, 173, 178,
             "BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel)", "(int)Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore))");
 
         // Refining pays each ore's flat XP times the rank's share of the curve (GatheringLevels.RefiningXp), not the flat XP alone.
         public static readonly SourceReference RefineryXp = new(
-            "Refining XP", Refinery, 366, 370,
+            "Refining XP", Refinery, 365, 369,
             "xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);",
             "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 

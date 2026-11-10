@@ -141,7 +141,8 @@ internal static class CallerRewriter
     /// The namespaces the tree the file is reversed against declares (its server sources, enclosing namespaces included).
     /// The import of a branch-only namespace (the accessor's, a moved constant owner's) is dropped only when that tree does
     /// not declare it: once <c>Move-SupportNamespaces.ps1</c> ran on master's parity copy, master declares the
-    /// <c>Domain.&lt;Domain&gt;</c> namespaces too, and the file still needs their support types. Null means none.
+    /// <c>Domain.&lt;Domain&gt;</c> namespaces too, and the file still needs their support types. Null means none. When it declares
+    /// <c>SWLOR.Game.Server.Service</c> (master's facades), a file the reversal sends back to a facade imports that namespace.
     /// </param>
     public static RewriteResult Reverse(string text, IReadOnlyList<RemovedFacade> facades, IReadOnlySet<string>? declaredNamespaces = null)
     {
@@ -166,6 +167,7 @@ internal static class CallerRewriter
             .Where(IsBranchOnly)
             .ToHashSet(StringComparer.Ordinal);
         bool MissingThere(string @namespace) => declaredNamespaces == null || !declaredNamespaces.Contains(@namespace);
+        var accessorImportDropped = false;
 
         foreach (var directive in AllUsings(root))
         {
@@ -181,6 +183,7 @@ internal static class CallerRewriter
 
             edits.Add(RemoveLine(text, directive));
             removed++;
+            accessorImportDropped |= directive.StaticKeyword.IsKind(SyntaxKind.StaticKeyword);
         }
 
         foreach (var access in root.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
@@ -205,7 +208,18 @@ internal static class CallerRewriter
         if (edits.Count == 0)
             return new RewriteResult(text, 0, 0, false);
 
-        return new RewriteResult(TextEdit.Apply(text, edits), removed, edits.Count - removed, false);
+        // Master's facades live in SWLOR.Game.Server.Service. Since P2-Z3 the branch's files no longer import that namespace
+        // (nothing is left in it), so a file that reaches a facade again imports it when the tree it is reversed against
+        // declares it.
+        var rewrites = edits.Count - removed;
+        if ((accessorImportDropped || rewrites > 0) && declaredNamespaces != null && declaredNamespaces.Contains(RemovedFacade.ServiceNamespace))
+        {
+            var usings = AllUsings(root).ToList();
+            if (!HasPlainUsing(usings, RemovedFacade.ServiceNamespace) && !IsInside(DeclaredNamespaces(root), RemovedFacade.ServiceNamespace))
+                edits.Add(InsertUsings(text, root, usings, ["using " + RemovedFacade.ServiceNamespace + ";"]));
+        }
+
+        return new RewriteResult(TextEdit.Apply(text, edits), removed, rewrites, false);
     }
 
     /// <summary>

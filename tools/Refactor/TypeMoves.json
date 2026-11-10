@@ -1,0 +1,40 @@
+{
+  "comment": "Data for tools/Refactor/SWLOR.TypeMoves (P2-Z3, wrapper Move-ServiceTypes.ps1): the types that sat directly in the namespace SWLOR.Game.Server.Service and the domain namespace each moves to, with its file from SWLOR.Game.Server/Service/ to the folder of that namespace (the file name stays). file defaults to <type>.cs; types that share a file share a target. The domains follow SWLOR.Architecture.Tests/DomainMap.json. textExcludes: PowerShell-like patterns (* and **) on repository paths whose text the tool never rewrites: files that hold master's names on purpose, the tool itself and its tests. tools/Refactor/Move-SupportNamespaces.ps1 reads the type names too: master code it moves out of a Service.<Name>Service folder reached these types through the enclosing namespace Service, so it keeps reaching them there and this tool, which runs after it, moves those references.",
+  "from": "SWLOR.Game.Server.Service",
+  "types": [
+    { "type": "BankItemPage", "to": "SWLOR.Game.Server.Domain.Economy" },
+    { "type": "CasinoPlayTracker", "to": "SWLOR.Game.Server.Domain.Economy" },
+    { "type": "CasinoSlotPresentation", "to": "SWLOR.Game.Server.Domain.Economy" },
+    { "type": "CasinoSpinResult", "to": "SWLOR.Game.Server.Domain.Economy" },
+    { "type": "BattleGridSettings", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "QueuedAttackAnimationPlayback", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "RecastTimestamp", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "WeaponAttackPhase", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "ColorToken", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "FrameProfiler", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "GameMath", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "Log", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "Menu", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "NamedAnimationPlayback", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "INamedAnimationRuntime", "to": "SWLOR.Game.Server.Domain.Foundation", "file": "NamedAnimationPlayback.cs" },
+    { "type": "Random", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "Time", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "MimicryLoadouts", "to": "SWLOR.Game.Server.Domain.Abilities" },
+    { "type": "PlayerActivityEffectTag", "to": "SWLOR.Game.Server.Domain.Character" },
+    { "type": "ServerRestart", "to": "SWLOR.Game.Server.Domain.Gameplay" }
+  ],
+  "textExcludes": [
+    "SWLOR.Game.Server/Readmes/Maintainability*",
+    "SWLOR.Toolset/WORKLOG.md",
+    "tools/Refactor/HandlerRenames.txt",
+    "tools/Refactor/TypeMoves.json",
+    "tools/Refactor/SWLOR.TypeMoves/**",
+    "tools/Refactor/Move-ServiceTypes.ps1",
+    "SWLOR.Game.Server.Tests/Tools/TypeMoves*",
+    "tools/Refactor/RemovedFacades.json",
+    "tools/Refactor/NamespaceMoves.json",
+    "tools/Refactor/Move-SupportNamespaces.ps1",
+    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs",
+    "SWLOR.Game.Server.Tests/Tools/FacadeRemovalRewriterTests.cs"
+  ]
+}

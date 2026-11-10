@@ -521,11 +521,24 @@ foreach ($path in $serverCs) {
         foreach ($type in $fileTypes[$path]) { [void]$facadeNames.Add($type) }
     }
 }
+# The types P2-Z3 moved out of Service (TypeMoves.json beside this script) are still there in master's code, which reaches
+# them through the enclosing namespace: a moved master file keeps reaching them through Service, and
+# Move-ServiceTypes.ps1, which runs next, moves those references to the types' domains.
+$typeMovesFile = Join-Path $PSScriptRoot 'TypeMoves.json'
+if (Test-Path -LiteralPath $typeMovesFile) {
+    $typeMoves = Get-Content -LiteralPath $typeMovesFile -Raw | ConvertFrom-Json
+    if ([string]$typeMoves.from -eq 'SWLOR.Game.Server.Service') {
+        foreach ($entry in @($typeMoves.types)) { [void]$facadeNames.Add([string]$entry.type) }
+    }
+}
 $hiddenFacades = New-Object 'System.Collections.Generic.List[string]'
 foreach ($domainName in (@($serviceDomain.Values | Select-Object -Unique) + @($renames.Values | Where-Object { $_ -match '^Domain\.[^.]+$' } | ForEach-Object { $_.Substring(7) }))) {
     if ($facadeNames.Contains($domainName) -and -not $hiddenFacades.Contains($domainName)) { $hiddenFacades.Add($domainName) }
 }
-$facadeUseRegex = New-Object System.Text.RegularExpressions.Regex(('(?<![\w.@])(?:' + (($facadeNames | Sort-Object Length -Descending | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')\b'), $regexOptions)
+$facadeUseRegex = $null
+if ($facadeNames.Count -gt 0) {
+    $facadeUseRegex = New-Object System.Text.RegularExpressions.Regex(('(?<![\w.@])(?:' + (($facadeNames | Sort-Object Length -Descending | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')\b'), $regexOptions)
+}
 $hiddenFacadeRegex = $null
 if ($hiddenFacades.Count -gt 0) {
     $hiddenFacadeRegex = New-Object System.Text.RegularExpressions.Regex(('(?<![\w.@"''])(?<q>' + (($hiddenFacades | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')\.(?=[A-Za-z_])'), $regexOptions)
@@ -550,7 +563,7 @@ function Add-FacadeAccess {
     if ($null -ne $hiddenFacadeRegex) { $Text = $hiddenFacadeRegex.Replace($Text, 'Service.${q}.') }
     if (-not $Moved) { return $Text }
     if ($null -ne $clashingFacadeRegex) { $Text = $clashingFacadeRegex.Replace($Text, 'Service.${q}.') }
-    if ($Text.Contains($serviceUsing) -or -not $facadeUseRegex.IsMatch($Text)) { return $Text }
+    if ($Text.Contains($serviceUsing) -or $null -eq $facadeUseRegex -or -not $facadeUseRegex.IsMatch($Text)) { return $Text }
     $eol = if ($Text.Contains("`r`n")) { "`r`n" } else { "`n" }
     $stop = $headerEndRegex.Match($Text)
     $limit = if ($stop.Success) { $stop.Index } else { 0 }

@@ -15,6 +15,10 @@ public static class WeaponFit
     private const string AppliedX = "WEAPON_GRIP_FIT_X";
     private const string AppliedY = "WEAPON_GRIP_FIT_Y";
     private const string AppliedZ = "WEAPON_GRIP_FIT_Z";
+    private const string AppliedRotationX = "WEAPON_GRIP_FIT_RX";
+    private const string AppliedRotationY = "WEAPON_GRIP_FIT_RY";
+    private const string AppliedRotationZ = "WEAPON_GRIP_FIT_RZ";
+    private const string AppliedScale = "WEAPON_GRIP_FIT_SCALE";
     private const string AppliedItem = "WEAPON_GRIP_FIT_ITEM";
     private const string HeldRight = "WEAPON_GRIP_FIT_RIGHT";
     private const string HeldLeft = "WEAPON_GRIP_FIT_LEFT";
@@ -89,13 +93,15 @@ public static class WeaponFit
     public static void Apply(uint creature)
     {
         if (!IsCreature(creature)) return;
+        WeaponGripHandRenderer.Apply(creature);
         var right = GetItemInSlot(InventorySlot.RightHand, creature);
         var left = GetItemInSlot(InventorySlot.LeftHand, creature);
         ReleaseDisplaced(creature, HeldRight, right, left);
         ReleaseDisplaced(creature, HeldLeft, right, left);
         var rightHand = GetHandModel(creature, CreaturePart.RightHand, "r");
         var leftHand = GetHandModel(creature, CreaturePart.LeftHand, "l");
-        ApplyHand(creature, right, rightHand, leftHand, HeldRight);
+        ApplyHand(creature, right, rightHand, leftHand, HeldRight,
+            RifleGripFits.IsReadyAnimation(ObjectPlugin.GetCurrentAnimation(creature)));
         ApplyHand(creature, left, leftHand, rightHand, HeldLeft);
     }
 
@@ -111,37 +117,40 @@ public static class WeaponFit
 
     private static string GetHandModel(uint creature, CreaturePart part, string side)
     {
-        if (RobeModelRenderer.GetBasePhenotype(creature) != 0) return string.Empty;
-        var armor = GetItemInSlot(InventorySlot.Chest, creature);
-        var armorPart = GetIsObjectValid(armor)
-            ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part) : 0;
-        var robe = GetIsObjectValid(armor)
-            ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe) : 0;
-        var appearance = (int)GetAppearanceType(creature);
-        if (!Get2DAString("appearance", "MODELTYPE", appearance).StartsWith("P", StringComparison.OrdinalIgnoreCase))
-            return string.Empty;
-        var handHiddenByRobe = robe > 0 &&
-            Get2DAString("parts_robe", "HIDEHAND" + side.ToUpperInvariant(), robe) != "0";
-        return WeaponGripFits.ResolveHandModel(Get2DAString("appearance", "RACE", appearance),
-            GetGender(creature), side, GetCreatureBodyPart(part, creature), armorPart, handHiddenByRobe);
+        return WeaponGripHandRenderer.GetHandModel(creature, part, side);
     }
 
-    private static void ApplyHand(uint creature, uint item, string hand, string supportHand, string variable)
+    internal static void ApplyRifleAnimation(uint creature, int animation)
+    {
+        if (!IsCreature(creature)) return;
+        var item = GetItemInSlot(InventorySlot.RightHand, creature);
+        if (!GetIsObjectValid(item) || GetBaseItemType(item) != BaseItem.Rifle) return;
+        ApplyHand(creature, item, GetHandModel(creature, CreaturePart.RightHand, "r"),
+            GetHandModel(creature, CreaturePart.LeftHand, "l"), HeldRight,
+            RifleGripFits.IsReadyAnimation(animation));
+    }
+
+    private static void ApplyHand(uint creature, uint item, string hand, string supportHand, string variable,
+        bool rifleReady = false)
     {
         if (!GetIsObjectValid(item)) return;
-        var fit = WeaponGripFits.GetFit(GetBaseItemType(item), GetPart(item, AppearanceWeapon.Middle),
+        var fit = WeaponGripFits.GetPlacement(GetBaseItemType(item), GetPart(item, AppearanceWeapon.Middle),
             GetPart(item, AppearanceWeapon.Top), GetPart(item, AppearanceWeapon.Bottom), hand, supportHand);
-        ApplyOffset(item, fit);
-        if (fit != FitVector.Zero) SetLocalObject(creature, variable, item);
+        if (GetBaseItemType(item) == BaseItem.Rifle && GetPart(item, AppearanceWeapon.Top) == 101 &&
+            GetPart(item, AppearanceWeapon.Bottom) == 101)
+            RifleGripFits.TryGetPosePlacement(GetPart(item, AppearanceWeapon.Middle), hand, supportHand,
+                rifleReady, out fit);
+        ApplyPlacement(item, fit);
+        if (fit != WeaponGripFit.Identity) SetLocalObject(creature, variable, item);
     }
 
-    private static int GetPart(uint item, AppearanceWeapon part) =>
+    internal static int GetPart(uint item, AppearanceWeapon part) =>
         GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)part) * 100 +
         GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)part);
 
     private static void Release(uint item)
     {
-        if (GetIsObjectValid(item) && GetObjectType(item) == ObjectType.Item) ApplyOffset(item, FitVector.Zero);
+        if (GetIsObjectValid(item) && GetObjectType(item) == ObjectType.Item) ApplyPlacement(item, WeaponGripFit.Identity);
     }
 
     private static FitVector RebaseOffset(FitVector current, FitVector previous, FitVector next) =>
@@ -150,21 +159,45 @@ public static class WeaponFit
     private static FitVector ResolveOwnedOffset(string fittedItem, string currentItem, FitVector offset) =>
         !string.IsNullOrEmpty(fittedItem) && fittedItem == currentItem ? offset : FitVector.Zero;
 
-    private static void ApplyOffset(uint item, FitVector offset)
+    private static float RebaseScale(float current, float previous, float next) => current / previous * next;
+
+    private static void ApplyPlacement(uint item, WeaponGripFit fit)
     {
         var saved = new FitVector(GetLocalFloat(item, AppliedX), GetLocalFloat(item, AppliedY), GetLocalFloat(item, AppliedZ));
-        if (saved == FitVector.Zero && offset == FitVector.Zero) return;
+        var savedRotation = new FitVector(GetLocalFloat(item, AppliedRotationX), GetLocalFloat(item, AppliedRotationY),
+            GetLocalFloat(item, AppliedRotationZ));
+        var savedScale = GetLocalFloat(item, AppliedScale);
+        // Translation-only fits from earlier versions did not store a scale.
+        if (savedScale <= 0f) savedScale = 1f;
+        if (saved == FitVector.Zero && savedRotation == FitVector.Zero && savedScale == 1f &&
+            fit == WeaponGripFit.Identity) return;
         // CopyItem copies locals but resets transforms; an ordinary reload retains the UUID and both values.
         var identity = GetObjectUUID(item);
-        var previous = ResolveOwnedOffset(GetLocalString(item, AppliedItem), identity, saved);
+        var fittedItem = GetLocalString(item, AppliedItem);
+        var previous = ResolveOwnedOffset(fittedItem, identity, saved);
+        var previousRotation = ResolveOwnedOffset(fittedItem, identity, savedRotation);
+        var previousScale = !string.IsNullOrEmpty(fittedItem) && fittedItem == identity ? savedScale : 1f;
         var current = new FitVector(GetObjectVisualTransform(item, ObjectVisualTransform.TranslateX, nScope: Scope),
             GetObjectVisualTransform(item, ObjectVisualTransform.TranslateY, nScope: Scope),
             GetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, nScope: Scope));
-        var next = RebaseOffset(current, previous, offset);
-        SetAxis(item, ObjectVisualTransform.TranslateX, current.X, next.X, AppliedX, offset.X);
-        SetAxis(item, ObjectVisualTransform.TranslateY, current.Y, next.Y, AppliedY, offset.Y);
-        SetAxis(item, ObjectVisualTransform.TranslateZ, current.Z, next.Z, AppliedZ, offset.Z);
-        if (offset == FitVector.Zero) DeleteLocalString(item, AppliedItem);
+        var next = RebaseOffset(current, previous, fit.Translation);
+        SetAxis(item, ObjectVisualTransform.TranslateX, current.X, next.X, AppliedX, fit.Translation.X);
+        SetAxis(item, ObjectVisualTransform.TranslateY, current.Y, next.Y, AppliedY, fit.Translation.Y);
+        SetAxis(item, ObjectVisualTransform.TranslateZ, current.Z, next.Z, AppliedZ, fit.Translation.Z);
+        var rotation = new FitVector(GetObjectVisualTransform(item, ObjectVisualTransform.RotateX, nScope: Scope),
+            GetObjectVisualTransform(item, ObjectVisualTransform.RotateY, nScope: Scope),
+            GetObjectVisualTransform(item, ObjectVisualTransform.RotateZ, nScope: Scope));
+        var nextRotation = RebaseOffset(rotation, previousRotation, fit.Rotation);
+        SetAxis(item, ObjectVisualTransform.RotateX, rotation.X, nextRotation.X, AppliedRotationX, fit.Rotation.X);
+        SetAxis(item, ObjectVisualTransform.RotateY, rotation.Y, nextRotation.Y, AppliedRotationY, fit.Rotation.Y);
+        SetAxis(item, ObjectVisualTransform.RotateZ, rotation.Z, nextRotation.Z, AppliedRotationZ, fit.Rotation.Z);
+        var scale = GetObjectVisualTransform(item, ObjectVisualTransform.Scale, nScope: Scope);
+        var nextScale = RebaseScale(scale, previousScale, fit.Scale);
+        if (Math.Abs(scale - nextScale) > .000001f)
+            SetObjectVisualTransform(item, ObjectVisualTransform.Scale, nextScale, nScope: Scope);
+        if (fit.Scale == 1f) DeleteLocalFloat(item, AppliedScale);
+        else SetLocalFloat(item, AppliedScale, fit.Scale);
+        if (fit == WeaponGripFit.Identity) DeleteLocalString(item, AppliedItem);
         else SetLocalString(item, AppliedItem, identity);
     }
 

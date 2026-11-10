@@ -1,7 +1,9 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using FitVector = System.Numerics.Vector3;
@@ -11,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class WeaponFitTests
 {
     [Test]
-    public void RepeatedRefreshAndChangingProfilesPreserveTheAuthoredTranslation()
+    public void RepeatedRefreshAndReleasePreserveAuthoredTranslationAndRotation()
     {
         var authored = new FitVector(.013f, -.021f, .007f);
         var first = new FitVector(.01f, .02f, -.03f);
@@ -27,7 +29,20 @@ public class WeaponFitTests
     }
 
     [Test]
-    public void ReloadRetainsTheAppliedDeltaButACopiedItemDoesNotSubtractItsSourcesDelta()
+    public void ScaleRefreshAndReleasePreserveAuthoredScale()
+    {
+        var current = 1.03f;
+        var previous = 1f;
+        foreach (var fit in new[] { .9f, .9f, 1.1f, 1f, 1f })
+        {
+            current = Invoke<float>(typeof(WeaponFit), "RebaseScale", current, previous, fit);
+            current.Should().BeApproximately(1.03f * fit, .000001f);
+            previous = fit;
+        }
+    }
+
+    [Test]
+    public void ReloadRetainsTheOwnedDeltaAndCopiesDoNotSubtractTheirSourcesDelta()
     {
         var saved = new FitVector(.01f, .02f, -.03f);
         Invoke<FitVector>(typeof(WeaponFit), "ResolveOwnedOffset", "item-a", "item-a", saved).Should().Be(saved);
@@ -45,93 +60,129 @@ public class WeaponFitTests
     [TestCase("", Gender.Male, "r", 1, 0, false, "")]
     [TestCase("h", Gender.Male, "x", 1, 0, false, "")]
     [TestCase("h", Gender.Male, "r", 0, 0, false, "")]
-    public void FitSelectionUsesTheRenderedHandAndDoesNotBorrowAHiddenCostumeHand(string race, Gender gender,
-        string side, int natural, int armor, bool handHiddenByRobe, string expected) =>
-        Invoke<string>(Catalog, "ResolveHandModel", race, gender, side, natural, armor, handHiddenByRobe).Should().Be(expected);
+    public void SelectionUsesTheRenderedHand(string race, Gender gender, string side, int natural, int armor,
+        bool hidden, string expected) =>
+        Invoke<string>(Catalog, "ResolveHandModel", race, gender, side, natural, armor, hidden).Should().Be(expected);
 
     [TestCase(BaseItem.Rifle, 999, 101, 101, "pmh0_handr001")]
     [TestCase(BaseItem.PowerGlove, 310, 101, 101, "pmh0_handr001")]
     [TestCase(BaseItem.LargeShield, 310, 101, 101, "pmh0_handl001")]
     [TestCase(BaseItem.Sling, 310, 102, 101, "pmh0_handr001")]
     [TestCase(BaseItem.Sling, 310, 101, 102, "pmh0_handr001")]
+    [TestCase(BaseItem.Sling, 999, 101, 101, "pmh0_handr001")]
     [TestCase(BaseItem.Sling, 310, 101, 101, "unknown")]
     [TestCase(BaseItem.Sling, 310, 101, 101, "")]
-    public void UnmeasuredAssembliesKeepTheirExistingTransforms(BaseItem type, int middle, int top, int bottom, string hand) =>
-        Fit(type, middle, top, bottom, hand).Should().Be(FitVector.Zero);
-
-    [Test]
-    public void GeneratedTwinUsesItsOwnHandsSharedFit()
+    public void MissingMeasurementsAreReportedAndLeaveAuthoredPlacement(BaseItem type, int middle,
+        int top, int bottom, string hand)
     {
-        foreach (var hand in new[] { "pmh0_handl001", "pfh0_handl001" })
-            Fit(BaseItem.CompanionPistol, 310, 101, 101, hand).Should().Be(Fit(BaseItem.Sling, 310, 101, 101, hand));
+        var args = new object[] { type, middle, top, bottom, hand, "", null! };
+        Invoke<bool>(Catalog, "TryGetPlacement", args).Should().BeFalse();
+        args[6].Should().Be(WeaponGripFit.Identity);
+        Placement(type, middle, top, bottom, hand).Should().Be(WeaponGripFit.Identity);
     }
 
     [Test]
-    public void ProfilesAreExplicitNormalHandMeasurementsAndLookupsIgnoreResourceCase()
+    public void EveryPistolAndNativeNormalHandHasAnExplicitMeasurementAtAuthoredSize()
     {
-        var profiles = (Dictionary<(BaseItem Type, int Top, int Middle, int Bottom, string Hand, string SupportHand), FitVector>)Catalog
-            .GetField("Fits", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        profiles.Should().NotBeEmpty();
-        foreach (var (key, offset) in profiles)
+        var root = RepositoryRoot();
+        var hands = new[] { "sw_pt_rhand", "sw_pt_lhand" }
+            .SelectMany(folder => Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks", folder), "*.mdl"))
+            .Select(Path.GetFileNameWithoutExtension).Select(name => name!.ToLowerInvariant())
+            .Where(name => Regex.IsMatch(name, "^p[mf][heodz]0_hand[rl][0-9]{3}$")).ToArray();
+        var selected = ReachableHands(root, hands.ToHashSet());
+        foreach (var columns in File.ReadLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "griprender.2da"))
+                     .Skip(3).Where(line => !string.IsNullOrWhiteSpace(line)).Select(line => Regex.Split(line.Trim(), @"\s+")))
         {
-            key.Hand.Should().MatchRegex("^p[mf][heodz]0_hand[rl][0-9]{3}$");
-            float.IsFinite(offset.X).Should().BeTrue();
-            float.IsFinite(offset.Y).Should().BeTrue();
-            float.IsFinite(offset.Z).Should().BeTrue();
-            Invoke<FitVector>(Catalog, "GetFit", key.Type, key.Middle, key.Top, key.Bottom, key.Hand.ToUpperInvariant(),
-                key.SupportHand.ToUpperInvariant()).Should().Be(offset);
-            if (key.Type == BaseItem.Rifle)
-                Invoke<FitVector>(Catalog, "GetFit", key.Type, key.Middle, 101, 101, key.Hand, "unmeasured")
-                    .Should().Be(FitVector.Zero);
-            else key.SupportHand.Should().BeEmpty();
+            columns.Should().HaveCount(3);
+            if (selected.Contains(columns[1].ToLowerInvariant())) selected.Add(columns[2].ToLowerInvariant());
+        }
+        hands.Should().NotBeEmpty();
+        selected.Should().NotBeEmpty();
+        foreach (var hand in selected)
+        foreach (var model in new PistolAppearanceDefinition().MiddleParts)
+        {
+            var args = new object[] { BaseItem.Sling, model, 101, 101, hand, "", null! };
+            Invoke<bool>(Catalog, "TryGetPlacement", args).Should().BeTrue($"{hand}, pistol {model} needs a measurement");
+            var fit = (WeaponGripFit)args[6];
+            fit.Scale.Should().Be(1f, "grip placement retains authored weapon size");
+            foreach (var value in new[] { fit.Translation.X, fit.Translation.Y, fit.Translation.Z,
+                         fit.Rotation.X, fit.Rotation.Y, fit.Rotation.Z })
+                float.IsFinite(value).Should().BeTrue();
+            Placement(BaseItem.Sling, model, 101, 101, hand.ToUpperInvariant()).Should().Be(fit);
+            foreach (var alias in new[] { BaseItem.Pistol, BaseItem.LegacyPistol, BaseItem.CompanionPistol })
+                Placement(alias, model, 101, 101, hand).Should().Be(fit);
         }
     }
 
     [Test]
-    public void WookieePistolCorrectionIsSpecificToTheMeasuredHandAndAssembly()
+    public void FemaleMonCalamari301SeatsTheActualHandleNeckAtFullSize()
     {
-        Fit(BaseItem.Sling, 310, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
-        Fit(BaseItem.Sling, 101, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
-        Fit(BaseItem.Sling, 404, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
-        foreach (var hand in new[] { "pfe0_handr214", "pme0_handl214", "pme0_handr208", "pmh0_handr214" })
-            Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 999, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 701, 101, 101, "pme0_handr214").Should().Be(new FitVector(0f, 0f, .035f));
-        Fit(BaseItem.Sling, 310, 102, 101, "pme0_handr214").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Rifle, 310, 101, 101, "pme0_handr214").Should().Be(FitVector.Zero);
+        var fit = Placement(BaseItem.Sling, 301, 101, 101, "pfh0_handr204");
+        AssertVector(fit.Translation, new FitVector(.003f, -.04f, .02f));
+        AssertVector(fit.Rotation, FitVector.Zero);
+        fit.Scale.Should().Be(1f);
+        Placement(BaseItem.Sling, 301, 101, 101, "pfh0_handl204").Should().NotBe(fit,
+            "the native left hand has its own geometry and attachment");
     }
 
-    [Test]
-    public void MonCalamariCorrectionDoesNotTransferToOtherHandsOrAssemblies()
+    [TestCase(90f, 0f, 0f, 1f, 0f, 0f, 0f, -1f, 0f)]
+    [TestCase(0f, 90f, 0f, 0f, 1f, 0f, 0f, 0f, -1f)]
+    [TestCase(0f, 0f, 90f, 0f, 0f, 1f, -1f, 0f, 0f)]
+    public void NativeHeadingPitchAndRollUseTheClientVerifiedModelAxes(float heading, float pitch, float roll,
+        float x, float y, float z, float tx, float ty, float tz)
     {
-        Fit(BaseItem.Sling, 310, 101, 101, "pfh0_handr204").Should().Be(new FitVector(0f, 0f, .035f));
-        foreach (var hand in new[] { "pmh0_handr204", "pfh0_handl204", "pfh0_handr001", "pfe0_handr204" })
-            Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 310, 102, 101, "pfh0_handr204").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 999, 101, 101, "pfh0_handr204").Should().Be(FitVector.Zero);
-    }
-
-    [Test]
-    public void TheInspectedBaselinesKeepTheirAuthoredAttachment()
-    {
-        Fit(BaseItem.Sling, 310, 101, 101, "pmh0_handr002").Should().Be(FitVector.Zero);
-        foreach (var hand in new[] { "pmh0_handr001", "pfh0_handr002", "pme0_handr002", "pmh0_handl002", "pmh2_handr002" })
-            Fit(BaseItem.Sling, 310, 101, 101, hand).Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 310, 102, 101, "pmh0_handr002").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 310, 101, 102, "pmh0_handr002").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Rifle, 310, 101, 101, "pmh0_handr002").Should().Be(FitVector.Zero);
-        Fit(BaseItem.Sling, 309, 101, 101, "pmh0_handr002").Should().Be(FitVector.Zero);
+        // Visible native axis markers reproduce these rotations. Treating the
+        // API's RotateX/Y/Z as MDL X/Y/Z seats a rotated neck at the wrong point.
+        var frameType = typeof(WeaponFit).Assembly.GetType(
+            "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFrame")!;
+        var frame = Activator.CreateInstance(frameType, FitVector.Zero, new FitVector(heading, pitch, roll))!;
+        var seated = Invoke<WeaponGripFit>(Catalog, "SeatHandle", frame, new FitVector(x, y, z));
+        AssertVector(seated.Translation, new FitVector(tx, ty, tz));
     }
 
     private static Type Catalog => typeof(WeaponFit).Assembly.GetType(
         "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFits")!;
-
-    private static FitVector Fit(BaseItem type, int middle, int top, int bottom, string hand) =>
-        Invoke<FitVector>(Catalog, "GetFit", type, middle, top, bottom, hand, hand.Replace("_handr", "_handl"));
-
+    private static WeaponGripFit Placement(BaseItem type, int middle, int top, int bottom, string hand) =>
+        Invoke<WeaponGripFit>(Catalog, "GetPlacement", type, middle, top, bottom, hand, "");
     private static T Invoke<T>(Type type, string method, params object[] args) =>
         (T)type.GetMethod(method, BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, args)!;
-
+    private static HashSet<string> ReachableHands(string root, HashSet<string> models)
+    {
+        var lines = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "appearance.2da"));
+        var column = Array.IndexOf(Regex.Split(lines[2].Trim(), @"\s+"), "RACE") + 1;
+        var races = lines.Skip(3).Select(line => Regex.Matches(line, @"""[^""]*""|\S+").Select(m => m.Value).ToArray())
+            .Where(c => c.Length > column && int.TryParse(c[0], out _) && c[column].Length == 1)
+            .ToDictionary(c => int.Parse(c[0]), c => c[column].ToLowerInvariant());
+        var selected = new HashSet<string>();
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        {
+            RacialAppearanceRegistry.TryGet(appearance, out var definition).Should().BeTrue();
+            foreach (var gender in new[] { 'm', 'f' })
+            foreach (var side in new[] { 'r', 'l' })
+            {
+                var prefix = $"p{gender}{races[(int)appearance]}0_hand{side}";
+                var natural = side == 'r' ? definition.RightHand : definition.LeftHand;
+                foreach (var part in natural)
+                {
+                    var hand = prefix + $"{part:D3}";
+                    models.Should().Contain(hand, $"{appearance} {gender} natural {side} hand {part}");
+                    selected.Add(hand);
+                }
+                foreach (var part in ArmorAppearanceCatalog.Definitions[appearance].Hand.Where(p => p > 2))
+                {
+                    var hand = prefix + $"{part:D3}";
+                    if (models.Contains(hand)) selected.Add(hand);
+                }
+            }
+        }
+        return selected;
+    }
+    private static string RepositoryRoot()
+    {
+        for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) return directory.FullName;
+        throw new DirectoryNotFoundException("Could not locate repository root.");
+    }
     private static void AssertVector(FitVector actual, FitVector expected)
     {
         actual.X.Should().BeApproximately(expected.X, .000001f);

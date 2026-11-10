@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -8,11 +9,57 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using FitVector = System.Numerics.Vector3;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class WeaponFitEngineTests
 {
+    [EngineTest("Native rifle hold transitions preserve primary contact and authored offsets", Category = "WeaponFit", TimeoutSeconds = 60f)]
+    public static async Task NativeRifleHoldTransitions(EngineTestContext ctx)
+    {
+        var wearer = ctx.SpawnCreature("civilian");
+        await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, wearer)),
+            10f, "the rifle wearer's outfit");
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            SetCreatureAppearanceType(wearer, (AppearanceType)10006);
+            SetGender(wearer, Gender.Male);
+            SetPhenoType(PhenoType.Normal, wearer);
+            SetCreatureBodyPart(CreaturePart.RightHand, 201, wearer);
+            SetCreatureBodyPart(CreaturePart.LeftHand, 201, wearer);
+            var outfit = GetItemInSlot(InventorySlot.Chest, wearer);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)CreaturePart.RightHand, 153);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)CreaturePart.LeftHand, 0);
+            EquippedItemAppearance.Refresh(wearer, outfit);
+        });
+        var rifle = await ctx.EquipItemAsync(wearer, "b_rifle", InventorySlot.RightHand);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            SetAppearance(rifle, 101);
+            Release(rifle);
+            var authored = new FitVector(.02f, -.03f, .01f);
+            SetTranslation(rifle, authored);
+            SetObjectVisualTransform(rifle, ObjectVisualTransform.Scale, 1.03f);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(wearer);
+            native.SetAnimation(0);
+            WeaponFit.Apply(wearer);
+            var idle = new FitVector(-.10091517f, .01336412f, -.12003522f);
+            var ready = new FitVector(-.13350788f, -.04168537f, -.06223492f);
+            AssertVector(ctx, ReadTranslation(rifle), authored + idle, "The resting grip is seated");
+            // Do not call Apply after these native changes: the hook must update the fit itself.
+            foreach (var animation in new[] { 1, 9, 0, 1, 0 })
+            {
+                native.SetAnimation(animation);
+                AssertVector(ctx, ReadTranslation(rifle), authored + (animation is 1 or 9 ? ready : idle),
+                    "The native hold refreshes without accumulating an offset");
+                ctx.AssertEqual(1.03f, GetObjectVisualTransform(rifle, ObjectVisualTransform.Scale),
+                    "Native hold changes preserve the authored gun size");
+            }
+        });
+    }
+
     [EngineTest("A delayed old-wearer refresh cannot strip the new wearer's shared fit", Category = "WeaponFit", TimeoutSeconds = 60f)]
     public static Task DelayedTransferRefresh(EngineTestContext ctx) => WithFixtureCorrection(() => DelayedTransferRefreshCore(ctx));
 
@@ -98,8 +145,10 @@ public static class WeaponFitEngineTests
             EquippedItemAppearance.Refresh(wearer, weapon);
             TintMapService.ApplyCurrentColors(wearer);
             AssertVector(ctx, ReadTranslation(weapon), authored + fit, "Repeated refresh does not compound the correction");
-            ctx.AssertEqual(1.03f, GetObjectVisualTransform(weapon, ObjectVisualTransform.Scale), "Scale remains authored");
-            ctx.AssertEqual(2f, GetObjectVisualTransform(weapon, ObjectVisualTransform.RotateZ), "Rotation remains authored");
+            ctx.Assert(Math.Abs(.927f - GetObjectVisualTransform(weapon, ObjectVisualTransform.Scale)) < .000001f,
+                "The measured scale multiplies the authored scale once");
+            ctx.AssertEqual(9f, GetObjectVisualTransform(weapon, ObjectVisualTransform.RotateZ),
+                "The measured rotation is added to the authored rotation once");
             ctx.AssertEqual(.017f, GetObjectVisualTransform(weapon, ObjectVisualTransform.TranslateZ,
                 nScope: (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2), "Other transform scopes remain authored");
 
@@ -125,7 +174,8 @@ public static class WeaponFitEngineTests
             AssertVector(ctx, ReadTranslation(weapon), authored + fit, "The hand-change source carries its correction");
             SetCreatureBodyPart(CreaturePart.RightHand, 263, wearer);
             TintMapService.ApplyCurrentColors(wearer);
-            AssertVector(ctx, ReadTranslation(weapon), authored, "An unmeasured hand removes only the correction");
+            AssertVector(ctx, ReadTranslation(weapon), authored + GetFit(BaseItem.Sling, 310, "pmh0_handr263"),
+                "Changing the actual hand selects its independent correction");
             SetCreatureBodyPart(CreaturePart.RightHand, 2, wearer);
             TintMapService.ApplyCurrentColors(wearer);
             SetAppearance(weapon, 999);
@@ -177,16 +227,26 @@ public static class WeaponFitEngineTests
     {
         // Restore this test-only correction on every exit.
         var catalog = typeof(WeaponFit).Assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFits")!;
-        var fits = (System.Collections.Generic.Dictionary<(BaseItem, int, int, int, string, string), FitVector>)catalog
+        var fits = (System.Collections.Generic.Dictionary<(BaseItem, int, int, int, string, string), WeaponGripFit>)catalog
             .GetField("Fits", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var key = (BaseItem.Sling, 101, 310, 101, "pmh0_handr002", "");
-        var hadEntry = fits.TryGetValue(key, out var previous);
-        fits[key] = new FitVector(.01f, .02f, -.03f);
+        var hands = new[] { "pmh0_handr002", RenderedHand("pmh0_handr002", BaseItem.Sling) }.Distinct().ToArray();
+        var previous = hands.ToDictionary(hand => hand, hand =>
+        {
+            var present = fits.TryGetValue((BaseItem.Sling, 101, 310, 101, hand, ""), out var value);
+            return (present, value);
+        });
+        foreach (var hand in hands)
+            fits[(BaseItem.Sling, 101, 310, 101, hand, "")] = new WeaponGripFit(
+                new FitVector(.01f, .02f, -.03f), new FitVector(4f, -3f, 7f), .9f);
         try { await test(); }
         finally
         {
-            if (hadEntry) fits[key] = previous;
-            else fits.Remove(key);
+            foreach (var hand in hands)
+            {
+                var key = (BaseItem.Sling, 101, 310, 101, hand, "");
+                if (previous[hand].present) fits[key] = previous[hand].value;
+                else fits.Remove(key);
+            }
         }
     }
 
@@ -199,9 +259,14 @@ public static class WeaponFitEngineTests
         }
     }
 
+    private static string RenderedHand(string hand, BaseItem type) =>
+        ((WeaponGripHandCatalog)typeof(WeaponGripHandRenderer).GetField("_catalog", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!).Resolve(hand, type, hand.Contains("_handr") ? "r" : "l");
+
     private static FitVector GetFit(BaseItem type, int middle, string hand) =>
         (FitVector)typeof(WeaponFit).Assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripFits")!
-            .GetMethod("GetFit", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { type, middle, 101, 101, hand, hand.Replace("_handr", "_handl") });
+            .GetMethod("GetFit", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { type, middle, 101, 101,
+                RenderedHand(hand, type), RenderedHand(hand.Replace("_handr", "_handl"), type) });
 
     private static void Release(uint item) => typeof(WeaponFit).GetMethod("Release", BindingFlags.NonPublic | BindingFlags.Static)!
         .Invoke(null, new object[] { item });

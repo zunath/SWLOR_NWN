@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 

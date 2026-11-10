@@ -3,8 +3,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -35,7 +35,7 @@ public class AuthoredCombatAnimationTests
     [Test]
     public void NativeAnimationAndOverwriteCallsReplaceAuthoredActivationMetadata()
     {
-        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Service.PerkService.PerkType.ShieldWall);
+        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Domain.Character.PerkType.ShieldWall);
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimation(Animation.LoopingPause);
         builder.Build().Values.Single().AuthoredAnimation.Should().BeNull();
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimationOverwrite("pause2");

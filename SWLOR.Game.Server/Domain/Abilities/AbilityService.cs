@@ -4,7 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
@@ -13,16 +13,8 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -186,7 +178,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 }
             }
 
-            Service.AnimationService.AbilityAnimationBinding.Apply(_abilities, Service.AnimationService.ActiveAbilityAnimationCatalog.Entries);
+            SWLOR.Game.Server.Domain.Foundation.AbilityAnimationBinding.Apply(_abilities, SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries);
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
             CacheAbilityTargeting(_abilities);
         }
@@ -2718,7 +2710,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (animation == Animation.Invalid)
                 return;
 
-            var authoredImpact = Service.AnimationService.AbilityAnimationBinding.ImpactClip(trackedAbility, activator);
+            var authoredImpact = SWLOR.Game.Server.Domain.Foundation.AbilityAnimationBinding.ImpactClip(trackedAbility, activator);
             if (authoredImpact != null)
             {
                 // Damage and projectile effects are already dispatched by the ability. Use the

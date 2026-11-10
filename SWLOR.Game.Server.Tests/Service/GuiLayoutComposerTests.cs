@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

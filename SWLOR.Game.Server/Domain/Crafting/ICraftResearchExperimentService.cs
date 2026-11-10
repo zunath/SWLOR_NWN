@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting.Research;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 

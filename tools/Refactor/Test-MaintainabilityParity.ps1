@@ -10,13 +10,16 @@
          SWLOR_Haks checkout (sw_2da, sw_tlk, sw_ability) at the commit master pins. It is never committed from and is
          always removed at the end, also when something fails.
       2. Applies the branch's behaviour-neutral seams to it: the seams in tools/Refactor/ParitySeams.txt (the P0-5
-         commit that adds ScriptRegistry.LoadHandlersFromAssemblies and the boot-order tests, and Clock.cs), then every
-         mechanical script in tools/Refactor/MechanicalScripts.txt (the clock seam rewrite and the NWScript engine seam generator). If a seam no longer
-         applies to master the run stops (exit 3) and names the file.
-      3. Copies SWLOR.Game.Server.CharacterizationTests (without its snapshots) into the copy and runs it with
+         commit that adds ScriptRegistry.LoadHandlersFromAssemblies and the boot-order tests, and Clock.cs). If a seam no
+         longer applies to master the run stops (exit 3) and names the file. Then it runs the P0-5 boot-order tests
+         (ScriptHandlerOrderTests) in update mode on the copy, which writes master's handler order in reflection order:
+         before the mechanical scripts, because Move-SupportNamespaces.ps1 relocates master's files and reflection order
+         follows the compiler's file order (master's names are mapped through the same moves when compared).
+      3. Applies every mechanical script in tools/Refactor/MechanicalScripts.txt (the clock seam rewrite, the NWScript
+         engine seam generator, the facade removal, which changes nothing on master, and the namespace move), copies
+         SWLOR.Game.Server.CharacterizationTests (without its snapshots) into the copy and runs it with
          SWLOR_UPDATE_SNAPSHOTS=1 and SWLOR_SNAPSHOT_DIRECTORY pointing at a temporary folder, so the folder receives
-         master's output. It also runs the P0-5 boot-order tests (ScriptHandlerOrderTests) in update mode on the copy,
-         which writes master's handler order in reflection order.
+         master's output.
       4. Compares: every characterization snapshot file with the branch's, and master's handler order with the
          branch's handler manifest (SWLOR.Game.Server/Core/ScriptHandlerOrder.txt) and the engine-test handler
          snapshot. Line endings are ignored; comment lines of the handler files are ignored.
@@ -113,12 +116,16 @@ function Invoke-Parity {
         Write-Section 'Throwaway copy of master'
         Add-MasterWorktree $copy
 
-        Write-Section 'Seams and mechanical scripts'
+        Write-Section 'Seams'
         Install-Seams -Copy $copy -Seams @(Read-Seams $root)
-        Invoke-MechanicalScriptsOnCopy -Copy $copy
 
+        # Master's handler order must be read before the move (Move-SupportNamespaces.ps1) relocates its files: reflection
+        # order follows the compiler's file order. Convert-HandlerOrderNames maps the pre-move names, as in the sync.
         Write-Section 'Boot-order reference (master''s own handler order)'
         $handlerTexts = Invoke-HandlerReference -Copy $copy -Configuration $Configuration -ResultsDirectory (Join-Path $resultsDirectory 'handlers')
+
+        Write-Section 'Mechanical scripts'
+        Invoke-MechanicalScriptsOnCopy -Copy $copy
 
         Write-Section 'Characterization reference'
         $characterization = Invoke-CharacterizationReference -Copy $copy -Configuration $Configuration `

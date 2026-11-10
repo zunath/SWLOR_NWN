@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using static SWLOR.Game.Server.Composition.GameServices;

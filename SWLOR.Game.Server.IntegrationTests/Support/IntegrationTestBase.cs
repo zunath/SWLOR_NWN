@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.IntegrationTests.Support;

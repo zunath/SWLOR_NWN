@@ -1,8 +1,5 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.CraftSim.Scenario
 {

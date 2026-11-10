@@ -6,14 +6,13 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -315,7 +314,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static object Invoke(string type, string method, params object[] args) =>
-            typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
+            typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
                 .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
 
         private static void ClearProperties(uint item)

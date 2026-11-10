@@ -6,8 +6,8 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DisguiseService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -30,7 +30,7 @@ public class DisguiseAuditTests
     {
         _world = new DisguiseWorld();
         _world.DbPlayer.UnknownDisplayName = "Base descriptor";
-        _world.Disguises.StatAdjustments[SWLOR.Game.Server.Service.StatService.StatType.AdditionalDisguiseSlots] = 2;
+        _world.Disguises.StatAdjustments[SWLOR.Game.Server.Domain.Character.StatType.AdditionalDisguiseSlots] = 2;
     }
 
     [TearDown]

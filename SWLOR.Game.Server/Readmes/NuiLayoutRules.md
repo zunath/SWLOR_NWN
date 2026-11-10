@@ -12,15 +12,15 @@ call raises a descriptive exception), **warns** (a structured `[NUI layout warni
 at boot), or **doc-only** (not statically detectable — follow the prescription).
 
 Enforcement lives in:
-- `Service/GuiService/GuiLayoutValidator.cs` — invoked from `GuiWindowBuilder.Build()`
+- `Domain/UI/GuiLayoutValidator.cs` — invoked from `GuiWindowBuilder.Build()`
   for every window at boot; findings are written as structured `[NUI layout warning]` entries. The
   validator flags **only shapes confirmed to fail in-game** via the DebugNuiGallery
   hazard harness (`/nuigallery`), so **zero warning lines for your window is a hard
   authoring gate — every warning is a real defect.** The bar for adding a new rule is
   a confirmed-failing hazard/probe partial in the gallery first.
-- `Service/GuiService/Component/GuiTable.cs` (`GuiTableBuilder.Build`) — hard throw for
+- `Domain/UI/Component/GuiTable.cs` (`GuiTableBuilder.Build`) — hard throw for
   fixed zero-width table columns (R1).
-- `Service/GuiService/GuiViewModelBase.cs` (`WatchOnClient`) — hard throw with a
+- `Domain/UI/GuiViewModelBase.cs` (`WatchOnClient`) — hard throw with a
   descriptive message when watching a never-assigned property (R3).
 
 All "verified in-game" stamps below come from the July 2026 DebugNuiGallery
@@ -125,7 +125,7 @@ root column
 `GuiWindowBuilder` normalizes every authored window into the shared outer root shape.
 For a window with tabs, swappable content, or rails, call
 `GuiStandardLayout.AddStandardLayout(...)`
-(`Service/GuiService/Component/GuiStandardLayout.cs`) instead of hand-rolling that
+(`Domain/UI/Component/GuiStandardLayout.cs`) instead of hand-rolling that
 inner structure. Deviating — most notably putting tab rows as siblings of the body
 row — froze the content region at a constant width regardless of window resizing.
 The all-window corpus test builds every definition through this normalizer and rejects

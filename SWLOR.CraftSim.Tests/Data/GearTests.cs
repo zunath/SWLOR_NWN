@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.CraftSim.Tests.Data

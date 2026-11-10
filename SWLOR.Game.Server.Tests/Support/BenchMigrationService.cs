@@ -1,8 +1,7 @@
 #nullable enable
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

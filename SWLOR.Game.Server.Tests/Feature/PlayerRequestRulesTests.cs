@@ -3,9 +3,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

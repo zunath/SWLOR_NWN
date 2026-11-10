@@ -1,8 +1,7 @@
 using NWNX.NET;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.FrameProfilerService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Core

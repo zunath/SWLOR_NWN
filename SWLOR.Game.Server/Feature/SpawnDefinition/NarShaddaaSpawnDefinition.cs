@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition

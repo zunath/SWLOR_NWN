@@ -1,12 +1,11 @@
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript;

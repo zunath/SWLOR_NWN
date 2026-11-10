@@ -49,12 +49,43 @@ public class ConvertedServicesTests
         Fail(ConvertedServiceRules.MissingPieces(List, ArchitectureProject.Facts), "A converted service is missing a piece");
     }
 
+    /// <summary>
+    /// Support types of services that were never converted (the folders <c>AnimationService</c>, <c>DMToolService</c> and
+    /// <c>RoleplayXPService</c>, whose services are not in <c>ConvertedServices.json</c>). The rules below never reached them
+    /// while they sat in <c>Service.&lt;Name&gt;Service</c>; P2-Z2 moved them into their domain namespace, which the rules now
+    /// cover whole, so they keep their constant tables and the one boot handler (<c>AnimationPreviewCatalog.CacheCategories</c>)
+    /// until their code is converted. Nothing may be added: remove a line when its type is fixed (the list is kept tight).
+    /// </summary>
+    private static readonly string[] SupportTypesOfUnconvertedServices =
+    [
+        "SWLOR.Game.Server.Domain.Administration.DMSearchText",
+        "SWLOR.Game.Server.Domain.Character.OOCDetectionModel",
+        "SWLOR.Game.Server.Domain.Character.OOCMessageScorer",
+        "SWLOR.Game.Server.Domain.Character.RoleplayMessageClassifier",
+        "SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog",
+        "SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog"
+    ];
+
+    [Test]
+    public void Each_support_type_of_an_unconverted_service_still_breaks_a_rule()
+    {
+        var services = List.Services;
+        var withState = ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, type => ServicesOwning(type, services, exempt: false).Count > 0);
+        var withHandlers = ConvertedServiceRules.HandlersOffTheInstance(ArchitectureProject.Facts,
+            type => ServicesOwning(type, services, exempt: false) is { Count: > 0 } owners ? owners.SelectMany(service => service.Pieces).Select(pieces => pieces.Instance).ToList() : null);
+
+        var stale = SupportTypesOfUnconvertedServices
+            .Where(type => !withState.Concat(withHandlers).Any(problem => problem.StartsWith(type + ".", StringComparison.Ordinal)))
+            .ToList();
+
+        Fail(stale, "These types no longer hold static state or a handler: remove them from SupportTypesOfUnconvertedServices");
+    }
+
     [Test]
     public void Converted_services_hold_no_static_mutable_state()
     {
-        var map = Map;
         var services = List.Services;
-        bool IsServiceType(TypeKey type) => ServiceOf(type, map, services) is not null;
+        bool IsServiceType(TypeKey type) => ServicesOwning(type, services).Count > 0;
 
         Fail(ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, IsServiceType),
             "Converted services must keep their state on the instance");
@@ -63,11 +94,10 @@ public class ConvertedServicesTests
     [Test]
     public void Event_handlers_of_converted_services_are_on_their_instance_classes()
     {
-        var map = Map;
         var services = List.Services;
         // A part of a split service (Combat) is an instance class too: each handler is on the part that owns it.
-        IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServiceOf(type, map, services) is { } service
-            ? service.Pieces.Select(pieces => pieces.Instance).ToList()
+        IReadOnlyList<TypeKey>? InstancesOf(TypeKey type) => ServicesOwning(type, services) is { Count: > 0 } owners
+            ? owners.SelectMany(service => service.Pieces).Select(pieces => pieces.Instance).ToList()
             : null;
 
         Fail(ConvertedServiceRules.HandlersOffTheInstance(ArchitectureProject.Facts, InstancesOf),
@@ -97,26 +127,33 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void Types_in_a_domain_namespace_are_named_after_a_service_of_that_domain()
+    public void Service_classes_in_a_domain_namespace_are_pieces_of_converted_services()
     {
-        // Domain.<Domain> types are classified by name (UnitClassifier). A type that names no service of its domain
-        // would show up as a Platform dependency, so name it after its service (for example AchievementNotification).
-        var map = Map;
-        var misplaced = ArchitectureProject.Facts.Types
-            .Where(type => type.Key.Namespace.StartsWith(UnitClassifier.RootNamespace + ".Domain.", StringComparison.Ordinal))
-            .Where(type => UnitClassifier.Classify(type.Key, map) is { Kind: not UnitKind.Service })
-            .Select(type => $"{type.Key} is in a domain namespace but names no service of that domain in DomainMap.json")
-            .OrderBy(message => message, StringComparer.Ordinal)
-            .ToList();
-
-        Fail(misplaced, "Types in Domain.<Domain> belong to a service");
+        // Since P2-Z2 a domain's support types share its namespace with its services, so only the types named like a
+        // service class (FooService, IFooService) must be registered pieces; ListProblems and MissingPieces tie each piece
+        // to a service of its domain in DomainMap.json.
+        Fail(ConvertedServiceRules.UnlistedServiceClasses(ArchitectureProject.Facts, List),
+            "A class named like a service in Domain.<Domain> is a piece of a converted service");
     }
 
-    /// <summary>The converted service a top-level type of the server belongs to, or null.</summary>
-    private static ConvertedService? ServiceOf(TypeKey type, DomainMap map, IReadOnlyList<ConvertedService> services)
+    /// <summary>
+    /// The converted services a top-level type of the server belongs to: for a type in <c>Domain.&lt;Domain&gt;</c> or a topic
+    /// below it, every converted service of that domain (the domain's services and their support types share the namespace,
+    /// so the rules hold for all of it, except <see cref="SupportTypesOfUnconvertedServices"/> unless
+    /// <paramref name="exempt"/> is false); for a type directly in <c>Service</c>, the converted service named like it. Empty
+    /// for other types.
+    /// </summary>
+    private static IReadOnlyList<ConvertedService> ServicesOwning(TypeKey type, IReadOnlyList<ConvertedService> services, bool exempt = true)
     {
-        var unit = UnitClassifier.Classify(type, map);
-        return unit is { Kind: UnitKind.Service } service ? services.FirstOrDefault(s => s.Name == service.Name) : null;
+        if (exempt && SupportTypesOfUnconvertedServices.Contains(type.ToString()))
+            return Array.Empty<ConvertedService>();
+
+        return UnitClassifier.Classify(type) switch
+        {
+            { Kind: UnitKind.Domain } domain => services.Where(service => service.Domain == domain.Name).ToList(),
+            { Kind: UnitKind.Service } named => services.Where(service => service.Name == named.Name).ToList(),
+            _ => Array.Empty<ConvertedService>()
+        };
     }
 
     private static void Fail(IReadOnlyList<string> problems, string headline)

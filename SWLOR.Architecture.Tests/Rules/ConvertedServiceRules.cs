@@ -133,7 +133,8 @@ internal static class ConvertedServiceRules
 
     /// <summary>
     /// An extra must belong to the service it is listed on: the interface and instance class of any extra are named after the
-    /// service so the cross-domain guard counts them as the same unit, and the extra is not the service's main class.
+    /// service (<see cref="UnitClassifier.ServiceOf"/>), so a reader finds the service from the class name, and the extra is
+    /// not the service's main class.
     /// </summary>
     private static IEnumerable<string> ExtraProblems(ConvertedService service, ExtraPiece extra, ConvertedPieces pieces, DomainMap map)
     {
@@ -145,14 +146,48 @@ internal static class ConvertedServiceRules
 
         foreach (var type in new[] { pieces.Interface, pieces.Instance })
         {
-            var typeOwner = UnitClassifier.Classify(type, map);
-            if (typeOwner != service.Unit)
+            var namedService = UnitClassifier.ServiceOf(type, map);
+            if (namedService != service.Name)
             {
-                yield return $"{pieces.Label}: {type} would count as {Describe(typeOwner)}, not as {service.Name}. " +
+                yield return $"{pieces.Label}: {type} would count as {namedService ?? "no service"}, not as {service.Name}. " +
                              $"Name the {extra.Kind} so that its service class starts with {service.Name} (for example {service.Name}Encounter).";
             }
         }
     }
 
-    private static string Describe(DependencyUnit? unit) => unit is { } found ? found.ToString() : "no service";
+    /// <summary>
+    /// A registered service class is a piece of a converted service: an instance class <c>&lt;Name&gt;Service</c> behind the
+    /// interface <c>I&lt;Name&gt;Service</c>, both directly in the service's domain namespace (<see cref="MissingPieces"/> checks
+    /// the pieces exist; <see cref="ListProblems"/> that the name is a service of that domain). So a class or an interface in
+    /// <c>Domain.&lt;Domain&gt;</c> or a topic below it that is named like a service class (<c>FooService</c>,
+    /// <c>IFooService</c>) must be one of the listed pieces. Support types share the namespace and are not service classes: any
+    /// other name passes.
+    /// </summary>
+    /// <param name="facts">The compiled assembly.</param>
+    /// <param name="list">The converted services; their pieces are the registered service classes.</param>
+    public static IReadOnlyList<string> UnlistedServiceClasses(AssemblyFacts facts, ConvertedServiceList list)
+    {
+        var pieces = list.Services
+            .SelectMany(service => service.Pieces)
+            .SelectMany(piece => new[] { piece.Interface, piece.Instance })
+            .ToHashSet();
+        var domainPrefix = ConvertedService.ServerNamespace + ".Domain.";
+
+        return facts.Types
+            .Where(type => type.Key.Namespace.StartsWith(domainPrefix, StringComparison.Ordinal))
+            .Where(type => IsNamedLikeAServiceClass(type.Key.Name))
+            .Where(type => !pieces.Contains(type.Key))
+            .Select(type => $"{type.Key} is named like a service class but is not a piece of a converted service in ConvertedServices.json: " +
+                            "a registered service is <Name>Service behind I<Name>Service in Domain.<Domain>, listed there; " +
+                            "a support type takes a name without the Service suffix.")
+            .Distinct()
+            .OrderBy(message => message, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    /// <summary>A type of any kind whose name ends in <c>Service</c> after at least one more character (<c>FooService</c>, <c>IFooService</c>).</summary>
+    private static bool IsNamedLikeAServiceClass(string name) =>
+        name.Length > ServiceSuffix.Length && name.EndsWith(ServiceSuffix, StringComparison.Ordinal);
+
+    private const string ServiceSuffix = "Service";
 }

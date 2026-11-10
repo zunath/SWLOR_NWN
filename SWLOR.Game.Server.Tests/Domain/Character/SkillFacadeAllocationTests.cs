@@ -2,7 +2,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;

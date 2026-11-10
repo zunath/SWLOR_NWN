@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -57,7 +57,7 @@ public class CombatReadinessEquipmentTests
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Core;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using static SWLOR.Game.Server.Composition.GameServices;

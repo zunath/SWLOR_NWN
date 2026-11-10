@@ -7,12 +7,11 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -241,7 +240,7 @@ public class CraftingStyleSelectionTests
     [Test]
     public void ChangingTheStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Circuit", "CircuitStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Circuit", "CircuitStyles.cs");
 
         Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
         Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");
@@ -250,7 +249,7 @@ public class CraftingStyleSelectionTests
     [Test]
     public void ChangingTheSmitheryStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Forge", "ForgeStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Forge", "ForgeStyles.cs");
 
         Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
         Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");
@@ -408,7 +407,7 @@ public class CraftingStyleSelectionTests
     [Test]
     public void ChangingAGatheringStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Gathering", "GatheringStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Gathering", "GatheringStyles.cs");
 
         Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
         Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");

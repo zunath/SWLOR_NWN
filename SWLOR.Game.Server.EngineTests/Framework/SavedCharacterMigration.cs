@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     public static class SavedCharacterMigration
     {
         private const BindingFlags Members = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-        private const string ServiceNamespace = "SWLOR.Game.Server.Service.MigrationService.";
+        private const string ServiceNamespace = "SWLOR.Game.Server.Domain.Foundation.";
         private const string MigrationNamespace = "SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.";
 
-        private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
+        private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly;
 
         private static Type GameType(string name) =>
             Game.GetType(name) ?? throw new InvalidOperationException($"The game assembly has no type '{name}'.");

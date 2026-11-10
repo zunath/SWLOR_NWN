@@ -8,9 +8,9 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -245,7 +245,7 @@ public sealed partial class QuestConversationTests
                     Grants.Add((resref, player, quantity));
                     return 500;
                 }
-                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Service.KeyItemService.KeyItemType type) { }
+                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Domain.Items.KeyItemType type) { }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)

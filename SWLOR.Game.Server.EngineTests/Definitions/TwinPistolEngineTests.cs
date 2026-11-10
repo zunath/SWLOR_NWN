@@ -8,11 +8,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -25,7 +23,6 @@ using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using NumericsVector3 = System.Numerics.Vector3;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -715,7 +712,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
-                        SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
+                        SWLOR.Game.Server.Domain.Abilities.HostileAbilityDelay.EndForTesting(actor);
                         GameServices.Ability.ClearLastCompletedAbilityImpactSummary(actor);
                         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
                             $"{feat} validation: {GameServices.Ability.GetLastActivationDenialReason()}");
@@ -739,7 +736,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 TwinPistolAbility.Cancel(actor);
                 GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
-                SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
+                SWLOR.Game.Server.Domain.Abilities.HostileAbilityDelay.EndForTesting(actor);
                 Stop(actor);
             }
         }

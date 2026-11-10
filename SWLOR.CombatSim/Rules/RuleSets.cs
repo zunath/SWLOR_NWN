@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PvpCombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.CombatSim.Rules
 {

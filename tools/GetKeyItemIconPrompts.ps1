@@ -6,7 +6,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$keyItemPath = Join-Path $repoRoot 'SWLOR.Game.Server\Service\KeyItemService\KeyItemType.cs'
+$keyItemPath = Join-Path $repoRoot 'SWLOR.Game.Server\Domain\Items\KeyItemType.cs'
 $source = Get-Content -Raw $keyItemPath
 
 $pattern = '(?ms)^\s*\[KeyItem\(KeyItemCategoryType\.(?<Category>\w+),\s*"(?<Name>(?:[^"\\]|\\.)*)",\s*(?<Active>true|false),\s*"(?<Description>(?:[^"\\]|\\.)*)"\)\]\s*\r?\n\s*(?<Type>\w+)\s*=\s*(?<Id>\d+),'

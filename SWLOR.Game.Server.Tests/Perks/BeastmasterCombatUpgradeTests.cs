@@ -2,18 +2,15 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
-using SWLOR.Game.Server.Feature.PerkDefinition.Beast;
+using SWLOR.Game.Server.Feature.PerkDefinition.BeastPerks;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -347,7 +344,7 @@ public class BeastmasterCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var definitionFiles = Directory.EnumerateFiles(
-            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "Beast").FullName,
+            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "BeastPerks").FullName,
             "*.cs");
 
         foreach (var file in definitionFiles)
@@ -368,8 +365,8 @@ public class BeastmasterCombatUpgradeTests
         var root = FindRepositoryRoot();
         var requirementFiles = new[]
         {
-            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastLevel.cs",
-            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastRole.cs"
+            root / "SWLOR.Game.Server" / "Domain" / "Character" / "PerkRequirementBeastLevel.cs",
+            root / "SWLOR.Game.Server" / "Domain" / "Character" / "PerkRequirementBeastRole.cs"
         };
 
         foreach (var file in requirementFiles)

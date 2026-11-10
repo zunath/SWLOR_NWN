@@ -135,7 +135,15 @@ internal static class CallerRewriter
     }
 
     /// <summary>Undoes <see cref="Apply"/> on a file written for the branch, so it compiles against master.</summary>
-    public static RewriteResult Reverse(string text, IReadOnlyList<RemovedFacade> facades)
+    /// <param name="text">The file.</param>
+    /// <param name="facades">The removed facades.</param>
+    /// <param name="declaredNamespaces">
+    /// The namespaces the tree the file is reversed against declares (its server sources, enclosing namespaces included).
+    /// The import of a branch-only namespace (the accessor's, a moved constant owner's) is dropped only when that tree does
+    /// not declare it: once <c>Move-SupportNamespaces.ps1</c> ran on master's parity copy, master declares the
+    /// <c>Domain.&lt;Domain&gt;</c> namespaces too, and the file still needs their support types. Null means none.
+    /// </param>
+    public static RewriteResult Reverse(string text, IReadOnlyList<RemovedFacade> facades, IReadOnlySet<string>? declaredNamespaces = null)
     {
         // A member a split facade handed to a class reads like a moved constant: Owner.Name goes back to Facade.Name.
         var owners = facades
@@ -157,6 +165,7 @@ internal static class CallerRewriter
             .Select(owner => owner.Constant.OwnerNamespace)
             .Where(IsBranchOnly)
             .ToHashSet(StringComparer.Ordinal);
+        bool MissingThere(string @namespace) => declaredNamespaces == null || !declaredNamespaces.Contains(@namespace);
 
         foreach (var directive in AllUsings(root))
         {
@@ -166,7 +175,7 @@ internal static class CallerRewriter
             var name = Dotted(directive.Name);
             var drop = directive.StaticKeyword.IsKind(SyntaxKind.StaticKeyword)
                 ? name == AccessorType
-                : name == AccessorNamespace || branchNamespaces.Contains(name);
+                : (name == AccessorNamespace || branchNamespaces.Contains(name)) && MissingThere(name);
             if (!drop)
                 continue;
 

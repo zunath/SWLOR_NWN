@@ -106,7 +106,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             target.PvpCombatStartedAt = -seconds;
             target.LastPvpActivityAt = 0;
             simulation.ApplyDamage(attacker, target, damage).Should().Be(
-                SWLOR.Game.Server.Service.PvpCombatService.PvpCombatRules.IncreaseDamage(damage, percent));
+                SWLOR.Game.Server.Domain.Combat.PvpCombatRules.IncreaseDamage(damage, percent));
         }
     }
 }

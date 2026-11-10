@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -61,7 +61,7 @@ public static partial class DroidInventoryEngineTests
                 SetLocalString(visor, "DROID_ITEM_ID", "equipped-visor");
             }
             if (denyEquip) AddItemProperty(DurationType.Permanent,
-                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Service.SkillService.SkillType.Rifle, 50), visor);
+                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Domain.Character.SkillType.Rifle, 50), visor);
             var archive = new ConstructedDroid
             {
                 Name = "Headgear fixture",

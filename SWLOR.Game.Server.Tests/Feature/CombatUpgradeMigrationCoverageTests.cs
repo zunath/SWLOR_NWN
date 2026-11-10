@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -116,7 +116,7 @@ public class CombatUpgradeMigrationCoverageTests
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "Core",
+            "Foundation",
             "MigrationService.cs"));
 
         migrationService.Should().Contain("ConsoleProgressMigrationVersion = 22");

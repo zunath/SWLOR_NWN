@@ -4,11 +4,10 @@ using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

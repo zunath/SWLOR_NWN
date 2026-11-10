@@ -2,7 +2,6 @@ using System.Collections;
 using System.Reflection;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

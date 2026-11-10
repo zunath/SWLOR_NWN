@@ -21,7 +21,7 @@ spec.loader.exec_module(exporter)
 HAKS = ROOT / 'SWLOR_Haks'
 PLC = HAKS / 'sw_plc'
 STATIONS = json.loads((ROOT / 'tools/StationModels.json').read_text(encoding='utf-8'))['stations']
-STRUCTURES = (ROOT / 'SWLOR.Game.Server/Service/PropertyService/StructureType.cs').read_text(encoding='utf-8')
+STRUCTURES = (ROOT / 'SWLOR.Game.Server/Domain/World/StructureType.cs').read_text(encoding='utf-8')
 
 
 def appearance(path):

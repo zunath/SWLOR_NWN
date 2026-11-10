@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.ExtraHotbarService;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity;

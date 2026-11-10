@@ -1,259 +1,159 @@
-# Edges from other domains into the Core and Platform domains (infrastructure everyone may use).
+# Edges from other domains into the Foundation and Platform domains (infrastructure everyone may use).
 # Recorded for information only: the guard never fails on these, and warns when this file is out of date.
 # Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build.
 
-# Abilities -> Core (24 edges)
-Ability -> Animation | 19
-Ability -> Cache | 1
-Ability -> ColorToken | 2
-Ability -> Log | 1
-Ability -> Messaging | 4
-Ability -> NamedAnimation | 3
-Ability -> PlayerFeedback | 3
-Ability -> Random | 1
-AbilityCooldownVisual -> DB | 3
-Feature/AbilityDefinition -> Animation | 10
+# Abilities -> Foundation (9 edges)
+Domain/Abilities -> ColorToken | 6
+Domain/Abilities -> Domain/Foundation | 55
+Domain/Abilities -> Log | 4
+Domain/Abilities -> Random | 2
 Feature/AbilityDefinition -> ColorToken | 6
-Feature/AbilityDefinition -> DB | 6
+Feature/AbilityDefinition -> Domain/Foundation | 22
 Feature/AbilityDefinition -> GameMath | 14
 Feature/AbilityDefinition -> Log | 2
-Feature/AbilityDefinition -> Messaging | 1
-Feature/AbilityDefinition -> NamedAnimation | 1
-Feature/AbilityDefinition -> PlayerFeedback | 4
 Feature/AbilityDefinition -> Random | 1
-Mimicry -> ColorToken | 4
-Mimicry -> DB | 21
-Mimicry -> Log | 3
-Mimicry -> PlayerFeedback | 4
-Mimicry -> Random | 1
-QuickCast -> DB | 3
 
-# Abilities -> Platform (14 edges)
-Ability -> Platform/Composition | 12
-Ability -> Platform/Core | 13
-AbilityCooldownVisual -> Platform/Core | 6
-AbilityCooldownVisual -> Platform/Entity | 1
+# Abilities -> Platform (9 edges)
+Domain/Abilities -> Platform/Composition | 12
+Domain/Abilities -> Platform/Core | 28
+Domain/Abilities -> Platform/Entity | 41
+Domain/Abilities -> Platform/Extension | 1
 Feature/AbilityDefinition -> Platform/Composition | 410
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
-Mimicry -> Platform/Core | 7
-Mimicry -> Platform/Entity | 33
-Mimicry -> Platform/Extension | 1
 MimicryLoadouts -> Platform/Entity | 5
-QuickCast -> Platform/Core | 2
-QuickCast -> Platform/Entity | 7
 
-# Administration -> Core (8 edges)
-DMBlueprintCatalog -> Log | 5
-DMCreatorFavorite -> DB | 4
-DMCreatureManagerFavorite -> DB | 6
-DMObjectDetails -> Cache | 4
-DMPlayerDirectory -> DB | 10
-DMPreference -> DB | 4
-DMPresence -> Log | 4
-DMTool -> DB | 1
+# Administration -> Foundation (2 edges)
+Domain/Administration -> Domain/Foundation | 29
+Domain/Administration -> Log | 9
 
-# Administration -> Platform (6 edges)
-DMBlueprintCatalog -> Platform/Core | 1
-DMCreatorFavorite -> Platform/Entity | 2
-DMCreatureManagerFavorite -> Platform/Entity | 4
-DMPlayerDirectory -> Platform/Entity | 10
-DMPreference -> Platform/Entity | 4
-DMTool -> Platform/Entity | 1
+# Administration -> Platform (2 edges)
+Domain/Administration -> Platform/Core | 1
+Domain/Administration -> Platform/Entity | 21
 
-# Character -> Core (36 edges)
-Achievement -> DB | 3
-Disguise -> Cache | 8
-Disguise -> DB | 17
-Disguise -> Log | 1
-EspionageInfiltration -> DB | 3
-Feature/AppearanceDefinition -> DB | 2
+# Character -> Foundation (13 edges)
+Domain/Character -> ColorToken | 11
+Domain/Character -> Domain/Foundation | 109
+Domain/Character -> FrameProfiler | 4
+Domain/Character -> GameMath | 1
+Domain/Character -> Log | 9
+Domain/Character -> Random | 3
+Feature/AppearanceDefinition -> Domain/Foundation | 2
 Feature/AppearanceDefinition -> Log | 2
-Feature/PerkDefinition -> DB | 1
+Feature/PerkDefinition -> Domain/Foundation | 1
 Feature/StatusEffectDefinition -> ColorToken | 2
-Feature/StatusEffectDefinition -> DB | 3
+Feature/StatusEffectDefinition -> Domain/Foundation | 3
 Feature/StatusEffectDefinition -> GameMath | 6
 Feature/StatusEffectDefinition -> Random | 3
-Language -> DB | 3
-Language -> Random | 1
-Perk -> DB | 16
-Perk -> Log | 1
-PlayerDescriptor -> DB | 5
-PlayerDescriptor -> Log | 1
-PlayerIntroduction -> ColorToken | 1
-PlayerIntroduction -> Log | 1
-PlayerName -> ColorToken | 8
-PlayerName -> DB | 8
-PlayerName -> FrameProfiler | 1
-Skill -> ColorToken | 2
-Skill -> DB | 6
-Skill -> PlayerFeedback | 3
-Skill -> Random | 1
-Stat -> DB | 29
-Stat -> FrameProfiler | 1
-Stat -> GameMath | 1
-Stat -> Log | 5
-Stat -> PlayerFeedback | 4
-Stat -> Random | 1
-StatusEffect -> DB | 4
-StatusEffect -> FrameProfiler | 2
-StatusEffect -> Messaging | 4
 
-# Character -> Platform (42 edges)
-Achievement -> Platform/Core | 2
-Achievement -> Platform/Entity | 1
-Achievement -> Platform/Extension | 1
-Activity -> Platform/Core | 2
-Disguise -> Platform/Core | 1
-Disguise -> Platform/Entity | 27
-EspionageInfiltration -> Platform/Core | 3
-EspionageInfiltration -> Platform/Entity | 1
-Feature/AppearanceDefinition -> Platform/Composition | 39
+# Character -> Platform (14 edges)
+Domain/Character -> Platform/Composition | 43
+Domain/Character -> Platform/Core | 53
+Domain/Character -> Platform/Entity | 183
+Domain/Character -> Platform/Enumeration | 68
+Domain/Character -> Platform/Extension | 6
+Domain/Character -> Platform/Native | 1
+Feature/AppearanceDefinition -> Platform/Composition | 44
 Feature/AppearanceDefinition -> Platform/Core | 33
 Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Platform/Composition | 8
 Feature/PerkDefinition -> Platform/Entity | 1
-Feature/StatusEffectDefinition -> Platform/Composition | 113
+Feature/StatusEffectDefinition -> Platform/Composition | 115
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
-Language -> Platform/Core | 1
-Language -> Platform/Entity | 8
-Perk -> Platform/Composition | 32
-Perk -> Platform/Core | 4
-Perk -> Platform/Entity | 15
-Perk -> Platform/Enumeration | 10
-Perk -> Platform/Extension | 2
-PlayerDescriptor -> Platform/Entity | 9
-PlayerIntroduction -> Platform/Core | 1
-PlayerName -> Platform/Core | 6
-PlayerName -> Platform/Entity | 14
-Race -> Platform/Core | 2
-RoleplayXP -> Platform/Entity | 1
-RoleplayXP -> Platform/Enumeration | 3
-Skill -> Platform/Core | 5
-Skill -> Platform/Entity | 19
-Skill -> Platform/Enumeration | 55
-Skill -> Platform/Extension | 2
-Stat -> Platform/Composition | 1
-Stat -> Platform/Core | 8
-Stat -> Platform/Entity | 86
-Stat -> Platform/Extension | 1
-StatusEffect -> Platform/Composition | 10
-StatusEffect -> Platform/Core | 18
-StatusEffect -> Platform/Entity | 2
-StatusEffect -> Platform/Native | 1
 
-# Combat -> Core (33 edges)
-Combat -> ColorToken | 30
-Combat -> DB | 6
-Combat -> GameMath | 16
-Combat -> Log | 4
-Combat -> Messaging | 9
-Combat -> PlayerFeedback | 19
-Combat -> Random | 21
-CombatPoint -> DB | 3
-CombatRecorder -> DB | 3
-CombatRecorder -> Log | 2
-Death -> DB | 6
-Death -> Log | 1
-Death -> Messaging | 3
-Death -> NamedAnimation | 3
-Enmity -> Log | 1
-PowerGloveEquipment -> ColorToken | 3
-PowerGloveEquipment -> Feature/MigrationDefinition | 1
-PvpCombat -> ColorToken | 2
-QueuedAttackAnimation -> Animation | 2
-QueuedAttackAnimation -> INamedAnimationRuntime | 1
-QueuedAttackAnimationPlayback -> Animation | 1
+# Combat -> Foundation (11 edges)
+Domain/Combat -> ColorToken | 39
+Domain/Combat -> Domain/Foundation | 65
+Domain/Combat -> Feature/MigrationDefinition | 2
+Domain/Combat -> FrameProfiler | 3
+Domain/Combat -> GameMath | 16
+Domain/Combat -> INamedAnimationRuntime | 1
+Domain/Combat -> Log | 9
+Domain/Combat -> Random | 22
+Domain/Combat -> Time | 1
+QueuedAttackAnimationPlayback -> Domain/Foundation | 1
 QueuedAttackAnimationPlayback -> INamedAnimationRuntime | 5
-Recast -> DB | 5
-Recast -> Time | 1
-Resistance -> DB | 4
-Stealth -> ColorToken | 2
-Stealth -> Log | 1
-Stealth -> Random | 1
-Telegraph -> FrameProfiler | 3
-TwinPistolAbility -> Animation | 1
-TwinPistolEquipment -> ColorToken | 2
-TwinPistolEquipment -> Feature/MigrationDefinition | 1
-TwinPistolMastery -> DB | 3
 
-# Combat -> Platform (32 edges)
-Combat -> Platform/Composition | 12
-Combat -> Platform/Core | 53
-Combat -> Platform/Entity | 2
-Combat -> Platform/Extension | 3
-CombatPoint -> Platform/Core | 7
-CombatPoint -> Platform/Entity | 2
-CombatRecorder -> Platform/Composition | 3
-CombatRecorder -> Platform/Core | 5
-CombatRecorder -> Platform/Entity | 5
-CombatRecorder -> Platform/Native | 3
-CombatRecorder -> Platform/Root | 1
-Death -> Platform/Core | 4
-Death -> Platform/Entity | 8
-Enmity -> Platform/Core | 12
-MeleeTechnique -> Platform/Core | 20
-OrdinaryAttackTraits -> Platform/Core | 3
-PairedRangedTraits -> Platform/Core | 17
-Poisons -> Platform/Core | 1
-PvpCombat -> Platform/Core | 4
-Recast -> Platform/Core | 4
-Recast -> Platform/Entity | 3
-Recast -> Platform/Extension | 1
-Resistance -> Platform/Core | 1
-Resistance -> Platform/Entity | 4
-Stealth -> Platform/Core | 11
-Stealth -> Platform/Native | 1
-Targeting -> Platform/Core | 1
-Telegraph -> Platform/Core | 7
-TemporaryStatModifier -> Platform/Core | 5
-TwinPistolAbility -> Platform/Native | 3
-TwinPistolMastery -> Platform/Entity | 1
-WeaponDelay -> Platform/Core | 2
+# Combat -> Platform (6 edges)
+Domain/Combat -> Platform/Composition | 16
+Domain/Combat -> Platform/Core | 157
+Domain/Combat -> Platform/Entity | 25
+Domain/Combat -> Platform/Extension | 4
+Domain/Combat -> Platform/Native | 7
+Domain/Combat -> Platform/Root | 1
 
-# Companions -> Core (7 edges)
-BeastMastery -> ColorToken | 2
-BeastMastery -> DB | 12
-BeastMastery -> Random | 4
-BeastMastery -> Time | 1
-Droid -> Random | 18
-DroidEquipmentDiagnostics -> Log | 1
-IncubationFieldNote -> Log | 1
+# Companions -> Foundation (5 edges)
+Domain/Companions -> ColorToken | 2
+Domain/Companions -> Domain/Foundation | 14
+Domain/Companions -> Log | 2
+Domain/Companions -> Random | 22
+Domain/Companions -> Time | 1
 
-# Companions -> Platform (8 edges)
-BeastMastery -> Platform/Composition | 13
-BeastMastery -> Platform/Core | 22
-BeastMastery -> Platform/Entity | 45
-BeastMastery -> Platform/Extension | 1
-Droid -> Platform/Composition | 19
-Droid -> Platform/Core | 23
-DroidEquipmentDiagnostics -> Platform/Core | 5
-IncubationFieldNote -> Platform/Core | 1
+# Companions -> Platform (4 edges)
+Domain/Companions -> Platform/Composition | 16
+Domain/Companions -> Platform/Core | 51
+Domain/Companions -> Platform/Entity | 45
+Domain/Companions -> Platform/Extension | 1
 
-# Core -> Platform (47 edges)
-Animation -> Platform/Composition | 3
-Animation -> Platform/Core | 1
-Animation -> Platform/Enumeration | 1
-Animation -> Platform/Root | 1
-Authorization -> Platform/Entity | 1
-Authorization -> Platform/Enumeration | 2
-Cache -> Platform/Core | 1
-Communication -> Platform/Core | 6
-Communication -> Platform/Entity | 7
-Communication -> Platform/Enumeration | 11
-Conversation -> Platform/Core | 4
-ConversationMenu -> Platform/Core | 3
-DB -> Platform/Core | 2
-DB -> Platform/Entity | 32
-DB -> Platform/Extension | 4
-DB -> Platform/Root | 3
+# Crafting -> Foundation (5 edges)
+Domain/Crafting -> ColorToken | 5
+Domain/Crafting -> Domain/Foundation | 64
+Domain/Crafting -> Log | 8
+Domain/Crafting -> Random | 9
+Domain/Crafting -> Time | 1
+
+# Crafting -> Platform (5 edges)
+Domain/Crafting -> Platform/Composition | 67
+Domain/Crafting -> Platform/Core | 17
+Domain/Crafting -> Platform/Entity | 98
+Domain/Crafting -> Platform/Extension | 2
+Feature/RecipeDefinition -> Platform/Composition | 3
+
+# Creatures -> Foundation (6 edges)
+Domain/Creatures -> Domain/Foundation | 13
+Domain/Creatures -> GameMath | 1
+Domain/Creatures -> Log | 6
+Domain/Creatures -> Random | 5
+Feature/SpawnDefinition -> Domain/Foundation | 3
+Feature/SpawnDefinition -> Random | 6
+
+# Creatures -> Platform (6 edges)
+Domain/Creatures -> Platform/Composition | 9
+Domain/Creatures -> Platform/Core | 38
+Domain/Creatures -> Platform/Extension | 1
+Domain/Creatures -> Platform/Native | 1
+Feature/AIDefinition -> Platform/Composition | 1
+Feature/SpawnDefinition -> Platform/Composition | 1
+
+# Economy -> Foundation (4 edges)
+Domain/Economy -> ColorToken | 1
+Domain/Economy -> Domain/Foundation | 29
+Domain/Economy -> Log | 3
+Domain/Economy -> Random | 2
+
+# Economy -> Platform (6 edges)
+BankItemPage -> Platform/Entity | 3
+CasinoPlayTracker -> Platform/Entity | 3
+Domain/Economy -> Platform/Core | 7
+Domain/Economy -> Platform/Entity | 22
+Domain/Economy -> Platform/Enumeration | 28
+Domain/Economy -> Platform/Extension | 7
+
+# Foundation -> Platform (23 edges)
+Domain/Foundation -> Platform/Composition | 21
+Domain/Foundation -> Platform/Core | 29
+Domain/Foundation -> Platform/Entity | 93
+Domain/Foundation -> Platform/Enumeration | 50
+Domain/Foundation -> Platform/Extension | 7
+Domain/Foundation -> Platform/Native | 1
+Domain/Foundation -> Platform/Root | 6
 Feature/DialogDefinition -> Platform/Composition | 29
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
-Feature/MigrationDefinition -> Platform/Composition | 54
+Feature/MigrationDefinition -> Platform/Composition | 61
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
@@ -262,185 +162,66 @@ Feature/SnippetDefinition -> Platform/Entity | 8
 FrameProfiler -> Platform/Core | 1
 FrameProfiler -> Platform/Root | 1
 Log -> Platform/Core | 1
-Log -> Platform/Enumeration | 34
+Log -> Platform/Enumeration | 2
 Log -> Platform/Extension | 1
 Log -> Platform/Root | 3
-Migration -> Platform/Composition | 18
-Migration -> Platform/Core | 4
-Migration -> Platform/Entity | 48
-Migration -> Platform/Extension | 3
-Migration -> Platform/Native | 1
-NamedAnimation -> Platform/Core | 1
-ObjectVisibility -> Platform/Core | 2
-ObjectVisibility -> Platform/Entity | 2
-PlayerFeedback -> Platform/Entity | 1
-PlayerFeedback -> Platform/Enumeration | 2
-PlayerFeedback -> Platform/Root | 2
-Snippet -> Platform/Core | 3
-TileMagic -> Platform/Enumeration | 2
-Walkmesh -> Platform/Core | 2
-Walkmesh -> Platform/Entity | 2
 
-# Crafting -> Core (20 edges)
-Craft -> Animation | 1
-Craft -> Cache | 3
-Craft -> ColorToken | 3
-Craft -> DB | 39
-Craft -> Log | 7
-Craft -> NamedAnimation | 2
-Craft -> Random | 5
-Craft -> Time | 1
-Prospecting -> Animation | 1
-Prospecting -> DB | 8
-Prospecting -> NamedAnimation | 1
-Prospecting -> Random | 1
-Scavenge -> Cache | 1
-Scavenge -> ColorToken | 1
-Scavenge -> DB | 6
-Slicing -> Cache | 3
-Slicing -> ColorToken | 1
-Slicing -> DB | 3
-Slicing -> Log | 1
-Slicing -> Random | 3
-
-# Crafting -> Platform (13 edges)
-Craft -> Platform/Composition | 49
-Craft -> Platform/Core | 11
-Craft -> Platform/Entity | 83
-Craft -> Platform/Extension | 2
-Feature/RecipeDefinition -> Platform/Composition | 3
-Prospecting -> Platform/Composition | 11
-Prospecting -> Platform/Core | 2
-Prospecting -> Platform/Entity | 11
-Scavenge -> Platform/Composition | 7
-Scavenge -> Platform/Core | 2
-Scavenge -> Platform/Entity | 3
-Slicing -> Platform/Core | 2
-Slicing -> Platform/Entity | 1
-
-# Creatures -> Core (13 edges)
-AI -> Conversation | 3
-AI -> ConversationMenu | 3
-AI -> GameMath | 1
-AI -> Log | 2
-AI -> Random | 1
-CompanionControl -> Log | 3
-Feature/SpawnDefinition -> Animation | 2
-Feature/SpawnDefinition -> Cache | 1
-Feature/SpawnDefinition -> Random | 6
-Spawn -> Animation | 7
-Spawn -> Log | 1
-Spawn -> Random | 4
-Spawn -> Walkmesh | 3
-
-# Creatures -> Platform (9 edges)
-AI -> Platform/Composition | 9
-AI -> Platform/Core | 25
-AI -> Platform/Native | 1
-CompanionControl -> Platform/Core | 6
-Feature/AIDefinition -> Platform/Composition | 1
-Feature/SpawnDefinition -> Platform/Composition | 1
-NPCGroup -> Platform/Core | 1
-NPCGroup -> Platform/Extension | 1
-Spawn -> Platform/Core | 6
-
-# Economy -> Core (11 edges)
-Bank -> DB | 9
-Bank -> Log | 2
-CasinoSlot -> DB | 4
-CasinoSlot -> Log | 1
-CasinoSlot -> Random | 1
-Currency -> DB | 5
-Guild -> ColorToken | 1
-Guild -> DB | 4
-Guild -> Random | 1
-GuildTaskXp -> DB | 3
-PlayerMarket -> DB | 4
-
-# Economy -> Platform (18 edges)
-Bank -> Platform/Entity | 11
-BankItemPage -> Platform/Entity | 3
-CasinoPlayTracker -> Platform/Entity | 3
-CasinoSlot -> Platform/Core | 1
-CasinoSlot -> Platform/Entity | 3
-Currency -> Platform/Core | 1
-Currency -> Platform/Entity | 3
-Currency -> Platform/Extension | 1
-Guild -> Platform/Core | 2
-Guild -> Platform/Entity | 2
-Guild -> Platform/Enumeration | 18
-Guild -> Platform/Extension | 2
-GuildTaskXp -> Platform/Entity | 1
-GuildTaskXp -> Platform/Enumeration | 10
-GuildTaskXp -> Platform/Extension | 2
-PlayerMarket -> Platform/Core | 3
-PlayerMarket -> Platform/Entity | 2
-PlayerMarket -> Platform/Extension | 2
-
-# Gameplay -> Core (61 edges)
-Feature.AchievementProgression -> DB | 6
+# Gameplay -> Foundation (52 edges)
+Feature.AchievementProgression -> Domain/Foundation | 6
+Feature.AreaConfiguration -> Domain/Foundation | 1
 Feature.AreaConfiguration -> Log | 1
-Feature.AreaConfiguration -> TileMagic | 1
-Feature.ArmorDisplay -> DB | 2
+Feature.ArmorDisplay -> Domain/Foundation | 2
 Feature.Auditing -> Log | 3
 Feature.BasicVibrobladeCompatibility -> Feature/MigrationDefinition | 1
 Feature.BuffTimer -> ColorToken | 2
 Feature.CZ220FlightsTerminal -> Log | 1
 Feature.ClientVersionCheck -> Log | 1
-Feature.CreatureDeathAnimation -> Animation | 1
-Feature.CreatureDeathAnimation -> AnimationPlayer | 1
-Feature.CreatureDeathAnimation -> NamedAnimation | 1
-Feature.DMActions -> DB | 1
-Feature.DMAuthorization -> Authorization | 1
+Feature.CreatureDeathAnimation -> Domain/Foundation | 1
+Feature.DMActions -> Domain/Foundation | 1
+Feature.DMAuthorization -> Domain/Foundation | 1
 Feature.DMAuthorization -> Log | 1
 Feature.EquipmentRestrictions -> ColorToken | 1
-Feature.EquipmentStats -> DB | 20
-Feature.EventRegistration -> DB | 1
+Feature.EquipmentStats -> Domain/Foundation | 20
+Feature.EventRegistration -> Domain/Foundation | 1
 Feature.ExplorationTrigger -> ColorToken | 1
 Feature.KatarAnimationRemap -> Log | 1
 Feature.LightsaberAudio -> Log | 1
 Feature.MiniMaps -> ColorToken | 1
-Feature.NaturalRegeneration -> DB | 2
-Feature.PersistentHitPoints -> DB | 2
-Feature.PersistentLocation -> DB | 2
+Feature.NaturalRegeneration -> Domain/Foundation | 2
+Feature.PersistentHitPoints -> Domain/Foundation | 2
+Feature.PersistentLocation -> Domain/Foundation | 2
 Feature.PersistentLocation -> Log | 1
-Feature.PersistentMapPin -> DB | 4
-Feature.PersistentMapProgression -> DB | 2
+Feature.PersistentMapPin -> Domain/Foundation | 4
+Feature.PersistentMapProgression -> Domain/Foundation | 2
 Feature.PersistentMapProgression -> Log | 1
-Feature.PistolAnimationRemap -> Animation | 2
+Feature.PistolAnimationRemap -> Domain/Foundation | 3
 Feature.PistolAnimationRemap -> Log | 1
-Feature.PistolAnimationRemap -> NamedAnimation | 1
 Feature.PlaceableScripts -> ColorToken | 1
-Feature.PlaceableScripts -> Conversation | 1
-Feature.PlaceableScripts -> ConversationMenu | 1
-Feature.PlayerAccountRecord -> DB | 1
-Feature.PlayerInitialization -> DB | 1
+Feature.PlaceableScripts -> Domain/Foundation | 1
+Feature.PlayerAccountRecord -> Domain/Foundation | 1
+Feature.PlayerInitialization -> Domain/Foundation | 2
 Feature.PlayerInitialization -> Feature/MigrationDefinition | 1
 Feature.PlayerInitialization -> Log | 2
-Feature.PlayerInitialization -> Migration | 2
-Feature.PlayerStatusWindow -> DB | 1
-Feature.PlayerTemporaryEffects -> DB | 2
-Feature.RoleplayXP -> DB | 3
+Feature.PlayerStatusWindow -> Domain/Foundation | 1
+Feature.PlayerTemporaryEffects -> Domain/Foundation | 2
+Feature.RoleplayXP -> Domain/Foundation | 3
 Feature.RoleplayXP -> Log | 4
-Feature.ServerTasks -> BackgroundJob | 1
 Feature.ServerTasks -> ColorToken | 1
-Feature.ServerTasks -> DB | 2
+Feature.ServerTasks -> Domain/Foundation | 3
 Feature.ServerTasks -> Log | 5
 Feature.ServerTasks -> Time | 1
 Feature.StoreManagement -> ColorToken | 1
 Feature.StoreManagement -> Log | 1
-Feature.TlkOverrides -> Attribute | 1
+Feature.TlkOverrides -> Domain/Foundation | 1
 Feature.TrashCan -> ColorToken | 1
 Feature.TwinPistolEquipmentValidation -> ColorToken | 2
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
-Feature.UsePerkFeat -> Animation | 3
 Feature.UsePerkFeat -> ColorToken | 1
+Feature.UsePerkFeat -> Domain/Foundation | 6
 Feature.UsePerkFeat -> Log | 1
-Feature.UsePerkFeat -> Messaging | 4
-Feature.UsePerkFeat -> NamedAnimation | 2
-Feature.UsePerkFeat -> PlayerFeedback | 1
 
 # Gameplay -> Platform (142 edges)
+Domain/Gameplay -> Platform/Root | 4
 Feature.AchievementProgression -> Platform/Composition | 7
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
@@ -534,7 +315,7 @@ Feature.PlayerInitialization -> Platform/Core | 1
 Feature.PlayerInitialization -> Platform/Entity | 10
 Feature.PlayerRest -> Platform/Composition | 1
 Feature.PlayerRest -> Platform/Core | 3
-Feature.PlayerStatusWindow -> Platform/Composition | 14
+Feature.PlayerStatusWindow -> Platform/Composition | 15
 Feature.PlayerStatusWindow -> Platform/Core | 13
 Feature.PlayerStatusWindow -> Platform/Entity | 1
 Feature.PlayerTemporaryEffects -> Platform/Composition | 4
@@ -582,254 +363,140 @@ Feature.UnarmedTechniqueProfile -> Platform/Core | 1
 Feature.UsePerkFeat -> Platform/Composition | 32
 Feature.UsePerkFeat -> Platform/Core | 7
 ServerRestart -> Platform/Composition | 1
-ServerTask -> Platform/Root | 4
 
-# Items -> Core (19 edges)
-Feature/ItemDefinition -> Cache | 2
-Feature/ItemDefinition -> ConversationMenu | 2
-Feature/ItemDefinition -> DB | 5
+# Items -> Foundation (9 edges)
+Domain/Items -> ColorToken | 1
+Domain/Items -> Domain/Foundation | 27
+Domain/Items -> Log | 7
+Domain/Items -> Random | 2
+Feature/ItemDefinition -> Domain/Foundation | 8
 Feature/ItemDefinition -> GameMath | 4
 Feature/ItemDefinition -> Log | 5
 Feature/ItemDefinition -> Random | 2
 Feature/LootTableDefinition -> Random | 2
-Item -> DB | 3
-ItemTrash -> Log | 2
-KeyItem -> DB | 6
-KeyItem -> ObjectVisibility | 3
-LightsaberWorkbench -> DB | 3
-LightsaberWorkbench -> Log | 1
-Loot -> Log | 2
-Loot -> Random | 2
-OverflowStorage -> ColorToken | 1
-OverflowStorage -> DB | 6
-OverflowStorage -> Log | 2
-Wardrobe -> DB | 6
 
-# Items -> Platform (17 edges)
-EquipmentUnequip -> Platform/Core | 1
+# Items -> Platform (9 edges)
+Domain/Items -> Platform/Composition | 2
+Domain/Items -> Platform/Core | 15
+Domain/Items -> Platform/Entity | 29
+Domain/Items -> Platform/Extension | 2
 Feature/ItemDefinition -> Platform/Composition | 33
 Feature/ItemDefinition -> Platform/Core | 3
 Feature/ItemDefinition -> Platform/Entity | 5
 Feature/ItemDefinition -> Platform/Enumeration | 1
 Feature/LootTableDefinition -> Platform/Core | 1
-Item -> Platform/Core | 4
-Item -> Platform/Entity | 1
-KeyItem -> Platform/Composition | 2
-KeyItem -> Platform/Core | 2
-KeyItem -> Platform/Entity | 4
-KeyItem -> Platform/Extension | 2
-LightsaberWorkbench -> Platform/Core | 1
-LightsaberWorkbench -> Platform/Entity | 1
-Loot -> Platform/Core | 7
-OverflowStorage -> Platform/Entity | 4
-Wardrobe -> Platform/Entity | 19
 
-# Platform -> Core (8 edges)
+# Platform -> Foundation (8 edges)
 Platform/Core -> FrameProfiler | 5
 Platform/Core -> Log | 15
 Platform/Native -> ColorToken | 2
-Platform/Native -> DB | 2
+Platform/Native -> Domain/Foundation | 2
 Platform/Native -> Feature/MigrationDefinition | 1
 Platform/Native -> FrameProfiler | 3
 Platform/Native -> Log | 31
 Platform/Native -> Random | 2
 
-# Quests -> Core (18 edges)
-Faction -> DB | 4
-Feature/QuestDefinition -> Cache | 19
-Feature/QuestDefinition -> DB | 20
-Feature/QuestDefinition -> ObjectVisibility | 5
-Quest -> Cache | 7
-Quest -> ColorToken | 3
-Quest -> Conversation | 3
-Quest -> ConversationMenu | 1
-Quest -> DB | 36
-Quest -> Log | 2
-Quest -> Time | 1
-QuestContract -> DB | 3
-QuestContract -> Log | 2
-QuestContractBoard -> Authorization | 3
-QuestContractBoard -> Cache | 4
-QuestContractBoard -> ColorToken | 3
-QuestContractBoard -> DB | 25
-QuestContractBoard -> Log | 10
+# Quests -> Foundation (5 edges)
+Domain/Quests -> ColorToken | 6
+Domain/Quests -> Domain/Foundation | 76
+Domain/Quests -> Log | 14
+Domain/Quests -> Time | 1
+Feature/QuestDefinition -> Domain/Foundation | 44
 
-# Quests -> Platform (14 edges)
-Faction -> Platform/Core | 1
-Faction -> Platform/Entity | 2
-Faction -> Platform/Extension | 1
+# Quests -> Platform (7 edges)
+Domain/Quests -> Platform/Composition | 46
+Domain/Quests -> Platform/Core | 16
+Domain/Quests -> Platform/Entity | 99
+Domain/Quests -> Platform/Enumeration | 19
+Domain/Quests -> Platform/Extension | 1
 Feature/QuestDefinition -> Platform/Composition | 145
 Feature/QuestDefinition -> Platform/Entity | 21
-Quest -> Platform/Composition | 42
-Quest -> Platform/Core | 13
-Quest -> Platform/Entity | 43
-Quest -> Platform/Enumeration | 17
-QuestContract -> Platform/Composition | 4
-QuestContract -> Platform/Entity | 11
-QuestContractBoard -> Platform/Core | 2
-QuestContractBoard -> Platform/Entity | 43
-QuestContractBoard -> Platform/Enumeration | 2
 
-# Social -> Core (17 edges)
-ChatCommand -> Authorization | 5
-ChatCommand -> ColorToken | 3
-ChatPortraitTells -> ColorToken | 2
-Feature/ChatCommandDefinition -> Animation | 3
-Feature/ChatCommandDefinition -> Authorization | 1
-Feature/ChatCommandDefinition -> BackgroundJob | 1
+# Social -> Foundation (7 edges)
+Domain/Social -> ColorToken | 5
+Domain/Social -> Domain/Foundation | 35
+Domain/Social -> FrameProfiler | 2
+Domain/Social -> Log | 9
 Feature/ChatCommandDefinition -> ColorToken | 16
-Feature/ChatCommandDefinition -> Communication | 1
-Feature/ChatCommandDefinition -> DB | 15
+Feature/ChatCommandDefinition -> Domain/Foundation | 21
 Feature/ChatCommandDefinition -> Log | 8
-Performance -> Animation | 12
-Performance -> DB | 12
-Performance -> FrameProfiler | 2
-Performance -> Log | 8
-Performance -> NamedAnimation | 5
-PlayerList -> DB | 5
-PlayerList -> Log | 1
 
-# Social -> Platform (15 edges)
-ChatCommand -> Platform/Core | 2
-ChatCommand -> Platform/Enumeration | 9
-ChatCommand -> Platform/Root | 2
-ChatPortraitTells -> Platform/Core | 3
+# Social -> Platform (10 edges)
+Domain/Social -> Platform/Core | 35
+Domain/Social -> Platform/Entity | 13
+Domain/Social -> Platform/Enumeration | 9
+Domain/Social -> Platform/Extension | 1
+Domain/Social -> Platform/Root | 2
 Feature/ChatCommandDefinition -> Platform/Composition | 71
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
 Feature/ChatCommandDefinition -> Platform/Root | 6
-Party -> Platform/Core | 7
-Performance -> Platform/Core | 18
-Performance -> Platform/Entity | 10
-PlayerList -> Platform/Core | 5
-PlayerList -> Platform/Entity | 3
-PlayerList -> Platform/Extension | 1
 
-# Space -> Core (8 edges)
-Feature/ShipModuleDefinition -> DB | 4
-Feature/ShipModuleDefinition -> Messaging | 16
+# Space -> Foundation (6 edges)
+Domain/Space -> ColorToken | 4
+Domain/Space -> Domain/Foundation | 30
+Domain/Space -> Log | 9
+Domain/Space -> Random | 1
+Feature/ShipModuleDefinition -> Domain/Foundation | 18
 Feature/ShipModuleDefinition -> Random | 14
-Space -> ColorToken | 4
-Space -> DB | 26
-Space -> Log | 9
-Space -> Messaging | 3
-Space -> Random | 1
 
 # Space -> Platform (7 edges)
-Feature/ShipModuleDefinition -> Platform/Composition | 18
+Domain/Space -> Platform/Composition | 4
+Domain/Space -> Platform/Core | 21
+Domain/Space -> Platform/Entity | 29
+Domain/Space -> Platform/Enumeration | 7
+Feature/ShipModuleDefinition -> Platform/Composition | 21
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
-Space -> Platform/Composition | 35
-Space -> Platform/Core | 21
-Space -> Platform/Entity | 29
-Space -> Platform/Enumeration | 6
 
-# UI -> Core (20 edges)
-ExtraHotbars -> ColorToken | 5
-ExtraHotbars -> DB | 6
-ExtraHotbars -> Feature/MigrationDefinition | 1
-Feature/GuiDefinition -> Animation | 11
-Feature/GuiDefinition -> Authorization | 3
-Feature/GuiDefinition -> BackgroundJob | 2
-Feature/GuiDefinition -> Cache | 36
+# UI -> Foundation (11 edges)
+Domain/UI -> ColorToken | 6
+Domain/UI -> Domain/Foundation | 11
+Domain/UI -> Feature/MigrationDefinition | 1
+Domain/UI -> FrameProfiler | 2
+Domain/UI -> Log | 1
 Feature/GuiDefinition -> ColorToken | 45
-Feature/GuiDefinition -> Communication | 3
-Feature/GuiDefinition -> Conversation | 14
-Feature/GuiDefinition -> DB | 231
+Feature/GuiDefinition -> Domain/Foundation | 295
 Feature/GuiDefinition -> GameMath | 3
 Feature/GuiDefinition -> Log | 29
-Feature/GuiDefinition -> NamedAnimation | 3
 Feature/GuiDefinition -> Random | 3
 Feature/GuiDefinition -> Time | 8
-Gui -> ColorToken | 1
-Gui -> DB | 5
-Gui -> FrameProfiler | 2
-Gui -> Log | 1
 
-# UI -> Platform (14 edges)
-ExtraHotbars -> Platform/Core | 8
-ExtraHotbars -> Platform/Entity | 26
-Feature/GuiDefinition -> Platform/Composition | 702
+# UI -> Platform (12 edges)
+Domain/UI -> Platform/Composition | 5
+Domain/UI -> Platform/Core | 126
+Domain/UI -> Platform/Entity | 29
+Domain/UI -> Platform/Enumeration | 1
+Domain/UI -> Platform/Properties | 1
+Domain/UI -> Platform/Root | 1
+Feature/GuiDefinition -> Platform/Composition | 712
 Feature/GuiDefinition -> Platform/Core | 237
 Feature/GuiDefinition -> Platform/Entity | 377
 Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
-Gui -> Platform/Composition | 5
-Gui -> Platform/Core | 118
-Gui -> Platform/Entity | 3
-Gui -> Platform/Enumeration | 1
-Gui -> Platform/Properties | 1
-Gui -> Platform/Root | 1
 
-# World -> Core (29 edges)
-Area -> ColorToken | 1
-Area -> DB | 3
+# World -> Foundation (8 edges)
+Domain/World -> ColorToken | 16
+Domain/World -> Domain/Foundation | 110
+Domain/World -> Log | 27
+Domain/World -> Random | 4
+Domain/World -> Time | 6
 Feature/FishingLocationDefinition -> Random | 1
-Feature/PropertyLayoutDefinition -> DB | 3
-Feature/TrapDefinition -> Messaging | 1
-Fishing -> Animation | 8
-Fishing -> Cache | 3
-Fishing -> ColorToken | 3
-Fishing -> DB | 3
-Fishing -> Messaging | 4
-Fishing -> NamedAnimation | 5
-Fishing -> Random | 4
-HoloCom -> ColorToken | 2
-Music -> DB | 11
-Notes -> DB | 5
-Property -> BackgroundJob | 3
-Property -> ColorToken | 3
-Property -> ConversationMenu | 3
-Property -> DB | 48
-Property -> Log | 19
-Shuttle -> ColorToken | 4
-Shuttle -> DB | 13
-Shuttle -> Log | 7
-Shuttle -> Time | 6
-Taxi -> DB | 3
-Traps -> ColorToken | 3
-Traps -> DB | 4
-Weather -> DB | 3
-Weather -> Log | 1
+Feature/PropertyLayoutDefinition -> Domain/Foundation | 3
+Feature/TrapDefinition -> Domain/Foundation | 1
 
-# World -> Platform (38 edges)
-Area -> Platform/Core | 5
-Area -> Platform/Entity | 1
+# World -> Platform (12 edges)
+Domain/World -> Platform/Composition | 13
+Domain/World -> Platform/Core | 46
+Domain/World -> Platform/Entity | 134
+Domain/World -> Platform/Enumeration | 73
+Domain/World -> Platform/Extension | 10
+Domain/World -> Platform/Root | 2
 Feature/PropertyLayoutDefinition -> Platform/Composition | 7
 Feature/PropertyLayoutDefinition -> Platform/Core | 2
 Feature/PropertyLayoutDefinition -> Platform/Entity | 3
 Feature/PropertyLayoutDefinition -> Platform/Enumeration | 4
 Feature/TrapDefinition -> Platform/Composition | 2
 Feature/TrapDefinition -> Platform/Core | 3
-Fishing -> Platform/Composition | 9
-Fishing -> Platform/Core | 4
-Fishing -> Platform/Entity | 1
-Fishing -> Platform/Extension | 3
-HoloCom -> Platform/Core | 5
-Music -> Platform/Core | 6
-Music -> Platform/Entity | 11
-Music -> Platform/Extension | 1
-Notes -> Platform/Entity | 6
-Planet -> Platform/Core | 1
-Planet -> Platform/Enumeration | 18
-Planet -> Platform/Extension | 1
-Property -> Platform/Composition | 4
-Property -> Platform/Core | 12
-Property -> Platform/Entity | 95
-Property -> Platform/Enumeration | 3
-Property -> Platform/Extension | 3
-Property -> Platform/Root | 2
-Shuttle -> Platform/Core | 6
-Shuttle -> Platform/Entity | 16
-Shuttle -> Platform/Enumeration | 48
-Shuttle -> Platform/Extension | 1
-Taxi -> Platform/Core | 1
-Taxi -> Platform/Entity | 1
-Taxi -> Platform/Extension | 1
-Traps -> Platform/Core | 1
-Traps -> Platform/Entity | 2
-Weather -> Platform/Core | 5
-Weather -> Platform/Entity | 1
-Weather -> Platform/Enumeration | 4

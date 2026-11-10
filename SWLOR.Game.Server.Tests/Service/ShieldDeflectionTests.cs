@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -79,8 +79,8 @@ public class ShieldDeflectionTests
         var enhancementSubTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "EnhancementSubType.cs"));
         enhancementSubTypeSource.Should().Contain("[EnhancementSubType(\"Shield Deflection\")]");
         enhancementSubTypeSource.Should().Contain("ShieldDeflection = 127");

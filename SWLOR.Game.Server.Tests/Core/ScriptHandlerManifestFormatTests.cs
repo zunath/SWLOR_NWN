@@ -180,8 +180,8 @@ public class ScriptHandlerManifestFormatTests
 
         manifest.ScriptNames.Should().Contain(ScriptName.OnModulePreload);
         var preload = manifest.GetHandlers(ScriptName.OnModulePreload, false).ToList();
-        preload.IndexOf("SWLOR.Game.Server.Domain.Core.DBService.Load").Should().BeGreaterThanOrEqualTo(0);
-        preload.IndexOf("SWLOR.Game.Server.Domain.Core.DBService.Load")
+        preload.IndexOf("SWLOR.Game.Server.Domain.Foundation.DBService.Load").Should().BeGreaterThanOrEqualTo(0);
+        preload.IndexOf("SWLOR.Game.Server.Domain.Foundation.DBService.Load")
             .Should().BeLessThan(preload.IndexOf("SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload"),
                 "DB.Load connects Redis, which OnModulePreload reads");
     }

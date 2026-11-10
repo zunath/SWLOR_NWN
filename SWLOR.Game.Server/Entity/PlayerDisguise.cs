@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Entity
 {

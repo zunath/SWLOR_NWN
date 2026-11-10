@@ -2,9 +2,8 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

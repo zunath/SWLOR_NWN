@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DisguiseService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -64,8 +64,8 @@ public class DialogPrivacyTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "ConversationService",
+            "Domain",
+            "Foundation",
             "ConversationMenuSession.cs");
 
         source.Should().NotContain("SetCustomToken");

@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Reflection;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {

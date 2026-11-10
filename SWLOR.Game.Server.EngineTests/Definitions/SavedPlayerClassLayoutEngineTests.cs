@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             fixed (byte* label = Encoding.ASCII.GetBytes("AuditSentinel\0"))
                 file.WriteFieldINT(root, 4567, label);
-            var normalize = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly.GetType("SWLOR.Game.Server.Native.SavedPlayerClassLayout")
+            var normalize = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly.GetType("SWLOR.Game.Server.Native.SavedPlayerClassLayout")
                 .GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             using var normalized = (IDisposable)normalize.Invoke(null, new object[] { file, root });
             ctx.AssertEqual(expectedChange, normalized != null, "Only supported repeated player class rows are normalized");

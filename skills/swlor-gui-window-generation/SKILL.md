@@ -20,7 +20,7 @@ Build with the framework's proven components — never hand-roll their equivalen
 - Copy widget patterns from `SWLOR.Game.Server/Feature/GuiDefinition/DebugNuiGalleryDefinition.cs`
   (the living example of every widget and binding path) before inventing anything.
   Every builder call you write must already exist under
-  `SWLOR.Game.Server/Service/GuiService/Component/` — grep before writing.
+  `SWLOR.Game.Server/Domain/UI/Component/` — grep before writing.
 
 **Zero `[NUI layout warning]` lines for your window at server boot is a hard gate.**
 The validator only reports confirmed defects; a warning means your layout will fail.
@@ -30,11 +30,11 @@ placeholder value — window structure first, data wiring is a separate task.
 
 ## Important Files
 
-- `SWLOR.Game.Server/Service/GuiService/GuiWindowType.cs` — window id enum (debug windows: 900 range)
+- `SWLOR.Game.Server/Domain/UI/GuiWindowType.cs` — window id enum (debug windows: 900 range)
 - `SWLOR.Game.Server/Feature/GuiDefinition/` — window definitions (reflection-registered)
 - `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/` — view models
-- `SWLOR.Game.Server/Service/GuiService/Component/GuiStandardLayout.cs` — the root-layout helper
-- `SWLOR.Game.Server/Service/GuiService/Component/GuiTabGroup.cs` — tab orchestration helpers
+- `SWLOR.Game.Server/Domain/UI/Component/GuiStandardLayout.cs` — the root-layout helper
+- `SWLOR.Game.Server/Domain/UI/Component/GuiTabGroup.cs` — tab orchestration helpers
 - `SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs` — debug open commands
 - `SWLOR.Game.Server/Readmes/GuiWindowAuthoring.md` — full authoring guide (lifecycle, skeleton, binding table)
 - `SWLOR.Game.Server/Readmes/NuiLayoutRules.md` — layout rules R1-R7 and verified-working shapes

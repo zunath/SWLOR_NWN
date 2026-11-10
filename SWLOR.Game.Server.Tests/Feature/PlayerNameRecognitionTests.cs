@@ -695,8 +695,8 @@ public class PlayerNameRecognitionTests
         var activateResultSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "DisguiseService",
+            "Domain",
+            "Character",
             "ActivateDisguiseResult.cs"));
         var entitySource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -719,7 +719,7 @@ public class PlayerNameRecognitionTests
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "Core",
+            "Foundation",
             "CacheService.cs"));
         var dialogSource = File.ReadAllText(Path.Combine(
             root.FullName,

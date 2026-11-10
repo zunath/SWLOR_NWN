@@ -1,15 +1,13 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Reads a live performing session into a snapshot: the logic that used to be static in
-    /// <c>Service.PerformanceService.PerformerSnapshotBuilder</c>, moved here unchanged. The bonuses come from the stats
+    /// <c>SWLOR.Game.Server.Domain.Social.PerformerSnapshotBuilder</c>, moved here unchanged. The bonuses come from the stats
     /// the perks grant; perk levels are only read for unlocks (traits and capstones that grant no stat).
     /// </summary>
     public class PerformanceSnapshotService : IPerformanceSnapshotService

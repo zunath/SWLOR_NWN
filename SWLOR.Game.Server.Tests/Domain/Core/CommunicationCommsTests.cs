@@ -4,12 +4,12 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
-using SWLOR.Game.Server.Domain.Core;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;

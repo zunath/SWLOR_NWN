@@ -6,8 +6,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.RoleplayXPService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -125,9 +125,9 @@ public class RoleplayXPLoggingTests
             global using System.Text.RegularExpressions;
             global using Newtonsoft.Json;
             global using SWLOR.Game.Server.Entity;
-            global using SWLOR.Game.Server.Service.LogService;
-            global using SWLOR.Game.Server.Service.PropertyService;
-            global using SWLOR.Game.Server.Service.RoleplayXPService;
+            global using SWLOR.Game.Server.Domain.Foundation;
+            global using SWLOR.Game.Server.Domain.World;
+            global using SWLOR.Game.Server.Domain.Character;
             global using SWLOR.NWN.API.NWScript.Enum;
             global using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
             global using static RoleplayXPLoggingHarness.Native;

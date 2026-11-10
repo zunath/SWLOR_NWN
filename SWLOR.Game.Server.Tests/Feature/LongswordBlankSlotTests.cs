@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
 namespace SWLOR.Game.Server.Tests.Feature;

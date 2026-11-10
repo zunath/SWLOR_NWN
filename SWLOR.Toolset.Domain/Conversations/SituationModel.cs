@@ -702,7 +702,7 @@ namespace SWLOR.Toolset.Domain.Conversations
         /// </remarks>
         public IEnumerable<string> MentionedArguments(
             SnippetCatalog snippets,
-            Game.Server.Service.SnippetService.SnippetArgumentType type)
+            Game.Server.Domain.Foundation.SnippetArgumentType type)
         {
             foreach (var (param, _) in AllParams())
             {

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.PvpCombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

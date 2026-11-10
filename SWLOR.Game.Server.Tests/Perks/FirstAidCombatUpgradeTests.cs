@@ -8,13 +8,9 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 
@@ -126,7 +122,7 @@ public class FirstAidCombatUpgradeTests
         stimPack.Tag.Should().Be("stim_pack");
 
         var requirementSource = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementItem.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityRequirementItem.cs").FullName);
         // Supplies match by tag in every stack and bag, so the merchant stacks' tags must be the requirement names.
         requirementSource.Should().Contain("GetTag(item) == ItemResref");
         requirementSource.Should().Contain("total += GetItemStackSize(item)");

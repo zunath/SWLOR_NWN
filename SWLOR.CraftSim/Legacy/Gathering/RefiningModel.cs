@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {
@@ -28,7 +28,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
 
         /// <summary>
         /// The XP of one unit refining pays now: the ore's flat XP times <c>GetDeltaXP(ore level - rank) / GetDeltaXP(0)</c>, at the level of the
-        /// vein of the ore's tier (<see cref="GatheringLevels.RefiningXp"/>, RefineryViewModel.cs:367). It is the flat XP at the ore's level.
+        /// vein of the ore's tier (<see cref="GatheringLevels.RefiningXp"/>, RefineryViewModel.cs:366). It is the flat XP at the ore's level.
         /// </summary>
         public static int CurrentXpPerUnit(OreTier ore, int gatheringRank) => CurrentXp(ore, gatheringRank, 1);
 

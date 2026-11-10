@@ -135,8 +135,11 @@ so the order must stop depending on file layout first.
 the code stops tangling further while the refactor runs. Later phases move each domain into its own namespace;
 this guard works before and after those moves because it maps types to domains, not files.
 
-**Domain map (coordinator's first cut, 2026-10-26; refine as conversions happen).** A "service" is the static
-class `SWLOR.Game.Server.Service.<Name>` plus every type in `SWLOR.Game.Server.Service.<Name>Service.*`.
+**Domain map (coordinator's first cut, 2026-10-26; refine as conversions happen).** A "service" was the static
+class `SWLOR.Game.Server.Service.<Name>` plus every type in `SWLOR.Game.Server.Service.<Name>Service.*`. Since P2-Z2
+the support namespaces are gone: every type of `Domain.<Domain>` and its topic namespaces is the unit `Domain/<Domain>`,
+and the `services` lists name the converted services (which `ConvertedServices.json` must agree with) and the types
+still directly in `Service`. The table below is the first cut; `DomainMap.json` is current (`Core` is now `Foundation`).
 
 | Domain | Services | Feature folders |
 |---|---|---|
@@ -428,3 +431,15 @@ them is not an option before facade removal (P2-Z).
     architecture test fails on a namespace segment equal to a type name in the server assembly, a leaf segment under two
     parents, or any `Service.*Service` namespace, with no exceptions.
   - **Verify:** the full end-of-phase set (unit and engine suites, parity, live smoke run).
+  - **As applied (P2-Z2 pull request, 2026-11-10).** The first commit is the script's output; the hand work on top:
+    `UnitClassifier` puts every type of `Domain.<Domain>[.<Topic>]` in the unit `Domain/<Domain>`, so the baseline's
+    service units became their domains: all 876 regenerated edges are old edges with the renames applied, none new or gone.
+    The "named after a service" rule became `UnlistedServiceClasses` (a `*Service` type in a domain namespace is a listed
+    piece); the static-state and handler rules cover each whole domain namespace, except six support types of the
+    never-converted `Animation`, `DMTool` and `RoleplayXP` folders, listed in `ConvertedServicesTests`. `DMTool` and
+    `RoleplayXP` left `DomainMap.json` for `retiredServiceFolders` in `NamespaceMoves.json`. `NamespaceGuardTests` is the
+    guard. The script is the last line of `MechanicalScripts.txt` (no mode applies; it owns no file) and reads the
+    branch's domain map on a tree without one (master's parity copy). Recipe order: every `IRecipeListDefinition` is in
+    `Feature.RecipeDefinition.*`, which the move left alone. The `CreatureStatusEffect` key lives only in memory
+    (temporary stat modifier groups), and entities store only `GetType().Name`. Left in `Service`: 19 static helpers that
+    need a type-level move (see the pull request).

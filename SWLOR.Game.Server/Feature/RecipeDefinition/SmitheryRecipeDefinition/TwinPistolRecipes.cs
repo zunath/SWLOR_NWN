@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 

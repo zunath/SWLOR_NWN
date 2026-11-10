@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Domain.World
 {

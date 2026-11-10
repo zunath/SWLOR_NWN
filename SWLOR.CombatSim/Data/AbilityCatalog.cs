@@ -1,10 +1,9 @@
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Reflection;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.CombatSim.Data
 {
@@ -114,7 +113,7 @@ namespace SWLOR.CombatSim.Data
                 WeaponAreaRadius = detail.Targeting is { Shape: AbilityTargetingShapeType.Sphere } targeting &&
                     targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf) ? targeting.SizeX : 0f,
                 MaximumAreaTargets = weapon?.Profile.Read<int>("MaximumAreaTargets") ?? 0,
-                ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect>>(detail, "statusFactory"),
+                ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Domain.Character.IStatusEffect>>(detail, "statusFactory"),
                 Name = detail.Name,
                 PerkName = perk?.Name ?? detail.Name,
                 RecastGroup = detail.RecastGroup.ToString(),
@@ -138,7 +137,7 @@ namespace SWLOR.CombatSim.Data
                 WeaponAbilityCadenceOnHit = detail.WeaponAbilityCadenceOnHit,
                 WeaponAbilityCadenceDamagePerCharge = detail.WeaponAbilityCadenceDamagePerCharge,
                 // Mirrors PairedRangedTraits.ChainKey: every rank of one ability shares its key.
-                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Service.PerkService.PerkType.Invalid
+                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Domain.Character.PerkType.Invalid
                     ? (int)detail.EffectiveLevelPerkType
                     : StringComparer.Ordinal.GetHashCode(detail.Name ?? string.Empty) | int.MinValue
             };

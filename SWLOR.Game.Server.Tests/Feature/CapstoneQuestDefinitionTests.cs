@@ -8,14 +8,11 @@ using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.ResistanceService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -722,8 +719,8 @@ public class CapstoneQuestDefinitionTests : SkillFacadeFixture
         var recastGroupPath = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "AbilityService",
+            "Domain",
+            "Abilities",
             "RecastGroup.cs");
         var recastGroupSource = File.ReadAllText(recastGroupPath);
         recastGroupSource.Should().NotContain("CapstoneSignature");

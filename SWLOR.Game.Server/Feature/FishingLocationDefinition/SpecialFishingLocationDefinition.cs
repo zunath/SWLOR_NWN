@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.World;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.FishingLocationDefinition

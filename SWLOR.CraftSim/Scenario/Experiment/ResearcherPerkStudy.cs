@@ -4,12 +4,11 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Rng;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Scenario.Experiment

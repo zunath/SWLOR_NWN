@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.ResistanceService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Entity

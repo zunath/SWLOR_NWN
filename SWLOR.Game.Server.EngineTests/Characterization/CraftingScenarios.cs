@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Characterization.Support;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Characterization;

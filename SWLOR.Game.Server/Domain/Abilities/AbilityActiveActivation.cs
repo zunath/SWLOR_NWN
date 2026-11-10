@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Abilities
 {

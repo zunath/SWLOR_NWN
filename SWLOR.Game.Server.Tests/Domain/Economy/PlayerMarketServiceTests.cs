@@ -8,12 +8,10 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
+using MarketCategoryType = SWLOR.Game.Server.Domain.Economy.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Tests.Domain.Economy;
 

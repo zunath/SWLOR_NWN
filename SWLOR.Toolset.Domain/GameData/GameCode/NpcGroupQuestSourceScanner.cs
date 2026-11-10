@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {

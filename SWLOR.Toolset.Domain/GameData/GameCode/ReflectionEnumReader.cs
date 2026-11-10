@@ -1,8 +1,8 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {

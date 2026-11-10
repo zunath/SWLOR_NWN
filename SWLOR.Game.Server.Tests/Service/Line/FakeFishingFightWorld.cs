@@ -1,6 +1,6 @@
 using System.Numerics;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
 

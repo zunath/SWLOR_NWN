@@ -4,7 +4,7 @@ using System.Runtime.Loader;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core

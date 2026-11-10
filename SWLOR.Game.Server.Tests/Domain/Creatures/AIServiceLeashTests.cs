@@ -3,7 +3,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;

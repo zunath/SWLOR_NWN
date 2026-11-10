@@ -11,9 +11,8 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
@@ -568,7 +567,7 @@ public class AIModelTests
     [Test]
     public void AITarget_SelfCenteredHostileAreasUseCasterAndNamedTargetPolicy()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+        var source = ReadSource("SWLOR.Game.Server", "Domain", "Creatures", "AITarget.cs")
             .Replace("\r\n", "\n");
         var selectorBody = source.Substring(
             source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),

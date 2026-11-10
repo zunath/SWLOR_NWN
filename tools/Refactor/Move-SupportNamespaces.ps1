@@ -5,16 +5,21 @@
     item P2-Z2).
 
 .DESCRIPTION
-    Rerunnable and idempotent. Exactly one mode:
+    Rerunnable and idempotent. At most one mode; none means -Apply (tools/Refactor/MechanicalScripts.txt contract: the
+    daily sync and the parity check run it after the other mechanical scripts, so new master code lands in place):
 
       -Check   change nothing; print every change -Apply would make and exit 1 if there is any (0 when the tree is done).
       -Apply   make the changes; a second -Apply changes nothing.
       -Report  change nothing; list, for the current tree, what the P2-Z2 guard test checks: namespace segments equal to
                a type name of the server assembly, leaf segments under two parents, and any remaining
                Service.*Service namespace. Exit 1 when it lists anything.
+      -ListOwnedFiles  print nothing and exit 0: the script owns no whole file (it edits lines of files people edit), so
+               a merge conflict is settled by hand and the script runs again.
 
-    The domain of a service comes from SWLOR.Architecture.Tests/DomainMap.json. A service name missing from the map, a
-    name in two domains, or two files that would land on the same path are reported and nothing is changed (exit 2).
+    The domain of a service comes from SWLOR.Architecture.Tests/DomainMap.json of the tree, or, when the tree has none
+    (master's copy in the parity check), of the repository that holds this script; retiredServiceFolders of the data
+    file adds the folders whose service the map no longer lists. A service name missing from the map, a name in two
+    domains, or two files that would land on the same path are reported and nothing is changed (exit 2).
 
     What it rewrites, in every tracked or new text file of the repository (code, razor, project files, scripts,
     generators, templates, manifests and guides; not Module/, SWLOR_Haks/, design/, the Maintainability* status guides,
@@ -46,6 +51,9 @@
 .PARAMETER Report
     List the guard findings of the current tree.
 
+.PARAMETER ListOwnedFiles
+    Print the files the script owns (none) and exit 0.
+
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script. Use a throwaway checkout to try it.
 
@@ -62,6 +70,7 @@ param(
     [switch]$Check,
     [switch]$Apply,
     [switch]$Report,
+    [switch]$ListOwnedFiles,
     [string]$RepositoryRoot,
     [string]$MovesFile
 )
@@ -69,10 +78,14 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-if (([int][bool]$Check + [int][bool]$Apply + [int][bool]$Report) -ne 1) {
-    Write-Host 'Pass exactly one of -Check, -Apply, -Report.'
+if ($ListOwnedFiles) {
+    exit 0
+}
+if (([int][bool]$Check + [int][bool]$Apply + [int][bool]$Report) -gt 1) {
+    Write-Host 'Pass at most one of -Check, -Apply, -Report.'
     exit 2
 }
+if (-not ($Check -or $Report)) { $Apply = [switch]$true }
 if (-not $RepositoryRoot) { $RepositoryRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot) }
 $root = [System.IO.Path]::GetFullPath($RepositoryRoot).TrimEnd('\', '/')
 if (-not $MovesFile) { $MovesFile = Join-Path $PSScriptRoot 'NamespaceMoves.json' }
@@ -126,6 +139,10 @@ $globFiles = Get-DataList 'expandGlobFiles'
 $textEdits = Get-DataList 'textEdits'
 
 $domainMapFile = Join-Path $root $domainMapPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+if (-not (Test-Path -LiteralPath $domainMapFile)) {
+    # A tree without the map (master's copy in the parity check) moves by the map of the repository that holds this script.
+    $domainMapFile = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) $domainMapPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+}
 if (-not (Test-Path -LiteralPath $domainMapFile)) { Write-Host "Domain map not found: $domainMapPath"; exit 2 }
 $domainMap = Get-Content -LiteralPath $domainMapFile -Raw | ConvertFrom-Json
 $serviceDomain = @{}
@@ -137,6 +154,14 @@ foreach ($domain in $domainMap.domains.PSObject.Properties) {
         }
         $serviceDomain[[string]$service] = $domain.Name
     }
+}
+# Folders whose service the map no longer lists (converted under other names); master still has them.
+foreach ($entry in (Get-DataList 'retiredServiceFolders')) {
+    $name = [string]$entry.service
+    if ($serviceDomain.ContainsKey($name) -and $serviceDomain[$name] -ne [string]$entry.domain) {
+        $problems.Add("Service '$name' is in DomainMap.json ($($serviceDomain[$name])) and in retiredServiceFolders ($($entry.domain)).")
+    }
+    $serviceDomain[$name] = [string]$entry.domain
 }
 
 # --- Files ------------------------------------------------------------------------------------------------------------

@@ -1,11 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Tests.Perks.AgriculturePerkLines;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
@@ -287,7 +285,7 @@ public class AgriculturePerkLineTests
 
     private static bool FishingQuickReelNeverReadsAStat()
     {
-        var source = File.ReadAllText(Path.Combine(FindRoot(), "SWLOR.Game.Server", "Service", "FishingService", "FishingQuickReel.cs"));
+        var source = File.ReadAllText(Path.Combine(FindRoot(), "SWLOR.Game.Server", "Domain", "World", "FishingQuickReel.cs"));
         return !source.Contains("StatType") && !source.Contains("Stat.");
     }
 

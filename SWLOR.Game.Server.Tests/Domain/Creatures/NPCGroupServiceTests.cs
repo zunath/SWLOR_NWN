@@ -3,7 +3,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 

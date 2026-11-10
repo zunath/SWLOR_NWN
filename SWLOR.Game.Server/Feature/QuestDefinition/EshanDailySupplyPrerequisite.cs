@@ -1,6 +1,6 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Quests;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Composition.GameServices;
 

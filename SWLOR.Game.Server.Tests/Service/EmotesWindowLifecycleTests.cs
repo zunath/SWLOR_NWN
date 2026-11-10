@@ -7,8 +7,7 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 

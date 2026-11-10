@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.QuestContractService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Space;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 

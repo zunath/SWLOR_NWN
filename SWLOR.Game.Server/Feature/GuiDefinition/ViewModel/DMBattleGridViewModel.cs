@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Combat;
 using static SWLOR.Game.Server.Composition.GameServices;

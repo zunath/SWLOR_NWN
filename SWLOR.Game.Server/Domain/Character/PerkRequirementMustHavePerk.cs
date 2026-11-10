@@ -1,0 +1,56 @@
+using SWLOR.Game.Server.Entity;
+using static SWLOR.Game.Server.Composition.GameServices;
+
+namespace SWLOR.Game.Server.Domain.Character
+{
+    public class PerkRequirementMustHavePerk: IPerkRequirement
+    {
+        private readonly PerkType _mustHavePerkType;
+        private readonly int _mustHavePerkLevel;
+
+        public PerkRequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
+        {
+            _mustHavePerkType = mustHavePerkType;
+            _mustHavePerkLevel = mustHavePerkLevel;
+        }
+
+        public PerkRequirementCategory Category => PerkRequirementCategory.MustHavePerk;
+
+        public string CheckRequirements(uint player)
+        {
+            if (_mustHavePerkType == PerkType.Invalid)
+                return string.Empty;
+
+            var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
+               return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
+
+            return string.Empty;
+        }
+
+        /// <summary>A player's perk level is the level recorded for the perk.</summary>
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
+        {
+            if (_mustHavePerkType == PerkType.Invalid)
+                return string.Empty;
+
+            var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+            if (!dbPlayer.Perks.TryGetValue(_mustHavePerkType, out var level) || level < _mustHavePerkLevel)
+               return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
+
+            return string.Empty;
+        }
+
+        public string RequirementText
+        {
+            get
+            {
+                var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+                return $"Must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
+            }
+        }
+    }
+}

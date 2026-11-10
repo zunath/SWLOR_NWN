@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.Game.Server.Tests.Support;
@@ -230,7 +230,7 @@ public class ForceWeaponEnhancementMigrationTests
                 forceItems.Add(Path.GetFileName(path));
         }
         forceItems.Should().BeEmpty("Force conversion belongs to Imbuement Stance, including on NPC weapons");
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "CraftService", "BlueprintBonuses.cs"))
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Crafting", "BlueprintBonuses.cs"))
             .Should().NotContain("CombatDamageType.Force");
         File.ReadAllLines(Path.Combine(root, "SWLOR.CLI", "InputFiles", "enhancement_list.tsv"))
             .Should().NotContain(line => line.Split('\t').Last().Trim() == "Force");

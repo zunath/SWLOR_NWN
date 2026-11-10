@@ -7,16 +7,12 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MessagingService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -25,12 +21,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
 using Vector3 = System.Numerics.Vector3;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Creatures;
-using SWLOR.Game.Server.Domain.Core;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Abilities;
 
 namespace SWLOR.Game.Server.Domain.Space
 {

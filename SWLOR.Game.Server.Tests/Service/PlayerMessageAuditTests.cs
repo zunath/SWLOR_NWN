@@ -51,7 +51,7 @@ public class PlayerMessageAuditTests
         var root = FindRepositoryRoot();
         var files = new[] { "Domain/Space/SpaceService.cs", "Domain/Abilities/AbilityService.cs", "Domain/Character/StatusEffectService.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
-            "Service/QuestService/QuestObjectives.cs", "Service/QuestService/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
+            "Domain/Quests/QuestObjectives.cs", "Domain/Quests/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
@@ -119,8 +119,8 @@ public class PlayerMessageAuditTests
                 : "Retained"
         };
         if ((file is "SWLOR.Game.Server/Service/PlayerFeedback.cs" or "SWLOR.Game.Server/Service/Messaging.cs" or
-            "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs" or "SWLOR.Game.Server/Domain/Core/MessagingService.cs" or
-            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Core/CommunicationService.cs" or
+            "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs" or "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs" or
+            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs" or
             "SWLOR.Game.Server/Domain/UI/GuiService.cs") &&
             !name.Contains("Diagnostic", StringComparison.OrdinalIgnoreCase))
             delivery = "Shared transport; policy at caller";
@@ -266,7 +266,7 @@ public class PlayerMessageAuditTests
         warning.ArgumentList.Arguments[2].ToString().Should().Contain("_playerName.GetDisplayName(receiver, attacker)");
         warning.ArgumentList.Arguments[3].ToString().Should().Be("5");
 
-        var delivery = ReadCalls(Path.Combine(root, "..", "Domain", "Core", "PlayerFeedbackService.cs"))
+        var delivery = ReadCalls(Path.Combine(root, "..", "Domain", "Foundation", "PlayerFeedbackService.cs"))
             .Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText == "SendWarningNearby")
             .ToArray();
         delivery.Should().Contain(call => MethodName(call) == "SendMessageNearbyToPlayers");

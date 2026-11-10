@@ -2,16 +2,13 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -362,7 +359,7 @@ public class CraftServiceTests
         recipe.PracticeRankLimit = 15;
         recipe.Requirements.Add(new FixedRequirement("Needs luck.", "Missing."));
         _cacheScript.On("GetItemNameByResref", args => "Component A");
-        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Service.GuiService.GuiBindingList<string> { "+1 Stuff" });
+        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Domain.UI.GuiBindingList<string> { "+1 Stuff" });
 
         var (lines, colors) = _service.BuildRecipeDetail(PlayerObject, RecipeType.VenomCoating1, null);
 
@@ -382,7 +379,7 @@ public class CraftServiceTests
     {
         AddRecipe(RecipeType.VenomCoating1, level: 3);
         _cacheScript.On("GetItemNameByResref", args => "x");
-        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Service.GuiService.GuiBindingList<string>());
+        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Domain.UI.GuiBindingList<string>());
         var blueprint = new BlueprintDetail
         {
             Recipe = RecipeType.VenomCoating1,
@@ -403,7 +400,7 @@ public class CraftServiceTests
     {
         AddRecipe(RecipeType.VenomCoating1, level: 3);
         _cacheScript.On("GetItemNameByResref", args => "x");
-        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Service.GuiService.GuiBindingList<string>());
+        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Domain.UI.GuiBindingList<string>());
 
         var (lines, _) = _service.BuildRecipeDetail(PlayerObject, RecipeType.VenomCoating1, new BlueprintDetail { Recipe = RecipeType.VenomCoating1 });
 
@@ -416,12 +413,12 @@ public class CraftServiceTests
         var recipe = AddRecipe(RecipeType.VenomCoating1, level: 3);
         recipe.Requirements.Add(new FixedRequirement("Needs luck.", "Missing."));
         _cacheScript.On("GetItemNameByResref", args => "x");
-        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Service.GuiService.GuiBindingList<string>());
+        _itemScript.On("BuildItemPropertyList", args => new SWLOR.Game.Server.Domain.UI.GuiBindingList<string>());
 
         var (lines, colors) = _service.BuildRecipeDetail(PlayerObject, RecipeType.VenomCoating1, null);
 
         var index = lines.ToList().IndexOf("Needs luck.");
-        colors[index].Should().BeEquivalentTo(SWLOR.Game.Server.Service.GuiService.Component.GuiColor.Red);
+        colors[index].Should().BeEquivalentTo(SWLOR.Game.Server.Domain.UI.Component.GuiColor.Red);
     }
 
     // ---- items

@@ -5,7 +5,7 @@ using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Report
 {
@@ -65,7 +65,7 @@ namespace SWLOR.CraftSim.Tests.Report
             report.Should().Contain("-1 to +5");
             report.Should().Contain("| +2 | 50% | 2.50 | 3.75 |");
             report.Should().Contain("WIL +2 (14)");
-            report.Should().Contain("`ProspectingNode.cs:67`").And.Contain("`GatheringLevels.cs:21-24`").And.Contain("`FishingFightLifecycle.cs:61-71`");
+            report.Should().Contain("`ProspectingNode.cs:67`").And.Contain("`GatheringLevels.cs:21-24`").And.Contain("`FishingFightLifecycle.cs:62-72`");
             report.Should().Contain("until the Line fight replaced it");
             report.Should().Contain("| 1 (5) | 1050 | 600 |");
         }

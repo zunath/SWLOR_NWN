@@ -5,15 +5,25 @@ using SWLOR.Architecture.Tests.Scanning;
 
 namespace SWLOR.Architecture.Tests;
 
+/// <remarks>
+/// The <c>Service.&lt;Name&gt;Service</c> cases use a made-up service (<c>Widget</c>): <c>tools/Refactor/Move-SupportNamespaces.ps1</c>
+/// rewrites every text file of the repository, and a real service name here would be rewritten when master brings back its
+/// support folder.
+/// </remarks>
 [TestFixture]
 public class UnitClassifierTests
 {
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "CombatService", "Domain/Combat")]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "ICombatRecorderService", "Domain/Combat")]
+    [TestCase("SWLOR.Game.Server.Domain.Combat", "HitResult", "Domain/Combat")]
+    [TestCase("SWLOR.Game.Server.Domain.UI.Component", "GuiButton", "Domain/UI")]
+    [TestCase("SWLOR.Game.Server.Domain.Crafting.Minigame.Search", "SearchSetup", "Domain/Crafting")]
+    [TestCase("SWLOR.Game.Server.Domain.Foundation", "IDBService", "Domain/Foundation")]
+    [TestCase("SWLOR.Game.Server.Domain.Unknown", "Anything", "Domain/Unknown")]
+    [TestCase("SWLOR.Game.Server.Service", "ColorToken", "ColorToken")]
     [TestCase("SWLOR.Game.Server.Service", "Combat", "Combat")]
-    [TestCase("SWLOR.Game.Server.Service", "CombatPoint", "CombatPoint")]
-    [TestCase("SWLOR.Game.Server.Service.CombatService", "HitResult", "Combat")]
-    [TestCase("SWLOR.Game.Server.Service.GuiService.Component", "GuiButton", "Gui")]
-    [TestCase("SWLOR.Game.Server.Service.NPCService", "NPCGroupType", "NPC")]
-    [TestCase("SWLOR.Game.Server.Service.ChatPortraitTellService", "ChatPortraitClick", "ChatPortraitTell")]
+    [TestCase("SWLOR.Game.Server.Service.WidgetService", "WidgetResult", "Widget")]
+    [TestCase("SWLOR.Game.Server.Service.WidgetService.Topic", "WidgetPart", "Widget")]
     [TestCase("SWLOR.Game.Server.Service.Animation", "Folder", "Animation")]
     [TestCase("SWLOR.Game.Server.Feature", "Auditing", "Feature.Auditing")]
     [TestCase("SWLOR.Game.Server.Feature.PerkDefinition", "ArmorPerkDefinition", "Feature/PerkDefinition")]
@@ -22,6 +32,7 @@ public class UnitClassifierTests
     [TestCase("SWLOR.Game.Server.Core.Beamdog", "Wrapper", "Platform/Core")]
     [TestCase("SWLOR.Game.Server.Native", "Hook", "Platform/Native")]
     [TestCase("SWLOR.Game.Server.Entity", "Player", "Platform/Entity")]
+    [TestCase("SWLOR.Game.Server.Domain", "Loose", "Platform/Domain")]
     [TestCase("SWLOR.Game.Server", "ApplicationSettings", "Platform/Root")]
     public void Classifies_a_type_by_its_namespace(string @namespace, string name, string expectedUnit)
     {
@@ -34,9 +45,9 @@ public class UnitClassifierTests
         {
           "platformDomain": "Platform",
           "featureTypeDomain": "Gameplay",
-          "unrestrictedTargetDomains": ["Core", "Platform"],
+          "unrestrictedTargetDomains": ["Foundation", "Platform"],
           "domains": {
-            "Core": { "services": ["DB"], "featureFolders": [] },
+            "Foundation": { "services": ["DB"], "featureFolders": [] },
             "Character": { "services": ["Achievement", "Stat"], "featureFolders": [] },
             "Space": { "services": ["Space", "SpaceModuleRecast"], "featureFolders": [] },
             "Gameplay": { "services": [], "featureFolders": [] }
@@ -49,25 +60,38 @@ public class UnitClassifierTests
     [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementNotification", "Achievement")]
     [TestCase("SWLOR.Game.Server.Domain.Character.Achievement", "AchievementWindow", "Achievement")]
     [TestCase("SWLOR.Game.Server.Domain.Character", "IStatService", "Stat")]
-    [TestCase("SWLOR.Game.Server.Domain.Core", "IDBService", "DB")]
+    [TestCase("SWLOR.Game.Server.Domain.Foundation", "IDBService", "DB")]
     [TestCase("SWLOR.Game.Server.Domain.Space", "SpaceService", "Space")]
     [TestCase("SWLOR.Game.Server.Domain.Space", "ISpaceModuleRecastService", "SpaceModuleRecast")]
-    [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementsHelper", "Platform/Domain.Character")]
-    [TestCase("SWLOR.Game.Server.Domain.Character", "Unrelated", "Platform/Domain.Character")]
-    [TestCase("SWLOR.Game.Server.Domain.Character", "IAmbient", "Platform/Domain.Character")]
-    [TestCase("SWLOR.Game.Server.Domain.Unknown", "IAchievementService", "Platform/Domain.Unknown")]
-    public void Classifies_the_types_of_a_converted_service_as_the_service(string @namespace, string name, string expectedUnit)
+    [TestCase("SWLOR.Game.Server.Service", "ColorToken", "ColorToken")]
+    [TestCase("SWLOR.Game.Server.Service.WidgetService", "Part", "Widget")]
+    public void Names_the_service_a_type_is_named_after(string @namespace, string name, string expectedService)
     {
-        DependencyUnit.TryParse(expectedUnit, out var expected).Should().BeTrue();
+        UnitClassifier.ServiceOf(new TypeKey(@namespace, name), DomainMap.Parse(DomainMapJson)).Should().Be(expectedService);
+    }
 
-        UnitClassifier.Classify(new TypeKey(@namespace, name), DomainMap.Parse(DomainMapJson)).Should().Be(expected);
+    [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementsHelper")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "Unrelated")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "IAmbient")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "ISpaceService")]
+    [TestCase("SWLOR.Game.Server.Domain.Unknown", "IAchievementService")]
+    [TestCase("SWLOR.Game.Server.Feature", "AchievementService")]
+    [TestCase("SWLOR.Game.Server.Core", "StatService")]
+    [TestCase("SWLOR.NWN.API", "StatService")]
+    public void A_type_that_names_no_service_of_its_domain_has_none(string @namespace, string name)
+    {
+        UnitClassifier.ServiceOf(new TypeKey(@namespace, name), DomainMap.Parse(DomainMapJson)).Should().BeNull();
     }
 
     [Test]
-    public void Without_a_map_the_types_of_a_domain_namespace_are_platform_code()
+    public void A_domain_unit_belongs_to_its_domain_when_the_map_declares_it()
     {
-        UnitClassifier.Classify(new TypeKey("SWLOR.Game.Server.Domain.Character", "IAchievementService")).Should().Be(
-            new DependencyUnit(UnitKind.Platform, "Domain.Character"));
+        var map = DomainMap.Parse(DomainMapJson);
+
+        map.DomainOf(new DependencyUnit(UnitKind.Domain, "Character")).Should().Be("Character");
+        map.DomainOf(new DependencyUnit(UnitKind.Domain, "Foundation")).Should().Be("Foundation");
+        map.DomainOf(new DependencyUnit(UnitKind.Domain, "Unknown")).Should().BeNull("a Domain namespace that is not a declared domain is unmapped");
+        map.DomainOf(new DependencyUnit(UnitKind.Domain, "Platform")).Should().BeNull();
     }
 
     [TestCase("", "<Module>")]
@@ -80,7 +104,8 @@ public class UnitClassifierTests
         UnitClassifier.Classify(new TypeKey(@namespace, name)).Should().BeNull();
     }
 
-    [TestCase("Combat")]
+    [TestCase("Domain/Combat")]
+    [TestCase("ColorToken")]
     [TestCase("Feature/PerkDefinition")]
     [TestCase("Feature.Auditing")]
     [TestCase("Platform/Native")]
@@ -92,6 +117,7 @@ public class UnitClassifierTests
     }
 
     [TestCase("")]
+    [TestCase("Domain/")]
     [TestCase("Feature/")]
     [TestCase("Feature.")]
     [TestCase("Platform/")]

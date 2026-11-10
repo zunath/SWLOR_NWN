@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Entity
 {

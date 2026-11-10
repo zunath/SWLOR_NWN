@@ -2,7 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.WeatherService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Domain.World;
 using SWLOR.Game.Server.Tests.Support;
 

@@ -1,5 +1,5 @@
 {
-  "comment": "Data for tools/Refactor/Move-SupportNamespaces.ps1 (P2-Z2). namespaceRenames: names relative to SWLOR.Game.Server; the namespace, its folder and the same names written as paths move together, children included. The coordinator approved the three Feature names on 2026-11-07; Domain.Foundation is the spec's name. expandGlobFiles: path lists whose `Service/<N>Service/**` lines become the moved files (a folder glob would also take the files already in the Domain folder, and the clock seam must not reach the ambient loops). textExcludes: PowerShell -like patterns on repository paths the script must not rewrite. facadeNameFiles: files whose \"facade\" values name a type relative to Service (<N>Service.Topic.Type) and become <Domain>.Topic.Type. textEdits: exact text replaced in one file; each is idempotent (the old or the new text must be present).",
+  "comment": "Data for tools/Refactor/Move-SupportNamespaces.ps1 (P2-Z2). namespaceRenames: names relative to SWLOR.Game.Server; the namespace, its folder and the same names written as paths move together, children included. The coordinator approved the three Feature names on 2026-11-07; Domain.Foundation is the spec's name. expandGlobFiles: path lists whose `Service/<N>Service/**` lines become the moved files (a folder glob would also take the files already in the Domain folder, and the clock seam must not reach the ambient loops). textExcludes: PowerShell -like patterns on repository paths the script must not rewrite. facadeNameFiles: files whose \"facade\" values name a type relative to Service (<N>Service.Topic.Type) and become <Domain>.Topic.Type. textEdits: exact text replaced in one file; each is idempotent (the old or the new text must be present). retiredServiceFolders: Service.<Name>Service folders whose service DomainMap.json no longer lists (it was converted under other names), with the domain they move to; master still has them. The domain map is read from the tree the script runs on, or, when that tree has none (master's copy in the parity check), from the repository that holds this script. textExcludes also keep master's names where a file holds them on purpose: the facade values of RemovedFacades.json are relative to master's Service namespace, and FacadeRemovalRewriterTests.cs feeds the facade removal tool master-shaped code.",
   "namespaceRenames": [
     { "from": "Domain.Core", "to": "Domain.Foundation" },
     { "from": "Feature.PerkDefinition.Beast", "to": "Feature.PerkDefinition.BeastPerks" },
@@ -11,7 +11,13 @@
     "SWLOR.Toolset/WORKLOG.md",
     "tools/Refactor/Move-SupportNamespaces.ps1",
     "tools/Refactor/NamespaceMoves.json",
-    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs"
+    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs",
+    "tools/Refactor/RemovedFacades.json",
+    "SWLOR.Game.Server.Tests/Tools/FacadeRemovalRewriterTests.cs"
+  ],
+  "retiredServiceFolders": [
+    { "service": "DMTool", "domain": "Administration" },
+    { "service": "RoleplayXP", "domain": "Character" }
   ],
   "expandGlobFiles": [
     "tools/Refactor/ClockSeamFiles.txt"
@@ -56,6 +62,11 @@
       "replace": "\"Foundation\": {"
     },
     {
+      "file": "tools/ExportPlayerMessageAudit.ps1",
+      "find": "|Domain[\\\\/]Core[\\\\/](PlayerFeedback|Messaging|Communication)Service\\.cs$",
+      "replace": "|Domain[\\\\/]Foundation[\\\\/](PlayerFeedback|Messaging|Communication)Service\\.cs$"
+    },
+    {
       "file": "tools/UpdateProgressionPaceBible.py",
       "find": "SERVICE / \"CraftService\" / \"Minigame\" / \"CraftMinigameXp.cs\"",
       "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Minigame\" / \"CraftMinigameXp.cs\""
@@ -64,6 +75,36 @@
       "file": "tools/UpdateProgressionPaceBible.py",
       "find": "SERVICE / \"CraftService\" / \"Research\" / \"ResearchXpRules.cs\"",
       "replace": "ROOT / \"SWLOR.Game.Server\" / \"Domain\" / \"Crafting\" / \"Research\" / \"ResearchXpRules.cs\""
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "using static SWLOR.Game.Server.Composition.GameServices;",
+      "replace": "using SWLOR.Game.Server.Composition;\r\nusing static SWLOR.Game.Server.Composition.GameServices;"
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "if (!Space.IsRegisteredShipModule(",
+      "replace": "if (!GameServices.Space.IsRegisteredShipModule("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/SpaceService/SpaceObjectBuilder.cs",
+      "find": "var shipModule = Space.GetShipModuleDetailByItemTag(",
+      "replace": "var shipModule = GameServices.Space.GetShipModuleDetailByItemTag("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "using static SWLOR.Game.Server.Composition.GameServices;",
+      "replace": "using SWLOR.Game.Server.Composition;\r\nusing static SWLOR.Game.Server.Composition.GameServices;"
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "                Space.RemoveLandingPointByPropertyId(",
+      "replace": "                GameServices.Space.RemoveLandingPointByPropertyId("
+    },
+    {
+      "file": "SWLOR.Game.Server/Service/PropertyService/StructureChangedAction.cs",
+      "find": "                Space.RemoveLandingPoint(dockPoint,",
+      "replace": "                GameServices.Space.RemoveLandingPoint(dockPoint,"
     }
   ]
 }

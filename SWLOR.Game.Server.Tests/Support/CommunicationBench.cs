@@ -6,13 +6,12 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Support;

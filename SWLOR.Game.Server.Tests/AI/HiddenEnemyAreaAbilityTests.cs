@@ -146,7 +146,7 @@ public class HiddenEnemyAreaAbilityTests
 
     private static string ExtractMethods(string fileName, string name)
     {
-        var source = ReadSource("Service", "AIService", fileName);
+        var source = ReadSource("Domain", "Creatures", fileName);
         var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Where(method => method.Identifier.Text == name)
             // The harness calls private production methods from its own class.

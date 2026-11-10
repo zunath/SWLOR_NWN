@@ -73,8 +73,8 @@ public class QuestEncounterTests
         var questDetailSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "QuestService",
+            "Domain",
+            "Quests",
             "QuestDetail.cs"));
 
         scriptNames.Should().NotContain("OnQuestEncounterHeartbeat");

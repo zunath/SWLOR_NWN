@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

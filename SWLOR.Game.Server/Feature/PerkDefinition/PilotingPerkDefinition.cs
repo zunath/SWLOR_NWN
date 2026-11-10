@@ -1,6 +1,4 @@
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 

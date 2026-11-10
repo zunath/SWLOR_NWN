@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Domain.Items
 {

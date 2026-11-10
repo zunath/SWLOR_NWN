@@ -1,7 +1,7 @@
 using System.Reflection;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ResistanceService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Engine;
 

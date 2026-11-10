@@ -1,7 +1,7 @@
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Domain.Conversations
 {

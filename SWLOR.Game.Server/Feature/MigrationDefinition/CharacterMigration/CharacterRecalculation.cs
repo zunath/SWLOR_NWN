@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
 
@@ -132,14 +130,14 @@ internal static class CharacterRecalculation
     {
         var original = QuickCast.GetOriginalFeat(feat);
         return character.HasFeat(original) ||
-               Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias) && character.HasFeat(alias);
+               SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias) && character.HasFeat(alias);
     }
 
     private static void RemoveQuickCastFeat(SavedCharacter character, FeatType feat)
     {
         var original = QuickCast.GetOriginalFeat(feat);
         character.RemoveFeat(original);
-        if (Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias))
+        if (SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias))
             character.RemoveFeat(alias);
     }
 
@@ -152,7 +150,7 @@ internal static class CharacterRecalculation
         var settings = character.Record.Settings;
         if (settings == null)
             return;
-        foreach (var (alias, original) in Service.AbilityService.QuickCastFeatMap.Originals)
+        foreach (var (alias, original) in SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.Originals)
         {
             var hasOriginal = character.HasFeat(original);
             var hasAlias = character.HasFeat(alias);
@@ -174,7 +172,7 @@ internal static class CharacterRecalculation
                 continue;
             var current = (FeatType)slots[index].IntParameter;
             var original = QuickCast.GetOriginalFeat(current);
-            if (!Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias))
+            if (!SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias))
                 continue;
             var desired = KnowsQuickCastFeat(character, original) && QuickCast.UsesAutomaticTarget(original, settings) ? alias : original;
             if (current != desired)

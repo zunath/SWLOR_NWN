@@ -2,20 +2,18 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.ResistanceService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
-using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -398,7 +396,7 @@ public class EquipmentStatActionTests
         _record.MaxStamina = 500;
         _record.Evasion = 9;
         Give(ItemPropertyType.FP, -1, 1);
-        _engine.SetReturn("GetLocalInt", (int)SWLOR.Game.Server.Service.StatService.EquipmentRecordStats.Stamina);
+        _engine.SetReturn("GetLocalInt", (int)SWLOR.Game.Server.Domain.Character.EquipmentRecordStats.Stamina);
 
         EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange();
 

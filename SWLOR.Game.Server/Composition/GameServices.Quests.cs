@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The player-authored quest contracts (the facade <c>Service.QuestContractBoard</c> until P2-ZN).</summary>
         public static IQuestContractBoardService QuestContractBoard => FacadeAccessor.Resolve<IQuestContractBoardService>();
 
-        /// <summary>The quest encounters (the facade <c>Service.QuestService.QuestEncounter</c> until P2-ZN).</summary>
+        /// <summary>The quest encounters (the facade <c>SWLOR.Game.Server.Domain.Quests.QuestEncounter</c> until P2-ZN).</summary>
         public static IQuestEncounterService QuestEncounter => FacadeAccessor.Resolve<IQuestEncounterService>();
     }
 }

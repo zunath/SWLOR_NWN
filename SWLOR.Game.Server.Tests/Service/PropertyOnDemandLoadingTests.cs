@@ -13,8 +13,8 @@ public class PropertyOnDemandLoadingTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "PropertyService",
+            "Domain",
+            "World",
             "PropertyType.cs"));
 
         source.Should().Contain("[PropertyType(\"Apartment\", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance, PropertyLoadType.OnDemand)]");
@@ -66,8 +66,8 @@ public class PropertyOnDemandLoadingTests
         var diagnosticSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "PropertyService",
+            "Domain",
+            "World",
             "PropertyLoadDiagnostic.cs"));
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -242,8 +242,8 @@ public class PropertyOnDemandLoadingTests
         var structureSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "PropertyService",
+            "Domain",
+            "World",
             "StructureChangedAction.cs")).Replace("\r\n", "\n");
         var registerBody = ExtractMethod(spaceSource, "public void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)");
         var removeBody = ExtractMethod(spaceSource, "public void RemoveLandingPointByPropertyId(string propertyId)");

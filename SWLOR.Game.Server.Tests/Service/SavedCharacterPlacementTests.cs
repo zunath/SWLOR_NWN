@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -18,10 +18,10 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class SavedCharacterPlacementTests
 {
     private const BindingFlags Members = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-    private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly;
+    private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly;
     private static readonly Type Document = Game.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
-    private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
+    private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter")!;
     private FacadeContainer _container = null!;
     private IDisposable _scope = null!;
 

@@ -8,14 +8,13 @@ using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
-using NpcGroup = SWLOR.Game.Server.Service.NPCService.NPCGroupType;
+using NpcGroup = SWLOR.Game.Server.Domain.Creatures.NPCGroupType;
 
 namespace SWLOR.Game.Server.Tests.Domain.Quests;
 

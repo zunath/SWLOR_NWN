@@ -1,10 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Crafting;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.ProspectingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using SWLOR.Game.Server.Tests.Service.Prospecting;
 using SWLOR.Game.Server.Tests.Service;
 using SWLOR.Game.Server.Tests.Support;

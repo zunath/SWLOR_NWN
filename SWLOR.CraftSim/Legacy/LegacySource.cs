@@ -16,15 +16,15 @@ namespace SWLOR.CraftSim.Legacy
             "Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `" +
             CraftViewModelCommit + "`; the others are checked against the source by `LegacySourceTests`:";
 
-        public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
+        public const string RecipeLevelChart = Server + "Domain/Crafting/RecipeLevelChart.cs";
         public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
-        public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
-        public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
-        public const string Scavenge = Server + "Service/ScavengeService/ScavengeQuickSearch.cs";
+        public const string ProspectingNode = Server + "Domain/Crafting/Minigame/Prospecting/ProspectingNode.cs";
+        public const string GatheringLevels = Server + "Domain/Crafting/GatheringLevels.cs";
+        public const string Scavenge = Server + "Domain/Crafting/ScavengeQuickSearch.cs";
         public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
-        public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
+        public const string FishingFight = Server + "Domain/World/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
         public static readonly SourceReference ActionRanks = SourceReference.Frozen(
@@ -79,7 +79,7 @@ namespace SWLOR.CraftSim.Legacy
             "Enhancement transfer chance", CraftViewModel, 1420, 1468, CraftViewModelCommit);
 
         public static readonly SourceReference RecipeUnlockOffset = new(
-            "Recipe rank requirement", Craft, 379, 382,
+            "Recipe rank requirement", Craft, 374, 377,
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(
@@ -117,7 +117,7 @@ namespace SWLOR.CraftSim.Legacy
             "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
 
         public static readonly SourceReference ScavengeXp = new(
-            "Scavenge XP level", ScavengeSite, 111, 111,
+            "Scavenge XP level", ScavengeSite, 109, 109,
             "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
@@ -127,7 +127,7 @@ namespace SWLOR.CraftSim.Legacy
             "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\", 125)}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
 
         public static readonly SourceReference RefineryBatch = new(
-            "Refinery batch size", Refinery, 64, 64,
+            "Refinery batch size", Refinery, 63, 63,
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
@@ -136,12 +136,12 @@ namespace SWLOR.CraftSim.Legacy
 
         // Refining pays each ore's flat XP times the rank's share of the curve (GatheringLevels.RefiningXp), not the flat XP alone.
         public static readonly SourceReference RefineryXp = new(
-            "Refining XP", Refinery, 367, 371,
+            "Refining XP", Refinery, 366, 370,
             "xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);",
             "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
-            "Fishing XP per bite", FishingFight, 61, 71,
+            "Fishing XP per bite", FishingFight, 62, 72,
             "Skill.GetDeltaXP(bite.Fish.Level - bite.Rank)");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]

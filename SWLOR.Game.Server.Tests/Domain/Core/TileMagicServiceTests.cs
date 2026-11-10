@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;

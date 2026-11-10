@@ -302,6 +302,25 @@ public class FacadeRemovalRewriterTests
     }
 
     [Test]
+    public void The_reversal_keeps_the_import_of_a_namespace_the_tree_it_is_reversed_against_declares()
+    {
+        // Master's parity copy declares the Domain.<Domain> namespaces once Move-SupportNamespaces.ps1 ran on it, and the
+        // reversed file still needs the support types there; the accessor's namespace exists only on the branch.
+        const string text = "using SWLOR.Game.Server.Domain.Quests;\nusing SWLOR.Game.Server.Composition;\n" +
+                            "class C { int M() => FactionService.MinimumFaction; }\n";
+        var declared = new HashSet<string>(StringComparer.Ordinal)
+            { "SWLOR", "SWLOR.Game", "SWLOR.Game.Server", "SWLOR.Game.Server.Domain", "SWLOR.Game.Server.Domain.Quests" };
+
+        var kept = CallerRewriter.Reverse(text, All, declared);
+        var dropped = CallerRewriter.Reverse(text, All, new HashSet<string>(StringComparer.Ordinal) { "SWLOR.Game.Server.Domain" });
+
+        kept.Text.Should().Be("using SWLOR.Game.Server.Domain.Quests;\nclass C { int M() => Faction.MinimumFaction; }\n");
+        kept.UsingsAdded.Should().Be(1, "only the accessor's import is dropped");
+        dropped.Text.Should().Be("class C { int M() => Faction.MinimumFaction; }\n", "a namespace the tree does not declare is dropped as before");
+        CallerRewriter.Reverse(text, All).Text.Should().Be(dropped.Text, "no tree means no namespace is declared");
+    }
+
+    [Test]
     public void Positions_count_bytes_so_text_that_is_not_ascii_round_trips()
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes("﻿using System;\nclass C { string S = \"café\"; void M() { Taxi.Register(1); } }\n");

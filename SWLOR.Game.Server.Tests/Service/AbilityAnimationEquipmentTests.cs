@@ -1,12 +1,12 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using Grip = SWLOR.Game.Server.Service.AnimationService.AnimationWeaponGrip;
-using Requirement = SWLOR.Game.Server.Service.AnimationService.AnimationEquipmentRequirement;
+using Grip = SWLOR.Game.Server.Domain.Foundation.AnimationWeaponGrip;
+using Requirement = SWLOR.Game.Server.Domain.Foundation.AnimationEquipmentRequirement;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

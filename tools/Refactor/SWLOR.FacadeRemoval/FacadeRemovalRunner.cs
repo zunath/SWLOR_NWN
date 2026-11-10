@@ -28,6 +28,11 @@ internal static class FacadeRemovalRunner
         "bin", "obj", ".git", ".vs", ".idea", ".claude", "node_modules", "packages", "TestResults", "SWLOR_Haks", "Module"
     };
 
+    /// <summary>The server's source folder below a repository root.</summary>
+    private const string ServerFolder = "SWLOR.Game.Server";
+
+    private static readonly Regex NamespaceDeclaration = new(@"^[ \t]*namespace[ \t]+([A-Za-z_][A-Za-z0-9_.]*)", RegexOptions.Multiline);
+
     /// <summary>The server's project file: a project that neither is it nor references it cannot call a removed facade.</summary>
     private const string ServerProjectFile = "SWLOR.Game.Server.csproj";
 
@@ -152,13 +157,18 @@ internal static class FacadeRemovalRunner
         if (!Directory.Exists(options.Root))
             throw new FacadeRemovalException($"The folder {options.Root} does not exist.");
 
+        // The tree the folder is reversed against: the repository above it (master's parity copy), whose server sources
+        // decide which branch-only imports still name a namespace there.
+        var repository = RepositoryLocator.Find(options.Root);
+        var declared = repository == null ? null : DeclaredNamespaces(Path.Combine(repository, ServerFolder));
+
         var files = 0;
         var usings = 0;
         var rewrites = 0;
         foreach (var path in SourceFiles(options.Root))
         {
             var source = SourceFile.Read(path);
-            var result = CallerRewriter.Reverse(source.Text, facades);
+            var result = CallerRewriter.Reverse(source.Text, facades, declared);
             if (!result.Changed(source.Text))
                 continue;
 
@@ -174,6 +184,30 @@ internal static class FacadeRemovalRunner
     }
 
     /// <summary>Every <c>.cs</c> file under <paramref name="root"/>, in ordinal order, outside build output and data folders.</summary>
+    /// <summary>
+    /// The namespaces the <c>.cs</c> files under <paramref name="serverFolder"/> declare, with every enclosing namespace
+    /// (a using of <c>A.B</c> is valid when only <c>A.B.C</c> declares types). Empty when the folder does not exist. The server
+    /// declares one namespace per file (file-scoped or a block), never a nested one.
+    /// </summary>
+    public static IReadOnlySet<string> DeclaredNamespaces(string serverFolder)
+    {
+        var declared = new HashSet<string>(StringComparer.Ordinal);
+        if (!Directory.Exists(serverFolder))
+            return declared;
+
+        foreach (var path in SourceFiles(serverFolder))
+        {
+            foreach (Match match in NamespaceDeclaration.Matches(SourceFile.Read(path).Text))
+            {
+                var name = match.Groups[1].Value;
+                while (declared.Add(name) && name.Contains('.'))
+                    name = name[..name.LastIndexOf('.')];
+            }
+        }
+
+        return declared;
+    }
+
     public static IEnumerable<string> SourceFiles(string root)
     {
         var pending = new Stack<string>();

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.ProspectingService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Domain.Crafting
 {

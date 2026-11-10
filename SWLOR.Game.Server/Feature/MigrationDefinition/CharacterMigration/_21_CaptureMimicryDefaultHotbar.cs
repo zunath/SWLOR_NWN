@@ -1,6 +1,6 @@
 using System.Linq;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;

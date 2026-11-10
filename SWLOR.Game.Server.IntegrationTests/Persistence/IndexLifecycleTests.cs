@@ -3,7 +3,7 @@ using NUnit.Framework;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.IntegrationTests.Support;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.IntegrationTests.Persistence;
 

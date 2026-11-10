@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.RoleplayXPService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server
 {

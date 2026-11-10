@@ -7,9 +7,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -48,8 +47,8 @@ public class SkillXPAwardTests
             using SWLOR.Game.Server.Entity;
             using SWLOR.Game.Server.Extension;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-            using SWLOR.Game.Server.Service.SkillService;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Character;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using RuntimeSkill = SWLOR.Game.Server.Domain.Character.SkillService;
 

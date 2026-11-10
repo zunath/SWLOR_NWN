@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CompanionControlService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Domain.Creatures
 {

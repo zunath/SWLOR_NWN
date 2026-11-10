@@ -13,8 +13,12 @@
 #                                                      every file under that folder. Prints nothing else, exits 0.
 # Exit code 0 is success. The scripts must run under Windows PowerShell 5.1 and PowerShell 7.
 #
+# Move-SupportNamespaces.ps1 (P2-Z2) runs last: Apply-FacadeRemoval.ps1 finds master's calls to a removed facade by
+# master's namespaces (Service.<Name>Service), which the move then rewrites to Domain.<Domain>.
+#
 # "Owns" means the branch's only change to the file is the script's rewrite, so on a merge conflict in an owned file
 # the sync takes master's version and runs the script again instead of merging by hand.
 tools/Refactor/Apply-ClockSeam.ps1
 tools/Refactor/Apply-EngineSeam.ps1
 tools/Refactor/Apply-FacadeRemoval.ps1
+tools/Refactor/Move-SupportNamespaces.ps1

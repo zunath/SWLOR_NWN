@@ -1,11 +1,11 @@
 {
-  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). A service is the static class Service.<Name> plus every type in Service.<Name>Service.*; a Feature folder is the first folder below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain. Types directly in Feature belong to featureTypeDomain; code outside Service and Feature belongs to platformDomain. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
+  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service), plus the types left directly in Service; tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
   "platformDomain": "Platform",
   "featureTypeDomain": "Gameplay",
-  "unrestrictedTargetDomains": ["Core", "Platform"],
+  "unrestrictedTargetDomains": ["Foundation", "Platform"],
   "wiringPlatformAreas": ["Composition"],
   "domains": {
-    "Core": {
+    "Foundation": {
       "services": [
         "DB", "Log", "Cache", "Random", "Time", "GameMath", "ColorToken", "Messaging",
         "Communication", "BackgroundJob", "FrameProfiler", "Migration", "Authorization", "Menu",
@@ -49,7 +49,7 @@
       "services": [
         "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
         "PlayerActivityEffectTag", "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
-        "EspionageInfiltration", "Language", "RoleplayXP", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
+        "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
       ],
       "featureFolders": [
         "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"
@@ -131,7 +131,7 @@
     "Administration": {
       "services": [
         "DMBlueprintCatalog", "DMCreatorFavorite", "DMCreatureManagerFavorite", "DMObjectDetails",
-        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence", "DMTool"
+        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence"
       ],
       "featureFolders": []
     },

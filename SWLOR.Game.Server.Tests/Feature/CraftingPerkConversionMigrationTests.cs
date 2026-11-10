@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -17,8 +17,8 @@ public class CraftingPerkConversionMigrationTests
     private const int StartingSP = 5;
     private const int StartingTokens = 2;
 
-    private static readonly Type SavedCharacterType = typeof(SWLOR.Game.Server.Domain.Core.MigrationService).Assembly
-        .GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
+    private static readonly Type SavedCharacterType = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
+        .GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter")!;
 
     // The refund table of the crafting revamp plan: SP paid per rank, read from the combat-rebuild prices.
     private static readonly PerkPrices[] Table =

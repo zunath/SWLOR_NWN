@@ -33,7 +33,7 @@ public class ScavengePointSourceTests
     public void RecoveredCredits_CountAsDeliveredByTheGoldTheyAdd_SoTheyArePaidOnce()
     {
         var deliver = Method(
-            Source("Service", "ScavengeService", "NwnScavengeWorld.cs"),
+            Source("Domain", "Crafting", "NwnScavengeWorld.cs"),
             "private static int Deliver(uint player, string resref, int quantity, Dictionary<string, string> names)");
         var gold = deliver[..deliver.IndexOf("var before = CountInInventory(player, resref);", StringComparison.Ordinal)];
 
@@ -49,7 +49,7 @@ public class ScavengePointSourceTests
         var source = Source("Feature", "ScavengePoint.cs");
         var onOpened = Method(source, "public static void OnOpened()");
         var onClosed = Method(source, "public static void OnClosed()");
-        var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
+        var world = Source("Domain", "Crafting", "NwnScavengeWorld.cs");
 
         world.Should().Contain("SetLocalObject(site, OpeningVariable, player);");
         onOpened.Should().Contain("GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable)");
@@ -64,7 +64,7 @@ public class ScavengePointSourceTests
     [Test]
     public void AHoldThatIsNeverReleasedLapses()
     {
-        var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
+        var world = Source("Domain", "Crafting", "NwnScavengeWorld.cs");
 
         world.Should().Contain("DeleteLocalObject(site, OpeningVariable);");
         world.Should().Contain("(float)animationSeconds + OpeningHoldSeconds");
@@ -74,7 +74,7 @@ public class ScavengePointSourceTests
     [Test]
     public void AHoldDoesNotLapseWhileItsScavengerHasTheSiteOpen_AndEndsWhenTheyLeaveOrClose()
     {
-        var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
+        var world = Source("Domain", "Crafting", "NwnScavengeWorld.cs");
         var onOpened = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnOpened()");
         var onClosed = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnClosed()");
         var lapse = Method(world, "private static void ScheduleHoldLapse(");

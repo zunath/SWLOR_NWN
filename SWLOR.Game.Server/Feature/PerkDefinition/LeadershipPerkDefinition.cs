@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;

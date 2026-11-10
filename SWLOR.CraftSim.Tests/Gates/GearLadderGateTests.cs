@@ -77,7 +77,7 @@ namespace SWLOR.CraftSim.Tests.Gates
         [Test]
         public void ASkillWithNoBestGearDoesNotRunTheLadder()
         {
-            var scenario = new BenchScenario { TunedAgainstFullMods = true, Skill = SWLOR.Game.Server.Service.SkillService.SkillType.Espionage };
+            var scenario = new BenchScenario { TunedAgainstFullMods = true, Skill = SWLOR.Game.Server.Domain.Character.SkillType.Espionage };
 
             var result = Evaluate(GearLadderGate.Key, scenario, Context(TopLevels));
 
@@ -96,8 +96,8 @@ namespace SWLOR.CraftSim.Tests.Gates
         [Test]
         public void TheGearLadderIsTheOldLadderPlusFullMods()
         {
-            var plain = SharedData.Gear.Levels(SWLOR.Game.Server.Service.SkillService.SkillType.Smithery);
-            var modded = SharedData.Gear.LevelsWithFullMods(SWLOR.Game.Server.Service.SkillService.SkillType.Smithery);
+            var plain = SharedData.Gear.Levels(SWLOR.Game.Server.Domain.Character.SkillType.Smithery);
+            var modded = SharedData.Gear.LevelsWithFullMods(SWLOR.Game.Server.Domain.Character.SkillType.Smithery);
 
             modded.Should().HaveCount(plain.Count + 1);
             modded[^1].Name.Should().Be(CraftingGearCatalog.FullyModdedGearName);

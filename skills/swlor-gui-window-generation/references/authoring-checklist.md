@@ -45,7 +45,7 @@ Run every sweep; each must answer YES before building.
       lambda (those compile but throw at boot). Computed display text lives in its
       own string property updated by the ViewModel.
 - [ ] Every `Add*/Set*/Bind*` call used exists in
-      `SWLOR.Game.Server/Service/GuiService/Component/` — verified by grep, not memory.
+      `SWLOR.Game.Server/Domain/UI/Component/` — verified by grep, not memory.
 - [ ] Event handlers are `public Action Name() => () => { ... };` (they RETURN the action).
 - [ ] All data access points are `// TODO: data plumbing` stubs with placeholder values.
 

@@ -3,9 +3,9 @@ using FluentAssertions.Execution;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -41,7 +41,7 @@ public sealed partial class QuestConversationTests
             "the XP is recorded as waiting craft XP with the completion, so a stop before the award cannot lose it");
 
         var source = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory,
-            "..", "..", "..", "..", "SWLOR.Game.Server", "Service", "QuestService", "QuestDetail.cs"));
+            "..", "..", "..", "..", "SWLOR.Game.Server", "Domain", "Quests", "QuestDetail.cs"));
         var complete = source[source.IndexOf("public void Complete(", StringComparison.Ordinal)..];
         complete.IndexOf("SaveWithCompletion", StringComparison.Ordinal).Should()
             .BeLessThan(complete.IndexOf("DB.Set(dbPlayer)", StringComparison.Ordinal), "the reward is recorded before the completion is saved");

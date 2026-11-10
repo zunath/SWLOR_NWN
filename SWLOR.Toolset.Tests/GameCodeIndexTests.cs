@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Tests
@@ -44,7 +44,7 @@ namespace SWLOR.Toolset.Tests
         {
             var index = CreateIndex();
 
-            // From SWLOR.Game.Server/Service/NPCService/NPCGroupType.cs
+            // From SWLOR.Game.Server/Domain/Creatures/NPCGroupType.cs
             index.NpcGroups.Should().ContainKey(1).WhoseValue.Should().Be("Mynocks");
             index.NpcGroups.Should().ContainKey(22).WhoseValue.Should().Be("Zombie Rancor");
 
@@ -58,7 +58,7 @@ namespace SWLOR.Toolset.Tests
         {
             var index = CreateIndex();
 
-            // From SWLOR.Game.Server/Service/KeyItemService/KeyItemType.cs
+            // From SWLOR.Game.Server/Domain/Items/KeyItemType.cs
             index.KeyItems.Should().ContainKey(5).WhoseValue.Should().Be("CZ-220 Shuttle Pass");
             index.KeyItems.Should().ContainKey(20).WhoseValue.Should().Be("Coxxion Base Key");
         }

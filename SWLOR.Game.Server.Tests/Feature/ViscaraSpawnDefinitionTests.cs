@@ -11,12 +11,12 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -1295,20 +1295,20 @@ public class ViscaraSpawnDefinitionTests
         var spawnObjectSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "SpawnService",
+            "Domain",
+            "Creatures",
             "SpawnObject.cs"));
         var builderSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "SpawnService",
+            "Domain",
+            "Creatures",
             "SpawnTableBuilder.cs"));
         var tableSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "SpawnService",
+            "Domain",
+            "Creatures",
             "SpawnTable.cs"));
 
         spawnObjectSource.Should().Contain("public bool IsRare { get; set; }");

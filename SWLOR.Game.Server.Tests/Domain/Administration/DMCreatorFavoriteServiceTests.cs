@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 

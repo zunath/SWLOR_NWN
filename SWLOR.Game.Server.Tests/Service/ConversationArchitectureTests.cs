@@ -3,10 +3,9 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -21,8 +20,8 @@ public class ConversationArchitectureTests
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);
-        var conversationCacheEvents = typeof(SWLOR.Game.Server.Domain.Core.ConversationService)
-            .GetMethod(nameof(SWLOR.Game.Server.Domain.Core.ConversationService.CacheData))!
+        var conversationCacheEvents = typeof(SWLOR.Game.Server.Domain.Foundation.ConversationService)
+            .GetMethod(nameof(SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);
@@ -115,8 +114,8 @@ public class ConversationArchitectureTests
         var markupSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "ConversationService",
+            "Domain",
+            "Foundation",
             "ConversationMarkup.cs"));
         markupSource.Should().NotContain("CollapseForHeader");
     }

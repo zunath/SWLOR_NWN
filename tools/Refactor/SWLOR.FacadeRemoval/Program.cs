@@ -25,7 +25,9 @@ using SWLOR.FacadeRemoval;
  *   ... --check
  *       write nothing; exit 1 when an apply would change something
  *   ... --reverse --path <folder>
- *       undo the caller rewrites in <folder> (the parity copy of the characterization tests), so it compiles against master
+ *       undo the caller rewrites in <folder> (the parity copy of the characterization tests), so it compiles against master;
+ *       the import of a branch-only namespace stays when the server sources of the repository above <folder> declare it
+ *       (master's copy declares the Domain.<Domain> namespaces once Move-SupportNamespaces.ps1 ran on it)
  *
  * Exit codes: 0 success, 1 a check found changes, 2 the input could not be processed (nothing written).
  */

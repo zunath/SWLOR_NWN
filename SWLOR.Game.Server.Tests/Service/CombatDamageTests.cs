@@ -5,17 +5,14 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using SWLOR.Game.Server.Tests.Support;
-using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Service.ResistanceService;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
 
@@ -271,7 +268,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var combatSource = CombatSource.Read();
-        var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "CombatDamageType.cs"));
+        var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "CombatDamageType.cs"));
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
@@ -923,7 +920,7 @@ public class CombatDamageTests
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
         var root = FindRepositoryRoot();
-        var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "SkillService", "SkillType.cs"));
+        var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "SkillType.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
 
         skillTypeSource.Should().NotContain("CombatImpactDamageAbility");
@@ -1225,7 +1222,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
-        var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatService", "StatType.cs"));
+        var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatType.cs"));
         var holdTheLineSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "HoldTheLine1StatusEffect.cs"));
         var statusEffectDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
         var perkDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
@@ -1305,7 +1302,7 @@ public class CombatDamageTests
         extractor.Should().Contain("if (!hasDamageProperty)");
         extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
         damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
-        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
+        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "WeaponDamage.cs"));
         ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
         var payloadSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "Payload", "ExamineItemPayload.cs"));
         var previewSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ExamineItemViewModel.cs"));
@@ -1707,8 +1704,8 @@ public class CombatDamageTests
         var blueprintBonusesSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "BlueprintBonuses.cs"));
 
         blueprintBonusesSource.Should().Contain("new(14, EnhancementSubType.ResistanceElectrical, 3)");
@@ -1728,8 +1725,8 @@ public class CombatDamageTests
         var enhancementSubTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "EnhancementSubType.cs"));
         var enhanceWeapon2da = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -1883,8 +1880,8 @@ public class CombatDamageTests
         var blueprintBonusesSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "BlueprintBonuses.cs"));
 
         blueprintBonusesSource.Should().Contain("CombatDamageType.Fire");

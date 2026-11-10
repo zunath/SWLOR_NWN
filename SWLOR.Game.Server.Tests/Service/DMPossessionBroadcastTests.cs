@@ -40,7 +40,7 @@ public class DMPossessionBroadcastTests
                     Members.Contains((first, second)) || Members.Contains((second, first));
             }
 
-            {{Type("Service/TelegraphService/TelegraphColorType.cs", "TelegraphColorType")}}
+            {{Type("Domain/Combat/TelegraphColorType.cs", "TelegraphColorType")}}
 
             public static class ObjectSnapshot
             {

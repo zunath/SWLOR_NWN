@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 

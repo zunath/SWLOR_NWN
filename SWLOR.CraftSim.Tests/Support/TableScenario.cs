@@ -1,7 +1,7 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Support
 {

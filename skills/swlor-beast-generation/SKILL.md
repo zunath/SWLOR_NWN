@@ -20,7 +20,7 @@ When the request is underspecified, resolve one blocker at a time. Ask only ques
 - Templates: `SWLOR.CLI/Templates/beast_builder_template.txt`, `SWLOR.CLI/Templates/beast_level_template.txt`
 - Generated scratch output: `SWLOR.CLI/OutputBeasts/...`
 - Server definitions: `SWLOR.Game.Server/Feature/BeastDefinition/TamableBeastDefinition` and `IncubationBeastDefinition`
-- Beast enum: `SWLOR.Game.Server/Service/BeastMasteryService/BeastType.cs`
+- Beast enum: `SWLOR.Game.Server/Domain/Companions/BeastType.cs`
 - Haks submodule: `SWLOR_Haks`
 - Model/portrait/sound lookups: `SWLOR_Haks/swlor2_2da/appearance.2da`, `portraits.2da`, `soundset.2da`
 - DNA labels: `SWLOR_Haks/swlor2_2da/iprp_dnatype.2da`

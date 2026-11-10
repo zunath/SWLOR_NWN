@@ -1,5 +1,5 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Toolset.Domain.Editors.Creatures
 {

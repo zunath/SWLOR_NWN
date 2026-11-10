@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
@@ -10,12 +10,9 @@ using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
+using MarketCategoryType = SWLOR.Game.Server.Domain.Economy.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {

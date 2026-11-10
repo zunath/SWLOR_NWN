@@ -4,7 +4,7 @@ For each visual element in the wireframe, use this table to pick the builder cal
 the ViewModel property that backs it. Copyable examples live in
 `SWLOR.Game.Server/Feature/GuiDefinition/DebugNuiGalleryDefinition.cs` — the "Example"
 column names the method to copy from. Every `Add*/Set*/Bind*` call below exists in
-`SWLOR.Game.Server/Service/GuiService/Component/`; do not invent others.
+`SWLOR.Game.Server/Domain/UI/Component/`; do not invent others.
 
 | Wireframe element | Builder calls | VM property type | Gallery example |
 |---|---|---|---|

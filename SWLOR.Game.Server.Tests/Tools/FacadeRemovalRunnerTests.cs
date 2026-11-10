@@ -209,6 +209,29 @@ public class FacadeRemovalRunnerTests
     }
 
     [Test]
+    public void Reverse_keeps_the_imports_of_namespaces_the_repository_above_the_folder_declares()
+    {
+        // Master's parity copy after the mechanical scripts: the move put a support type in Domain.World, and the copied
+        // tests import it beside a moved constant's owner.
+        Write("tools/Refactor/RemovedFacades.json", """
+            { "facades": [ { "facade": "Taxi", "constants": [ { "name": "MaxStops", "owner": "SWLOR.Game.Server.Domain.World.TaxiService" } ] },
+                           { "facade": "Weather", "constants": [ { "name": "MaxFog", "owner": "SWLOR.Game.Server.Domain.Skies.WeatherService" } ] } ] }
+            """);
+        Write("SWLOR.Game.Server/Domain/World/TaxiStop.cs", "namespace SWLOR.Game.Server.Domain.World;\n\npublic sealed record TaxiStop(int Id);\n");
+        Write("Tests.Copy/T.cs", "using SWLOR.Game.Server.Domain.World;\nusing SWLOR.Game.Server.Domain.Skies;\n" +
+                                 "class T { int M(TaxiStop stop) => TaxiService.MaxStops + WeatherService.MaxFog; }\n");
+        var log = new StringWriter();
+
+        FacadeRemovalRunner.Run(new RunOptions(RunMode.Reverse, Path.Combine(_root, "Tests.Copy"), DataPath), log).Should().Be(FacadeRemovalRunner.Ok, log.ToString());
+
+        Text("Tests.Copy/T.cs").Should().Be("using SWLOR.Game.Server.Domain.World;\nclass T { int M(TaxiStop stop) => Taxi.MaxStops + Weather.MaxFog; }\n");
+        FacadeRemovalRunner.DeclaredNamespaces(Path.Combine(_root, "SWLOR.Game.Server")).Should()
+            .Contain(new[] { "SWLOR.Game.Server.Domain.World", "SWLOR.Game.Server.Domain", "SWLOR.Game.Server.Composition", "SWLOR.Game.Server.Feature" })
+            .And.NotContain("SWLOR.Game.Server.Domain.Skies");
+        FacadeRemovalRunner.DeclaredNamespaces(Path.Combine(_root, "missing")).Should().BeEmpty();
+    }
+
+    [Test]
     public void The_branch_is_in_the_shape_the_tool_keeps_it_in()
     {
         var root = RepositoryLocator.Find(TestContext.CurrentContext.TestDirectory)!;

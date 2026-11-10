@@ -1,10 +1,10 @@
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

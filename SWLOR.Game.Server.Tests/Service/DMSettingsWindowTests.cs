@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -89,7 +89,7 @@ public class DMSettingsWindowTests
                 {
                     public bool Update(uint actor, System.Action<DMPreferences> change) => DMPreference.Update(actor, change);
                 }
-                {{InstanceMethod("Domain/Core/CommunicationService.cs", "SetEmoteStyle")}}
+                {{InstanceMethod("Domain/Foundation/CommunicationService.cs", "SetEmoteStyle")}}
             }
 
             public static class ArmorDisplay

@@ -3,13 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ActivityService;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
 
 namespace SWLOR.Game.Server.Domain.Combat

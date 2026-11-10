@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -528,8 +528,8 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                         var isKnownKeyItem =
                             (int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId))
-                            || (Enum.TryParse<Game.Server.Service.KeyItemService.KeyItemType>(value, out var keyItemByName)
-                                && keyItemByName != Game.Server.Service.KeyItemService.KeyItemType.Invalid
+                            || (Enum.TryParse<Game.Server.Domain.Items.KeyItemType>(value, out var keyItemByName)
+                                && keyItemByName != Game.Server.Domain.Items.KeyItemType.Invalid
                                 && _gameCode.KeyItems.ContainsKey((int)keyItemByName));
                         if (!isKnownKeyItem)
                         {

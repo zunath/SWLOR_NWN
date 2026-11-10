@@ -151,12 +151,12 @@ Service/                              # Support types of the services, and the s
 
 Most services use builder patterns for complex object creation. See the individual service directories for builder implementations:
 
-- `Service/AbilityService/AbilityBuilder.cs`
-- `Service/PerkService/PerkBuilder.cs`
-- `Service/ChatCommandService/ChatCommandBuilder.cs`
-- `Service/CraftService/RecipeBuilder.cs`
-- `Service/BeastMasteryService/BeastBuilder.cs`
-- `Service/ItemService/ItemBuilder.cs`
+- `Domain/Abilities/AbilityBuilder.cs`
+- `Domain/Character/PerkBuilder.cs`
+- `Domain/Social/ChatCommandBuilder.cs`
+- `Domain/Crafting/RecipeBuilder.cs`
+- `Domain/Companions/BeastBuilder.cs`
+- `Domain/Items/ItemBuilder.cs`
 
 ### 2. Service Integration
 
@@ -170,11 +170,11 @@ Services include comprehensive error handling. See the individual service files 
 
 ### 1. Caching
 
-Services use caching to improve performance. See `Domain/Core/ICacheService.cs` for caching implementations and patterns.
+Services use caching to improve performance. See `Domain/Foundation/ICacheService.cs` for caching implementations and patterns.
 
 ### 2. Database Optimization
 
-Database operations are optimized. See `Domain/Core/IDBService.cs` for database access patterns and optimization strategies.
+Database operations are optimized. See `Domain/Foundation/IDBService.cs` for database access patterns and optimization strategies.
 
 ### 3. Memory Management
 

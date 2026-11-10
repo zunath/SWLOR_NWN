@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {

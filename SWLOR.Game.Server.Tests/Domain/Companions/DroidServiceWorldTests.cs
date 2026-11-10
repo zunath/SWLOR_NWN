@@ -2,12 +2,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -805,8 +804,8 @@ public class DroidServiceWorldTests
         _world.AddProperty(DroidWorld.Controller, ItemPropertyType.DroidInstruction, 1, 1);
         _world.AddProperty(DroidWorld.Controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 2);
         var droid = new ConstructedDroid { Name = "Beepy" };
-        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Service.PerkService.PerkType.Invalid, 2));
-        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Service.PerkService.PerkType.Invalid, 3));
+        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Character.PerkType.Invalid, 2));
+        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Character.PerkType.Invalid, 3));
 
         _service.SaveInstructions(DroidWorld.Controller, droid);
 

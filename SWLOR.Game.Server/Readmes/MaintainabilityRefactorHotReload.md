@@ -68,7 +68,7 @@ live in the game assembly and die with it, so a handler that only starts a timer
 
 Hard cases:
 
-1. `Domain/Core/DBService.cs` `Load` (lines 80-111): opens the Redis connection and blocks up to 10 minutes for it, registers
+1. `Domain/Foundation/DBService.cs` `Load` (lines 80-111): opens the Redis connection and blocks up to 10 minutes for it, registers
    entity types, syncs search indexes when a stored fingerprint differs (writes Redis), subscribes `_cachedEntities.Clear` to
    `ServerManager.OnScriptContextEnd`, then fires `db_loaded`.
 2. `Feature/EventRegistration.cs` `OnModulePreload` (lines 28-64): installs the `LegacyItemProperties` hook, binds module and area
@@ -86,8 +86,8 @@ Hard cases:
    property from Redis. A reload needs a rebuild of the loader state from the live objects instead.
 7. `Domain/World/WeatherService.cs`: `LoadData` resets the weather pattern, `InitializeWeather` rolls new weather for every area.
 8. `Domain/UI/GuiService.cs` `ReserveIds` (line 733): a running counter in call order; a rerun must reserve in boot order.
-9. `Domain/Core/CacheService.cs` `CacheData`: creates and destroys every item blueprint once; slow, so it sets the reload pause.
-10. `Domain/Core/MigrationService.cs` `AfterCacheLoaded`: a candidate build that adds a migration must not activate (see the schema
+9. `Domain/Foundation/CacheService.cs` `CacheData`: creates and destroys every item blueprint once; slow, so it sets the reload pause.
+10. `Domain/Foundation/MigrationService.cs` `AfterCacheLoaded`: a candidate build that adds a migration must not activate (see the schema
     gate below).
 11. `ShuttleService.LoadShuttleFlights`: rebuilds flight state from Redis (rerun) but also delivers offline passengers (Redis
     writes) and starts a 2-second timer.
@@ -138,14 +138,14 @@ their view models), `FishingService`, `PropertyCatalogService` (all under `Domai
   game type in a `SWLOR.NWN.API` static; `AppDomain.CurrentDomain.UnhandledException` (`Core/ServerBootstrapper.cs` line 120) and
   `ProcessExit` (`Feature/EventRegistration.cs` line 591) are never removed; `NReJSONSerializer.SerializerProxy` (set in the
   `DBService` constructor) is a static of NReJSON.
-- **Threads:** one dedicated thread, `Service/CombatRecorderService/CombatRecordWriter.cs` line 38, started per recording and
+- **Threads:** one dedicated thread, `Domain/Combat/CombatRecordWriter.cs` line 38, started per recording and
   stopped at `app_shutdown`. No `System.Threading.Timer`, `Task.Run`, `LongRunning` or `HttpClient` in the server; webhooks and
   metrics go through the Redis stream that `SWLOR.BackgroundServices` reads. `Parallel.For` runs only inside migrations.
 - **Redis:** `DBService._multiplexer` (StackExchange.Redis 3.0.17, never disposed) owns sockets and timers for the life of the
   process; NRediSearch and NReJSON wrap it.
 - **Logging:** `Service/Log.cs` builds one Serilog logger per group (file sinks, plus console for errors) in static fields and
   disposes them on `app_shutdown`. `Log.WriteError` passes the `Exception` object to Serilog (lines 124-130); 22 files call it.
-- **JSON:** Newtonsoft with default settings in 43 files (entity persistence through `Service/DBService/DBJsonSerializer.cs`,
+- **JSON:** Newtonsoft with default settings in 43 files (entity persistence through `Domain/Foundation/DBJsonSerializer.cs`,
   migrations); no `TypeNameHandling`. System.Text.Json only as `Utf8JsonWriter`, `JsonDocument` and `JsonNode` (no type metadata
   cached), so the package's `JsonSerializerOptions.Default` leak does not apply.
 - **Other:** no `Expression.Compile`, `ConditionalWeakTable`, `ThreadLocal` or `MemoryCache`; `PropertyCityGovernanceService` line 99
@@ -154,9 +154,9 @@ their view models), `FishingService`, `PropertyCatalogService` (all under `Domai
 ### Persisted type names
 
 Only simple class names, never namespaces or assembly names: Redis keys `{Type.Name}:{id}`, index names, `Index:{Type.Name}:` and
-`IndexDefinition:{Type.Name}` keys (`Domain/Core/DBService.cs`), `EntityBase.EntityType = GetType().Name` (`Entity/EntityBase.cs`
-line 21) queried by `DBQuery` (`Service/DBService/DBQuery.cs` line 156), status effect toggles restored after a restart
-(`Domain/Character/StatusEffectService.cs` line 350) and engine effect tags (`Service/StatusEffectService/StatusEffectBase.cs` line
+`IndexDefinition:{Type.Name}` keys (`Domain/Foundation/DBService.cs`), `EntityBase.EntityType = GetType().Name` (`Entity/EntityBase.cs`
+line 21) queried by `DBQuery` (`Domain/Foundation/DBQuery.cs` line 156), status effect toggles restored after a restart
+(`Domain/Character/StatusEffectService.cs` line 350) and engine effect tags (`Domain/Character/StatusEffectBase.cs` line
 328). Moving types between assemblies or loading them per generation changes nothing; renaming one is the same break it is today.
 
 ### Deployment and runtime
@@ -328,7 +328,7 @@ form; a `ServerTeardown` routine (stop timers, clear the `Scheduler` and `NwTask
 process-wide event subscription and no `new Thread` outside an allow list. Done: shutdown behaviour tests unchanged. Risk: shutdown
 order (combat recorder files, log flush).
 
-**P4-6 Combat record writer on the pool.** Scope: `Service/CombatRecorderService/CombatRecordWriter.cs` runs its loop as pool work
+**P4-6 Combat record writer on the pool.** Scope: `Domain/Combat/CombatRecordWriter.cs` runs its loop as pool work
 with the same queue, ordering and flush; stop and drain on shutdown and quiescence. Done: recorder tests and a byte-identical record
 file for a recorded fixture. Risk: ordering under load; recordings are developer-only.
 

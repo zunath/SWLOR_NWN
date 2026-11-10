@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
+using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 
-namespace SWLOR.Game.Server.Service.SlicingService
+namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
     /// Development-time exact search for the cheapest way to power a slicing board. Rotations

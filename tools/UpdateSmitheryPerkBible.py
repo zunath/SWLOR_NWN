@@ -1,6 +1,6 @@
 """Write the Smithery perk lines (Forgemaster and Artisan) into the Design Bible's Smithery tab and the perk manifest.
 
-Reads every magnitude from SWLOR.Game.Server/Service/CraftService/Minigame/Forge/ForgePerkRules.cs and ForgeRules.cs, so the Bible cannot
+Reads every magnitude from SWLOR.Game.Server/Domain/Crafting/Minigame/Forge/ForgePerkRules.cs and ForgeRules.cs, so the Bible cannot
 drift from the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level, copying every other
 workbook entry byte-for-byte. Safe to rerun: the perk rows go on the rows under the header, the Total row follows them, and a rerun
 writes the same cells. After a merge conflict on the workbook, take the base's workbook and run this again. The Smithery rows of
@@ -29,7 +29,7 @@ import UpdateCraftingProgressionBible as Bible  # noqa: E402  (shared zip/XML he
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 DEFAULT_MANIFEST = ROOT / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv"
-DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Forge"
+DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Forge"
 SHEET = "Smithery"
 TEMPLATE_SHEET = "Engineering"  # the Smithery tab has no perk row of its own to take the cell styles from
 TEMPLATE_ROW = 9

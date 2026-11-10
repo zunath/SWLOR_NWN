@@ -37,7 +37,6 @@ public static class EnzymeBaseItemMigration
     public static bool MigrateSavedObject(string original, out string migrated) =>
         StoredObjectData.MigrateEnzymeData(original, out migrated);
 
-    /// <summary>True for an enzyme still on its 2x2 base item; <paramref name="model"/> is its new appearance.</summary>
     /// <summary>Updates enzyme sizes, building icons and Gaderffii looks in carried, worn and nested items.</summary>
     internal static void MigrateCharacter(SavedCharacter character)
     {
@@ -48,6 +47,7 @@ public static class EnzymeBaseItemMigration
             StoredObjectData.MigrateEnzymeNode(item.Node, true, visited);
     }
 
+    /// <summary>True for an enzyme still on its 2x2 base item; <paramref name="model"/> is its new appearance.</summary>
     internal static bool TryGetConversion(string resref, BaseItem baseItem, out int model)
     {
         model = 0;

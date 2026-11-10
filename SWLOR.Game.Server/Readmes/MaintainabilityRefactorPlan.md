@@ -134,6 +134,7 @@ indirectly (Roslyn recompiles, reflection resets) move to the seams service by s
 - Leak sources fixed: Newtonsoft and Serilog caches, logged exception objects, the combat recorder's
   dedicated thread, static providers in `SWLOR.NWN.API`.
 - Pin the .NET runtime patch version in the server image (the package's runtime guards check it).
+- Survey, design and items P4-1 to P4-18: [MaintainabilityRefactorHotReload.md](MaintainabilityRefactorHotReload.md) (it found 36 hooks, not 32).
 
 **Done:** many-reload unload test passes with the real SWLOR build; a connected client survives a reload on
 a development server.

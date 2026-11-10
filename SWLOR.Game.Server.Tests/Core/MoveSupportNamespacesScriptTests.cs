@@ -181,6 +181,53 @@ public class MoveSupportNamespacesScriptTests
         done.Output.Should().Contain("Remaining Service.*Service namespaces: 0");
     }
 
+    [Test]
+    public void WithoutAModeItApplies_AndItOwnsNoFile()
+    {
+        // tools/Refactor/MechanicalScripts.txt contract: the sync runs a script without a mode to apply it, -Check to
+        // check it and -ListOwnedFiles for the files whose conflicts it settles by taking master's version.
+        var list = RunScript("-ListOwnedFiles");
+        list.ExitCode.Should().Be(0, list.Output);
+        list.Output.Trim().Should().BeEmpty("the script owns no whole file");
+        File.Exists(Path.Combine(_temp, "SWLOR.Game.Server", "Service", "CraftService", "Foo.cs")).Should().BeTrue("-ListOwnedFiles changes nothing");
+
+        var run = RunScript();
+
+        run.ExitCode.Should().Be(0, run.Output);
+        Read("SWLOR.Game.Server/Domain/Crafting/Foo.cs").Should().Contain("namespace SWLOR.Game.Server.Domain.Crafting;");
+        RunScript("-Check").ExitCode.Should().Be(0);
+        RunScript("-Check", "-Apply").ExitCode.Should().Be(2, "one mode at most");
+    }
+
+    [Test]
+    public void ARetiredServiceFolderMovesToTheDomainTheDataGivesIt()
+    {
+        File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "NamespaceMoves.json"), Moves.Replace(
+            "\"textEdits\": []", "\"textEdits\": [], \"retiredServiceFolders\": [ { \"service\": \"Tool\", \"domain\": \"Crafting\" } ]"));
+        Write("SWLOR.Game.Server/Service/ToolService/Old.cs", "namespace SWLOR.Game.Server.Service.ToolService;\n\npublic class Old { }\n");
+
+        var run = RunScript("-Apply");
+
+        run.ExitCode.Should().Be(0, run.Output);
+        Read("SWLOR.Game.Server/Domain/Crafting/Old.cs").Should().Contain("namespace SWLOR.Game.Server.Domain.Crafting;");
+        File.Exists(Path.Combine(_temp, "SWLOR.Game.Server", "Service", "ToolService", "Old.cs")).Should().BeFalse();
+    }
+
+    [Test]
+    public void ATreeWithoutADomainMapMovesByTheMapOfTheScriptsRepository()
+    {
+        // Master's copy in the parity check has no SWLOR.Architecture.Tests: the branch's map, beside the script, decides.
+        var tree = Path.Combine(_temp, "master-copy");
+        Write("master-copy/SWLOR.Game.Server/Service/CraftService/Foo.cs",
+            "namespace SWLOR.Game.Server.Service.CraftService;\n\npublic static class Foo { }\n");
+
+        var run = RunScript("-Apply", "-RepositoryRoot", tree);
+
+        run.ExitCode.Should().Be(0, run.Output);
+        Read("master-copy/SWLOR.Game.Server/Domain/Crafting/Foo.cs").Should().Contain("namespace SWLOR.Game.Server.Domain.Crafting;");
+        File.Exists(Path.Combine(_temp, "SWLOR.Game.Server", "Service", "CraftService", "Foo.cs")).Should().BeTrue("only the tree it was given moves");
+    }
+
     private string Read(string relativePath) =>
         File.ReadAllText(Path.Combine(_temp, relativePath.Replace('/', Path.DirectorySeparatorChar)), Encoding.Latin1);
 

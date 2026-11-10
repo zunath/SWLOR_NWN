@@ -119,10 +119,10 @@ public class FacadeRemovalRewriterTests
     [Test]
     public void A_further_facade_is_reached_by_its_simple_name()
     {
-        const string text = "using SWLOR.Game.Server.Domain.Quests;\nclass C { void M() { QuestEncounter.Start(1); QuestService.QuestEncounter.Stop(2); } }\n";
+        const string text = "using SWLOR.Game.Server.Service.QuestService;\nclass C { void M() { QuestEncounter.Start(1); QuestService.QuestEncounter.Stop(2); } }\n";
 
         CallerRewriter.Apply(text, All, false).Text.Should().Be(
-            "using SWLOR.Game.Server.Domain.Quests;\nusing static SWLOR.Game.Server.Composition.GameServices;\nclass C { void M() { QuestEncounter.Start(1); QuestEncounter.Stop(2); } }\n");
+            "using SWLOR.Game.Server.Service.QuestService;\nusing static SWLOR.Game.Server.Composition.GameServices;\nclass C { void M() { QuestEncounter.Start(1); QuestEncounter.Stop(2); } }\n");
     }
 
     [TestCase("class C { void M(Holder x) { x.Taxi.Register(1); } }\n")]
@@ -289,13 +289,13 @@ public class FacadeRemovalRewriterTests
     public void The_reversal_drops_only_the_imports_of_namespaces_master_does_not_have()
     {
         const string text = "global using static SWLOR.Game.Server.Composition.GameServices;\n" +
-                            "using SWLOR.Game.Server.Domain.Quests;\nusing SWLOR.Game.Server.Domain.Quests;\nusing Alias = SWLOR.Game.Server.Composition;\n" +
+                            "using SWLOR.Game.Server.Service.QuestService;\nusing SWLOR.Game.Server.Domain.Quests;\nusing Alias = SWLOR.Game.Server.Composition;\n" +
                             "using System; using SWLOR.Game.Server.Composition;\n" +
                             "class C { int M() => FactionService.MinimumFaction + SWLOR.Game.Server.Composition.GameServices.Taxi.Count + GameServices.Taxi; }\n";
 
         var result = CallerRewriter.Reverse(text, All);
 
-        result.Text.Should().Be("using SWLOR.Game.Server.Domain.Quests;\nusing Alias = SWLOR.Game.Server.Composition;\nusing System; \n" +
+        result.Text.Should().Be("using SWLOR.Game.Server.Service.QuestService;\nusing Alias = SWLOR.Game.Server.Composition;\nusing System; \n" +
                                 "class C { int M() => Faction.MinimumFaction + Taxi.Count + GameServices.Taxi; }\n");
         result.UsingsAdded.Should().Be(3);
         result.Rewrites.Should().Be(2, "GameServices.Taxi alone (not followed by a member) has no master spelling and stays");

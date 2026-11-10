@@ -24,8 +24,18 @@ internal sealed class DomainDependencies
     /// <summary>Every unit that has at least one type in the assembly, sorted by name.</summary>
     public IReadOnlyList<DependencyUnit> Units { get; }
 
-    /// <summary>Services and Feature folders that are in no domain of the map.</summary>
+    /// <summary>
+    /// Services and Feature folders that are in no domain of the map, and <c>Domain.&lt;Name&gt;</c> namespaces whose name is
+    /// not a domain of the map.
+    /// </summary>
     public IReadOnlyList<DependencyUnit> UnmappedUnits { get; }
+
+    /// <summary>
+    /// The services of the map that at least one type of the assembly is named after (<see cref="UnitClassifier.ServiceOf"/>):
+    /// a converted service's interface and instance class, its support types named after it, a type directly in
+    /// <c>Service</c>. A listed service outside this set no longer exists.
+    /// </summary>
+    public IReadOnlySet<string> NamedServices { get; private init; } = new HashSet<string>();
 
     /// <summary>
     /// Every edge between units of different domains, sorted by name. An edge from or to an unmapped unit is left
@@ -46,7 +56,7 @@ internal sealed class DomainDependencies
         {
             if (!unitOfType.TryGetValue(type, out var unit))
             {
-                unit = UnitClassifier.Classify(type, map);
+                unit = UnitClassifier.Classify(type);
                 unitOfType[type] = unit;
             }
 
@@ -60,6 +70,10 @@ internal sealed class DomainDependencies
             .OrderBy(unit => unit.ToString(), StringComparer.Ordinal)
             .ToList();
         var unmapped = units.Where(unit => map.DomainOf(unit) is null).ToList();
+        var namedServices = graph.Types
+            .Select(type => UnitClassifier.ServiceOf(type, map))
+            .OfType<string>()
+            .ToHashSet(StringComparer.Ordinal);
 
         var members = new Dictionary<(DependencyUnit From, DependencyUnit To), HashSet<string>>();
         foreach (var ((source, target), referencing) in graph.References)
@@ -90,6 +104,6 @@ internal sealed class DomainDependencies
         }
 
         edges.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
-        return new DomainDependencies(map, units, unmapped, edges);
+        return new DomainDependencies(map, units, unmapped, edges) { NamedServices = namedServices };
     }
 }

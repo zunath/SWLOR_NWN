@@ -221,7 +221,7 @@ public class ConvertedServiceRulesTests
         var problems = ConvertedServiceRules.ListProblems(ListOf(WithExtraClasses("Tracker")), DomainMap.Parse(MapJson));
 
         problems.Should().HaveCount(2, "the interface and the instance class are both misplaced");
-        problems.Should().OnlyContain(problem => problem.Contains("would count as Platform/Domain.Character, not as Achievement") && problem.Contains("starts with Achievement"));
+        problems.Should().OnlyContain(problem => problem.Contains("would count as no service, not as Achievement") && problem.Contains("starts with Achievement"));
     }
 
     [Test]
@@ -279,13 +279,63 @@ public class ConvertedServiceRulesTests
     }
 
     [Test]
-    public void The_classifier_counts_the_pieces_of_an_extra_class_as_the_service()
+    public void The_pieces_of_an_extra_class_are_named_after_the_service_and_count_as_its_domain()
     {
         var map = DomainMap.Parse(MapJson);
         var service = WithExtraClasses(TrackerClass);
 
         foreach (var type in service.Pieces.SelectMany(pieces => new[] { pieces.Interface, pieces.Instance }))
-            UnitClassifier.Classify(type, map).Should().Be(service.Unit, type.ToString());
+        {
+            UnitClassifier.ServiceOf(type, map).Should().Be(service.Name, type.ToString());
+            UnitClassifier.Classify(type).Should().Be(new DependencyUnit(UnitKind.Domain, service.Domain), type.ToString());
+        }
+    }
+
+    // ---- service classes in a domain namespace
+
+    private static ConvertedServiceList AchievementWithTracker() => ListOf(WithExtraClasses(TrackerClass));
+
+    private static TypeFact DomainType(string domain, string name, bool isInterface = false) =>
+        new(new TypeKey(ConvertedService.ServerNamespace + ".Domain." + domain, name), isInterface, false, !isInterface, []);
+
+    [Test]
+    public void The_listed_pieces_and_the_support_types_beside_them_pass()
+    {
+        var facts = FactsOf(
+            DomainType("Character", "IAchievementService", isInterface: true),
+            DomainType("Character", "AchievementService"),
+            DomainType("Character", "IAchievementTrackerService", isInterface: true),
+            DomainType("Character", "AchievementTrackerService"),
+            DomainType("Character", "AchievementNotification"),
+            DomainType("Character", "HitResult"),
+            DomainType("Character", "IUnrelatedRuntime", isInterface: true),
+            DomainType("Character.Topic", "TopicBoard"),
+            new TypeFact(new TypeKey(ConvertedService.ServerNamespace + ".Feature", "FeatureService"), false, false, true, []));
+
+        ConvertedServiceRules.UnlistedServiceClasses(facts, AchievementWithTracker()).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_service_class_or_interface_that_is_not_a_listed_piece_is_reported()
+    {
+        var facts = FactsOf(
+            DomainType("Character", "IAchievementService", isInterface: true),
+            DomainType("Character", "AchievementService"),
+            DomainType("Character", "StatService"),
+            DomainType("Character", "IStatService", isInterface: true),
+            DomainType("Character", "HelperService"),
+            DomainType("Character.Topic", "AchievementService"),
+            DomainType("Combat", "AchievementTrackerService"));
+
+        var problems = ConvertedServiceRules.UnlistedServiceClasses(facts, AchievementWithTracker());
+
+        problems.Should().HaveCount(5);
+        problems.Should().Contain(problem => problem.StartsWith("SWLOR.Game.Server.Domain.Character.StatService is named like a service class"));
+        problems.Should().Contain(problem => problem.StartsWith("SWLOR.Game.Server.Domain.Character.IStatService is named like a service class"));
+        problems.Should().Contain(problem => problem.StartsWith("SWLOR.Game.Server.Domain.Character.HelperService "));
+        problems.Should().Contain(problem => problem.StartsWith("SWLOR.Game.Server.Domain.Character.Topic.AchievementService "), "a piece sits directly in its domain namespace, not a topic");
+        problems.Should().Contain(problem => problem.StartsWith("SWLOR.Game.Server.Domain.Combat.AchievementTrackerService "), "a piece sits in the domain of its service");
+        problems.Should().OnlyContain(problem => problem.Contains("not a piece of a converted service in ConvertedServices.json") && problem.Contains("without the Service suffix"));
     }
 
     [Test]

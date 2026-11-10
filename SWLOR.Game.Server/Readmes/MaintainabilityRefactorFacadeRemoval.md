@@ -153,7 +153,8 @@ the very end, so one output-locking test project compiles against both") ends he
 - **Cross-domain guard:** callers now reference `I<Name>Service`, which `UnitClassifier` puts in the same unit as `Service.<Name>`, and
   `GameServices` is a `Composition` wiring area, so `Baseline/CrossDomainEdges.txt` must not change (a per-item check);
   `EdgesIntoCoreAndPlatform.txt` (information only) gains `Composition` edges and is regenerated. `UnitClassifier` itself needs no change
-  until P2-Z2.
+  until P2-Z2, which made every type of `Domain.<Domain>` the one unit `Domain/<Domain>` (the support namespaces it moved there hold
+  no service name).
 - **Allocation tests** (7 files: `Ability`, `Perk`, `Stat`, `StatusEffect`, `Combat`, `CombatHelper`, `TemporaryStatModifier`
   `FacadeAllocationTests`) compare the accessor path with the instance instead of the facade, at the same byte counts.
 - **Code that reads facade source by path:** 13 files, 12 of them tests (`CombatSource`, `CombatSourceTests`, `AIModelTests`, `ClockSeamSourceGuardTests`,
@@ -261,7 +262,9 @@ coordinator runs them.
   static call sites (`Combat` 313, `Performance` 47, `Mimicry` 21, `Prospecting` 9), so a master edit to one of those lines conflicts:
   take master's line and re-run the tool. P2-Z2's
   `Move-SupportNamespaces.ps1` derives its hidden-facade list from the files of namespace `Service`, so after P2-Z it no longer rewrites
-  `Combat`; it still handles `Space`.
+  `Combat`; it still handles `Space`. It runs after `Apply-FacadeRemoval.ps1` in `MechanicalScripts.txt`, because the removal tool finds
+  master's facade calls by master's `Service.<Name>Service` namespaces, and `RemovedFacades.json` keeps master's facade names (the script
+  never rewrites that file).
 - **Handler renames stay one line per handler** (decision D4): the P2-Z2 script already updates the branch side of existing lines; a new
   type-level format would need changes to that script, `RefactorCommon.ps1` and the sync.
 - **`Space`.** P2-Z cannot clear `Service.Space` (a class) against `Domain.Space` (the namespace P2-Z2 creates); the owner's D8 ruling: convert `Space` and `Droid` from master's code before P2-Z2 if the revamp has not landed.

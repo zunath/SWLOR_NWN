@@ -111,7 +111,11 @@ indirectly (Roslyn recompiles, reflection resets) move to the seams service by s
   healing and per-creature state).
 - Tests for every converted service reach the coverage floor in the same pull request.
 - Facades are removed at the end, area by area, after the last conversion.
-- After the facades go, P2-Z2 moves every `Service.<Name>Service` support namespace into its domain namespace.
+- After the facades go, P2-Z2 moved every `Service.<Name>Service` support namespace into its domain namespace: a
+  domain's services and support types share `Domain.<Domain>` and its topic namespaces, the cross-domain guard counts
+  each domain as one unit, and `NamespaceGuardTests` keeps namespaces from hiding types. `Move-SupportNamespaces.ps1`
+  is a mechanical script, so master code merged later lands in place until cutover. The static helpers still directly
+  in `Service` (`Log`, `Random`, `ColorToken` and the rest) need a type-level move, which the script cannot make.
 
 **Done:** no static service state remains; no namespace conflicts remain; the dependency guard and architecture tests pass; parity holds.
 
@@ -162,8 +166,9 @@ Project folders stay at the repository root (moving them would break hundreds of
 - `SWLOR.Game.Host/` (new): NWNX entry point, native hook registration, Redis connection, reload options.
 - `SWLOR.Game.Contracts/` (new): types that cross the host/game boundary.
 - `SWLOR.Game.Server/`: the reloadable game build. New `Composition/` (container, script dispatch),
-  `Domain/<Domain>/` (interface + instance class per service) and `NativeSinks/` (game side of the hooks); `Service/`
-  keeps the static facades until facade removal (P2-Z) and the support namespaces until P2-Z2, then it is gone;
+  `Domain/<Domain>/` (interface + instance class per service, and its support types since P2-Z2) and `NativeSinks/`
+  (game side of the hooks); `Service/` lost the static facades in P2-Z and the support namespaces in P2-Z2 and holds
+  only the static helpers that still need a domain (until they move, then it is gone);
   `Native/` and the old `Core/` closure, scheduler and registry types removed.
 - `SWLOR.NWN.API/`: generated `INWScript` seam; `SWLOR.NWN.API.Testing/` (new) with fakes.
 - Tests: `SWLOR.Game.Server.Tests` (unit), `SWLOR.Game.Server.CharacterizationTests` (new, output locking),

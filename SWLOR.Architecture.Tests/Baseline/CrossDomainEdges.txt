@@ -1,1071 +1,675 @@
 # Cross-domain dependencies of SWLOR.Game.Server, recorded by SWLOR.Architecture.Tests (refactor owner decision 9).
 # One line per edge between two units of different domains: <from> -> <to> | <members>.
-# A unit is a service (Combat), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing)
-# or an area outside Service and Feature (Platform/Native). Domains come from DomainMap.json.
+# A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a type left directly in Service
+# (ColorToken), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside
+# Domain, Service and Feature (Platform/Native). Domains come from DomainMap.json.
 # <members> is the number of distinct members that hold the reference. It is information only and is never compared.
-# Edges into the Core and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.
+# Edges into the Foundation and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.
 # The guard fails when an edge appears that is not listed, and when a listed edge no longer exists.
 # Regenerate after an intended change: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build, then review the diff.
 
 # Abilities -> Administration (1 edge)
-Mimicry -> DMPresence | 1
+Domain/Abilities -> Domain/Administration | 3
 
-# Abilities -> Character (16 edges)
-Ability -> Activity | 1
-Ability -> Feature/StatusEffectDefinition | 1
-Ability -> Perk | 14
-Ability -> Skill | 41
-Ability -> Stat | 34
-Ability -> StatusEffect | 45
+# Abilities -> Character (4 edges)
+Domain/Abilities -> Domain/Character | 189
+Domain/Abilities -> Feature/StatusEffectDefinition | 1
+Feature/AbilityDefinition -> Domain/Character | 285
 Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 444
-Feature/AbilityDefinition -> Perk | 8
-Feature/AbilityDefinition -> PlayerName | 2
-Feature/AbilityDefinition -> Skill | 29
-Feature/AbilityDefinition -> Stat | 81
-Feature/AbilityDefinition -> StatusEffect | 211
-Mimicry -> Perk | 6
-Mimicry -> Skill | 8
-Mimicry -> Stat | 8
-Mimicry -> StatusEffect | 1
 
-# Abilities -> Combat (24 edges)
-Ability -> Combat | 68
-Ability -> CombatPoint | 2
-Ability -> CombatRecorder | 9
-Ability -> Enmity | 2
-Ability -> MeleeTechnique | 5
-Ability -> PairedRangedTraits | 2
-Ability -> Recast | 1
-Ability -> RecastTimestamp | 2
-Ability -> Resistance | 4
-Ability -> Stealth | 1
-Ability -> Telegraph | 11
-Feature/AbilityDefinition -> Combat | 69
-Feature/AbilityDefinition -> CombatPoint | 32
-Feature/AbilityDefinition -> CombatRecorder | 17
-Feature/AbilityDefinition -> Enmity | 19
-Feature/AbilityDefinition -> MeleeTechnique | 1
-Feature/AbilityDefinition -> PvpCombat | 4
-Feature/AbilityDefinition -> Resistance | 1
-Feature/AbilityDefinition -> Stealth | 4
-Feature/AbilityDefinition -> Telegraph | 8
-Feature/AbilityDefinition -> TemporaryStatModifier | 12
-Feature/AbilityDefinition -> TwinPistolAbility | 1
-Mimicry -> Combat | 5
-Mimicry -> CombatPoint | 1
+# Abilities -> Combat (3 edges)
+Domain/Abilities -> Domain/Combat | 179
+Domain/Abilities -> RecastTimestamp | 2
+Feature/AbilityDefinition -> Domain/Combat | 146
 
-# Abilities -> Companions (2 edges)
-Feature/AbilityDefinition -> BeastMastery | 11
-Feature/AbilityDefinition -> Droid | 2
+# Abilities -> Companions (1 edge)
+Feature/AbilityDefinition -> Domain/Companions | 11
 
 # Abilities -> Creatures (2 edges)
-Ability -> AI | 8
-Feature/AbilityDefinition -> AI | 32
+Domain/Abilities -> Domain/Creatures | 8
+Feature/AbilityDefinition -> Domain/Creatures | 32
 
 # Abilities -> Gameplay (5 edges)
-Ability -> Feature.PistolAnimationRemap | 1
-Ability -> Feature.TwinPistolEquipmentValidation | 1
+Domain/Abilities -> Feature.PistolAnimationRemap | 1
+Domain/Abilities -> Feature.TwinPistolEquipmentValidation | 1
+Domain/Abilities -> Feature.UsePerkFeat | 1
 Feature/AbilityDefinition -> Feature.PlayerTemporaryEffects | 2
 Feature/AbilityDefinition -> Feature.UsePerkFeat | 3
-QuickCast -> Feature.UsePerkFeat | 1
 
 # Abilities -> Items (2 edges)
-Ability -> Item | 1
-Feature/AbilityDefinition -> Item | 2
+Domain/Abilities -> Domain/Items | 1
+Feature/AbilityDefinition -> Domain/Items | 2
 
 # Abilities -> Quests (2 edges)
-Ability -> CapstoneProof | 1
-Feature/AbilityDefinition -> CapstoneProof | 1
+Domain/Abilities -> Domain/Quests | 3
+Feature/AbilityDefinition -> Domain/Quests | 1
 
-# Abilities -> Social (3 edges)
-Ability -> Party | 8
-Feature/AbilityDefinition -> Party | 9
-Feature/AbilityDefinition -> Performance | 2
+# Abilities -> Social (2 edges)
+Domain/Abilities -> Domain/Social | 10
+Feature/AbilityDefinition -> Domain/Social | 11
 
 # Abilities -> Space (1 edge)
-Ability -> Space | 1
+Domain/Abilities -> Domain/Space | 3
 
-# Abilities -> UI (4 edges)
-AbilityCooldownVisual -> Feature/GuiDefinition | 3
-AbilityCooldownVisual -> Gui | 3
-Mimicry -> Feature/GuiDefinition | 5
-Mimicry -> Gui | 5
+# Abilities -> UI (2 edges)
+Domain/Abilities -> Domain/UI | 12
+Domain/Abilities -> Feature/GuiDefinition | 8
 
 # Abilities -> World (2 edges)
-Ability -> Music | 1
-Feature/AbilityDefinition -> Traps | 2
+Domain/Abilities -> Domain/World | 3
+Feature/AbilityDefinition -> Domain/World | 2
 
-# Administration -> Character (3 edges)
-DMObjectDetails -> Stat | 5
-DMPlayerDirectory -> Disguise | 2
-DMPlayerDirectory -> PlayerDescriptor | 4
+# Administration -> Character (1 edge)
+Domain/Administration -> Domain/Character | 14
 
 # Administration -> Combat (1 edge)
-DMObjectDetails -> Combat | 2
+Domain/Administration -> Domain/Combat | 2
 
-# Administration -> Creatures (2 edges)
-DMBlueprintCatalog -> Spawn | 1
-DMObjectDetails -> AI | 1
+# Administration -> Creatures (1 edge)
+Domain/Administration -> Domain/Creatures | 6
 
 # Administration -> Gameplay (1 edge)
-DMBlueprintCatalog -> Feature.DMActions | 1
+Domain/Administration -> Feature.DMActions | 1
 
 # Administration -> Items (1 edge)
-DMObjectDetails -> Item | 3
+Domain/Administration -> Domain/Items | 5
 
 # Administration -> Space (1 edge)
-DMPresence -> Space | 1
+Domain/Administration -> Domain/Space | 3
 
 # Administration -> UI (1 edge)
-DMPresence -> Gui | 16
+Domain/Administration -> Domain/UI | 13
 
-# Administration -> World (2 edges)
-DMObjectDetails -> Area | 1
-DMPlayerDirectory -> Area | 2
+# Administration -> World (1 edge)
+Domain/Administration -> Domain/World | 7
 
-# Character -> Abilities (12 edges)
+# Character -> Abilities (6 edges)
+Domain/Character -> Domain/Abilities | 49
+Domain/Character -> Feature/AbilityDefinition | 2
+Feature/PerkDefinition -> Domain/Abilities | 3
 Feature/PerkDefinition -> Feature/AbilityDefinition | 2
-Feature/PerkDefinition -> Mimicry | 3
-Feature/StatusEffectDefinition -> Ability | 19
+Feature/StatusEffectDefinition -> Domain/Abilities | 19
 Feature/StatusEffectDefinition -> Feature/AbilityDefinition | 18
-Perk -> Ability | 11
-Perk -> QuickCast | 2
-Stat -> Ability | 2
-Stat -> Feature/AbilityDefinition | 3
-Stat -> Mimicry | 2
-StatusEffect -> Ability | 14
-StatusEffect -> Feature/AbilityDefinition | 1
-StatusEffect -> QuickCast | 3
 
 # Character -> Administration (1 edge)
-Disguise -> DMPresence | 1
+Domain/Character -> Domain/Administration | 3
 
-# Character -> Combat (34 edges)
-EspionageInfiltration -> Enmity | 3
-EspionageInfiltration -> Stealth | 3
-Feature/AppearanceDefinition -> PowerGloveEquipment | 2
-Feature/AppearanceDefinition -> TwinPistolEquipment | 1
-Feature/PerkDefinition -> Stealth | 1
-Feature/StatusEffectDefinition -> Combat | 125
-Feature/StatusEffectDefinition -> CombatPoint | 1
-Feature/StatusEffectDefinition -> CombatRecorder | 3
-Feature/StatusEffectDefinition -> Enmity | 3
-Feature/StatusEffectDefinition -> OrdinaryAttackTraits | 2
-Feature/StatusEffectDefinition -> PairedRangedTraits | 2
-Feature/StatusEffectDefinition -> Resistance | 12
-Feature/StatusEffectDefinition -> Stealth | 4
-Feature/StatusEffectDefinition -> TemporaryStatModifier | 6
-Perk -> Combat | 2
-Perk -> PowerGloveEquipment | 1
-Perk -> TwinPistolEquipment | 1
-PlayerIntroduction -> Recast | 2
-Skill -> TwinPistolEquipment | 1
-Stat -> Combat | 1246
-Stat -> CombatRecorder | 8
-Stat -> Enmity | 1
-Stat -> PowerGloveEquipment | 3
-Stat -> PvpCombat | 1
-Stat -> Recast | 1
-Stat -> Resistance | 4
-Stat -> TemporaryStatModifier | 3
-Stat -> TwinPistolEquipment | 1
-StatusEffect -> Combat | 40
-StatusEffect -> CombatRecorder | 9
-StatusEffect -> MeleeTechnique | 3
-StatusEffect -> PvpCombat | 2
-StatusEffect -> Resistance | 5
-StatusEffect -> Stealth | 2
+# Character -> Combat (4 edges)
+Domain/Character -> Domain/Combat | 1383
+Feature/AppearanceDefinition -> Domain/Combat | 3
+Feature/PerkDefinition -> Domain/Combat | 1
+Feature/StatusEffectDefinition -> Domain/Combat | 143
 
-# Character -> Companions (8 edges)
-Feature/AppearanceDefinition -> Droid | 9
-Feature/StatusEffectDefinition -> BeastMastery | 2
-Feature/StatusEffectDefinition -> Droid | 2
-Perk -> BeastMastery | 9
-Perk -> Droid | 3
-Skill -> Droid | 1
-Stat -> BeastMastery | 3
-Stat -> Droid | 1
+# Character -> Companions (3 edges)
+Domain/Character -> Domain/Companions | 26
+Feature/AppearanceDefinition -> Domain/Companions | 9
+Feature/StatusEffectDefinition -> Domain/Companions | 4
 
 # Character -> Crafting (2 edges)
-Feature/PerkDefinition -> Craft | 12
-Feature/StatusEffectDefinition -> Craft | 6
+Feature/PerkDefinition -> Domain/Crafting | 12
+Feature/StatusEffectDefinition -> Domain/Crafting | 6
 
 # Character -> Creatures (1 edge)
-EspionageInfiltration -> AI | 2
+Domain/Character -> Domain/Creatures | 4
 
 # Character -> Economy (1 edge)
-Language -> Currency | 1
+Domain/Character -> Domain/Economy | 1
 
-# Character -> Items (2 edges)
-Perk -> Item | 17
-Stat -> Item | 3
+# Character -> Items (1 edge)
+Domain/Character -> Domain/Items | 22
 
-# Character -> Quests (2 edges)
-Perk -> Quest | 2
-StatusEffect -> CapstoneProof | 1
+# Character -> Quests (1 edge)
+Domain/Character -> Domain/Quests | 5
 
-# Character -> Social (5 edges)
-Feature/AppearanceDefinition -> Performance | 1
-Feature/StatusEffectDefinition -> Party | 2
-Feature/StatusEffectDefinition -> Performance | 2
-PlayerName -> ChatPortraitTells | 1
-PlayerName -> PlayerList | 4
+# Character -> Social (3 edges)
+Domain/Character -> Domain/Social | 8
+Feature/AppearanceDefinition -> Domain/Social | 1
+Feature/StatusEffectDefinition -> Domain/Social | 4
 
-# Character -> UI (9 edges)
-Achievement -> Gui | 3
-Disguise -> Feature/GuiDefinition | 2
-Disguise -> Gui | 2
+# Character -> UI (4 edges)
+Domain/Character -> Domain/UI | 17
+Domain/Character -> Feature/GuiDefinition | 6
+Feature/AppearanceDefinition -> Domain/UI | 41
 Feature/AppearanceDefinition -> Feature/GuiDefinition | 2
-Feature/AppearanceDefinition -> Gui | 41
-Skill -> Feature/GuiDefinition | 1
-Skill -> Gui | 1
-StatusEffect -> Feature/GuiDefinition | 3
-StatusEffect -> Gui | 3
 
-# Combat -> Abilities (13 edges)
-Combat -> Ability | 131
-Combat -> Feature/AbilityDefinition | 21
-CombatRecorder -> Ability | 20
-CombatRecorder -> Feature/AbilityDefinition | 1
-Death -> Ability | 1
-Death -> Feature/AbilityDefinition | 1
-MeleeTechnique -> Ability | 61
-MeleeTechnique -> Feature/AbilityDefinition | 2
-PairedRangedTraits -> Ability | 5
-Recast -> Ability | 12
-Recast -> AbilityCooldownVisual | 2
-Resistance -> Mimicry | 1
-TwinPistolAbility -> Ability | 5
+# Combat -> Abilities (2 edges)
+Domain/Combat -> Domain/Abilities | 346
+Domain/Combat -> Feature/AbilityDefinition | 24
 
-# Combat -> Administration (2 edges)
-CombatRecorder -> DMPresence | 1
-Telegraph -> DMPresence | 4
+# Combat -> Administration (1 edge)
+Domain/Combat -> Domain/Administration | 9
 
-# Combat -> Character (46 edges)
-Combat -> Activity | 1
-Combat -> Feature/StatusEffectDefinition | 99
-Combat -> Perk | 26
-Combat -> PlayerName | 10
-Combat -> Skill | 206
-Combat -> Stat | 334
-Combat -> StatusEffect | 148
-CombatPoint -> Skill | 13
-CombatPoint -> Stat | 2
-CombatRecorder -> Skill | 2
-CombatRecorder -> Stat | 5
-CombatRecorder -> StatusEffect | 4
-Death -> Feature/StatusEffectDefinition | 1
-Death -> PlayerName | 2
-Death -> StatusEffect | 2
-Enmity -> Activity | 2
-Enmity -> Skill | 1
-Enmity -> Stat | 3
-Enmity -> StatusEffect | 2
-MeleeTechnique -> Skill | 32
-MeleeTechnique -> Stat | 5
-MeleeTechnique -> StatusEffect | 7
-OrdinaryAttackTraits -> Feature/StatusEffectDefinition | 3
-OrdinaryAttackTraits -> Stat | 1
-OrdinaryAttackTraits -> StatusEffect | 3
-PairedRangedTraits -> Feature/StatusEffectDefinition | 1
-PairedRangedTraits -> Perk | 1
-PairedRangedTraits -> Stat | 3
-PairedRangedTraits -> StatusEffect | 1
-Poisons -> Feature/StatusEffectDefinition | 1
-Poisons -> StatusEffect | 1
-PowerGloveEquipment -> Feature/AppearanceDefinition | 1
-PvpCombat -> Feature/StatusEffectDefinition | 2
-PvpCombat -> StatusEffect | 3
-Resistance -> Stat | 6
-Resistance -> StatusEffect | 2
-Stealth -> EspionageInfiltration | 4
-Stealth -> Feature/StatusEffectDefinition | 5
-Stealth -> Perk | 1
-Stealth -> Stat | 2
-Stealth -> StatusEffect | 5
-TemporaryStatModifier -> Stat | 32
-TwinPistolAbility -> StatusEffect | 1
-TwinPistolEquipment -> Feature/AppearanceDefinition | 1
-TwinPistolEquipment -> Skill | 2
-TwinPistolMastery -> Perk | 2
+# Combat -> Character (3 edges)
+Domain/Combat -> Domain/Character | 873
+Domain/Combat -> Feature/AppearanceDefinition | 3
+Domain/Combat -> Feature/StatusEffectDefinition | 115
 
-# Combat -> Companions (6 edges)
-Combat -> Droid | 1
-CombatPoint -> BeastMastery | 1
-Enmity -> BeastMastery | 1
-Enmity -> Droid | 1
-PowerGloveEquipment -> Droid | 1
-TwinPistolEquipment -> Droid | 1
+# Combat -> Companions (1 edge)
+Domain/Combat -> Domain/Companions | 15
 
-# Combat -> Creatures (3 edges)
-Enmity -> AI | 7
-Enmity -> CompanionControl | 2
-Stealth -> AI | 1
+# Combat -> Creatures (1 edge)
+Domain/Combat -> Domain/Creatures | 17
 
-# Combat -> Gameplay (6 edges)
-Combat -> Feature.UsePerkFeat | 1
-Death -> Feature.PlayerTemporaryEffects | 2
-Death -> Feature.UsePerkFeat | 1
-MeleeTechnique -> Feature.UsePerkFeat | 1
-Stealth -> Feature.LightsaberAudio | 2
-TwinPistolAbility -> Feature.UsePerkFeat | 4
+# Combat -> Gameplay (3 edges)
+Domain/Combat -> Feature.LightsaberAudio | 2
+Domain/Combat -> Feature.PlayerTemporaryEffects | 1
+Domain/Combat -> Feature.UsePerkFeat | 6
 
-# Combat -> Items (5 edges)
-Combat -> Item | 5
-PowerGloveEquipment -> Item | 2
-TwinPistolEquipment -> Item | 2
-TwinPistolMastery -> KeyItem | 1
-WeaponDelay -> Item | 1
+# Combat -> Items (1 edge)
+Domain/Combat -> Domain/Items | 21
 
-# Combat -> Quests (2 edges)
-Combat -> CapstoneProof | 1
-TwinPistolMastery -> Quest | 1
+# Combat -> Quests (1 edge)
+Domain/Combat -> Domain/Quests | 6
 
-# Combat -> Social (4 edges)
-Combat -> Party | 3
-CombatPoint -> Party | 1
-Enmity -> Party | 1
-Telegraph -> Party | 1
+# Combat -> Social (1 edge)
+Domain/Combat -> Domain/Social | 18
 
 # Combat -> Space (1 edge)
-CombatPoint -> Space | 1
+Domain/Combat -> Domain/Space | 3
 
 # Combat -> UI (2 edges)
-TemporaryStatModifier -> Feature/GuiDefinition | 1
-TemporaryStatModifier -> Gui | 1
+Domain/Combat -> Domain/UI | 3
+Domain/Combat -> Feature/GuiDefinition | 1
 
-# Combat -> World (3 edges)
-Death -> Area | 1
-Death -> Property | 1
-Enmity -> HoloCom | 1
+# Combat -> World (1 edge)
+Domain/Combat -> Domain/World | 8
 
 # Companions -> Abilities (1 edge)
-BeastMastery -> Feature/AbilityDefinition | 1
+Domain/Companions -> Feature/AbilityDefinition | 1
 
-# Companions -> Character (12 edges)
-BeastMastery -> Feature/StatusEffectDefinition | 1
-BeastMastery -> Perk | 4
-BeastMastery -> Stat | 11
-BeastMastery -> StatusEffect | 1
-Droid -> Feature/AppearanceDefinition | 3
-Droid -> Feature/StatusEffectDefinition | 1
-Droid -> Perk | 16
-Droid -> Race | 1
-Droid -> Skill | 6
-Droid -> Stat | 3
-Droid -> StatusEffect | 1
-DroidEquipmentDiagnostics -> Activity | 1
+# Companions -> Character (3 edges)
+Domain/Companions -> Domain/Character | 51
+Domain/Companions -> Feature/AppearanceDefinition | 3
+Domain/Companions -> Feature/StatusEffectDefinition | 2
 
-# Companions -> Combat (9 edges)
-BeastMastery -> Combat | 33
-BeastMastery -> CombatRecorder | 1
-BeastMastery -> Resistance | 9
-Droid -> Combat | 10
-Droid -> CombatRecorder | 1
-Droid -> PowerGloveEquipment | 1
-Droid -> Recast | 2
-Droid -> Resistance | 1
-Droid -> TwinPistolEquipment | 1
+# Companions -> Combat (1 edge)
+Domain/Companions -> Domain/Combat | 56
 
-# Companions -> Creatures (4 edges)
-BeastMastery -> AI | 1
-BeastMastery -> CompanionControl | 6
-Droid -> AI | 1
-Droid -> CompanionControl | 10
+# Companions -> Creatures (1 edge)
+Domain/Companions -> Domain/Creatures | 24
 
 # Companions -> Gameplay (1 edge)
-Droid -> ServerRestart | 1
+Domain/Companions -> ServerRestart | 1
 
-# Companions -> Items (5 edges)
-BeastMastery -> Item | 1
-BeastMastery -> KeyItem | 3
-Droid -> Item | 2
-DroidEquipmentDiagnostics -> Item | 3
-IncubationFieldNote -> KeyItem | 9
+# Companions -> Items (1 edge)
+Domain/Companions -> Domain/Items | 23
 
 # Companions -> Quests (1 edge)
-BeastMastery -> Feature/QuestDefinition | 3
+Domain/Companions -> Feature/QuestDefinition | 3
 
-# Companions -> UI (3 edges)
-BeastMastery -> Feature/GuiDefinition | 2
-BeastMastery -> Gui | 2
-Droid -> Gui | 3
+# Companions -> UI (2 edges)
+Domain/Companions -> Domain/UI | 9
+Domain/Companions -> Feature/GuiDefinition | 2
 
 # Companions -> World (1 edge)
-BeastMastery -> Property | 3
+Domain/Companions -> Domain/World | 3
 
-# Core -> Abilities (4 edges)
-Animation -> Ability | 12
-Feature/MigrationDefinition -> Ability | 3
+# Crafting -> Character (3 edges)
+Domain/Crafting -> Domain/Character | 206
+Domain/Crafting -> Feature/StatusEffectDefinition | 3
+Feature/RecipeDefinition -> Domain/Character | 3
+
+# Crafting -> Combat (1 edge)
+Domain/Crafting -> Domain/Combat | 15
+
+# Crafting -> Creatures (1 edge)
+Domain/Crafting -> Domain/Creatures | 4
+
+# Crafting -> Gameplay (1 edge)
+Domain/Crafting -> Feature.PlayerTemporaryEffects | 1
+
+# Crafting -> Items (3 edges)
+Domain/Crafting -> Domain/Items | 33
+Domain/Crafting -> Feature/ItemDefinition | 1
+Feature/RecipeDefinition -> Feature/ItemDefinition | 2
+
+# Crafting -> UI (2 edges)
+Domain/Crafting -> Domain/UI | 40
+Domain/Crafting -> Feature/GuiDefinition | 4
+
+# Crafting -> World (1 edge)
+Domain/Crafting -> Domain/World | 8
+
+# Creatures -> Abilities (2 edges)
+Domain/Creatures -> Domain/Abilities | 31
+Feature/AIDefinition -> Domain/Abilities | 5
+
+# Creatures -> Administration (1 edge)
+Domain/Creatures -> Domain/Administration | 3
+
+# Creatures -> Character (2 edges)
+Domain/Creatures -> Domain/Character | 36
+Domain/Creatures -> Feature/StatusEffectDefinition | 2
+
+# Creatures -> Combat (1 edge)
+Domain/Creatures -> Domain/Combat | 29
+
+# Creatures -> Companions (1 edge)
+Domain/Creatures -> Domain/Companions | 9
+
+# Creatures -> Gameplay (1 edge)
+Domain/Creatures -> Feature.UsePerkFeat | 3
+
+# Creatures -> Social (1 edge)
+Domain/Creatures -> Domain/Social | 3
+
+# Creatures -> World (1 edge)
+Feature/SpawnDefinition -> Domain/World | 2
+
+# Economy -> Character (1 edge)
+Domain/Economy -> Domain/Character | 15
+
+# Economy -> Companions (1 edge)
+Domain/Economy -> Domain/Companions | 3
+
+# Economy -> Crafting (1 edge)
+Domain/Economy -> Domain/Crafting | 8
+
+# Economy -> Items (1 edge)
+Domain/Economy -> Domain/Items | 9
+
+# Economy -> Quests (1 edge)
+Domain/Economy -> Domain/Quests | 10
+
+# Economy -> Space (1 edge)
+Domain/Economy -> Domain/Space | 3
+
+# Economy -> UI (3 edges)
+BankItemPage -> Domain/UI | 3
+Domain/Economy -> Domain/UI | 8
+Domain/Economy -> Feature/GuiDefinition | 3
+
+# Economy -> World (1 edge)
+Domain/Economy -> Domain/World | 7
+
+# Foundation -> Abilities (3 edges)
+Domain/Foundation -> Domain/Abilities | 11
+Feature/MigrationDefinition -> Domain/Abilities | 4
 Feature/MigrationDefinition -> MimicryLoadouts | 1
-Feature/MigrationDefinition -> QuickCast | 4
 
-# Core -> Administration (2 edges)
-Communication -> DMPreference | 5
-Communication -> DMPresence | 4
+# Foundation -> Administration (1 edge)
+Domain/Foundation -> Domain/Administration | 7
 
-# Core -> Character (19 edges)
-Animation -> Perk | 2
-Animation -> Skill | 3
-Communication -> Activity | 1
-Communication -> Language | 2
-Communication -> PlayerName | 2
-Communication -> Skill | 2
-Conversation -> PlayerName | 1
-Feature/DialogDefinition -> Disguise | 6
-Feature/DialogDefinition -> Perk | 1
-Feature/DialogDefinition -> Skill | 10
+# Foundation -> Character (5 edges)
+Domain/Foundation -> Domain/Character | 30
+Feature/DialogDefinition -> Domain/Character | 17
+Feature/MigrationDefinition -> Domain/Character | 32
 Feature/MigrationDefinition -> Feature/AppearanceDefinition | 17
-Feature/MigrationDefinition -> Perk | 22
-Feature/MigrationDefinition -> Skill | 5
-Feature/MigrationDefinition -> Stat | 5
-Feature/SnippetDefinition -> Skill | 2
-Migration -> Perk | 2
-Migration -> Skill | 2
-Migration -> Stat | 2
-PlayerFeedback -> PlayerName | 1
+Feature/SnippetDefinition -> Domain/Character | 2
 
-# Core -> Combat (9 edges)
-Feature/DialogDefinition -> Enmity | 2
-Feature/MigrationDefinition -> Combat | 40
-Feature/MigrationDefinition -> Resistance | 8
-Feature/MigrationDefinition -> WeaponDelay | 3
-Feature/SnippetDefinition -> Enmity | 1
-Messaging -> Stealth | 1
-Migration -> Combat | 2
-Migration -> PowerGloveEquipment | 3
-Migration -> Resistance | 2
+# Foundation -> Combat (4 edges)
+Domain/Foundation -> Domain/Combat | 8
+Feature/DialogDefinition -> Domain/Combat | 2
+Feature/MigrationDefinition -> Domain/Combat | 50
+Feature/SnippetDefinition -> Domain/Combat | 1
 
-# Core -> Companions (1 edge)
-Feature/MigrationDefinition -> Droid | 45
+# Foundation -> Companions (1 edge)
+Feature/MigrationDefinition -> Domain/Companions | 45
 
-# Core -> Crafting (1 edge)
-Feature/MigrationDefinition -> Craft | 15
+# Foundation -> Crafting (1 edge)
+Feature/MigrationDefinition -> Domain/Crafting | 15
 
-# Core -> Creatures (1 edge)
-Walkmesh -> Spawn | 2
+# Foundation -> Creatures (1 edge)
+Domain/Foundation -> Domain/Creatures | 2
 
-# Core -> Economy (4 edges)
-Feature/DialogDefinition -> Guild | 2
-Feature/DialogDefinition -> PlayerMarket | 2
-Feature/MigrationDefinition -> Currency | 1
-Feature/MigrationDefinition -> PlayerMarket | 14
+# Foundation -> Economy (2 edges)
+Feature/DialogDefinition -> Domain/Economy | 4
+Feature/MigrationDefinition -> Domain/Economy | 15
 
-# Core -> Gameplay (5 edges)
+# Foundation -> Gameplay (5 edges)
+Domain/Foundation -> Feature.PistolAnimationRemap | 1
 Feature/MigrationDefinition -> Feature.BasicVibrobladeCompatibility | 2
 Feature/MigrationDefinition -> Feature.EquipmentStats | 1
 Feature/MigrationDefinition -> Feature.PistolBaseItemCompatibility | 6
 Feature/SnippetDefinition -> Feature.PlaceableScripts | 1
-NamedAnimation -> Feature.PistolAnimationRemap | 1
 
-# Core -> Items (7 edges)
-Cache -> Item | 3
-Feature/DialogDefinition -> ItemTrash | 1
-Feature/DialogDefinition -> KeyItem | 7
-Feature/MigrationDefinition -> Item | 16
-Feature/SnippetDefinition -> KeyItem | 2
-Migration -> Item | 2
-Migration -> OverflowStorage | 1
+# Foundation -> Items (4 edges)
+Domain/Foundation -> Domain/Items | 8
+Feature/DialogDefinition -> Domain/Items | 8
+Feature/MigrationDefinition -> Domain/Items | 16
+Feature/SnippetDefinition -> Domain/Items | 2
 
-# Core -> Quests (4 edges)
-Feature/DialogDefinition -> Quest | 2
-Feature/MigrationDefinition -> QuestContract | 2
-Feature/SnippetDefinition -> Faction | 6
-Feature/SnippetDefinition -> Quest | 4
+# Foundation -> Quests (3 edges)
+Feature/DialogDefinition -> Domain/Quests | 2
+Feature/MigrationDefinition -> Domain/Quests | 2
+Feature/SnippetDefinition -> Domain/Quests | 10
 
-# Core -> Social (1 edge)
-Communication -> Party | 3
+# Foundation -> Social (1 edge)
+Domain/Foundation -> Domain/Social | 3
 
-# Core -> Space (3 edges)
-Communication -> Space | 1
-Feature/DialogDefinition -> Space | 7
-Feature/MigrationDefinition -> Space | 6
+# Foundation -> Space (3 edges)
+Domain/Foundation -> Domain/Space | 3
+Feature/DialogDefinition -> Domain/Space | 7
+Feature/MigrationDefinition -> Domain/Space | 6
 
-# Core -> UI (5 edges)
-Conversation -> Feature/GuiDefinition | 1
-Conversation -> Gui | 2
+# Foundation -> UI (5 edges)
+Domain/Foundation -> Domain/UI | 4
+Domain/Foundation -> Feature/GuiDefinition | 1
+Feature/DialogDefinition -> Domain/UI | 3
 Feature/DialogDefinition -> Feature/GuiDefinition | 3
-Feature/DialogDefinition -> Gui | 3
 Feature/SnippetDefinition -> Feature/GuiDefinition | 2
 
-# Core -> World (10 edges)
-Communication -> Area | 3
-Communication -> HoloCom | 3
-Communication -> Planet | 4
-Communication -> Property | 6
-Feature/DialogDefinition -> Area | 4
-Feature/DialogDefinition -> Planet | 5
-Feature/DialogDefinition -> Property | 7
-Feature/DialogDefinition -> Shuttle | 5
-Feature/DialogDefinition -> Taxi | 2
-Feature/MigrationDefinition -> Property | 11
+# Foundation -> World (3 edges)
+Domain/Foundation -> Domain/World | 11
+Feature/DialogDefinition -> Domain/World | 16
+Feature/MigrationDefinition -> Domain/World | 11
 
-# Crafting -> Character (12 edges)
-Craft -> Feature/StatusEffectDefinition | 3
-Craft -> Perk | 56
-Craft -> Skill | 92
-Craft -> Stat | 29
-Craft -> StatusEffect | 10
-Feature/RecipeDefinition -> Skill | 3
-Prospecting -> Activity | 3
-Prospecting -> Skill | 3
-Scavenge -> Skill | 1
-Slicing -> Perk | 2
-Slicing -> Skill | 1
-Slicing -> Stat | 1
-
-# Crafting -> Combat (2 edges)
-Craft -> Combat | 11
-Craft -> Resistance | 1
-
-# Crafting -> Creatures (1 edge)
-Slicing -> Spawn | 2
-
-# Crafting -> Gameplay (1 edge)
-Craft -> Feature.PlayerTemporaryEffects | 1
-
-# Crafting -> Items (7 edges)
-Craft -> Item | 3
-Craft -> Loot | 5
-Feature/RecipeDefinition -> Feature/ItemDefinition | 2
-Prospecting -> Feature/ItemDefinition | 1
-Prospecting -> Loot | 5
-Scavenge -> Loot | 14
-Slicing -> Item | 2
-
-# Crafting -> UI (7 edges)
-Craft -> Feature/GuiDefinition | 2
-Craft -> Gui | 23
-Prospecting -> Feature/GuiDefinition | 1
-Prospecting -> Gui | 3
-Scavenge -> Feature/GuiDefinition | 1
-Scavenge -> Gui | 3
-Slicing -> Gui | 1
-
-# Crafting -> World (2 edges)
-Craft -> Fishing | 5
-Craft -> Property | 1
-
-# Creatures -> Abilities (3 edges)
-AI -> Ability | 14
-CompanionControl -> Ability | 8
-Feature/AIDefinition -> Ability | 5
-
-# Creatures -> Administration (1 edge)
-AI -> DMPresence | 3
-
-# Creatures -> Character (12 edges)
-AI -> Activity | 2
-AI -> EspionageInfiltration | 2
-AI -> Perk | 1
-AI -> Stat | 3
-AI -> StatusEffect | 4
-CompanionControl -> Activity | 3
-CompanionControl -> Feature/StatusEffectDefinition | 1
-CompanionControl -> Perk | 1
-CompanionControl -> PlayerName | 1
-CompanionControl -> Skill | 1
-CompanionControl -> StatusEffect | 1
-Spawn -> Stat | 1
-
-# Creatures -> Combat (3 edges)
-AI -> Enmity | 17
-AI -> Stealth | 3
-CompanionControl -> Combat | 3
-
-# Creatures -> Companions (4 edges)
-AI -> BeastMastery | 3
-AI -> Droid | 1
-CompanionControl -> BeastMastery | 1
-CompanionControl -> Droid | 1
-
-# Creatures -> Gameplay (2 edges)
-AI -> Feature.UsePerkFeat | 1
-CompanionControl -> Feature.UsePerkFeat | 3
-
-# Creatures -> Social (1 edge)
-AI -> Party | 3
-
-# Creatures -> World (1 edge)
-Feature/SpawnDefinition -> Fishing | 2
-
-# Economy -> Character (2 edges)
-Guild -> Perk | 1
-GuildTaskXp -> Skill | 8
-
-# Economy -> Companions (1 edge)
-PlayerMarket -> BeastMastery | 1
-
-# Economy -> Crafting (2 edges)
-GuildTaskXp -> Craft | 2
-PlayerMarket -> Craft | 1
-
-# Economy -> Items (2 edges)
-Bank -> Item | 4
-PlayerMarket -> Item | 1
-
-# Economy -> Quests (1 edge)
-Guild -> Quest | 11
-
-# Economy -> Space (1 edge)
-PlayerMarket -> Space | 1
-
-# Economy -> UI (6 edges)
-Bank -> Gui | 1
-BankItemPage -> Gui | 3
-CasinoSlot -> Feature/GuiDefinition | 1
-CasinoSlot -> Gui | 1
-Currency -> Feature/GuiDefinition | 2
-Currency -> Gui | 2
-
-# Economy -> World (4 edges)
-GuildTaskXp -> Fishing | 2
-PlayerMarket -> Fishing | 1
-PlayerMarket -> Music | 1
-PlayerMarket -> Property | 1
-
-# Gameplay -> Abilities (9 edges)
+# Gameplay -> Abilities (6 edges)
 Feature.NaturalRegeneration -> Feature/AbilityDefinition | 1
-Feature.TlkOverrides -> Ability | 2
-Feature.TlkOverrides -> Mimicry | 1
-Feature.UnarmedMastery -> Ability | 3
-Feature.UnarmedTechniqueProfile -> Ability | 2
-Feature.UsePerkFeat -> Ability | 27
+Feature.TlkOverrides -> Domain/Abilities | 2
+Feature.UnarmedMastery -> Domain/Abilities | 3
+Feature.UnarmedTechniqueProfile -> Domain/Abilities | 2
+Feature.UsePerkFeat -> Domain/Abilities | 32
 Feature.UsePerkFeat -> Feature/AbilityDefinition | 1
-Feature.UsePerkFeat -> Mimicry | 2
-Feature.UsePerkFeat -> QuickCast | 1
 
 # Gameplay -> Administration (6 edges)
-Feature.ArmorDisplay -> DMPreference | 3
-Feature.Auditing -> DMPresence | 1
-Feature.DMToolbarWindow -> DMPresence | 6
-Feature.Jukebox -> DMPresence | 1
-Feature.RoleplayXP -> DMPresence | 1
-Feature.ServerTasks -> DMPresence | 1
+Feature.ArmorDisplay -> Domain/Administration | 3
+Feature.Auditing -> Domain/Administration | 1
+Feature.DMToolbarWindow -> Domain/Administration | 6
+Feature.Jukebox -> Domain/Administration | 1
+Feature.RoleplayXP -> Domain/Administration | 1
+Feature.ServerTasks -> Domain/Administration | 1
 
-# Gameplay -> Character (41 edges)
-Feature.AchievementProgression -> Achievement | 6
+# Gameplay -> Character (27 edges)
+Feature.AchievementProgression -> Domain/Character | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
-Feature.Auditing -> PlayerName | 3
-Feature.BasicVibrobladeCompatibility -> Skill | 8
-Feature.BuffTimer -> StatusEffect | 3
-Feature.CivilianPatrol -> Activity | 1
-Feature.EchaniTempleMonks -> Activity | 1
-Feature.EquipmentRestrictions -> Perk | 2
-Feature.EquipmentStats -> Skill | 3
-Feature.EquipmentStats -> Stat | 23
-Feature.KatarAnimationRemap -> Perk | 1
-Feature.NaturalRegeneration -> Stat | 2
-Feature.OrdinaryAttackCombatLifecycle -> Activity | 1
-Feature.PlaceableScripts -> PlayerName | 1
-Feature.PlayerInitialization -> Language | 1
-Feature.PlayerInitialization -> PlayerDescriptor | 1
-Feature.PlayerInitialization -> PlayerName | 1
-Feature.PlayerInitialization -> Race | 1
-Feature.PlayerInitialization -> Skill | 1
-Feature.PlayerInitialization -> Stat | 2
+Feature.Auditing -> Domain/Character | 3
+Feature.BasicVibrobladeCompatibility -> Domain/Character | 8
+Feature.BuffTimer -> Domain/Character | 3
+Feature.CivilianPatrol -> Domain/Character | 1
+Feature.EchaniTempleMonks -> Domain/Character | 1
+Feature.EquipmentRestrictions -> Domain/Character | 2
+Feature.EquipmentStats -> Domain/Character | 27
+Feature.KatarAnimationRemap -> Domain/Character | 1
+Feature.NaturalRegeneration -> Domain/Character | 2
+Feature.OrdinaryAttackCombatLifecycle -> Domain/Character | 1
+Feature.PlaceableScripts -> Domain/Character | 1
+Feature.PlayerInitialization -> Domain/Character | 5
+Feature.PlayerRest -> Domain/Character | 1
 Feature.PlayerRest -> Feature/StatusEffectDefinition | 1
-Feature.PlayerRest -> StatusEffect | 1
+Feature.PlayerTemporaryEffects -> Domain/Character | 1
 Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
-Feature.PlayerTemporaryEffects -> Stat | 1
-Feature.RoleplayXP -> RoleplayXP | 7
-Feature.RoleplayXP -> RoleplayXPDetection | 2
-Feature.ScavengePoint -> Perk | 1
-Feature.ScavengePoint -> Skill | 1
-Feature.ScavengePoint -> Stat | 1
-Feature.TlkOverrides -> Perk | 1
-Feature.TwinPistolEquipmentValidation -> Skill | 1
-Feature.UnarmedMastery -> Perk | 1
-Feature.UnarmedMastery -> Stat | 1
+Feature.RoleplayXP -> Domain/Character | 6
+Feature.ScavengePoint -> Domain/Character | 1
+Feature.TlkOverrides -> Domain/Character | 1
+Feature.TwinPistolEquipmentValidation -> Domain/Character | 1
+Feature.UnarmedMastery -> Domain/Character | 2
+Feature.UnarmedTechniqueProfile -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Feature/StatusEffectDefinition | 1
-Feature.UnarmedTechniqueProfile -> StatusEffect | 2
-Feature.UsePerkFeat -> Activity | 2
-Feature.UsePerkFeat -> Perk | 3
-Feature.UsePerkFeat -> PlayerName | 3
-Feature.UsePerkFeat -> Skill | 2
-Feature.UsePerkFeat -> Stat | 1
+Feature.UsePerkFeat -> Domain/Character | 7
+ServerRestart -> Domain/Character | 1
 
-ServerRestart -> StatusEffect | 1
-# Gameplay -> Combat (37 edges)
-Feature.CivilianPatrol -> Enmity | 2
-Feature.EchaniTempleMonks -> Enmity | 2
-Feature.EquipmentRestrictions -> PowerGloveEquipment | 2
-Feature.EquipmentRestrictions -> TwinPistolEquipment | 1
-Feature.EquipmentStats -> Combat | 2
-Feature.EquipmentStats -> PowerGloveEquipment | 2
-Feature.EquipmentStats -> Resistance | 1
-Feature.KatarAnimationRemap -> QueuedAttackAnimation | 2
-Feature.LightsaberAudio -> Stealth | 2
-Feature.NaturalRegeneration -> Combat | 1
-Feature.NaturalRegeneration -> CombatRecorder | 2
-Feature.OrdinaryAttackCombatLifecycle -> OrdinaryAttackTraits | 7
-Feature.PistolAnimationRemap -> TwinPistolEquipment | 3
-Feature.PlaceableScripts -> Enmity | 1
-Feature.PlayerStatusWindow -> Combat | 1
-Feature.PowerGlovePairLifecycle -> PowerGloveEquipment | 14
-Feature.PowerGlovePairLifecycle -> WeaponAttackEligibility | 1
+# Gameplay -> Combat (19 edges)
+Feature.CivilianPatrol -> Domain/Combat | 2
+Feature.EchaniTempleMonks -> Domain/Combat | 2
+Feature.EquipmentRestrictions -> Domain/Combat | 3
+Feature.EquipmentStats -> Domain/Combat | 4
+Feature.KatarAnimationRemap -> Domain/Combat | 2
+Feature.LightsaberAudio -> Domain/Combat | 2
+Feature.NaturalRegeneration -> Domain/Combat | 2
+Feature.OrdinaryAttackCombatLifecycle -> Domain/Combat | 7
+Feature.PistolAnimationRemap -> Domain/Combat | 3
+Feature.PlaceableScripts -> Domain/Combat | 1
+Feature.PlayerStatusWindow -> Domain/Combat | 1
+Feature.PowerGlovePairLifecycle -> Domain/Combat | 14
 Feature.PowerGlovePairLifecycle -> WeaponAttackPhase | 2
-Feature.TwinPistolCombatLifecycle -> Combat | 2
-Feature.TwinPistolCombatLifecycle -> CombatRecorder | 1
-Feature.TwinPistolCombatLifecycle -> PairedRangedTraits | 4
-Feature.TwinPistolCombatLifecycle -> TwinPistolAbility | 5
-Feature.TwinPistolCombatLifecycle -> TwinPistolMastery | 2
-Feature.TwinPistolEquipmentValidation -> TwinPistolEquipment | 3
-Feature.TwinPistolPairLifecycle -> TwinPistolEquipment | 8
-Feature.UnarmedMastery -> MeleeTechnique | 1
-Feature.UnarmedTechniqueProfile -> MeleeTechnique | 1
-Feature.UsePerkFeat -> Combat | 23
-Feature.UsePerkFeat -> CombatRecorder | 7
-Feature.UsePerkFeat -> Enmity | 3
-Feature.UsePerkFeat -> MeleeTechnique | 3
-Feature.UsePerkFeat -> PairedRangedTraits | 3
-Feature.UsePerkFeat -> QueuedAttackAnimation | 3
-Feature.UsePerkFeat -> Recast | 2
-Feature.UsePerkFeat -> Stealth | 3
-Feature.UsePerkFeat -> Telegraph | 5
-Feature.UsePerkFeat -> TwinPistolEquipment | 1
+Feature.TwinPistolCombatLifecycle -> Domain/Combat | 6
+Feature.TwinPistolEquipmentValidation -> Domain/Combat | 7
+Feature.TwinPistolPairLifecycle -> Domain/Combat | 8
+Feature.UnarmedMastery -> Domain/Combat | 1
+Feature.UnarmedTechniqueProfile -> Domain/Combat | 1
+Feature.UsePerkFeat -> Domain/Combat | 20
 
 # Gameplay -> Companions (2 edges)
-Feature.EquipmentRestrictions -> Droid | 1
-Feature.TwinPistolEquipmentValidation -> Droid | 2
+Feature.EquipmentRestrictions -> Domain/Companions | 1
+Feature.TwinPistolEquipmentValidation -> Domain/Companions | 2
 
-# Gameplay -> Crafting (8 edges)
-Feature.CraftingInterruptions -> Craft | 4
-Feature.CraftingInterruptions -> Prospecting | 1
-Feature.CraftingInterruptions -> Scavenge | 1
-Feature.PlayerTemporaryEffects -> Craft | 1
-Feature.ResearchInterruptions -> Craft | 2
-Feature.ScavengePoint -> Craft | 1
-Feature.ScavengePoint -> Scavenge | 3
-Feature.SlicingTerminal -> Slicing | 1
+# Gameplay -> Crafting (5 edges)
+Feature.CraftingInterruptions -> Domain/Crafting | 4
+Feature.PlayerTemporaryEffects -> Domain/Crafting | 1
+Feature.ResearchInterruptions -> Domain/Crafting | 2
+Feature.ScavengePoint -> Domain/Crafting | 3
+Feature.SlicingTerminal -> Domain/Crafting | 1
 
 # Gameplay -> Creatures (4 edges)
-Feature.CivilianPatrol -> AI | 1
-Feature.EchaniTempleMonks -> AI | 1
-Feature.ScavengePoint -> Spawn | 1
-Feature.UsePerkFeat -> CompanionControl | 5
+Feature.CivilianPatrol -> Domain/Creatures | 1
+Feature.EchaniTempleMonks -> Domain/Creatures | 1
+Feature.ScavengePoint -> Domain/Creatures | 1
+Feature.UsePerkFeat -> Domain/Creatures | 5
 
 # Gameplay -> Economy (2 edges)
-Feature.PlaceableScripts -> Currency | 1
-Feature.PlayerInitialization -> Currency | 1
+Feature.PlaceableScripts -> Domain/Economy | 1
+Feature.PlayerInitialization -> Domain/Economy | 1
 
-# Gameplay -> Items (15 edges)
-Feature.EquipmentRestrictions -> Item | 4
-Feature.EquipmentStats -> Item | 2
-Feature.KatarAnimationRemap -> Item | 3
-Feature.MiniMaps -> KeyItem | 1
-Feature.PersistentMapProgression -> KeyItem | 1
-Feature.PistolAnimationRemap -> Item | 1
-Feature.PlaceableScripts -> KeyItem | 1
-Feature.PowerGlovePairLifecycle -> EquipmentUnequip | 1
-Feature.ProceduralTreasure -> Loot | 1
-Feature.ScavengePoint -> Item | 1
-Feature.ScavengePoint -> Loot | 1
-Feature.TrashCan -> ItemTrash | 2
-Feature.TwinPistolCombatLifecycle -> Item | 1
-Feature.TwinPistolEquipmentValidation -> Item | 2
-Feature.TwinPistolPairLifecycle -> EquipmentUnequip | 1
+# Gameplay -> Items (14 edges)
+Feature.EquipmentRestrictions -> Domain/Items | 4
+Feature.EquipmentStats -> Domain/Items | 2
+Feature.KatarAnimationRemap -> Domain/Items | 3
+Feature.MiniMaps -> Domain/Items | 1
+Feature.PersistentMapProgression -> Domain/Items | 1
+Feature.PistolAnimationRemap -> Domain/Items | 1
+Feature.PlaceableScripts -> Domain/Items | 1
+Feature.PowerGlovePairLifecycle -> Domain/Items | 1
+Feature.ProceduralTreasure -> Domain/Items | 1
+Feature.ScavengePoint -> Domain/Items | 2
+Feature.TrashCan -> Domain/Items | 2
+Feature.TwinPistolCombatLifecycle -> Domain/Items | 1
+Feature.TwinPistolEquipmentValidation -> Domain/Items | 2
+Feature.TwinPistolPairLifecycle -> Domain/Items | 1
 
 # Gameplay -> Quests (2 edges)
-Feature.BeastStableTrials -> Quest | 1
-Feature.UnarmedMastery -> Quest | 1
+Feature.BeastStableTrials -> Domain/Quests | 1
+Feature.UnarmedMastery -> Domain/Quests | 1
 
 # Gameplay -> Social (3 edges)
-Feature.PlaceableScripts -> Party | 1
-Feature.PlayerRest -> Party | 1
-Feature.UsePerkFeat -> Performance | 1
+Feature.PlaceableScripts -> Domain/Social | 1
+Feature.PlayerRest -> Domain/Social | 1
+Feature.UsePerkFeat -> Domain/Social | 1
 
 # Gameplay -> Space (1 edge)
-Feature.PlayerStatusWindow -> Space | 1
+Feature.PlayerStatusWindow -> Domain/Space | 1
 
 # Gameplay -> UI (18 edges)
+Feature.ArmorDisplay -> Domain/UI | 1
 Feature.ArmorDisplay -> Feature/GuiDefinition | 1
-Feature.ArmorDisplay -> Gui | 1
-Feature.CivilianPatrol -> Gui | 1
+Feature.CivilianPatrol -> Domain/UI | 1
+Feature.DMActions -> Domain/UI | 1
 Feature.DMActions -> Feature/GuiDefinition | 1
-Feature.DMActions -> Gui | 1
+Feature.DMToolbarWindow -> Domain/UI | 3
 Feature.DMToolbarWindow -> Feature/GuiDefinition | 2
-Feature.DMToolbarWindow -> Gui | 3
-Feature.EchaniTempleMonks -> Gui | 1
+Feature.EchaniTempleMonks -> Domain/UI | 1
+Feature.EquipmentStats -> Domain/UI | 2
 Feature.EquipmentStats -> Feature/GuiDefinition | 2
-Feature.EquipmentStats -> Gui | 2
-Feature.HolonetTerminal -> Gui | 1
+Feature.HolonetTerminal -> Domain/UI | 1
+Feature.Jukebox -> Domain/UI | 1
 Feature.Jukebox -> Feature/GuiDefinition | 1
-Feature.Jukebox -> Gui | 1
-Feature.PlaceableScripts -> Gui | 1
+Feature.PlaceableScripts -> Domain/UI | 1
+Feature.PlayerStatusWindow -> Domain/UI | 16
 Feature.PlayerStatusWindow -> Feature/GuiDefinition | 11
-Feature.PlayerStatusWindow -> Gui | 16
+Feature.SlicingTerminal -> Domain/UI | 1
 Feature.SlicingTerminal -> Feature/GuiDefinition | 1
-Feature.SlicingTerminal -> Gui | 1
 
-# Gameplay -> World (9 edges)
-Feature.CZ220FlightsTerminal -> Area | 1
-Feature.CivilianPatrol -> Area | 1
-Feature.EchaniTempleMonks -> Area | 1
-Feature.EventRegistration -> Area | 1
-Feature.PersistentLocation -> Area | 2
-Feature.PersistentLocation -> Shuttle | 1
-Feature.PersistentMapPin -> Area | 1
-Feature.PersistentMapProgression -> Area | 1
-Feature.RoleplayXP -> Property | 1
+# Gameplay -> World (8 edges)
+Feature.CZ220FlightsTerminal -> Domain/World | 1
+Feature.CivilianPatrol -> Domain/World | 1
+Feature.EchaniTempleMonks -> Domain/World | 1
+Feature.EventRegistration -> Domain/World | 1
+Feature.PersistentLocation -> Domain/World | 2
+Feature.PersistentMapPin -> Domain/World | 1
+Feature.PersistentMapProgression -> Domain/World | 1
+Feature.RoleplayXP -> Domain/World | 1
 
 # Items -> Abilities (2 edges)
+Domain/Items -> Domain/Abilities | 5
 Feature/ItemDefinition -> Feature/AbilityDefinition | 3
-Item -> Ability | 5
 
 # Items -> Administration (2 edges)
-Feature/ItemDefinition -> DMPresence | 1
-ItemTrash -> DMPresence | 3
+Domain/Items -> Domain/Administration | 3
+Feature/ItemDefinition -> Domain/Administration | 1
 
-# Items -> Character (13 edges)
+# Items -> Character (4 edges)
+Domain/Items -> Domain/Character | 24
+Domain/Items -> Feature/AppearanceDefinition | 3
+Feature/ItemDefinition -> Domain/Character | 21
 Feature/ItemDefinition -> Feature/StatusEffectDefinition | 11
-Feature/ItemDefinition -> Perk | 4
-Feature/ItemDefinition -> Skill | 6
-Feature/ItemDefinition -> Stat | 6
-Feature/ItemDefinition -> StatusEffect | 11
-Item -> Activity | 1
-Item -> Perk | 3
-Item -> Skill | 7
-ItemTrash -> Disguise | 1
-ItemTrash -> PlayerName | 1
-Loot -> Perk | 1
-Loot -> Stat | 2
-Wardrobe -> Feature/AppearanceDefinition | 3
 
-# Items -> Combat (7 edges)
-Feature/ItemDefinition -> Combat | 1
-Feature/ItemDefinition -> Poisons | 1
-Feature/ItemDefinition -> Recast | 1
-Feature/ItemDefinition -> Resistance | 1
-Item -> CombatRecorder | 2
-Item -> Recast | 1
-Item -> TwinPistolEquipment | 3
+# Items -> Combat (2 edges)
+Domain/Items -> Domain/Combat | 9
+Feature/ItemDefinition -> Domain/Combat | 3
 
-# Items -> Companions (8 edges)
-Feature/ItemDefinition -> BeastMastery | 4
-Feature/ItemDefinition -> Droid | 1
-Feature/LootTableDefinition -> BeastMastery | 7
-Item -> BeastMastery | 3
-Item -> Droid | 2
-KeyItem -> BeastMastery | 1
-KeyItem -> IncubationFieldNote | 1
-Loot -> BeastMastery | 2
+# Items -> Companions (3 edges)
+Domain/Items -> Domain/Companions | 10
+Feature/ItemDefinition -> Domain/Companions | 4
+Feature/LootTableDefinition -> Domain/Companions | 7
 
-# Items -> Crafting (4 edges)
-Feature/ItemDefinition -> Craft | 3
-Feature/ItemDefinition -> Prospecting | 1
-Feature/ItemDefinition -> Slicing | 1
-Item -> Craft | 1
+# Items -> Crafting (2 edges)
+Domain/Items -> Domain/Crafting | 3
+Feature/ItemDefinition -> Domain/Crafting | 4
 
 # Items -> Economy (2 edges)
-Feature/ItemDefinition -> Currency | 4
-LightsaberWorkbench -> Currency | 3
+Domain/Items -> Domain/Economy | 3
+Feature/ItemDefinition -> Domain/Economy | 4
 
 # Items -> Gameplay (1 edge)
 Feature/ItemDefinition -> Feature.BeastStableTrials | 1
 
 # Items -> Space (1 edge)
-Feature/ItemDefinition -> Space | 1
+Feature/ItemDefinition -> Domain/Space | 1
 
-# Items -> UI (6 edges)
+# Items -> UI (4 edges)
+Domain/Items -> Domain/UI | 8
+Domain/Items -> Feature/GuiDefinition | 1
+Feature/ItemDefinition -> Domain/UI | 4
 Feature/ItemDefinition -> Feature/GuiDefinition | 4
-Feature/ItemDefinition -> Gui | 4
-Item -> Gui | 3
-KeyItem -> Feature/GuiDefinition | 1
-KeyItem -> Gui | 1
-LightsaberWorkbench -> Gui | 1
 
-# Items -> World (3 edges)
-Feature/ItemDefinition -> Fishing | 1
-Feature/ItemDefinition -> Traps | 2
-KeyItem -> Music | 1
+# Items -> World (2 edges)
+Domain/Items -> Domain/World | 1
+Feature/ItemDefinition -> Domain/World | 3
 
-# Platform -> Abilities (4 edges)
-Platform/Entity -> Ability | 4
-Platform/Native -> Ability | 4
+# Platform -> Abilities (3 edges)
+Platform/Entity -> Domain/Abilities | 4
+Platform/Native -> Domain/Abilities | 5
 Platform/Native -> Feature/AbilityDefinition | 1
-Platform/Native -> QuickCast | 1
 
 # Platform -> Administration (1 edge)
-Platform/Entity -> DMTool | 8
+Platform/Entity -> Domain/Administration | 8
 
-# Platform -> Character (12 edges)
-Platform/Entity -> Achievement | 4
-Platform/Entity -> Perk | 14
-Platform/Entity -> Skill | 26
-Platform/Enumeration -> Skill | 7
+# Platform -> Character (6 edges)
+Platform/Entity -> Domain/Character | 40
+Platform/Enumeration -> Domain/Character | 7
+Platform/Native -> Domain/Character | 28
 Platform/Native -> Feature/AppearanceDefinition | 1
 Platform/Native -> Feature/StatusEffectDefinition | 1
-Platform/Native -> Perk | 3
-Platform/Native -> PlayerName | 3
-Platform/Native -> Skill | 15
-Platform/Native -> Stat | 11
-Platform/Native -> StatusEffect | 10
-Platform/Root -> RoleplayXP | 1
+Platform/Root -> Domain/Character | 1
 
-# Platform -> Combat (15 edges)
-Platform/Core -> CombatRecorder | 1
-Platform/Entity -> Combat | 21
-Platform/Entity -> Resistance | 3
-Platform/Native -> Combat | 56
-Platform/Native -> CombatPoint | 3
-Platform/Native -> CombatRecorder | 10
-Platform/Native -> MeleeTechnique | 2
-Platform/Native -> OrdinaryAttackTraits | 2
-Platform/Native -> PairedRangedTraits | 3
-Platform/Native -> PowerGloveEquipment | 3
-Platform/Native -> Resistance | 1
-Platform/Native -> TemporaryStatModifier | 1
-Platform/Native -> TwinPistolEquipment | 7
-Platform/Native -> TwinPistolMastery | 2
-Platform/Native -> WeaponAttackEligibility | 3
+# Platform -> Combat (3 edges)
+Platform/Core -> Domain/Combat | 1
+Platform/Entity -> Domain/Combat | 21
+Platform/Native -> Domain/Combat | 67
 
 # Platform -> Companions (1 edge)
-Platform/Entity -> BeastMastery | 22
+Platform/Entity -> Domain/Companions | 22
 
 # Platform -> Crafting (1 edge)
-Platform/Entity -> Craft | 23
+Platform/Entity -> Domain/Crafting | 23
 
 # Platform -> Creatures (2 edges)
-Platform/Entity -> NPC | 4
-Platform/Native -> AI | 1
+Platform/Entity -> Domain/Creatures | 4
+Platform/Native -> Domain/Creatures | 1
 
-# Platform -> Economy (2 edges)
-Platform/Entity -> Currency | 4
-Platform/Entity -> PlayerMarket | 3
+# Platform -> Economy (1 edge)
+Platform/Entity -> Domain/Economy | 10
 
 # Platform -> Gameplay (2 edges)
 Platform/Native -> Feature.TwinPistolEquipmentValidation | 1
 Platform/Native -> Feature.UsePerkFeat | 8
 
-# Platform -> Items (3 edges)
-Platform/Entity -> KeyItem | 4
-Platform/Native -> Item | 2
-Platform/Native -> Loot | 2
+# Platform -> Items (2 edges)
+Platform/Entity -> Domain/Items | 4
+Platform/Native -> Domain/Items | 4
 
-# Platform -> Quests (2 edges)
-Platform/Entity -> Faction | 4
-Platform/Entity -> QuestContract | 14
+# Platform -> Quests (1 edge)
+Platform/Entity -> Domain/Quests | 18
 
 # Platform -> Social (2 edges)
-Platform/Entity -> PlayerList | 8
-Platform/Native -> ChatPortraitTells | 1
+Platform/Entity -> Domain/Social | 8
+Platform/Native -> Domain/Social | 1
 
 # Platform -> Space (1 edge)
-Platform/Entity -> Space | 3
+Platform/Entity -> Domain/Space | 3
 
-# Platform -> UI (2 edges)
-Platform/Entity -> ExtraHotbar | 6
-Platform/Entity -> Gui | 4
+# Platform -> UI (1 edge)
+Platform/Entity -> Domain/UI | 10
 
-# Platform -> World (3 edges)
-Platform/Entity -> Property | 35
-Platform/Entity -> Shuttle | 3
-Platform/Entity -> Taxi | 4
+# Platform -> World (1 edge)
+Platform/Entity -> Domain/World | 42
 
-# Quests -> Abilities (3 edges)
-CapstoneProof -> Ability | 13
-Feature/QuestDefinition -> Ability | 1
-Quest -> Ability | 3
+# Quests -> Abilities (2 edges)
+Domain/Quests -> Domain/Abilities | 15
+Feature/QuestDefinition -> Domain/Abilities | 1
 
 # Quests -> Administration (1 edge)
-Quest -> DMPresence | 3
+Domain/Quests -> Domain/Administration | 3
 
-# Quests -> Character (6 edges)
-Feature/QuestDefinition -> Achievement | 47
+# Quests -> Character (3 edges)
+Domain/Quests -> Domain/Character | 12
+Feature/QuestDefinition -> Domain/Character | 48
 Feature/QuestDefinition -> Feature/StatusEffectDefinition | 1
-Feature/QuestDefinition -> Skill | 1
-Quest -> Activity | 2
-Quest -> Perk | 1
-Quest -> Skill | 6
 
 # Quests -> Combat (2 edges)
-Feature/QuestDefinition -> TwinPistolMastery | 2
-Quest -> Enmity | 3
+Domain/Quests -> Domain/Combat | 7
+Feature/QuestDefinition -> Domain/Combat | 2
 
 # Quests -> Companions (1 edge)
-CapstoneProof -> BeastMastery | 3
+Domain/Quests -> Domain/Companions | 3
 
 # Quests -> Crafting (1 edge)
-Quest -> Craft | 1
+Domain/Quests -> Domain/Crafting | 1
 
-# Quests -> Creatures (4 edges)
-Feature/QuestDefinition -> NPC | 1
-Feature/QuestDefinition -> NPCGroup | 1
-Quest -> NPC | 28
-Quest -> NPCGroup | 2
+# Quests -> Creatures (2 edges)
+Domain/Quests -> Domain/Creatures | 26
+Feature/QuestDefinition -> Domain/Creatures | 1
 
-# Quests -> Economy (2 edges)
-Quest -> Guild | 2
-Quest -> GuildTaskXp | 2
+# Quests -> Economy (1 edge)
+Domain/Quests -> Domain/Economy | 4
 
-# Quests -> Items (6 edges)
-Feature/QuestDefinition -> KeyItem | 70
-Feature/QuestDefinition -> Wardrobe | 5
-Quest -> Item | 2
-Quest -> KeyItem | 28
-QuestContract -> Item | 1
-QuestContractBoard -> Item | 2
+# Quests -> Items (2 edges)
+Domain/Quests -> Domain/Items | 37
+Feature/QuestDefinition -> Domain/Items | 75
 
-# Quests -> UI (6 edges)
-Quest -> Feature/GuiDefinition | 5
-Quest -> Gui | 5
-QuestContract -> Feature/GuiDefinition | 1
-QuestContract -> Gui | 1
-QuestContractBoard -> Feature/GuiDefinition | 1
-QuestContractBoard -> Gui | 1
+# Quests -> UI (2 edges)
+Domain/Quests -> Domain/UI | 9
+Domain/Quests -> Feature/GuiDefinition | 7
 
-# Social -> Abilities (5 edges)
-Feature/ChatCommandDefinition -> Ability | 2
-Feature/ChatCommandDefinition -> AbilityCooldownVisual | 1
-Feature/ChatCommandDefinition -> Mimicry | 1
-Party -> Ability | 2
-Performance -> Feature/AbilityDefinition | 2
+# Social -> Abilities (3 edges)
+Domain/Social -> Domain/Abilities | 4
+Domain/Social -> Feature/AbilityDefinition | 2
+Feature/ChatCommandDefinition -> Domain/Abilities | 3
 
-# Social -> Administration (4 edges)
-Feature/ChatCommandDefinition -> DMPreference | 1
-Feature/ChatCommandDefinition -> DMPresence | 14
-PlayerList -> DMPresence | 10
-PlayerList -> DMTool | 1
+# Social -> Administration (2 edges)
+Domain/Social -> Domain/Administration | 13
+Feature/ChatCommandDefinition -> Domain/Administration | 15
 
-# Social -> Character (20 edges)
-ChatPortraitTells -> PlayerName | 1
-Feature/ChatCommandDefinition -> Disguise | 3
+# Social -> Character (5 edges)
+Domain/Social -> Domain/Character | 76
+Domain/Social -> Feature/AppearanceDefinition | 1
+Domain/Social -> Feature/StatusEffectDefinition | 8
+Feature/ChatCommandDefinition -> Domain/Character | 11
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
-Feature/ChatCommandDefinition -> Language | 1
-Feature/ChatCommandDefinition -> Perk | 2
-Feature/ChatCommandDefinition -> PlayerDescriptor | 1
-Feature/ChatCommandDefinition -> PlayerIntroduction | 1
-Feature/ChatCommandDefinition -> PlayerName | 3
-Feature/ChatCommandDefinition -> Skill | 2
-Feature/ChatCommandDefinition -> Stat | 3
-Performance -> Activity | 4
-Performance -> Feature/AppearanceDefinition | 1
-Performance -> Feature/StatusEffectDefinition | 6
-Performance -> Perk | 10
-Performance -> PlayerName | 2
-Performance -> Skill | 1
-Performance -> Stat | 3
-Performance -> StatusEffect | 20
-PlayerList -> Disguise | 3
-PlayerList -> PlayerName | 3
 
-# Social -> Combat (5 edges)
-ChatCommand -> Targeting | 1
-Feature/ChatCommandDefinition -> CombatRecorder | 2
-Feature/ChatCommandDefinition -> Enmity | 1
-Feature/ChatCommandDefinition -> Recast | 1
-Party -> Telegraph | 2
+# Social -> Combat (2 edges)
+Domain/Social -> Domain/Combat | 7
+Feature/ChatCommandDefinition -> Domain/Combat | 4
 
 # Social -> Companions (1 edge)
-Feature/ChatCommandDefinition -> BeastMastery | 6
+Feature/ChatCommandDefinition -> Domain/Companions | 6
 
 # Social -> Crafting (2 edges)
-Feature/ChatCommandDefinition -> Craft | 1
-Performance -> Craft | 5
+Domain/Social -> Domain/Crafting | 5
+Feature/ChatCommandDefinition -> Domain/Crafting | 1
 
 # Social -> Creatures (1 edge)
-Feature/ChatCommandDefinition -> CompanionControl | 1
+Feature/ChatCommandDefinition -> Domain/Creatures | 1
 
 # Social -> Gameplay (4 edges)
 Feature/ChatCommandDefinition -> Feature.ArmorDisplay | 1
@@ -1074,239 +678,141 @@ Feature/ChatCommandDefinition -> Feature.ServerTasks | 1
 Feature/ChatCommandDefinition -> ServerRestart | 1
 
 # Social -> Items (1 edge)
-Feature/ChatCommandDefinition -> OverflowStorage | 1
+Feature/ChatCommandDefinition -> Domain/Items | 1
 
-# Social -> Quests (2 edges)
-Feature/ChatCommandDefinition -> Faction | 2
-Feature/ChatCommandDefinition -> Quest | 2
+# Social -> Quests (1 edge)
+Feature/ChatCommandDefinition -> Domain/Quests | 4
 
-# Social -> Space (3 edges)
-Feature/ChatCommandDefinition -> Space | 3
-Performance -> Space | 1
-PlayerList -> Space | 1
+# Social -> Space (2 edges)
+Domain/Social -> Domain/Space | 6
+Feature/ChatCommandDefinition -> Domain/Space | 3
 
-# Social -> UI (8 edges)
-ChatCommand -> Gui | 13
-Feature/ChatCommandDefinition -> ExtraHotbars | 1
+# Social -> UI (4 edges)
+Domain/Social -> Domain/UI | 28
+Domain/Social -> Feature/GuiDefinition | 2
+Feature/ChatCommandDefinition -> Domain/UI | 26
 Feature/ChatCommandDefinition -> Feature/GuiDefinition | 10
-Feature/ChatCommandDefinition -> Gui | 26
-Performance -> Feature/GuiDefinition | 1
-Performance -> Gui | 12
-PlayerList -> Feature/GuiDefinition | 1
-PlayerList -> Gui | 2
 
-# Social -> World (4 edges)
-Feature/ChatCommandDefinition -> HoloCom | 3
-Performance -> Music | 7
-Performance -> Property | 2
-PlayerList -> HoloCom | 1
+# Social -> World (2 edges)
+Domain/Social -> Domain/World | 20
+Feature/ChatCommandDefinition -> Domain/World | 3
 
-# Space -> Abilities (2 edges)
-Space -> Ability | 6
-Space -> AbilityCooldownVisual | 1
+# Space -> Abilities (1 edge)
+Domain/Space -> Domain/Abilities | 9
 
-# Space -> Character (10 edges)
-Feature/ShipModuleDefinition -> Perk | 2
-Feature/ShipModuleDefinition -> PlayerName | 6
-Feature/ShipModuleDefinition -> Skill | 2
-Space -> Feature/AppearanceDefinition | 1
-Space -> Perk | 15
-Space -> PlayerName | 2
-Space -> Race | 1
-Space -> Skill | 4
-Space -> Stat | 8
-Space -> StatusEffect | 1
+# Space -> Character (3 edges)
+Domain/Space -> Domain/Character | 32
+Domain/Space -> Feature/AppearanceDefinition | 1
+Feature/ShipModuleDefinition -> Domain/Character | 8
 
-# Space -> Combat (6 edges)
-Feature/ShipModuleDefinition -> Combat | 10
-Feature/ShipModuleDefinition -> CombatPoint | 16
-Feature/ShipModuleDefinition -> Enmity | 13
-Space -> Combat | 1
-Space -> Enmity | 3
-Space -> Recast | 1
+# Space -> Combat (2 edges)
+Domain/Space -> Domain/Combat | 8
+Feature/ShipModuleDefinition -> Domain/Combat | 16
 
 # Space -> Creatures (1 edge)
-Space -> AI | 4
+Domain/Space -> Domain/Creatures | 6
 
 # Space -> Items (1 edge)
-Feature/ShipModuleDefinition -> Loot | 2
+Feature/ShipModuleDefinition -> Domain/Items | 2
 
 # Space -> UI (1 edge)
-Space -> Gui | 2
+Domain/Space -> Domain/UI | 4
 
-# Space -> World (3 edges)
-Space -> Area | 1
-Space -> Planet | 2
-Space -> Property | 11
+# Space -> World (1 edge)
+Domain/Space -> Domain/World | 17
 
-# UI -> Abilities (8 edges)
-ExtraHotbars -> Ability | 3
-ExtraHotbars -> QuickCast | 3
-Feature/GuiDefinition -> Ability | 16
-Feature/GuiDefinition -> AbilityCooldownVisual | 1
+# UI -> Abilities (4 edges)
+Domain/UI -> Domain/Abilities | 13
+Feature/GuiDefinition -> Domain/Abilities | 28
 Feature/GuiDefinition -> Feature/AbilityDefinition | 4
-Feature/GuiDefinition -> Mimicry | 8
 Feature/GuiDefinition -> MimicryLoadouts | 7
-Feature/GuiDefinition -> QuickCast | 8
 
-# UI -> Administration (10 edges)
-Feature/GuiDefinition -> DMBlueprintCatalog | 4
-Feature/GuiDefinition -> DMCreatorFavorite | 2
-Feature/GuiDefinition -> DMCreatureManagerFavorite | 3
-Feature/GuiDefinition -> DMObjectDetails | 4
-Feature/GuiDefinition -> DMObjectSearch | 2
-Feature/GuiDefinition -> DMPlayerDirectory | 6
-Feature/GuiDefinition -> DMPreference | 2
-Feature/GuiDefinition -> DMPresence | 62
-Feature/GuiDefinition -> DMTool | 69
-Gui -> DMPresence | 2
+# UI -> Administration (2 edges)
+Domain/UI -> Domain/Administration | 4
+Feature/GuiDefinition -> Domain/Administration | 117
 
-# UI -> Character (14 edges)
-ExtraHotbars -> Perk | 1
-Feature/GuiDefinition -> Achievement | 9
-Feature/GuiDefinition -> Activity | 1
-Feature/GuiDefinition -> Disguise | 11
-Feature/GuiDefinition -> Feature/AppearanceDefinition | 87
-Feature/GuiDefinition -> Language | 4
-Feature/GuiDefinition -> Perk | 63
-Feature/GuiDefinition -> PlayerDescriptor | 1
-Feature/GuiDefinition -> PlayerIntroduction | 8
-Feature/GuiDefinition -> PlayerName | 19
-Feature/GuiDefinition -> Race | 2
-Feature/GuiDefinition -> Skill | 79
-Feature/GuiDefinition -> Stat | 34
-Feature/GuiDefinition -> StatusEffect | 4
+# UI -> Character (3 edges)
+Domain/UI -> Domain/Character | 3
+Feature/GuiDefinition -> Domain/Character | 201
+Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
-# UI -> Combat (12 edges)
-ExtraHotbars -> Targeting | 2
-ExtraHotbars -> TwinPistolEquipment | 2
-Feature/GuiDefinition -> BattleGrid | 6
+# UI -> Combat (3 edges)
+Domain/UI -> Domain/Combat | 6
 Feature/GuiDefinition -> BattleGridSettings | 11
-Feature/GuiDefinition -> Combat | 17
-Feature/GuiDefinition -> Enmity | 2
-Feature/GuiDefinition -> PairedRangedTraits | 1
-Feature/GuiDefinition -> PowerGloveEquipment | 1
-Feature/GuiDefinition -> Recast | 3
-Feature/GuiDefinition -> Resistance | 1
-Feature/GuiDefinition -> Targeting | 28
-Feature/GuiDefinition -> TwinPistolEquipment | 2
+Feature/GuiDefinition -> Domain/Combat | 57
 
-# UI -> Companions (3 edges)
-Feature/GuiDefinition -> BeastMastery | 52
-Feature/GuiDefinition -> Droid | 20
-Feature/GuiDefinition -> IncubationFieldNote | 2
+# UI -> Companions (1 edge)
+Feature/GuiDefinition -> Domain/Companions | 70
 
-# UI -> Crafting (5 edges)
-ExtraHotbars -> Craft | 1
-Feature/GuiDefinition -> Craft | 202
-Feature/GuiDefinition -> Prospecting | 18
-Feature/GuiDefinition -> Scavenge | 14
-Feature/GuiDefinition -> Slicing | 18
+# UI -> Crafting (2 edges)
+Domain/UI -> Domain/Crafting | 3
+Feature/GuiDefinition -> Domain/Crafting | 237
 
 # UI -> Creatures (1 edge)
-Feature/GuiDefinition -> CompanionControl | 1
+Feature/GuiDefinition -> Domain/Creatures | 1
 
-# UI -> Economy (9 edges)
-Feature/GuiDefinition -> Bank | 4
+# UI -> Economy (4 edges)
 Feature/GuiDefinition -> BankItemPage | 1
-Feature/GuiDefinition -> CasinoSlot | 2
 Feature/GuiDefinition -> CasinoSlotPresentation | 2
 Feature/GuiDefinition -> CasinoSpinResult | 3
-Feature/GuiDefinition -> Currency | 13
-Feature/GuiDefinition -> Guild | 2
-Feature/GuiDefinition -> GuildTaskXp | 1
-Feature/GuiDefinition -> PlayerMarket | 16
+Feature/GuiDefinition -> Domain/Economy | 43
 
 # UI -> Gameplay (6 edges)
-ExtraHotbars -> Feature.UsePerkFeat | 1
+Domain/UI -> Feature.UsePerkFeat | 1
 Feature/GuiDefinition -> Feature.ArmorDisplay | 5
 Feature/GuiDefinition -> Feature.EquipmentRestrictions | 1
 Feature/GuiDefinition -> Feature.PlayerInitialization | 1
 Feature/GuiDefinition -> Feature.PlayerStatusWindow | 1
 Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
-# UI -> Items (5 edges)
-ExtraHotbars -> Item | 2
-Feature/GuiDefinition -> Item | 40
-Feature/GuiDefinition -> KeyItem | 12
-Feature/GuiDefinition -> LightsaberWorkbench | 12
-Feature/GuiDefinition -> Wardrobe | 9
+# UI -> Items (2 edges)
+Domain/UI -> Domain/Items | 4
+Feature/GuiDefinition -> Domain/Items | 72
 
-# UI -> Quests (3 edges)
-Feature/GuiDefinition -> Quest | 14
-Feature/GuiDefinition -> QuestContract | 16
-Feature/GuiDefinition -> QuestContractBoard | 20
+# UI -> Quests (1 edge)
+Feature/GuiDefinition -> Domain/Quests | 37
 
-# UI -> Social (5 edges)
-ExtraHotbars -> ChatCommand | 1
-Feature/GuiDefinition -> ChatCommand | 3
-Feature/GuiDefinition -> Party | 2
-Feature/GuiDefinition -> Performance | 67
-Feature/GuiDefinition -> PlayerList | 40
+# UI -> Social (2 edges)
+Domain/UI -> Domain/Social | 3
+Feature/GuiDefinition -> Domain/Social | 112
 
 # UI -> Space (1 edge)
-Feature/GuiDefinition -> Space | 29
+Feature/GuiDefinition -> Domain/Space | 29
 
-# UI -> World (6 edges)
-Feature/GuiDefinition -> Area | 6
-Feature/GuiDefinition -> Fishing | 10
-Feature/GuiDefinition -> HoloCom | 4
-Feature/GuiDefinition -> Music | 14
-Feature/GuiDefinition -> Notes | 6
-Feature/GuiDefinition -> Property | 94
+# UI -> World (1 edge)
+Feature/GuiDefinition -> Domain/World | 134
 
 # World -> Abilities (2 edges)
-Traps -> Ability | 1
-Traps -> Feature/AbilityDefinition | 3
+Domain/World -> Domain/Abilities | 3
+Domain/World -> Feature/AbilityDefinition | 3
 
-# World -> Administration (3 edges)
-HoloCom -> DMPresence | 3
-Traps -> DMPresence | 1
-Weather -> DMPresence | 3
+# World -> Administration (1 edge)
+Domain/World -> Domain/Administration | 11
 
-# World -> Character (13 edges)
-Feature/TrapDefinition -> Stat | 1
-Fishing -> Activity | 6
-Fishing -> PlayerName | 1
-Fishing -> Skill | 3
-Fishing -> Stat | 1
-HoloCom -> PlayerName | 1
-Property -> Perk | 2
-Traps -> Feature/StatusEffectDefinition | 2
-Traps -> Perk | 1
-Traps -> Skill | 2
-Traps -> Stat | 6
-Traps -> StatusEffect | 1
-Weather -> Stat | 2
+# World -> Character (3 edges)
+Domain/World -> Domain/Character | 37
+Domain/World -> Feature/StatusEffectDefinition | 2
+Feature/TrapDefinition -> Domain/Character | 1
 
-# World -> Combat (6 edges)
-HoloCom -> Stealth | 1
-Traps -> Combat | 5
-Traps -> CombatRecorder | 7
-Traps -> PvpCombat | 1
-Weather -> Combat | 3
-Weather -> Resistance | 2
+# World -> Combat (1 edge)
+Domain/World -> Domain/Combat | 22
 
 # World -> Crafting (1 edge)
-Fishing -> Craft | 26
+Domain/World -> Domain/Crafting | 26
 
 # World -> Economy (1 edge)
-Feature/PropertyLayoutDefinition -> Bank | 2
+Feature/PropertyLayoutDefinition -> Domain/Economy | 2
 
 # World -> Items (1 edge)
-Music -> KeyItem | 14
+Domain/World -> Domain/Items | 14
 
-# World -> Social (2 edges)
-HoloCom -> PlayerList | 9
-Music -> Performance | 1
+# World -> Social (1 edge)
+Domain/World -> Domain/Social | 11
 
-# World -> Space (3 edges)
-Feature/PropertyLayoutDefinition -> Space | 1
-HoloCom -> Space | 3
-Property -> Space | 1
+# World -> Space (2 edges)
+Domain/World -> Domain/Space | 6
+Feature/PropertyLayoutDefinition -> Domain/Space | 1
 
-# World -> UI (4 edges)
-Fishing -> Feature/GuiDefinition | 1
-Fishing -> Gui | 3
-Notes -> Gui | 9
-Property -> Gui | 2
+# World -> UI (2 edges)
+Domain/World -> Domain/UI | 14
+Domain/World -> Feature/GuiDefinition | 1

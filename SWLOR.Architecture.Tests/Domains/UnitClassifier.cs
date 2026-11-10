@@ -4,10 +4,11 @@ namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
 /// Decides which <see cref="DependencyUnit"/> a type belongs to from its namespace and name, never from the file it
-/// lives in, so the guard keeps working when a later phase moves a domain's types into new folders and namespaces.
-/// Types of the server assembly outside <c>Service</c> and <c>Feature</c> are Platform, except the instance types of
-/// converted services in <c>Domain.&lt;Domain&gt;</c> (see <see cref="ClassifyDomainType"/>); anything else (compiler
-/// generated types, other assemblies) belongs to no unit.
+/// lives in. A type in <c>Domain.&lt;Domain&gt;</c> or one of its topic namespaces (<c>Domain.Crafting.Minigame</c>) belongs
+/// to the domain: since P2-Z2 a domain's services and their support types share that namespace, so the namespace names the
+/// domain and nothing finer. A type directly in <c>Service</c> is the unit named like it (<c>ColorToken</c>), a type in
+/// <c>Feature</c> its folder or itself, and the rest of the server assembly Platform; anything else (compiler generated
+/// types, other assemblies) belongs to no unit.
 /// </summary>
 internal static class UnitClassifier
 {
@@ -18,12 +19,7 @@ internal static class UnitClassifier
     private const string DomainSegment = "Domain";
     private const string ServiceSuffix = "Service";
 
-    /// <param name="type">The type to place.</param>
-    /// <param name="map">
-    /// The domain map. Needed only to place the types of converted services in <c>Domain.&lt;Domain&gt;</c>; without
-    /// it they are Platform code, <c>Platform/Domain.&lt;Domain&gt;</c>, like a type no service of the domain names.
-    /// </param>
-    public static DependencyUnit? Classify(TypeKey type, DomainMap? map = null)
+    public static DependencyUnit? Classify(TypeKey type)
     {
         var segments = Segments(type.Namespace);
         if (segments is null)
@@ -35,15 +31,7 @@ internal static class UnitClassifier
         switch (segments[0])
         {
             case ServiceSegment:
-                if (segments.Length == 1)
-                    return new DependencyUnit(UnitKind.Service, type.Name);
-
-                // SWLOR.Game.Server.Domain.Combat.* belongs to the service Combat.
-                var folder = segments[1];
-                var name = folder.Length > ServiceSuffix.Length && folder.EndsWith(ServiceSuffix, StringComparison.Ordinal)
-                    ? folder[..^ServiceSuffix.Length]
-                    : folder;
-                return new DependencyUnit(UnitKind.Service, name);
+                return new DependencyUnit(UnitKind.Service, ServiceFolderName(segments) ?? type.Name);
 
             case FeatureSegment:
                 return segments.Length == 1
@@ -51,7 +39,8 @@ internal static class UnitClassifier
                     : new DependencyUnit(UnitKind.FeatureFolder, segments[1]);
 
             case DomainSegment when segments.Length >= 2:
-                return ClassifyDomainType(segments[1], type.Name, map);
+                // SWLOR.Game.Server.Domain.Crafting.Minigame.* belongs to the domain Crafting.
+                return new DependencyUnit(UnitKind.Domain, segments[1]);
 
             default:
                 return new DependencyUnit(UnitKind.Platform, segments[0]);
@@ -59,17 +48,49 @@ internal static class UnitClassifier
     }
 
     /// <summary>
-    /// A type in <c>Domain.&lt;Domain&gt;</c> belongs to the service of that domain whose name starts the type's name,
-    /// ignoring one leading <c>I</c> (<c>IAchievementService</c> and <c>AchievementService</c> are the service
-    /// <c>Achievement</c>), so a converted service is one unit before and after its conversion. The longest matching
-    /// service name wins (<c>SpaceModuleRecastService</c> is <c>SpaceModuleRecast</c>, not <c>Space</c>). A type no
-    /// service of the domain names is Platform, <c>Platform/Domain.&lt;Domain&gt;</c>, so it shows up as an edge to review.
+    /// The service of the domain map a type is named after, or null. A type directly in <c>Service</c> is the service named
+    /// like it. A type in <c>Domain.&lt;Domain&gt;</c> (or a topic below it) is the service of that domain whose name starts the
+    /// type's name, ignoring one leading <c>I</c> (<c>IAchievementService</c>, <c>AchievementService</c> and
+    /// <c>AchievementNotification</c> are all <c>Achievement</c>); the longest matching name wins (<c>SpaceModuleRecastService</c>
+    /// is <c>SpaceModuleRecast</c>, not <c>Space</c>). The converted-service rules use it to tie a class to the service it is
+    /// listed on; the cross-domain guard does not (it works by domain, <see cref="Classify"/>).
     /// </summary>
-    private static DependencyUnit ClassifyDomainType(string domain, string typeName, DomainMap? map)
+    public static string? ServiceOf(TypeKey type, DomainMap map)
+    {
+        var segments = Segments(type.Namespace);
+        if (segments is not { Length: > 0 })
+            return null;
+
+        switch (segments[0])
+        {
+            case ServiceSegment:
+                return ServiceFolderName(segments) ?? type.Name;
+
+            case DomainSegment when segments.Length >= 2:
+                return NamedService(segments[1], type.Name, map);
+
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>The name of the service a <c>Service.&lt;Name&gt;Service[.*]</c> namespace held, or null for the namespace <c>Service</c> itself.</summary>
+    private static string? ServiceFolderName(string[] segments)
+    {
+        if (segments.Length == 1)
+            return null;
+
+        var folder = segments[1];
+        return folder.Length > ServiceSuffix.Length && folder.EndsWith(ServiceSuffix, StringComparison.Ordinal)
+            ? folder[..^ServiceSuffix.Length]
+            : folder;
+    }
+
+    private static string? NamedService(string domain, string typeName, DomainMap map)
     {
         var stripped = typeName.Length > 1 && typeName[0] == 'I' && char.IsUpper(typeName[1]) ? typeName[1..] : typeName;
         string? best = null;
-        foreach (var service in map?.ServicesOf(domain) ?? Array.Empty<string>())
+        foreach (var service in map.ServicesOf(domain))
         {
             if (!stripped.StartsWith(service, StringComparison.Ordinal))
                 continue;
@@ -79,9 +100,7 @@ internal static class UnitClassifier
                 best = service;
         }
 
-        return best is null
-            ? new DependencyUnit(UnitKind.Platform, DomainSegment + "." + domain)
-            : new DependencyUnit(UnitKind.Service, best);
+        return best;
     }
 
     /// <summary>The namespace segments below <see cref="RootNamespace"/>, or null when the type is not part of the server.</summary>

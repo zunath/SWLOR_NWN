@@ -4,8 +4,10 @@ namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
 /// Which domain each service and Feature folder belongs to, read from <c>DomainMap.json</c>.
-/// Types directly in <c>Feature</c> belong to <see cref="FeatureTypeDomain"/> and code outside <c>Service</c> and
-/// <c>Feature</c> to <see cref="PlatformDomain"/>, so only services and Feature folders are listed.
+/// Code in <c>Domain.&lt;Domain&gt;</c> belongs to that domain, types directly in <c>Feature</c> to
+/// <see cref="FeatureTypeDomain"/> and code outside <c>Domain</c>, <c>Service</c> and <c>Feature</c> to
+/// <see cref="PlatformDomain"/>, so only services and Feature folders are listed. The services of a domain name its
+/// converted services (<c>ConvertedServices.json</c> must agree) and the types still directly in <c>Service</c>.
 /// </summary>
 internal sealed class DomainMap
 {
@@ -50,11 +52,16 @@ internal sealed class DomainMap
     /// <summary>True when edges into the domain are recorded but never fail the guard.</summary>
     public bool IsUnrestrictedTarget(string domain) => _unrestrictedTargets.Contains(domain);
 
-    /// <summary>The domain of the unit, or null when it is a service or Feature folder that is in no domain.</summary>
+    /// <summary>
+    /// The domain of the unit, or null when it is a service or Feature folder that is in no domain, or the code of a
+    /// <c>Domain.&lt;Name&gt;</c> namespace whose name is not a declared domain.
+    /// </summary>
     public string? DomainOf(DependencyUnit unit)
     {
         switch (unit.Kind)
         {
+            case UnitKind.Domain:
+                return _domains.Contains(unit.Name) && unit.Name != PlatformDomain ? unit.Name : null;
             case UnitKind.Platform:
                 return PlatformDomain;
             case UnitKind.FeatureType:

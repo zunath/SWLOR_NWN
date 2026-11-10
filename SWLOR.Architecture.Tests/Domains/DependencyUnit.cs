@@ -1,14 +1,15 @@
 namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
-/// The granularity of the guard: one service, one Feature folder, one top-level Feature type or one Platform area.
-/// Its text form is what the baseline files and failure messages show:
-/// <c>Combat</c>, <c>Feature/PerkDefinition</c>, <c>Feature.Auditing</c>, <c>Platform/Native</c>.
+/// The granularity of the guard: one domain's own code, one type left directly in <c>Service</c>, one Feature folder,
+/// one top-level Feature type or one Platform area. Its text form is what the baseline files and failure messages show:
+/// <c>Domain/Combat</c>, <c>ColorToken</c>, <c>Feature/PerkDefinition</c>, <c>Feature.Auditing</c>, <c>Platform/Native</c>.
 /// </summary>
 internal readonly record struct DependencyUnit(UnitKind Kind, string Name)
 {
     public override string ToString() => Kind switch
     {
+        UnitKind.Domain => "Domain/" + Name,
         UnitKind.Service => Name,
         UnitKind.FeatureFolder => "Feature/" + Name,
         UnitKind.FeatureType => "Feature." + Name,
@@ -20,7 +21,9 @@ internal readonly record struct DependencyUnit(UnitKind Kind, string Name)
     public static bool TryParse(string text, out DependencyUnit unit)
     {
         unit = default;
-        if (text.StartsWith("Feature/", StringComparison.Ordinal))
+        if (text.StartsWith("Domain/", StringComparison.Ordinal))
+            unit = new DependencyUnit(UnitKind.Domain, text["Domain/".Length..]);
+        else if (text.StartsWith("Feature/", StringComparison.Ordinal))
             unit = new DependencyUnit(UnitKind.FeatureFolder, text["Feature/".Length..]);
         else if (text.StartsWith("Feature.", StringComparison.Ordinal))
             unit = new DependencyUnit(UnitKind.FeatureType, text["Feature.".Length..]);

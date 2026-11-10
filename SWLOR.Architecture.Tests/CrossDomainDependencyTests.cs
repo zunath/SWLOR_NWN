@@ -6,18 +6,20 @@ namespace SWLOR.Architecture.Tests;
 
 /// <summary>
 /// The cross-domain dependency guard (refactor owner decision 9). It reads the compiled <c>SWLOR.Game.Server.dll</c>,
-/// lifts every type reference to the service or Feature folder it comes from and goes to, and compares the edges
-/// between different domains with the checked-in baseline.
+/// lifts every type reference to the unit it comes from and goes to (a domain, a Feature folder, a Platform area; see
+/// <see cref="UnitClassifier"/>), and compares the edges between different domains with the checked-in baseline.
 /// </summary>
 /// <remarks>
 /// <para><b>What fails.</b> A cross-domain edge that is not in <c>Baseline/CrossDomainEdges.txt</c> (a new dependency),
-/// and a baseline edge that no longer exists (the baseline is kept tight). Edges into the Core and Platform
-/// domains are recorded in <c>Baseline/EdgesIntoCoreAndPlatform.txt</c> for information and never fail.</para>
+/// and a baseline edge that no longer exists (the baseline is kept tight). Edges into the Foundation and Platform
+/// domains are recorded in <c>Baseline/EdgesIntoCoreAndPlatform.txt</c> (named when Foundation was called Core) for
+/// information and never fail.</para>
 /// <para><b>Regenerating.</b> After an intended change set <c>SWLOR_UPDATE_SNAPSHOTS=1</c> and run these tests again,
 /// then review the diff of the baseline files like any snapshot. PowerShell:
 /// <c>$env:SWLOR_UPDATE_SNAPSHOTS = "1"; dotnet test SWLOR.Architecture.Tests --no-build</c>.</para>
-/// <para><b>Domains.</b> <c>DomainMap.json</c> maps services and Feature folders to domains. The guard maps types, not
-/// files, so it keeps working when a later phase moves a domain's types into new folders and namespaces (extend
+/// <para><b>Domains.</b> Code in <c>Domain.&lt;Domain&gt;</c> (and its topic namespaces) is one unit per domain: since P2-Z2
+/// a domain's services and their support types share that namespace. <c>DomainMap.json</c> maps the Feature folders and
+/// the types left directly in <c>Service</c> to domains. The guard maps types by namespace, not by file (extend
 /// <see cref="UnitClassifier"/> when the namespaces change).</para>
 /// <para><b>Limit.</b> The compiler inlines constants (enum members, <c>const</c> fields); a dependency made only
 /// through one is invisible. See <c>AssemblyScanner</c>.</para>
@@ -32,17 +34,18 @@ public class CrossDomainDependencyTests
     [
         "Cross-domain dependencies of SWLOR.Game.Server, recorded by SWLOR.Architecture.Tests (refactor owner decision 9).",
         "One line per edge between two units of different domains: <from> -> <to> | <members>.",
-        "A unit is a service (Combat), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing)",
-        "or an area outside Service and Feature (Platform/Native). Domains come from DomainMap.json.",
+        "A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a type left directly in Service",
+        "(ColorToken), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside",
+        "Domain, Service and Feature (Platform/Native). Domains come from DomainMap.json.",
         "<members> is the number of distinct members that hold the reference. It is information only and is never compared.",
-        "Edges into the Core and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.",
+        "Edges into the Foundation and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.",
         "The guard fails when an edge appears that is not listed, and when a listed edge no longer exists.",
         "Regenerate after an intended change: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build, then review the diff."
     ];
 
     private static readonly string[] UnrestrictedHeader =
     [
-        "Edges from other domains into the Core and Platform domains (infrastructure everyone may use).",
+        "Edges from other domains into the Foundation and Platform domains (infrastructure everyone may use).",
         "Recorded for information only: the guard never fails on these, and warns when this file is out of date.",
         "Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build."
     ];

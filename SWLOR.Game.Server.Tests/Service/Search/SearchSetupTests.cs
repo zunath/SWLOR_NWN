@@ -148,19 +148,23 @@ public class SearchSetupTests
     [Test]
     public void TheBoardReadsNoAttribute()
     {
+        // The search board and the scavenging code beside it. Since P2-Z2 the scavenging files share Domain/Crafting with
+        // the rest of the craft code (which reads attributes), so they are picked by name: every file the old scavenging
+        // folder held has Scavenge in its name or starts with QuickSearch, and so do the service's own files.
         var root = TestRepository.FindRoot();
-        foreach (var path in new[]
-                 {
-                     "SWLOR.Game.Server/Domain/Crafting/Minigame/Search",
-                     "SWLOR.Game.Server/Domain/Crafting"
-                 })
+        var files = Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server/Domain/Crafting/Minigame/Search"), "*.cs")
+            .Concat(new[] { "*Scavenge*.cs", "QuickSearch*.cs" }
+                .SelectMany(pattern => Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server/Domain/Crafting"), pattern)))
+            .Distinct()
+            .ToList();
+
+        files.Select(Path.GetFileName).Should().Contain(new[] { "ScavengeLifecycle.cs", "ScavengeQuickSearch.cs", "QuickSearchAttempt.cs", "NwnScavengeWorld.cs", "ScavengeService.cs" },
+            "the scan must reach the scavenging code");
+        foreach (var file in files)
         {
-            foreach (var file in Directory.EnumerateFiles(Path.Combine(root, path), "*.cs"))
-            {
-                var source = File.ReadAllText(file);
-                source.Should().NotContain("GetAbilityModifier", Path.GetFileName(file));
-                source.Should().NotContain("AbilityType.", Path.GetFileName(file));
-            }
+            var source = File.ReadAllText(file);
+            source.Should().NotContain("GetAbilityModifier", Path.GetFileName(file));
+            source.Should().NotContain("AbilityType.", Path.GetFileName(file));
         }
     }
 }

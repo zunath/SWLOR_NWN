@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Log.Write(LogGroup.Error, message);
         }
 
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

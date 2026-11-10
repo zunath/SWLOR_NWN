@@ -123,6 +123,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// OnModuleCacheBefore) has already populated every AbilityDetail, including the
         /// Mimicry-specific fields set by AbilityBuilder.MimicryTechnique.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {

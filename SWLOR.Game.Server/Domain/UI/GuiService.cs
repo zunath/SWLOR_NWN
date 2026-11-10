@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {

@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _registered = true;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void LoadDisplayText()
         {

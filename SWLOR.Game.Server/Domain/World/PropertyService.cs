@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <inheritdoc />
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -72,6 +73,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void OnModuleLoad()
         {

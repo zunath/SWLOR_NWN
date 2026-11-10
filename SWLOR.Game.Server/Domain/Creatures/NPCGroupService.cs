@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
     {
         private readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

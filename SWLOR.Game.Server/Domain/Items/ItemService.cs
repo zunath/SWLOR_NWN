@@ -158,6 +158,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _stat = stat;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {

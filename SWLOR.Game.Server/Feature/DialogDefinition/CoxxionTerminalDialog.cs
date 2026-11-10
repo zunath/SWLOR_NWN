@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadDoors()
         {

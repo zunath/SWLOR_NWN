@@ -12,9 +12,11 @@ namespace SWLOR.Game.Server.Feature;
 /// <summary>Routes both-hand removal through safe storage before the existing equipment hooks run.</summary>
 public static class PowerGlovePairLifecycle
 {
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterUnequipGuard() => EquipmentUnequip.RegisterGuard("PowerGlove", TryHandleUnequip);
 
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterAttackRules()
     {

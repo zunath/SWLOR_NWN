@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
         /// </summary>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {

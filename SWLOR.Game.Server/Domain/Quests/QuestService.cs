@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

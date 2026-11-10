@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _stat = stat;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadTranslators()
         {

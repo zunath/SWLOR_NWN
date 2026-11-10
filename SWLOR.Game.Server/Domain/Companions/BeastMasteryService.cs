@@ -98,6 +98,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _damageCatalog = damageCatalog;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

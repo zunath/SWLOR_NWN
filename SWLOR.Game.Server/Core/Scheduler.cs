@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Core
 {
     public static class Scheduler
     {
+        private static int _clearCount;
         private static double Time { get; set; }
         private static double DeltaTime { get; set; }
 
@@ -54,6 +55,8 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         public static void Clear()
         {
+            // An item running right now is not in the list; the counter keeps it from being queued again.
+            _clearCount++;
             foreach (var item in _scheduledItems.ToArray())
                 item.Dispose();
         }
@@ -85,13 +88,15 @@ namespace SWLOR.Game.Server.Core
                     continue;
 
                 _scheduledItems.Remove(item);
+                var clearCount = _clearCount;
                 try
                 {
                     item.Execute();
                 }
                 finally
                 {
-                    if (item.Repeating && !item.IsCancelled)
+                    // A callback that cleared the scheduler cancelled everything, this running item included.
+                    if (item.Repeating && !item.IsCancelled && clearCount == _clearCount)
                     {
                         item.Reschedule(Time + item.Schedule);
                         _scheduledItems.InsertOrdered(item, _comparer);

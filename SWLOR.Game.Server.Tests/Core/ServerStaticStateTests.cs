@@ -32,6 +32,27 @@ public class ServerStaticStateTests
     }
 
     [Test]
+    public void A_repeating_callback_that_clears_the_scheduler_does_not_run_again()
+    {
+        var calls = 0;
+        Scheduler.Process();
+        Scheduler.ScheduleRepeating(() =>
+        {
+            calls++;
+            _state.ClearScheduler();
+        }, TimeSpan.FromMilliseconds(1));
+
+        Thread.Sleep(20);
+        Scheduler.Process();
+        Thread.Sleep(20);
+        Scheduler.Process();
+        Thread.Sleep(20);
+        Scheduler.Process();
+
+        calls.Should().Be(1);
+    }
+
+    [Test]
     public void Work_scheduled_after_a_clear_still_runs()
     {
         _state.ClearScheduler();

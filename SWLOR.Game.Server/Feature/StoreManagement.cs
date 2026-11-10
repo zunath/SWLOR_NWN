@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessStores()
         {

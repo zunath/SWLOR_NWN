@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         public SavedCharacterDataStore CharacterData { get; } = new();
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public void AfterDatabaseLoaded()
         {
@@ -78,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             RunServerMigrationsPostDatabase();
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void AfterCacheLoaded()
         {
@@ -131,7 +133,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>Finds and creates every server migration the assemblies hold.</summary>
         protected virtual IEnumerable<IServerMigration> CreateServerMigrations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

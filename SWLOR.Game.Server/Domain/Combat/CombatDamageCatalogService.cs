@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// Cache all valid character and defense damage types before module load.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadDamageTypes()
         {

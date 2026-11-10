@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         // Snippet handlers are registered during OnModuleCacheBefore. Graphs must load in the
         // after phase so operation validation never depends on reflection handler ordering within
         // the before phase (Skill.CacheData raises OnSwlorSkillCache re-entrantly while it runs).
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// </summary>
         protected virtual IEnumerable<Type> GetGraphDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => typeof(IConversationGraphDefinition).IsAssignableFrom(type) &&
                                !type.IsInterface &&

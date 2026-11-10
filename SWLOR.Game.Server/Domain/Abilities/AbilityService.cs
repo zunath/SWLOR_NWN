@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -4049,7 +4050,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>The ability definitions of every loaded assembly. The search stays lazy: each definition is built when the loop reaches it.</summary>
         protected virtual IEnumerable<Type> GetAbilityListDefinitionTypes() =>
-            AppDomain.CurrentDomain.GetAssemblies()
+            GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

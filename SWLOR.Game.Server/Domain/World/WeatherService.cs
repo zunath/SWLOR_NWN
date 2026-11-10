@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Domain.World
             _damageTaken = damageTaken;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {
@@ -113,6 +114,7 @@ namespace SWLOR.Game.Server.Domain.World
                    _db.Get<WorldProperty>(propertyId)?.PropertyType != PropertyType.City;
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void InitializeWeather()
         {

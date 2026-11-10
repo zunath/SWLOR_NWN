@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Native
         /// <summary>The number of client JSON payloads made unreadable since the module loaded.</summary>
         public static long RejectedPayloadCount { get; private set; }
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {

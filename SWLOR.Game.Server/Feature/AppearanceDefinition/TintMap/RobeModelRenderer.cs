@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private static RobeModelCatalog Catalog => AppearanceRenderState.GetRobeCatalog();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {

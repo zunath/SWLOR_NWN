@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _conversation = conversation;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// </summary>
         protected virtual IEnumerable<Type> GetMenuDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => typeof(ConversationMenuDefinition).IsAssignableFrom(type) &&
                                !type.IsAbstract &&

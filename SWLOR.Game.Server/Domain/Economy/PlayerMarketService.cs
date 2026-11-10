@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             _space = space;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             LoadMarkets();
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RemoveOldListings()
         {

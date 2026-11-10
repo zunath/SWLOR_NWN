@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the server starts up, a log message will be written.
         /// </summary>
+        [BootPhase(BootReload.Split)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature
             _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void ProcessBootStart()
         {

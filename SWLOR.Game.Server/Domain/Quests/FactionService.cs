@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             _db = db;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadFactions()
         {

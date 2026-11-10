@@ -28,7 +28,7 @@ internal static class AssemblyFactScanner
         private readonly ExternalTypeCollector _externalTypes = new();
         private readonly Dictionary<TypeDefinitionHandle, bool> _generated = new();
         private readonly Dictionary<(TypeKey Source, string External), HashSet<string>> _external = new();
-        private readonly Dictionary<(TypeKey Source, string External, string Member), HashSet<string>> _externalMembers = new();
+        private readonly Dictionary<(TypeKey Source, string External, string MemberName), HashSet<string>> _memberUses = new();
 
         private readonly TypeShapeProvider _shapes = new();
         private readonly ImmutabilityAnalyzer _immutability;
@@ -125,8 +125,8 @@ internal static class AssemblyFactScanner
                 .OrderBy(reference => reference.Source.ToString(), StringComparer.Ordinal)
                 .ThenBy(reference => reference.ExternalType, StringComparer.Ordinal)
                 .ToList();
-            var memberUses = _externalMembers
-                .Select(pair => new ExternalMemberUse(pair.Key.Source, pair.Key.External, pair.Key.Member, pair.Value))
+            var memberUses = _memberUses
+                .Select(pair => new ExternalMemberUse(pair.Key.Source, pair.Key.External, pair.Key.MemberName, pair.Value))
                 .OrderBy(use => use.Source.ToString(), StringComparer.Ordinal)
                 .ThenBy(use => use.ExternalType, StringComparer.Ordinal)
                 .ThenBy(use => use.MemberName, StringComparer.Ordinal)
@@ -236,17 +236,17 @@ internal static class AssemblyFactScanner
             }
         }
 
-        /// <summary>Records a call or access of a named member of a non-generic type of another assembly (<c>AppDomain::add_ProcessExit</c>, <c>Thread::.ctor</c>).</summary>
+        /// <summary>Records which member of a type of another assembly a method body calls or reads (only members named on a plain type reference).</summary>
         private void AddMemberUse(MemberReference reference)
         {
             if (reference.Parent.Kind != HandleKind.TypeReference)
                 return;
 
             var key = (_source, ExternalTypeCollector.FullName(_metadata, (TypeReferenceHandle)reference.Parent), _metadata.GetString(reference.Name));
-            if (!_externalMembers.TryGetValue(key, out var members))
+            if (!_memberUses.TryGetValue(key, out var members))
             {
                 members = new HashSet<string>(StringComparer.Ordinal);
-                _externalMembers[key] = members;
+                _memberUses[key] = members;
             }
 
             members.Add(_member);

@@ -22,10 +22,10 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// The stat reads run on every attack, tick and rebuild for every player, so a facade call that only reads must not
+/// The stat reads run on every attack, tick and rebuild for every player, so a call through <c>GameServices</c> that only reads must not
 /// allocate. These tests count the bytes the current thread allocates over many calls. The engine here is one that
 /// answers from constants and records nothing (<see cref="StatReadEngine"/>), and the unconverted calls answer through
-/// a subclass, so what is counted is the facade and the instance. Reads that already allocated in the old static class
+/// a subclass, so what is counted is the accessor and the instance. Reads that already allocated in the old static class
 /// are pinned at what they cost: <c>TemporaryStatModifier.GetStatAdjustment</c> builds a closure on entry, <c>GetNPCStats</c>
 /// builds a new <c>NPCStats</c>, and <c>GetAccuracy</c> and <c>GetEvasion</c> build log messages.
 /// </summary>
@@ -205,7 +205,7 @@ public class StatFacadeAllocationTests
     }
 
     /// <summary>
-    /// What the hot reads cost through the facade, against the instance. Not a pass or fail: run it on its own in Release:
+    /// What the hot reads cost through GameServices, against the instance. Not a pass or fail: run it on its own in Release:
     /// <c>dotnet test SWLOR.Game.Server.Tests -c Release --no-build --filter "FullyQualifiedName~StatFacadeAllocationTests.Measure_hot_read_cost" --logger "console;verbosity=detailed"</c>.
     /// </summary>
     [Test, Explicit("Micro-benchmark. Run on its own in Release.")]

@@ -13,8 +13,8 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// The status effect reads run on every attack and effect tick, so a facade call that only reads a table must not
-/// allocate: the facade resolves its instance from a cache and the instance reads its own fields. These tests count the
+/// The status effect reads run on every attack and effect tick, so a call through <c>GameServices</c> that only reads a table must not
+/// allocate: the accessor resolves its instance from a per-service slot and the instance reads its own fields. These tests count the
 /// bytes the current thread allocates over many calls. The native attack cycle calls are here too: a swing must not
 /// gain an allocation from the conversion.
 /// </summary>
@@ -154,7 +154,7 @@ public class StatusEffectFacadeAllocationTests
     }
 
     /// <summary>
-    /// What the hot reads cost through the facade, against the instance. Not a pass or fail: run it on its own in Release:
+    /// What the hot reads cost through GameServices, against the instance. Not a pass or fail: run it on its own in Release:
     /// <c>dotnet test SWLOR.Game.Server.Tests -c Release --no-build --filter "FullyQualifiedName~StatusEffectFacadeAllocationTests.Measure_hot_read_cost" --logger "console;verbosity=detailed"</c>.
     /// </summary>
     [Test, Explicit("Micro-benchmark. Run on its own in Release.")]

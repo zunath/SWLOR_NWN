@@ -16,8 +16,8 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// The perk reads run on every attack and stat rebuild, so a facade call that only reads a table must not allocate: the
-/// facade resolves its instance from a cache and the instance reads its own fields. These tests count the bytes the
+/// The perk reads run on every attack and stat rebuild, so a call through <c>GameServices</c> that only reads a table must not allocate: the
+/// accessor resolves its instance from a per-service slot and the instance reads its own fields. These tests count the bytes the
 /// current thread allocates over many calls, with the real cache build over a small catalog. The reads that ask the
 /// engine about a creature (a player's level, the force affinity of a character) are not here: the recording engine fake
 /// allocates a record per call, so their cost says nothing about the service.

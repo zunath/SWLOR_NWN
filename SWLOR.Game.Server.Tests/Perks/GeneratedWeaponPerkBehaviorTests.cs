@@ -356,6 +356,66 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void SniperStance_LongRangeDamageAppliesToRangedAbilityDamageOnly()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        Regex.IsMatch(
+            combatSource,
+            @"if \(isAbilityDamage\)\s*\{[^}]*damage = ApplyRangedAbilityLongRangeDamageModifier\(attacker, defender, skillType, damage\);",
+            RegexOptions.Singleline).Should().BeTrue(
+            "the long-range damage bonus belongs to hostile ranged abilities, not auto-attacks");
+        var modifier = combatSource.Substring(
+            combatSource.IndexOf("public static int ApplyRangedAbilityLongRangeDamageModifier(", StringComparison.Ordinal));
+        modifier = modifier.Substring(0, modifier.IndexOf("public static int ", 10, StringComparison.Ordinal));
+        modifier.Should().Contain("IsRangedAbilityLongRangeTarget(attacker, defender, skillType)");
+        modifier.Should().Contain("StatType.RangedAbilityLongRangeDamagePercentAdjustment");
+
+        // Sniper Stance and Scope Calibration both supply a 10m threshold; owning both must stay 10m.
+        Stat.GetStatTypeAggregation(StatType.RangedAbilityLongRangeMinimumRangeMeters)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.AggregateStatAdjustment(StatType.RangedAbilityLongRangeMinimumRangeMeters, 10, 10)
+            .Should().Be(10);
+        Stat.GetStatTypeCategory(StatType.RangedAbilityLongRangeDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+    }
+
+    [Test]
+    public void ThrowingStances_WireTargetHasteAndSingleTargetDamageIntoSharedCombat()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var attackSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+
+        // Ordnance Stance: auto-attacks and single-target abilities share the single-target stage.
+        combatSource.Should().Contain(
+            "damage = ApplyThrowingSingleTargetDamageModifier(attacker, skillType, damage, isAbilityDamage, ability);");
+        var modifier = combatSource.Substring(
+            combatSource.IndexOf("public static int ApplyThrowingSingleTargetDamageModifier(", StringComparison.Ordinal));
+        modifier = modifier.Substring(0, modifier.IndexOf("public static int ", 10, StringComparison.Ordinal));
+        modifier.Should().Contain("skillType != SkillType.Throwing");
+        modifier.Should().Contain("!isAbilityDamage ||");
+        modifier.Should().Contain("Ability.IsSingleTargetImpact(attacker, ability)");
+
+        // Flurry Stance: the per-swing delay reads the swing's target, with and without limited Haste.
+        Regex.IsMatch(attackSource,
+                @"GetTargetAttackDelayReduction\(\s*pCreature.m_idSelf,\s*oidAttackTarget,\s*attackSkillType\)")
+            .Should().BeTrue();
+        attackSource.Should().Contain("Combat.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction)");
+        attackSource.Should().Contain(
+            "Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)");
+        var helper = combatSource.Substring(
+            combatSource.IndexOf("public static int GetTargetAttackDelayReduction(", StringComparison.Ordinal));
+        helper = helper.Substring(0, helper.IndexOf("private static int ", StringComparison.Ordinal));
+        helper.Should().Contain("StatusEffectCategory.Bleeding");
+        helper.Should().Contain("IsAttackDelayReductionSuppressed(attacker)");
+    }
+
+    [Test]
     public void QueuedWeaponNativeRolls_UseGenericLongRangeAccuracyAdjustment()
     {
         var root = FindRepositoryRoot();
@@ -605,7 +665,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
         combatRoundGuardIndex.Should().BeLessThan(weaponLookupIndex,
             "the unmanaged hook must reject a missing combat round before dereferencing it");
-        attackHookSource.Should().Contain("Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)",
+        attackHookSource.Should().Contain("Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)",
             "Limited Haste must be applied only after the swing's actual weapon skill matches");
 
         var combatSource = File.ReadAllText(Path.Combine(
@@ -902,7 +962,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackWindowSeconds, "30");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.LowHPGuard, "25");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedRequiredCategory, "(int)StatusEffectCategory.Control");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedSelfEnmityPercentAdjustment, "15");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment, "15");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.OutgoingDebuffDurationPercentAdjustment, "20");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.DamageTakenNextSkillAbilityDamageBonus, "20");
 
@@ -919,10 +979,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectIcon, "(int)EffectIconType.DuelistsDistanceStatusEffect");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, "(int)StatusEffectCleanseType.TreatmentKit1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, "(int)ResistanceType.Trauma");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionRangedOnly, "1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionRangedOnly, "1");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflection, "12");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");
@@ -1023,10 +1083,21 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var flurry = new FlurryStanceStatusEffect();
         AssertStatusStat(flurry, StatType.DefensePercentAdjustment, -10);
+        AssertStatusStat(flurry, StatType.ThrowingAttackDelayReductionToBleedingTargetPercent, 10);
+        AssertStatusStat(flurry, StatType.AttackDelayReductionPercent, 0);
+
+        var ordnance = new OrdnanceStanceStatusEffect();
+        AssertStatusStat(ordnance, StatType.ThrowingAreaAbilityDamagePercentAdjustment, 10);
+        AssertStatusStat(ordnance, StatType.ThrowingSingleTargetDamagePercentAdjustment, -10);
 
         var suppression = new SuppressionStanceStatusEffect();
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.WeaponCriticalDamagePercentAdjustment, -10);
+
+        var sniper = new SniperStanceStatusEffect();
+        AssertStatusStat(sniper, StatType.RangedAbilityLongRangeMinimumRangeMeters, 10);
+        AssertStatusStat(sniper, StatType.RangedAbilityLongRangeDamagePercentAdjustment, 15);
+        AssertStatusStat(sniper, StatType.AttackDelayReductionPercent, -15);
 
         var gambler = new GamblerStanceStatusEffect();
         AssertStatusStat(gambler, StatType.CriticalRatePercentAdjustment, 12);
@@ -1191,8 +1262,8 @@ public class GeneratedWeaponPerkBehaviorTests
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 8");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 12");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 17");
-        guardCounterSource.Should().Contain("RequireRecentGuardedHitForConditionalStatus = true");
-        guardCounterSource.Should().Contain("ConditionalTargetStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().Contain("RecentGuardedHitStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().NotContain("ConditionalTargetStatusEffect");
 
         var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
         foreach (var feat in new[]
@@ -1839,7 +1910,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "Feature",
             "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs"));
-        weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
+        weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivationFromHit(target)");
         weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
         weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
         weaponBaseSource.Should().Contain("SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0",

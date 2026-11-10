@@ -44,6 +44,7 @@ public class CombatReadinessEquipmentTests
             using SWLOR.Game.Server.Service.StatService;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
+            using PowerGloveEquipment = SWLOR.Game.Server.Service.PowerGloveEquipment;
             using Stat = ReadinessHarness;
 
             public static class ReadinessHarness

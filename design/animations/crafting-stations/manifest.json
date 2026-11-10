@@ -1,0 +1,397 @@
+{
+  "Version": 1,
+  "Workbook": "",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
+  "RecipeSha256": "9369e7ab7b5ca585a3648c8a6d6dedc2865da0be77e92e29722fccb952274241",
+  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "Animations": [
+    {
+      "Id": "ForgeWork",
+      "Name": "Plasma forge work",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A smith works a plasma forge: dials in the heat, hauls a hydraulic press lever, then hones the piece.",
+      "Interpretation": "A looping standing work cycle at a console. Weight stays planted while the hands twist a heat dial, pull a press lever down with a lean, and stroke a hone across the piece. Used for every Smithery craft and quick craft.",
+      "Activity": "Crafting",
+      "Status": "Draft: visual review required",
+      "Project": "ForgeWork.swlanim",
+      "Duration": 3.4,
+      "Keyframes": 69,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.6530645E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Hands on the controls"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Reach for the heat dial"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Turn the dial"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Grip the press lever"
+        },
+        {
+          "Time": 1.7,
+          "Label": "Haul the lever down"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Hold the press"
+        },
+        {
+          "Time": 2.35,
+          "Label": "Release the lever"
+        },
+        {
+          "Time": 2.6,
+          "Label": "Hone the piece"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Hone back"
+        },
+        {
+          "Time": 3.1,
+          "Label": "Hone out"
+        },
+        {
+          "Time": 3.4,
+          "Label": "Hands on the controls"
+        }
+      ],
+      "ProjectSha256": "fde098fe608d192b02ab44c640c4d8a400491381c846d845dab7d6f5ca0e4075"
+    },
+    {
+      "Id": "Circuitry",
+      "Name": "Circuit bench work",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "An engineer leans over a circuit board and works it with a probe.",
+      "Interpretation": "A looping close-work cycle. The chest tips forward over the bench, the left hand steadies the board and the right hand taps test points, then drags a solder line. Used for every Engineering craft and quick craft.",
+      "Activity": "Crafting",
+      "Status": "Draft: visual review required",
+      "Project": "Circuitry.swlanim",
+      "Duration": 2.9,
+      "Keyframes": 59,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.550668E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Probe over the board"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Touch a test point"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.85,
+          "Label": "Touch the next point"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Lift"
+        },
+        {
+          "Time": 1.45,
+          "Label": "Adjust the board"
+        },
+        {
+          "Time": 1.85,
+          "Label": "Lay the solder line"
+        },
+        {
+          "Time": 2.15,
+          "Label": "Drag the line"
+        },
+        {
+          "Time": 2.5,
+          "Label": "Lift"
+        },
+        {
+          "Time": 2.9,
+          "Label": "Probe over the board"
+        }
+      ],
+      "ProjectSha256": "0d46673391bfeda0cc0fa60aaa6ffcfb6eb78812b14cd4b1d954d0201b0e0e58"
+    },
+    {
+      "Id": "Fabricate",
+      "Name": "Fabricator console work",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "An operator runs a three-head fabricator from its control panel.",
+      "Interpretation": "A looping console cycle. The torso turns to each tool head in turn, a hand presses its key, and both hands push the feed sliders forward at the centre. Used for every Fabrication craft and quick craft.",
+      "Activity": "Crafting",
+      "Status": "Draft: visual review required",
+      "Project": "Fabricate.swlanim",
+      "Duration": 3.6,
+      "Keyframes": 73,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.8115454E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Centre panel"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Turn to the cutter"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Press the cutter key"
+        },
+        {
+          "Time": 1,
+          "Label": "Release"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Centre sliders"
+        },
+        {
+          "Time": 1.75,
+          "Label": "Push the feed sliders"
+        },
+        {
+          "Time": 2.15,
+          "Label": "Turn to the bonder"
+        },
+        {
+          "Time": 2.45,
+          "Label": "Press the bonder key"
+        },
+        {
+          "Time": 2.75,
+          "Label": "Release"
+        },
+        {
+          "Time": 3.2,
+          "Label": "Centre panel"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Centre panel"
+        }
+      ],
+      "ProjectSha256": "6c32be75837a05d32afbeef763eb3f90bbd70a768feae7b03d8d3a7842368310"
+    },
+    {
+      "Id": "Cooking",
+      "Name": "Kitchen work",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A cook stirs a pot and seasons it with a pinch.",
+      "Interpretation": "A looping galley cycle. The right hand stirs a steady circle at waist height while the left hand holds the pot, lifts for a pinch of seasoning and flicks it over the pot. Used for every cooking craft and quick craft.",
+      "Activity": "Crafting",
+      "Status": "Draft: visual review required",
+      "Project": "Cooking.swlanim",
+      "Duration": 3.2,
+      "Keyframes": 65,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.9886024E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Stir"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Stir"
+        },
+        {
+          "Time": 1,
+          "Label": "Stir"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Stir"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.7,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 1.9,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 2,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 2.2,
+          "Label": "Season while stirring"
+        },
+        {
+          "Time": 2.3,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.5,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.6,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.8,
+          "Label": "Stir"
+        },
+        {
+          "Time": 2.9,
+          "Label": "Stir"
+        },
+        {
+          "Time": 3,
+          "Label": "Stir"
+        },
+        {
+          "Time": 3.1,
+          "Label": "Stir"
+        },
+        {
+          "Time": 3.2,
+          "Label": "Stir"
+        }
+      ],
+      "ProjectSha256": "d4ced78f196c6e6906564a7d73a3dc12b4cfd61b160c5180329c9d39d56ad80d"
+    },
+    {
+      "Id": "Compound",
+      "Name": "Reaction bench work",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A saboteur drips a reagent into a vial and holds it up to read the reaction.",
+      "Interpretation": "A looping bench cycle. The right hand drips from a dropper into a vial held in the left, the vial lifts to eye level to check the colour, then returns for another drop. Used for every Espionage craft and quick craft.",
+      "Activity": "Crafting",
+      "Status": "Draft: visual review required",
+      "Project": "Compound.swlanim",
+      "Duration": 3.3,
+      "Keyframes": 67,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.5770546E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dropper over the vial"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Squeeze a drop"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Lift the dropper"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Squeeze a drop"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Lift the dropper"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Raise the vial"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Read the colour"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Lower the vial"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Dropper over the vial"
+        }
+      ],
+      "ProjectSha256": "053553620bcac3bc2aa4acd7497a80fc4388010052913bb6aa820377aa89f7fe"
+    }
+  ]
+}

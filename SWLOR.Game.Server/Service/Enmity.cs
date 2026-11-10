@@ -580,6 +580,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Removes a creature from one enemy's enmity table without making the enemy pick a new target.
+        /// </summary>
+        /// <param name="creature">The creature to remove.</param>
+        /// <param name="enemy">The enemy whose enmity table is updated.</param>
+        public static void RemoveEnmity(uint creature, uint enemy)
+        {
+            RemoveEnmityTableEntry(creature, enemy);
+            RemoveProximityEnmityTracking(creature, enemy);
+        }
+
+        /// <summary>
         /// Removes the tracked proximity enmity contribution from a specific enemy's table.
         /// </summary>
         /// <param name="creature">The creature to remove proximity enmity for.</param>

@@ -9,8 +9,20 @@ internal static class PreviewWriter
     private static readonly string[] Bones = ["rootdummy", "torso_g", "neck_g", "head_g", "lbicep_g", "lforearm_g", "lhand_g",
         "rbicep_g", "rforearm_g", "rhand_g", "lthigh_g", "lshin_g", "lfoot_g", "rthigh_g", "rshin_g", "rfoot_g"];
 
+    /// <summary>
+    /// Work clips that have no ability definition. <c>Fishing</c> comes from <c>ActivityStatusType</c>; station crafting and
+    /// gathering are not busy states, so their names live here.
+    /// </summary>
+    public static readonly string[] WorkActivities = ["Crafting", "Gathering"];
+
     /// <summary>Returns the accessory's local tip offset for every offline preview producer.</summary>
-    public static Vector3 WeaponTipOffset(string? activity) => new(0, activity == "Fishing" ? 1.72f : .8f, 0);
+    public static Vector3 WeaponTipOffset(string? activity) => new(0, activity switch
+    {
+        "Fishing" => 1.72f,
+        "Gathering" => .9f,
+        "Crafting" => .45f,
+        _ => .8f
+    }, 0);
 
     /// <summary>Samples saved humanoid joints and attachment proxies for the browser preview.</summary>
     public static object Motion(AnimationProject project, Motion motion)

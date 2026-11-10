@@ -37,6 +37,8 @@ public static partial class MigrationEngineTests
     public static async Task PlayerLootStatRevision(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        // Count equipment totals from the worn gear, not the fixture's seeded combat values.
+        fixture.MatchEquipmentRecordsToGear();
         var player = fixture.Creature;
         var gloves = await CreateItemAsync(ctx, player, RevisedGloves, player);
         var pistol = await CreateItemAsync(ctx, player, RevisedPistol, player);

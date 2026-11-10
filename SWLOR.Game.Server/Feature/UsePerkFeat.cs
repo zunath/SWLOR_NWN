@@ -244,6 +244,18 @@ namespace SWLOR.Game.Server.Feature
             return true;
         }
 
+        /// <summary>
+        /// Interrupts a cast or channel because an interrupting attack hit its creature, and shows nearby players it worked.
+        /// </summary>
+        public static bool InterruptAbilityActivationFromHit(uint target)
+        {
+            if (!InterruptAbilityActivation(target))
+                return false;
+
+            Messaging.FloatTextNearbyToPlayers(target, ColorToken.Combat("Interrupted!"));
+            return true;
+        }
+
         private static void ClearAbilityActivationIdleSnapshots(uint activator)
         {
             Combat.ClearAbilityActivationIdleBonuses(activator);
@@ -371,6 +383,12 @@ namespace SWLOR.Game.Server.Feature
                 EventsPlugin.SkipEvent();
                 if (!QuickCast.TryCast(activator, feat, out var error) && !string.IsNullOrWhiteSpace(error))
                     SendMessageToPC(activator, error);
+                return;
+            }
+            if (Performance.IsModeFeat(activator, feat))
+            {
+                EventsPlugin.SkipEvent();
+                Performance.HandleInput(activator, feat);
                 return;
             }
             TryUseAbility(activator, target, feat, targetLocation, true);
@@ -547,6 +565,10 @@ namespace SWLOR.Game.Server.Feature
 
             if (GetIsPC(activator))
                 PlayerPlugin.PlaySound(activator, soundResref, activator);
+
+            // A hidden activator hears its own ability; nobody nearby does.
+            if (Stealth.IsConcealed(activator))
+                return;
 
             var nth = 1;
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
@@ -746,8 +768,9 @@ namespace SWLOR.Game.Server.Feature
 
                 PlayAbilitySound(activator, ability.ActivationSound);
 
-                // Display a casting visual effect if one has been specified.
-                if (ability.ActivationVisualEffect != VisualEffect.None)
+                // Display a casting visual effect if one has been specified. A hidden activator's
+                // casting effect would mark its position, so it is skipped while hidden.
+                if (ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator))
                 {
                     var vfx = TagEffect(EffectVisualEffect(ability.ActivationVisualEffect), "ACTIVATION_VFX");
                     ApplyEffectToObject(DurationType.Temporary, vfx, activator, delay + 0.2f);

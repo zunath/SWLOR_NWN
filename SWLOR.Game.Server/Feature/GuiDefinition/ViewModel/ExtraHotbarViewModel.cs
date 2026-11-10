@@ -13,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ExtraHotbarViewModel : GuiViewModelBase<ExtraHotbarViewModel, GuiPayloadBase>,
         IGuiRefreshable<ExtraHotbarRefreshEvent>,
-        IGuiRefreshable<ExtraHotbarStatusRefreshEvent>
+        IGuiRefreshable<ExtraHotbarStatusRefreshEvent>,
+        IGuiRefreshable<ExtraHotbarCooldownRefreshEvent>
     {
         public const string SlotsElement = "extra_hotbar_slots";
         public const int StackedRowLength = 6;
@@ -360,6 +361,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        public void Refresh(ExtraHotbarCooldownRefreshEvent payload)
+        {
+            if (_bar == null)
+                return;
+
+            for (var slot = 0; slot < _bar.SlotCount; slot++)
+            {
+                if (_bar.Slots[slot].Type == ExtraHotbarSlotType.Ability)
+                    RefreshSlot(slot, _bar.Slots[slot]);
+            }
+        }
+
         private void LoadBar()
         {
             _bar = ExtraHotbars.GetBar(Player, BarIndex);
@@ -584,8 +597,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case ExtraHotbarSlotType.Ability:
                     if (Ability.IsFeatRegistered(slot.Feat))
                     {
+                        var ability = Ability.GetAbilityDetail(slot.Feat);
                         icon = ExtraHotbars.GetAbilityIcon(slot.Feat);
-                        tooltip = Ability.GetAbilityDetail(slot.Feat).Name;
+                        tooltip = ability.Name;
+
+                        // NUI images ignore the texture overrides that draw the native quickbar's recharge sweep,
+                        // so the slot shows the same recharge frame directly.
+                        var stage = AbilityCooldownVisual.GetCooldownStage(Player, ability.RecastGroup);
+                        if (stage >= 0)
+                            icon = AbilityCooldownVisual.GetCooldownTextureName(icon, stage) ?? icon;
                     }
                     break;
                 case ExtraHotbarSlotType.Item:

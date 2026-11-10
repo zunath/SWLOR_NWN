@@ -1100,6 +1100,7 @@ namespace SWLOR.Game.Server.Service
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplyPhysicalAbilityShapeDamageModifier(attacker, damageType, damage, isSingleTarget);
                 damage = ApplyAreaAbilityAfterDeflectionDamageModifier(attacker, skillType, damage, isArea);
+                damage = ApplyRangedAbilityLongRangeDamageModifier(attacker, defender, skillType, damage);
             }
 
             damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
@@ -1108,6 +1109,7 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyAbilityShapeDamageModifier(attacker, damage, isAbilityDamage, ability);
+            damage = ApplyThrowingSingleTargetDamageModifier(attacker, skillType, damage, isAbilityDamage, ability);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
 
             damage = ApplyTargetStatusDamageModifiers(
@@ -1185,6 +1187,34 @@ namespace SWLOR.Game.Server.Service
                     ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        /// <summary>
+        /// Applies ThrowingSingleTargetDamagePercentAdjustment to Throwing auto-attacks and
+        /// single-target hostile Throwing abilities, the Throwing-only form of the single-target
+        /// scope used by SingleTargetDamagePercentAdjustment.
+        /// </summary>
+        public static int ApplyThrowingSingleTargetDamageModifier(
+            uint attacker,
+            SkillType skillType,
+            int damage,
+            bool isAbilityDamage,
+            AbilityDetail ability)
+        {
+            if (damage <= 0 || skillType != SkillType.Throwing)
+                return damage;
+
+            var isSingleTarget = !isAbilityDamage ||
+                                 ability?.IsHostileAbility == true && Ability.IsSingleTargetImpact(attacker, ability);
+            if (!isSingleTarget)
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingSingleTargetDamagePercentAdjustment);
+            return adjustment == 0
+                ? damage
+                : ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         /// <summary>
@@ -2464,6 +2494,14 @@ namespace SWLOR.Game.Server.Service
                 defenseIgnore,
                 duration,
                 StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                attacker,
+                StatType.NextSkillAbilityRequiredCategory,
+                0,
+                duration,
+                StatType.NextSkillAbilitySkillType);
         }
 
         private static void ApplyCriticalNextAbilityDamageBonus(uint attacker, SkillType skillType)
@@ -2682,7 +2720,15 @@ namespace SWLOR.Game.Server.Service
             if (damageBonus <= 0 || window <= 0)
                 return;
 
-            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window);
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                defender,
+                StatType.DamageTakenNextSkillAbilityRequiredCategory));
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                defender,
+                StatType.NextSkillAbilityDamageBonus,
+                StatType.NextSkillAbilitySkillType) == damageBonus;
+            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window, requiredCategory: requiredCategory);
+            ShowReadyCue(defender, wasArmed, damageBonus, ReadyCue.Damage("Breaker Reversal", damageBonus));
         }
 
         public static void ApplyLowHPDamageTakenEffects(uint defender, int damage)
@@ -3745,7 +3791,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var source in Stat.GetStatSources(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment))
             {
-                GrantNextSkillAbilityStaminaCostAdjustment(
+                GrantCuedNextSkillAbilityStaminaCostAdjustment(
                     creature,
                     GetSkillTypeFromStat(source[StatType.AvoidedAttackNextSkillAbilitySkillType]),
                     source[StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment],
@@ -4327,6 +4373,12 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Invalid || duration <= 0 && damageBonus <= 0)
                 return;
 
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextSkillAbilityExposedDamageBonus,
+                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds) != 0;
+            ShowReadyCue(creature, wasArmed, damageBonus, ReadyCue.Damage("Guard Reversal", damageBonus));
+
             var window = Math.Max(1, duration);
             TemporaryStatModifier.Replace(
                 creature,
@@ -4785,6 +4837,24 @@ namespace SWLOR.Game.Server.Service
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.SkillAreaAbilityDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        public static int ApplyRangedAbilityLongRangeDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !IsRangedAbilityLongRangeTarget(attacker, defender, skillType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.RangedAbilityLongRangeDamagePercentAdjustment);
             if (adjustment == 0)
                 return damage;
 
@@ -5666,11 +5736,15 @@ namespace SWLOR.Game.Server.Service
             if (ability == null || !ability.IsHostileAbility)
                 return;
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    skillType,
+                    StatType.AbilityUsedMovementSpeedPercentAdjustmentSkillType,
+                    StatType.AbilityUsedMovementSpeedRangedOnly))
+            {
                 return;
+            }
 
             var movementSpeed = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedPercentAdjustment);
             var duration = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMovementSpeedDurationSeconds);
@@ -5961,7 +6035,8 @@ namespace SWLOR.Game.Server.Service
             bool firstHostileAbilityHitDamageBonusApplied,
             bool isFirstSuccessfulTarget,
             StatusEffectCategory appliedStatusCategories,
-            bool allowsHitProcs = true)
+            bool allowsHitProcs = true,
+            bool targetWasAttackingAlly = false)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5994,7 +6069,8 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusAppliedEffects(
                 activator,
                 target,
-                appliedStatusCategories);
+                appliedStatusCategories,
+                targetWasAttackingAlly);
             ApplyAbilityTargetStatusEffects(activator, target, ability);
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
@@ -7634,7 +7710,8 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStatusAppliedEffects(
             uint activator,
             uint target,
-            StatusEffectCategory appliedStatusCategories)
+            StatusEffectCategory appliedStatusCategories,
+            bool targetWasAttackingAlly)
         {
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 activator,
@@ -7661,10 +7738,79 @@ namespace SWLOR.Game.Server.Service
             var nextAttackWindow = Stat.GetStatAdjustment(
                 activator,
                 StatType.StatusAppliedNextAttackWindowSeconds);
+            if (nextAttackWindow > 0)
+            {
+                var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                    activator,
+                    StatType.NextAttackStatusAppliedDMGBonus,
+                    StatType.NextAttackStatusAppliedDMGBonus) != 0;
+                ShowReadyCue(activator, wasArmed, nextAttackDamage, ReadyCue.Damage("Charged Blows", nextAttackDamage));
+            }
+
             GrantStatusAppliedNextAttackDamageBonus(activator, nextAttackDamage, nextAttackWindow);
 
             ApplyStatusAppliedSelfEffects(activator);
             ApplyStatusAppliedTargetEffects(activator, target);
+            if (targetWasAttackingAlly)
+                ApplyStatusAppliedTargetAttackingAllyEnmity(activator, target);
+        }
+
+        /// <summary>
+        /// Whether the target is attacking one of the activator's allies, checked only when the activator
+        /// has a rider that needs it.
+        /// </summary>
+        public static bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target)
+        {
+            if (Stat.GetStatAdjustment(activator, StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment) <= 0)
+                return false;
+
+            return IsAttackingAllyOf(target, activator);
+        }
+
+        /// <summary>
+        /// Whether the attacker is attacking a party member of the creature other than the creature itself.
+        /// Uses the attacker's current attack target, or, while it is casting or moving, the creature its
+        /// enmity table has it attacking.
+        /// </summary>
+        public static bool IsAttackingAllyOf(uint attacker, uint creature)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(creature))
+                return false;
+
+            var attackTarget = GetAttackTarget(attacker);
+            if (!GetIsObjectValid(attackTarget))
+                attackTarget = Enmity.GetHighestEnmityAttackTarget(attacker);
+
+            return GetIsObjectValid(attackTarget) &&
+                   attackTarget != creature &&
+                   Party.IsInParty(creature, attackTarget);
+        }
+
+        private static void ApplyStatusAppliedTargetAttackingAllyEnmity(uint activator, uint target)
+        {
+            var enmity = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment);
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedTargetAttackingAllyEnmityDurationSeconds);
+            if (enmity <= 0 || duration <= 0 || !GetIsObjectValid(target))
+                return;
+
+            // Challenge is the shared "more Enmity toward its source" status. Never replace a stronger one
+            // the activator already put on this target, such as Guardian's Challenge.
+            var existing = StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Where(effect => effect is ChallengeEnmityStatusEffect &&
+                                 effect.Source == activator &&
+                                 !effect.IsFlaggedForRemoval)
+                .Select(effect => effect.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment))
+                .DefaultIfEmpty(0)
+                .Max();
+            if (existing > enmity)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, new ChallengeEnmityStatusEffect(enmity), duration);
         }
 
         private static void ApplyStatusAppliedSelfEffects(uint activator)
@@ -8500,7 +8646,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)
         {
-            if (GetAbilitySkillType(activator, ability) != SkillType.Force ||
+            if (!Ability.IsForcePower(activator, ability) ||
                 !ability.Requirements.OfType<AbilityRequirementFP>().Any(x => x.RequiredFP > 0))
             {
                 return;
@@ -9563,9 +9709,12 @@ namespace SWLOR.Game.Server.Service
                        GetSkillTypeFromStat(source[StatType.NextSkillAbilityStaminaCostAdjustmentSkillType]));
         }
 
+        /// <param name="abilityStatusCategories">Status categories the ability applies; a bonus stored with
+        /// a required category (Breaker Reversal: Control) waits for an ability that applies it.</param>
         public static (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            StatusEffectCategory abilityStatusCategories = StatusEffectCategory.None)
         {
             if (skillType == SkillType.Invalid)
                 return (0, 0, 0);
@@ -9576,6 +9725,16 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType));
             if (!SkillTypeMatches(skillType, storedSkillType))
                 return (0, 0, 0);
+
+            var requiredCategory = GetStatusEffectCategoryFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                StatType.NextSkillAbilitySkillType));
+            if (requiredCategory != StatusEffectCategory.None &&
+                (abilityStatusCategories & requiredCategory) == 0)
+            {
+                return (0, 0, 0);
+            }
 
             var damageBonus = TemporaryStatModifier.Consume(
                 creature,
@@ -9588,6 +9747,10 @@ namespace SWLOR.Game.Server.Service
             var defenseIgnore = TemporaryStatModifier.Consume(
                 creature,
                 StatType.NextSkillAbilityDefenseIgnorePercentAdjustment,
+                StatType.NextSkillAbilitySkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
                 StatType.NextSkillAbilitySkillType);
             TemporaryStatModifier.Consume(
                 creature,
@@ -9906,9 +10069,13 @@ namespace SWLOR.Game.Server.Service
                 StatType.WeaponAbilityActivationIdleSnapshot);
         }
 
+        /// <param name="ability">The queued ability. Its status categories add category accuracy
+        /// (Scrapper Control: "your control abilities gain Ability Accuracy"), which ability rolls get
+        /// in ApplyCombatImpact but the native weapon roll would otherwise miss.</param>
         public static int GetQueuedWeaponAbilityActivationHitChanceAdjustment(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            AbilityDetail ability = null)
         {
             var activationSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
@@ -9921,8 +10088,14 @@ namespace SWLOR.Game.Server.Service
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
 
+            var statusCategoryHitChanceAdjustment = GetAbilityStatusCategoryHitChancePercentAdjustment(
+                creature,
+                skillType,
+                ability?.ResolveImpactStatusCategories?.Invoke(creature) ?? StatusEffectCategory.None);
+
             // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
-            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment +
+                   statusCategoryHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
@@ -10781,7 +10954,8 @@ namespace SWLOR.Game.Server.Service
                 ability,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
                 StatType.SecondaryAbilityUsedEvasionPercentAdjustment,
-                StatType.SecondaryAbilityUsedEvasionDurationSeconds);
+                StatType.SecondaryAbilityUsedEvasionDurationSeconds,
+                StatType.SecondaryAbilityUsedEvasionRangedOnly);
         }
 
         private static void ApplyAbilityUsedSkillEvasionChannel(
@@ -10789,14 +10963,18 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             StatType skillTypeStat,
             StatType evasionStat,
-            StatType durationStat)
+            StatType durationStat,
+            StatType? rangedOnlyStat = null)
         {
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                skillTypeStat));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    skillTypeStat,
+                    rangedOnlyStat))
+            {
                 return;
+            }
 
             var evasionPercent = Stat.GetStatAdjustment(
                 activator,
@@ -10819,12 +10997,15 @@ namespace SWLOR.Game.Server.Service
             if (ability?.IsHostileAbility != true)
                 return;
 
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflectionSkillType));
-            var abilitySkillType = GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
+            if (!AbilityUsedTriggerSkillMatches(
+                    activator,
+                    ability,
+                    GetAbilitySkillType(activator, ability),
+                    StatType.AbilityUsedRangedDeflectionSkillType,
+                    StatType.AbilityUsedRangedDeflectionRangedOnly))
+            {
                 return;
+            }
 
             var deflection = Stat.GetStatAdjustment(
                 activator,
@@ -11726,6 +11907,43 @@ namespace SWLOR.Game.Server.Service
             return requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType);
         }
 
+        private static bool AbilityUsedTriggerSkillMatches(
+            uint activator,
+            AbilityDetail ability,
+            SkillType abilitySkillType,
+            StatType skillTypeStat,
+            StatType? rangedOnlyStat)
+        {
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(activator, skillTypeStat));
+            var rangedOnly = rangedOnlyStat.HasValue &&
+                             Stat.GetStatAdjustment(activator, rangedOnlyStat.Value) > 0;
+
+            return AbilityUsedTriggerSkillMatches(
+                abilitySkillType,
+                requiredSkillType,
+                rangedOnly,
+                ability?.IsHostileAbility == true);
+        }
+
+        /// <summary>
+        /// Decides whether an activated ability fires an "after using an ability" trigger. A ranged-only
+        /// trigger fires from any hostile ranged weapon ability (Pistol, Twin Pistol, Rifle or Throwing),
+        /// optionally narrowed by a skill selector; otherwise the ability's skill must match the selector.
+        /// </summary>
+        public static bool AbilityUsedTriggerSkillMatches(
+            SkillType abilitySkillType,
+            SkillType requiredSkillType,
+            bool rangedOnly,
+            bool isHostileAbility)
+        {
+            if (!rangedOnly)
+                return SkillTypeMatches(abilitySkillType, requiredSkillType);
+
+            return isHostileAbility &&
+                   IsRangedWeaponSkill(abilitySkillType) &&
+                   SkillTypeMatchesOrGlobal(abilitySkillType, requiredSkillType);
+        }
+
         private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)
         {
             return skillType == SkillType.Force ||
@@ -11939,7 +12157,8 @@ namespace SWLOR.Game.Server.Service
             int damageBonus,
             int criticalRatePercentAdjustment,
             int durationSeconds,
-            int defenseIgnorePercentAdjustment = 0)
+            int defenseIgnorePercentAdjustment = 0,
+            StatusEffectCategory requiredCategory = StatusEffectCategory.None)
         {
             if (!GetIsObjectValid(creature) ||
                 durationSeconds <= 0 ||
@@ -11950,6 +12169,14 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.NextSkillAbilitySkillType,
                 (int)skillType,
+                durationSeconds,
+                StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                (int)requiredCategory,
                 durationSeconds,
                 StatType.NextSkillAbilitySkillType);
 
@@ -12000,6 +12227,38 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAttackStatusAppliedDMGBonus);
         }
 
+        private static void GrantCuedNextSkillAbilityStaminaCostAdjustment(
+            uint creature,
+            SkillType skillType,
+            int adjustment,
+            int durationSeconds,
+            string group = null,
+            bool rangedOnly = false,
+            bool hostileOnly = false)
+        {
+            if (durationSeconds <= 0)
+                return;
+
+            group ??= GetDefaultNextSkillAbilityStaminaCostGroup(skillType);
+            var wasArmed = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextSkillAbilityStaminaCostAdjustment,
+                group) != 0;
+            GrantNextSkillAbilityStaminaCostAdjustment(creature, skillType, adjustment, durationSeconds, group, rangedOnly, hostileOnly);
+            ShowReadyCue(creature, wasArmed, adjustment, ReadyCue.StaminaDiscount(adjustment));
+        }
+
+        private static string GetDefaultNextSkillAbilityStaminaCostGroup(SkillType skillType)
+        {
+            return $"{StatType.NextSkillAbilityStaminaCostAdjustmentSkillType}:{(int)skillType}";
+        }
+
+        private static void ShowReadyCue(uint creature, bool wasArmed, int bonus, string text)
+        {
+            if (ReadyCue.ShouldShow(GetIsPC(creature), wasArmed, bonus))
+                FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false);
+        }
+
         public static void GrantNextSkillAbilityStaminaCostAdjustment(
             uint creature,
             SkillType skillType,
@@ -12014,7 +12273,7 @@ namespace SWLOR.Game.Server.Service
                 durationSeconds <= 0)
                 return;
 
-            group ??= $"{StatType.NextSkillAbilityStaminaCostAdjustmentSkillType}:{(int)skillType}";
+            group ??= GetDefaultNextSkillAbilityStaminaCostGroup(skillType);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.NextSkillAbilityStaminaCostAdjustmentSkillType,
@@ -12048,7 +12307,7 @@ namespace SWLOR.Game.Server.Service
                 source,
                 StatType.BleedingStatusExpiredNextSkillAbilityWindowSeconds);
 
-            GrantNextSkillAbilityStaminaCostAdjustment(source, skillType, adjustment, windowSeconds);
+            GrantCuedNextSkillAbilityStaminaCostAdjustment(source, skillType, adjustment, windowSeconds);
         }
 
         private static void GrantNextSkillAutoAttackDamageBonus(
@@ -12898,6 +13157,28 @@ namespace SWLOR.Game.Server.Service
                 MaximumAttackDelayAdjustmentPercent);
         }
 
+        /// <summary>
+        /// Attack delay reduction that depends on the swing's target, such as Flurry Stance's Haste
+        /// for Throwing auto-attacks against bleeding targets. Positive values respect Haste suppression.
+        /// </summary>
+        public static int GetTargetAttackDelayReduction(uint attacker, uint target, SkillType skillType)
+        {
+            if (skillType != SkillType.Throwing ||
+                !GetIsObjectValid(target) ||
+                GetObjectType(target) != SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature ||
+                !StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding))
+            {
+                return 0;
+            }
+
+            var reduction = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingAttackDelayReductionToBleedingTargetPercent);
+            return reduction > 0 && IsAttackDelayReductionSuppressed(attacker)
+                ? 0
+                : reduction;
+        }
+
         private static int GetDualWieldAttackDelayReduction(uint attacker) =>
             EquipmentPredicates.HasDualWield(attacker)
                 ? Stat.GetStatAdjustment(attacker, StatType.DualWieldAttackDelayReductionPercent)
@@ -12915,7 +13196,8 @@ namespace SWLOR.Game.Server.Service
                 MaximumAttackDelayAdjustmentPercent);
         }
 
-        private static int GetWeaponDelay(uint item)
+        /// <summary>The weapon's Delay item property total (the value shown on examine), or 0 for no weapon.</summary>
+        public static int GetWeaponDelay(uint item)
         {
             if (!GetIsObjectValid(item))
                 return 0;

@@ -2,7 +2,10 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.Formats.TwoDA;
 using FitVector = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -425,6 +428,163 @@ public class PowerGloveFitTests
         Invoke<float>("ResolveScale", "pmo0_handr201", "unknown", appearance).Should().Be(expected);
         Invoke<float>("ResolveScale", "unknown", "pmo0_handr201", appearance).Should().Be(expected);
     }
+
+    // An unmeasured armor hand (any part above 2) must not take the pre-compact clearance size.
+    // Playable families: human, elf, half-orc, dwarf and droid, both genders.
+    private static readonly string[] PlayableNormalBodies =
+        { "pmh0", "pfh0", "pme0", "pfe0", "pmo0", "pfo0", "pmd0", "pfd0", "pmz0", "pfz0" };
+
+    private static IEnumerable<int> VisibleGloveAppearances() => Enumerable.Range(101, 21).Where(id => id != 106);
+
+    [Test]
+    public void AnUnmeasuredArmorHandFitsLikeTheWearersNaturalHand()
+    {
+        foreach (var body in PlayableNormalBodies)
+        foreach (var appearance in VisibleGloveAppearances())
+        {
+            var naturalRight = $"{body}_handr001";
+            var naturalLeft = $"{body}_handl001";
+            var armorRight = $"{body}_handr150";
+            var armorLeft = $"{body}_handl150";
+            var right = Invoke<string>("ResolveFitHandModel", armorRight, naturalRight, naturalRight, appearance);
+            var left = Invoke<string>("ResolveFitHandModel", armorLeft, naturalLeft, naturalLeft, appearance);
+            var naturalMeasured = HasMeasuredFit(naturalRight, appearance);
+            right.Should().Be(naturalMeasured ? naturalRight : armorRight, $"{body} appearance {appearance}");
+            left.Should().Be(HasMeasuredFit(naturalLeft, appearance) ? naturalLeft : armorLeft);
+
+            foreach (var side in new[] { true, false })
+            {
+                var armored = ResolveFit(right, left, "", side, appearance);
+                var bare = ResolveFit(Invoke<string>("ResolveFitHandModel", naturalRight, naturalRight, naturalRight, appearance),
+                    Invoke<string>("ResolveFitHandModel", naturalLeft, naturalLeft, naturalLeft, appearance), "", side, appearance);
+                if (!naturalMeasured)
+                    continue;
+                armored.Scale.Should().Be(bare.Scale, $"{body} appearance {appearance} keeps the bare-hand size");
+                AssertVector(armored.Translation, bare.Translation);
+            }
+        }
+    }
+
+    [TestCase("pmh0_handr150", "pmh0_handr001", 105, "pmh0_handr001")]
+    [TestCase("pfh0_handl257", "pfh0_handl001", 101, "pfh0_handl001")]
+    [TestCase("pmo0_handr150", "pmo0_handr001", 117, "pmo0_handr001")]
+    [TestCase("pme0_handr208", "pme0_handr001", 104, "pme0_handr208")]
+    [TestCase("pmh0_handr201", "pmh0_handr001", 109, "pmh0_handr201")]
+    [TestCase("pmh0_handr150", "pmh0_handr001", 103, "pmh0_handr001")]
+    [TestCase("pmh0_handr150", "", 105, "pmh0_handr150")]
+    [TestCase("pmh0_handr150", "pmg0_handr001", 105, "pmh0_handr150")]
+    [TestCase("", "pmh0_handr001", 105, "pmh0_handr001")]
+    public void MeasuredArmorHandsKeepTheirOwnFitAndOnlyUnmeasuredOnesUseTheNaturalHand(
+        string worn, string natural, int appearance, string expected)
+    {
+        Invoke<string>("ResolveFitHandModel", worn, natural, "", appearance).Should().Be(expected);
+    }
+
+    [TestCase(101)]
+    [TestCase(102)]
+    [TestCase(104)]
+    [TestCase(107)]
+    [TestCase(108)]
+    [TestCase(109)]
+    [TestCase(111)]
+    [TestCase(114)]
+    [TestCase(115)]
+    [TestCase(117)]
+    public void AnArmorHandOnEitherSideNoLongerOversizesBothGloves(int appearance)
+    {
+        // A human wearing an unmeasured armor hand on one side used the unknown-hand maximum for both gloves.
+        var armor = Invoke<string>("ResolveFitHandModel", "pmh0_handr150", "pmh0_handr001", "pmh0_handr001", appearance);
+        var bare = Invoke<float>("ResolveScale", "pmh0_handr001", "pmh0_handl001", appearance);
+        Invoke<float>("ResolveScale", armor, "pmh0_handl001", appearance).Should().Be(bare);
+        Invoke<float>("ResolveScale", "pmh0_handr150", "pmh0_handl001", appearance).Should().BeGreaterThan(bare,
+            "the unmeasured hand itself still carries the clearance size, so the fit must not use it");
+    }
+
+    [TestCase("pmh0_handr110", "pmh0_handr110", "pmh0_handr001", 101, "pmh0_handr001")]
+    [TestCase("pfh0_handl258", "pfh0_handl258", "pfh0_handl001", 115, "pfh0_handl001")]
+    [TestCase("pmh0_handr150", "pmh0_handr005", "pmh0_handr001", 101, "pmh0_handr001")]
+    [TestCase("pme0_handr212", "pme0_handr212", "pme0_handr208", 104, "pme0_handr208")]
+    [TestCase("pmh0_handr150", "pmh0_handr002", "pmh0_handr001", 101, "pmh0_handr002")]
+    [TestCase("pmh0_handr201", "pmh0_handr110", "pmh0_handr001", 109, "pmh0_handr201")]
+    [TestCase("pmh0_handr110", "pmh0_handr110", "", 101, "pmh0_handr110")]
+    [TestCase("pmg0_handr110", "pmg0_handr110", "pmg0_handr001", 101, "pmg0_handr110")]
+    public void AnUnmeasuredNaturalHandFitsLikeTheSpeciesStandardHand(
+        string worn, string natural, string standard, int appearance, string expected)
+    {
+        Invoke<string>("ResolveFitHandModel", worn, natural, standard, appearance).Should().Be(expected);
+    }
+
+    [TestCase(AppearanceType.Wookiee, CreaturePart.RightHand, 208)]
+    [TestCase(AppearanceType.Trandoshan, CreaturePart.LeftHand, 201)]
+    [TestCase(AppearanceType.Human, CreaturePart.RightHand, 1)]
+    [TestCase(AppearanceType.Bothan, CreaturePart.LeftHand, 1)]
+    [TestCase(AppearanceType.NullHuman, CreaturePart.RightHand, 1)]
+    public void TheStandardHandIsTheSpeciesFirstOfferedHand(AppearanceType appearance, CreaturePart part,
+        int expected)
+    {
+        Invoke<int>("GetStandardHandPart", appearance, part).Should().Be(expected);
+    }
+
+    // Every hand the Appearance Editor offers a playable species, alone or under an unmeasured armor hand,
+    // must fit no larger than a measured hand of that body: never the unknown-hand clearance (up to 1.92x).
+    [Test]
+    public void NoOfferedNaturalHandOversizesThePowerGloves()
+    {
+        var appearances = TwoDAReader.Read(Path.Combine(FindHaks(), "sw_2da", "appearance.2da"));
+        var failures = new List<string>();
+        foreach (var species in RacialAppearanceRegistry.GetAppearanceTypes())
+        {
+            RacialAppearanceRegistry.TryGet(species, out var definition).Should().BeTrue();
+            var race = appearances.GetValue((int)species, "RACE");
+            foreach (var gender in new[] { Gender.Male, Gender.Female })
+            foreach (var appearance in VisibleGloveAppearances())
+            {
+                var right = FitModels(race, gender, "r", definition.RightHand, appearance);
+                var left = FitModels(race, gender, "l", definition.LeftHand, appearance);
+                var limit = right.Concat(left).Where(model => HasMeasuredFit(model.Fit, appearance))
+                    .Select(model => Invoke<float>("ResolveScale", model.Fit, model.Fit, appearance))
+                    .DefaultIfEmpty(1f).Max();
+                foreach (var r in right)
+                foreach (var l in left)
+                {
+                    var scale = Invoke<float>("ResolveScale", r.Fit, l.Fit, appearance);
+                    if (scale > limit + .0001f)
+                        failures.Add($"{species} {gender} {appearance}: {r.Worn}/{l.Worn} scale {scale} > {limit}");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty();
+    }
+
+    private static IEnumerable<(string Worn, string Fit)> FitModels(string race, Gender gender, string side,
+        int[] offered, int appearance)
+    {
+        var standard = Invoke<string>("ResolveHandModel", race, gender, 0, side, offered[0], 0);
+        foreach (var hand in offered)
+        foreach (var armor in new[] { 0, 150 })
+        {
+            var worn = Invoke<string>("ResolveHandModel", race, gender, 0, side, hand, armor);
+            var natural = Invoke<string>("ResolveHandModel", race, gender, 0, side, hand, 0);
+            yield return (worn, Invoke<string>("ResolveFitHandModel", worn, natural, standard, appearance));
+        }
+    }
+
+    private static string FindHaks()
+    {
+        var configured = Environment.GetEnvironmentVariable("SWLOR_HAKS_CORPUS");
+        if (!string.IsNullOrWhiteSpace(configured))
+            return Path.GetFullPath(configured);
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull("the tests run inside the repository");
+        return Path.Combine(directory!.FullName, "SWLOR_Haks");
+    }
+
+    private static bool HasMeasuredFit(string hand, int appearance) =>
+        (bool)typeof(PowerGloveHandFitCatalog).GetMethod("HasMeasuredFit", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { hand, appearance })!;
 
     private static FitVector GripTranslation(string hand, int appearance, float scale) =>
         (FitVector)typeof(PowerGloveFit).Assembly.GetType(

@@ -8843,6 +8843,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dorra Vesk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dorra_vesk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 30.0
                     },
                     "FACTION": {
@@ -10433,6 +10452,63 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hc_vesa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Master Vaelis"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_monk_master"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Disciple Ren"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_monk_ren"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Disciple Sai"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "es_monk_sai"
                     }
                   }
                 ]

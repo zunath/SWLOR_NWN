@@ -17,7 +17,7 @@ public class IndependentBuffWindowTests
     private static readonly (StatType Stat, string Reason)[] AuthoredWindows =
     {
         (StatType.StatusAppliedSelfDurationSeconds,
-            "Guard Training and Redirecting Guard each author a 30-second self buff"),
+            "Guard Training and ability-granted status-applied self buffs share one window"),
         (StatType.AbilityRestoredFPHasteDurationSeconds,
             "Energized Forms and Flow of the Maelstrom each author 30 seconds of Haste"),
         (StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds,
@@ -34,10 +34,11 @@ public class IndependentBuffWindowTests
     }
 
     [Test]
-    public void KatarScrapperSelfBuffs_BothAuthorThirtySeconds()
+    public void KatarScrapperControlRiders_BothAuthorThirtySeconds()
     {
         Window<KatarPerkDefinition>("GuardTraining", PerkType.GuardTraining).Should().Be(30);
-        Window<KatarPerkDefinition>("RedirectingGuard", PerkType.RedirectingGuard).Should().Be(30);
+        WindowOf<KatarPerkDefinition>("RedirectingGuard", PerkType.RedirectingGuard,
+            StatType.StatusAppliedTargetAttackingAllyEnmityDurationSeconds).Should().Be(30);
     }
 
     [Test]

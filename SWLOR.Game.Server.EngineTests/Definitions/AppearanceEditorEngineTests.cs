@@ -1423,8 +1423,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     pair[0].Type == JTokenType.String && pair[1].Type == JTokenType.Integer),
                     $"{stage}: {prefix} combo must use native [label, value] entries.");
                 ctx.AssertEqual(armor.Models[(int)part], selected, $"{stage}: {prefix} selected model");
-                ctx.Assert(options.Any(entry => entry[1].Value<int>() == selected),
-                    $"{stage}: {prefix} selected model must occur in its published options.");
+                // A retained bare style (the civilian outfit's neck and hands 1) is kept but no longer offered.
+                ctx.Assert(options.Any(entry => entry[1].Value<int>() == selected) ||
+                    ArmorAppearanceCatalog.RetainedBareStyles.Contains(selected) &&
+                    ArmorAppearanceCatalog.AcceptsSavedStyle(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], part, selected),
+                    $"{stage}: {prefix} selected model must occur in its published options or be a retained bare style.");
             }
 
             var regions = MaterialRegionProperties();
@@ -1679,27 +1682,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return Enumerable.Range(0, (int)AppearanceArmor.Num)
                 .Select(index => (Part: (AppearanceArmor)index,
                     Model: GetItemAppearance(item, ItemAppearanceType.ArmorModel, index)))
-                .Where(entry => !FixturePartOptions(definition, entry.Part).Contains(entry.Model))
+                .Where(entry => !ArmorAppearanceCatalog.AcceptsSavedStyle(definition, entry.Part, entry.Model))
                 .Select(entry => $"{entry.Part}={entry.Model}")
                 .ToArray();
         }
-
-        private static int[] FixturePartOptions(GeneralArmorAppearanceDefinition definition, AppearanceArmor part) => part switch
-        {
-            AppearanceArmor.LeftFoot or AppearanceArmor.RightFoot => definition.Foot,
-            AppearanceArmor.LeftShin or AppearanceArmor.RightShin => definition.Shin,
-            AppearanceArmor.LeftThigh or AppearanceArmor.RightThigh => definition.Thigh,
-            AppearanceArmor.LeftHand or AppearanceArmor.RightHand => definition.Hand,
-            AppearanceArmor.LeftForearm or AppearanceArmor.RightForearm => definition.Forearm,
-            AppearanceArmor.LeftBicep or AppearanceArmor.RightBicep => definition.Bicep,
-            AppearanceArmor.LeftShoulder or AppearanceArmor.RightShoulder => definition.Shoulder,
-            AppearanceArmor.Pelvis => definition.Pelvis,
-            AppearanceArmor.Torso => definition.Torso,
-            AppearanceArmor.Belt => definition.Belt,
-            AppearanceArmor.Neck => definition.Neck,
-            AppearanceArmor.Robe => definition.Robe,
-            _ => Array.Empty<int>()
-        };
 
         private static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {

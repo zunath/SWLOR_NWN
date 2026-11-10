@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public SniperStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.RangedAbilityLongRangeMinimumRangeMeters] = 10;
+            StatGroup.Stats[StatType.RangedAbilityLongRangeDamagePercentAdjustment] = 15;
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = -15;
         }
     }

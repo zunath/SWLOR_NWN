@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(4)
+                .RequirementStamina(2)
                 .RequirementItem("explosives");
 
             return builder.Build();

@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Tests.Feature
         private static bool HasObservableOutcome(AbilityBehaviorCase behaviorCase)
         {
             return (behaviorCase.RequiresPlayerBeastFixture && PlayerBeastAbilityEngineTests.Supports(behaviorCase.Feat)) ||
+                   (behaviorCase.RequiresPlayerPerformanceFixture && PerformanceAbilityEngineTests.Supports(behaviorCase.Feat)) ||
                    behaviorCase.ExpectedActivatorStatusEffects.Length > 0 ||
                    behaviorCase.ExpectedTargetStatusEffects.Length > 0 ||
                    behaviorCase.ExpectedActivatorStatAdjustments.Count > 0 ||

@@ -102,9 +102,14 @@ public static class PowerGlovePairLifecycle
 
     /// <summary>Gloves made before the per-hand note, including ones players already own, gain it when examined.</summary>
     [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
-    public static void OnExamine()
+    public static void OnExamine() => AddPairNote(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+
+    /// <summary>
+    /// Adds the per-hand note to a Power Glove's description once. The item examine window calls this directly,
+    /// because the native examine events do not run while players' examine panel is disabled.
+    /// </summary>
+    public static void AddPairNote(uint item)
     {
-        var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
         if (!PowerGloveEquipment.IsPairItem(item)) return;
         var description = GetDescription(item);
         var noted = PowerGloveEquipment.GetPairDescription(description);

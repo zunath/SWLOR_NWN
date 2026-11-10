@@ -29,14 +29,14 @@ public class NativeAnimationPreviewTests
             ability.ImpactAnimationType.Should().Be(Animation.Invalid, "the cast plays before the rocket launches, without replaying on impact");
             AbilityAnimationBinding.ActivationType(ability, true, .8f).Should().Be(Animation.CastOutAnimation);
             AbilityAnimationBinding.ActivationType(ability, false, .8f).Should().Be(Animation.CastOutAnimation);
-            ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(1f);
+            ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(.5f, "Assault Gadgets activate in half a second");
             ability.ImpactDelay.Should().Be(0f);
             ability.NativeAnimationPreview.Should().Be(Animation.CastOutAnimation);
         }
 
         var preview = AnimationPreviewCatalog.CreateEntries(abilities.Values).Single(item => item.Id == entry.Id);
         preview.NativeAnimation.Should().Be(Animation.CastOutAnimation);
-        preview.PreviewDuration.Should().Be(1f);
+        preview.PreviewDuration.Should().Be(.5f);
     }
 
     [Test]

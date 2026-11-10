@@ -2,14 +2,15 @@
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
@@ -84,6 +85,16 @@ namespace SWLOR.Game.Server.Entity
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
+            CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
+            SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
+            HeldCraftItems = new List<string>();
+            PendingCraftReturns = new List<PendingCraftReturn>();
+            PendingCraftXp = new Dictionary<SkillType, int>();
+            PaidExperimentJobs = new HashSet<string>();
+            PendingScavengeFinds = new Dictionary<string, int>();
+            ScavengeFindsAwaitingRoom = new Dictionary<string, int>();
+            PendingHarvestReturns = new List<PendingHarvestReturn>();
+            HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -165,6 +176,9 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
+        // Kept until a login confirms the character file contains the restored hot bar.
+        public string PerformanceSavedHotBar { get; set; }
+        public int PerformanceHotBarRestoreSequence { get; set; }
         public string ActiveShipId { get; set; }
         [Indexed]
         public string UnknownDisplayName { get; set; }
@@ -221,14 +235,51 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
-        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
-        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+        // The craft in progress, with the materials it took. Null when the player is not crafting.
+        public CraftSessionRecord ActiveCraftSession { get; set; }
+        // Serialized items a settled craft could not return because the inventory was full.
+        public List<string> HeldCraftItems { get; set; }
+        // Items a craft put in the inventory that the character file may not hold yet, each with the file sequence it needs.
+        // See CraftSessionLifecycle for how a login settles them.
+        public List<PendingCraftReturn> PendingCraftReturns { get; set; }
+        // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
+        // respawn, a login or the next crafting window.
+        public Dictionary<SkillType, int> PendingCraftXp { get; set; }
+        // The ids of research jobs whose experiment XP has been added to PendingCraftXp, saved in the same write as the XP. This is the
+        // record that the XP is paid; the job's own XpGranted flag only follows it. An id leaves the set when its job is deleted.
+        // See ResearchExperimentPayout.
+        public HashSet<string> PaidExperimentJobs { get; set; }
+        // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
+        // site, so the next login gives these to the player. Empty when no board is in progress.
+        public Dictionary<string, int> PendingScavengeFinds { get; set; }
+        // The craft file sequence of the return that gave PendingScavengeFinds to the player, kept until a character file holds it; 0 when
+        // the finds have not been given yet.
+        public int PendingScavengeReturnSequence { get; set; }
+        // Search finds that could not be given to the player because their inventory had no room, by item resref and quantity. They are
+        // kept apart from PendingScavengeFinds (which a board in progress overwrites and which carries the return stamp) and are tried
+        // again at a respawn, a login and the start of the next visit. Records saved before this existed hold null, which means none.
+        public Dictionary<string, int> ScavengeFindsAwaitingRoom { get; set; }
+        // Prospecting harvest units paid out that the character file may not hold yet, each with the file sequence it needs.
+        // See HarvestReturnJournal for how a login settles them.
+        public List<PendingHarvestReturn> PendingHarvestReturns { get; set; }
+        // Prospecting harvest units that had no room in the inventory, by resref. They wait here, never on the ground, and are given
+        // at the next harvest or login that has room.
+        public Dictionary<string, int> HarvestAwaitingRoom { get; set; }
+        // When the player first opened each crafting minigame, which is when its help page opened by itself.
+        public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
+        // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is
+        // applied again from this after a death or a login, and a refunded or rebuilt perk clears its entry. Records saved before
+        // styles were remembered have no entry.
+        public Dictionary<SkillType, PerkType> SelectedCraftingStyles { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }
         public string ActiveMimicryLoadoutId { get; set; } = string.Empty;
+        // The class names of the stances and toggles to apply again at the next login, saved when a server restart boots everyone.
+        // Records saved before this existed hold null, which means none.
+        public List<string> TogglesToRestore { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
@@ -288,7 +339,6 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
-        [JsonConverter(typeof(RenamedNpcGroupsJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, int> CombatProgresses { get; set; } = new();
@@ -310,6 +360,10 @@ namespace SWLOR.Game.Server.Entity
         public bool DisplayCooldownFloatingText { get; set; }
         public bool SelfQuickCastEnabled { get; set; }
         public bool EnemyQuickCastEnabled { get; set; }
+
+        // The market categories switched off in the market search, kept as exclusions so a category added later still shows.
+        // Empty means no filter. Records saved before this existed hold null, which means the same.
+        public HashSet<MarketCategoryType> MarketExcludedCategories { get; set; }
 
         // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
         // instead of the standalone HP/STM/FP window docked in the lower-right corner.

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -11,8 +12,18 @@ namespace SWLOR.Game.Server.Service
         public const int SpinCost = 100;
         public const int MaximumPayout = 10000;
 
+        private static readonly Dictionary<string, string> _casinoMachineTags = new()
+        {
+            { "swd_smach01", "SWTOR_SLOT1" },
+            { "swd_smach02", "SWTOR_SLOT2" },
+            { "swd_smach03", "SWTOR_SLOT3" },
+            { "swd_smach04", "SWTOR_SLOT4" },
+        };
+
         public static bool IsCasinoMachine(string areaResref, string resref, string tag) =>
-            areaResref == "pw_ar_nscasino" && resref == "swd_smach02" && tag == "SWTOR_SLOT2";
+            areaResref == "pw_ar_nscasino" &&
+            _casinoMachineTags.TryGetValue(resref, out var expectedTag) &&
+            tag == expectedTag;
 
         public static int GetPayout(int roll)
         {
@@ -21,10 +32,10 @@ namespace SWLOR.Game.Server.Service
 
             return roll switch
             {
-                < 7000 => 0,
-                < 9000 => 100,
-                < 9800 => 500,
-                < 9990 => 1000,
+                < 6919 => 0,
+                < 8919 => 100,
+                < 9719 => 500,
+                < 9999 => 1000,
                 _ => MaximumPayout
             };
         }

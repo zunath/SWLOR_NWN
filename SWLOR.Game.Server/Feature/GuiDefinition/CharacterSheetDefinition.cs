@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Main Hand", model => model.MainHandDMG, "Estimated main-hand weapon damage.", model => model.MainHandTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, CombatLabelWidth);
-                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, CharacterSheetViewModel.AttackDescription, model => model.AttackTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Main-hand attack accuracy. Weapon bonuses do not combine.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Off-hand attack accuracy, including double weapons. Weapon bonuses do not combine.", null, CombatLabelWidth);
@@ -255,8 +255,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             tableCol.AddTable<CharacterSheetViewModel>(t => t
                                 .AddColumn("CRAFT", 135f, "Crafting skill.", model => model.CraftNames)
-                                .AddColumn("CONTROL", 82f, "Craft quality and auto-craft chance.", model => model.CraftControls)
-                                .AddColumn("CRAFTSMANSHIP", 0f, "Craft progress and auto-craft chance.", model => model.CraftCraftsmanship)
+                                .AddColumn("CONTROL", 82f, "Powers the quality actions of crafting.", model => model.CraftControls)
+                                .AddColumn("CRAFTSMANSHIP", 0f, "Powers the progress actions of crafting.", model => model.CraftCraftsmanship)
                                 .SetRowHeight(28f));
                         });
                     })

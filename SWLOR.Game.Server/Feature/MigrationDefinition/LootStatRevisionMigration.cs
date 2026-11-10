@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// property shifts by the blueprint difference, so crafted enhancements merged into it are kept.
 /// Revised blueprints carry the revision local, which also marks every migrated item. Droids are covered
 /// both as saved controller data and as summoned creatures, whose items are saved back onto the controller.
-/// The same item visit repairs legacy headgear slots before the unreleased migration is checkpointed, and release
+/// The same item visit repairs legacy headgear slots before the migration is checkpointed, and release
 /// migrations (which also update artwork) add the droid weapon skills (<see cref="DroidWeaponSkillMigration"/>).
 /// </summary>
 public static class LootStatRevisionMigration

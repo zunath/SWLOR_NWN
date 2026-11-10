@@ -84,6 +84,8 @@ public static partial class MigrationEngineTests
     private static async Task VerifyWearableTypeLifecycle(EngineTestContext ctx, string resref, bool occupied)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        // Count equipment totals from the worn gear, not the fixture's seeded combat values.
+        fixture.MatchEquipmentRecordsToGear();
         var owner = fixture.Creature;
         var correction = EquipmentTypeMigration.Corrections[resref];
         var previousSlot = correction.LegacyType == BaseItem.Armor ? InventorySlot.Chest : InventorySlot.Arms;

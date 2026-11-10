@@ -40,18 +40,19 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 Read the guide before working in its area. `Readmes/README.md` lists every guide.
 
-- Coding style (one type per file, one enum per file), renames (an enum rename needs a data migration), Module JSON, StatType design, TLK and 2DA data: `Readmes/CodingStandards.md`
-- Items, enemies, loot, balance, dungeons, ship access, phenotypes, head triangle caps per LOD: `Readmes/ContentStandards.md`
+- Coding style (one type per file, one enum per file), renames (an enum rename needs a data migration), Module JSON, StatType design, gear-fed player stats (rebuilt from worn gear), TLK and 2DA data: `Readmes/CodingStandards.md`
+- Items, enemies, loot, balance and player stat caps (kept in sync with the Player Guide `Stat Caps` topic), dungeons, ship access, phenotypes, head triangle caps per LOD: `Readmes/ContentStandards.md`
 - Skills, perk lines, cross-skill design, progression, descriptions, and balance evidence: `Readmes/SkillPerkStandards.md`
 - Migrations, persistence, and enum renames: `Readmes/Migrations.md`
 - Pull requests and code review: `Readmes/PullRequests.md`
 - Worktrees, haks submodule, git network, disk hygiene, builds, local deploy, cloud sessions: `Readmes/AgentEnvironment.md`
 - Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
 - Engine tests: `Readmes/EngineTesting.md`
-- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
+- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (check every new or changed icon upright in the client; key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
 - Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
+- Tint maps, the palette atlas, tint shaders, and dyed parts that glitter, fizz, or turn magenta: `Readmes/TintMapRendering.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`

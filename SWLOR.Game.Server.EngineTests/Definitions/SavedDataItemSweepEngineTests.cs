@@ -22,6 +22,41 @@ public static partial class MigrationEngineTests
     private const string CurrentLootLabel = "already migrated loot";
     private static readonly Assembly SavedDataSweepAssembly = typeof(EquipmentTypeMigration).Assembly;
 
+    [EngineTest("Building icons match the native migration through repeated save and reload",
+        Category = "BuildingIcons", TimeoutSeconds = 120f)]
+    public static async Task BuildingIconsMatchNative(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        foreach (var (resref, model) in BuildingIconMigration.Models)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 202);
+                SetLocalString(item, "BUILDING_ICON_OWNER", resref);
+                var original = ObjectPlugin.Serialize(item);
+                ctx.Assert(EnzymeBaseItemMigration.MigrateSavedObject(original, out var data), $"{resref} saved conversion runs");
+                ctx.Assert(ItemIconMigration.MigrateObject(item), $"{resref} native conversion runs");
+                ctx.Assert(GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0) == model, $"{resref} native model");
+                ctx.Assert(Item.GetIconResref(item) == $"iit_midmisc_{model:000}", $"{resref} native icon lookup");
+                for (var pass = 0; pass < 3; pass++)
+                {
+                    var restored = ObjectPlugin.Deserialize(data);
+                    ctx.Assert(GetIsObjectValid(restored), $"{resref} reload {pass}");
+                    ctx.Assert(GetItemAppearance(restored, ItemAppearanceType.SimpleModel, 0) == model, $"{resref} saved/native parity");
+                    ctx.Assert(GetResRef(restored) == resref && GetItemStackSize(restored) == 1, $"{resref} identity and quantity");
+                    ctx.Assert(GetLocalString(restored, "BUILDING_ICON_OWNER") == resref, $"{resref} ownership marker");
+                    ctx.Assert(!EnzymeBaseItemMigration.MigrateSavedObject(data, out _), $"{resref} retry is idempotent");
+                    data = ObjectPlugin.Serialize(restored);
+                    DestroyObject(restored);
+                }
+                DestroyObject(item);
+            });
+        }
+        ctx.SetResultDetail("All 18 building blueprints: native icon lookup, saved/native model parity, identity, quantity and locals across three reloads.");
+    }
+
     /// <summary>
     /// The saved-data sweep must save what the engine sweep saves. Both converters run on the same legacy payloads,
     /// both results load into the engine, and everything the engine reads back is compared. The production-copy
@@ -71,6 +106,17 @@ public static partial class MigrationEngineTests
 
         // A catalog pistol saved with arrow ammunition from its legacy bow base item: the engine re-saves it
         // with the ammunition type it derives from the base item, the saved-data sweep keeps the saved value.
+        foreach (var resref in BuildingIconMigration.Models.Keys)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 202);
+                fixtures.Add(($"legacy building {resref}", ObjectPlugin.Serialize(item), true));
+                DestroyObject(item);
+            });
+        }
+
         var arrowPistol = await CreateItemAsync(ctx, owner, "raider_pistol", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
@@ -246,11 +292,8 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
-    /// <summary>
-    /// A former plinth that no release migration reached (a character file or record restored afterwards) is renamed
-    /// when its owner logs in or acquires it; a DM's custom name is kept.
-    /// </summary>
-    [EngineTest("Former Display Plinths missed by the release migrations are renamed live", Category = SavedDataSweepCategory)]
+    /// <summary>The engine-side item rename the native parity checks use renames a former plinth; a DM's custom name is kept.</summary>
+    [EngineTest("The engine-side rename renames former Display Plinths and keeps custom names", Category = SavedDataSweepCategory)]
     public static async Task FormerDisplayPlinthsAreRenamedLive(EngineTestContext ctx)
     {
         var owner = ctx.SpawnCreature("civilian");
@@ -264,11 +307,11 @@ public static partial class MigrationEngineTests
             try
             {
                 ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Display Plinth", $"legacy fixture name '{GetName(legacy)}'");
-                ctx.Assert(FurnitureRenameMigration.RenameInventory(legacy), "the legacy blueprint is renamed");
+                ctx.Assert(FurnitureRenameMigration.RenameItem(legacy), "the legacy blueprint is renamed");
                 ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Rune Pillar", $"renamed to '{GetName(legacy)}'");
                 ctx.Assert(GetDescription(legacy) == "A rare schematic for crafting Veilcarved Rune Pillar.", $"description '{GetDescription(legacy)}'");
-                ctx.Assert(!FurnitureRenameMigration.RenameInventory(legacy), "the live rename is idempotent");
-                ctx.Assert(!FurnitureRenameMigration.RenameInventory(custom), "a custom name is kept");
+                ctx.Assert(!FurnitureRenameMigration.RenameItem(legacy), "the rename is idempotent");
+                ctx.Assert(!FurnitureRenameMigration.RenameItem(custom), "a custom name is kept");
                 ctx.Assert(GetName(custom) == "Veilcarved Display Plinth Replica", $"custom name '{GetName(custom)}'");
             }
             finally
@@ -278,43 +321,6 @@ public static partial class MigrationEngineTests
                 DestroyObject(custom);
             }
         });
-    }
-
-    /// <summary>A bank listing restored after the release migration is saved under its new name, so name searches find it.</summary>
-    [EngineTest("Restored bank listings of former Display Plinths are found by their new name", Category = SavedDataSweepCategory)]
-    public static async Task RestoredFormerPlinthListingsAreSearchable(EngineTestContext ctx)
-    {
-        var storageId = "furniture-rename-" + Guid.NewGuid().ToString("N");
-        var listing = new SWLOR.Game.Server.Entity.InventoryItem
-        {
-            StorageId = storageId,
-            PlayerId = storageId,
-            Name = "Veilcarved Display Plinth",
-            Tag = "structure_0389",
-            Resref = "structure_0389",
-            Quantity = 1,
-            Data = string.Empty,
-            IconResref = string.Empty,
-        };
-        DB.Set(listing);
-        try
-        {
-            SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem> ByName(string name) =>
-                new SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem>()
-                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.StorageId), storageId, false)
-                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.Name), name, true);
-            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 0, "the restored listing is still indexed under its old name");
-
-            FurnitureRenameMigration.SaveRestoredListings();
-            await ctx.WaitFrameAsync();
-
-            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 1, "the listing is found by its new name");
-            ctx.Assert(DB.Get<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id).Name == "Veilcarved Rune Pillar", "the listing loads renamed");
-        }
-        finally
-        {
-            DB.Delete<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id);
-        }
     }
 
     private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =

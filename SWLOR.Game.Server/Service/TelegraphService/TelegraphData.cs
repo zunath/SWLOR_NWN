@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.TelegraphService
         public float Duration { get; set; }
         public bool IsHostile { get; set; }
         public bool IsPersistentAreaIndicator { get; set; }
+        public bool IsImpactFlash { get; set; }
         public ApplyTelegraphEffect Action { get; set; }
     }
 }

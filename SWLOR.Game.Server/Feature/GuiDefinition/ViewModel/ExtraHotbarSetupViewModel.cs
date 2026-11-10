@@ -30,7 +30,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int Bar1Layout { get => Get<int>(); set => Set(value); }
         public int Bar2Layout { get => Get<int>(); set => Set(value); }
 
+        // The client drops a value that reaches it before the control showing it, which is likely while every bar
+        // redraws in the same tick. A slider left without a value reports its minimum, and saving that turned bars
+        // down to one slot. So the controls are sent first, then their values, and changes are only listened for
+        // from the next tick, after the values are sent again.
+        private bool _isListening;
+
         protected override void Initialize(GuiPayloadBase initialPayload)
+        {
+            _isListening = false;
+            ChangePartialView(ContentElement, MainPartial);
+            LoadValues();
+
+            var windowToken = WindowToken;
+            DelayCommand(0f, () => Listen(windowToken));
+
+            ExtraHotbars.SetUnlocked(Player, true);
+        }
+
+        private void LoadValues()
         {
             for (var index = 0; index < ExtraHotbars.BarCount; index++)
             {
@@ -40,7 +58,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbars.MaxSlots), SlotCountTextProperty(index));
                 Set((int)(bar?.Layout ?? ExtraHotbarLayout.Horizontal), LayoutProperty(index));
             }
+        }
 
+        private void Listen(int windowToken)
+        {
+            if (WindowToken != windowToken || !Gui.IsWindowOpen(Player, GuiWindowType.ExtraHotbarSetup))
+                return;
+
+            // Watching sends each value again, now that its control exists.
+            LoadValues();
             WatchOnClient(model => model.Bar0Visible);
             WatchOnClient(model => model.Bar1Visible);
             WatchOnClient(model => model.Bar2Visible);
@@ -50,13 +76,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Bar0Layout);
             WatchOnClient(model => model.Bar1Layout);
             WatchOnClient(model => model.Bar2Layout);
-
-            ChangePartialView(ContentElement, MainPartial);
-            ExtraHotbars.SetUnlocked(Player, true);
+            _isListening = true;
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (!_isListening)
+                return;
+
             for (var index = 0; index < ExtraHotbars.BarCount; index++)
             {
                 if (propertyName == VisibleProperty(index))

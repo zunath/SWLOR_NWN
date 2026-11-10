@@ -540,7 +540,7 @@ namespace SWLOR.Game.Server.Service
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
 
-            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+            if (CraftService.Minigame.CraftMinigameRouting.IsAnyCraftWindowOpen(creature))
                 return "Items cannot be equipped while crafting.";
 
             if (itemType == BaseItem.CompanionPistol)
@@ -1468,13 +1468,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             // Stack size cannot be smaller than the amount we're reducing by.
-            if (stackSize < reduceBy)
+            if (stackSize < amount)
                 return false;
 
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordItemStackReduced(item, amount);
 
-            var remaining = stackSize - reduceBy;
+            var remaining = stackSize - amount;
             if (remaining <= 0)
             {
                 DestroyObject(item);

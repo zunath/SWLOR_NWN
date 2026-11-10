@@ -1,13 +1,18 @@
 # NWNX 8193.37-17, pinned to the tested immutable upstream commit tag.
 FROM nwnxee/unified:3d4c4e1
 
+# .NET 10 packages are pinned to runtime 10.0.14; change them with the tag (Readmes/Deployment.md).
+
 ARG SWLOR_RUNTIME_UID=1000
 ARG SWLOR_RUNTIME_GID=1000
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        dotnet-apphost-pack-10.0 \
-        dotnet-runtime-10.0 \
+        dotnet-apphost-pack-10.0=10.0.14-1 \
+        dotnet-host=10.0.14-1 \
+        dotnet-hostfxr-10.0=10.0.14-1 \
+        dotnet-runtime-10.0=10.0.14-1 \
+        dotnet-runtime-deps-10.0=10.0.14-1 \
         gdb \
         python3-minimal \
         tini \

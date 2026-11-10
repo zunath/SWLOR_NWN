@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Domain.UI
         /// </summary>
         protected virtual IEnumerable<Type> GetWindowDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IGuiWindowDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

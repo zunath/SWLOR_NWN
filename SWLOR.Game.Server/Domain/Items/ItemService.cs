@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual IEnumerable<Type> GetItemListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IItemListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

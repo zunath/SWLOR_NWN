@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// </summary>
         private void LoadChatCommands()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IChatCommandListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

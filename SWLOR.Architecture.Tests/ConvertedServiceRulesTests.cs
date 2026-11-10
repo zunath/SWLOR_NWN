@@ -579,6 +579,33 @@ public class ConvertedServiceRulesTests
         Locate().Should().NotContain(problem => problem.StartsWith(KeyOf(allowed).ToString() + " "));
     }
 
+    // ---- assembly scans
+
+    private static IReadOnlyList<string> ListAssemblies(Type allowed) => AssemblyScanRule.Find(Facts, KeyOf(allowed));
+
+    [TestCase(typeof(AppDomainScanner), "System.AppDomain.GetAssemblies")]
+    [TestCase(typeof(LoadContextAllScanner), "AssemblyLoadContext.get_All")]
+    [TestCase(typeof(LoadContextDefaultScanner), "AssemblyLoadContext.get_Assemblies")]
+    public void Listing_the_assemblies_of_the_process_outside_the_helper_is_reported(Type offender, string used)
+    {
+        ListAssemblies(typeof(CleanUser)).Should().Contain(problem => problem.StartsWith(KeyOf(offender).ToString() + " ") && problem.Contains(used));
+    }
+
+    [TestCase(typeof(AppDomainScanner))]
+    [TestCase(typeof(LoadContextAllScanner))]
+    [TestCase(typeof(LoadContextDefaultScanner))]
+    public void The_helper_may_list_the_assemblies(Type helper)
+    {
+        ListAssemblies(helper).Should().NotContain(problem => problem.StartsWith(KeyOf(helper).ToString() + " "));
+    }
+
+    [TestCase(typeof(LoadContextLookup))]
+    [TestCase(typeof(CleanUser))]
+    public void Types_that_never_list_assemblies_are_not_reported(Type allowed)
+    {
+        ListAssemblies(typeof(CleanUser)).Should().NotContain(problem => problem.StartsWith(KeyOf(allowed).ToString() + " "));
+    }
+
     // ---- the GameServices accessor
 
     private static StaticPropertyFact AccessorProperty(string name, TypeKey type) => new(ConvertedService.Accessor, name, type.ToString());

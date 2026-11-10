@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// </summary>
         protected virtual IEnumerable<Type> GetGraphDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => typeof(IConversationGraphDefinition).IsAssignableFrom(type) &&
                                !type.IsInterface &&

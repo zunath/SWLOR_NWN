@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         private void LoadFishingLocations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IFishingLocationDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

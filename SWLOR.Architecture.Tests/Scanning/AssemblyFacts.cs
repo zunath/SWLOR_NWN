@@ -12,14 +12,19 @@ internal sealed class AssemblyFacts
         IReadOnlyList<StaticFieldFact> staticFields,
         IReadOnlyList<HandlerFact> handlers,
         IReadOnlyList<ExternalReference> externalReferences,
-        IReadOnlyList<StaticPropertyFact>? staticProperties = null)
+        IReadOnlyList<StaticPropertyFact>? staticProperties = null,
+        IReadOnlyList<ExternalMemberUse>? externalMemberUses = null)
     {
+        ExternalMemberUses = externalMemberUses ?? [];
         Types = types;
         StaticFields = staticFields;
         Handlers = handlers;
         ExternalReferences = externalReferences;
         StaticProperties = staticProperties ?? [];
     }
+
+    /// <summary>Every call or access of a named member of a type of another assembly, grouped by the type that makes it.</summary>
+    public IReadOnlyList<ExternalMemberUse> ExternalMemberUses { get; }
 
     /// <summary>Every static property written in the source, with its type (the <c>GameServices</c> accessor's properties among them).</summary>
     public IReadOnlyList<StaticPropertyFact> StaticProperties { get; }

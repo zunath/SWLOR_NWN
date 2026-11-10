@@ -73,6 +73,17 @@ namespace SWLOR.Game.Server.Composition
         }
 
         /// <summary>
+        /// The container's singleton of <typeparamref name="TService"/>, for the boot steps (<see cref="ServerBootstrapper"/>)
+        /// that run before any handler: they receive the host, never the provider.
+        /// </summary>
+        /// <exception cref="ContainerNotBuiltException">The container is not built.</exception>
+        public TService Resolve<TService>()
+            where TService : class
+        {
+            return Provider.GetRequiredService<TService>();
+        }
+
+        /// <summary>
         /// The instance the script registry binds the event handlers of <paramref name="type"/> to: the container's
         /// singleton of that class, the same one the services and <see cref="GameServices"/> resolve. Null when the
         /// container does not register the class. <see cref="ServerBootstrapper"/> passes this to the script registry,

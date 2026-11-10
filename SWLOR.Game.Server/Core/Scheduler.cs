@@ -48,6 +48,16 @@ namespace SWLOR.Game.Server.Core
             return item;
         }
 
+        /// <summary>
+        /// Cancels every scheduled item, repeating ones included, so none runs again. Called by <see cref="ServerTeardown"/>;
+        /// an item already due in the frame being processed is skipped because it is marked cancelled.
+        /// </summary>
+        public static void Clear()
+        {
+            foreach (var item in _scheduledItems.ToArray())
+                item.Dispose();
+        }
+
         internal static void Unschedule(ScheduledItem scheduledItem)
         {
             _scheduledItems.Remove(scheduledItem);

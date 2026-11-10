@@ -1,9 +1,13 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Composition
 {
     public static partial class GameServices
     {
+        /// <summary>The server's removable subscriptions to process-wide events (P4-5).</summary>
+        public static IProcessEventSubscriptions ProcessEvents => FacadeAccessor.Resolve<IProcessEventSubscriptions>();
+
         /// <summary>Plays the visual effect an object carries for an animation event (the static facade <c>AnimationPlayer</c> until P2-ZI).</summary>
         public static IAnimationPlayerService AnimationPlayer => FacadeAccessor.Resolve<IAnimationPlayerService>();
 

@@ -581,6 +581,12 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnCombatAttackOfOpportunityAfter);
         }
 
+        /// <summary>Runs when the process exits: tells the engine's event system the application is shutting down.</summary>
+        private static void SignalApplicationShutdown()
+        {
+            EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
+        }
+
         /// <summary>
         /// Hooks all application-specific scripts.
         /// </summary>
@@ -588,10 +594,7 @@ namespace SWLOR.Game.Server.Feature
         {
             // Application Shutdown events
             EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
-            };
+            ProcessEvents.SubscribeProcessExit(SignalApplicationShutdown);
 
             EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
             EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);

@@ -265,6 +265,12 @@ coordinator runs them.
   `Combat`; it still handles `Space`. It runs after `Apply-FacadeRemoval.ps1` in `MechanicalScripts.txt`, because the removal tool finds
   master's facade calls by master's `Service.<Name>Service` namespaces, and `RemovedFacades.json` keeps master's facade names (the script
   never rewrites that file).
+- **Master's names after P2-Z2.** The parity copy runs the move too, so its handler names and namespaces are the moved ones while
+  `HandlerRenames.txt` keeps master's own names on the left. `Read-HandlerRenames` (`RefactorCommon.ps1`) also lists each left name
+  under its moved name, and `Convert-HandlerOrderNames` (`MasterCopy.ps1`) moves a master name no line lists through the same
+  namespace map (`Read-NamespaceMoves`: `DomainMap.json` with `retiredServiceFolders` and `namespaceRenames` of `NamespaceMoves.json`),
+  so the sync (master's names before the move) and the parity run (after it) both reach the branch's names. `-Reverse` keeps the
+  import of a branch-only namespace that the copy's server sources declare.
 - **Handler renames stay one line per handler** (decision D4): the P2-Z2 script already updates the branch side of existing lines; a new
   type-level format would need changes to that script, `RefactorCommon.ps1` and the sync.
 - **`Space`.** P2-Z cannot clear `Service.Space` (a class) against `Domain.Space` (the namespace P2-Z2 creates); the owner's D8 ruling: convert `Space` and `Droid` from master's code before P2-Z2 if the revamp has not landed.

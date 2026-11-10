@@ -248,7 +248,8 @@ function Read-ManifestLines {
 # comment. A handler the branch had to rename (for example when it moved onto a facade) is listed here, in the same pull
 # request, so the parity run and the sync compare master's order with the branch's manifest under the branch's name.
 # Returns a case-sensitive hashtable master name -> branch name. A malformed line, a duplicate master name and a branch
-# name the manifest does not list are errors.
+# name the manifest does not list are errors. Each master name in a namespace P2-Z2 moved (Read-NamespaceMoves) is listed
+# under its moved name too, so the names of master's parity copy (where Move-SupportNamespaces.ps1 ran) find their line.
 function Read-HandlerRenames {
     param([string]$ManifestText, [string]$Path = (Join-Path $PSScriptRoot 'HandlerRenames.txt'))
     $renames = New-Object 'System.Collections.Hashtable'
@@ -283,7 +284,63 @@ function Read-HandlerRenames {
         }
         $renames[$names[0]] = $names[1]
     }
+
+    $moves = Read-NamespaceMoves -Root (Split-Path -Parent (Split-Path -Parent (Split-Path -Parent ([System.IO.Path]::GetFullPath($Path)))))
+    foreach ($key in @($renames.Keys)) {
+        $moved = Convert-MovedName -Name $key -Moves $moves
+        if ($moved -cne $key -and -not $renames.ContainsKey($moved)) { $renames[$moved] = $renames[$key] }
+    }
     return $renames
+}
+
+# The namespace moves of P2-Z2 (tools/Refactor/Move-SupportNamespaces.ps1): a case-sensitive hashtable from an old full
+# namespace to its new one. Each service of SWLOR.Architecture.Tests/DomainMap.json and each retiredServiceFolders entry of
+# tools/Refactor/NamespaceMoves.json gives SWLOR.Game.Server.Service.<Name>Service -> SWLOR.Game.Server.Domain.<Domain>
+# (after the namespaceRenames), and each namespaceRenames entry its own pair. Empty when $Root lacks either file. Master's
+# handler names pass through it (Convert-MovedName) where they meet the branch's: the sync reads them before the move and
+# the parity copy after it.
+function Read-NamespaceMoves {
+    param([string]$Root = (Get-RepositoryRootOfScript))
+    $moves = New-Object 'System.Collections.Hashtable'
+    $mapPath = Join-Path (Join-Path $Root 'SWLOR.Architecture.Tests') 'DomainMap.json'
+    $dataPath = Join-Path (Join-Path (Join-Path $Root 'tools') 'Refactor') 'NamespaceMoves.json'
+    if (-not (Test-Path -LiteralPath $mapPath -PathType Leaf) -or -not (Test-Path -LiteralPath $dataPath -PathType Leaf)) { return $moves }
+
+    $map = [System.IO.File]::ReadAllText($mapPath) | ConvertFrom-Json
+    $data = [System.IO.File]::ReadAllText($dataPath) | ConvertFrom-Json
+    $server = 'SWLOR.Game.Server.'
+    $renames = New-Object 'System.Collections.Hashtable'
+    if ($data.PSObject.Properties['namespaceRenames']) {
+        foreach ($entry in @($data.namespaceRenames)) { $renames[[string]$entry.from] = [string]$entry.to }
+    }
+    $domainOf = New-Object 'System.Collections.Hashtable'
+    foreach ($domain in $map.domains.PSObject.Properties) {
+        foreach ($service in @($domain.Value.services)) { $domainOf[[string]$service] = $domain.Name }
+    }
+    if ($data.PSObject.Properties['retiredServiceFolders']) {
+        foreach ($entry in @($data.retiredServiceFolders)) { $domainOf[[string]$entry.service] = [string]$entry.domain }
+    }
+    foreach ($service in @($domainOf.Keys)) {
+        $target = 'Domain.' + $domainOf[$service]
+        if ($renames.ContainsKey($target)) { $target = $renames[$target] }
+        $moves[$server + 'Service.' + $service + 'Service'] = $server + $target
+    }
+    foreach ($from in @($renames.Keys)) { $moves[$server + $from] = $server + $renames[$from] }
+    return $moves
+}
+
+# A full name (a handler's Namespace.Type.Method) with its longest moved namespace prefix replaced; unchanged when no
+# prefix moved.
+function Convert-MovedName {
+    param([string]$Name, $Moves)
+    if ($null -eq $Moves -or $Moves.Count -eq 0) { return $Name }
+    $prefix = $Name
+    while ($true) {
+        $dot = $prefix.LastIndexOf('.')
+        if ($dot -lt 0) { return $Name }
+        $prefix = $prefix.Substring(0, $dot)
+        if ($Moves.ContainsKey($prefix)) { return $Moves[$prefix] + $Name.Substring($prefix.Length) }
+    }
 }
 
 function Get-RepositoryRootOfScript {

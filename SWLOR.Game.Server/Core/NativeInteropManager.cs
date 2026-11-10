@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using System.Runtime.InteropServices;
 using NWNX.NET;

@@ -1,7 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.CraftSim.Report.MarkdownTable;

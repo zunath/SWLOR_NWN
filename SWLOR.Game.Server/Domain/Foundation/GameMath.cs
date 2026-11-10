@@ -1,6 +1,6 @@
 using System;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public static class GameMath
     {

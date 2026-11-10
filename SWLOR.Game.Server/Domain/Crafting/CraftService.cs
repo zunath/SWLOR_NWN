@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Research;
@@ -1005,7 +1004,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                 var damageTypes = properties.Where(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType).ToList();
                 var keepExisting = damageTypes.Count > 0 &&
                                    GetItemPropertySubType(damageTypes[0]) != subType &&
-                                   Service.Random.D100(1) <= 50;
+                                   Domain.Foundation.Random.D100(1) <= 50;
                 if (keepExisting)
                     return;
 
@@ -1050,7 +1049,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
             var keepExisting = damageTypeMatches.Count > 0 &&
                                 GetItemPropertySubType(damageTypeMatches[0]) != subType &&
-                                Service.Random.D100(1) <= 50;
+                                Domain.Foundation.Random.D100(1) <= 50;
 
             if (keepExisting)
                 return;

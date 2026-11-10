@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWScript.Enum;

@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Tests.Support;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 
 namespace SWLOR.Game.Server.Tests.Domain.Crafting;

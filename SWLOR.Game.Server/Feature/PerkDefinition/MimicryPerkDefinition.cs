@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;

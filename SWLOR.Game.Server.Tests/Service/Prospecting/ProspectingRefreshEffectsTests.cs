@@ -1,7 +1,6 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;

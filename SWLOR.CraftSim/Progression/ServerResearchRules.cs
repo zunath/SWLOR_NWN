@@ -1,7 +1,6 @@
 using System.Reflection;
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Domain.Crafting;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CraftSim.Progression
 {

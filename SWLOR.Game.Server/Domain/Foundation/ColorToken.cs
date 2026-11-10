@@ -1,6 +1,6 @@
 using NWN.Native.API;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     ///      *

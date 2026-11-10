@@ -7,7 +7,6 @@ using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CombatSim.Tests.Engine;
 

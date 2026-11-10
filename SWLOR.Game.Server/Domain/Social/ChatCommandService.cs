@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.Engine;

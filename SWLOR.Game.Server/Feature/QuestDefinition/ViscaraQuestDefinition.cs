@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Quests;

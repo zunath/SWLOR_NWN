@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// Stores NPC cooldown expiry times in local strings without losing fractional seconds.

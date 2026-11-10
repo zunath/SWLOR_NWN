@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The settings of a DM battle grid: square size, how many sections it spans, and how far it floats above the

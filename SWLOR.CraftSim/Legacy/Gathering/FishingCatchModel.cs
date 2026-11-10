@@ -71,14 +71,14 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             foreach (var definition in definitions)
             {
                 Dictionary<FishingLocationType, FishingLocationDetail> built;
-                SWLOR.Game.Server.Service.Random.SetSeed(SpecialPlacementSeed);
+                SWLOR.Game.Server.Domain.Foundation.Random.SetSeed(SpecialPlacementSeed);
                 try
                 {
                     built = ((IFishingLocationDefinition)Activator.CreateInstance(definition)).Build();
                 }
                 finally
                 {
-                    SWLOR.Game.Server.Service.Random.ResetSeed();
+                    SWLOR.Game.Server.Domain.Foundation.Random.ResetSeed();
                 }
 
                 foreach (var (location, detail) in built)

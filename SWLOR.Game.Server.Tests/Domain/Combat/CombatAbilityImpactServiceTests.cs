@@ -14,7 +14,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Testing;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
@@ -1765,7 +1765,7 @@ public class CombatAbilityImpactServiceTests
             $"Attribute {Defender} {StatType.StatusAppliedTargetStaminaDrain}",
             $"ReduceStamina {Defender} 6",
             $"Stamina {Defender}");
-        FloatingText().Should().Equal($"{Defender} {SWLOR.Game.Server.Service.ColorToken.Combat("-4 STM")}");
+        FloatingText().Should().Equal($"{Defender} {SWLOR.Game.Server.Domain.Foundation.ColorToken.Combat("-4 STM")}");
     }
 
     [Test]

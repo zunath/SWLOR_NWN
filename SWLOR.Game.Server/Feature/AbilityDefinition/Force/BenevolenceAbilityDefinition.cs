@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Abilities;

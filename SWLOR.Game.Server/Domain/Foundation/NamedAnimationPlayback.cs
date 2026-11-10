@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Service;
+namespace SWLOR.Game.Server.Domain.Foundation;
 
 /// <summary>The native operations required for a temporary per-creature animation replacement.</summary>
 public interface INamedAnimationRuntime

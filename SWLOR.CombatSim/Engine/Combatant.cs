@@ -1,6 +1,5 @@
 using SWLOR.CombatSim.Scenario;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CombatSim.Engine
 {

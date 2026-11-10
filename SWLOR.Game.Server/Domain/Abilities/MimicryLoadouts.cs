@@ -3,7 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Service;
+namespace SWLOR.Game.Server.Domain.Abilities;
 
 /// <summary>Saved builds are independent snapshots; editing them never equips techniques.</summary>
 public static class MimicryLoadouts

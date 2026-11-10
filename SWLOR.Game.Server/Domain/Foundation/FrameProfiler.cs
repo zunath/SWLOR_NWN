@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Foundation;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Counts expensive work per server frame, logs frames slower than the configured threshold, and

@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 return false;
 
             var chance = Stat.GetStatAdjustment(player, PreserveChanceStatType);
-            return chance > 0 && Service.Random.D100(1) <= chance;
+            return chance > 0 && Domain.Foundation.Random.D100(1) <= chance;
         }
     }
 }

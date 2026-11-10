@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Domain.Economy;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Economy
 {
     public static class CasinoPlayTracker
     {

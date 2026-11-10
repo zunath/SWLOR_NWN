@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {

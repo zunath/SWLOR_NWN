@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Abilities
 {

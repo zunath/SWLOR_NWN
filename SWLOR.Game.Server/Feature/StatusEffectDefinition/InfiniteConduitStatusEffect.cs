@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition

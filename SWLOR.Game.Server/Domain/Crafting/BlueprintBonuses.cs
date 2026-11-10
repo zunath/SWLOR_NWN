@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
             var set = _bonusesByEnhancementType[enhancementType][isCraftingItem][tier];
             var weights = set.Select(x => x.Weight).ToArray();
-            var index = Service.Random.GetRandomWeightedIndex(weights);
+            var index = Domain.Foundation.Random.GetRandomWeightedIndex(weights);
 
             return set[index];
         }

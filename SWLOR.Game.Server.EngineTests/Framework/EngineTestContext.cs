@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public void SeedRandom(int seed)
         {
             _seededRandom = true;
-            Service.Random.SetSeed(seed);
+            Domain.Foundation.Random.SetSeed(seed);
         }
 
         public void Assert(bool condition, string message)
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
 
         public void Log(string message)
         {
-            Service.Log.Write(LogGroup.EngineTest, $"[{TestName}] {message}", true);
+            Domain.Foundation.Log.Write(LogGroup.EngineTest, $"[{TestName}] {message}", true);
         }
 
         /// <summary>
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         {
             if (_seededRandom)
             {
-                Service.Random.ResetSeed();
+                Domain.Foundation.Random.ResetSeed();
                 _seededRandom = false;
             }
 

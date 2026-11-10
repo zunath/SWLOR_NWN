@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Character;
-using GameRandom = SWLOR.Game.Server.Service.Random;
+using GameRandom = SWLOR.Game.Server.Domain.Foundation.Random;
 using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;

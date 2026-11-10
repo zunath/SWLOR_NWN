@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
 

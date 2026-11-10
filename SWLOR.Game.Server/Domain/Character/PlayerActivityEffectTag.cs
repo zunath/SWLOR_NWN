@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Character
 {
     public static class PlayerActivityEffectTag
     {

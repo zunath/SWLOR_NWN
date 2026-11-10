@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 

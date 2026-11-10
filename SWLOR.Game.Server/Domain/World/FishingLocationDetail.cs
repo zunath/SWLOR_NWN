@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             var weights = availableFish
                 .Select(s => s.Frequency).ToArray();
-            var selectedIndex = Service.Random.GetRandomWeightedIndex(weights);
+            var selectedIndex = Domain.Foundation.Random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
 
             return (selectedFish.Type, false);

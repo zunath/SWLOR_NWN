@@ -121,7 +121,7 @@ Native/OnAIActionAttackObject.cs
 # melee techniques, the crafting window, entity creation times). Ambient server loops (Spawn, Space, Shuttle, Weather,
 # ServerTasks) are not listed: they are not part of a scenario and must keep reading the system clock.
 Service/Recast.cs  # master-only (P2-ZG)
-Service/RecastTimestamp.cs
+Domain/Combat/RecastTimestamp.cs
 Service/AbilityCooldownVisual.cs # master-only
 Service/Enmity.cs  # master-only (P2-ZG)
 Domain/Combat/CombatPointService.cs

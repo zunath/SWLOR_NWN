@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private static LootTableItem Pick(IReadOnlyList<LootTableItem> entries)
         {
             var weights = entries.Select(entry => Math.Max(1, entry.Weight)).ToArray();
-            return entries[Service.Random.GetRandomWeightedIndex(weights)];
+            return entries[Domain.Foundation.Random.GetRandomWeightedIndex(weights)];
         }
     }
 }

@@ -1,5 +1,3 @@
-using SWLOR.Game.Server.Service;
-
 namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>

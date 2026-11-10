@@ -3,7 +3,6 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Progression

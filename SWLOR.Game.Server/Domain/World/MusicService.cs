@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

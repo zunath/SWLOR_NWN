@@ -325,7 +325,7 @@ public class CombatAttackTimingServiceTests
             $"Replace NextSkillAbilityStaminaCostAdjustmentRangedOnly 1 8 {skillGroup}",
             $"Replace NextSkillAbilityStaminaCostAdjustmentHostileOnly 0 8 {skillGroup}");
         _engine.CallsTo("FloatingTextStringOnCreature").Select(call => call.Arguments[0]).Should().Equal(
-            SWLOR.Game.Server.Service.ColorToken.Combat("Next Ability -3 STM"));
+            SWLOR.Game.Server.Domain.Foundation.ColorToken.Combat("Next Ability -3 STM"));
 
         _service.GrantCuedNextSkillAbilityStaminaCostAdjustment(Attacker, SkillType.Rifle, -3, 8);
         _engine.CallsTo("FloatingTextStringOnCreature").Should().HaveCount(1, "an armed discount is not cued again");

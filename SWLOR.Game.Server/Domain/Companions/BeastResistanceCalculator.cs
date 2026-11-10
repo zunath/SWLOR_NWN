@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Combat;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Companions
 {
@@ -19,7 +18,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             int maximumExclusive = 10)
         {
             return GameServices.CombatDamageCatalog.GetDefenseDamageTypes()
-                .ToDictionary(type => type, _ => Service.Random.Next(minimumInclusive, maximumExclusive));
+                .ToDictionary(type => type, _ => Domain.Foundation.Random.Next(minimumInclusive, maximumExclusive));
         }
 
         public static Dictionary<CombatDamageType, int> CreateDefensePurities(
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             int maximumExclusive = 10)
         {
             return Resistance.GetAllResistanceTypes()
-                .ToDictionary(type => type, _ => Service.Random.Next(minimumInclusive, maximumExclusive));
+                .ToDictionary(type => type, _ => Domain.Foundation.Random.Next(minimumInclusive, maximumExclusive));
         }
 
         public static Dictionary<ResistanceType, int> CreateResistancePurities(

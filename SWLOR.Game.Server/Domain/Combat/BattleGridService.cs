@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 

@@ -1,6 +1,5 @@
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Social
 {

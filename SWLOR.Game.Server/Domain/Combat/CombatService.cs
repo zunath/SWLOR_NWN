@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

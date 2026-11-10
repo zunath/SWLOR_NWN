@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (filteredList.Count <= 0) return null;
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
-            var index = Service.Random.GetRandomWeightedIndex(weights);
+            var index = Domain.Foundation.Random.GetRandomWeightedIndex(weights);
 
             // If GetRandomWeightedIndex returns -1 (no valid weights), return null
             if (index == -1 || index >= filteredList.Count)

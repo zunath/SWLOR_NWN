@@ -1,5 +1,5 @@
 using static SWLOR.Game.Server.Composition.GameServices;
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Gameplay
 {
     /// <summary>
     /// The player side of a planned server restart. Being booted by one is not the player's choice, so it does not count as leaving.

@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using static SWLOR.Game.Server.Composition.GameServices;

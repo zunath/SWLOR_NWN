@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
     /// One page of a bank search: the items on the page, how many items match in total, and the page selector state.

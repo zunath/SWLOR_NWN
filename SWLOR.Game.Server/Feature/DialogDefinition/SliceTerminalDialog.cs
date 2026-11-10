@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;

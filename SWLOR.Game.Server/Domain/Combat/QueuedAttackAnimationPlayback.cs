@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Foundation;
 
-namespace SWLOR.Game.Server.Service;
+namespace SWLOR.Game.Server.Domain.Combat;
 
 /// <summary>Owns only melee swing keys, leaving ready, parry, throw, and custom emote mappings alone.</summary>
 public sealed class QueuedAttackAnimationPlayback

@@ -5,9 +5,8 @@ using Serilog.Core;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Domain.Foundation;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public static class Log
     {

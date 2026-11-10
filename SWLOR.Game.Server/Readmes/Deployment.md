@@ -27,11 +27,13 @@ The main deployment configuration is defined in `Docker/docker-compose.yml`. Thi
 
 - **Redis**: Caching and data storage using `redislabs/redismod:latest`
 - **Redis Commander**: Web interface for Redis management
-- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.17-2` with the .NET 10 runtime and a dedicated non-root user
+- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.17-3` with the .NET 10 runtime and a dedicated non-root user
 - **InfluxDB**: Time-series database for metrics storage
 - **Grafana**: Monitoring and visualization dashboard
 
 The configuration includes networking, volume mounts, and environment variable setup.
+
+The .NET 10 packages in `Docker/Dockerfile` (`dotnet-runtime-10.0`, `dotnet-apphost-pack-10.0`, `dotnet-hostfxr-10.0`, `dotnet-runtime-deps-10.0`, `dotnet-host`) are pinned to one exact version (`10.0.14-1`, runtime 10.0.14) so the server runtime changes only on purpose. The pins match the current `8193.37.17-3` image. The next publish of this Dockerfile needs a new tag (the publish workflow refuses to replace an existing one), so bump `scripts/deployment/server-image.txt`, both compose files and `scripts/deployment/swlor-deploy.conf.example` together in the same change that publishes; the owner publishes the image. To change the runtime on purpose, update all five pins in that same change. `ServerImagePinTests` fails when a pin has no version or the tag differs between those files.
 
 Before the game server starts, the one-shot `server-home-init` service runs `prepare-server-home.sh` as root with networking disabled. It gives UID/GID `1000:1000` ownership and write access to the mounted home directory, runtime data directories, and existing runtime configuration files. Docker bind mounts hide the ownership established in the image, so this preparation is required even for a freshly built image. The helper does not recursively modify HAKs, modules, TLK, binaries, Redis, or monitoring data. On Docker Desktop for Windows, where walking every file over the bind mount takes over a minute, the helper does one full pass, writes `.server-home-prepared`, and afterwards checks only the top-level data directories; delete that file to force another full pass after copying files in from the host. The game server remains non-root and starts only after preparation succeeds.
 

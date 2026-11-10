@@ -51,7 +51,7 @@ internal static class StoredItemSweep
         var converter = EnzymeStoredItemConverter.Instance;
         var changed = Sweep(pass, converter, null);
         changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes and building icons in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes, building icons and Gaderffii looks in {changed} stored records.", true);
     }
 
 

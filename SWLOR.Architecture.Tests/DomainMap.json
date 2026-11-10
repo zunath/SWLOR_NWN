@@ -1,5 +1,5 @@
 {
-  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service), plus the types left directly in Service; tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
+  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service); tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
   "platformDomain": "Platform",
   "featureTypeDomain": "Gameplay",
   "unrestrictedTargetDomains": ["Foundation", "Platform"],
@@ -7,11 +7,9 @@
   "domains": {
     "Foundation": {
       "services": [
-        "DB", "Log", "Cache", "Random", "Time", "GameMath", "ColorToken", "Messaging",
-        "Communication", "BackgroundJob", "FrameProfiler", "Migration", "Authorization", "Menu",
+        "DB", "Cache", "Messaging", "Communication", "BackgroundJob", "Migration", "Authorization",
         "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
-        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "NamedAnimationPlayback",
-        "Animation", "Attribute", "INamedAnimationRuntime"
+        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute"
       ],
       "featureFolders": [
         "MigrationDefinition", "SnippetDefinition", "DialogDefinition"
@@ -28,18 +26,18 @@
     "Combat": {
       "services": [
         "Combat", "CombatPoint", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
-        "RecastTimestamp", "Telegraph", "Targeting", "QueuedAttackAnimation",
-        "WeaponAttackEligibility", "WeaponAttackPhase", "WeaponDelay", "OrdinaryAttackTraits",
+        "Telegraph", "Targeting", "QueuedAttackAnimation",
+        "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
         "PairedRangedTraits", "MeleeTechnique", "TwinPistolAbility", "TwinPistolEquipment",
         "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
-        "BattleGridSettings", "QueuedAttackAnimationPlayback", "TemporaryStatModifier"
+        "TemporaryStatModifier"
       ],
       "featureFolders": []
     },
     "Abilities": {
       "services": [
         "Ability", "AbilityCooldownVisual", "AbilityTargetingCache", "FieldEngineerPulseEmitters", "ForceControlCooldowns",
-        "QuickCast", "ReviveHistory", "Mimicry", "MimicryLoadouts"
+        "QuickCast", "ReviveHistory", "Mimicry"
       ],
       "featureFolders": [
         "AbilityDefinition"
@@ -48,7 +46,7 @@
     "Character": {
       "services": [
         "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
-        "PlayerActivityEffectTag", "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
+        "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
         "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
       ],
       "featureFolders": [
@@ -74,8 +72,7 @@
     },
     "Economy": {
       "services": [
-        "Bank", "BankItemPage", "Currency", "PlayerMarket", "Guild", "CasinoSlot", "CasinoSlotPresentation",
-        "CasinoSpinResult", "CasinoPlayTracker", "GuildTaskXp"
+        "Bank", "Currency", "PlayerMarket", "Guild", "CasinoSlot", "GuildTaskXp"
       ],
       "featureFolders": []
     },
@@ -136,7 +133,7 @@
       "featureFolders": []
     },
     "Gameplay": {
-      "services": ["ServerRestart", "ServerTask"],
+      "services": ["ServerTask"],
       "featureFolders": []
     }
   }

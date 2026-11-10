@@ -20,8 +20,6 @@ public class UnitClassifierTests
     [TestCase("SWLOR.Game.Server.Domain.Crafting.Minigame.Search", "SearchSetup", "Domain/Crafting")]
     [TestCase("SWLOR.Game.Server.Domain.Foundation", "IDBService", "Domain/Foundation")]
     [TestCase("SWLOR.Game.Server.Domain.Unknown", "Anything", "Domain/Unknown")]
-    [TestCase("SWLOR.Game.Server.Service", "ColorToken", "ColorToken")]
-    [TestCase("SWLOR.Game.Server.Service", "Combat", "Combat")]
     [TestCase("SWLOR.Game.Server.Service.WidgetService", "WidgetResult", "Widget")]
     [TestCase("SWLOR.Game.Server.Service.WidgetService.Topic", "WidgetPart", "Widget")]
     [TestCase("SWLOR.Game.Server.Service.Animation", "Folder", "Animation")]
@@ -63,7 +61,6 @@ public class UnitClassifierTests
     [TestCase("SWLOR.Game.Server.Domain.Foundation", "IDBService", "DB")]
     [TestCase("SWLOR.Game.Server.Domain.Space", "SpaceService", "Space")]
     [TestCase("SWLOR.Game.Server.Domain.Space", "ISpaceModuleRecastService", "SpaceModuleRecast")]
-    [TestCase("SWLOR.Game.Server.Service", "ColorToken", "ColorToken")]
     [TestCase("SWLOR.Game.Server.Service.WidgetService", "Part", "Widget")]
     public void Names_the_service_a_type_is_named_after(string @namespace, string name, string expectedService)
     {
@@ -78,6 +75,7 @@ public class UnitClassifierTests
     [TestCase("SWLOR.Game.Server.Feature", "AchievementService")]
     [TestCase("SWLOR.Game.Server.Core", "StatService")]
     [TestCase("SWLOR.NWN.API", "StatService")]
+    [TestCase("SWLOR.Game.Server.Service", "Widget")]
     public void A_type_that_names_no_service_of_its_domain_has_none(string @namespace, string name)
     {
         UnitClassifier.ServiceOf(new TypeKey(@namespace, name), DomainMap.Parse(DomainMapJson)).Should().BeNull();
@@ -104,8 +102,15 @@ public class UnitClassifierTests
         UnitClassifier.Classify(new TypeKey(@namespace, name)).Should().BeNull();
     }
 
+    [Test]
+    public void A_type_directly_in_Service_belongs_to_no_unit()
+    {
+        // P2-Z3 left nothing directly in Service; the namespace guard fails a new type there, so no unit is made for it.
+        UnitClassifier.Classify(new TypeKey("SWLOR.Game.Server.Service", "Widget")).Should().BeNull();
+    }
+
     [TestCase("Domain/Combat")]
-    [TestCase("ColorToken")]
+    [TestCase("Widget")]
     [TestCase("Feature/PerkDefinition")]
     [TestCase("Feature.Auditing")]
     [TestCase("Platform/Native")]

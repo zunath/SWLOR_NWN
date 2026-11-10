@@ -7,8 +7,9 @@ namespace SWLOR.Architecture.Tests;
 
 /// <summary>
 /// The namespace guard (P2-Z2, owner decision 2026-11-06): no namespace of <c>SWLOR.Game.Server</c> hides a type, no leaf
-/// segment sits under two parents, and no <c>Service.&lt;Name&gt;Service</c> support namespace is left, with no exceptions
-/// (<see cref="NamespaceRules"/>). The fixture tests prove each check fails on a violation and passes on the right shape.
+/// segment sits under two parents, no <c>Service.&lt;Name&gt;Service</c> support namespace is left and (P2-Z3) no type is
+/// declared directly in <c>Service</c>, with no exceptions (<see cref="NamespaceRules"/>). The fixture tests prove each check
+/// fails on a violation and passes on the right shape.
 /// </summary>
 /// <remarks>
 /// The fixtures use made-up service and namespace names (<c>Widget</c>), never real ones or the old names that
@@ -49,7 +50,7 @@ public class NamespaceGuardTests
                 Type("Domain.Widgets.Assembly.Gears", "GearSetup"),
                 Type("Feature.WidgetDefinition", "WidgetDefinitionBase"),
                 Type("Core", "NWNEventHandler"),
-                Type("Service", "ColorToken"),
+                Type("Domain.Gadgets", "GadgetMeter"),
                 new TypeKey(string.Empty, "<Module>"),
                 new TypeKey(Root + ".Domain.Widgets", "<>c")
             ]).Should().BeEmpty();
@@ -61,11 +62,11 @@ public class NamespaceGuardTests
         var problems = NamespaceRules.Violations(
             [
                 Type("Domain.Widgets", "WidgetResult"),
-                Type("Service", "Widgets"),
+                Type("Native", "Widgets"),
                 Type("Feature.WidgetDefinition.Gadget", "Gadget")
             ]);
 
-        problems.Should().Contain(problem => problem.StartsWith($"Namespace {Root}.Domain.Widgets: the segment 'Widgets' is also a type ({Root}.Service.Widgets)"));
+        problems.Should().Contain(problem => problem.StartsWith($"Namespace {Root}.Domain.Widgets: the segment 'Widgets' is also a type ({Root}.Native.Widgets)"));
         problems.Should().Contain(problem => problem.StartsWith($"Namespace {Root}.Feature.WidgetDefinition.Gadget: the segment 'Gadget' is also a type"));
         problems.Should().HaveCount(2, "only the namespaces whose segments name a type are reported");
     }
@@ -102,13 +103,27 @@ public class NamespaceGuardTests
         var problems = NamespaceRules.Violations(
             [
                 Type("Service.WidgetService", "WidgetStyle"),
-                Type("Service.WidgetService.Assembly", "AssemblyBoard"),
-                Type("Service", "Log")
+                Type("Service.WidgetService.Assembly", "AssemblyBoard")
             ]);
 
         problems.Should().Contain($"Namespace {Root}.Service.WidgetService is a Service.<Name>Service support namespace: put the types in Domain.<Domain>.");
         problems.Should().Contain($"Namespace {Root}.Service.WidgetService.Assembly is a Service.<Name>Service support namespace: put the types in Domain.<Domain>.");
-        problems.Should().HaveCount(2, "Service itself, which holds the remaining static helpers, is not a support namespace");
+        problems.Should().HaveCount(2, "Service itself holds no type here, so it is only an enclosing namespace");
+    }
+
+    [Test]
+    public void A_type_declared_directly_in_Service_is_reported()
+    {
+        var problems = NamespaceRules.Violations(
+            [
+                Type("Service", "WidgetMeter"),
+                Type("Service", "GadgetDial"),
+                Type("Domain.Widgets", "WidgetResult")
+            ]);
+
+        problems.Should().Equal(
+            $"{Root}.Service.GadgetDial is declared directly in {Root}.Service: put it in the namespace of its domain, Domain.<Domain>.",
+            $"{Root}.Service.WidgetMeter is declared directly in {Root}.Service: put it in the namespace of its domain, Domain.<Domain>.");
     }
 
     private static TypeKey Type(string relativeNamespace, string name) => new(Root + "." + relativeNamespace, name);

@@ -1,9 +1,10 @@
 namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
-/// The granularity of the guard: one domain's own code, one type left directly in <c>Service</c>, one Feature folder,
-/// one top-level Feature type or one Platform area. Its text form is what the baseline files and failure messages show:
-/// <c>Domain/Combat</c>, <c>ColorToken</c>, <c>Feature/PerkDefinition</c>, <c>Feature.Auditing</c>, <c>Platform/Native</c>.
+/// The granularity of the guard: one domain's own code, one <c>Service.&lt;Name&gt;Service</c> folder of a tree the P2-Z2 move
+/// has not reached, one Feature folder, one top-level Feature type or one Platform area. Its text form is what the baseline
+/// files and failure messages show: <c>Domain/Combat</c>, <c>Widget</c>, <c>Feature/PerkDefinition</c>, <c>Feature.Auditing</c>,
+/// <c>Platform/Native</c>.
 /// </summary>
 internal readonly record struct DependencyUnit(UnitKind Kind, string Name)
 {

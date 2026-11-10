@@ -23,8 +23,9 @@ public class DomainDependenciesTests
         }
         """;
 
+    // A type in the Service.<Name>Service folder of a tree the P2-Z2 move has not reached: the unit of service <Name>.
     private static TypeKey Service(string name, string? subFolder = null) =>
-        new(subFolder is null ? "SWLOR.Game.Server.Service" : $"SWLOR.Game.Server.Service.{subFolder}", name);
+        new($"SWLOR.Game.Server.Service.{subFolder ?? name + "Service"}", name);
 
     private static TypeKey FeatureFolder(string folder, string name) => new($"SWLOR.Game.Server.Feature.{folder}", name);
 

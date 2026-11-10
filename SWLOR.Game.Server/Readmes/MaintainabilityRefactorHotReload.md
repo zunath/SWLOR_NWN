@@ -143,7 +143,7 @@ their view models), `FishingService`, `PropertyCatalogService` (all under `Domai
   metrics go through the Redis stream that `SWLOR.BackgroundServices` reads. `Parallel.For` runs only inside migrations.
 - **Redis:** `DBService._multiplexer` (StackExchange.Redis 3.0.17, never disposed) owns sockets and timers for the life of the
   process; NRediSearch and NReJSON wrap it.
-- **Logging:** `Service/Log.cs` builds one Serilog logger per group (file sinks, plus console for errors) in static fields and
+- **Logging:** `Domain/Foundation/Log.cs` builds one Serilog logger per group (file sinks, plus console for errors) in static fields and
   disposes them on `app_shutdown`. `Log.WriteError` passes the `Exception` object to Serilog (lines 124-130); 22 files call it.
 - **JSON:** Newtonsoft with default settings in 43 files (entity persistence through `Domain/Foundation/DBJsonSerializer.cs`,
   migrations); no `TypeNameHandling`. System.Text.Json only as `Utf8JsonWriter`, `JsonDocument` and `JsonNode` (no type metadata

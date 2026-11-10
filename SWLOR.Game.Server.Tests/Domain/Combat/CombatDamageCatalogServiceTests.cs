@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.ResistanceService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;

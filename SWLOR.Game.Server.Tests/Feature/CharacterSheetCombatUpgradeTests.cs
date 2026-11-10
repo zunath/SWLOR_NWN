@@ -41,7 +41,7 @@ public class CharacterSheetCombatUpgradeTests
         foreach (var method in new[] { "public static void PlayerFPAdjusted()", "public static void PlayerSTMAdjusted()" })
             ExtractMethod(publisher, method).Should().Contain("Gui.PublishCharacterSheetRefreshEvent(player");
 
-        var feedback = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Core", "PlayerFeedbackService.cs"));
+        var feedback = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Foundation", "PlayerFeedbackService.cs"));
         var restore = ExtractMethod(feedback, "public void SendResourceRestored(");
         restore.Should().Contain("GetMaster(creature)");
         restore.Should().Contain("SendMessageToPC(receiver");

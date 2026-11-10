@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 
@@ -57,8 +57,8 @@ public class ImmobilizedStatusEffectTests
         var holoCom = File.ReadAllText(Path.Combine(server, "Domain", "World", "HoloComService.cs"));
         var craft = File.ReadAllText(Path.Combine(
             server,
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "Minigame",
             "NwnCraftSessionWorld.cs"));
         var temporaryEffects = File.ReadAllText(Path.Combine(server, "Feature", "PlayerTemporaryEffects.cs"));

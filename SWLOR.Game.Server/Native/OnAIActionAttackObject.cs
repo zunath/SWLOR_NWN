@@ -5,14 +5,12 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using NWNX.NET;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {

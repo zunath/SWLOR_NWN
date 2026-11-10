@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Service;
 

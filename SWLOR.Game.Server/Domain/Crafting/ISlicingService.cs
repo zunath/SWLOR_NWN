@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Domain.Crafting
 {

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.RaceService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.IntegrationTests.Support;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 
@@ -61,7 +61,7 @@ public class PlayerFirstEntryTests : IntegrationTestBase
         record.Currencies[CurrencyType.LanguageToken].Should().Be(1);
         record.CharacterType.Should().Be(CharacterType.Standard);
         Engine.CountOf("BootPC").Should().Be(0);
-        Db.SearchCount(new Service.DBService.DBQuery<Player>().AddFieldSearch(nameof(Player.Id), HeroId, false)).Should().Be(1);
+        Db.SearchCount(new SWLOR.Game.Server.Domain.Foundation.DBQuery<Player>().AddFieldSearch(nameof(Player.Id), HeroId, false)).Should().Be(1);
     }
 
     [Test]

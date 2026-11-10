@@ -38,7 +38,7 @@ internal static class UnitClassifier
                 if (segments.Length == 1)
                     return new DependencyUnit(UnitKind.Service, type.Name);
 
-                // Service.CombatService.* belongs to the service Combat.
+                // SWLOR.Game.Server.Domain.Combat.* belongs to the service Combat.
                 var folder = segments[1];
                 var name = folder.Length > ServiceSuffix.Length && folder.EndsWith(ServiceSuffix, StringComparison.Ordinal)
                     ? folder[..^ServiceSuffix.Length]

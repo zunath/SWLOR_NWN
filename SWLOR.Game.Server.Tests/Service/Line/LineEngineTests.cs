@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Tests.Service.Line.LineTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;

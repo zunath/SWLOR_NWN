@@ -37,7 +37,7 @@ SHEET = "System Changes & Migrations"
 FIRST_ENTRY_ROW = 3
 
 SERVER = Path("SWLOR.Game.Server")
-CRAFT = SERVER / "Service" / "CraftService"
+CRAFT = SERVER / "Domain" / "Crafting"
 MINIGAME = CRAFT / "Minigame"
 PERKS = SERVER / "Feature" / "PerkDefinition"
 
@@ -50,13 +50,13 @@ SOURCE_FILES = {
     "kitchen_axis": MINIGAME / "Kitchen" / "KitchenAxis.cs",
     "kitchen_heat": MINIGAME / "Kitchen" / "KitchenHeat.cs",
     "line": MINIGAME / "Line" / "LineRules.cs",
-    "quick_reel": SERVER / "Service" / "FishingService" / "FishingQuickReel.cs",
+    "quick_reel": SERVER / "Domain" / "World" / "FishingQuickReel.cs",
     "prospecting": MINIGAME / "Prospecting" / "ProspectingRules.cs",
-    "prospecting_lifecycle": SERVER / "Service" / "ProspectingService" / "ProspectingLifecycle.cs",
+    "prospecting_lifecycle": SERVER / "Domain" / "Crafting" / "ProspectingLifecycle.cs",
     "milestones": CRAFT / "CraftRankMilestones.cs",
     "search": MINIGAME / "Search" / "SearchRules.cs",
     "search_board": MINIGAME / "Search" / "SearchBoard.cs",
-    "quick_search": SERVER / "Service" / "ScavengeService" / "ScavengeQuickSearch.cs",
+    "quick_search": SERVER / "Domain" / "Crafting" / "ScavengeQuickSearch.cs",
     "experiment": MINIGAME / "Experiment" / "ExperimentRules.cs",
     "research_grants": CRAFT / "Research" / "ResearchGrantRules.cs",
     "research_outcome": CRAFT / "Research" / "ResearchOutcomeRules.cs",

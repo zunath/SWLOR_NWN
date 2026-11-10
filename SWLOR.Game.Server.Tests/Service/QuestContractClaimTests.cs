@@ -2,7 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

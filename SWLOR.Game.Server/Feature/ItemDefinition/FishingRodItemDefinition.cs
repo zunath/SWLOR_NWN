@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Composition.GameServices;
 

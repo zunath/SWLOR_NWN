@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Abilities
 {

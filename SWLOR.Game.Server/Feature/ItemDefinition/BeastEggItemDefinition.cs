@@ -1,17 +1,14 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

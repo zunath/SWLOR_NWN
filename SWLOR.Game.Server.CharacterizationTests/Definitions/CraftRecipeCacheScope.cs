@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 

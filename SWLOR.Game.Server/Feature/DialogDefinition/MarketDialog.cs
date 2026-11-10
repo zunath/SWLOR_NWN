@@ -1,9 +1,8 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition

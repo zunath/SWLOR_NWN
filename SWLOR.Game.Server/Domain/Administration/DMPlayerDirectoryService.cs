@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.Administration

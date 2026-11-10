@@ -1,15 +1,11 @@
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using FluentAssertions;
 using NUnit.Framework;
 using NWN.Native.API;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.ResistanceService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;

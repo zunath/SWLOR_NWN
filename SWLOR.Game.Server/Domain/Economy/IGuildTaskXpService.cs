@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {

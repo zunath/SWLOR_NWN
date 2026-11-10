@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.Administration

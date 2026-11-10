@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
 {

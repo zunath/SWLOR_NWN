@@ -2,7 +2,6 @@ using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service.RoleplayXPService;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.ShuttleService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

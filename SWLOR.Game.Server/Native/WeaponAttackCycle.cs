@@ -4,11 +4,10 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Combat;
 

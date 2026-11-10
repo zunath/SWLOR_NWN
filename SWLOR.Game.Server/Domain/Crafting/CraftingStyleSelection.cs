@@ -1,0 +1,87 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Character;
+
+namespace SWLOR.Game.Server.Domain.Crafting;
+
+/// <summary>
+/// The crafting style each crafter selected, kept on the player record (<see cref="Player.SelectedCraftingStyles"/>, one perk per
+/// skill) so it outlives the status effect that carries it. Death strips every effect and a relog drops the non-persistent ones,
+/// so the effect is applied again from the record after a revive, on login and when a craft window opens, and only while the
+/// crafter still owns the style's perk. The craft window records a change, and a refunded perk or a full rebuild clears the entry.
+/// A skill's style helper lists its styles in <see cref="Definitions"/>. The parts that touch the database and the engine are in <see cref="SWLOR.Game.Server.Domain.Crafting.CraftStyleEffectsService"/>.
+/// </summary>
+public static class CraftingStyleSelection
+{
+    /// <summary>Every crafting style of every skill. The Agriculture helpers add their own here.</summary>
+    public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
+        CircuitStyles.Definitions
+            .Concat(ForgeStyles.Definitions)
+            .Concat(GatheringStyles.Definitions)
+            .ToList();
+
+    /// <summary>The perk of the style selected for <paramref name="skill"/>, or <see cref="PerkType.Invalid"/>.</summary>
+    public static PerkType Selected(Player record, SkillType skill) =>
+        record.SelectedCraftingStyles != null && record.SelectedCraftingStyles.TryGetValue(skill, out var perk)
+            ? perk
+            : PerkType.Invalid;
+
+    /// <summary>
+    /// Selects the style with <paramref name="perk"/> for <paramref name="skill"/>, replacing the one before it, or clears the
+    /// selection when <paramref name="perk"/> is <see cref="PerkType.Invalid"/>. Returns true when the record changed.
+    /// </summary>
+    public static bool Set(Player record, SkillType skill, PerkType perk)
+    {
+        record.SelectedCraftingStyles ??= new Dictionary<SkillType, PerkType>();
+
+        if (perk == PerkType.Invalid)
+            return record.SelectedCraftingStyles.Remove(skill);
+
+        if (record.SelectedCraftingStyles.TryGetValue(skill, out var current) && current == perk)
+            return false;
+
+        record.SelectedCraftingStyles[skill] = perk;
+        return true;
+    }
+
+    /// <summary>Forgets every selection, as a full rebuild does when it refunds the perks. Returns true when the record changed.</summary>
+    public static bool ClearAll(Player record)
+    {
+        if (record.SelectedCraftingStyles == null || record.SelectedCraftingStyles.Count == 0)
+            return false;
+
+        record.SelectedCraftingStyles.Clear();
+        return true;
+    }
+
+    /// <summary>
+    /// Finds the styles that should be active: those the record selects whose perk the player still owns. An entry that names no
+    /// style of its skill, or a perk the player no longer owns, is dropped from the record. Returns true when the record changed.
+    /// </summary>
+    public static bool Reconcile(Player record, IReadOnlyList<CraftingStyleDefinition> definitions, out List<CraftingStyleDefinition> active)
+    {
+        active = new List<CraftingStyleDefinition>();
+        if (record.SelectedCraftingStyles == null)
+            return false;
+
+        var changed = false;
+        foreach (var (skill, perk) in record.SelectedCraftingStyles.ToList())
+        {
+            var definition = definitions.FirstOrDefault(candidate => candidate.Skill == skill && candidate.Perk == perk);
+            if (definition != null && record.Perks != null && record.Perks.TryGetValue(perk, out var level) && level > 0)
+            {
+                active.Add(definition);
+                continue;
+            }
+
+            record.SelectedCraftingStyles.Remove(skill);
+            changed = true;
+        }
+
+        return changed;
+    }
+}

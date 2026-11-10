@@ -1,7 +1,7 @@
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Toolset.Avalonia.Explorer.Workflow;
 using SWLOR.Toolset.Domain.Conversations;
-using ConversationGraph = SWLOR.Game.Server.Service.ConversationService.ConversationGraph;
+using ConversationGraph = SWLOR.Game.Server.Domain.Foundation.ConversationGraph;
 
 namespace SWLOR.Toolset.Shell.Panels.ExplorerHost
 {

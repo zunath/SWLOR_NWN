@@ -6,8 +6,8 @@ using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -144,7 +144,7 @@ public class LinkedBankStorageTests
     [TestCase(120, 5, 5, 6)]
     public void BankPaging_ClampsToTheLastPageOfTwentyItems(long matchCount, int requested, int expectedPage, int expectedPageCount)
     {
-        var pagination = SWLOR.Game.Server.Service.GuiService.GuiPaginationState.Create(matchCount, 20, requested);
+        var pagination = SWLOR.Game.Server.Domain.UI.GuiPaginationState.Create(matchCount, 20, requested);
 
         pagination.SelectedPageIndex.Should().Be(expectedPage);
         pagination.PageNumbers.Count.Should().Be(expectedPageCount);

@@ -5,7 +5,7 @@ using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Report
 {

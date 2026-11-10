@@ -12,14 +12,11 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Game.Server.Tests.Support;
@@ -446,7 +443,7 @@ public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
                     Path.Combine("Feature", "PerkDefinition"),
                     StringComparison.OrdinalIgnoreCase))
                 .Where(file => !file.EndsWith(
-                    Path.Combine("Service", "StatService", "StatType.cs"),
+                    Path.Combine("Domain", "Character", "StatType.cs"),
                     StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
         var missingConsumers = grantedStats
@@ -1315,8 +1312,8 @@ public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
         var recipeTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "RecipeType.cs"));
         var enumRecipeTypes = Regex.Matches(recipeTypeSource, @"(?m)^\s*(Instruction[A-Za-z0-9]+)\s*=")
             .Select(match => match.Groups[1].Value)

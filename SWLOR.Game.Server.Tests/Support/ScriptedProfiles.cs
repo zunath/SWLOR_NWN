@@ -1,5 +1,5 @@
 #nullable enable
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

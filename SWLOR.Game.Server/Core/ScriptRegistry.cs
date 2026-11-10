@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;

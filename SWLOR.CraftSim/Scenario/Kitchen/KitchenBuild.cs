@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Scenario.Kitchen
 {

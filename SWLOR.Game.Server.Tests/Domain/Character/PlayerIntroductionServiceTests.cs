@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
@@ -186,7 +186,7 @@ public class PlayerIntroductionServiceTests
     {
         _service.Introduce(Presenter, "  Kira  ");
 
-        _service.GetPending(Observer).Should().ContainSingle().Which.Should().Match<SWLOR.Game.Server.Service.PlayerIntroductionService.PlayerIntroductionOffer>(
+        _service.GetPending(Observer).Should().ContainSingle().Which.Should().Match<SWLOR.Game.Server.Domain.Character.PlayerIntroductionOffer>(
             offer => offer.Name == "Kira" && offer.Presenter == Presenter && offer.PresenterPlayerId == "presenter-id" &&
                      offer.IdentityKey == "key-" + Presenter && offer.DisplayName == "Someone" + Presenter &&
                      offer.ExpiresAt == _service.Now.AddMinutes(10));

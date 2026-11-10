@@ -5,14 +5,12 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

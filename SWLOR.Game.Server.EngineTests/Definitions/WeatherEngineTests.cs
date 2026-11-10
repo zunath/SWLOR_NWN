@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;

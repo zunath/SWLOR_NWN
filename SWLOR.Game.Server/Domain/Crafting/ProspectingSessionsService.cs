@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.ProspectingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Domain.Crafting
 {

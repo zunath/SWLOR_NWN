@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Character;
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var initialNativeHP = 0;
                 var initialize = typeof(Feature.PlayerInitialization);
                 var adjustStats = initialize.GetMethod("AdjustStats", BindingFlags.Static | BindingFlags.NonPublic);
-                var run = typeof(SWLOR.Game.Server.Domain.Core.IMigrationService).GetMethod("RunPlayerInitialization");
+                var run = typeof(SWLOR.Game.Server.Domain.Foundation.IMigrationService).GetMethod("RunPlayerInitialization");
                 initialize.GetMethod("AutoLevelPlayer", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, new object[] { owner });
 

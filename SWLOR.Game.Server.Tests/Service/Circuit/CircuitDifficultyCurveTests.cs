@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
 using static SWLOR.Game.Server.Tests.Service.Circuit.CircuitTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;

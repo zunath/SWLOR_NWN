@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Composition;
@@ -745,7 +743,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var item in new[] { disc, otherDisc, weapon, controller })
                 ctx.Assert(GetIsObjectValid(item), "the programming fixture item exists");
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidInstruction,
-                (int)SWLOR.Game.Server.Service.PerkService.PerkType.AdrenalStim, 1), controller);
+                (int)SWLOR.Game.Server.Domain.Character.PerkType.AdrenalStim, 1), controller);
             ctx.AssertEqual(string.Empty, Droid.GetInstructionDiscValidationError(programmer, disc), "an owned instruction disc is accepted");
             foreach (var item in new[] { otherDisc, weapon, controller, OBJECT_INVALID })
                 ctx.Assert(!string.IsNullOrEmpty(Droid.GetInstructionDiscValidationError(programmer, item)), "invalid programming inputs are rejected before consumption");

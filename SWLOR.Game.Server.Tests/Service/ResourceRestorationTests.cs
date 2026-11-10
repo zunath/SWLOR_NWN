@@ -40,8 +40,8 @@ public class ResourceRestorationTests
         // native actor queries, persistence, modifiers, and observable side effects.
         var source = $$"""
             using System;
-            using SWLOR.Game.Server.Service.CombatRecorderService;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = ResourceHarness;
             public static class ResourceHarness

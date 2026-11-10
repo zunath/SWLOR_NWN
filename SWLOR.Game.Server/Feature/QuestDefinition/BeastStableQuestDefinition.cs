@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     /// <summary>
     /// Dorra Vesk's two-part trial at the Anchorhead stables on Tatooine. Each completed part adds one beast stable
-    /// slot (see <see cref="Service.BeastMasteryService.BeastStableCapacity"/>).
+    /// slot (see <see cref="SWLOR.Game.Server.Domain.Companions.BeastStableCapacity"/>).
     /// </summary>
     public class BeastStableQuestDefinition : IQuestListDefinition
     {

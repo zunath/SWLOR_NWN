@@ -4,8 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -23,8 +23,8 @@ public class QuestLifecycleTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
         root.Should().NotBeNull();
         var service = Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service");
-        var detail = File.ReadAllText(Path.Combine(service, "QuestService", "QuestDetail.cs"))
-            .Replace("namespace SWLOR.Game.Server.Service.QuestService", "namespace QuestLifecycleHarness");
+        var detail = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Domain", "Quests", "QuestDetail.cs"))
+            .Replace("namespace SWLOR.Game.Server.Domain.Quests", "namespace QuestLifecycleHarness");
         // The login logic is the quest service instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod);
         // its injected database is modelled by the harness's own DB below.
         var load = DMPossessionHarness.InstanceMethod("Domain/Quests/QuestService.cs", "LoadPlayerQuests");
@@ -88,9 +88,9 @@ public class QuestLifecycleTests
             global using System.Collections.Generic;
             global using System.Linq;
             global using SWLOR.Game.Server.Entity;
-            global using SWLOR.Game.Server.Service.QuestService;
-            global using SWLOR.Game.Server.Service.KeyItemService;
-            global using SWLOR.Game.Server.Service.LogService;
+            global using SWLOR.Game.Server.Domain.Quests;
+            global using SWLOR.Game.Server.Domain.Items;
+            global using SWLOR.Game.Server.Domain.Foundation;
             global using SWLOR.NWN.API.NWNX;
             global using static QuestLifecycleHarness.Native;
             """;

@@ -3,10 +3,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;

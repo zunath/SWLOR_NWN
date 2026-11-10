@@ -1,7 +1,7 @@
 using System.Numerics;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Abilities;

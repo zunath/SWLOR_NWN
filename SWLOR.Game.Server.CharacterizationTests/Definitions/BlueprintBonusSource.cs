@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Reflection;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 /// </summary>
 internal sealed class BlueprintBonusSource
 {
-    private const string TypeName = "SWLOR.Game.Server.Service.CraftService.BlueprintBonuses";
+    private const string TypeName = "SWLOR.Game.Server.Domain.Crafting.BlueprintBonuses";
     private static readonly Type BonusesType = typeof(RecipeDetail).Assembly.GetType(TypeName, throwOnError: true)!;
     private static readonly FieldInfo TablesField = BonusesType.GetField("_bonusesByEnhancementType", BindingFlags.Instance | BindingFlags.NonPublic)!;
     private static readonly MethodInfo PickMethod = BonusesType.GetMethod("PickBonus")!;

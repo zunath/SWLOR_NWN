@@ -9,9 +9,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.TelegraphService;
-using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
 using SWLOR.Game.Server.Domain.Combat;
+using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

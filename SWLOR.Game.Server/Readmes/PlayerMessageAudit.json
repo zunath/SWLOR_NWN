@@ -798,175 +798,175 @@
     "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 223,
     "Member": "ProcessChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(ChatChannel.ServerMessage, \"(Sent to DM) \" + message, sender, sender)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 236,
     "Member": "ProcessChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 242,
     "Member": "ProcessChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, ColorToken.Red(\"You cannot speak while dead.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 350,
     "Member": "ProcessChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 552,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/CommunicationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
     "Line": 568,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/ConversationMenuService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/ConversationMenuService.cs",
     "Line": 152,
     "Member": "Start",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/ConversationMenuService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/ConversationMenuService.cs",
     "Line": 174,
     "Member": "Start",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/ConversationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/ConversationService.cs",
     "Line": 362,
     "Member": "ReportStartFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This conversation could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 38,
     "Member": "FloatTextNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PlayerPlugin.FloatingTextStringOnCreature(creature, creature, text, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 47,
     "Member": "FloatTextNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PlayerPlugin.FloatingTextStringOnCreature(nearby, creature, text, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 55,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageNearbyToPlayers(sender, _ => message, range)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 60,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageNearbyToPlayers(sender, buildMessage, range, OBJECT_INVALID)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 70,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, buildMessage(sender))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 72,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(concealedActor, buildMessage(concealedActor))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 77,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, buildMessage(sender))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MessagingService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs",
     "Line": 86,
     "Member": "SendMessageNearbyToPlayers",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(nearby, buildMessage(nearby))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/MigrationService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/MigrationService.cs",
     "Line": 323,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 43,
     "Member": "SendDiagnosticToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 49,
     "Member": "ShowDiagnosticFloatingText",
     "Delivery": "Shared transport; policy at caller",
     "Call": "FloatingTextStringOnCreature(message, creature, displayToFaction)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 72,
     "Member": "ShowCooldownFloatingText",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PlayerPlugin.FloatingTextStringOnCreature(player, player, ColorToken.Yellow($\"{abilityName}: {timeToWait}\"), false)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 85,
     "Member": "SendWarningToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 98,
     "Member": "SendWarningNearby",
     "Delivery": "Shared transport; policy at caller",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, buildMessage, range)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/PlayerFeedbackService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs",
     "Line": 136,
     "Member": "SendResourceRestored",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(receiver, ColorToken.Combat(message))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Core/SnippetService.cs",
+    "File": "SWLOR.Game.Server/Domain/Foundation/SnippetService.cs",
     "Line": 237,
     "Member": "HasUsableArguments",
     "Delivery": "Retained",
@@ -6321,217 +6321,217 @@
     "Call": "defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
     "Line": 72,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
     "Line": 333,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
     "Line": 422,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnQuickCraftWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnQuickCraftWorld.cs",
     "Line": 175,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs",
     "Line": 31,
     "Member": "ExhaustFishingPoint",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(fishingPoint, \"The fishing point has been exhausted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs",
     "Line": 41,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 156,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 158,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 226,
     "Member": "DeliverAwaiting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 260,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestReturnedMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 262,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 264,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs",
     "Line": 286,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestContractService/QuestContractFactory.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestContractFactory.cs",
     "Line": 103,
     "Member": "HandleCollectedItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This contract is no longer active. Your items have been placed in a delivery - claim them at any contract board.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestContractService/QuestContractReward.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestContractReward.cs",
     "Line": 37,
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The contract '{contract.Title}' is no longer active. No reward could be paid.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestContractService/QuestContractReward.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestContractReward.cs",
     "Line": 48,
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your reward for '{contract.Title}' is ready. Any items or credits you could not receive remain claimable at any Contract Board.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/CombatObjective.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/CombatObjective.cs",
     "Line": 51,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"[{Quest.GetQuestById(questId).Name}] {Description}: {Amount - progress.CombatProgresses[Key]} / {Amount}\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/KillTargetObjective.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/KillTargetObjective.cs",
     "Line": 61,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 106,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 114,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already accepted this quest.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 125,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not meet the prerequisites necessary to accept this quest.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 245,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Quest '{Name}' has been abandoned!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 312,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' accepted. Refer to your journal for more information on this quest.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 347,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 398,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Objective for quest '\" + Name + \"' complete! Check your journal for information on the next objective.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
     "Line": 545,
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' complete!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestObjectives.cs",
     "Line": 102,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestRewards.cs",
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestRewards.cs",
     "Line": 72,
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {Amount} XP!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs",
     "Line": 53,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs",
     "Line": 58,
     "Member": "SkillCheckMessage",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(text), player, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "File": "SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs",
     "Line": 163,
     "Member": "ReturnPendingFinds",
     "Delivery": "Retained",

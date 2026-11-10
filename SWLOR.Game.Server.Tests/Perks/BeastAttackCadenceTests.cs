@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Combat;
 

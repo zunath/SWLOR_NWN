@@ -2,12 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
 

@@ -7,8 +7,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWNX;
 

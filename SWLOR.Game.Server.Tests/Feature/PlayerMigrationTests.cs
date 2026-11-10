@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

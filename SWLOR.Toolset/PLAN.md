@@ -177,7 +177,7 @@ Deliverables in `Domain\GameData\Lookups\`: `AppearanceService` (appearance.2da 
 Acceptance: per-service tests against known 2DA rows.
 
 **WP2.5 — Game-code index.** Tier: **Mid**.
-Inputs: `SWLOR.Game.Server\Service\NPCService\NPCGroupType.cs` (`[NPCGroup]` attributes), spawn-table and quest definitions.
+Inputs: `SWLOR.Game.Server\Domain\Creatures\NPCGroupType.cs` (`[NPCGroup]` attributes), spawn-table and quest definitions.
 Deliverables: `IGameCodeIndex` + `ReflectionGameCodeIndex` (reflect over referenced SWLOR.Game.Server for NPCGroupType values, spawn table IDs, quest IDs, key items). If the server reference proves too heavy in a GUI process, fall back to `RoslynGameCodeIndex` parsing source (precedent: Tests already use Microsoft.CodeAnalysis.CSharp). Record which path was taken.
 Acceptance: tests assert known enum values/quest IDs resolve.
 

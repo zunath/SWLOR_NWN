@@ -9,16 +9,15 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

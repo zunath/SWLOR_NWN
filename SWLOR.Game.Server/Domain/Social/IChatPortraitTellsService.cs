@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.ChatPortraitTellService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.Social
 {

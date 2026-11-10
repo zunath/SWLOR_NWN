@@ -8,7 +8,7 @@ in with extra weight. The output holds message-scoring weights plus a threshold;
 start from SWLOR_RPXP_OOC_DETECTION_FILE.
 
 Feature extraction here must stay identical to OOCMessageScorer.ExtractFeatures in
-SWLOR.Game.Server/Service/RoleplayXPService/OOCMessageScorer.cs. RoleplayXPOOCPenaltyTests checks the two
+SWLOR.Game.Server/Domain/Character/OOCMessageScorer.cs. RoleplayXPOOCPenaltyTests checks the two
 against SWLOR.Game.Server.Tests/Fixtures/RoleplayXP/ooc-feature-parity.json; regenerate that fixture with
 --parity-fixture after changing features.
 

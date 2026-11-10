@@ -419,15 +419,15 @@ public void OnPlayerDamaged(uint player, uint attacker, int damage)
 
 ### 4. Script Handler Order
 
-At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Core.DBService.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Foundation.DBService.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
 
-**Where handlers live.** A handler is a public, parameterless instance method (`void`, or `bool` for a conditional script) of a service's instance class or of one of its listed parts, never of a static class: at boot the registry builds the container, binds each handler to the singleton of its class and registers it under its script name. The manifest names the instance class (`SWLOR.Game.Server.Domain.Core.DBService.Load`), and `SWLOR.Architecture.Tests` fail a handler on any other type of a converted service. Moving a handler to another class edits its manifest line in place (and, until the cutover, adds a line to `tools/Refactor/HandlerRenames.txt`).
+**Where handlers live.** A handler is a public, parameterless instance method (`void`, or `bool` for a conditional script) of a service's instance class or of one of its listed parts, never of a static class: at boot the registry builds the container, binds each handler to the singleton of its class and registers it under its script name. The manifest names the instance class (`SWLOR.Game.Server.Domain.Foundation.DBService.Load`), and `SWLOR.Architecture.Tests` fail a handler on any other type of a converted service. Moving a handler to another class edits its manifest line in place (and, until the cutover, adds a line to `tools/Refactor/HandlerRenames.txt`).
 
 **Format.** One block per script. The script name starts in column 0 (an optional `  # comment` may follow it), then one indented line per handler in run order: `action` (a `void` handler) or `conditional` (a `bool` handler), then `Namespace.Type.Method`. Blank lines, `#` comment lines and `== section ==` headings are ignored. Anything else is an error.
 
 ```text
 mod_preload  # run by the engine before the module loads
-  action      SWLOR.Game.Server.Domain.Core.DBService.Load
+  action      SWLOR.Game.Server.Domain.Foundation.DBService.Load
   action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
 ```
 

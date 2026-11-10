@@ -4,8 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -24,7 +24,7 @@ public class QuestKillCreditTests
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Entity;
-            using SWLOR.Game.Server.Service.NPCService;
+            using SWLOR.Game.Server.Domain.Creatures;
             namespace KillCreditHarness;
             public enum CreatureType { PlayerCharacter }
             public static class Quest

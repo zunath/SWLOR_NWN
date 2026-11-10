@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI.Component;
 
 namespace SWLOR.Game.Server.Domain.World
 {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.World

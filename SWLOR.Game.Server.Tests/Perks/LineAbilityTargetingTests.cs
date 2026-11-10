@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Staff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;

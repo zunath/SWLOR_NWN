@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Rng;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Legacy.Crafting
 {

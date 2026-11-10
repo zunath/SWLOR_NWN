@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Quests;
-using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {

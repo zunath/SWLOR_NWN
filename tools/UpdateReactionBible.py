@@ -17,7 +17,7 @@ from xml.sax.saxutils import escape, unescape
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
-RULES_SOURCE = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Reaction" / "ReactionRules.cs"
+RULES_SOURCE = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Reaction" / "ReactionRules.cs"
 TAB = "System Changes & Migrations"
 MARKER = "Espionage poison and trap crafting is now the Reaction minigame"
 NUMBER_STYLE = "3"

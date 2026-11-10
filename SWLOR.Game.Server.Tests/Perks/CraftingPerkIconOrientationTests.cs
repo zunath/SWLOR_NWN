@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;

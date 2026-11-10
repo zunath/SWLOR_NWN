@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Domain.World
 {

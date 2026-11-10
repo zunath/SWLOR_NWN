@@ -54,9 +54,9 @@ public class DMPossessedCombatTargetTests
             using System.Collections.Generic;
             using System.Globalization;
             using SWLOR.Game.Server.Domain.Character;
-            using SWLOR.Game.Server.Service.CombatRecorderService;
-            using SWLOR.Game.Server.Service.CombatService;
-            using SWLOR.Game.Server.Service.SkillService;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = TargetHarness;
             public static class TargetHarness

@@ -1,9 +1,8 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;

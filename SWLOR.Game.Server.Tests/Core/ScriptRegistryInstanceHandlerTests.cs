@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Tests.Core.ScriptHandlerTestSupport;
 

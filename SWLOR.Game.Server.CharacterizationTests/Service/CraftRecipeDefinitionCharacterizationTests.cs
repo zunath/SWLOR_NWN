@@ -2,8 +2,8 @@ using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 

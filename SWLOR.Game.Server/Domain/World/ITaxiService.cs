@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Domain.World
 {

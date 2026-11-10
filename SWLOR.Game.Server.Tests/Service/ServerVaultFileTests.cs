@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class ServerVaultFileTests
 {
-    private static readonly Type VaultFile = typeof(Player).Assembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerVaultFile")!;
+    private static readonly Type VaultFile = typeof(Player).Assembly.GetType("SWLOR.Game.Server.Domain.Foundation.ServerVaultFile")!;
 
     private static object Call(string method, params object[] args) =>
         VaultFile.GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, args)!;

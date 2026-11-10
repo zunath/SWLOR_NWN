@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;

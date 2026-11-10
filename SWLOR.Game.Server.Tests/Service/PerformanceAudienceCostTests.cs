@@ -2,9 +2,8 @@ using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -149,7 +148,7 @@ public class PerformanceAudienceCostTests
 
         File.ReadAllText(SourcePath("Domain", "Character", "StatService.cs"))
             .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
-        File.ReadAllText(SourcePath("Service", "CraftService", "Minigame", "Line", "LineAnglerEffects.cs"))
+        File.ReadAllText(SourcePath("Domain", "Crafting", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");
         File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
     }
@@ -162,7 +161,7 @@ public class PerformanceAudienceCostTests
             Environment.NewLine,
             Directory.EnumerateFiles(productionRoot, "*.cs", SearchOption.AllDirectories)
                 .Where(file => !file.Contains(Path.Combine("Feature", "PerkDefinition"), StringComparison.OrdinalIgnoreCase))
-                .Where(file => !file.EndsWith(Path.Combine("Service", "StatService", "StatType.cs"), StringComparison.OrdinalIgnoreCase))
+                .Where(file => !file.EndsWith(Path.Combine("Domain", "Character", "StatType.cs"), StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
 
         var stats = Enum.GetValues<StatType>().Where(stat => (int)stat >= 1300 && (int)stat <= 1313).ToArray();

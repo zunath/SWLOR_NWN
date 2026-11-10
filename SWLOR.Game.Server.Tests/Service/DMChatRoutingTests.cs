@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// <summary>
 /// Runs the production DM area shout against the engine model of DM possession. The DM chat routing of the chat
 /// service itself (the Comms filter, the DM emote style, the DM Talk and Whisper channels, who overhears local speech)
-/// is tested on the instance in <c>Tests/Domain/Core/CommunicationChatTests.cs</c> and <c>CommunicationCommsTests.cs</c>.
+/// is tested on the instance in <c>Tests/Domain/Foundation/CommunicationChatTests.cs</c> and <c>CommunicationCommsTests.cs</c>.
 /// </summary>
 public class DMChatRoutingTests
 {

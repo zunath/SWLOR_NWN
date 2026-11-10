@@ -5,10 +5,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.IntegrationTests.Support;
-using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.IntegrationTests.Migrations;
 

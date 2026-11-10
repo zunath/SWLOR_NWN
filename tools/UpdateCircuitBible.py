@@ -1,6 +1,6 @@
 """Record the Engineering Circuit's XP multipliers and enhancement rule in the Design Bible's System Changes & Migrations tab.
 
-Reads the values from SWLOR.Game.Server/Service/CraftService/Minigame/Circuit/CircuitRules.cs, so the Bible cannot drift from
+Reads the values from SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitRules.cs, so the Bible cannot drift from
 the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level, copying every other
 workbook entry byte-for-byte. Safe to rerun: the entry is found by its opening words and rewritten in place; a new one goes on
 the first row after the last numbered entry.
@@ -23,7 +23,7 @@ import UpdateCraftingProgressionBible as Bible  # noqa: E402  (shared zip/XML he
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
-DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Circuit" / "CircuitRules.cs"
+DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Circuit" / "CircuitRules.cs"
 TOP_RECIPE_RULES = DEFAULT_RULES.parent.parent / "TopRecipeRules.cs"
 SHEET = "System Changes & Migrations"
 FIRST_ENTRY_ROW = 3

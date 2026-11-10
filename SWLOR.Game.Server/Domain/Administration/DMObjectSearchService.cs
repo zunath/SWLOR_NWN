@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.Engine;

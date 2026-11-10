@@ -6,16 +6,12 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CompanionControlService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -27,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// <summary>
     /// Creature AI: the creature event logic, the combat leash, the aggro aura, the ally cache and the profile decision
     /// engine (profiles, per-creature state and action selection) that used to be static in <c>Service.AI</c> and
-    /// <c>Service.AIService.NPCAI</c>, moved here unchanged. The event handlers run on the container's
+    /// <c>SWLOR.Game.Server.Domain.Creatures.NPCAI</c>, moved here unchanged. The event handlers run on the container's
     /// instance; static callers reach it through <c>GameServices.AI</c>.
     /// </summary>
     public class AIService : IAIService
@@ -1039,7 +1035,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                    GetAILevel(creature) != AILevel.VeryLow;
         }
 
-        // ---- Profile decision engine (formerly Service.AIService.NPCAI) ----
+        // ---- Profile decision engine (formerly SWLOR.Game.Server.Domain.Creatures.NPCAI) ----
 
         private sealed class ActionEvaluation
         {

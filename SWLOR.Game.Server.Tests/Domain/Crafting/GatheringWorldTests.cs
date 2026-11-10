@@ -1,8 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.ProspectingService;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.NWN.API.NWScript.NWScript;
 

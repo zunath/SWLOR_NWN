@@ -1,7 +1,7 @@
 ﻿ using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using System.Collections.Generic;
 using static SWLOR.Game.Server.Composition.GameServices;
 

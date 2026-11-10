@@ -7,7 +7,7 @@ using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;

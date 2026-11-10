@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Service.MusicService;
-using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// Which song a musician plays: the logic that used to be static in <c>Service.PerformanceService.PerformanceSongs</c>,
+    /// Which song a musician plays: the logic that used to be static in <c>SWLOR.Game.Server.Domain.Social.PerformanceSongs</c>,
     /// moved here unchanged. It reads the player's collection from <see cref="IMusicService"/>.
     /// </summary>
     public class PerformanceSongService : IPerformanceSongService

@@ -6,11 +6,8 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -401,8 +398,8 @@ public class BloodFrenzyQuestDefinitionTests
             Path.Combine(root.FullName, "Module", "utc", "bf_kess.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_pulsedroid.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_scavenger.utc.json"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "KeyItemService", "KeyItemType.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "NPCService", "NPCGroupType.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Items", "KeyItemType.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Creatures", "NPCGroupType.cs"),
         };
 
         foreach (var file in contentFiles)

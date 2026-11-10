@@ -6,9 +6,9 @@ using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Scenario.Circuit;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {

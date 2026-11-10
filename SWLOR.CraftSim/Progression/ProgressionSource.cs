@@ -13,8 +13,8 @@ namespace SWLOR.CraftSim.Progression
         private const string Server = "SWLOR.Game.Server/";
         public const string RoleplayXp = Server + "Feature/RoleplayXP.cs";
         public const string Guild = Server + "Domain/Economy/GuildService.cs";
-        public const string ProspectingRulesFile = Server + "Service/CraftService/Minigame/Prospecting/ProspectingRules.cs";
-        public const string SearchRulesFile = Server + "Service/CraftService/Minigame/Search/SearchRules.cs";
+        public const string ProspectingRulesFile = Server + "Domain/Crafting/Minigame/Prospecting/ProspectingRules.cs";
+        public const string SearchRulesFile = Server + "Domain/Crafting/Minigame/Search/SearchRules.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string ResearchViewModel = Server + "Feature/GuiDefinition/ViewModel/ResearchViewModel.cs";

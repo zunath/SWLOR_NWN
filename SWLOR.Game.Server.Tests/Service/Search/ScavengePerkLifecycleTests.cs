@@ -1,9 +1,9 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Crafting;
 using static SWLOR.Game.Server.Tests.Service.Search.SearchTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;

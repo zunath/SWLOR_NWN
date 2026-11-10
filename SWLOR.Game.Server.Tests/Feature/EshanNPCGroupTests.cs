@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

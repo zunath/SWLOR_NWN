@@ -1,8 +1,8 @@
 using SWLOR.CraftSim.Play;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Reaction;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Scenario.Reaction
 {

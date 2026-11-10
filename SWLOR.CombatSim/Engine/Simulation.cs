@@ -2,12 +2,8 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
-using SWLOR.Game.Server.Service.PvpCombatService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using DamageType = SWLOR.CombatSim.Scenario.DamageType;
 
@@ -438,8 +434,8 @@ namespace SWLOR.CombatSim.Engine
                     throw new InvalidDataException($"{use.Feat} power must match the source definition.");
                 use.WeaponPower = info.SourceWeaponPower;
                 use.IsControl = info.ImpactStatusTypes.Any(type =>
-                    ((SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect)Activator.CreateInstance(type)).Categories.HasFlag(
-                        SWLOR.Game.Server.Service.StatusEffectService.StatusEffectCategory.Control));
+                    ((SWLOR.Game.Server.Domain.Character.IStatusEffect)Activator.CreateInstance(type)).Categories.HasFlag(
+                        SWLOR.Game.Server.Domain.Character.StatusEffectCategory.Control));
             }
             if (use.MinimumStaminaBeforeUse < 0)
                 throw new InvalidDataException("MinimumStaminaBeforeUse must be nonnegative.");

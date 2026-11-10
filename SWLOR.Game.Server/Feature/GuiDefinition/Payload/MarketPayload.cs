@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {

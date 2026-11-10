@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 using static SWLOR.Game.Server.Tests.Service.Search.SearchTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;
@@ -151,8 +151,8 @@ public class SearchSetupTests
         var root = TestRepository.FindRoot();
         foreach (var path in new[]
                  {
-                     "SWLOR.Game.Server/Service/CraftService/Minigame/Search",
-                     "SWLOR.Game.Server/Service/ScavengeService"
+                     "SWLOR.Game.Server/Domain/Crafting/Minigame/Search",
+                     "SWLOR.Game.Server/Domain/Crafting"
                  })
         {
             foreach (var file in Directory.EnumerateFiles(Path.Combine(root, path), "*.cs"))

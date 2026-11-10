@@ -3,8 +3,8 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Rng;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Scenario.Kitchen

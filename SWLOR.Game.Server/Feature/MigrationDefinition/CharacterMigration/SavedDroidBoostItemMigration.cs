@@ -7,14 +7,13 @@ using System.Text;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Node = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Node;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 

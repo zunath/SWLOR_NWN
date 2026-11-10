@@ -1,8 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;

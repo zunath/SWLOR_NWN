@@ -5,13 +5,10 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -61,11 +58,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Music.GetAllSongs().Count > 0, "Songs cached by the module-cache handler");
             ctx.Assert(Weather.GetWeather(OBJECT_INVALID) == SWLOR.NWN.API.NWScript.Enum.Weather.Invalid,
                 "Weather answers through the container");
-            ctx.AssertEqual("Apartment", Property.GetPropertyDetail(SWLOR.Game.Server.Service.PropertyService.PropertyType.Apartment).Name,
+            ctx.AssertEqual("Apartment", Property.GetPropertyDetail(SWLOR.Game.Server.Domain.World.PropertyType.Apartment).Name,
                 "Property definitions cached by the module-cache handler");
             ctx.Assert(Property.GetAllInstanceAreaResrefs().Count > 0, "Property layouts cached by the module-cache handler");
             ctx.AssertEqual("Township", Property.GetCityLevelName(3), "Property city rules answer through the container");
-            ctx.AssertEqual(SWLOR.Game.Server.Service.PropertyService.PropertyLoadState.Failed, Property.GetPropertyLoadState("no-such-property"),
+            ctx.AssertEqual(SWLOR.Game.Server.Domain.World.PropertyLoadState.Failed, Property.GetPropertyLoadState("no-such-property"),
                 "The property loader answers through the container");
             ctx.AssertEqual(QuestContractBoardService.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
             ctx.Assert(Quest.GetQuestByIdOrDefault("scrapmetal_monster") != null, "Quests cached by the module-cache handler");

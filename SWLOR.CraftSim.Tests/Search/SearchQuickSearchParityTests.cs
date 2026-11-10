@@ -4,8 +4,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Search;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.CraftSim.Tests.Search
 {
@@ -143,7 +142,7 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         /// <summary>A source of chance that returns the rolls it was given in order, then fails.</summary>
-        private sealed class ScriptedRolls : Game.Server.Service.CraftService.Minigame.IMinigameRandom
+        private sealed class ScriptedRolls : Game.Server.Domain.Crafting.Minigame.IMinigameRandom
         {
             private readonly Queue<int> _rolls;
 

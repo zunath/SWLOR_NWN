@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -124,7 +124,7 @@ public class GuiPressLayoutHoldTests
     [Test]
     public void RootLayoutIsHeldDuringAPress()
     {
-        var source = ServerSource("Service", "GuiService", "GuiViewModelBase.cs");
+        var source = ServerSource("Domain", "UI", "GuiViewModelBase.cs");
         var apply = source[source.IndexOf("private void ApplyRootLayout(", StringComparison.Ordinal)..];
 
         var hold = apply.IndexOf("_pressHold.Hold()", StringComparison.Ordinal);

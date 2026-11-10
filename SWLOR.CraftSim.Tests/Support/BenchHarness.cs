@@ -1,7 +1,7 @@
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.CraftSim.Tests.Support
 {

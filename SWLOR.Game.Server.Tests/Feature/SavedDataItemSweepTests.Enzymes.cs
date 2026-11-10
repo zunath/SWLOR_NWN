@@ -177,7 +177,7 @@ public partial class SavedDataItemSweepTests
     public void EnzymeShrink_CharacterRetryChangesOnlyTheOldFile()
     {
         const BindingFlags members = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
-        var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
+        var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter")!;
         var migrationType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._26_ConvertCraftingPerksToRanks")!;
         var migration = Activator.CreateInstance(migrationType, true)!;
         var record = new Player { Version = 26, CharacterFileVersion = 26, HP = 17, FP = 13, Stamina = 11 };

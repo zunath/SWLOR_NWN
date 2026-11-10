@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Economy;
 

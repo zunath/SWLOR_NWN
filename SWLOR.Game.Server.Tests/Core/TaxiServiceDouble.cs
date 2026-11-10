@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Core;

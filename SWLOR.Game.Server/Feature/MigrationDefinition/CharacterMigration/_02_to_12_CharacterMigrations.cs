@@ -1,6 +1,6 @@
 using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;

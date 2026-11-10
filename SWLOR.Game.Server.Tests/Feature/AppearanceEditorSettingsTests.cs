@@ -41,7 +41,7 @@ public class AppearanceEditorSettingsTests
         var harness = $$"""
             using System;
             using System.Linq.Expressions;
-            using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+            using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
             using SWLOR.NWN.API.NWScript.Enum;
             using DMPreferences = SWLOR.Game.Server.Entity.DMPreferences;

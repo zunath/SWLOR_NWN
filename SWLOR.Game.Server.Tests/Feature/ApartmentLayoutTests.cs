@@ -2,8 +2,8 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PropertyLayoutDefinition;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Domain.Social;

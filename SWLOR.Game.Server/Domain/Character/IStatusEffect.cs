@@ -1,0 +1,80 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Domain.Character
+{
+    public interface IStatusEffect
+    {
+        string Id { get; }
+        uint Source { get; }
+        /// <summary>
+        /// The cached definition that granted this effect, retained across logout and source-handle
+        /// reassignment. Periodic child effects must inherit this identity from their parent.
+        /// Null means the granting ability is unknown, not that the effect belongs to any ability.
+        /// </summary>
+        AbilityDetail OriginatingAbility { get; set; }
+        StatusEffectActivationType ActivationType { get; }
+        StatusEffectSourceType SourceType { get; }
+        string Name { get; }
+        EffectIconType Icon { get; }
+        StatusEffectCategory Categories { get; }
+        StatusEffectStackType StackingType { get; }
+        bool IsFlaggedForRemoval { get; }
+        bool WasNaturallyExpired { get; }
+        float SecondsSinceNaturalExpiration { get; }
+        bool SendsApplicationMessage { get; }
+        bool SendsWornOffMessage { get; }
+        StatusEffectCleanseType CleanseTypes { get; }
+        ResistanceType ResistanceType { get; }
+        ResistanceType AppliedResistanceType { get; }
+        float Frequency { get; }
+        int DurationTicks { get; }
+        DateTime LastTickTime { get; }
+        bool PreservesTickScheduleOnRefresh { get; }
+        float GetRemainingDurationSeconds(DateTime currentTime);
+        bool PersistsOnLogout { get; }
+        /// <summary>
+        /// True when a player who has this effect switched on gets it back after a server restart.
+        /// </summary>
+        bool RestoresAfterServerRestart { get; }
+        StatGroup StatGroup { get; }
+        List<Type> MorePowerfulEffectTypes { get; }
+        List<Type> LessPowerfulEffectTypes { get; }
+        IStatusEffect Clone();
+        string CanApply(uint creature);
+        /// <summary>
+        /// True when applying this effect over <paramref name="active"/>, the same type and ability, would
+        /// produce the same state, so the active effect restarts its duration in place (taking the new
+        /// source when the type does not stack). Only effects whose Apply and Remove change nothing but
+        /// their own stats may opt in.
+        /// </summary>
+        bool CanRefreshInPlace(IStatusEffect active);
+        void AssignResistanceType(ResistanceType type);
+        void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null);
+        void RestartDuration(int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null);
+        void ReassignSource(uint source);
+        void ExtendDurationTicks(int ticks);
+        void SetDurationTicks(int ticks);
+        void SetDurationSeconds(float seconds);
+        void ReapplyEffect(uint creature);
+        void RemoveNativeEffects(uint creature);
+        void RemoveEffect(uint creature, bool isReplacement = false);
+        void TickEffect(uint creature);
+        void ReconcileElapsedTime(DateTime currentTime);
+        void OnHitEffect(uint creature, uint target, int damage);
+        void OnDamageDealtEffect(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
+        void OnDamageTakenEffect(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
+    }
+}

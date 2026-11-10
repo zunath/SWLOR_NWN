@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service.StatService;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
 using Random = SWLOR.Game.Server.Service.Random;
 

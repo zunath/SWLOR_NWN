@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Administration;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

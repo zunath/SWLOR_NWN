@@ -101,7 +101,7 @@ public class DMPossessionPlayerLoopTests
                 {{InstanceMethod("Domain/Abilities/MimicryService.cs", "GetNearbyPlayers")}}
             }
 
-            {{Type("Service/RoleplayXPService/OOCMessageContext.cs", "OOCMessageContext")}}
+            {{Type("Domain/Character/OOCMessageContext.cs", "OOCMessageContext")}}
             public static class CommunicationService { public const string EventCommsAreaVariable = "EVENT_COMMS_AREA"; }
             public static class RoleplayXP
             {

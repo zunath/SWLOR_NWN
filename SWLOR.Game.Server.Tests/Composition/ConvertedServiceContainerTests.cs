@@ -53,7 +53,7 @@ public class ConvertedServiceContainerTests
         // The static facades are gone: their handlers moved onto the instance methods they forwarded to, each renamed in
         // tools/Refactor/HandlerRenames.txt, and the script registry binds them to the container's singleton. A line names
         // master's handler, which for an earlier move is not on the facade master had
-        // (Service.CombatService.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a line
+        // (SWLOR.Game.Server.Domain.Combat.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a line
         // belongs to this service when its master name is on that facade or its branch name on the instance; of a split
         // service (Combat), only a line whose branch name is on this class: the facade's handlers went to the parts that own
         // them.

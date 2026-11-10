@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Area;

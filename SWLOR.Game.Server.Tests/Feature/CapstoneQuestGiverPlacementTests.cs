@@ -122,9 +122,9 @@ public class CapstoneQuestGiverPlacementTests
     {
         var quests = typeof(VibrobladeCapstoneQuestDefinition).Assembly.GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract &&
-                           typeof(SWLOR.Game.Server.Service.QuestService.IQuestListDefinition).IsAssignableFrom(type) &&
+                           typeof(SWLOR.Game.Server.Domain.Quests.IQuestListDefinition).IsAssignableFrom(type) &&
                            type.Name.EndsWith("CapstoneQuestDefinition", StringComparison.Ordinal))
-            .SelectMany(type => ((SWLOR.Game.Server.Service.QuestService.IQuestListDefinition)
+            .SelectMany(type => ((SWLOR.Game.Server.Domain.Quests.IQuestListDefinition)
                 Activator.CreateInstance(type)!).BuildQuests())
             .ToDictionary(pair => pair.Key, pair => pair.Value);
 

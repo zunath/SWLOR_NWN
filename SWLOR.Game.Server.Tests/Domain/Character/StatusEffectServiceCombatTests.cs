@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Testing;
@@ -44,7 +44,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     {
         var onHit = Applied<ProbeEffect>(Caster, Caster, probe =>
         {
-            probe.ActivationValue = SWLOR.Game.Server.Service.StatusEffectService.StatusEffectActivationType.OnHit;
+            probe.ActivationValue = SWLOR.Game.Server.Domain.Character.StatusEffectActivationType.OnHit;
             probe.NameValue = "Hit";
         });
         var taken = Applied<OtherProbeEffect>(Target, Target, probe => probe.NameValue = "Taken");

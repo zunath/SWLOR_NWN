@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

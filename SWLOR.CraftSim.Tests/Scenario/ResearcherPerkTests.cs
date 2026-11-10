@@ -4,11 +4,10 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {

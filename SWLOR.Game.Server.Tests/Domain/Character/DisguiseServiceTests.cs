@@ -4,8 +4,6 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DisguiseService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Testing;
 using static SWLOR.Game.Server.Composition.GameServices;
@@ -152,7 +150,7 @@ public class DisguiseServiceTests
     [Test]
     public void A_full_page_of_disguises_asks_for_the_next_page()
     {
-        var db = ScriptedProxy.Create<SWLOR.Game.Server.Domain.Core.IDBService>(out var script);
+        var db = ScriptedProxy.Create<SWLOR.Game.Server.Domain.Foundation.IDBService>(out var script);
         var pages = new Queue<List<PlayerDisguise>>();
         pages.Enqueue(Enumerable.Range(0, 50).Select(i => new PlayerDisguise { Id = "a" + i, PrivateName = "n" + (99 - i) }).ToList());
         pages.Enqueue(new List<PlayerDisguise> { new() { Id = "last", PrivateName = "n00" } });
@@ -670,7 +668,7 @@ public class DisguiseServiceTests
     [Test]
     public void Resetting_cooldowns_walks_every_page()
     {
-        var db = ScriptedProxy.Create<SWLOR.Game.Server.Domain.Core.IDBService>(out var script);
+        var db = ScriptedProxy.Create<SWLOR.Game.Server.Domain.Foundation.IDBService>(out var script);
         var pages = new Queue<List<PlayerDisguise>>();
         pages.Enqueue(Enumerable.Range(0, 50).Select(i => new PlayerDisguise { Id = "a" + i, DateLastActivated = DateTime.UtcNow }).ToList());
         pages.Enqueue(new List<PlayerDisguise> { new() { Id = "last", DateLastActivated = DateTime.UtcNow } });

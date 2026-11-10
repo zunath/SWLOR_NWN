@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+
+namespace SWLOR.Game.Server.Domain.Character
+{
+    public class NPCStats
+    {
+        public int Level { get; set; }
+        public int Attack { get; set; }
+        public int Accuracy { get; set; }
+        public int ForceAttack { get; set; }
+        public int Evasion { get; set; }
+        public int CombatReadiness { get; set; }
+        public int FP { get; set; }
+        public int Stamina { get; set; }
+        public Dictionary<CombatDamageType, int> Defenses { get; set; }
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
+        public Dictionary<SkillType, int> Skills { get; set; }
+
+        public NPCStats()
+        {
+            Defenses = new Dictionary<CombatDamageType, int>();
+            Resistances = new Dictionary<ResistanceType, int>();
+            Skills = new Dictionary<SkillType, int>();
+        }
+    }
+}

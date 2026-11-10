@@ -1,7 +1,6 @@
 using StackExchange.Redis;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

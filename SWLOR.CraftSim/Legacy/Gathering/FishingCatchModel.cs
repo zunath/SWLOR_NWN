@@ -1,6 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {

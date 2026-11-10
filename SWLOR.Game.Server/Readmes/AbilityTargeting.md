@@ -45,7 +45,7 @@ Players configure **Self-Cast Support Abilities** and **Cast on Current Enemy** 
 ### Authoring a new ability or rank
 
 1. Define the ordinary ability and canonical native feat first. For a creature-targeted cast, keep its normal manual targeting and `RequiresTarget()` requirement so the off setting preserves ally/enemy selection. Do not set `TARGETSELF=1` on the canonical targeted cast to implement an optional preference, or use `.UsesActiveAttackTarget()` as a shortcut: that changes the default behavior and excludes it from optional targeting.
-2. Check every rank against `Service/AbilityService/QuickCastPolicy.cs`. Ordinary eligibility requires `IsCastedAbility`, `IsSingleTargetAbility` and `RequiresTarget`, with no area flag, active-attack-target behavior or non-`None` targeting shape. Self-casting also accepts explicitly opted-in, non-hostile creature-targeted area casts with a `Sphere` shape and exactly `HelpsAllies` flags, such as Power Cell III. These retain their ally-centered area when targeting manually and center on the caster when self-casting.
+2. Check every rank against `Domain/Abilities/QuickCastPolicy.cs`. Ordinary eligibility requires `IsCastedAbility`, `IsSingleTargetAbility` and `RequiresTarget`, with no area flag, active-attack-target behavior or non-`None` targeting shape. Self-casting also accepts explicitly opted-in, non-hostile creature-targeted area casts with a `Sphere` shape and exactly `HelpsAllies` flags, such as Power Cell III. These retain their ally-centered area when targeting manually and center on the caster when self-casting.
 
    | Ability kind | Definition requirement | Optional mode |
    |---|---|---|

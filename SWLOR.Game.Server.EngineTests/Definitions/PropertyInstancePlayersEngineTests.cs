@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 

@@ -2,8 +2,8 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Gates

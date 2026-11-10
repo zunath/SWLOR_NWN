@@ -1,8 +1,6 @@
 using System.Reflection;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data

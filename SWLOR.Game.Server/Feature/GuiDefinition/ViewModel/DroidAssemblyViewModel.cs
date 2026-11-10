@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

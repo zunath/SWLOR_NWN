@@ -1,5 +1,5 @@
 using System.Linq;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;

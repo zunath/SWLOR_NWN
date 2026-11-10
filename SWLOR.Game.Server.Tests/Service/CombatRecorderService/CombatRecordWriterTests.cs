@@ -2,7 +2,7 @@ using System.IO;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CombatRecorderService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service.CombatRecorderService;
 

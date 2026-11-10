@@ -135,7 +135,7 @@ public class EquipmentStatsTests
         EquipmentStats.ApplyStats();
 
         _log.Should().Equal("Evasion:100:204:False", "Attack:100:201:True", "Evasion:100:201:True");
-        _locals.Int(Wearer, "EQUIPMENT_DISPLACED_RECORD_STATS").Should().Be((int)SWLOR.Game.Server.Service.StatService.EquipmentRecordStats.Evasion);
+        _locals.Int(Wearer, "EQUIPMENT_DISPLACED_RECORD_STATS").Should().Be((int)SWLOR.Game.Server.Domain.Character.EquipmentRecordStats.Evasion);
     }
 
     [Test]

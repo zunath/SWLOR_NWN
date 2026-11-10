@@ -1,6 +1,6 @@
 """Write the Engineering perk lines (Overclocker and Technician) into the Design Bible's Engineering tab.
 
-Reads every magnitude from SWLOR.Game.Server/Service/CraftService/Minigame/Circuit/CircuitPerkRules.cs and CircuitRules.cs, so the
+Reads every magnitude from SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitPerkRules.cs and CircuitRules.cs, so the
 Bible cannot drift from the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level,
 copying every other workbook entry byte-for-byte. Safe to rerun: the perk rows go on the rows after the retired Droid Assembly rows,
 the Total row follows them, and a rerun writes the same cells. After a merge conflict on the workbook, take the base's workbook and
@@ -26,7 +26,7 @@ import UpdateCraftingProgressionBible as Bible  # noqa: E402  (shared zip/XML he
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
-DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Circuit"
+DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Circuit"
 SHEET = "Engineering"
 FIRST_PERK_ROW = 14
 TEMPLATE_ROW = 9

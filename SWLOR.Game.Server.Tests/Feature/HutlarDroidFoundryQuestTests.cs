@@ -6,8 +6,8 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;

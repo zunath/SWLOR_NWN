@@ -5,13 +5,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -177,7 +172,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     {
         var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
-        var statusBase = Read(root, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectBase.cs");
+        var statusBase = Read(root, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectBase.cs");
         var blazingSpikes = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BlazingSpikesStatusEffect.cs");
         var markedForDeath = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "MarkedForDeathStatusEffect.cs");
 
@@ -391,8 +386,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             "Training, Stance, and Infinite Conduit together must remain below full cost restoration");
 
         var root = FindRepositoryRoot();
-        var stamina = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementStamina.cs");
-        var force = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementFP.cs");
+        var stamina = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityRequirementStamina.cs");
+        var force = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityRequirementFP.cs");
         var combat = CombatSource.Read();
 
         stamina.IndexOf("Stat.ReduceStamina(player, requiredSTM)", StringComparison.Ordinal)

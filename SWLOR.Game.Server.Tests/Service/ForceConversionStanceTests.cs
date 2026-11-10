@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -37,9 +37,9 @@ public class ForceConversionStanceTests
         // Execute the production conversion and damage profile with only native actors,
         // stat storage, and the queued-ability query replaced.
         var source = $$"""
-            using SWLOR.Game.Server.Service.CombatService;
-            using SWLOR.Game.Server.Service.SkillService;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Character;
+            using SWLOR.Game.Server.Domain.Character;
             using System.Collections.Generic;
 
             public static class ConversionHarness

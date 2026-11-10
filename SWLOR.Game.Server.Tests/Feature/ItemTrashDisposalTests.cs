@@ -6,7 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;

@@ -2,11 +2,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using PlayerRecord = SWLOR.Game.Server.Entity.Player;
-using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Tests.Feature;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;

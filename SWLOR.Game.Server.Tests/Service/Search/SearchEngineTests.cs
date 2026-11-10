@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 using static SWLOR.Game.Server.Tests.Service.Search.SearchTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;

@@ -2,23 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.LanguageService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
-using SkillCategoryType = SWLOR.Game.Server.Service.SkillService.SkillCategoryType;
-using SkillAttribute = SWLOR.Game.Server.Service.SkillService.SkillAttribute;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillCategoryType = SWLOR.Game.Server.Domain.Character.SkillCategoryType;
+using SkillAttribute = SWLOR.Game.Server.Domain.Character.SkillAttribute;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Languages: the logic and state that used to be static in <c>Service.Language</c>, moved here unchanged. The
-    /// translators are stateless string functions that stay in <c>Service/LanguageService/</c>; the translator table
+    /// translators are stateless string functions that stay in <c>Domain/Character/</c>; the translator table
     /// and the command list are instance fields. The module-load handler is here.
     /// </summary>
     public class LanguageService : ILanguageService

@@ -4,9 +4,8 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Companions
 {

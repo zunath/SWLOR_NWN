@@ -1,11 +1,11 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
 /// Gives an existing character one rebuild token. Call it only from a character migration's
-/// <see cref="Service.MigrationService.ICharacterMigration.MigratePlayerData"/>, whose record version
+/// <see cref="SWLOR.Game.Server.Domain.Foundation.ICharacterMigration.MigratePlayerData"/>, whose record version
 /// checkpoint grants it once per release.
 /// </summary>
 internal static class RebuildTokenGrant

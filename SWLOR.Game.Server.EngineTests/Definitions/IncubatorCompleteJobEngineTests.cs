@@ -5,11 +5,10 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
-using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

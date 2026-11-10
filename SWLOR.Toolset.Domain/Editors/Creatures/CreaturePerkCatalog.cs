@@ -1,5 +1,5 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Toolset.Domain.Editors.Creatures
 {

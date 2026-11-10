@@ -2,7 +2,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

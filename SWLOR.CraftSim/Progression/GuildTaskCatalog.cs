@@ -2,14 +2,14 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Progression
 {

@@ -1,9 +1,8 @@
 using SWLOR.Game.Server.Domain.Administration;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Tests.Support;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PlayerIntroductionService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

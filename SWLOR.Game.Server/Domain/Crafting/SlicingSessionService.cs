@@ -2,20 +2,17 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using ColorToken = SWLOR.Game.Server.Service.ColorToken;
 using Random = SWLOR.Game.Server.Service.Random;
-using Slicing = SWLOR.Game.Server.Service.SlicingService.Slicing;
+using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 
 namespace SWLOR.Game.Server.Domain.Crafting
 {
@@ -797,7 +794,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
         /// <summary>Writes a line to the crafting log.</summary>
         protected virtual void WriteLog(string message) =>
-            Service.Log.Write(Service.LogService.LogGroup.Crafting, message);
+            Service.Log.Write(SWLOR.Game.Server.Domain.Foundation.LogGroup.Crafting, message);
 
         /// <summary>The current time in Unix seconds, which dates a target's claim.</summary>
         protected virtual int UtcNowSeconds() => (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();

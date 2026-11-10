@@ -12,8 +12,8 @@ public class QuestJournalProgressionTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "QuestService",
+            "Domain",
+            "Quests",
             "QuestDetail.cs"));
 
         var nextStateIndex = source.IndexOf(

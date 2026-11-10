@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LanguageService;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SWLOR.Game.Server.Domain.Character;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

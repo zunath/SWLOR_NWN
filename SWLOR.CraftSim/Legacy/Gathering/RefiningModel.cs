@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {

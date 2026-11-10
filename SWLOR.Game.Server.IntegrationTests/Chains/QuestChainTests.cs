@@ -3,7 +3,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.IntegrationTests.Support;
-using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.IntegrationTests.Chains;
 

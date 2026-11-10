@@ -9,8 +9,7 @@ using SWLOR.CombatSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;
@@ -83,7 +82,7 @@ public class WeaponLineTests
         worldbreaker.ExtraDamageIfTargetControlled.Should().Be(40);
         worldbreaker.ConditionalTargetStatus.Status.Should().Be(typeof(DazedStatusEffect));
         worldbreaker.ConditionalTargetStatus.DurationSeconds.Should().Be(30);
-        worldbreaker.ConditionalTargetStatus.RequiredCategory.Should().Be(SWLOR.Game.Server.Service.StatusEffectService.StatusEffectCategory.Control);
+        worldbreaker.ConditionalTargetStatus.RequiredCategory.Should().Be(SWLOR.Game.Server.Domain.Character.StatusEffectCategory.Control);
         worldbreaker.CastSeconds.Should().Be(2);
     }
 
@@ -287,7 +286,7 @@ public class WeaponLineTests
     public void ChargedBlows_TheNextLandedAttackOrAbilityHitSpendsTheBonusOnce()
     {
         var attacker = State("a", 1, "None", "ChargedBlows:3");
-        attacker.Weapon.ApplyStatusRiders(SWLOR.Game.Server.Service.StatusEffectService.StatusEffectCategory.Control, 0);
+        attacker.Weapon.ApplyStatusRiders(SWLOR.Game.Server.Domain.Character.StatusEffectCategory.Control, 0);
         attacker.Weapon.NextAttackBonus(29.9).Should().Be(26);
         attacker.Weapon.TakeLandedOrdinaryPower(1).Should().Be(26);
         attacker.Weapon.TakeLandedOrdinaryPower(2).Should().Be(0);
@@ -296,7 +295,7 @@ public class WeaponLineTests
         staff.Abilities.Add(new() { Feat = "Slam4" });
         var sim = Duel(staff, Fighter("Victim"));
         var source = sim.Get("Attacker");
-        source.Weapon.ApplyStatusRiders(SWLOR.Game.Server.Service.StatusEffectService.StatusEffectCategory.Control, 0);
+        source.Weapon.ApplyStatusRiders(SWLOR.Game.Server.Domain.Character.StatusEffectCategory.Control, 0);
         SimulationClock.RunUntil(sim, () => Diagnostic(sim, "Attacker", "AbilityImpactsLanded") == 1, 10, "a landed Slam");
         Diagnostic(sim, "Attacker", "NextAttackBonusSpent").Should().Be(1);
         source.Weapon.NextAttackBonus(sim.Now).Should().Be(0);

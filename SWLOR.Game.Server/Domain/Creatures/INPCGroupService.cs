@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Domain.Creatures
 {

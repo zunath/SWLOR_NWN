@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {

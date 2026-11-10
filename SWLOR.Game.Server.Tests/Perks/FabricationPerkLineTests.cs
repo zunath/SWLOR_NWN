@@ -1,11 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Tests.Perks.FabricationPerkLines;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;

@@ -2,7 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
@@ -10,11 +10,9 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
@@ -201,8 +199,8 @@ public class ForceSensitiveEspionageTests
         var decoy = new DecoyStatusEffect(penalty);
         decoy.StatGroup.Stats[StatType.AccuracyToStatusSourcePercentAdjustment].Should().Be(-penalty);
         ((DecoyStatusEffect)decoy.Clone()).AccuracyPenaltyPercent.Should().Be(penalty);
-        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Mind);
-        decoy.StackingType.Should().Be(SWLOR.Game.Server.Service.StatusEffectService.StatusEffectStackType.StackFromMultipleSources,
+        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Mind);
+        decoy.StackingType.Should().Be(SWLOR.Game.Server.Domain.Character.StatusEffectStackType.StackFromMultipleSources,
             "each caster's Decoy only penalizes attacks against that caster");
         new DecoyStatusEffect().AccuracyPenaltyPercent.Should().Be(DecoyStatusEffect.DefaultAccuracyPenaltyPercent);
     }
@@ -288,7 +286,7 @@ public class ForceSensitiveEspionageTests
     public void NearbyMessages_GoOnlyToTheHiddenSenderOrActor(bool senderHidden, bool actorHidden, bool nearby)
     {
         new MessagingService(FacadeForwarder.For<IStealthService>()).ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
-        var messaging = ReadSource("Domain", "Core", "MessagingService.cs");
+        var messaging = ReadSource("Domain", "Foundation", "MessagingService.cs");
         messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
         var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
         ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");

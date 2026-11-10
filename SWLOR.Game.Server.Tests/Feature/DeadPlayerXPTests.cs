@@ -55,7 +55,7 @@ public class DeadPlayerXPTests
     {
         var questSource = ReadServerSource("Domain", "Quests", "QuestService.cs");
         var questEncounterSource = ReadServerSource("Domain", "Quests", "QuestEncounterService.cs");
-        var questDetailSource = ReadServerSource("Service", "QuestService", "QuestDetail.cs");
+        var questDetailSource = ReadServerSource("Domain", "Quests", "QuestDetail.cs");
         var killProgression = ExtractMethod(questSource, "public void ProgressKillTargetObjectives()");
         var encounterKillCredit = ExtractMethod(questEncounterSource, "private void ProgressKillCredit(");
         var canComplete = ExtractMethod(questDetailSource, "public bool CanComplete(uint player)");

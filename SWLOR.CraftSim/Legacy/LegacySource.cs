@@ -16,15 +16,15 @@ namespace SWLOR.CraftSim.Legacy
             "Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `" +
             CraftViewModelCommit + "`; the others are checked against the source by `LegacySourceTests`:";
 
-        public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
+        public const string RecipeLevelChart = Server + "Domain/Crafting/RecipeLevelChart.cs";
         public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
-        public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
-        public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
-        public const string Scavenge = Server + "Service/ScavengeService/ScavengeQuickSearch.cs";
+        public const string ProspectingNode = Server + "Domain/Crafting/Minigame/Prospecting/ProspectingNode.cs";
+        public const string GatheringLevels = Server + "Domain/Crafting/GatheringLevels.cs";
+        public const string Scavenge = Server + "Domain/Crafting/ScavengeQuickSearch.cs";
         public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
-        public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
+        public const string FishingFight = Server + "Domain/World/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
         public static readonly SourceReference ActionRanks = SourceReference.Frozen(

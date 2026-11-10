@@ -1,13 +1,12 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Puts an Inspired status effect on a creature: the logic that used to be static in
-    /// <c>Service.PerformanceService.PerformanceInspiredApplier</c>, moved here unchanged. The effect is rebuilt only when
+    /// <c>SWLOR.Game.Server.Domain.Social.PerformanceInspiredApplier</c>, moved here unchanged. The effect is rebuilt only when
     /// its composition changed; otherwise only its remaining time is refreshed, which is all a tick usually needs.
     /// </summary>
     public class PerformanceInspiredService : IPerformanceInspiredService

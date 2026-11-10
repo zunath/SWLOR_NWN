@@ -2970,7 +2970,7 @@ def short_recast_name(name):
 
 
 def add_missing_perk_types(rows):
-    path = ROOT / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkType.cs"
+    path = ROOT / "SWLOR.Game.Server" / "Domain" / "Character" / "PerkType.cs"
     text, values = parse_enum_values(path)
     bases = OrderedDict()
     for row in rows:
@@ -2997,7 +2997,7 @@ def add_missing_perk_types(rows):
 
 
 def add_missing_recast_groups(rows):
-    path = ROOT / "SWLOR.Game.Server" / "Service" / "AbilityService" / "RecastGroup.cs"
+    path = ROOT / "SWLOR.Game.Server" / "Domain" / "Abilities" / "RecastGroup.cs"
     text, values = parse_enum_values(path)
     active_bases = OrderedDict()
     for row in rows:
@@ -3357,11 +3357,11 @@ def generate_perk_definitions(rows, perk_values, feat_values):
             GENERATED_FILE_HEADER,
             "using System.Collections.Generic;",
             "using SWLOR.Game.Server.Enumeration;",
-            "using SWLOR.Game.Server.Service.CombatService;",
-            "using SWLOR.Game.Server.Service.PerkService;",
-            "using SWLOR.Game.Server.Service.SkillService;",
-            "using SWLOR.Game.Server.Service.StatService;",
-            "using SWLOR.Game.Server.Service.StatusEffectService;",
+            "using SWLOR.Game.Server.Domain.Combat;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
             "using SWLOR.NWN.API.NWScript.Enum;",
             "",
             "namespace SWLOR.Game.Server.Feature.PerkDefinition",
@@ -3457,9 +3457,9 @@ def generate_stance_status_effects(rows):
         stat_entries = stance_stat_entries(row)
         lines = [
             GENERATED_FILE_HEADER,
-            "using SWLOR.Game.Server.Service.SkillService;",
-            "using SWLOR.Game.Server.Service.StatusEffectService;",
-            "using SWLOR.Game.Server.Service.StatService;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
             "using SWLOR.NWN.API.NWScript.Enum;",
             "",
             "namespace SWLOR.Game.Server.Feature.StatusEffectDefinition",
@@ -3534,11 +3534,11 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             "using System.Collections.Generic;",
             "using SWLOR.Game.Server.Feature.StatusEffectDefinition;",
             "using SWLOR.Game.Server.Service;",
-            "using SWLOR.Game.Server.Service.AbilityService;",
-            *(["using SWLOR.Game.Server.Service.AIService;"] if base == "Steel Shoulder" else []),
-            "using SWLOR.Game.Server.Service.PerkService;",
-            "using SWLOR.Game.Server.Service.SkillService;",
-            "using SWLOR.Game.Server.Service.StatusEffectService;",
+            "using SWLOR.Game.Server.Domain.Abilities;",
+            *(["using SWLOR.Game.Server.Domain.Creatures;"] if base == "Steel Shoulder" else []),
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
+            "using SWLOR.Game.Server.Domain.Character;",
             "using SWLOR.NWN.API.NWScript.Enum;",
             "using SWLOR.NWN.API.NWScript.Enum.VisualEffect;",
             "",

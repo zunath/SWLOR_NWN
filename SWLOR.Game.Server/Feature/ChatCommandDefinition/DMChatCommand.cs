@@ -8,15 +8,14 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -25,7 +24,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -1369,7 +1367,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             {
                                 var playerId = GetObjectUUID(target);
                                 var dbPlayer = DB.Get<Player>(playerId);
-                                level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                                level = dbPlayer.Skills[SWLOR.Game.Server.Domain.Character.SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
                             var targetStatus = Space.GetShipStatus(target);

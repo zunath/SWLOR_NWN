@@ -1,7 +1,7 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Rng;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -188,6 +188,6 @@ namespace SWLOR.CraftSim.Progression
         /// <summary>The components one craft at a recipe level commits, averaged over the level's recipes.</summary>
         public LevelDemand Demand(SkillType skill, int level, ProgressionAssumptions assumptions) =>
             LevelDemand.Build(Recipes.ForNewCrafter(skill).Where(r => r.Level == level).ToList(), Supply,
-                assumptions with { GatheringTier = SWLOR.Game.Server.Service.CraftService.CraftRankMilestones.TierForRank(level) });
+                assumptions with { GatheringTier = SWLOR.Game.Server.Domain.Crafting.CraftRankMilestones.TierForRank(level) });
     }
 }

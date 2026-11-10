@@ -1,6 +1,6 @@
 #nullable enable
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Creatures;

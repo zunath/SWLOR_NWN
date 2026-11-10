@@ -5,24 +5,22 @@ using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Service.Random;
-using SkillCategoryType = SWLOR.Game.Server.Service.SkillService.SkillCategoryType;
-using SkillAttribute = SWLOR.Game.Server.Service.SkillService.SkillAttribute;
-using SkillCategoryAttribute = SWLOR.Game.Server.Service.SkillService.SkillCategoryAttribute;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillCategoryType = SWLOR.Game.Server.Domain.Character.SkillCategoryType;
+using SkillAttribute = SWLOR.Game.Server.Domain.Character.SkillAttribute;
+using SkillCategoryAttribute = SWLOR.Game.Server.Domain.Character.SkillCategoryAttribute;
+using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions

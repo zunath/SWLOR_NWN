@@ -108,6 +108,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadSpaceSystem()
         {
@@ -146,22 +147,87 @@ namespace SWLOR.Game.Server.Domain.Space
         }
 
         /// <summary>
-        /// When the module loads,
+        /// When the module loads, before <see cref="LoadLandingPoints"/>: gives each dock waypoint of a recognized planet
+        /// whose id is not registered yet a new id (a new GUID in its STARSHIP_DOCKPOINT_ID local, replacing any earlier
+        /// one), as <see cref="RegisterLandingPoint"/> does for an NPC dock. Boot only: ships and properties hold these ids.
         /// </summary>
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public void AssignLandingPointIds()
+        {
+            foreach (var waypoint in GetDockWaypoints())
+            {
+                var area = GetArea(waypoint);
+                var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+                var planet = _planet.GetPlanetType(area);
+
+                // Only waypoints in recognized planets are tracked.
+                if (planet == PlanetType.Invalid)
+                    continue;
+
+                if (!string.IsNullOrWhiteSpace(dockPointId))
+                {
+                    if (_dockPoints.TryGetValue(planet, out var dockPoints) && dockPoints.ContainsKey(dockPointId))
+                        continue;
+
+                    DeleteLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+                }
+
+                SetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID", Guid.NewGuid().ToString());
+            }
+        }
+
+        /// <summary>
+        /// When the module loads, right after <see cref="AssignLandingPointIds"/>: registers each dock waypoint of a
+        /// recognized planet as an NPC landing point under the id it carries, unless that id is registered already. It only
+        /// reads the world, so a hot reload runs it again and finds the ids the boot gave the waypoints.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadLandingPoints()
         {
+            foreach (var waypoint in GetDockWaypoints())
+            {
+                var area = GetArea(waypoint);
+                var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+                var planet = _planet.GetPlanetType(area);
+
+                // Only waypoints in recognized planets are tracked.
+                if (planet == PlanetType.Invalid)
+                    continue;
+
+                if (!_dockPoints.ContainsKey(planet))
+                    _dockPoints[planet] = new Dictionary<string, ShipDockPoint>();
+
+                if (string.IsNullOrWhiteSpace(dockPointId) || _dockPoints[planet].ContainsKey(dockPointId))
+                    continue;
+
+                _dockPoints[planet][dockPointId] = new ShipDockPoint
+                {
+                    Location = GetLocation(waypoint),
+                    Name = GetName(waypoint),
+                    PropertyId = string.Empty,
+                    IsNPC = true
+                };
+            }
+        }
+
+        /// <summary>The dock waypoints of the module (tag STARSHIP_DOCKPOINT), in the engine's order.</summary>
+        private static List<uint> GetDockWaypoints()
+        {
+            var waypoints = new List<uint>();
             var count = 0;
             var waypoint = GetObjectByTag("STARSHIP_DOCKPOINT", count);
 
             while (GetIsObjectValid(waypoint))
             {
-                var area = GetArea(waypoint);
-                RegisterLandingPoint(waypoint, area, true, string.Empty);
+                waypoints.Add(waypoint);
 
                 count++;
                 waypoint = GetObjectByTag("STARSHIP_DOCKPOINT", count);
             }
+
+            return waypoints;
         }
 
         /// <summary>
@@ -272,7 +338,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShips()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IShipListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
@@ -297,7 +363,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShipModules()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IShipModuleListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
@@ -328,7 +394,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         private void LoadShipEnemies()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ISpaceObjectListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

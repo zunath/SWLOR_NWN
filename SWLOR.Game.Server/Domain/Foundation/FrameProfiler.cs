@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public static bool IsEnabled { get; private set; }
         public static bool IsCapturing => _capturing;
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void Load()
         {

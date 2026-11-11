@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         public DateTime? DateTasksLoaded { get; private set; }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {

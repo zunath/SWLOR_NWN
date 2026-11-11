@@ -8,7 +8,9 @@
 == BOOT BUCKETS (in the order the server reaches them) ==
 
 mod_preload  # run by the engine before the module loads (NWNX_UTIL_PRE_MODULE_START_SCRIPT=mod_preload in Docker/swlor.env)
-  action      SWLOR.Game.Server.Domain.Foundation.DBService.Load
+  action      SWLOR.Game.Server.Domain.Foundation.DBService.Connect
+  action      SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
+  action      SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents
   action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
   action      SWLOR.Game.Server.Feature.ServerTasks.ProcessBootStart
 
@@ -47,7 +49,8 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
   action      SWLOR.Game.Server.Domain.Foundation.SnippetService.CacheData
   action      SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
-  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.CacheData
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
   action      SWLOR.Game.Server.Domain.Character.StatService.CacheData
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
   action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
@@ -87,6 +90,8 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces
   action      SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
   action      SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
+  action      SWLOR.Game.Server.Domain.World.ShuttleService.DeliverOfflinePassengers
+  action      SWLOR.Game.Server.Domain.Space.SpaceService.AssignLandingPointIds
   action      SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
   action      SWLOR.Game.Server.Domain.Foundation.WalkmeshService.RetrieveWalkmeshes
   action      SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
@@ -115,6 +120,8 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbackMessages
   action      SWLOR.Game.Server.Feature.RoleplayXP.LoadOOCDetection
   action      SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
+  action      SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
+  action      SWLOR.Game.Server.Feature.StoreManagement.LoadStores
   action      SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
   action      SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances

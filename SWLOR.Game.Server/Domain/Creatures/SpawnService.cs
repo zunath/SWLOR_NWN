@@ -84,6 +84,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<string, SpawnTable> _spawnTables = new();
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
+        // True once LoadSpawnTables ran to its end. StoreSpawns refuses to run otherwise: the single CacheData stopped at its
+        // first failure, so the hand-placed creatures were never captured against a partly loaded table cache.
+        private bool _spawnTablesLoaded;
 
         /// <summary>
         /// The current UTC time. <c>protected virtual</c> so a unit test can place a respawn, a despawn or a
@@ -98,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         protected virtual IEnumerable<Type> GetSpawnListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ISpawnListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
@@ -112,19 +115,16 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Log.Write(LogGroup.Error, message);
         }
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public void CacheData()
-        {
-            LoadSpawnTables();
-            StoreSpawns();
-        }
-
         /// <summary>
         /// When the module loads, all spawn tables are loaded with reflection and stored into a dictionary cache.
-        /// If any spawn tables with the same ID are found, an exception will be raised.
+        /// If any spawn tables with the same ID are found, an exception will be raised. It only fills the cache, so a hot
+        /// reload runs it again; <see cref="StoreSpawns"/> runs right after it at boot.
         /// </summary>
-        private void LoadSpawnTables()
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void LoadSpawnTables()
         {
+            _spawnTablesLoaded = false;
             // Get all implementations of spawn table definitions.
             var types = GetSpawnListDefinitionTypes();
 
@@ -150,6 +150,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
                     _spawnTables[table.Key] = table.Value;
                 }
             }
+
+            _spawnTablesLoaded = true;
         }
 
 
@@ -158,9 +160,16 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// Spawns can be hand placed creatures, waypoints, or marked as a local variable on the area.
         /// Resource spawn tables use 'RESOURCE_SPAWN_TABLE_ID' for the table name and 'RESOURCE_SPAWN_COUNT' for the number of spawns.
         /// Creature spawn tables use 'CREATURE_SPAWN_TABLE_ID' for the table name and 'CREATURE_SPAWN_COUNT' for the number of spawns.
+        /// Runs after <see cref="LoadSpawnTables"/>. Boot only: it destroys the hand-placed creatures and gives every spawn a
+        /// new id, so a second run would capture and destroy the creatures the spawn system placed.
         /// </summary>
-        private void StoreSpawns()
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void StoreSpawns()
         {
+            if (!_spawnTablesLoaded)
+                throw new InvalidOperationException("The spawns are not stored: LoadSpawnTables did not finish.");
+
             void RegisterAreaSpawnTable(uint area, string variableName, int spawnCount)
             {
                 var spawnTableId = GetLocalString(area, variableName);

@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadResistanceTypes()
         {

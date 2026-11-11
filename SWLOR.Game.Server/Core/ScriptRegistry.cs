@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Core
         /// </param>
         public void LoadHandlersFromAssembly(Func<Type, object> resolveOwner = null)
         {
-            LoadHandlersFromAssemblies(AppDomain.CurrentDomain.GetAssemblies(), resolveOwner);
+            LoadHandlersFromAssemblies(GameAssemblies.GetAssemblies(), resolveOwner);
         }
 
         /// <summary>

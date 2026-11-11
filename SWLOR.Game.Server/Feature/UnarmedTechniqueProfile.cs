@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class UnarmedTechniqueProfile
     {
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void Register()
         {

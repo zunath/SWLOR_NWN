@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void ResetProfiles()
         {

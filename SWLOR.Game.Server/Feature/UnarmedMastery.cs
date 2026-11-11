@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private const int MinimumOpponentLevel = 45;
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Register()
         {

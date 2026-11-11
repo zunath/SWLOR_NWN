@@ -14,7 +14,9 @@ namespace SWLOR.Game.Server.Tests.Core;
 [TestFixture]
 public class ScriptHandlerManifestOrderTests
 {
-    private const string DbLoad = "SWLOR.Game.Server.Domain.Foundation.DBService.Load";
+    // DB.Load is two handlers since P4-8: Connect (reruns after a hot reload) then SyncIndexes (boot only).
+    private const string DbLoad = "SWLOR.Game.Server.Domain.Foundation.DBService.Connect";
+    private const string DbSyncIndexes = "SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes";
     private const string OnModulePreload = "SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload";
     private const string AbilityCacheData = "SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData";
     private const string AchievementLoad = "SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements";
@@ -33,10 +35,12 @@ public class ScriptHandlerManifestOrderTests
             registry.UnlistedHandlers.Should().BeEmpty(label);
             registry.StaleManifestEntries.Should().BeEmpty(label);
 
-            // The one order the boot depends on: Redis is connected before the module preload handler reads it.
+            // The one order the boot depends on: Redis is connected and its indexes are current before the module preload
+            // handler reads it and runs the cache scripts.
             var preload = Names(registry, ScriptName.OnModulePreload, false).ToList();
             preload.IndexOf(DbLoad).Should().BeGreaterThanOrEqualTo(0, label);
-            preload.IndexOf(DbLoad).Should().BeLessThan(preload.IndexOf(OnModulePreload), label);
+            preload.IndexOf(DbLoad).Should().BeLessThan(preload.IndexOf(DbSyncIndexes), label);
+            preload.IndexOf(DbSyncIndexes).Should().BeLessThan(preload.IndexOf(OnModulePreload), label);
         }
     }
 

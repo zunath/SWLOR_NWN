@@ -31,12 +31,14 @@ namespace SWLOR.Game.Server.Domain.Character
             _gui = gui;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {
             _idReservation = _gui.ReserveIds(GuiReservationName, 6);
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadAchievements()
         {

@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                 DestroyObject(item);
             }
 
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

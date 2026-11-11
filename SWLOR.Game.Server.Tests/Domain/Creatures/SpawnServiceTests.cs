@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Creatures;
 /// Unit tests of the spawn instance. The engine (NWScript and the object, area, creature and events plugins) is a
 /// <see cref="SpawnBench"/>: areas of a given size, hand-placed creatures, waypoints and placeables, real local
 /// variables and a clock the test moves. The spawn tables are the test's own; the instance finds them through the
-/// definition search the bench replaces.
+/// definition search the bench replaces. The boot runs the two <c>mod_cache_bef</c> handlers <c>LoadSpawnTables</c> (a hot
+/// reload reruns it) and <c>StoreSpawns</c> (boot only) back to back, which <see cref="CacheData"/> does (P4-8).
 /// </summary>
 [TestFixture]
 public class SpawnServiceTests
@@ -78,12 +79,48 @@ public class SpawnServiceTests
     // ---------------------------------------------------------------- loading the tables and the areas
 
     [Test]
+    public void StoreSpawns_captures_nothing_when_LoadSpawnTables_did_not_finish()
+    {
+        // The registry runs the next handler after one that threw; the single CacheData stopped at its first failure.
+        var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
+        _service.Definitions.Add(typeof(ISpawnListDefinition)); // cannot be created, so the table load throws
+
+        var load = () => _service.LoadSpawnTables();
+        var store = () => _service.StoreSpawns();
+
+        load.Should().Throw<Exception>();
+        store.Should().Throw<InvalidOperationException>().WithMessage("*LoadSpawnTables did not finish*");
+        _bench.DestroyCount(guard.Id).Should().Be(0, "the placed creature stays as it was");
+        _bench.Objects.CountOf("Serialize").Should().Be(0);
+    }
+
+    [Test]
+    public void LoadSpawnTables_alone_fills_the_tables_and_leaves_the_world_as_it_is()
+    {
+        var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
+        _bench.AddWaypoint(RatTable, _area, new Vector3(5f, 6f, 7f));
+
+        _service.LoadSpawnTables();
+
+        _bench.DestroyCount(guard.Id).Should().Be(0, "a hot reload reruns this part, so it must not capture or destroy creatures");
+        _bench.Objects.CountOf("Serialize").Should().Be(0);
+        _bench.Engine.CountOf("GetFirstArea").Should().Be(0, "the areas are read by the boot-only part");
+        _service.Errors.Should().BeEmpty();
+
+        _service.StoreSpawns();
+
+        _bench.DestroyCount(guard.Id).Should().Be(1, "the boot-only part replaces the placed creature with a spawn");
+        EnterAndSpawn();
+        CreatedObjects().Select(o => o.ResRef).Should().Contain("woods_rat", "the waypoint found the table the first part loaded");
+    }
+
+    [Test]
     public void CacheData_reports_a_blank_key_and_a_repeated_key_and_keeps_the_first_table()
     {
         _service.Definitions.Add(typeof(ConflictingDefinition));
         UseCreatureTable(RatTable, 1);
 
-        _service.CacheData();
+        CacheData();
 
         _service.Errors.Should().Equal(
             "Spawn table   has an invalid key. Values must be greater than zero.",
@@ -99,7 +136,7 @@ public class SpawnServiceTests
         var plotNpc = _bench.AddCreature("plot_npc", _area, new Vector3(9f, 9f, 0f));
         _bench.Engine.SetLocalString(plotNpc.Id, "VISIBILITY_OBJECT_ID", "keep-me");
 
-        _service.CacheData();
+        CacheData();
 
         _bench.DestroyCount(guard.Id).Should().Be(1, "the placed creature is replaced by a spawn the system controls");
         _bench.DestroyCount(plotNpc.Id).Should().Be(0, "creatures of the object visibility service are left as they are");
@@ -128,7 +165,7 @@ public class SpawnServiceTests
         _bench.AddWaypoint(RatTable, _area, new Vector3(5f, 6f, 7f), 45f);
         _bench.AddWaypoint("NOT_A_TABLE", _area, new Vector3(1f, 1f, 1f));
 
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
 
         var created = _bench.Engine.CallsTo("CreateObject").Should().ContainSingle().Subject;
@@ -144,7 +181,7 @@ public class SpawnServiceTests
     {
         _bench.AddWaypoint(RatTable, _area);
 
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
 
         var rat = CreatedObjects().Single();
@@ -169,7 +206,7 @@ public class SpawnServiceTests
         var area = _bench.AddArea("sized", width, height);
         _bench.Engine.SetLocalString(area, "RESOURCE_SPAWN_TABLE_ID", StumpTable);
         _bench.Engine.SetLocalString(area, "CREATURE_SPAWN_TABLE_ID", RatTable);
-        _service.CacheData();
+        CacheData();
 
         Enter(area);
         Pass(TimeSpan.FromSeconds(1));
@@ -187,7 +224,7 @@ public class SpawnServiceTests
         _bench.Engine.SetLocalString(area, "CREATURE_SPAWN_TABLE_ID", RatTable);
         _bench.Engine.SetLocalInt(area, "CREATURE_SPAWN_COUNT", 2);
         _bench.Engine.SetLocalString(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", SlicingTable);
-        _service.CacheData();
+        CacheData();
 
         Enter(area);
         Pass(TimeSpan.FromSeconds(1));
@@ -203,7 +240,7 @@ public class SpawnServiceTests
         _bench.Engine.SetLocalString(_area, "RESOURCE_SPAWN_TABLE_ID", "NO_SUCH_TABLE");
         _bench.Engine.SetLocalString(_area, "CREATURE_SPAWN_TABLE_ID", EmptyTable);
 
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
 
         _service.Errors.Should().Equal(
@@ -257,7 +294,7 @@ public class SpawnServiceTests
     {
         _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f));
         _bench.Objects.SetReturnHandler("Serialize", _ => string.Empty);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
 
         for (var attempt = 0; attempt < 9; attempt++)
@@ -279,7 +316,7 @@ public class SpawnServiceTests
         UseCreatureTable(RatTable, 2);
         var other = _bench.AddArea("unregistered");
         var npc = _bench.AddCreature("npc", _area);
-        _service.CacheData();
+        CacheData();
 
         _bench.Self = _area;
         _bench.Entering = npc.Id;
@@ -299,7 +336,7 @@ public class SpawnServiceTests
         var dm = _bench.AddPlayer(_area);
         dm.IsPC = false;
         dm.IsDM = true;
-        _service.CacheData();
+        CacheData();
 
         _bench.Self = _area;
         _bench.Entering = dm.Id;
@@ -317,7 +354,7 @@ public class SpawnServiceTests
     public void A_spawn_waits_until_its_time_has_passed()
     {
         UseCreatureTable(RatTable, 1);
-        _service.CacheData();
+        CacheData();
         Enter(_area);
 
         _service.ProcessQueuedSpawns();
@@ -331,7 +368,7 @@ public class SpawnServiceTests
     public void QueueDespawnArea_waits_for_the_last_player_and_the_despawn_time()
     {
         UseCreatureTable(RatTable, 2);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var rats = CreatedObjects();
 
@@ -363,7 +400,7 @@ public class SpawnServiceTests
     public void Leaving_an_area_without_spawns_queues_a_despawn_that_does_nothing()
     {
         var bare = _bench.AddArea("bare");
-        _service.CacheData();
+        CacheData();
         _bench.Self = bare;
         _bench.Exiting = _player.Id;
 
@@ -381,7 +418,7 @@ public class SpawnServiceTests
     public void A_despawned_area_spawns_again_when_somebody_comes_back()
     {
         UseCreatureTable(RatTable, 2);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         LeaveAndDespawn();
 
@@ -395,7 +432,7 @@ public class SpawnServiceTests
     public void A_player_coming_back_cancels_the_pending_despawn()
     {
         UseCreatureTable(RatTable, 1);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var rat = CreatedObjects().Single();
         _bench.Self = _area;
@@ -417,7 +454,7 @@ public class SpawnServiceTests
     {
         _bench.AddWaypoint(RatTable, _area);
         _bench.AddWaypoint(NightTable, _area);
-        _service.CacheData();
+        CacheData();
         _bench.GameHour = 12;
         EnterAndSpawn();
         var rat = CreatedObjects().Single();
@@ -445,7 +482,7 @@ public class SpawnServiceTests
     public void A_creature_that_dies_is_replaced_after_the_respawn_delay()
     {
         UseCreatureTable(RatTable, 1);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var rat = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(rat.Id, "SPAWN_ID"));
@@ -482,7 +519,7 @@ public class SpawnServiceTests
     public void A_respawn_window_is_rolled_when_the_replacement_is_queued()
     {
         _bench.AddWaypoint(OreTable, _area);
-        _service.CacheData();
+        CacheData();
         var replay = new System.Random(20261103);
         replay.NextDouble(); // which spawn of the table
         replay.Next(-25, 26); // despawn variance of the resource (a waypoint spawn keeps its own facing: no facing roll)
@@ -506,7 +543,7 @@ public class SpawnServiceTests
     public void DespawnAndQueueRespawn_removes_the_object_and_queues_its_replacement()
     {
         _bench.AddWaypoint(OreTable, _area);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var ore = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(ore.Id, "SPAWN_ID"));
@@ -527,7 +564,7 @@ public class SpawnServiceTests
     public void DespawnAndQueueRespawn_leaves_an_object_whose_replacement_is_already_queued()
     {
         UseCreatureTable(RatTable, 1);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var rat = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(rat.Id, "SPAWN_ID"));
@@ -562,7 +599,7 @@ public class SpawnServiceTests
     public void A_table_with_nothing_to_spawn_backs_off_and_is_dropped_after_ten_failures()
     {
         _bench.AddWaypoint(NightTable, _area);
-        _service.CacheData();
+        CacheData();
         _bench.GameHour = 12;
         EnterAndSpawn();
         var attempts = () => _bench.Engine.CountOf("GetTimeHour");
@@ -592,7 +629,7 @@ public class SpawnServiceTests
     public void A_table_that_has_something_to_spawn_later_spawns_after_a_failure()
     {
         _bench.AddWaypoint(NightTable, _area);
-        _service.CacheData();
+        CacheData();
         _bench.GameHour = 12;
         EnterAndSpawn();
         _bench.Engine.CountOf("CreateObject").Should().Be(0);
@@ -610,7 +647,7 @@ public class SpawnServiceTests
     public void Only_one_rare_of_a_table_is_active_in_an_area_at_a_time()
     {
         UseCreatureTable(RareTable, 2);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
 
         CreatedObjects().Select(o => o.ResRef).Should().Equal("alpha_wolf");
@@ -630,7 +667,7 @@ public class SpawnServiceTests
     public void A_rare_that_died_stops_counting_as_active_and_its_slot_is_replaced()
     {
         UseCreatureTable(RareTable, 2);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var rare = CreatedObjects().Single();
         _bench.Self = rare.Id;
@@ -650,7 +687,7 @@ public class SpawnServiceTests
         _bench.RandomPositions.Enqueue(new Vector3(10f, 10f, 0f));
         _bench.RandomPositions.Enqueue(new Vector3(11f, 10f, 0f));
         _bench.RandomPositions.Enqueue(new Vector3(30f, 10f, 0f));
-        _service.CacheData();
+        CacheData();
         var replay = new System.Random(20261103);
 
         EnterAndSpawn();
@@ -670,7 +707,7 @@ public class SpawnServiceTests
     public void A_resource_node_despawns_when_its_time_comes_and_is_replaced()
     {
         _bench.AddWaypoint(OreTable, _area);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var ore = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(ore.Id, "SPAWN_ID"));
@@ -697,7 +734,7 @@ public class SpawnServiceTests
     {
         _bench.AddWaypoint(OreTable, _area);
         _bench.AddWaypoint(OreTable, _area);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var nodes = CreatedObjects();
         nodes.Should().HaveCount(2);
@@ -715,7 +752,7 @@ public class SpawnServiceTests
     public void ScheduleResourceDespawn_brings_a_despawn_forward_and_never_pushes_it_back()
     {
         _bench.AddWaypoint(OreTable, _area);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var ore = CreatedObjects().Single();
         var natural = _service.GetResourceDespawnTimeForTesting(ore.Id)!.Value;
@@ -731,7 +768,7 @@ public class SpawnServiceTests
     public void ScheduleResourceDespawn_adds_a_despawn_to_a_node_with_none_and_refuses_unknown_nodes()
     {
         _bench.AddWaypoint(StumpTable, _area);
-        _service.CacheData();
+        CacheData();
         EnterAndSpawn();
         var stump = CreatedObjects().Single();
         _service.GetResourceDespawnTimeForTesting(stump.Id).Should().BeNull("this table's nodes do not despawn naturally");
@@ -753,7 +790,7 @@ public class SpawnServiceTests
     [Test]
     public void The_testing_hooks_register_a_node_run_its_despawn_and_remove_every_trace()
     {
-        _service.CacheData();
+        CacheData();
         var node = _bench.AddPlaceable("node", _area, new Vector3(2f, 3f, 4f));
 
         var spawnId = _service.RegisterResourceSpawnForTesting(node.Id, OreTable);
@@ -777,7 +814,7 @@ public class SpawnServiceTests
     [Test]
     public void A_node_registered_from_a_table_without_a_natural_despawn_still_despawns_after_one_minute()
     {
-        _service.CacheData();
+        CacheData();
         var node = _bench.AddPlaceable("node", _area);
 
         _service.RegisterResourceSpawnForTesting(node.Id, StumpTable);
@@ -788,7 +825,7 @@ public class SpawnServiceTests
     [Test]
     public void Removing_an_active_node_with_its_despawn_clears_both()
     {
-        _service.CacheData();
+        CacheData();
         var node = _bench.AddPlaceable("node", _area);
         var spawnId = _service.RegisterResourceSpawnForTesting(node.Id, OreTable);
 
@@ -963,6 +1000,13 @@ public class SpawnServiceTests
     {
         _service.Now += time;
         _service.ProcessQueuedSpawns();
+    }
+
+    /// <summary>The two <c>mod_cache_bef</c> handlers in manifest order, which is what the single <c>CacheData</c> did.</summary>
+    private void CacheData()
+    {
+        _service.LoadSpawnTables();
+        _service.StoreSpawns();
     }
 
     private void EnterAndSpawn()

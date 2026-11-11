@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static PartSkinModelCatalog Catalog => AppearanceRenderState.GetPartSkinCatalog();
         public static readonly ImmutableArray<AppearanceArmor> Parts = PartSkinModelCatalog.PartNames.Keys.ToImmutableArray();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {

@@ -47,18 +47,31 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// When the server starts up, a log message will be written.
+        /// When the server starts up, a log message will be written, the play options and bans are set in the engine and
+        /// the boot-complete notification is sent. Boot only; <see cref="StartRestartReminders"/> runs right after it.
         /// </summary>
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
             ConfigureServerSettings();
             ApplyBans();
-            ScheduleRestartReminder();
             _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
+        /// <summary>
+        /// Starts the restart reminders after <see cref="ProcessBootUp"/>: the reminder state and its one-minute timer live
+        /// in the game build, so a hot reload runs it again.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void StartRestartReminders()
+        {
+            ScheduleRestartReminder();
+        }
+
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void ProcessBootStart()
         {

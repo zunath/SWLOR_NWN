@@ -213,6 +213,7 @@ public static unsafe class WeaponAttackAnimation
         return next == 2 && playback.Rolls[1] == null ? sent : next;
     }
 
+    [BootPhase(BootReload.NativeHook)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void RegisterHooks()
     {

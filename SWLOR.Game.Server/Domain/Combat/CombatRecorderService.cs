@@ -229,6 +229,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             return status;
         }
 
+        [BootPhase(BootReload.Retire)]
         [NWNEventHandler(ScriptName.OnSWLORApplicationShutdown)]
         public void StopOnShutdown()
         {

@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Domain.Items
             _stat = stat;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void RegisterLootTables()
         {
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual IEnumerable<Type> GetLootTableDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(ILootTableDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

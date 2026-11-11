@@ -87,7 +87,8 @@ public static class ConvertedServiceFixtures
 
     /// <summary>
     /// <c>tools/Refactor/HandlerRenames.txt</c> as (master name, branch name) pairs: a handler the branch renamed, such as
-    /// one moved from a removed facade onto the instance method it forwarded to.
+    /// one moved from a removed facade onto the instance method it forwarded to. A handler the branch split into several
+    /// (P4-8) gives one pair per branch handler, in their run order.
     /// </summary>
     public static IReadOnlyList<(string Master, string Branch)> HandlerRenames()
     {
@@ -96,7 +97,7 @@ public static class ConvertedServiceFixtures
             .Select(line => line.Trim())
             .Where(line => line.Length > 0 && !line.StartsWith('#'))
             .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-            .Select(names => (names[0], names[1]))
+            .SelectMany(names => names.Skip(1).Select(branch => (names[0], branch)))
             .ToList();
     }
 

@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// </summary>
         protected virtual IEnumerable<Type> GetQuestListTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IQuestListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             return _builder.Build();
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheSpawnBeastEggHelp()
         {

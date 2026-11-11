@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Native
         private static readonly delegate* unmanaged<void*, uint, uint, void*, int>[] Originals =
             new delegate* unmanaged<void*, uint, uint, void*, int>[Symbols.Length];
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHooks()
         {

@@ -55,6 +55,8 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
         private readonly ShuttleMissedBoardingTracker _missedBoardings = new();
         private DateTime _lastTickUtc;
+        // The in-transit rides LoadShuttleFlights found already landed; DeliverOfflinePassengers delivers them at boot.
+        private readonly List<ShuttleRide> _ridesLandedWhileDown = new();
 
         private readonly IDBService _db;
         private readonly IPlanetService _planet;
@@ -87,8 +89,10 @@ namespace SWLOR.Game.Server.Domain.World
 
         /// <summary>
         /// When the module loads, recover in-transit flights from the database and
-        /// begin processing the flight schedule.
+        /// begin processing the flight schedule. It only reads the database, so a hot reload runs it again;
+        /// <see cref="DeliverOfflinePassengers"/> runs right after it at boot.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadShuttleFlights()
         {
@@ -100,7 +104,27 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// Restores ticketed and in-transit rides from the database after a server restart.
+        /// After <see cref="LoadShuttleFlights"/>, delivers the passengers whose flight landed while the server was down
+        /// (the rides it found arrived by the time it read them) to their destination on their offline record. Boot only:
+        /// it writes the player records.
+        /// </summary>
+        [BootPhase(BootReload.BootOnly)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public void DeliverOfflinePassengers()
+        {
+            foreach (var ride in _ridesLandedWhileDown)
+            {
+                // The flight landed while the server was down. Deliver the passenger
+                // to the destination on their offline record; they log in at the landing pad.
+                DeliverOfflinePassenger(ride);
+            }
+
+            _ridesLandedWhileDown.Clear();
+        }
+
+        /// <summary>
+        /// Restores ticketed and in-transit rides from the database after a server restart. The rides that already
+        /// landed are kept for <see cref="DeliverOfflinePassengers"/>.
         /// </summary>
         private void RecoverRidesAfterRestart(DateTime now)
         {
@@ -110,14 +134,13 @@ namespace SWLOR.Game.Server.Domain.World
                 _ticketHolders[ride.PlayerId] = (ride.Origin, ride.Destination);
             }
 
+            _ridesLandedWhileDown.Clear();
             var inTransit = SearchRidesByStatus(ShuttleRideStatus.InTransit);
             foreach (var ride in inTransit)
             {
                 if (ride.ArrivalUtc <= now)
                 {
-                    // The flight landed while the server was down. Deliver the passenger
-                    // to the destination on their offline record; they log in at the landing pad.
-                    DeliverOfflinePassenger(ride);
+                    _ridesLandedWhileDown.Add(ride);
                 }
                 else if (!_activeFlights.ContainsKey(ride.FlightId))
                 {

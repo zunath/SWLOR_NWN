@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OverrideTlks()
         {

@@ -157,6 +157,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -211,7 +212,7 @@ namespace SWLOR.Game.Server.Domain.Items
         /// </summary>
         protected virtual IEnumerable<Type> GetItemListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IItemListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

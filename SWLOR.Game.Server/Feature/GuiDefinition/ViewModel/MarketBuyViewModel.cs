@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// When the module loads, set up the category lists so they don't need
         /// to be initialized for every player.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadCategories()
         {

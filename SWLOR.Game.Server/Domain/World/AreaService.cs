@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.World
             SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RemoveInstancesFromCache()
         {

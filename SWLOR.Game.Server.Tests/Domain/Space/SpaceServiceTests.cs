@@ -200,6 +200,98 @@ public class SpaceServiceTests
         _space.GetDockPointsByPlanet(PlanetType.Tatooine).Should().BeEmpty();
     }
 
+    // ---- loading the landing points at boot (P4-8: AssignLandingPointIds, boot only, then LoadLandingPoints, rerun)
+
+    private const uint Waypoint4 = 2004;
+    private const uint ObjectInvalid = 0x7F000000;
+    private const string DockIdVariable = "STARSHIP_DOCKPOINT_ID";
+
+    /// <summary>
+    /// The module's dock waypoints: 1 and 2 on Viscara (2 with a stale id an earlier boot left), 3 on an unknown planet and
+    /// 4 the dock of a player starport, registered before (the property loader runs earlier in mod_load).
+    /// </summary>
+    private void PlaceTheDockWaypoints(SpaceService space)
+    {
+        var waypoints = new[] { Waypoint1, Waypoint2, Waypoint3, Waypoint4 };
+        _engine.SetReturnHandler("GetObjectByTag", arguments =>
+            (string)arguments[0]! == "STARSHIP_DOCKPOINT" && (int)arguments[1]! < waypoints.Length ? waypoints[(int)arguments[1]!] : ObjectInvalid);
+        _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != ObjectInvalid);
+        _engine.SetReturnHandler("GetArea", arguments => (uint)arguments[0]! == Waypoint3 ? UnknownArea : ViscaraArea);
+        _engine.SetLocalString(Waypoint2, DockIdVariable, "stale-id");
+        space.RegisterLandingPoint(Waypoint4, ViscaraArea, false, "property-1");
+        _locals.ClearCalls();
+    }
+
+    /// <summary>The registry as text, in order, with each key checked against the id its waypoint carries.</summary>
+    private List<string> Registry(SpaceService space)
+    {
+        return space.GetDockPointsByPlanet(PlanetType.Viscara)
+            .Select(entry =>
+            {
+                var waypoint = new[] { Waypoint1, Waypoint2, Waypoint3, Waypoint4 }.Single(id => _locals.String(id, DockIdVariable) == entry.Key);
+                return $"{waypoint} {entry.Value.Name}|{entry.Value.IsNPC}|{entry.Value.PropertyId}|{entry.Value.Location.Handle}";
+            })
+            .ToList();
+    }
+
+    [Test]
+    public void AssignLandingPointIds_then_LoadLandingPoints_register_the_dock_waypoints_as_registering_each_one_as_an_npc_dock_did()
+    {
+        // What the single handler did: RegisterLandingPoint(waypoint, its area, NPC, no property) for every dock waypoint.
+        PlaceTheDockWaypoints(_space);
+        for (var nth = 0; nth < 4; nth++)
+        {
+            var waypoint = _engine.GetObjectByTag("STARSHIP_DOCKPOINT", nth);
+            _space.RegisterLandingPoint(waypoint, _engine.GetArea(waypoint), true, string.Empty);
+        }
+        var expected = Registry(_space);
+        _scope.Dispose();
+
+        _engine = new FakeNWScript();
+        _locals = new LocalVariables(_engine);
+        _engine.SetReturnHandler("GetLocation", arguments => EngineStructures.Create<Location>((nint)(uint)arguments[0]!));
+        _engine.SetReturnHandler("GetName", arguments => "Dock " + arguments[0]);
+        _scope = NWScriptRuntime.Override(_engine);
+        var split = NewSpace();
+        PlaceTheDockWaypoints(split);
+
+        split.AssignLandingPointIds();
+
+        split.GetDockPointsByPlanet(PlanetType.Viscara).Should().ContainSingle("the boot-only part writes the ids and registers nothing");
+        _locals.String(Waypoint2, DockIdVariable).Should().NotBe("stale-id", "a stale id is replaced by a new one");
+        _locals.Has(Waypoint3, DockIdVariable).Should().BeFalse("a waypoint on an unknown planet is not tracked");
+
+        split.LoadLandingPoints();
+
+        Registry(split).Should().Equal(expected);
+        expected.Should().HaveCount(3);
+        expected[0].Should().StartWith(Waypoint4 + " |False|property-1", "the starport's dock stays as the property registered it");
+    }
+
+    [Test]
+    public void LoadLandingPoints_alone_finds_the_ids_the_boot_gave_the_waypoints_and_writes_no_local()
+    {
+        PlaceTheDockWaypoints(_space);
+        _space.AssignLandingPointIds();
+        _space.LoadLandingPoints();
+        var booted = Registry(_space);
+
+        // A hot reload: a new build with an empty registry reruns only LoadLandingPoints over the same world.
+        var reloaded = NewSpace();
+        reloaded.RegisterLandingPoint(Waypoint4, ViscaraArea, false, "property-1");
+        _locals.String(Waypoint4, DockIdVariable).Should().NotBeEmpty();
+        var starportId = _locals.String(Waypoint4, DockIdVariable);
+        _locals.ClearCalls();
+
+        reloaded.LoadLandingPoints();
+
+        _engine.CountOf("SetLocalString").Should().Be(0);
+        _engine.CountOf("DeleteLocalString").Should().Be(0);
+        Registry(reloaded).Where(line => !line.StartsWith(Waypoint4.ToString())).Should()
+            .Equal(booted.Where(line => !line.StartsWith(Waypoint4.ToString())), "the NPC docks keep the ids ships hold");
+        _locals.String(Waypoint4, DockIdVariable).Should().Be(starportId);
+    }
+
     [Test]
     public void LandingPoints_AreOwnedByTheInstance()
     {

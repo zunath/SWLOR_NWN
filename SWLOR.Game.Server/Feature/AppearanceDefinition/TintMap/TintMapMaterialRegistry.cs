@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             { TintMapLayerType.Tattoo2, new TintMapLayerDefinition("Tattoo 2", "rowTat2", "tintTat2", "useCustomTat2", "gui_pal_tattoo", 1056) }
         }.ToFrozenDictionary();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {

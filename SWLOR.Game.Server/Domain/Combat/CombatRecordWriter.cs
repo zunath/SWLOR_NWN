@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// Owns one recording's files. The main thread only enqueues event structs; this writer's
-    /// background thread serializes them, aggregates the summary and does all file I/O.
+    /// thread-pool task serializes them, aggregates the summary and does all file I/O.
     /// </summary>
     public sealed class CombatRecordWriter
     {
@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Domain.Combat
         private const byte NewLine = (byte)'\n';
 
         private readonly ConcurrentQueue<CombatRecordEvent> _queue = new();
-        private readonly AutoResetEvent _wake = new(false);
+        private readonly SemaphoreSlim _wake = new(0);
         private readonly TaskCompletionSource<CombatRecordSummary> _completion =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly Thread _thread;
+        private Task _run = Task.CompletedTask;
         private volatile bool _completeRequested;
         private volatile string _error;
         private long _eventsWritten;
@@ -35,16 +35,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             EventsPath = eventsPath;
             SummaryPath = summaryPath;
-            _thread = new Thread(Run)
-            {
-                IsBackground = true,
-                Name = "CombatRecordWriter"
-            };
         }
 
         public void Start()
         {
-            _thread.Start();
+            _run = Task.Run(RunAsync);
         }
 
         public void Enqueue(in CombatRecordEvent recordEvent)
@@ -59,7 +54,17 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void Complete()
         {
             _completeRequested = true;
-            _wake.Set();
+            _wake.Release();
+        }
+
+        /// <summary>
+        /// Requests completion and waits until every queued event and the summary are written
+        /// (or the recording has failed). Never throws; read <see cref="Error"/>.
+        /// </summary>
+        public Task StopAsync()
+        {
+            Complete();
+            return _run;
         }
 
         /// <summary>
@@ -68,10 +73,10 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public bool WaitForExit(TimeSpan timeout)
         {
-            return _thread.Join(timeout);
+            return _run.Wait(timeout);
         }
 
-        private void Run()
+        private async Task RunAsync()
         {
             var builder = new CombatRecordSummaryBuilder();
             try
@@ -91,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                         if (completing)
                             break;
 
-                        _wake.WaitOne(IdleWaitMilliseconds);
+                        await _wake.WaitAsync(IdleWaitMilliseconds).ConfigureAwait(false);
                     }
                 }
 
@@ -103,7 +108,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             {
                 _error = ex.Message;
                 Log.Write(LogGroup.Error, $"Combat recording writer failed for '{EventsPath}': {ex}", true);
-                DiscardUntilComplete();
+                await DiscardUntilCompleteAsync().ConfigureAwait(false);
                 _completion.TrySetException(ex);
             }
         }
@@ -128,7 +133,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             CombatRecordSummaryWriter.Write(json, summary);
         }
 
-        private void DiscardUntilComplete()
+        private async Task DiscardUntilCompleteAsync()
         {
             while (true)
             {
@@ -140,7 +145,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 if (completing)
                     return;
 
-                _wake.WaitOne(IdleWaitMilliseconds);
+                await _wake.WaitAsync(IdleWaitMilliseconds).ConfigureAwait(false);
             }
         }
     }

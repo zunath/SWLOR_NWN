@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.World
             _collectibleSongsByTrackId = _collectibleSongs.ToDictionary(song => song.TrackId);
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadSongList()
         {

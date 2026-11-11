@@ -109,6 +109,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

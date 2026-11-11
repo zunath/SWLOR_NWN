@@ -1,6 +1,9 @@
 # Handlers the branch renamed on purpose (for example when one moved onto a facade, or from a removed facade onto the
 # instance method of its service, P2-Z). One line each:
 #   <master full handler name> <branch full handler name>
+# A master handler the branch split into several handlers (P4-8: a part a hot reload reruns and a boot-only part) lists
+# every branch handler, in the order they run; they stand together in the manifest where master's one handler stood:
+#   <master full handler name> <branch full handler name> <branch full handler name> ...
 # Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
 # or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
 # same pull request that makes it.
@@ -30,7 +33,7 @@ SWLOR.Game.Server.Service.AI.CreatureUserDefined SWLOR.Game.Server.Domain.Creatu
 SWLOR.Game.Server.Service.AI.DMToggleAIAfter SWLOR.Game.Server.Domain.Creatures.AIService.DMToggleAIAfter
 SWLOR.Game.Server.Service.AI.RemoveFromAlliesCache SWLOR.Game.Server.Domain.Creatures.AIService.RemoveFromAlliesCache
 SWLOR.Game.Server.Service.NPCGroup.CacheData SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
-SWLOR.Game.Server.Service.Spawn.CacheData SWLOR.Game.Server.Domain.Creatures.SpawnService.CacheData
+SWLOR.Game.Server.Service.Spawn.CacheData SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
 SWLOR.Game.Server.Service.Spawn.DMSpawnCreature SWLOR.Game.Server.Domain.Creatures.SpawnService.DMSpawnCreature
 SWLOR.Game.Server.Service.Spawn.ProcessSpawnSystem SWLOR.Game.Server.Domain.Creatures.SpawnService.ProcessSpawnSystem
 SWLOR.Game.Server.Service.Spawn.QueueDespawnArea SWLOR.Game.Server.Domain.Creatures.SpawnService.QueueDespawnArea
@@ -165,7 +168,7 @@ SWLOR.Game.Server.Service.Conversation.StartAssignedCreatureConversation SWLOR.G
 SWLOR.Game.Server.Service.ConversationMenu.CacheData SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.CacheData
 SWLOR.Game.Server.Service.ConversationMenu.StartFromLocalConversation SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.StartFromLocalConversation
 SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.StartFromObjectEvent
-SWLOR.Game.Server.Service.DB.Load SWLOR.Game.Server.Domain.Foundation.DBService.Load
+SWLOR.Game.Server.Service.DB.Load SWLOR.Game.Server.Domain.Foundation.DBService.Connect SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
 SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
 SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
 SWLOR.Game.Server.Service.Death.OnPlayerDeath SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
@@ -298,7 +301,7 @@ SWLOR.Game.Server.Service.Resistance.LoadResistanceTypes SWLOR.Game.Server.Domai
 SWLOR.Game.Server.Service.Shuttle.EnterServer SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
 SWLOR.Game.Server.Service.Shuttle.ExitServer SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
 SWLOR.Game.Server.Service.Shuttle.HandleShuttleAreaExit SWLOR.Game.Server.Domain.World.ShuttleService.HandleShuttleAreaExit
-SWLOR.Game.Server.Service.Shuttle.LoadShuttleFlights SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
+SWLOR.Game.Server.Service.Shuttle.LoadShuttleFlights SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights SWLOR.Game.Server.Domain.World.ShuttleService.DeliverOfflinePassengers
 SWLOR.Game.Server.Service.Skill.AddMissingSkills SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
 SWLOR.Game.Server.Service.Skill.CacheData SWLOR.Game.Server.Domain.Character.SkillService.CacheData
 SWLOR.Game.Server.Service.Skill.CacheXPChartData SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
@@ -369,7 +372,7 @@ SWLOR.Game.Server.Service.PlayerName.PreventAmbiguousTellTargets SWLOR.Game.Serv
 SWLOR.Game.Server.Service.Space.LoadSpaceSystem SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
 SWLOR.Game.Server.Service.Space.EnterServer SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
 SWLOR.Game.Server.Service.Space.ExitServer SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
-SWLOR.Game.Server.Service.Space.LoadLandingPoints SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
+SWLOR.Game.Server.Service.Space.LoadLandingPoints SWLOR.Game.Server.Domain.Space.SpaceService.AssignLandingPointIds SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
 SWLOR.Game.Server.Service.Space.SelectTarget SWLOR.Game.Server.Domain.Space.SpaceService.SelectTarget
 SWLOR.Game.Server.Service.Space.UpdateSpacePosition SWLOR.Game.Server.Domain.Space.SpaceService.UpdateSpacePosition
 SWLOR.Game.Server.Service.Space.ClearTargetOnAreaExit SWLOR.Game.Server.Domain.Space.SpaceService.ClearTargetOnAreaExit
@@ -386,3 +389,6 @@ SWLOR.Game.Server.Service.Space.PreventSpaceStealth SWLOR.Game.Server.Domain.Spa
 SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog.CacheCategories
 SWLOR.Game.Server.Service.FrameProfiler.Load SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load
 SWLOR.Game.Server.Service.Log.OnApplicationShutdown SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown
+SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
+SWLOR.Game.Server.Feature.StoreManagement.ProcessStores SWLOR.Game.Server.Feature.StoreManagement.LoadStores SWLOR.Game.Server.Feature.StoreManagement.ProcessStores

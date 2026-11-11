@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Native
         /// <summary>True once the hook is in place and has not turned itself off.</summary>
         public static bool IsActive => _hook != null && !_disabled;
 
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {

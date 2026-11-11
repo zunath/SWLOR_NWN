@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _ability = ability;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {

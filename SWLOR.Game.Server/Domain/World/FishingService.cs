@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         private void LoadFishingLocations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IFishingLocationDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

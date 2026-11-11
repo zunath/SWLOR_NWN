@@ -154,6 +154,7 @@ public static class PairedRangedPresentation
         }
     }
 
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void StartParking() =>
         Scheduler.ScheduleRepeating(ParkSettledActors, TimeSpan.FromMilliseconds(500));

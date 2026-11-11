@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _stealth = stealth;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheAIData()
         {
@@ -1805,7 +1806,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         protected virtual IEnumerable<Type> GetProfileDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IAIProfileDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

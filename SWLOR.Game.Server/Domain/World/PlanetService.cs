@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Domain.World
             ["ziyhut"] = PlanetType.Hutlar
         };
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {

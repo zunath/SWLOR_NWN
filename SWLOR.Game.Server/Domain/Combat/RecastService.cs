@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _cooldownVisual = cooldownVisual;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheRecastGroups()
         {

@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads the external OOC detection file at server start so a bad file is reported at boot.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadOOCDetection()
         {

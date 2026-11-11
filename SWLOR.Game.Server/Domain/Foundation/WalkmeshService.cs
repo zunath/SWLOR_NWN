@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _db = db;
         }
 
+        [BootPhase(BootReload.BootOnly)]
         [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public void LoadWalkmeshes()
         {
@@ -77,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             }
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RetrieveWalkmeshes()
         {

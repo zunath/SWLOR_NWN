@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -133,6 +134,7 @@ namespace SWLOR.Game.Server.Domain.Character
             CacheCharacterTypes();
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CachePerkFeatData()
         {
@@ -1456,7 +1458,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The perk list definitions of every loaded assembly, found lazily as the cache builds.</summary>
         protected virtual IEnumerable<Type> GetPerkListDefinitionTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
+            return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }

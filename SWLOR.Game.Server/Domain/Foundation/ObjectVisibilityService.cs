@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _db = db;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadVisibilityObjects()
         {

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             _gui = gui;
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheCurrencies()
         {

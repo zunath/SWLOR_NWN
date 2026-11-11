@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // constructor free of work.
         private static ApplicationSettings AppSettings => ApplicationSettings.Get();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void OnModuleLoad()
         {
@@ -217,7 +218,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// </summary>
         private void LoadChatCommands()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var types = GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IChatCommandListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 

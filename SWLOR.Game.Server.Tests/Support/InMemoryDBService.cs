@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class InMemoryDBService : IDBService
 {
     public void Load() => throw UnsupportedDBMember.For(nameof(Load));
+    public void Connect() => throw UnsupportedDBMember.For(nameof(Connect));
+    public void SyncIndexes() => throw UnsupportedDBMember.For(nameof(SyncIndexes));
 
     public RedisValue StreamAdd(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
         throw UnsupportedDBMember.For(nameof(StreamAdd));

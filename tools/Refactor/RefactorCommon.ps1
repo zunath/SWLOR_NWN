@@ -246,10 +246,14 @@ function Read-ManifestLines {
 
 # tools/Refactor/HandlerRenames.txt: one `<master full handler name> <branch full handler name>` per line, `#` starts a
 # comment. A handler the branch had to rename (for example when it moved onto a facade) is listed here, in the same pull
-# request, so the parity run and the sync compare master's order with the branch's manifest under the branch's name.
-# Returns a case-sensitive hashtable master name -> branch name. A malformed line, a duplicate master name and a branch
-# name the manifest does not list are errors. Each master name in a namespace P2-Z2 moved (Read-NamespaceMoves) is listed
-# under its moved name too, so the names of master's parity copy (where Move-SupportNamespaces.ps1 ran) find their line.
+# request, so the parity run and the sync compare master's order with the branch's manifest under the branch's name. A
+# master handler the branch split into several handlers (P4-8) lists every branch name, in the order they run:
+# `<master name> <branch name> <branch name> ...`.
+# Returns a case-sensitive hashtable master name -> branch name, or -> a string array of the branch names for a split (in
+# order; Convert-HandlerOrderNames puts them all where master's one name was). A malformed line, a duplicate master name, a
+# branch name listed twice on one line and a branch name the manifest does not list are errors. Each master name in a
+# namespace P2-Z2 moved (Read-NamespaceMoves) is listed under its moved name too, so the names of master's parity copy
+# (where Move-SupportNamespaces.ps1 ran) find their line.
 function Read-HandlerRenames {
     param([string]$ManifestText, [string]$Path = (Join-Path $PSScriptRoot 'HandlerRenames.txt'))
     $renames = New-Object 'System.Collections.Hashtable'
@@ -273,16 +277,24 @@ function Read-HandlerRenames {
         $comment = $line.IndexOf(' #')
         if ($comment -ge 0) { $line = $line.Substring(0, $comment).TrimEnd() }
         $names = @($line -split '\s+')
-        if ($names.Count -ne 2) {
-            throw (New-Failure "HandlerRenames.txt line ${number} is malformed: expected '<master handler name> <branch handler name>', found '$line'." 4)
+        if ($names.Count -lt 2) {
+            throw (New-Failure "HandlerRenames.txt line ${number} is malformed: expected '<master handler name> <branch handler name>' (or several branch names for a split handler), found '$line'." 4)
         }
         if ($renames.ContainsKey($names[0])) {
             throw (New-Failure "HandlerRenames.txt line ${number}: master handler '$($names[0])' is listed twice." 4)
         }
-        if (-not $manifestNames.Contains($names[1])) {
-            throw (New-Failure "HandlerRenames.txt line ${number}: branch handler '$($names[1])' is not a line of the handler manifest (ScriptHandlerOrder.txt); rename it there first." 4)
+        $branchNames = @($names | Select-Object -Skip 1)
+        $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
+        foreach ($branchName in $branchNames) {
+            if (-not $seen.Add($branchName)) {
+                throw (New-Failure "HandlerRenames.txt line ${number}: branch handler '$branchName' is listed twice on the line." 4)
+            }
+            if (-not $manifestNames.Contains($branchName)) {
+                throw (New-Failure "HandlerRenames.txt line ${number}: branch handler '$branchName' is not a line of the handler manifest (ScriptHandlerOrder.txt); rename it there first." 4)
+            }
         }
-        $renames[$names[0]] = $names[1]
+        if ($branchNames.Count -eq 1) { $renames[$names[0]] = $branchNames[0] }
+        else { $renames[$names[0]] = [string[]]$branchNames }
     }
 
     $moves = Read-NamespaceMoves -Root (Split-Path -Parent (Split-Path -Parent (Split-Path -Parent ([System.IO.Path]::GetFullPath($Path)))))

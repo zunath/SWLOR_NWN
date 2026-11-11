@@ -635,6 +635,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
@@ -899,6 +900,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadMappings()
         {
@@ -1042,6 +1044,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// When the module loads, cache all XP chart data used for quick access. The chart is a constant table
         /// built when <see cref="SkillXPChart"/> loads, so there is nothing left to build here.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheXPChartData()
         {

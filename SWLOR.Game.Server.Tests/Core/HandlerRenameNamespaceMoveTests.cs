@@ -144,6 +144,52 @@ public class HandlerRenameNamespaceMoveTests
         names.Should().Equal(Server + "Domain.Gadgets.WidgetEncounterService.OnEnter", Server + "Service.WidgetService.WidgetNew.OnNew");
     }
 
+    [Test]
+    public void AHandlerTheBranchSplitBecomesAllItsPartsInOrderWhereMastersOneHandlerWas()
+    {
+        // P4-8: master's one handler is two on the branch, a part a hot reload reruns and a boot-only part.
+        Write("manifest.txt", Manifest
+            + "mod_preload\n"
+            + "  action      " + Server + "Domain.Gadgets.GaugeService.Connect\n"
+            + "  action      " + Server + "Domain.Gadgets.GaugeService.SyncIndexes\n"
+            + "  action      " + Server + "Feature.Boot.StartEvents\n"
+            + "  action      " + Server + "Feature.Boot.OnPreload\n");
+        Write("tools/Refactor/HandlerRenames.txt", Renames
+            + Server + "Service.Gauge.Load " + Server + "Domain.Gadgets.GaugeService.Connect " + Server + "Domain.Gadgets.GaugeService.SyncIndexes\n"
+            + Server + "Feature.Boot.OnPreload " + Server + "Feature.Boot.StartEvents " + Server + "Feature.Boot.OnPreload\n");
+
+        var names = Convert("mod_load\n"
+            + "  action      " + Server + "Feature.Other.Keep\n"
+            + "  action      " + Server + "Service.Gauge.Load\n"
+            + "  action      " + Server + "Feature.Boot.OnPreload\n"
+            + "  action      " + Server + "Service.WidgetService.WidgetStore.Load\n");
+
+        names.Should().Equal(
+            Server + "Feature.Other.Keep",
+            Server + "Domain.Gadgets.GaugeService.Connect",
+            Server + "Domain.Gadgets.GaugeService.SyncIndexes",
+            Server + "Feature.Boot.StartEvents",
+            Server + "Feature.Boot.OnPreload",
+            Server + "Domain.Gadgets.WidgetStore.Load");
+    }
+
+    [TestCase("Domain.Gadgets.WidgetStore.Load Feature.Other.Missing", "is not a line of the handler manifest")]
+    [TestCase("Domain.Gadgets.WidgetStore.Load Domain.Gadgets.WidgetStore.Load", "is listed twice on the line")]
+    public void ASplitLineWhosePartsAreNotDistinctLinesOfTheManifestIsRefused(string parts, string problem)
+    {
+        var branchNames = string.Join(" ", parts.Split(' ').Select(name => Server + name));
+        Write("tools/Refactor/HandlerRenames.txt", Server + "Service.Gauge.Load " + branchNames + "\n");
+
+        var command = "$ErrorActionPreference = 'Stop'; "
+            + ". ./tools/Refactor/RefactorCommon.ps1; . ./tools/Refactor/MasterCopy.ps1; "
+            + "try { Read-HandlerRenames -ManifestText ([IO.File]::ReadAllText((Join-Path $PWD 'manifest.txt'))) | Out-Null } "
+            + "catch { 'REFUSED ' + $_.Exception.Message; exit 1 }";
+        var (exitCode, output) = RunPowerShell(command);
+
+        exitCode.Should().NotBe(0, output);
+        output.Should().Contain("REFUSED ").And.Contain(problem);
+    }
+
     /// <summary>Reads the renames against the manifest and converts a master handler order text; returns the action names.</summary>
     private IReadOnlyList<string> Convert(string reference)
     {

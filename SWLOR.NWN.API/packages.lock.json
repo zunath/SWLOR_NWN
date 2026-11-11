@@ -4,9 +4,9 @@
     "net10.0": {
       "NWN.Core": {
         "type": "Direct",
-        "requested": "[8193.37.4, )",
-        "resolved": "8193.37.4",
-        "contentHash": "EFHDt//HyNY+WEUnvYLDNCtEMS7tFTVolBJw4OP5VTl6u8qIbXZ59dcsT/38x+zzaebK6/6w9uWx3eZ9ep8JDA==",
+        "requested": "[8193.37.7, )",
+        "resolved": "8193.37.7",
+        "contentHash": "Hnci3l2SM3TDRLel+QRTXj1Qg0M4UwjRDjPx1YVEGTaGF9wJ21eZIZgNghjG8GDJJe+RSkDiiB6G1PHw98zb2A==",
         "dependencies": {
           "NWNX.NET": "1.0.3"
         }

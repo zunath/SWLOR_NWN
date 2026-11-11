@@ -81,6 +81,28 @@ public class TypeMovesTextTests
     }
 
     [Test]
+    public void A_renamed_handler_updates_its_rename_line_or_gets_one_and_a_split_keeps_its_parts_in_place()
+    {
+        const string renames = "# renames\r\n"
+                               + "M.Gauge.Load B.Service.Gauge.Load\r\n"
+                               + "M.Gauge.Tick B.Gauge.Start B.Service.Gauge.Tick\r\n";
+
+        var text = HandlerRenames.Update(renames,
+        [
+            ("B.Service.Gauge.Load", "B.Domain.Gadgets.Gauge.Load"),
+            ("B.Service.Gauge.Tick", "B.Domain.Gadgets.Gauge.Tick"),
+            ("SWLOR.Game.Server.Service.Gauge.Flush", "SWLOR.Game.Server.Domain.Gadgets.Gauge.Flush")
+        ]);
+
+        text.Should().Be("# renames\r\n"
+                         + "M.Gauge.Load B.Domain.Gadgets.Gauge.Load\r\n"
+                         + "M.Gauge.Tick B.Gauge.Start B.Domain.Gadgets.Gauge.Tick\r\n"
+                         + "SWLOR.Game.Server.Service.Gauge.Flush SWLOR.Game.Server.Domain.Gadgets.Gauge.Flush\r\n");
+        HandlerRenames.Pairs("x\n  action      A.B\n  action      C.D  # note\n", "x\n  action      A.E\n  action      C.D  # note\n")
+            .Should().Equal(("A.B", "A.E"));
+    }
+
+    [Test]
     public void A_position_maps_through_the_edits()
     {
         var edits = new List<TextEdit> { new(0, 0, "ab"), new(5, 3, "x"), new(10, 0, "yy") };

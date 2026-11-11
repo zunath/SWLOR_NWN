@@ -36,7 +36,10 @@ internal static class HandlerRenames
         return pairs;
     }
 
-    /// <summary>The renames file with each pair recorded.</summary>
+    /// <summary>
+    /// The renames file with each pair recorded. A line whose branch side names the old name takes the new one there; that
+    /// includes a split handler (<c>&lt;master&gt; &lt;part&gt; &lt;part&gt;</c>, P4-8), whose part keeps its place on the line.
+    /// </summary>
     public static string Update(string text, IReadOnlyList<(string Old, string New)> pairs)
     {
         var eol = text.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
@@ -50,10 +53,21 @@ internal static class HandlerRenames
             for (var i = 0; i < lines.Count; i++)
             {
                 var parts = lines[i].Split(' ');
-                if (!lines[i].StartsWith('#') && parts.Length == 2 && parts[1] == old)
+                if (lines[i].StartsWith('#') || parts.Length < 2)
+                    continue;
+
+                for (var part = 1; part < parts.Length; part++)
                 {
-                    lines[i] = parts[0] + " " + @new;
+                    if (parts[part] != old)
+                        continue;
+
+                    parts[part] = @new;
                     updated = true;
+                }
+
+                if (updated)
+                {
+                    lines[i] = string.Join(' ', parts);
                     break;
                 }
             }

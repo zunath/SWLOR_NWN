@@ -87,7 +87,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+            {
+                SetCreatureAppearanceType(player, AppearanceType.Human);
+                SetGender(player, Gender.Male);
+                SetPhenoType(PhenoType.Normal, player);
+                var armor = GetItemInSlot(InventorySlot.Chest, player);
+                foreach (var part in new[] { CreaturePart.RightHand, CreaturePart.LeftHand })
+                {
+                    SetCreatureBodyPart(part, 1, player);
+                    if (GetIsObjectValid(armor))
+                        EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)part, 0);
+                }
+                if (GetIsObjectValid(armor))
+                {
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                    EquippedItemAppearance.Refresh(player, armor);
+                }
+            });
             var rifle = await ctx.EquipItemAsync(player, "b_rifle", InventorySlot.RightHand);
+            await ctx.WaitUntilAsync(() => Read(player).GetValueOrDefault(NamedAnimationPlayback.HoldCarrierSource, "") !=
+                NamedAnimationPlayback.NoHoldName, 5f, "the existing equipment hold clear");
             var field = typeof(RifleSupportAnimation).GetField("_catalog", BindingFlags.Static | BindingFlags.NonPublic)!;
             var previous = field.GetValue(null);
             var poses = new RifleSupportPoses("rf_fixture_i", "rf_fixture_r", "rf_fixture_s");

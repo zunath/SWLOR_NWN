@@ -1,5 +1,6 @@
 """Pure helpers of the live-server client stack; the Docker run itself is verified in-engine."""
 from pathlib import Path
+import json
 import struct
 import subprocess
 import sys
@@ -260,6 +261,100 @@ class LiveClientHelperTests(unittest.TestCase):
     def test_profile_aliases_point_at_mounted_haks(self):
         self.assertIn('HAK=/hak\n', stack.CLIENT_ALIASES)
         self.assertIn('TLK=/tlk\n', stack.CLIENT_ALIASES)
+
+    def test_capture_client_is_not_throttled_when_xvfb_focus_changes(self):
+        import tomllib
+        settings = tomllib.loads(stack.client_settings('SwlorLive'))['graphics']
+        self.assertTrue(settings['framelimiter']['enabled'])
+        for mode in ('foreground', 'background', 'non-interactive'):
+            self.assertGreaterEqual(settings['framelimiter'][mode]['target-fps'], 60)
+        self.assertFalse(settings['stats']['enabled'])
+        self.assertTrue(tomllib.loads(stack.client_settings('SwlorLive', True))['graphics']['stats']['enabled'])
+
+    def test_smaller_motion_window_starts_at_native_size_without_changing_ui_scale(self):
+        import tomllib
+        for size in ((960, 600), (800, 600), (640, 480)):
+            settings = tomllib.loads(stack.client_settings('SwlorLive', True, False, size))
+            self.assertEqual({'width': size[0], 'height': size[1]}, settings['graphics']['window']['windowed'])
+            self.assertEqual(1, settings['ui']['scale'])
+        with self.assertRaises(stack.LiveStackError):
+            stack.client_settings('SwlorLive', window_size=(960, 540))
+
+    def test_motion_capture_changes_only_the_owned_rendering_profile(self):
+        import tomllib
+        regular = tomllib.loads(stack.client_settings('SwlorLive'))
+        capture = tomllib.loads(stack.client_settings('SwlorLive', True, True))
+        for key in ('sound', 'client', 'net', 'ui', 'game'):
+            self.assertEqual(regular[key], capture[key])
+        self.assertEqual(regular['graphics']['window'], capture['graphics']['window'])
+        self.assertFalse(capture['graphics']['fbo']['ssao']['enabled'])
+        self.assertFalse(capture['graphics']['shadows']['environment']['enabled'])
+        self.assertNotIn('fbo', regular['graphics'])
+
+    def test_gpu_composition_is_optional_and_keeps_the_run_snapshot(self):
+        directory = self.root / 'gpu-run'
+        directory.mkdir()
+        state = directory / 'state.json'
+        import json
+        for gpu in (None, 'wsl-d3d12'):
+            state.write_text(json.dumps({'project': 'swlor-live-gpu-test', 'gpu_renderer': gpu}))
+            owned = stack.Stack(directory)
+            with patch.object(stack, 'run') as run:
+                owned.compose('ps', client=True)
+            command = run.call_args.args[0]
+            self.assertEqual(2 if gpu else 1, command.count('-f'))
+            self.assertIn(str(owned.run_dir / 'compose.yml'), command)
+            self.assertEqual(bool(gpu), str(owned.run_dir / 'compose.gpu.yml') in command)
+            self.assertEqual(bool(gpu), 'compose.gpu.yml' in owned.compose_command('ps'))
+
+    def owned_stack(self):
+        directory = self.root / 'direct-run'
+        directory.mkdir()
+        (directory / 'state.json').write_text('{"project":"swlor-live-direct"}')
+        return stack.Stack(directory)
+
+    def service_reply(self, project='swlor-live-direct', service='client', running=True):
+        data = {'id': 'a' * 64, 'running': running,
+                'labels': {'com.docker.compose.project': project, 'com.docker.compose.service': service}}
+        return subprocess.CompletedProcess([], 0, json.dumps(data).encode(), b'')
+
+    def test_capture_exec_uses_verified_container_without_reloading_compose(self):
+        owned = self.owned_stack()
+        with patch.object(owned, 'ensure_owner') as owner, patch.object(stack, 'run', side_effect=[
+                self.service_reply(), subprocess.CompletedProcess([], 0, b'done', b'')]) as run:
+            result = owned.compose('exec', '-T', 'client', '/bin/bash', '/tool/ui.sh', 'capture', 'pose',
+                                   client=True, capture=True, timeout=105)
+        owner.assert_called_once_with()
+        self.assertEqual(b'done', result.stdout)
+        self.assertEqual(['docker', 'exec', 'a' * 64, '/bin/bash', '/tool/ui.sh', 'capture', 'pose'],
+                         run.call_args.args[0])
+        self.assertEqual(105, run.call_args.kwargs['timeout'])
+
+    def test_direct_service_inspection_rejects_a_foreign_container(self):
+        owned = self.owned_stack()
+        for reply in (self.service_reply(project='another-run'), self.service_reply(service='redis')):
+            with self.subTest(reply=reply.stdout), patch.object(stack, 'run', return_value=reply):
+                with self.assertRaisesRegex(LiveStackError, 'identity'):
+                    owned.running('client')
+
+    def test_direct_exec_refuses_stopped_or_reassigned_services(self):
+        owned = self.owned_stack()
+        with patch.object(owned, 'ensure_owner'), patch.object(stack, 'run', return_value=self.service_reply(running=False)) as run:
+            with self.assertRaisesRegex(LiveStackError, 'not running'):
+                owned.compose('exec', '-T', 'client', '/tool/ui.sh', 'capture', 'pose')
+            self.assertEqual(1, run.call_count)
+        with patch.object(stack, 'reservation_holder', return_value=str(self.root / 'other')), patch.object(stack, 'run') as run:
+            with self.assertRaisesRegex(LiveStackError, 'refusing'):
+                owned.compose('exec', '-T', 'client', '/tool/ui.sh', 'capture', 'pose')
+            run.assert_not_called()
+
+    def test_gpu_backend_does_not_mount_a_host_display_or_publish_ports(self):
+        text = (stack.PACKAGE_DIR / 'compose.gpu.yml').read_text()
+        for forbidden in ('ports:', 'privileged:', 'network_mode:', '/tmp/.X11-unix', 'DISPLAY:'):
+            self.assertNotIn(forbidden, text)
+        self.assertIn('read_only: true', text)
+        self.assertIn('GALLIUM_DRIVER: d3d12', text)
+        self.assertIn('source: /usr/lib/wsl/drivers', text)
 
     def test_join_and_leave_patterns_match_server_log(self):
         log = self.write('nwserverLog1.txt', (

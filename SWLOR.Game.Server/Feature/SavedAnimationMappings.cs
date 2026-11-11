@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Native;
+using SWLOR.Game.Server.Service;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Feature
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(player))
                 return;
 
+            NamedAnimation.ResetOnLogin(player);
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSObject();
             foreach (var source in WeaponAttackAnimation.ReadAnimationReplacements(native).Keys)
             {

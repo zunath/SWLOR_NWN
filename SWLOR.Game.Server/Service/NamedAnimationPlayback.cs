@@ -5,18 +5,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>The native operations required for a temporary per-creature animation replacement.</summary>
-public interface INamedAnimationRuntime
-{
-    bool IsValid(uint creature);
-    string GetToken(uint creature);
-    void SetToken(uint creature, string token);
-    void Replace(uint creature, string source, string replacement);
-    ActionType CurrentAction(uint creature);
-    void ClearActions(uint creature);
-    void Schedule(float seconds, Action callback);
-}
-
 /// <summary>Owns temporary replacements; callbacks from superseded playbacks cannot clear a newer one.</summary>
 public sealed class NamedAnimationPlayback
 {
@@ -115,6 +103,7 @@ public sealed class NamedAnimationPlayback
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
+        var physicalRifleHold = weaponHold == AnimationWeaponHold.Rifle ? ReadPhysicalRifleHold(creature) : RifleHoldSource;
         var token = Guid.NewGuid().ToString("N");
         _runtime.SetToken(creature, token);
         try
@@ -136,7 +125,7 @@ public sealed class NamedAnimationPlayback
             });
             _runtime.Replace(creature, ShoulderHoldSource, weaponHold switch
             {
-                AnimationWeaponHold.Rifle => RifleHoldSource,
+                AnimationWeaponHold.Rifle => physicalRifleHold,
                 AnimationWeaponHold.Shoulder => NoHoldName,
                 _ => liftShoulderHoldInPlace ? NoHoldName : ""
             });
@@ -152,6 +141,15 @@ public sealed class NamedAnimationPlayback
             Complete(creature, token);
             throw;
         }
+    }
+
+    private string ReadPhysicalRifleHold(uint creature)
+    {
+        var rifle = _runtime.Replacement(creature, RifleHoldSource);
+        var shoulder = _runtime.Replacement(creature, ShoulderHoldSource);
+        if ((rifle == NoHoldName || _runtime.Replacement(creature, HoldCarrierSource) == NoHoldName) &&
+            !string.IsNullOrEmpty(shoulder) && shoulder != NoHoldName) return shoulder;
+        return string.IsNullOrEmpty(rifle) || rifle == NoHoldName ? RifleHoldSource : rifle;
     }
 
     /// <summary>Reserves one-shot native preview ownership without installing authored mappings.</summary>
@@ -233,6 +231,15 @@ public sealed class NamedAnimationPlayback
         if (cancelQueuedAnimation && _runtime.CurrentAction(creature) == ActionType.Invalid)
             _runtime.ClearActions(creature);
         Complete(creature, token);
+    }
+
+    /// <summary>Discards session ownership before login clears persisted mappings and reapplies equipment.</summary>
+    public void ResetOnLogin(uint creature)
+    {
+        _equipmentRequests.Remove(creature);
+        _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
+        if (_runtime.IsValid(creature)) _runtime.SetToken(creature, "");
     }
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>

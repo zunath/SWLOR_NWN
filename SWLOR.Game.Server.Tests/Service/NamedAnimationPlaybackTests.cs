@@ -429,6 +429,66 @@ public class NamedAnimationPlaybackTests
         restored.Should().Be(1);
     }
 
+    [TestCase("saved-playback")]
+    [TestCase("ending:saved-playback")]
+    public void LoginDiscardsPersistedOwnershipBeforeEquipmentMappingsAreRestored(string savedToken)
+    {
+        var runtime = new Runtime { Token = savedToken };
+        var restored = 0;
+        var playback = new NamedAnimationPlayback(runtime, restoreEquipmentMappings: _ => restored++);
+        var request = playback.ReserveEquipmentPlayback(1);
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource] = "rf_saved_i";
+
+        playback.ResetOnLogin(1);
+
+        runtime.Token.Should().BeEmpty();
+        playback.CanStartEquipmentPlayback(1, request).Should().BeFalse();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be("rf_saved_i",
+            "login clears every persisted mapping before applying the current equipment");
+        restored.Should().Be(0);
+        runtime.ClearedActions.Should().Be(0);
+    }
+
+    [Test]
+    public void LoginInvalidatesOldPlaybackCallbacksWithoutRemovingNewEquipmentMappings()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_wave", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
+        var oldCallbacks = runtime.Callbacks.ToArray();
+
+        playback.ResetOnLogin(1);
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource] = "rf_restored_i";
+        foreach (var callback in oldCallbacks) callback();
+
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be("rf_restored_i");
+        runtime.ClearedActions.Should().Be(0);
+    }
+
+    [TestCase("rf_fitted_i", "", "", "rf_fitted_i")]
+    [TestCase("rf_next_i", NamedAnimationPlayback.NoHoldName, "rf_previous_i", "rf_previous_i")]
+    [TestCase(NamedAnimationPlayback.NoHoldName, "sw_previous", "rf_fitted_i", "rf_fitted_i")]
+    public void RifleAbilitiesClearThePhysicalFittedHoldBeforeTakingItsMappingKeys(
+        string rifle, string carrier, string shoulder, string physical)
+    {
+        var runtime = new Runtime();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource] = rifle;
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource] = carrier;
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource] = shoulder;
+        var playback = new NamedAnimationPlayback(runtime);
+
+        var token = playback.Begin(1, new AnimationClip("sw_aimedshot", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
+
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be(physical);
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().Be("sw_aimedshot");
+        playback.Complete(1, token);
+        runtime.Callbacks[^1]();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        runtime.ClearedActions.Should().Be(0);
+    }
+
     private sealed class Runtime : INamedAnimationRuntime
     {
         public string Token = "";
@@ -441,6 +501,7 @@ public class NamedAnimationPlaybackTests
         public List<float> Delays { get; } = new();
         public bool IsValid(uint creature) => Valid;
         public string GetToken(uint creature) => Token;
+        public string Replacement(uint creature, string source) => Replacements.GetValueOrDefault(source, "");
         public void SetToken(uint creature, string token) => Token = token;
         public void Replace(uint creature, string source, string replacement) => Replacements[source] = replacement;
         public ActionType CurrentAction(uint creature) => Action;

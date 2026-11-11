@@ -54,10 +54,34 @@ public class WeaponGripMeasurementInputsTests
             "changed hand, handle or socket geometry needs new fit measurements and client review");
     }
 
+    [Test]
+    public void SparseFallbackReadsALargeHandBatchWithoutBlocking()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
+        root.Should().NotBeNull();
+        var haks = Path.Combine(root!.FullName, "SWLOR_Haks");
+        var measurements = typeof(WeaponFit).Assembly.GetType(
+            "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PistolGripMeasurements")!;
+        var hands = (IDictionary)measurements.GetField("Hands", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var paths = hands.Keys.Cast<string>().Select(hand =>
+            (hand[9] == 'r' ? "sw_pt_rhand/" : "sw_pt_lhand/") + hand + ".mdl").ToArray();
+        paths.Sum(path => Encoding.UTF8.GetByteCount("HEAD:" + path + "\n")).Should().BeGreaterThan(4096,
+            "the sparse fallback must drain model output before filling the request pipe");
+
+        var resources = ReadCommitted(haks, paths);
+
+        resources.Keys.Should().BeEquivalentTo(paths);
+        resources.Values.Should().OnlyContain(bytes => bytes.Length > 0);
+        foreach (var path in paths.Where(path => File.Exists(Path.Combine(haks, path))).Take(3))
+            resources[path].Should().Equal(File.ReadAllBytes(Path.Combine(haks, path)));
+    }
+
     private static Dictionary<string, byte[]> ReadCommitted(string haks, string[] paths)
     {
         var result = new Dictionary<string, byte[]>();
         if (paths.Length == 0) return result;
+        var tracked = TrackedPaths(haks, paths);
         var start = new ProcessStartInfo("git")
         {
             WorkingDirectory = haks, RedirectStandardInput = true,
@@ -68,11 +92,11 @@ public class WeaponGripMeasurementInputsTests
         start.ArgumentList.Add("--batch");
         using var process = Process.Start(start)!;
         var errors = process.StandardError.ReadToEndAsync();
-        foreach (var path in paths) process.StandardInput.WriteLine("HEAD:" + path);
-        process.StandardInput.Close();
         var stream = process.StandardOutput.BaseStream;
         foreach (var path in paths)
         {
+            process.StandardInput.WriteLine("HEAD:" + tracked.GetValueOrDefault(path, path));
+            process.StandardInput.Flush();
             var header = new StringBuilder();
             for (int value; (value = stream.ReadByte()) != '\n';)
             {
@@ -87,9 +111,31 @@ public class WeaponGripMeasurementInputsTests
             if (stream.ReadByte() != '\n') throw new InvalidDataException("Invalid Git resource boundary");
             result.Add(path, data);
         }
+        process.StandardInput.Close();
         process.WaitForExit();
         process.ExitCode.Should().Be(0, errors.GetAwaiter().GetResult());
         return result;
+    }
+
+    private static Dictionary<string, string> TrackedPaths(string haks, string[] paths)
+    {
+        var start = new ProcessStartInfo("git")
+        {
+            WorkingDirectory = haks, RedirectStandardOutput = true,
+            RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true
+        };
+        foreach (var argument in new[] { "ls-tree", "-r", "--name-only", "-z", "HEAD", "--" })
+            start.ArgumentList.Add(argument);
+        foreach (var folder in paths.Select(path => path.Split('/')[0]).Distinct())
+            start.ArgumentList.Add(folder);
+        using var process = Process.Start(start)!;
+        var errors = process.StandardError.ReadToEndAsync();
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+        process.ExitCode.Should().Be(0, errors.GetAwaiter().GetResult());
+        var requested = paths.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return output.Split('\0', StringSplitOptions.RemoveEmptyEntries).Where(requested.Contains)
+            .ToDictionary(path => path, path => path, StringComparer.OrdinalIgnoreCase);
     }
 
     private static readonly string[] SocketInputs =

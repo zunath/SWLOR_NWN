@@ -189,6 +189,7 @@ public class EquipmentAnimationPlaybackTests
         public List<Action> Callbacks = new();
         public bool IsValid(uint creature) => true;
         public string GetToken(uint creature) => Token;
+        public string Replacement(uint creature, string source) => Maps.GetValueOrDefault(source, "");
         public void SetToken(uint creature, string token) => Token = token;
         public void Replace(uint creature, string source, string replacement) => Maps[source] = replacement;
         public ActionType CurrentAction(uint creature) => ActionType.Invalid;

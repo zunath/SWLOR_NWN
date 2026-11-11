@@ -40,6 +40,12 @@ public static class QueuedAttackAnimation
             if (string.IsNullOrEmpty(token)) DeleteLocalString(creature, TokenVariable);
             else SetLocalString(creature, TokenVariable, token);
         }
+        public string Replacement(uint creature, string source)
+        {
+            var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSObject();
+            return native != null && SWLOR.Game.Server.Native.WeaponAttackAnimation.ReadAnimationReplacements(native).TryGetValue(source, out var replacement)
+                ? replacement : "";
+        }
         public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
         public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);
         public void ClearActions(uint creature) => ClearAllActions(oObject: creature);

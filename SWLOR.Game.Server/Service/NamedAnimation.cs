@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -130,6 +131,8 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
+    public static void ResetOnLogin(uint creature) => Playback.ResetOnLogin(creature);
+
     /// <summary>Stops restricted and weapon-held poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
     [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
     [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
@@ -177,6 +180,12 @@ public static class NamedAnimation
         {
             if (string.IsNullOrEmpty(token)) DeleteLocalString(creature, PlaybackTokenVariable);
             else SetLocalString(creature, PlaybackTokenVariable, token);
+        }
+        public string Replacement(uint creature, string source)
+        {
+            var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSObject();
+            return native != null && WeaponAttackAnimation.ReadAnimationReplacements(native).TryGetValue(source, out var replacement)
+                ? replacement : "";
         }
         public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
         public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);

@@ -85,6 +85,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<string, SpawnTable> _spawnTables = new();
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
+        // True once LoadSpawnTables ran to its end. StoreSpawns refuses to run otherwise: the single CacheData stopped at its
+        // first failure, so the hand-placed creatures were never captured against a partly loaded table cache.
+        private bool _spawnTablesLoaded;
 
         /// <summary>
         /// The current UTC time. <c>protected virtual</c> so a unit test can place a respawn, a despawn or a
@@ -122,6 +125,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadSpawnTables()
         {
+            _spawnTablesLoaded = false;
             // Get all implementations of spawn table definitions.
             var types = GetSpawnListDefinitionTypes();
 
@@ -147,6 +151,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
                     _spawnTables[table.Key] = table.Value;
                 }
             }
+
+            _spawnTablesLoaded = true;
         }
 
 
@@ -162,6 +168,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void StoreSpawns()
         {
+            if (!_spawnTablesLoaded)
+                throw new InvalidOperationException("The spawns are not stored: LoadSpawnTables did not finish.");
+
             void RegisterAreaSpawnTable(uint area, string variableName, int spawnCount)
             {
                 var spawnTableId = GetLocalString(area, variableName);

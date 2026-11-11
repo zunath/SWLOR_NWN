@@ -52,6 +52,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private readonly IRedisConnectionSource _connectionSource;
         // The entity types Connect registered, in registration order; SyncIndexes brings their indexes up to date in that order.
         private readonly List<Type> _entityTypes = new();
+        // True once Connect ran to its end. SyncIndexes refuses to run otherwise: the single Load stopped at its first failure,
+        // so db_loaded (the migrations) never ran without a connection and every entity type registered.
+        private bool _connected;
         private readonly Dictionary<Type, string> _keyPrefixByType = new();
         private readonly Dictionary<Type, Client> _searchClientsByType = new();
         private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
@@ -90,6 +93,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public void Connect()
         {
+            _connected = false;
             _multiplexer = _connectionSource.Open();
 
             RegisterEntityTypes();
@@ -99,6 +103,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             {
                 _cachedEntities.Clear();
             });
+            _connected = true;
         }
 
         /// <inheritdoc/>
@@ -106,6 +111,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public void SyncIndexes()
         {
+            if (!_connected)
+                throw new InvalidOperationException("The search indexes cannot be synced and db_loaded is not run: Connect did not finish.");
+
             foreach (var type in _entityTypes)
             {
                 ProcessIndex(type);

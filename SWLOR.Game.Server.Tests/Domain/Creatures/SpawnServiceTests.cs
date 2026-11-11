@@ -79,6 +79,22 @@ public class SpawnServiceTests
     // ---------------------------------------------------------------- loading the tables and the areas
 
     [Test]
+    public void StoreSpawns_captures_nothing_when_LoadSpawnTables_did_not_finish()
+    {
+        // The registry runs the next handler after one that threw; the single CacheData stopped at its first failure.
+        var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
+        _service.Definitions.Add(typeof(ISpawnListDefinition)); // cannot be created, so the table load throws
+
+        var load = () => _service.LoadSpawnTables();
+        var store = () => _service.StoreSpawns();
+
+        load.Should().Throw<Exception>();
+        store.Should().Throw<InvalidOperationException>().WithMessage("*LoadSpawnTables did not finish*");
+        _bench.DestroyCount(guard.Id).Should().Be(0, "the placed creature stays as it was");
+        _bench.Objects.CountOf("Serialize").Should().Be(0);
+    }
+
+    [Test]
     public void LoadSpawnTables_alone_fills_the_tables_and_leaves_the_world_as_it_is()
     {
         var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);

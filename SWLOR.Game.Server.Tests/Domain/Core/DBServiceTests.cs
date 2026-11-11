@@ -160,6 +160,30 @@ public class DBServiceTests
     }
 
     [Test]
+    public void SyncIndexes_runs_nothing_when_Connect_did_not_finish()
+    {
+        // The registry runs the next handler after one that threw; the single Load stopped at its first failure, so
+        // db_loaded (the migrations) never ran without a database.
+        var previous = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+        try
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "TRUE");
+            var db = new SourcedDbService(new UnreachableRedis());
+
+            var connect = () => db.Connect();
+            var sync = () => db.SyncIndexes();
+
+            connect.Should().Throw<TimeoutException>();
+            sync.Should().Throw<InvalidOperationException>().WithMessage("*Connect did not finish*");
+            db.LoadedScriptRuns.Should().Be(0);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", previous);
+        }
+    }
+
+    [Test]
     public void A_source_that_hands_over_an_open_connection_is_used_as_it_is()
     {
         // What a host that keeps the connection across hot reloads does: no settings are read and nothing waits.
@@ -737,6 +761,12 @@ public class DBServiceTests
         }
     }
 
+    /// <summary>A source whose database never answers, as the ten-minute wait ends.</summary>
+    private sealed class UnreachableRedis : IRedisConnectionSource
+    {
+        public IConnectionMultiplexer Open() => throw new TimeoutException("Timed out waiting for database connection.");
+    }
+
     /// <summary>The service on any connection source, with the engine calls replaced.</summary>
     private sealed class SourcedDbService : DBService
     {
@@ -745,13 +775,13 @@ public class DBServiceTests
         {
         }
 
+        public int LoadedScriptRuns { get; private set; }
+
         protected override void SubscribeScriptContextEnd(Action handler)
         {
         }
 
-        protected override void ExecuteDatabaseLoadedScript()
-        {
-        }
+        protected override void ExecuteDatabaseLoadedScript() => LoadedScriptRuns++;
 
         protected override IEnumerable<EntityBase> CreateEntityInstances() => new EntityBase[] { new Player(), new QuestContract() };
     }

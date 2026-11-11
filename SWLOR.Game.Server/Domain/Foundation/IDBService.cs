@@ -64,7 +64,8 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>
         /// The boot-only <c>mod_preload</c> handler that follows <see cref="Connect"/>: brings each registered type's search
         /// index up to date (rebuilding one whose definition changed, which writes Redis), then runs <c>db_loaded</c> in the
-        /// game server.
+        /// game server. Throws, doing nothing, when <see cref="Connect"/> did not finish, as the single <c>Load</c> stopped at
+        /// its first failure.
         /// </summary>
         void SyncIndexes();
 

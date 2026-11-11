@@ -244,6 +244,10 @@ namespace SWLOR.Game.Server.Service
                     (PerformanceInstrumentCatalog.TryGetFamily(GetResRef(item), out family) ||
                      TryParseFamily(GetLocalString(item, InstrumentFamilyVariable), out family)))
                 {
+                    if (PerformanceInstrumentCatalog.RequiresBow(family) &&
+                        !string.Equals(GetResRef(GetItemInSlot(InventorySlot.RightHand, player)), "violin_bow", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
                     instrumentSlot = slot;
                     instrument = item;
                     return true;
@@ -444,7 +448,7 @@ namespace SWLOR.Game.Server.Service
             else if (Space.IsPlayerInSpaceMode(player))
                 error = "You cannot perform in space.";
             else if (kind == PerformanceKind.Music && !TryFindInstrument(player, out family, out instrumentSlot, out instrument))
-                error = "You must equip an instrument to play music.";
+                error = "You must equip an instrument or microphone to perform music. A violin also requires a Violin Bow.";
 
             if (error != null)
             {
@@ -500,6 +504,9 @@ namespace SWLOR.Game.Server.Service
                 PerkLevel = level,
                 InstrumentSlot = instrumentSlot,
                 Instrument = instrument,
+                InstrumentBow = PerformanceInstrumentCatalog.RequiresBow(family)
+                    ? GetItemInSlot(InventorySlot.RightHand, player)
+                    : OBJECT_INVALID,
                 Routine = IsRoutineUnlocked(player, preference.Routine)
                     ? preference.Routine
                     : PerformanceRoutineType.CantinaShuffle,
@@ -516,11 +523,11 @@ namespace SWLOR.Game.Server.Service
             // The toggle has no cast window to play its clip in, so the performance opens with it.
             PlayThenLoop(
                 session,
-                PerformanceAnimations.GetOpeningClip(kind),
+                PerformanceAnimations.GetOpeningClip(kind, family),
                 PerformanceAnimations.GetOpeningHoldMode(kind, family, GetResRef(instrument)));
             ScheduleBeats(session);
 
-            SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay));
+            SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay, family));
 
             // The cue window shows the strip; floating text stands in only when it could not be opened. Roleplay mode has no
             // strip to stand in for.
@@ -622,8 +629,10 @@ namespace SWLOR.Game.Server.Service
         // One slot lookup per beat. Sessions started under the no-instrument test allowance have no item to check.
         private static bool IsInstrumentStillEquipped(PerformanceSession session)
         {
-            return session.Instrument == OBJECT_INVALID ||
-                   GetItemInSlot(session.InstrumentSlot, session.Performer) == session.Instrument;
+            return (session.Instrument == OBJECT_INVALID ||
+                    GetItemInSlot(session.InstrumentSlot, session.Performer) == session.Instrument) &&
+                   (session.InstrumentBow == OBJECT_INVALID ||
+                    GetItemInSlot(InventorySlot.RightHand, session.Performer) == session.InstrumentBow);
         }
 
         private static void ApplyTempo(PerformanceSession session, PerformanceTempo tempo)
@@ -809,18 +818,17 @@ namespace SWLOR.Game.Server.Service
                 PlayThenLoop(session, clip);
         }
 
-        private static string GetStartMessage(PerformanceKind kind, bool roleplay)
+        private static string GetStartMessage(PerformanceKind kind, bool roleplay, PerformanceInstrumentFamily family)
         {
+            var action = kind == PerformanceKind.Dance ? "dance" : family == PerformanceInstrumentFamily.Vocals ? "sing" : "play";
             if (roleplay)
             {
-                return kind == PerformanceKind.Dance
-                    ? $"You begin to dance in Roleplay mode. {RoleplayKeepGoingText}"
-                    : $"You begin to play in Roleplay mode. {RoleplayKeepGoingText}";
+                return $"You begin to {action} in Roleplay mode. {RoleplayKeepGoingText}";
             }
 
             return kind == PerformanceKind.Dance
                 ? "You begin to dance. Use the step buttons on your hot bar to match the cues, or switch to Roleplay mode under Options."
-                : "You begin to play. Use the note buttons on your hot bar to match the cues, or switch to Roleplay mode under Options.";
+                : $"You begin to {action}. Use the note buttons on your hot bar to match the cues, or switch to Roleplay mode under Options.";
         }
 
         private static string GetModeMessage(PerformanceKind kind, bool roleplay)

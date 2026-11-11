@@ -49,7 +49,6 @@ namespace SWLOR.Game.Server.Service
 
         private const float NPCShipKeepDistance = 15f;
         private const float ShipDamageMessageRange = 10f;
-        public const float DestroyedShipHullRemovalSeconds = 1.5f;
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -425,7 +424,6 @@ namespace SWLOR.Game.Server.Service
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
-            var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
@@ -441,7 +439,7 @@ namespace SWLOR.Game.Server.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.PlaySound(player, ShipSound.TargetCancel, target);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -449,7 +447,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.PlaySound(player, ShipSound.TargetSelect, target);
             }
         }
 
@@ -1615,30 +1613,16 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature dies, remove it from the cache.
-        /// An NPC ship's hull explodes and is removed shortly after: ship models have no death animation, so a dead hull
-        /// would keep floating, fully rendered, until its loot corpse expires. Its loot stays in the corpse container.
         /// </summary>
         [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
             var creature = OBJECT_SELF;
-            _shipNPCs.Remove(creature);
 
-            if (!IsNPCShip(creature))
-                return;
-
-            // At the location, so the explosion outlives the hull.
-            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), GetLocation(creature));
-            SetIsDestroyable(true, false, false);
-            DestroyObject(creature, DestroyedShipHullRemovalSeconds);
-        }
-
-        /// <summary>Whether a creature is an NPC ship registered with the space system.</summary>
-        public static bool IsNPCShip(uint creature)
-        {
-            return GetIsObjectValid(creature) &&
-                   !GetIsPC(creature) &&
-                   _spaceObjects.ContainsKey(GetTag(creature));
+            if (_shipNPCs.ContainsKey(creature))
+            {
+                _shipNPCs.Remove(creature);
+            }
         }
 
         /// <summary>
@@ -1854,7 +1838,7 @@ namespace SWLOR.Game.Server.Service
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
                 ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
+                ShipSound.Play(target, ShipSound.Deflect);
             }
             else
             {
@@ -1867,7 +1851,7 @@ namespace SWLOR.Game.Server.Service
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ShipSound.Play(target, ShipSound.Explosion);
             }
 
             // Safety clamping
@@ -1950,7 +1934,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Hull > 0)
             {
                 targetShipStatus.Hull -= amount;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ShipSound.Play(target, ShipSound.Explosion);
             }
 
             // Safety clamping

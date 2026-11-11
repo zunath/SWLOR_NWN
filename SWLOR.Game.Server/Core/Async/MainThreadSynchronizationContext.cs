@@ -35,6 +35,18 @@ namespace SWLOR.Game.Server.Core.Async
             }
         }
 
+        /// <summary>
+        /// Drops the work queued for the next <see cref="Update"/>. Work a running <see cref="Update"/> already took
+        /// still finishes. Called by <see cref="ServerTeardown"/>.
+        /// </summary>
+        public void Clear()
+        {
+            lock (_queuedTasks)
+            {
+                _queuedTasks.Clear();
+            }
+        }
+
         public override void Post(SendOrPostCallback callback, object state)
         {
             lock (_queuedTasks)

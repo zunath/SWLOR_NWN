@@ -714,7 +714,9 @@ public class AIModelTests
     [Test]
     public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        // The body is the sink's; the leash helper stays with the hook file.
+        var source = (ReadSource("SWLOR.Game.Server", "NativeSinks", "OnAIActionAttackObjectSink.cs") + "\n" +
+                      ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs")).Replace("\r\n", "\n");
         var activeTargetIndex = source.IndexOf("if (bTargetActive)", StringComparison.Ordinal);
         var activeTargetBody = source.Substring(
             activeTargetIndex,
@@ -739,7 +741,7 @@ public class AIModelTests
             "var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(",
             StringComparison.Ordinal);
 
-        source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
+        source.Should().Contain("internal static bool TryCancelAttackForCombatLeash");
         source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
         source.Should().Contain("_creatureAttackDelays.Remove(pCreature.m_idSelf);");
         source.Should().Contain("pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);");

@@ -11,10 +11,13 @@ internal static class ArchitectureProject
 
     private const string ProjectFileName = "SWLOR.Architecture.Tests.csproj";
     private const string ServerAssemblyFileName = "SWLOR.Game.Server.dll";
+    private const string ContractsAssemblyFileName = "SWLOR.Game.Contracts.dll";
+    private const string ContractsNamespace = "SWLOR.Game.Contracts";
 
     private static readonly Lazy<TypeReferenceGraph> ServerGraph = new(ScanServerGraph);
     private static readonly Lazy<DomainDependencies> ServerDependencies = new(() => DomainDependencies.Build(ServerGraph.Value, DomainMap.Load(DomainMapPath)));
     private static readonly Lazy<AssemblyFacts> ServerAssemblyFacts = new(() => AssemblyFactScanner.Scan(ServerAssemblyPath));
+    private static readonly Lazy<NativeHookFacts> ServerNativeHooks = new(() => NativeHookScanner.Scan(ServerAssemblyPath, ContractsNamespace));
 
     public static bool IsUpdating => Environment.GetEnvironmentVariable(UpdateVariable) == "1";
 
@@ -52,6 +55,12 @@ internal static class ArchitectureProject
 
     /// <summary>The services converted to the dependency-injection pattern, from <c>ConvertedServices.json</c>.</summary>
     public static ConvertedServiceList ConvertedServices => ConvertedServiceList.Load(ConvertedServicesPath);
+
+    /// <summary>The native hook entry points, the sink implementations and the sink interfaces of the compiled server assembly.</summary>
+    public static NativeHookFacts NativeHooks => ServerNativeHooks.Value;
+
+    /// <summary>The compiled contracts assembly (<c>SWLOR.Game.Contracts</c>), copied next to the tests.</summary>
+    public static string ContractsAssemblyPath => Path.Combine(AppContext.BaseDirectory, ContractsAssemblyFileName);
 
     private static string ServerAssemblyPath => Path.Combine(AppContext.BaseDirectory, ServerAssemblyFileName);
 

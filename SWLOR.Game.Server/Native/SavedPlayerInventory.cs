@@ -2,16 +2,22 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native
 {
-    /// <summary>Keeps saved item stacks intact while a player file is being loaded.</summary>
+    /// <summary>Installs the hook that lets <see cref="SavedPlayerInventorySink"/> keep saved item stacks intact while a player file is being loaded.</summary>
     internal static unsafe class SavedPlayerInventory
     {
         private static readonly byte[] IsPCLabel = System.Text.Encoding.ASCII.GetBytes("IsPC\0");
         private static FunctionHook* _compareHook;
+        private static ISavedPlayerInventorySink _sink;
         [ThreadStatic] private static int _loadDepth;
+
+        /// <summary>How many player files this thread is loading right now.</summary>
+        internal static int LoadDepth => _loadDepth;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -19,6 +25,7 @@ namespace SWLOR.Game.Server.Native
         {
             if (_compareHook != null)
                 return;
+            _sink ??= new SavedPlayerInventorySink();
             delegate* unmanaged<void*, void*, int> compare = &Compare;
             _compareHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(),
                 "_ZN8CNWSItem11CompareItemEPS_"), (IntPtr)compare, HookOrder.Early);
@@ -49,13 +56,6 @@ namespace SWLOR.Game.Server.Native
 
         [UnmanagedCallersOnly]
         private static int Compare(void* item, void* other)
-        {
-            // Native loading can combine differently priced blueprints before migrations
-            // see them. Keep each saved stack; ordinary gameplay merging stays unchanged.
-            if (_loadDepth > 0)
-                return 0;
-            var original = (delegate* unmanaged<void*, void*, int>)_compareHook->m_trampoline;
-            return original(item, other);
-        }
+            => _sink.CompareItem(item, other, (nint)_compareHook->m_trampoline);
     }
 }

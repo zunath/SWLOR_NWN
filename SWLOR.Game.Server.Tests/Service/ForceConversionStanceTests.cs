@@ -146,8 +146,11 @@ public class ForceConversionStanceTests
         var hook = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "OnResolveAttackRoll");
         var delegation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>().Should().ContainSingle().Which;
-        delegation.Expression.ToString().Should().Be("ResolveWeaponRoll");
+        // The native hook only forwards to its sink (P4-9), which runs the shared roll.
+        delegation.Expression.ToString().Should().Be("_sink.ResolveAttackRoll");
         delegation.ArgumentList.Arguments.Select(argument => argument.ToString()).Should().Equal("thisPtr", "pTarget");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "NativeSinks", "ResolveAttackRollSink.cs"))
+            .Should().Contain("NativeResolveAttackRoll.ResolveWeaponRoll(thisPtr, pTarget)");
         var sharedRoll = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ResolveWeaponRoll");
         var preparation = sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()

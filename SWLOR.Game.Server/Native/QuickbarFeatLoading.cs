@@ -1,17 +1,17 @@
 using System.Runtime.InteropServices;
-using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Foundation;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native;
 
-/// <summary>Saved quickbars may contain either targeting representation of an ability.</summary>
+/// <summary>Installs the hook that lets <see cref="QuickbarFeatLoadingSink"/> restore saved quickbars with either targeting representation of an ability.</summary>
 public static unsafe class QuickbarFeatLoading
 {
     private static FunctionHook* _loadHook;
+    private static IQuickbarFeatLoadingSink _sink;
 
     [BootPhase(BootReload.NativeHook)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -19,6 +19,7 @@ public static unsafe class QuickbarFeatLoading
     {
         if (_loadHook != null)
             return;
+        _sink ??= new QuickbarFeatLoadingSink();
         delegate* unmanaged<void*, void*, void*, void> load = &Load;
         _loadHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(),
             "_ZN12CNWSCreature16LoadQuickButtonsEP7CResGFFP10CResStruct"), (IntPtr)load, HookOrder.Early);
@@ -26,14 +27,5 @@ public static unsafe class QuickbarFeatLoading
 
     [UnmanagedCallersOnly]
     private static void Load(void* creature, void* resource, void* structure)
-    {
-        var original = (delegate* unmanaged<void*, void*, void*, void>)_loadHook->m_trampoline;
-        original(creature, resource, structure);
-        try
-        {
-            var id = CNWSCreature.FromPointer(creature).m_idSelf;
-            ServerManager.Executor.ExecuteInScriptContext(() => QuickCast.ApplyPreferences(id), id);
-        }
-        catch (Exception exception) { Log.WriteError(exception, "Ability targeting quickbar restoration failed"); }
-    }
+        => _sink.LoadQuickButtons(creature, resource, structure, (nint)_loadHook->m_trampoline);
 }

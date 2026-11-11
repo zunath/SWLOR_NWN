@@ -1,16 +1,16 @@
 using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Foundation;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native
 {
     /// <summary>
-    /// Watches each chat line the engine sends to one client, so <see cref="ChatPortraitTells"/> knows which
-    /// speaker's portrait that client's chat log holds for each connection slot. Every player chat channel the
-    /// engine fans out, including NWNX Chat sends and SpeakString, reaches one of these functions per recipient.
+    /// Installs the nine chat send hooks that let <see cref="ChatPortraitSpeakersSink"/> watch each chat line the engine
+    /// sends to one client. Every player chat channel the engine fans out, including NWNX Chat sends and SpeakString,
+    /// reaches one of these functions per recipient; each only forwards to the sink.
     /// </summary>
     public static unsafe class ChatPortraitSpeakers
     {
@@ -31,10 +31,13 @@ namespace SWLOR.Game.Server.Native
         private static readonly delegate* unmanaged<void*, uint, uint, void*, int>[] Originals =
             new delegate* unmanaged<void*, uint, uint, void*, int>[Symbols.Length];
 
+        private static IChatPortraitSpeakersSink _sink;
+
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHooks()
         {
+            _sink ??= new ChatPortraitSpeakersSink();
             delegate* unmanaged<void*, uint, uint, void*, int>[] hooks =
             {
                 &Talk, &Whisper, &Party, &Tell, &Shout, &SilentShout, &DMTalk, &DMWhisper, &DMSilentShout,
@@ -52,45 +55,31 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static int Send(int index, void* message, uint recipient, uint speaker, void* text)
-        {
-            try
-            {
-                ChatPortraitTells.RecordChatLine(recipient, speaker);
-            }
-            catch (Exception exception)
-            {
-                Log.WriteError(exception, "Could not record a chat portrait speaker");
-            }
-
-            return Originals[index](message, recipient, speaker, text);
-        }
+        [UnmanagedCallersOnly]
+        private static int Talk(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[0]);
 
         [UnmanagedCallersOnly]
-        private static int Talk(void* message, uint recipient, uint speaker, void* text) => Send(0, message, recipient, speaker, text);
+        private static int Whisper(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[1]);
 
         [UnmanagedCallersOnly]
-        private static int Whisper(void* message, uint recipient, uint speaker, void* text) => Send(1, message, recipient, speaker, text);
+        private static int Party(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[2]);
 
         [UnmanagedCallersOnly]
-        private static int Party(void* message, uint recipient, uint speaker, void* text) => Send(2, message, recipient, speaker, text);
+        private static int Tell(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[3]);
 
         [UnmanagedCallersOnly]
-        private static int Tell(void* message, uint recipient, uint speaker, void* text) => Send(3, message, recipient, speaker, text);
+        private static int Shout(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[4]);
 
         [UnmanagedCallersOnly]
-        private static int Shout(void* message, uint recipient, uint speaker, void* text) => Send(4, message, recipient, speaker, text);
+        private static int SilentShout(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[5]);
 
         [UnmanagedCallersOnly]
-        private static int SilentShout(void* message, uint recipient, uint speaker, void* text) => Send(5, message, recipient, speaker, text);
+        private static int DMTalk(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[6]);
 
         [UnmanagedCallersOnly]
-        private static int DMTalk(void* message, uint recipient, uint speaker, void* text) => Send(6, message, recipient, speaker, text);
+        private static int DMWhisper(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[7]);
 
         [UnmanagedCallersOnly]
-        private static int DMWhisper(void* message, uint recipient, uint speaker, void* text) => Send(7, message, recipient, speaker, text);
-
-        [UnmanagedCallersOnly]
-        private static int DMSilentShout(void* message, uint recipient, uint speaker, void* text) => Send(8, message, recipient, speaker, text);
+        private static int DMSilentShout(void* message, uint recipient, uint speaker, void* text) => _sink.Send(message, recipient, speaker, text, (nint)Originals[8]);
     }
 }

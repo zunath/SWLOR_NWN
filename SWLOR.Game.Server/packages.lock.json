@@ -101,6 +101,11 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5"
         }
       },
+      "Nwn.Hosting.Contracts": {
+        "type": "Transitive",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "OyN1zsyvrz7L0/lJzXzC8GNyB3BZWgZzK39cJjHTy9bK1sn9TYpZmOaojIhnQIKglKs3z89cHbM5c9K+EGD7QQ=="
+      },
       "NWNX.NET": {
         "type": "Transitive",
         "resolved": "1.0.3",
@@ -115,6 +120,13 @@
         "type": "Transitive",
         "resolved": "10.0.5",
         "contentHash": "8IBJWcCT9+e4Bmevm4T7+fQEiAh133KGiz4oiVTgJckd3Q76OFdR1falgn9lpz7+C4HJvogCDJeAa2QmvbeVtg=="
+      },
+      "swlor.game.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "Nwn.Hosting.Contracts": "[0.1.0-preview.2, )",
+          "StackExchange.Redis": "[3.0.17, )"
+        }
       },
       "swlor.nwn.api": {
         "type": "Project",

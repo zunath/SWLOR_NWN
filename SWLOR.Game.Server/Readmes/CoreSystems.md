@@ -121,6 +121,15 @@ ChatPlugin.SendMessage(0, "Hello World", ChatChannelType.PlayerTalk);
 var areaInfo = AreaPlugin.GetAreaInfo(area);
 ```
 
+### 2a. Native hooks and sinks
+
+Each engine function the server hooks (`NWNXAPI.RequestFunctionHook`) has a hook file in `Native/` (17 files, 36 hooks). The hook file installs the hook and holds the `[UnmanagedCallersOnly]` entry point, which only forwards to a **sink**: the managed body lives in `NativeSinks/<Name>Sink.cs`, a class that implements `I<Name>Sink` of `SWLOR.Game.Contracts`. The hook file sets its sink once (`_sink ??= new <Name>Sink()` in `RegisterHook(s)`), so an entry point is one interface call; it passes the engine function's trampoline as the last argument (`nint original`), and the sink calls it where the engine's own work belongs. The hooks that replace an engine function and never call it (`GetDamageRoll`, `ResolveAttackRoll`, `OnAIActionAttackObject`) have no `original`. Sink parameters are native pointers and numbers, so the interfaces reference nothing of the game; the host of a later phase installs the hooks once and binds each build's sinks (`MaintainabilityRefactorHotReload.md`, "Native hooks").
+
+- **Add or change a hook.** Add the engine function's hook to its hook file (or a new file), put the body in the sink class, add the method to the sink interface, and keep the entry point a one-line forward. State that other code reads (a public counter, a table a test calls) stays on the hook file; state only the body uses moves to the sink.
+- **Hot paths.** `ComputeUpdate`, `WriteUpdate`, `GetMaximum` and `CalculateModifier` run per object per frame: the sink adds one interface call and nothing else (no closure, no boxing); the allocation tests pin their byte counts.
+- **Rules.** `SWLOR.Architecture.Tests` (`NativeHookRulesTests`) fails when a hook body calls anything but a sink method, when a sink implementation is outside `NativeSinks`, or when `SWLOR.Game.Contracts` references anything but the framework, `Nwn.Hosting.Contracts` and `StackExchange.Redis`.
+- **Other contracts.** `IRedisConnectionSource` (the default `Domain.Foundation.RedisConnectionSource` opens Redis as before), `IScriptContext` and `IHostLifecycle` (implemented by the host in a later phase) live in the same project.
+
 ### 3. Async System
 
 **Purpose**: Provides asynchronous programming support for NWN.

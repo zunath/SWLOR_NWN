@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -23,9 +25,9 @@ namespace SWLOR.Game.Server.Native
         public const long JumpWindowMilliseconds = 1500;
         public const long CorrectionTimeoutMilliseconds = 10000;
 
-        private static readonly Dictionary<uint, StaleDriveState> _states = new();
         private static FunctionHook* _jumpHook;
         private static FunctionHook* _driveHook;
+        private static IStaleDriveAfterJumpSink _sink;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Native
             if (_jumpHook != null)
                 return;
 
+            _sink ??= new StaleDriveAfterJumpSink();
             var library = NativeLibrary.GetMainProgramHandle();
             delegate* unmanaged<void*, void*, uint> jump = &OnAIActionJumpToPoint;
             delegate* unmanaged<void*, ushort, void*, int, int, int, int, int> drive = &OnAddDriveAction;
@@ -89,14 +92,14 @@ namespace SWLOR.Game.Server.Native
                 : StaleDriveDecision.LeaveAlone;
         }
 
-        private static bool IsExpired(StaleDriveState state, long now)
+        internal static bool IsExpired(StaleDriveState state, long now)
         {
             return state.Correcting
                 ? now - state.LastCorrectionAt > CorrectionTimeoutMilliseconds
                 : now - state.JumpedAt > JumpWindowMilliseconds;
         }
 
-        private static float HorizontalDistance(float ax, float ay, float bx, float by)
+        internal static float HorizontalDistance(float ax, float ay, float bx, float by)
         {
             var dx = ax - bx;
             var dy = ay - by;
@@ -105,82 +108,12 @@ namespace SWLOR.Game.Server.Native
 
         [UnmanagedCallersOnly]
         private static uint OnAIActionJumpToPoint(void* creature, void* node)
-        {
-            float fromX = 0f, fromY = 0f;
-            var captured = false;
-            try
-            {
-                var before = CNWSCreature.FromPointer(creature).m_vPosition;
-                fromX = before.x;
-                fromY = before.y;
-                captured = true;
-            }
-            catch
-            {
-                // Never let a managed failure escape into the engine.
-            }
-
-            var original = (delegate* unmanaged<void*, void*, uint>)_jumpHook->m_trampoline;
-            var result = original(creature, node);
-
-            if (!captured)
-                return result;
-
-            try
-            {
-                var native = CNWSCreature.FromPointer(creature);
-                var after = native.m_vPosition;
-                if (IsTeleport(fromX, fromY, after.x, after.y))
-                {
-                    var now = Environment.TickCount64;
-                    foreach (var expired in _states.Where(entry => IsExpired(entry.Value, now))
-                                 .Select(entry => entry.Key).ToList())
-                        _states.Remove(expired);
-                    _states[native.m_idSelf] = new StaleDriveState { JumpedAt = now };
-                }
-            }
-            catch
-            {
-                // Never let a managed failure escape into the engine.
-            }
-
-            return result;
-        }
+            => _sink.JumpToPoint(creature, node, (nint)_jumpHook->m_trampoline);
 
         [UnmanagedCallersOnly]
         private static int OnAddDriveAction(void* creature, ushort groupId, void* pathStart, int bearing,
             int clientPathNumber, int driveFlags, int wayPointsToGenerate)
-        {
-            try
-            {
-                var native = CNWSCreature.FromPointer(creature);
-                var id = native.m_idSelf;
-                if (_states.TryGetValue(id, out var state))
-                {
-                    var start = (float*)pathStart;
-                    var server = native.m_vPosition;
-                    var gap = HorizontalDistance(start[0], start[1], server.x, server.y);
-                    switch (Decide(ref state, Environment.TickCount64, gap, clientPathNumber))
-                    {
-                        case StaleDriveDecision.StartFromServer:
-                            start[0] = server.x;
-                            start[1] = server.y;
-                            start[2] = server.z;
-                            _states[id] = state;
-                            break;
-                        case StaleDriveDecision.Release:
-                            _states.Remove(id);
-                            break;
-                    }
-                }
-            }
-            catch
-            {
-                // Never let a managed failure escape into the engine.
-            }
-
-            var original = (delegate* unmanaged<void*, ushort, void*, int, int, int, int, int>)_driveHook->m_trampoline;
-            return original(creature, groupId, pathStart, bearing, clientPathNumber, driveFlags, wayPointsToGenerate);
-        }
+            => _sink.AddDriveAction(creature, groupId, pathStart, bearing, clientPathNumber, driveFlags,
+                wayPointsToGenerate, (nint)_driveHook->m_trampoline);
     }
 }

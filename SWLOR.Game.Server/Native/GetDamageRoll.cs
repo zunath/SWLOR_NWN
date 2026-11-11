@@ -1,6 +1,8 @@
 using NWN.Native.API;
 using NWNX.NET;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Domain.Combat;
@@ -36,11 +38,13 @@ namespace SWLOR.Game.Server.Native
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
+        private static IGetDamageRollSink _sink;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
+            _sink ??= new GetDamageRollSink();
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
             var functionPtr = NativeLibrary.GetExport(
                 NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii");
@@ -61,9 +65,7 @@ namespace SWLOR.Game.Server.Native
             int bSneakAttack,
             int bDeathAttack,
             int bForceMax)
-        {
-            return ResolveWeaponDamage(thisPtr, pTarget, bOffHand, bCritical, bSneakAttack, bDeathAttack, bForceMax);
-        }
+            => _sink.GetDamageRoll(thisPtr, pTarget, bOffHand, bCritical, bSneakAttack, bDeathAttack, bForceMax);
 
         internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
             int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,

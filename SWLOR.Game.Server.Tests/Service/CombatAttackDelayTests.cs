@@ -549,8 +549,8 @@ public class CombatAttackDelayTests
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
-            "Native",
-            "OnAIActionAttackObject.cs"));
+            "NativeSinks",
+            "OnAIActionAttackObjectSink.cs"));
         var countStart = source.IndexOf(
             "var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction",
             System.StringComparison.Ordinal);

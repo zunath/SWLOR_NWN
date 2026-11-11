@@ -6,6 +6,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- The native sink tests call the sinks with function pointers (Native/NativeSinkBehaviorTests). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

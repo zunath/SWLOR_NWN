@@ -3,12 +3,11 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Foundation;
-using ObjectType = NWN.Native.API.ObjectType;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Native
 
         private static delegate* unmanaged<void*, void*, void*, int, int> _originalApplyDamage;
         private static delegate* unmanaged<void*, void*, void*, int, int> _originalApplyHeal;
+        private static ICombatRecorderEffectHooksSink _sink;
 
         /// <summary>
         /// Installs each hook once. A hook that installed stays installed even if the other one
@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Native
             // Earliest: these hooks only observe, and running outermost lets the before/after
             // reads include every other hook's adjustments. The original is reached through the
             // hook's trampoline, not the returned FunctionHook pointer.
+            _sink ??= new CombatRecorderEffectHooksSink();
             if (_originalApplyDamage == null)
             {
                 delegate* unmanaged<void*, void*, void*, int, int> damageHook = &OnApplyDamage;
@@ -59,145 +60,11 @@ namespace SWLOR.Game.Server.Native
 
         [UnmanagedCallersOnly]
         private static int OnApplyDamage(void* effectListHandler, void* pObject, void* pEffect, int bLoadingGame)
-        {
-            if (!CombatRecorder.IsRecording || bLoadingGame != 0)
-                return _originalApplyDamage(effectListHandler, pObject, pEffect, bLoadingGame);
-
-            CNWSObject target = null;
-            uint creator = OBJECT_INVALID;
-            var damage = new CombatRecordDamageBreakdown();
-            var hitPointsBefore = 0;
-            var maxHitPoints = 0;
-            var applicationIndex = -1;
-            // No managed entry point on the stack means the engine itself is applying the hit.
-            var isEngineApplied = ManagedEntryDepth.Current == 0;
-            CombatRecordTemporaryHitPointPool[] poolsBefore = null;
-            try
-            {
-                target = CNWSObject.FromPointer(pObject);
-                if (target != null && target.m_nObjectType == (int)ObjectType.Creature)
-                {
-                    var effect = CGameEffect.FromPointer(pEffect);
-                    creator = effect.m_oidCreator;
-                    for (var index = 0; index < CombatRecordDamageBreakdown.NativeDamageTypeCount; index++)
-                    {
-                        damage.AddNative(index, effect.GetInteger(index));
-                    }
-
-                    hitPointsBefore = target.GetCurrentHitPoints(1);
-                    // Read before the engine call: a lethal hit runs the death scripts inside it,
-                    // and clearing status effects there can lower the maximum.
-                    maxHitPoints = target.GetMaxHitPoints(1);
-                    poolsBefore = CaptureTemporaryHitPointPools(target);
-                    // An engine-applied weapon hit has no script context, and the recorder calls NWScript.
-                    var source = creator;
-                    var targetId = target.m_idSelf;
-                    var amount = damage.Total;
-                    var hitPoints = hitPointsBefore;
-                    applicationIndex = ServerManager.Executor.ExecuteInScriptContext(() =>
-                        CombatRecorder.BeginDamageApplication(source, targetId, amount, hitPoints));
-                }
-                else
-                {
-                    target = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                target = null;
-                LogFailure(nameof(OnApplyDamage), ex);
-            }
-
-            var result = _originalApplyDamage(effectListHandler, pObject, pEffect, bLoadingGame);
-            if (target == null)
-                return result;
-
-            try
-            {
-                var targetId = target.m_idSelf;
-                var hitPointsAfter = target.GetCurrentHitPoints(1);
-                var poolsAfter = CaptureTemporaryHitPointPools(target);
-                ServerManager.Executor.ExecuteInScriptContext(() =>
-                    CombatRecorder.RecordDamageApplied(
-                        applicationIndex, isEngineApplied, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
-                        maxHitPoints, poolsBefore, poolsAfter));
-            }
-            catch (Exception ex)
-            {
-                LogFailure(nameof(OnApplyDamage), ex);
-            }
-            finally
-            {
-                CombatRecorder.EndDamageApplication(applicationIndex);
-            }
-
-            return result;
-        }
+            => _sink.ApplyDamage(effectListHandler, pObject, pEffect, bLoadingGame, (nint)_originalApplyDamage);
 
         [UnmanagedCallersOnly]
         private static int OnApplyHeal(void* effectListHandler, void* pObject, void* pEffect, int bLoadingGame)
-        {
-            if (!CombatRecorder.IsRecording || bLoadingGame != 0)
-                return _originalApplyHeal(effectListHandler, pObject, pEffect, bLoadingGame);
-
-            CNWSObject target = null;
-            uint creator = OBJECT_INVALID;
-            var requested = 0;
-            var hitPointsBefore = 0;
-            try
-            {
-                target = CNWSObject.FromPointer(pObject);
-                if (target != null && target.m_nObjectType == (int)ObjectType.Creature)
-                {
-                    var effect = CGameEffect.FromPointer(pEffect);
-                    creator = effect.m_oidCreator;
-                    requested = effect.GetInteger(0);
-                    hitPointsBefore = target.GetCurrentHitPoints(1);
-                }
-                else
-                {
-                    target = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                target = null;
-                LogFailure(nameof(OnApplyHeal), ex);
-            }
-
-            // The PvP healing reduction runs inside this call and writes its cut into this heal's frame.
-            var targetId = target?.m_idSelf ?? OBJECT_INVALID;
-            if (target != null)
-                CombatRecorder.BeginHealApplication(targetId);
-            int result;
-            var pvpReduced = 0;
-            try
-            {
-                result = _originalApplyHeal(effectListHandler, pObject, pEffect, bLoadingGame);
-            }
-            finally
-            {
-                if (target != null)
-                    pvpReduced = CombatRecorder.EndHealApplication(targetId);
-            }
-
-            if (target == null)
-                return result;
-
-            try
-            {
-                var hitPointsAfter = target.GetCurrentHitPoints(1);
-                ServerManager.Executor.ExecuteInScriptContext(() =>
-                    CombatRecorder.RecordHealingApplied(
-                        creator, targetId, requested, hitPointsBefore, hitPointsAfter, GetMaxHitPoints(targetId), pvpReduced));
-            }
-            catch (Exception ex)
-            {
-                LogFailure(nameof(OnApplyHeal), ex);
-            }
-
-            return result;
-        }
+            => _sink.ApplyHeal(effectListHandler, pObject, pEffect, bLoadingGame, (nint)_originalApplyHeal);
 
         /// <summary>
         /// A creature's current HP without temporary HP, read the same way as the damage hook.
@@ -222,7 +89,7 @@ namespace SWLOR.Game.Server.Native
         /// Script effect iteration is avoided because it would reset an iterator a running script
         /// may be using on the same creature.
         /// </summary>
-        private static CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(CNWSObject target)
+        internal static CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(CNWSObject target)
         {
             List<CombatRecordTemporaryHitPointPool> pools = null;
             foreach (var effect in target.m_appliedEffects)
@@ -240,11 +107,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return pools?.ToArray();
-        }
-
-        private static void LogFailure(string hook, Exception ex)
-        {
-            Log.Write(LogGroup.Error, $"Combat recorder {hook} hook failed: {ex}", true);
         }
     }
 }

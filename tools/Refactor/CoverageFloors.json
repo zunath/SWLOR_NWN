@@ -26,6 +26,7 @@
     "Extension": 25,
     "Feature": 65,
     "Native": 10,
+    "NativeSinks": 5,
     "SWLOR.CLI": 39,
     "SWLOR.CombatSim": 94,
     "SWLOR.EngineSeamGenerator": 87,

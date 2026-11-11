@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;

@@ -1082,6 +1082,7 @@ then
         "$target_commit" \
         SWLOR.Game.Server \
         ':(exclude)SWLOR.Game.Server/Readmes/**' \
+        SWLOR.Game.Contracts \
         SWLOR.NWN.API \
         global.json \
         Directory.Build.props \

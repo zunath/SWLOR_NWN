@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The boundary between the permanent host and the reloadable game build (MaintainabilityRefactorHotReload.md,
+       section 3). It references only the hosting contracts and Redis, never anything of the game: a rule in
+       SWLOR.Architecture.Tests keeps it that way. Sink parameters are native pointers and numbers. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nwn.Hosting.Contracts" Version="0.1.0-preview.2" />
+    <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
+  </ItemGroup>
+
+</Project>

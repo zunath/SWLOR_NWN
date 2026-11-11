@@ -521,8 +521,8 @@ public class EnmityTests
         var nativeSource = File.ReadAllText(Path.Combine(
             repositoryRoot,
             "SWLOR.Game.Server",
-            "Native",
-            "OnAIActionAttackObject.cs"));
+            "NativeSinks",
+            "OnAIActionAttackObjectSink.cs"));
         var enmitySource = File.ReadAllText(Path.Combine(
             repositoryRoot,
             "SWLOR.Game.Server",

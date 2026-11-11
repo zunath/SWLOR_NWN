@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using StackExchange.Redis;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;

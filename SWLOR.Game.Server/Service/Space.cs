@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Service
 
         private const float NPCShipKeepDistance = 15f;
         private const float ShipDamageMessageRange = 10f;
+        public const float DestroyedShipHullRemovalSeconds = 1.5f;
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -1614,16 +1615,30 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature dies, remove it from the cache.
+        /// An NPC ship's hull explodes and is removed shortly after: ship models have no death animation, so a dead hull
+        /// would keep floating, fully rendered, until its loot corpse expires. Its loot stays in the corpse container.
         /// </summary>
         [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
             var creature = OBJECT_SELF;
+            _shipNPCs.Remove(creature);
 
-            if (_shipNPCs.ContainsKey(creature))
-            {
-                _shipNPCs.Remove(creature);
-            }
+            if (!IsNPCShip(creature))
+                return;
+
+            // At the location, so the explosion outlives the hull.
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), GetLocation(creature));
+            SetIsDestroyable(true, false, false);
+            DestroyObject(creature, DestroyedShipHullRemovalSeconds);
+        }
+
+        /// <summary>Whether a creature is an NPC ship registered with the space system.</summary>
+        public static bool IsNPCShip(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   !GetIsPC(creature) &&
+                   _spaceObjects.ContainsKey(GetTag(creature));
         }
 
         /// <summary>

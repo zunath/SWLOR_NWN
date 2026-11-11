@@ -336,7 +336,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            ScheduleCorpseCleanup(container);
+            // The container owns its cleanup timer, so it still runs when the body is removed early (NPC ship hulls).
+            AssignCommand(container, () => ScheduleCorpseCleanup(container));
         }
 
         private static void ScheduleCorpseCleanup(uint placeable)

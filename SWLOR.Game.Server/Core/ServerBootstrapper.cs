@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Core
 
         public ClosureManager ClosureManager => _closureManager;
 
+        /// <summary>The removable process-event subscriptions; available once the container is built.</summary>
+        public IProcessEventSubscriptions ProcessEvents => _container.Resolve<IProcessEventSubscriptions>();
+
         /// <summary>
         /// The boot steps in the order <see cref="Bootstrap"/> runs them. One list drives the run and the tests that
         /// pin the order, so the order they check is the order that runs.
@@ -117,7 +120,7 @@ namespace SWLOR.Game.Server.Core
 
         private void RegisterEventHandlers()
         {
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            _container.Resolve<IProcessEventSubscriptions>().SubscribeUnhandledException(OnUnhandledException);
         }
 
         /// <summary>
@@ -196,9 +199,9 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Scripts registered successfully.");
         }
 
-        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
+        private static void OnUnhandledException(object exceptionObject)
         {
-            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace(), true);
+            Log.Write(LogGroup.Error, ((Exception)exceptionObject).ToMessageAndCompleteStacktrace(), true);
         }
     }
 }

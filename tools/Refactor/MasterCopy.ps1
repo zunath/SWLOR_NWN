@@ -371,6 +371,7 @@ function ConvertFrom-HandlerOrderText {
 }
 
 # Renames master's handler names in a parsed handler order to the branch's names (see Read-HandlerRenames), in place. A
+# master handler the branch split (P4-8) becomes all its branch names, in their order, where master's one name was. A
 # name HandlerRenames.txt does not list goes through the P2-Z2 namespace moves (Read-NamespaceMoves), so a master handler
 # in a Service.<Name>Service namespace carries the Domain.<Domain> name the branch gives it.
 function Convert-HandlerOrderNames {
@@ -379,10 +380,15 @@ function Convert-HandlerOrderNames {
     foreach ($script in @($Parsed.Keys)) {
         foreach ($kind in @('action', 'conditional')) {
             $list = $Parsed[$script][$kind]
-            for ($i = 0; $i -lt $list.Count; $i++) {
-                if ($null -ne $Renames -and $Renames.ContainsKey($list[$i])) { $list[$i] = $Renames[$list[$i]] }
-                else { $list[$i] = Convert-MovedName -Name $list[$i] -Moves $Moves }
+            $converted = New-Object 'System.Collections.Generic.List[string]'
+            foreach ($name in $list) {
+                if ($null -ne $Renames -and $Renames.ContainsKey($name)) {
+                    foreach ($branchName in @($Renames[$name])) { $converted.Add([string]$branchName) }
+                }
+                else { $converted.Add((Convert-MovedName -Name $name -Moves $Moves)) }
             }
+            $list.Clear()
+            $list.AddRange([string[]]$converted.ToArray())
         }
     }
     return $Parsed

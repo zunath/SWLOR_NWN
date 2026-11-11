@@ -130,7 +130,7 @@ internal static class FacadeRemovalRunner
         {
             var renames = File.Exists(options.RenamesPath)
                 ? ManifestRenamer.ReadRenames(File.ReadAllText(options.RenamesPath), options.RenamesPath)
-                : new Dictionary<string, string>();
+                : new Dictionary<string, IReadOnlyList<string>>();
             var manifest = SourceFile.Read(manifestPath);
             var (text, count) = ManifestRenamer.Apply(manifest.Text, renames, active);
             if (count > 0)

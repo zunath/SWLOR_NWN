@@ -38,6 +38,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IServerTeardown, ServerTeardown>();
 
             // Core
+            // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).
+            services.AddSingleton<IRedisConnectionSource, RedisConnectionSource>();
             services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();

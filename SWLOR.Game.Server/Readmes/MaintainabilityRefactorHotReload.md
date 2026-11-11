@@ -48,9 +48,10 @@ Facts come from the branch at `968e3338d`, `C:\Projects\NWN.Hosting` (packages `
 
 ### Boot handlers
 
-Five boot buckets hold 104 handlers: `mod_preload` 3, `mod_content_chg` 1, `mod_cache_bef` 43, `mod_cache_aft` 15, `mod_load` 42.
-Two more scripts belong to boot and shutdown: `db_loaded` (1 handler, run by `DBService.Load`) and `app_shutdown` (2). After a
-reload the module is loaded and the engine runs none of these again, so the new build runs the rerunnable ones itself.
+Five boot buckets hold 111 handlers since P4-8 split the mixed ones (104 before): `mod_preload` 5, `mod_content_chg` 1, `mod_cache_bef` 44,
+`mod_cache_aft` 15, `mod_load` 46. Two more scripts belong to boot and shutdown: `db_loaded` (1 handler, run by `DBService.SyncIndexes`)
+and `app_shutdown` (2). After a reload the module is loaded and the engine runs none of these again, so the new build runs the
+rerunnable ones itself.
 
 Classification for reload (rule: a handler reruns when it only fills its own instance state or the game assembly's own statics,
 reads the engine, Redis or resources, writes nothing persistent and creates nothing; `Scheduler` timers and static registries
@@ -58,16 +59,20 @@ live in the game assembly and die with it, so a handler that only starts a timer
 
 | Class | Count | Handlers |
 |---|--:|---|
-| Rerun | 71 | `mod_cache_bef`: 42, all but `SpawnService.CacheData` (the 38 cache builds, `PlanetService.CacheData` whose `SetLocalInt` per area is idempotent, `SpaceService.LoadSpaceSystem` (caches and two timers), `KatarAnimationRemap.RegisterEquipmentAnimationRestoration`, `UnarmedMastery.Register`). `mod_cache_aft`: 14 (all but `MigrationService.AfterCacheLoaded`). `mod_load`: 15 (`AchievementService.ReserveGuiIds`, `PerformanceWindowsService.ReserveGuiIds`, `AreaService.RemoveInstancesFromCache`, `FrameProfiler.Load`, `LanguageService.LoadTranslators`, `RaceService.LoadRaces`, `ResistanceService.LoadResistanceTypes`, `WalkmeshService.RetrieveWalkmeshes`, `EquipmentStats.RegisterStatActions`, `RoleplayXP.LoadOOCDetection`, `AppearanceEditorViewModel.LoadAppearances`, `MarketBuyViewModel.LoadCategories`, `CoxxionTerminalDialog.LoadDoors`, `PerformanceAudienceService.StartAudienceTick`, `PairedRangedPresentation.StartParking`) |
-| Boot only | 11 | `ServerTasks.ProcessBootStart` (webhook), `WalkmeshService.LoadWalkmeshes` (writes Redis), `MigrationService.AfterCacheLoaded` (migrations, vault `.bic` upgrade), `PlayerMarketService.RemoveOldListings`, `PropertyService.OnModuleLoad`, `WeatherService.InitializeWeather`, `AreaConfiguration.ApplyAreaConfiguration`, `CZ220FlightsTerminal.SpawnHangarFlightsTerminal`, `FeatConfiguration.ConfigureFeats`, `FeedbackMessageConfiguration.ConfigureFeedbackMessages`, `TlkOverrides.OverrideTlks` (the last three set engine state that survives a reload) |
-| Split | 7 | `DBService.Load`, `EventRegistration.OnModulePreload`, `ServerTasks.ProcessBootUp`, `ShuttleService.LoadShuttleFlights`, `SpaceService.LoadLandingPoints`, `SpawnService.CacheData` (`StoreSpawns` destroys the hand-placed creatures and gives every spawn a new id, so a rerun would capture and destroy the live spawned creatures; `LoadSpawnTables` is the rerun part), `StoreManagement.ProcessStores` |
+| Rerun | 78 | `mod_preload`: 2 (`DBService.Connect`: the connection from `IRedisConnectionSource`, the entity types and the frame-end cache clear; `EventRegistration.StartServerEvents`: the `ProcessExit` signal and the 6-second heartbeat). `mod_cache_bef`: 43, all but `SpawnService.StoreSpawns` (the 38 cache builds, `SpawnService.LoadSpawnTables`, `PlanetService.CacheData` whose `SetLocalInt` per area is idempotent, `SpaceService.LoadSpaceSystem` (caches and two timers), `KatarAnimationRemap.RegisterEquipmentAnimationRestoration`, `UnarmedMastery.Register`). `mod_cache_aft`: 14 (all but `MigrationService.AfterCacheLoaded`). `mod_load`: 19 (`AchievementService.ReserveGuiIds`, `PerformanceWindowsService.ReserveGuiIds`, `AreaService.RemoveInstancesFromCache`, `FrameProfiler.Load`, `LanguageService.LoadTranslators`, `RaceService.LoadRaces`, `ResistanceService.LoadResistanceTypes`, `ShuttleService.LoadShuttleFlights` (rides from Redis, the 2-second timer), `SpaceService.LoadLandingPoints` (registers the ids the dock waypoints carry), `WalkmeshService.RetrieveWalkmeshes`, `EquipmentStats.RegisterStatActions`, `RoleplayXP.LoadOOCDetection`, `ServerTasks.StartRestartReminders`, `StoreManagement.LoadStores` (the store list, the hourly cleanup), `AppearanceEditorViewModel.LoadAppearances`, `MarketBuyViewModel.LoadCategories`, `CoxxionTerminalDialog.LoadDoors`, `PerformanceAudienceService.StartAudienceTick`, `PairedRangedPresentation.StartParking`) |
+| Boot only | 18 | `DBService.SyncIndexes` (rebuilds a changed index, writes Redis, runs `db_loaded`), `EventRegistration.OnModulePreload` (engine and NWNX event bindings, the legacy item property hook, `mod_content_chg`, runs the cache scripts), `ServerTasks.ProcessBootStart` (webhook), `WalkmeshService.LoadWalkmeshes` (writes Redis), `SpawnService.StoreSpawns` (destroys the hand-placed creatures and gives every spawn a new id, so a rerun would capture and destroy the live spawned creatures), `MigrationService.AfterCacheLoaded` (migrations, vault `.bic` upgrade), `PlayerMarketService.RemoveOldListings`, `PropertyService.OnModuleLoad`, `ShuttleService.DeliverOfflinePassengers` (writes the player records), `SpaceService.AssignLandingPointIds` (new dock ids), `WeatherService.InitializeWeather`, `AreaConfiguration.ApplyAreaConfiguration`, `CZ220FlightsTerminal.SpawnHangarFlightsTerminal`, `FeatConfiguration.ConfigureFeats`, `FeedbackMessageConfiguration.ConfigureFeedbackMessages`, `ServerTasks.ProcessBootUp` (play options and bans in the engine, webhook), `StoreManagement.ProcessStores` (marks the store items, compounds the prices on a rerun), `TlkOverrides.OverrideTlks` (feats, feedback and TLK overrides set engine state that survives a reload) |
 | Native hook | 15 | the `Native.*.RegisterHook(s)` handlers of `mod_load` (see "Native hooks") |
+
+P4-8 split the seven handlers P4-7 found mixed (`DBService.Load`, `EventRegistration.OnModulePreload`, `ServerTasks.ProcessBootUp`,
+`ShuttleService.LoadShuttleFlights`, `SpaceService.LoadLandingPoints`, `SpawnService.CacheData`, `StoreManagement.ProcessStores`) into a Rerun
+handler and a Boot only handler that run back to back where the old handler ran (`tools/Refactor/HandlerRenames.txt` lists each split as
+`<master name> <part> <part>`, in run order), so no handler is mixed and `BootReload` has no `Split` value any more.
 
 `db_loaded` (`MigrationService.AfterDatabaseLoaded`) is boot only. The two `app_shutdown` handlers (`CombatRecorderService.StopOnShutdown`,
 `Log.OnApplicationShutdown`) also run when a generation retires; they carry `BootReload.Retire`. P4-7 re-checked every line against the
 code and recorded it with `[BootPhase(BootReload.<class>)]` on the handler; `BootHandlerClassificationTests` and its snapshot
-(`SWLOR.Game.Server.Tests/Core/Snapshots/BootHandlerClassification.txt`) list all 107 handlers (71 Rerun, 12 Boot only with `db_loaded`,
-7 Split, 15 Native hook, 2 Retire). The one change from the first table is `SpawnService.CacheData`, moved from Rerun to Split.
+(`SWLOR.Game.Server.Tests/Core/Snapshots/BootHandlerClassification.txt`) list all 114 handlers after P4-8 (78 Rerun, 19 Boot only with
+`db_loaded`, 15 Native hook, 2 Retire; P4-7 recorded 107 with 7 Split, after moving `SpawnService.CacheData` from Rerun to Split).
 
 Hard cases:
 

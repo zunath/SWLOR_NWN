@@ -13,7 +13,9 @@ namespace SWLOR.Game.Server.Tests.Domain.Core;
 /// <summary>
 /// Unit tests of the persistence instance against <see cref="FakeRedis"/>, the connection stand-in. They pin what the
 /// static <c>DB</c> class did: key and index formats, the order of the commands of a write, the entity cache of a
-/// script context, the write version, the retry of a search and the boot sequence.
+/// script context, the write version, the retry of a search and the boot sequence. The connection comes from the
+/// server's <see cref="RedisConnectionSource"/> with its settings and connect call replaced; <see cref="IDBService.Load"/>
+/// runs the two boot handlers <see cref="IDBService.Connect"/> and <see cref="IDBService.SyncIndexes"/> (P4-8).
 /// </summary>
 [TestFixture]
 public class DBServiceTests
@@ -82,6 +84,118 @@ public class DBServiceTests
         {
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", previous);
         }
+    }
+
+    [Test]
+    public void Connect_takes_the_connection_from_its_source_registers_every_type_and_sends_nothing_to_redis()
+    {
+        var previous = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+        try
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "TRUE");
+            var redis = new FakeRedis { DisconnectedReads = 2 };
+            var db = new TestDbService(redis);
+
+            db.Connect();
+
+            db.Opens.Should().Be(1);
+            redis.DisconnectedReads.Should().Be(-1, "the connection source waits for the connection as Load always did");
+            redis.Commands.Should().BeEmpty("the part a hot reload reruns writes nothing: no index is dropped, created or synced");
+            redis.Strings.Should().BeEmpty();
+            db.LoadedScriptRuns.Should().Be(0, "db_loaded runs the migrations, which only the boot-only part may start");
+            db.ContextEndSubscriptions.Should().Be(1, "the entity cache is cleared at the end of every script context");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", previous);
+        }
+    }
+
+    [Test]
+    public void After_Connect_alone_a_rerun_build_reads_and_writes_entities_as_after_Load()
+    {
+        // After a hot reload only Connect runs; the indexes exist already. The writes must be the ones a booted server makes.
+        var contract = new QuestContract { Id = "c1", Status = QuestContractStatus.Published, SettlementPending = 3, AuthorPlayerId = "a-b@c" };
+        _redis.Commands.Clear();
+        _db.Set(contract);
+        var booted = _redis.Commands.Select(command => string.Join(" ", command)).ToList();
+
+        var redis = new FakeRedis();
+        var rerun = new TestDbService(redis);
+        rerun.Connect();
+        rerun.Set(contract);
+
+        redis.Commands.Select(command => string.Join(" ", command)).Should().Equal(booted);
+        rerun.EndScriptContext();
+        rerun.Get<QuestContract>("c1").SettlementPending.Should().Be(3);
+    }
+
+    [Test]
+    public void Connect_then_SyncIndexes_in_manifest_order_send_the_commands_and_run_db_loaded_as_the_whole_load()
+    {
+        var previous = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+        try
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "TRUE");
+            var whole = new FakeRedis();
+            var loaded = new TestDbService(whole);
+            loaded.Load();
+
+            var parts = new FakeRedis();
+            var split = new TestDbService(parts);
+            split.Connect();
+            var afterConnect = split.Events.Count;
+            split.SyncIndexes();
+
+            parts.Commands.Select(command => string.Join(" ", command)).Should().Equal(whole.Commands.Select(command => string.Join(" ", command)));
+            parts.Strings.Should().BeEquivalentTo(whole.Strings);
+            split.Events.Should().Equal(loaded.Events);
+            split.Events.Should().Equal("open", "subscribe", "db_loaded");
+            afterConnect.Should().Be(2, "db_loaded runs after the indexes are current, in the boot-only part");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", previous);
+        }
+    }
+
+    [Test]
+    public void SyncIndexes_runs_nothing_when_Connect_did_not_finish()
+    {
+        // The registry runs the next handler after one that threw; the single Load stopped at its first failure, so
+        // db_loaded (the migrations) never ran without a database.
+        var previous = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+        try
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "TRUE");
+            var db = new SourcedDbService(new UnreachableRedis());
+
+            var connect = () => db.Connect();
+            var sync = () => db.SyncIndexes();
+
+            connect.Should().Throw<TimeoutException>();
+            sync.Should().Throw<InvalidOperationException>().WithMessage("*Connect did not finish*");
+            db.LoadedScriptRuns.Should().Be(0);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", previous);
+        }
+    }
+
+    [Test]
+    public void A_source_that_hands_over_an_open_connection_is_used_as_it_is()
+    {
+        // What a host that keeps the connection across hot reloads does: no settings are read and nothing waits.
+        var redis = new FakeRedis();
+        var source = new HandedConnection(redis.Multiplexer);
+        var db = new SourcedDbService(source);
+
+        db.Load();
+        db.Set(new QuestContract { Id = "c1" });
+
+        source.Opens.Should().Be(1);
+        redis.CommandsNamed("JSON.SET").Should().ContainSingle();
     }
 
     [Test]
@@ -485,8 +599,6 @@ public class DBServiceTests
 
         bare.Entities().Select(entity => entity.GetType()).Should().Contain(typeof(Player)).And.Contain(typeof(QuestContract))
             .And.NotContain(type => type.IsAbstract || type.IsGenericType);
-        bare.Settings().Should().BeSameAs(ApplicationSettings.Get());
-        using var connection = (IDisposable)bare.Open(new ConfigurationOptions { AbortOnConnectFail = false, EndPoints = { "127.0.0.1:1" }, ConnectTimeout = 1 });
         bare.Wait(0);
     }
 
@@ -538,24 +650,74 @@ public class DBServiceTests
         };
     }
 
-    /// <summary>The service with every outside call replaced: settings, connection, engine and script-context event.</summary>
+    /// <summary>
+    /// The service with every outside call replaced: the connection (the server's source with its settings and connect call
+    /// replaced), the engine and the script-context event. <see cref="Events"/> records the outside calls in order.
+    /// </summary>
     private sealed class TestDbService : DBService
     {
-        private readonly FakeRedis _redis;
+        private readonly TestConnectionSource _source;
         private Action? _contextEnd;
 
         public TestDbService(FakeRedis redis)
+            : this(new TestConnectionSource(redis))
+        {
+        }
+
+        private TestDbService(TestConnectionSource source)
+            : base(source)
+        {
+            _source = source;
+            _source.Opened = () => Events.Add("open");
+        }
+
+        public ConfigurationOptions? ConnectOptions => _source.ConnectOptions;
+
+        public int Opens => _source.Opens;
+
+        public int LoadedScriptRuns { get; private set; }
+
+        public int ContextEndSubscriptions { get; private set; }
+
+        public List<string> Events { get; } = new();
+
+        public List<int> Sleeps { get; } = new();
+
+        public void EndScriptContext() => _contextEnd!();
+
+        protected override void SubscribeScriptContextEnd(Action handler)
+        {
+            _contextEnd = handler;
+            ContextEndSubscriptions++;
+            Events.Add("subscribe");
+        }
+
+        protected override void ExecuteDatabaseLoadedScript()
+        {
+            LoadedScriptRuns++;
+            Events.Add("db_loaded");
+        }
+
+        protected override IEnumerable<EntityBase> CreateEntityInstances() => new EntityBase[] { new Player(), new QuestContract() };
+
+        protected override void SleepBeforeSearchRetry(int delayMilliseconds) => Sleeps.Add(delayMilliseconds);
+    }
+
+    /// <summary>The server's connection source with the settings and the connect call replaced: it hands out the fake's connection.</summary>
+    private sealed class TestConnectionSource : RedisConnectionSource
+    {
+        private readonly FakeRedis _redis;
+
+        public TestConnectionSource(FakeRedis redis)
         {
             _redis = redis;
         }
 
         public ConfigurationOptions? ConnectOptions { get; private set; }
 
-        public int LoadedScriptRuns { get; private set; }
+        public int Opens { get; private set; }
 
-        public List<int> Sleeps { get; } = new();
-
-        public void EndScriptContext() => _contextEnd!();
+        public Action? Opened { get; set; }
 
         protected override ApplicationSettings GetApplicationSettings()
         {
@@ -574,26 +736,65 @@ public class DBServiceTests
         protected override IConnectionMultiplexer Connect(ConfigurationOptions options)
         {
             ConnectOptions = options;
+            Opens++;
+            Opened?.Invoke();
             return _redis.Multiplexer;
         }
+    }
 
-        protected override void SubscribeScriptContextEnd(Action handler) => _contextEnd = handler;
+    /// <summary>A source that hands over a connection it already holds, as a host that keeps it across reloads does.</summary>
+    private sealed class HandedConnection : IRedisConnectionSource
+    {
+        private readonly IConnectionMultiplexer _connection;
+
+        public HandedConnection(IConnectionMultiplexer connection)
+        {
+            _connection = connection;
+        }
+
+        public int Opens { get; private set; }
+
+        public IConnectionMultiplexer Open()
+        {
+            Opens++;
+            return _connection;
+        }
+    }
+
+    /// <summary>A source whose database never answers, as the ten-minute wait ends.</summary>
+    private sealed class UnreachableRedis : IRedisConnectionSource
+    {
+        public IConnectionMultiplexer Open() => throw new TimeoutException("Timed out waiting for database connection.");
+    }
+
+    /// <summary>The service on any connection source, with the engine calls replaced.</summary>
+    private sealed class SourcedDbService : DBService
+    {
+        public SourcedDbService(IRedisConnectionSource source)
+            : base(source)
+        {
+        }
+
+        public int LoadedScriptRuns { get; private set; }
+
+        protected override void SubscribeScriptContextEnd(Action handler)
+        {
+        }
 
         protected override void ExecuteDatabaseLoadedScript() => LoadedScriptRuns++;
 
         protected override IEnumerable<EntityBase> CreateEntityInstances() => new EntityBase[] { new Player(), new QuestContract() };
-
-        protected override void SleepBeforeSearchRetry(int delayMilliseconds) => Sleeps.Add(delayMilliseconds);
     }
 
-    /// <summary>Exposes the default seams, which reach the real settings, Redis client and server event.</summary>
+    /// <summary>Exposes the default seams, which reach the real assembly, thread and server event.</summary>
     private sealed class BareDbService : DBService
     {
+        public BareDbService()
+            : base(new RedisConnectionSource())
+        {
+        }
+
         public IEnumerable<EntityBase> Entities() => CreateEntityInstances();
-
-        public ApplicationSettings Settings() => GetApplicationSettings();
-
-        public IConnectionMultiplexer Open(ConfigurationOptions options) => Connect(options);
 
         public void Subscribe(Action handler) => SubscribeScriptContextEnd(handler);
 

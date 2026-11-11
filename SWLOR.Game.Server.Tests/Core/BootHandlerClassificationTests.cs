@@ -82,7 +82,7 @@ public class BootHandlerClassificationTests
         var text = new StringBuilder();
         text.Append("# SWLOR boot handler classification for hot reload: SWLOR.Game.Server only\n");
         text.Append("# One line per handler of a boot script, in the order the registry runs them: class, then Namespace.Type.Method.\n");
-        text.Append("# Classes (BootReload): Rerun = the new build runs it again; BootOnly = never again after boot; Split = mixed, to be split;\n");
+        text.Append("# Classes (BootReload): Rerun = the new build runs it again; BootOnly = never again after boot (a mixed handler is split into the two);\n");
         text.Append("# NativeHook = installs a native hook; Retire = runs at shutdown and when a generation retires. UNCLASSIFIED fails EveryBootHandlerHasABootPhase.\n");
         text.Append("# The rule and the reasons are in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md section 2.\n");
         text.Append("# Regenerate (build first so the handlers are current): " + RegenerateCommand + "\n");

@@ -33,6 +33,16 @@ namespace SWLOR.Game.Server.Domain.Space
 
         void ExitServer();
 
+        /// <summary>
+        /// At boot, before <see cref="LoadLandingPoints"/>: gives each dock waypoint of a recognized planet whose id is not
+        /// registered a new id.
+        /// </summary>
+        void AssignLandingPointIds();
+
+        /// <summary>
+        /// Registers each dock waypoint of a recognized planet as an NPC landing point under the id it carries. Writes
+        /// nothing; a hot reload runs it again.
+        /// </summary>
         void LoadLandingPoints();
 
         /// <summary>

@@ -180,12 +180,36 @@ public class FacadeRemovalRunnerTests
     }
 
     [Test]
+    public void A_handler_the_branch_split_becomes_one_manifest_line_per_part_in_order_and_a_second_run_changes_nothing()
+    {
+        // P4-8: master's one handler is several on the branch; the renames line lists them in run order.
+        Write("tools/Refactor/HandlerRenames.txt",
+            "SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.AssignTaxiIds\n");
+
+        Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Ok);
+
+        Text("SWLOR.Game.Server/Core/ScriptHandlerOrder.txt").Should().Be(
+            "# header\n\nmod_cache_bef  # bucket\n  action      SWLOR.Game.Server.Service.Stat.CacheData\n"
+            + "  action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations\n"
+            + "  action      SWLOR.Game.Server.Domain.World.TaxiService.AssignTaxiIds\n"
+            + "  action      SWLOR.Game.Server.Service.TaxiRank.Load\n");
+        var before = Snapshot();
+
+        Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Ok);
+
+        Snapshot().Should().BeEquivalentTo(before);
+    }
+
+    [Test]
     public void A_malformed_renames_file_or_a_missing_data_file_stops_the_run()
     {
         Write("tools/Refactor/HandlerRenames.txt", "only-one-name\n");
         Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Failed);
 
         Write("tools/Refactor/HandlerRenames.txt", "a b\na c\n");
+        Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Failed);
+
+        Write("tools/Refactor/HandlerRenames.txt", "a b c b\n");
         Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Failed);
 
         File.Delete(Path.Combine(_root, "tools/Refactor/RemovedFacades.json"));

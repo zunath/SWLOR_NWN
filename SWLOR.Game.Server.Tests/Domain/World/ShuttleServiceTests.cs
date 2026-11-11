@@ -15,7 +15,9 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// Unit tests of the shuttle instance. The engine is a model of a small module (<see cref="ShuttleBench"/>), the
 /// database keeps the rides in memory, and the clock, the scheduler and the area service are in the test's hands: a
 /// test moves <see cref="ClockedShuttleService.Now"/>, runs the repeating tick the instance registered, and runs the
-/// delayed tasks it scheduled, so a whole flight (ticket, boarding, transit, arrival) runs in a few lines.
+/// delayed tasks it scheduled, so a whole flight (ticket, boarding, transit, arrival) runs in a few lines. The module
+/// load runs <c>LoadShuttleFlights</c> (a hot reload reruns it) then <c>DeliverOfflinePassengers</c> (boot only), which
+/// <see cref="LoadTheModule"/> does (P4-8).
 /// </summary>
 [TestFixture]
 public class ShuttleServiceTests
@@ -107,10 +109,17 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Now = FirstDeparture.AddSeconds(1);
         Service.Tick!();
         return Service.GetRide(PassengerId);
+    }
+
+    /// <summary>The two <c>mod_load</c> handlers in manifest order, which is what the single <c>LoadShuttleFlights</c> did.</summary>
+    private void LoadTheModule()
+    {
+        Service.LoadShuttleFlights();
+        Service.DeliverOfflinePassengers();
     }
 
     private static string Wait(TimeSpan span) => Time.GetTimeLongIntervals(span, false);
@@ -122,7 +131,7 @@ public class ShuttleServiceTests
     [Test]
     public void LoadShuttleFlights_schedules_the_flight_tick_every_two_seconds()
     {
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         Service.Tick.Should().NotBeNull();
         Service.TickInterval.Should().Be(TimeSpan.FromSeconds(2));
@@ -134,7 +143,7 @@ public class ShuttleServiceTests
         var ticket = Ticketed();
         var flying = InTransit(OtherPassengerId, Start.AddMinutes(2));
 
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         _bench.Db.Store.Saved.Should().BeEmpty();
         _bench.Db.Store.Deleted.Should().BeEmpty();
@@ -152,7 +161,7 @@ public class ShuttleServiceTests
         var console = _bench.AddPlaceable("flights_terminal", _starport);
         _bench.Engine.SetLocalString(console, "SHUTTLE_FLIGHT_ID", flightId);
 
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         Service.TryGetFlightInfo(console, out var destination, out var arrivalUtc).Should().BeTrue();
         destination.Should().Be(Destination);
@@ -160,12 +169,12 @@ public class ShuttleServiceTests
     }
 
     [Test]
-    public void LoadShuttleFlights_records_the_landing_of_a_passenger_whose_flight_arrived_while_the_server_was_down()
+    public void Loading_the_module_records_the_landing_of_a_passenger_whose_flight_arrived_while_the_server_was_down()
     {
         var ride = InTransit(PassengerId, Start.AddSeconds(-5));
         var stored = StoredPlayer(PassengerId);
 
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         stored.LocationAreaResref.Should().Be("tatooine_landing_zone");
         stored.LocationX.Should().Be(50f);
@@ -178,26 +187,72 @@ public class ShuttleServiceTests
     }
 
     [Test]
-    public void LoadShuttleFlights_leaves_an_unknown_offline_passenger_alone()
+    public void Loading_the_module_leaves_an_unknown_offline_passenger_alone()
     {
         InTransit(PassengerId, Start.AddSeconds(-5));
 
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         _bench.Db.Store.Saved.Should().BeEmpty();
     }
 
     [Test]
-    public void LoadShuttleFlights_does_not_move_a_passenger_when_the_landing_waypoint_is_missing()
+    public void Loading_the_module_does_not_move_a_passenger_when_the_landing_waypoint_is_missing()
     {
         _bench.Remove(_landing);
         InTransit(PassengerId, Start.AddSeconds(-5));
         var stored = StoredPlayer(PassengerId);
 
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         stored.LocationAreaResref.Should().Be("old_area");
         _bench.Db.Store.Saved.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LoadShuttleFlights_alone_writes_nothing_and_leaves_the_landed_passengers_to_the_boot_only_part()
+    {
+        var ticket = Ticketed(OtherPassengerId);
+        InTransit(PassengerId, Start.AddSeconds(-5));
+        var stored = StoredPlayer(PassengerId);
+
+        Service.LoadShuttleFlights();
+
+        _bench.Db.Store.Saved.Should().BeEmpty("a hot reload reruns this part, so it must not write the player records");
+        stored.LocationAreaResref.Should().Be("old_area");
+        Service.GetRide(OtherPassengerId).Should().BeSameAs(ticket);
+        Service.Tick.Should().NotBeNull();
+
+        Service.DeliverOfflinePassengers();
+
+        stored.LocationAreaResref.Should().Be("tatooine_landing_zone");
+        _bench.Db.Store.Saved.Should().ContainSingle().Which.Should().BeSameAs(stored);
+
+        Service.DeliverOfflinePassengers();
+
+        _bench.Db.Store.Saved.Should().ContainSingle("each landed ride is delivered once");
+    }
+
+    [Test]
+    public void DeliverOfflinePassengers_delivers_exactly_the_rides_LoadShuttleFlights_found_landed_when_the_clock_moves_between_them()
+    {
+        // The two parts split one method that read the clock once. A ride that lands between them is still in the air for
+        // both: it is tracked as a flight and not delivered, as the single method did.
+        var arrival = Start.AddSeconds(1);
+        var flightId = ShuttleSchedule.BuildFlightId(Origin, Destination, arrival.AddSeconds(-TransitSeconds));
+        InTransit(PassengerId, arrival, flightId);
+        var stored = StoredPlayer(PassengerId);
+        var console = _bench.AddPlaceable("flights_terminal", _starport);
+        _bench.Engine.SetLocalString(console, "SHUTTLE_FLIGHT_ID", flightId);
+
+        Service.LoadShuttleFlights();
+        Service.Now = Start.AddSeconds(5);
+        Service.DeliverOfflinePassengers();
+
+        _bench.Db.Store.Saved.Should().BeEmpty();
+        stored.LocationAreaResref.Should().Be("old_area");
+        Service.TryGetFlightInfo(console, out _, out var arrivalUtc).Should().BeTrue();
+        arrivalUtc.Should().Be(arrival);
     }
 
     // ---- buying a ticket
@@ -348,7 +403,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.RefundTicket(_passenger.Id).Should().BeTrue();
 
         Service.Now = FirstDeparture.AddSeconds(1);
@@ -475,7 +530,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate(boardingContract: false);
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Now = FirstDeparture.AddSeconds(1);
         _bench.InteriorHasBoardingContract = false;
 
@@ -490,7 +545,7 @@ public class ShuttleServiceTests
     public void The_tick_uses_the_original_freighter_when_the_template_is_not_in_the_module()
     {
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Now = FirstDeparture.AddSeconds(1);
 
         Service.Tick!();
@@ -505,7 +560,7 @@ public class ShuttleServiceTests
         var second = _bench.AddPlayer(OtherPassengerId, _starport, new Vector3(11f, 11f, 0f), 100000);
         Purchase();
         Service.TryPurchaseTicket(second.Id, Origin, Destination, string.Empty, 0f).Should().BeTrue();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Now = FirstDeparture.AddSeconds(1);
 
         Service.Tick!();
@@ -520,7 +575,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         var ride = Ticketed();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Now = FirstDeparture.AddSeconds(1);
 
         Service.Tick!();
@@ -535,7 +590,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Service.Now = FirstDeparture.AddSeconds(1);
 
@@ -554,7 +609,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _bench.Engine.SetLocalInt(_terminal, "CURRENT_LOCATION", (int)PlanetType.Tatooine);
         Service.Now = FirstDeparture.AddSeconds(1);
 
@@ -569,7 +624,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _bench.Engine.SetLocalInt(_terminal, "CURRENT_LOCATION", (int)PlanetType.Tatooine);
         _bench.AddTerminal(Origin, _starport, new Vector3(10f, 20f, 0f));
         Service.Now = FirstDeparture.AddSeconds(1);
@@ -585,7 +640,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.IsDead = condition == "dead";
         _passenger.IsDMPossessed = condition == "possessed";
         Service.Now = FirstDeparture.AddSeconds(1);
@@ -601,7 +656,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _bench.Remove(_passenger.Id);
         Service.Now = FirstDeparture.AddSeconds(1);
 
@@ -616,7 +671,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         var ride = Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _bench.Db.Delete<ShuttleRide>(ride.Id);
         Service.Now = FirstDeparture.AddSeconds(1);
 
@@ -630,7 +685,7 @@ public class ShuttleServiceTests
     public void The_tick_calls_boarding_shortly_before_a_departure_once()
     {
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         Service.Tick!();
         Service.Tick!();
@@ -643,7 +698,7 @@ public class ShuttleServiceTests
     public void The_tick_announces_the_next_departure_again_after_the_previous_one_has_passed()
     {
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         Service.Tick!();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Service.Now = FirstDeparture.AddSeconds(1);
@@ -663,7 +718,7 @@ public class ShuttleServiceTests
     {
         AddShuttleTemplate();
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Service.Now = FirstDeparture.AddSeconds(1);
         Service.Tick!();
@@ -756,7 +811,7 @@ public class ShuttleServiceTests
     public void The_tick_does_not_call_boarding_while_the_next_departure_is_far_off()
     {
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Service.Now = FirstDeparture.AddSeconds(1);
         _bench.Locals.ClearCalls();
@@ -770,7 +825,7 @@ public class ShuttleServiceTests
     public void The_tick_does_not_call_boarding_for_a_passenger_who_is_not_online()
     {
         Purchase();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _bench.Remove(_passenger.Id);
 
         Service.Tick!();
@@ -784,7 +839,7 @@ public class ShuttleServiceTests
         var elsewhere = _bench.AddPlayer(OtherPassengerId, _starport, new Vector3(11f, 11f, 0f), 100000);
         Purchase();
         Service.TryPurchaseTicket(elsewhere.Id, PlanetType.Tatooine, PlanetType.Viscara, string.Empty, 0f).Should().BeTrue();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         Service.Tick!();
 
@@ -907,7 +962,7 @@ public class ShuttleServiceTests
     public void The_tick_delivers_a_passenger_when_the_flight_instance_is_gone_after_a_restart()
     {
         var ride = InTransit(PassengerId, Start.AddSeconds(40));
-        Service.LoadShuttleFlights();
+        LoadTheModule();
 
         Service.Now = ride.ArrivalUtc;
         Service.Tick!();
@@ -1163,7 +1218,7 @@ public class ShuttleServiceTests
     public void EnterServer_keeps_the_boarding_calls_quiet_for_a_ticket_holder_who_logs_in_away_from_the_terminal()
     {
         Ticketed();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Enters(_passenger);
         Service.EnterServer();
@@ -1181,7 +1236,7 @@ public class ShuttleServiceTests
     public void EnterServer_lets_the_boarding_calls_start_once_a_ticket_holder_who_logged_in_away_reaches_the_terminal()
     {
         Ticketed();
-        Service.LoadShuttleFlights();
+        LoadTheModule();
         _passenger.Position = new Vector3(10f, 40f, 0f);
         Enters(_passenger);
         Service.EnterServer();

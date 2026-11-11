@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Companions;

@@ -3,14 +3,13 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 

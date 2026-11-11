@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Quests;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Domain.Creatures;

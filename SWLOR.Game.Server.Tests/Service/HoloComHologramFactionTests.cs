@@ -3,7 +3,6 @@ using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Service;

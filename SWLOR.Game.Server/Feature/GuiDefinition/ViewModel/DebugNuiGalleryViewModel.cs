@@ -1,6 +1,5 @@
 using System;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -619,7 +618,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var data = new GuiBindingList<float>();
             for (var point = 0; point < 5; point++)
             {
-                data.Add(Service.Random.Next(1, 10));
+                data.Add(Domain.Foundation.Random.Next(1, 10));
             }
 
             ChartData = data;

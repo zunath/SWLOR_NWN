@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWScript.Enum;

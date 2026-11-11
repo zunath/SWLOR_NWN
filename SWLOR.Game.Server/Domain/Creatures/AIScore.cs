@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Creatures
 {

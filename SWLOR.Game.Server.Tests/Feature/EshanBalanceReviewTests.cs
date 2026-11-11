@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Domain.Crafting;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Tests.Support;
 

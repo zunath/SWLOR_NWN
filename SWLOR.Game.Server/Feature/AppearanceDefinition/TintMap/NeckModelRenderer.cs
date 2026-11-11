@@ -4,7 +4,6 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;

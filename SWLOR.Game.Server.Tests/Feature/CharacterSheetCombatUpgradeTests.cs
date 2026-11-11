@@ -5,7 +5,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 

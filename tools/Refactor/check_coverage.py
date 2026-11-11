@@ -10,8 +10,8 @@ Reads the Cobertura files the unit test run writes (scripts/ci/run-unit-tests.sh
     python tools/Refactor/check_coverage.py <...> --top-files 25                      also list the biggest gaps
 
 Areas (Readmes/EngineTesting.md, "Coverage floors"):
-  SWLOR.Game.Server files    Domain/<Domain>, Service (the static helpers at the folder root), Service/folders
-                             (the old <Name>Service support folders, empty since P2-Z2), and every other top-level
+  SWLOR.Game.Server files    Domain/<Domain>, Service (the static helpers at the folder root, empty since P2-Z3),
+                             Service/folders (the old <Name>Service support folders, empty since P2-Z2), and every other top-level
                              folder by name;
                              files in the project root count as "(project root)".
   other SWLOR.* assemblies   one area each, named after the project folder (for example SWLOR.CombatSim).

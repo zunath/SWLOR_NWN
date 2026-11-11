@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

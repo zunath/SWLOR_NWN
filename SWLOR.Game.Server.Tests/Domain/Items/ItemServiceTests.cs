@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;

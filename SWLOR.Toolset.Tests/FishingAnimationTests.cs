@@ -4,7 +4,6 @@ using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using Nwn.Formats.NativeModels;
 using Nwn.Preview.Scene;

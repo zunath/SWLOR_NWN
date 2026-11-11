@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;

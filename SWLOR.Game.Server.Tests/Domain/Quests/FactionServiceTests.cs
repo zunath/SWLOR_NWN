@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Domain.Quests;
 

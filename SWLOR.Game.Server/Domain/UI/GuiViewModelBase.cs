@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.UI
 {

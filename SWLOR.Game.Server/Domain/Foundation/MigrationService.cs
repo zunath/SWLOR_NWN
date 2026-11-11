@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using NWNXLib = NWN.Native.API.NWNXLib;

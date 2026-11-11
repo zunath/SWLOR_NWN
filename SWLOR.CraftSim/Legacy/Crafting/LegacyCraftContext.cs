@@ -1,5 +1,4 @@
 using SWLOR.CraftSim.Data;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CraftSim.Legacy.Crafting
 {

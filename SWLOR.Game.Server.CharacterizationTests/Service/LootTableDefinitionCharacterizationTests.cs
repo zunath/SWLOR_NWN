@@ -2,7 +2,6 @@ using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;

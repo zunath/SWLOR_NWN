@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.Loader;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API;
 

@@ -11,13 +11,18 @@ namespace SWLOR.Architecture.Tests.Rules;
 /// namespace, so the type is hidden: <c>Domain.Combat</c> hid the facade <c>Combat</c>);</item>
 /// <item>a leaf segment under two parents (a domain named <c>Core</c> beside the root namespace <c>Core</c>: inside
 /// <c>Domain.*</c> the name <c>Core</c> means the wrong one);</item>
-/// <item>any <c>Service.&lt;Name&gt;Service</c> namespace (the support namespaces P2-Z2 moved into <c>Domain.&lt;Domain&gt;</c>).</item>
+/// <item>any <c>Service.&lt;Name&gt;Service</c> namespace (the support namespaces P2-Z2 moved into <c>Domain.&lt;Domain&gt;</c>);</item>
+/// <item>any type declared directly in <c>SWLOR.Game.Server.Service</c> (P2-Z3 moved the last ones into their domains, so
+/// <c>Service</c> is no namespace of the server any more).</item>
 /// </list>
 /// Every namespace counts, including the ones that hold no type of their own (<c>SWLOR.Game.Server.Domain</c>).
 /// </summary>
 internal static class NamespaceRules
 {
     private const string ServiceSegment = "Service";
+
+    /// <summary>The namespace P2-Z3 emptied.</summary>
+    private const string ServiceNamespace = "SWLOR.Game.Server." + ServiceSegment;
 
     /// <param name="types">The top-level types of the assembly (compiler-generated names, which start with <c>&lt;</c>, are ignored).</param>
     public static IReadOnlyList<string> Violations(IEnumerable<TypeKey> types)
@@ -58,6 +63,9 @@ internal static class NamespaceRules
                 }
             }
         }
+
+        foreach (var type in declared.Where(type => type.Namespace == ServiceNamespace).OrderBy(type => type.ToString(), StringComparer.Ordinal))
+            problems.Add($"{type} is declared directly in {ServiceNamespace}: put it in the namespace of its domain, Domain.<Domain>.");
 
         return problems;
     }

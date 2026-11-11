@@ -6,7 +6,6 @@ using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;

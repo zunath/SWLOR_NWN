@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;

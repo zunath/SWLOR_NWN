@@ -5,7 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
-using GameRandom = SWLOR.Game.Server.Service.Random;
+using GameRandom = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.Creatures;
 

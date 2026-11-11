@@ -5,7 +5,6 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using ObjectType = NWN.Native.API.ObjectType;

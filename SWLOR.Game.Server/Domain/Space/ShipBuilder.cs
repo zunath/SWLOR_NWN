@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Space
 {

@@ -937,7 +937,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         _hits.Clear();
                         // This seed puts the first 32 D100 rolls below the shield's 75% cap.
                         // Resolution is synchronous, so other creatures cannot consume the sequence.
-                        Service.Random.SetSeed(7197);
+                        Domain.Foundation.Random.SetSeed(7197);
                         var firstAttack = ResolveCycle(attacker, defender, attacks);
                         for (var index = firstAttack; index < firstAttack + attacks; index++)
                             ctx.AssertEqual(2, (int)round.GetAttack(index).m_nAttackResult,
@@ -948,7 +948,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Service.Random.ResetSeed();
+                Domain.Foundation.Random.ResetSeed();
                 AssignCommand(attacker, () => ClearAllActions());
                 ResetObservation();
             }

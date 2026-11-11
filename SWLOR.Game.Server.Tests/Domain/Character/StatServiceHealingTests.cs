@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using ServiceRandom = SWLOR.Game.Server.Service.Random;
+using ServiceRandom = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 

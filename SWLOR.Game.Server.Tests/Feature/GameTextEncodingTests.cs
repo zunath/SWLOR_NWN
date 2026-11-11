@@ -40,7 +40,7 @@ public class GameTextEncodingTests
     private static readonly HashSet<(string File, string Member)> CharacterTables = new()
     {
         (Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"), "highChannels"),
-        (Path.Combine("Service", "ColorToken.cs"), "ColorArray")
+        (Path.Combine("Domain", "Foundation", "ColorToken.cs"), "ColorArray")
     };
 
     // Existing text left as authored at the owner's request: the Disguise status label and the

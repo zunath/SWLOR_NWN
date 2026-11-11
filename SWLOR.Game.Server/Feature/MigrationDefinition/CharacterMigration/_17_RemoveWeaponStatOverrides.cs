@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;

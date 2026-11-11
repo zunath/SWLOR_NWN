@@ -1,6 +1,5 @@
 using SWLOR.CraftSim.Gates;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;

@@ -214,6 +214,37 @@ public class MoveSupportNamespacesScriptTests
     }
 
     [Test]
+    public void AMovedFileKeepsReachingTheTypesP2Z3MovedOutOfServiceThroughService()
+    {
+        // TypeMoves.json beside the script lists types the branch moved out of Service. Master's code still reaches them
+        // through the enclosing namespace Service, so a moved master file imports Service and Move-ServiceTypes.ps1 (next in
+        // MechanicalScripts.txt) moves the reference to the type's domain.
+        File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "TypeMoves.json"),
+            "{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ { \"type\": \"Gauge\", \"to\": \"SWLOR.Game.Server.Domain.Foundation\" } ] }");
+        Write("SWLOR.Game.Server/Service/LogService/Reader.cs",
+            "namespace SWLOR.Game.Server.Service.LogService;\n\npublic static class Reader\n{\n    public static int Read() => Gauge.Value;\n}\n");
+        Write("SWLOR.Game.Server/Service/LogService/Quiet.cs",
+            "namespace SWLOR.Game.Server.Service.LogService;\n\npublic static class Quiet\n{\n    public static int Read() => 1;\n}\n");
+
+        var run = RunScript("-Apply");
+
+        run.ExitCode.Should().Be(0, run.Output);
+        Read("SWLOR.Game.Server/Domain/Foundation/Reader.cs").Should().StartWith("using SWLOR.Game.Server.Service;\n\nnamespace SWLOR.Game.Server.Domain.Foundation;");
+        Read("SWLOR.Game.Server/Domain/Foundation/Quiet.cs").Should().NotContain("using SWLOR.Game.Server.Service;", "it names nothing of Service");
+    }
+
+    [Test]
+    public void WithNothingLeftInServiceAMovedFileGetsNoUsingOfIt()
+    {
+        File.Delete(Path.Combine(_temp, "SWLOR.Game.Server", "Service", "Craft.cs"));
+
+        var run = RunScript("-Apply");
+
+        run.ExitCode.Should().Be(0, run.Output);
+        Read("SWLOR.Game.Server/Domain/Crafting/Foo.cs").Should().NotContain("using SWLOR.Game.Server.Service;", "no type is left in Service to reach");
+    }
+
+    [Test]
     public void ATreeWithoutADomainMapMovesByTheMapOfTheScriptsRepository()
     {
         // Master's copy in the parity check has no SWLOR.Architecture.Tests: the branch's map, beside the script, decides.

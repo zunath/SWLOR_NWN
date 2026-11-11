@@ -8,7 +8,8 @@
     is tools/Refactor/RemovedFacades.json (the facades the branch deleted and the owners of their constants) and
     tools/Refactor/HandlerRenames.txt. A run:
       * adds `using static SWLOR.Game.Server.Composition.GameServices;` to each file that calls a removed facade (or the
-        global form to a project whose GlobalUsings.cs imports SWLOR.Game.Server.Service globally), drops the qualifier
+        global form to a project whose GlobalUsings.cs imports SWLOR.Game.Server.Service globally; a project that already
+        imports GameServices globally needs neither), drops the qualifier
         of a qualified call, writes an explicit name as GameServices.<Name>, reads a moved constant from its owner, and
         sends a member of a split facade (Combat) to the part or class its "members" line names, leaving a name with two
         owners or none for a person (a bare name the file declares itself, and every file of a project that does not

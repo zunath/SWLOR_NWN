@@ -10,12 +10,11 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Domain.Abilities
 {

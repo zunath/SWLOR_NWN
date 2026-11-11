@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;

@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 

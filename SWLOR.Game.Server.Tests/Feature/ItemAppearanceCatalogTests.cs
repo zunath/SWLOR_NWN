@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Domain.Items;

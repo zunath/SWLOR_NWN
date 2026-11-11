@@ -387,6 +387,8 @@ SWLOR.Game.Server.Service.Space.RestoreLeashedShip SWLOR.Game.Server.Domain.Spac
 SWLOR.Game.Server.Service.Space.TargetSpaceObject SWLOR.Game.Server.Domain.Space.SpaceService.TargetSpaceObject
 SWLOR.Game.Server.Service.Space.PreventSpaceStealth SWLOR.Game.Server.Domain.Space.SpaceService.PreventSpaceStealth
 SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog.CacheCategories
+SWLOR.Game.Server.Service.FrameProfiler.Load SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load
+SWLOR.Game.Server.Service.Log.OnApplicationShutdown SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown
 SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
 SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
 SWLOR.Game.Server.Feature.StoreManagement.ProcessStores SWLOR.Game.Server.Feature.StoreManagement.LoadStores SWLOR.Game.Server.Feature.StoreManagement.ProcessStores

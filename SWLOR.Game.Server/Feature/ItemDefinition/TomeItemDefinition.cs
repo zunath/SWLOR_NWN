@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.Game.Server.Composition.GameServices;

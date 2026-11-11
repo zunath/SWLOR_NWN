@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Foundation
 {

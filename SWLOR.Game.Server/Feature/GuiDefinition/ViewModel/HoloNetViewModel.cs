@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;

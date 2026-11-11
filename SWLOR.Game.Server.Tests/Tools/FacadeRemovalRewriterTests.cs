@@ -321,6 +321,30 @@ public class FacadeRemovalRewriterTests
     }
 
     [Test]
+    public void The_reversal_imports_the_facades_namespace_when_the_tree_it_is_reversed_against_declares_it()
+    {
+        // Since P2-Z3 the branch's files no longer import SWLOR.Game.Server.Service (nothing is left in it); master's parity
+        // copy still declares it for the facades, so a file the reversal sends back to a facade imports it there.
+        const string text = "using SWLOR.Game.Server.Domain.Quests;\nusing static SWLOR.Game.Server.Composition.GameServices;\n\n" +
+                            "class C { int M() => Taxi.Count + FactionService.MinimumFaction; }\n";
+        var declared = new HashSet<string>(StringComparer.Ordinal)
+            { "SWLOR", "SWLOR.Game", "SWLOR.Game.Server", "SWLOR.Game.Server.Service", "SWLOR.Game.Server.Domain", "SWLOR.Game.Server.Domain.Quests" };
+        var withoutFacades = new HashSet<string>(declared, StringComparer.Ordinal);
+        withoutFacades.Remove("SWLOR.Game.Server.Service");
+
+        CallerRewriter.Reverse(text, All, declared).Text.Should().Be(
+            "using SWLOR.Game.Server.Domain.Quests;\nusing SWLOR.Game.Server.Service;\n\nclass C { int M() => Taxi.Count + Faction.MinimumFaction; }\n");
+        CallerRewriter.Reverse("using SWLOR.Game.Server.Service;\n" + text, All, declared).Text.Should().Be(
+            "using SWLOR.Game.Server.Service;\nusing SWLOR.Game.Server.Domain.Quests;\n\nclass C { int M() => Taxi.Count + Faction.MinimumFaction; }\n",
+            "a file that still imports it gets no second using");
+        CallerRewriter.Reverse(text, All, withoutFacades).Text.Should().Be(
+            "using SWLOR.Game.Server.Domain.Quests;\n\nclass C { int M() => Taxi.Count + Faction.MinimumFaction; }\n",
+            "a tree without the namespace gets no using of it");
+        CallerRewriter.Reverse("using SWLOR.Game.Server.Domain.Quests;\n\nclass C { int M() => 1; }\n", All, declared).Text.Should().Be(
+            "using SWLOR.Game.Server.Domain.Quests;\n\nclass C { int M() => 1; }\n", "a file that never reached a facade is left alone");
+    }
+
+    [Test]
     public void Positions_count_bytes_so_text_that_is_not_ascii_round_trips()
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes("﻿using System;\nclass C { string S = \"café\"; void M() { Taxi.Register(1); } }\n");

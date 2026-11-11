@@ -3,7 +3,6 @@ using System.Diagnostics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.AI;
 

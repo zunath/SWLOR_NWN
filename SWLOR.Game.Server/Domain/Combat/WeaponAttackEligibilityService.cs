@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Domain.Combat

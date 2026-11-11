@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;

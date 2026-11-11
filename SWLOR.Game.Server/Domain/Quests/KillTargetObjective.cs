@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Creatures;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Quests
 {

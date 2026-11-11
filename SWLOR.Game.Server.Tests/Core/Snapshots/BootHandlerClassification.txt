@@ -84,7 +84,7 @@ mod_cache_aft (15)
 mod_load (46)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
-  Rerun       SWLOR.Game.Server.Service.FrameProfiler.Load
+  Rerun       SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load
   Rerun       SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   BootOnly    SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   BootOnly    SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
@@ -131,7 +131,7 @@ mod_load (46)
 
 app_shutdown (2)
   Retire      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
-  Retire      SWLOR.Game.Server.Service.Log.OnApplicationShutdown
+  Retire      SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown
 
 == TOTALS ==
 BootOnly    19

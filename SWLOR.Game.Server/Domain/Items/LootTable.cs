@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Items
                 weights[x] = weight;
             }
 
-            var randomIndex = Service.Random.GetRandomWeightedIndex(weights);
+            var randomIndex = Domain.Foundation.Random.GetRandomWeightedIndex(weights);
             return this.ElementAt(randomIndex);
         }
 

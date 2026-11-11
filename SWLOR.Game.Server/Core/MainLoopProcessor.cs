@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Core

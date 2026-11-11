@@ -112,6 +112,27 @@ public class HandlerRenameNamespaceMoveTests
     }
 
     [Test]
+    public void ATypeMovedOutOfServiceTakesItsNewNameWithOrWithoutARenameLine()
+    {
+        // P2-Z3 (tools/Refactor/TypeMoves.json) moved single types out of Service; their handlers carry the new type name.
+        Write("tools/Refactor/TypeMoves.json", "{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ "
+            + "{ \"type\": \"Gauge\", \"to\": \"SWLOR.Game.Server.Domain.Gadgets\" }, { \"type\": \"Meter\", \"to\": \"SWLOR.Game.Server.Domain.Foundation\" } ] }");
+        Write("manifest.txt", Manifest + "  action      " + Server + "Domain.Gadgets.Gauge.Load\n  action      " + Server + "Domain.Foundation.Meter.Tick\n");
+        Write("tools/Refactor/HandlerRenames.txt", Renames + Server + "Service.Meter.Tick " + Server + "Domain.Foundation.Meter.Tick\n");
+
+        // What the sync reads (master's names) and what the parity copy reads once Move-ServiceTypes.ps1 ran on it.
+        Convert("mod_load\n"
+                + "  action      " + Server + "Service.Gauge.Load\n"
+                + "  action      " + Server + "Service.Meter.Tick\n"
+                + "  action      " + Server + "Service.Widget.OnFacade\n")
+            .Should().Equal(Server + "Domain.Gadgets.Gauge.Load", Server + "Domain.Foundation.Meter.Tick", Server + "Service.Widget.OnFacade");
+        Convert("mod_load\n"
+                + "  action      " + Server + "Domain.Gadgets.Gauge.Load\n"
+                + "  action      " + Server + "Domain.Foundation.Meter.Tick\n")
+            .Should().Equal(Server + "Domain.Gadgets.Gauge.Load", Server + "Domain.Foundation.Meter.Tick");
+    }
+
+    [Test]
     public void WithoutTheMoveDataTheRenamesAloneApply()
     {
         File.Delete(Path.Combine(_temp, "tools", "Refactor", "NamespaceMoves.json"));

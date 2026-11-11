@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
@@ -17,7 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Testing;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;

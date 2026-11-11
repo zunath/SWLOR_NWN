@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Companions
 {
@@ -35,17 +34,17 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public string GreetingPhrase()
         {
-            return _greetingPhrases[Service.Random.Next(_greetingPhrases.Count)];
+            return _greetingPhrases[Domain.Foundation.Random.Next(_greetingPhrases.Count)];
         }
 
         public string DeathPhrase()
         {
-            return _deathPhrases[Service.Random.Next(_deathPhrases.Count)];
+            return _deathPhrases[Domain.Foundation.Random.Next(_deathPhrases.Count)];
         }
 
         public string DismissedPhrase()
         {
-            return _dismissedPhrases[Service.Random.Next(_dismissedPhrases.Count)];
+            return _dismissedPhrases[Domain.Foundation.Random.Next(_dismissedPhrases.Count)];
         }
     }
 }

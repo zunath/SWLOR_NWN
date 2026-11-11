@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {

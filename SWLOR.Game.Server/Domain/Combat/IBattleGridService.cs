@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

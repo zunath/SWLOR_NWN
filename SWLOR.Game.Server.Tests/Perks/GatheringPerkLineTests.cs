@@ -2,7 +2,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;

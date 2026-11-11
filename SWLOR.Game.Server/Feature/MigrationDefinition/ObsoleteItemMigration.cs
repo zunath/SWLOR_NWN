@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;

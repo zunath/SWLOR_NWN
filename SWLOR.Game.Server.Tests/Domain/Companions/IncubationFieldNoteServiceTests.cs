@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 

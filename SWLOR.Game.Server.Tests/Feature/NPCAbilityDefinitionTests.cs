@@ -6,7 +6,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;

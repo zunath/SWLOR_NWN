@@ -4,7 +4,6 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Foundation;
 

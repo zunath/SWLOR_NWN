@@ -14,7 +14,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Crafting.Minigame;
 

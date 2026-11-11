@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Combat;

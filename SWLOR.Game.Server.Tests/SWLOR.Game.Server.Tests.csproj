@@ -32,6 +32,8 @@
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <!-- The facade removal tool (P2-Z): Tools/FacadeRemoval*Tests prove its rewrites and that the branch is in its shape. -->
     <ProjectReference Include="..\tools\Refactor\SWLOR.FacadeRemoval\SWLOR.FacadeRemoval.csproj" />
+    <!-- The type move tool (P2-Z3): Tools/TypeMoves*Tests prove its rewrites and that the branch is in its shape. -->
+    <ProjectReference Include="..\tools\Refactor\SWLOR.TypeMoves\SWLOR.TypeMoves.csproj" />
     <!-- FakeNWScript: swaps the engine behind the static NWScript wrappers so game code that calls the engine can be unit tested. -->
     <ProjectReference Include="..\SWLOR.NWN.API.Testing\SWLOR.NWN.API.Testing.csproj" />
     <!-- The coverage ratchets (AbilityBehaviorCoverageTests, PerkCoverageTests) assert that

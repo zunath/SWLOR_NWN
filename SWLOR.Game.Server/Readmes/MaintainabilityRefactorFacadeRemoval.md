@@ -273,6 +273,11 @@ coordinator runs them.
   import of a branch-only namespace that the copy's server sources declare.
 - **Handler renames stay one line per handler** (decision D4): the P2-Z2 script already updates the branch side of existing lines; a new
   type-level format would need changes to that script, `RefactorCommon.ps1` and the sync.
+- **P2-Z3.** `Move-ServiceTypes.ps1` (`SWLOR.TypeMoves`, last in `MechanicalScripts.txt`) moves the types left directly in `Service`
+  into their domains on the branch and on master's parity copy, so the branch's files no longer import `SWLOR.Game.Server.Service`.
+  `-Reverse` imports it again in a file it sends back to master's facades, when the copy declares the namespace (it does: the
+  facades). `Move-SupportNamespaces.ps1` counts the moved types (`TypeMoves.json`) among the names master's moved files reach
+  through `Service`, and `Read-NamespaceMoves` maps their handler names (`FrameProfiler.Load`, `Log.OnApplicationShutdown`).
 - **`Space`.** P2-Z cannot clear `Service.Space` (a class) against `Domain.Space` (the namespace P2-Z2 creates); the owner's D8 ruling: convert `Space` and `Droid` from master's code before P2-Z2 if the revamp has not landed.
 - **P3-3.** Can run alongside: tests it adds that call `Stat.X` keep compiling once the tool adds the `using`. Removing the facades deletes
   lines that `FacadeForwardingTests` covers, which lowers the overall percentage and the `Service` area; re-measure for P3-3 after P2-ZZ.

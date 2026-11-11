@@ -14,7 +14,6 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.Engine;

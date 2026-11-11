@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Engine;

@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Crafting.Research;
 

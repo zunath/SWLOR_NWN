@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Foundation

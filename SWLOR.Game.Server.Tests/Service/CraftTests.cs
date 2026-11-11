@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Domain.Crafting;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;

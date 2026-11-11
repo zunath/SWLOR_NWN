@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using CNWSArea = NWN.Native.API.CNWSArea;
 using NWNXLib = NWN.Native.API.NWNXLib;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Domain.Foundation

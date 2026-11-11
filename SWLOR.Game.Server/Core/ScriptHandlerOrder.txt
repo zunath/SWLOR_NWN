@@ -83,7 +83,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
 mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
   action      SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   action      SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
-  action      SWLOR.Game.Server.Service.FrameProfiler.Load
+  action      SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load
   action      SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   action      SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   action      SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
@@ -141,7 +141,7 @@ apartment_term
 
 app_shutdown
   action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
-  action      SWLOR.Game.Server.Service.Log.OnApplicationShutdown
+  action      SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown
 
 appear
   conditional SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAppearsWhen

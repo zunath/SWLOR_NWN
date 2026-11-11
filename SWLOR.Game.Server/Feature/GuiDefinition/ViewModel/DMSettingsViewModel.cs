@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.Composition.GameServices;
 

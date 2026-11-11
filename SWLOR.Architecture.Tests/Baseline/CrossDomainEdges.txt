@@ -1,8 +1,8 @@
 # Cross-domain dependencies of SWLOR.Game.Server, recorded by SWLOR.Architecture.Tests (refactor owner decision 9).
 # One line per edge between two units of different domains: <from> -> <to> | <members>.
-# A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a type left directly in Service
-# (ColorToken), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside
-# Domain, Service and Feature (Platform/Native). Domains come from DomainMap.json.
+# A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a Feature folder
+# (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside Domain and Feature
+# (Platform/Native). Domains come from DomainMap.json.
 # <members> is the number of distinct members that hold the reference. It is information only and is never compared.
 # Edges into the Foundation and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.
 # The guard fails when an edge appears that is not listed, and when a listed edge no longer exists.
@@ -17,9 +17,8 @@ Domain/Abilities -> Feature/StatusEffectDefinition | 1
 Feature/AbilityDefinition -> Domain/Character | 285
 Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 444
 
-# Abilities -> Combat (3 edges)
-Domain/Abilities -> Domain/Combat | 179
-Domain/Abilities -> RecastTimestamp | 2
+# Abilities -> Combat (2 edges)
+Domain/Abilities -> Domain/Combat | 181
 Feature/AbilityDefinition -> Domain/Combat | 146
 
 # Abilities -> Companions (1 edge)
@@ -189,7 +188,7 @@ Domain/Companions -> Domain/Combat | 56
 Domain/Companions -> Domain/Creatures | 24
 
 # Companions -> Gameplay (1 edge)
-Domain/Companions -> ServerRestart | 1
+Domain/Companions -> Domain/Gameplay | 1
 
 # Companions -> Items (1 edge)
 Domain/Companions -> Domain/Items | 23
@@ -274,18 +273,16 @@ Domain/Economy -> Domain/Quests | 10
 # Economy -> Space (1 edge)
 Domain/Economy -> Domain/Space | 3
 
-# Economy -> UI (3 edges)
-BankItemPage -> Domain/UI | 3
-Domain/Economy -> Domain/UI | 8
+# Economy -> UI (2 edges)
+Domain/Economy -> Domain/UI | 11
 Domain/Economy -> Feature/GuiDefinition | 3
 
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Abilities (3 edges)
+# Foundation -> Abilities (2 edges)
 Domain/Foundation -> Domain/Abilities | 11
 Feature/MigrationDefinition -> Domain/Abilities | 4
-Feature/MigrationDefinition -> MimicryLoadouts | 1
 
 # Foundation -> Administration (1 edge)
 Domain/Foundation -> Domain/Administration | 7
@@ -371,6 +368,7 @@ Feature.RoleplayXP -> Domain/Administration | 1
 Feature.ServerTasks -> Domain/Administration | 1
 
 # Gameplay -> Character (27 edges)
+Domain/Gameplay -> Domain/Character | 1
 Feature.AchievementProgression -> Domain/Character | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> Domain/Character | 3
@@ -397,9 +395,8 @@ Feature.UnarmedMastery -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Feature/StatusEffectDefinition | 1
 Feature.UsePerkFeat -> Domain/Character | 7
-ServerRestart -> Domain/Character | 1
 
-# Gameplay -> Combat (19 edges)
+# Gameplay -> Combat (18 edges)
 Feature.CivilianPatrol -> Domain/Combat | 2
 Feature.EchaniTempleMonks -> Domain/Combat | 2
 Feature.EquipmentRestrictions -> Domain/Combat | 3
@@ -411,8 +408,7 @@ Feature.OrdinaryAttackCombatLifecycle -> Domain/Combat | 7
 Feature.PistolAnimationRemap -> Domain/Combat | 3
 Feature.PlaceableScripts -> Domain/Combat | 1
 Feature.PlayerStatusWindow -> Domain/Combat | 1
-Feature.PowerGlovePairLifecycle -> Domain/Combat | 14
-Feature.PowerGlovePairLifecycle -> WeaponAttackPhase | 2
+Feature.PowerGlovePairLifecycle -> Domain/Combat | 15
 Feature.TwinPistolCombatLifecycle -> Domain/Combat | 6
 Feature.TwinPistolEquipmentValidation -> Domain/Combat | 7
 Feature.TwinPistolPairLifecycle -> Domain/Combat | 8
@@ -672,10 +668,10 @@ Feature/ChatCommandDefinition -> Domain/Crafting | 1
 Feature/ChatCommandDefinition -> Domain/Creatures | 1
 
 # Social -> Gameplay (4 edges)
+Feature/ChatCommandDefinition -> Domain/Gameplay | 1
 Feature/ChatCommandDefinition -> Feature.ArmorDisplay | 1
 Feature/ChatCommandDefinition -> Feature.PlayerTemporaryEffects | 1
 Feature/ChatCommandDefinition -> Feature.ServerTasks | 1
-Feature/ChatCommandDefinition -> ServerRestart | 1
 
 # Social -> Items (1 edge)
 Feature/ChatCommandDefinition -> Domain/Items | 1
@@ -721,11 +717,10 @@ Domain/Space -> Domain/UI | 4
 # Space -> World (1 edge)
 Domain/Space -> Domain/World | 17
 
-# UI -> Abilities (4 edges)
+# UI -> Abilities (3 edges)
 Domain/UI -> Domain/Abilities | 13
-Feature/GuiDefinition -> Domain/Abilities | 28
+Feature/GuiDefinition -> Domain/Abilities | 33
 Feature/GuiDefinition -> Feature/AbilityDefinition | 4
-Feature/GuiDefinition -> MimicryLoadouts | 7
 
 # UI -> Administration (2 edges)
 Domain/UI -> Domain/Administration | 4
@@ -736,10 +731,9 @@ Domain/UI -> Domain/Character | 3
 Feature/GuiDefinition -> Domain/Character | 201
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
-# UI -> Combat (3 edges)
+# UI -> Combat (2 edges)
 Domain/UI -> Domain/Combat | 6
-Feature/GuiDefinition -> BattleGridSettings | 11
-Feature/GuiDefinition -> Domain/Combat | 57
+Feature/GuiDefinition -> Domain/Combat | 66
 
 # UI -> Companions (1 edge)
 Feature/GuiDefinition -> Domain/Companions | 70
@@ -751,11 +745,8 @@ Feature/GuiDefinition -> Domain/Crafting | 237
 # UI -> Creatures (1 edge)
 Feature/GuiDefinition -> Domain/Creatures | 1
 
-# UI -> Economy (4 edges)
-Feature/GuiDefinition -> BankItemPage | 1
-Feature/GuiDefinition -> CasinoSlotPresentation | 2
-Feature/GuiDefinition -> CasinoSpinResult | 3
-Feature/GuiDefinition -> Domain/Economy | 43
+# UI -> Economy (1 edge)
+Feature/GuiDefinition -> Domain/Economy | 46
 
 # UI -> Gameplay (6 edges)
 Domain/UI -> Feature.UsePerkFeat | 1

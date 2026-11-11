@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

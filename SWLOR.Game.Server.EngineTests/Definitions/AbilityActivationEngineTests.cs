@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
 

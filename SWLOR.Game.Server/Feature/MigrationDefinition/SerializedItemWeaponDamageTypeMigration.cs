@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.Engine;
@@ -594,7 +593,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return damageEnhancements;
 
             var selectedElementalDamageType = elementalDamageTypes[
-                SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)];
+                SWLOR.Game.Server.Domain.Foundation.Random.Next(elementalDamageTypes.Count)];
             return damageEnhancements
                 .Where(damageEnhancement =>
                     !damageEnhancement.DamageType.IsElementalDamageType() ||

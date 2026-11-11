@@ -3,8 +3,8 @@ using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

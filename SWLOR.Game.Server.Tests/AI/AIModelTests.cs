@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;

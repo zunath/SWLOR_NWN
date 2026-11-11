@@ -5,7 +5,7 @@ public sealed class ServiceMinigameRandom : IMinigameRandom
 {
     public static ServiceMinigameRandom Instance => new();
 
-    public int D100() => Service.Random.D100(1);
+    public int D100() => Domain.Foundation.Random.D100(1);
 
-    public int Next(int minInclusive, int maxExclusive) => Service.Random.Next(minInclusive, maxExclusive);
+    public int Next(int minInclusive, int maxExclusive) => Domain.Foundation.Random.Next(minInclusive, maxExclusive);
 }

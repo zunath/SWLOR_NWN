@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
 using SWLOR.Game.Server.Feature.PerkDefinition.BeastPerks;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Combat;

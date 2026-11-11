@@ -15,7 +15,7 @@
     "Domain/Creatures": 93,
     "Domain/Economy": 93,
     "Domain/Foundation": 79,
-    "Domain/Gameplay": 100,
+    "Domain/Gameplay": 66,
     "Domain/Items": 96,
     "Domain/Quests": 75,
     "Domain/Social": 94,
@@ -26,14 +26,14 @@
     "Extension": 25,
     "Feature": 65,
     "Native": 10,
-    "Service": 23,
     "SWLOR.CLI": 39,
     "SWLOR.CombatSim": 94,
     "SWLOR.EngineSeamGenerator": 87,
     "SWLOR.FacadeRemoval": 91,
     "SWLOR.NWN.API": 94,
     "SWLOR.NWN.Formats": 81,
-    "SWLOR.RecipeParameters": 93
+    "SWLOR.RecipeParameters": 93,
+    "SWLOR.TypeMoves": 82
   },
   "excludes": [
     {

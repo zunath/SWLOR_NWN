@@ -381,7 +381,7 @@ public class ForceUniversalTests
     [TestCase(7)]
     public void ForceConvergence_TicksAddUpToExactlyTheFortyPercentBudget(int maxFP)
     {
-        var total = SWLOR.Game.Server.Service.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
+        var total = SWLOR.Game.Server.Domain.Foundation.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
         var ticks = Enumerable.Range(1, ForceConvergenceStatusEffect.FPRestoreTicks)
             .Select(tick => ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick)
                             - ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick - 1))

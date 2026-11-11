@@ -138,8 +138,8 @@ this guard works before and after those moves because it maps types to domains, 
 **Domain map (coordinator's first cut, 2026-10-26; refine as conversions happen).** A "service" was the static
 class `SWLOR.Game.Server.Service.<Name>` plus every type in `SWLOR.Game.Server.Service.<Name>Service.*`. Since P2-Z2
 the support namespaces are gone: every type of `Domain.<Domain>` and its topic namespaces is the unit `Domain/<Domain>`,
-and the `services` lists name the converted services (which `ConvertedServices.json` must agree with) and the types
-still directly in `Service`. The table below is the first cut; `DomainMap.json` is current (`Core` is now `Foundation`).
+and the `services` lists name the converted services (which `ConvertedServices.json` must agree with); since P2-Z3
+nothing is left directly in `Service`. The table below is the first cut; `DomainMap.json` is current (`Core` is now `Foundation`).
 
 | Domain | Services | Feature folders |
 |---|---|---|

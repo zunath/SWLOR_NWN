@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;

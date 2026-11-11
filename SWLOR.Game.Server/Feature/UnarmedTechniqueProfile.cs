@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Composition.GameServices;

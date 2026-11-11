@@ -350,7 +350,7 @@ public class CommunicationServiceTests
         _bench.AddCreature(Npc, name: "Gamorrean Guard");
 
         new DefaultSeams(_bench).ChatName(Player, Npc)
-            .Should().Be(SWLOR.Game.Server.Service.ColorToken.GetNameNPCColor(Npc)).And.Contain("Gamorrean Guard");
+            .Should().Be(SWLOR.Game.Server.Domain.Foundation.ColorToken.GetNameNPCColor(Npc)).And.Contain("Gamorrean Guard");
     }
 
     [Test]

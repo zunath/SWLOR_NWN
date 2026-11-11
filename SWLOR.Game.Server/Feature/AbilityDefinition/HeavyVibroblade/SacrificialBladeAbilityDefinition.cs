@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;

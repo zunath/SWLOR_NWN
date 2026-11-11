@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;

@@ -18,9 +18,9 @@ namespace SWLOR.Architecture.Tests;
 /// then review the diff of the baseline files like any snapshot. PowerShell:
 /// <c>$env:SWLOR_UPDATE_SNAPSHOTS = "1"; dotnet test SWLOR.Architecture.Tests --no-build</c>.</para>
 /// <para><b>Domains.</b> Code in <c>Domain.&lt;Domain&gt;</c> (and its topic namespaces) is one unit per domain: since P2-Z2
-/// a domain's services and their support types share that namespace. <c>DomainMap.json</c> maps the Feature folders and
-/// the types left directly in <c>Service</c> to domains. The guard maps types by namespace, not by file (extend
-/// <see cref="UnitClassifier"/> when the namespaces change).</para>
+/// a domain's services and their support types share that namespace, and since P2-Z3 nothing is left directly in
+/// <c>Service</c>. <c>DomainMap.json</c> maps the Feature folders to domains. The guard maps types by namespace, not by file
+/// (extend <see cref="UnitClassifier"/> when the namespaces change).</para>
 /// <para><b>Limit.</b> The compiler inlines constants (enum members, <c>const</c> fields); a dependency made only
 /// through one is invisible. See <c>AssemblyScanner</c>.</para>
 /// </remarks>
@@ -34,9 +34,9 @@ public class CrossDomainDependencyTests
     [
         "Cross-domain dependencies of SWLOR.Game.Server, recorded by SWLOR.Architecture.Tests (refactor owner decision 9).",
         "One line per edge between two units of different domains: <from> -> <to> | <members>.",
-        "A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a type left directly in Service",
-        "(ColorToken), a Feature folder (Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside",
-        "Domain, Service and Feature (Platform/Native). Domains come from DomainMap.json.",
+        "A unit is a domain's own code (Domain/Combat: the namespace Domain.Combat and its topics), a Feature folder",
+        "(Feature/PerkDefinition), a type directly in Feature (Feature.Auditing) or an area outside Domain and Feature",
+        "(Platform/Native). Domains come from DomainMap.json.",
         "<members> is the number of distinct members that hold the reference. It is information only and is never compared.",
         "Edges into the Foundation and Platform domains are not listed here; see EdgesIntoCoreAndPlatform.txt.",
         "The guard fails when an edge appears that is not listed, and when a listed edge no longer exists.",

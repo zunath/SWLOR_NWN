@@ -211,7 +211,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 | `SetNPCPerkLevel(npc, PerkType, level)` | Caps an NPC's effective perk level via the `PERK_LEVEL_{id}` local int. NPCs default to a perk's max level when this is unset. |
 | `SetNPCResources(npc, fp, stamina)` | Sets an NPC's current FP/Stamina pools (stored as the `FP`/`STAMINA` local ints NPCs use). |
 | `MakeHostile(creature)` | Moves a creature to the standard `Hostile` faction so other spawned creatures treat it as an enemy. |
-| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Service.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. Cleanup restores a fresh time-seeded RNG afterward, so determinism never leaks into later tests or a server kept running for debugging. |
+| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Domain.Foundation.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. Cleanup restores a fresh time-seeded RNG afterward, so determinism never leaks into later tests or a server kept running for debugging. |
 | `Assert(condition, message)` | Throws `EngineTestAssertionException` (-> `Failed`) if `condition` is false. |
 | `AssertEqual<T>(expected, actual, label)` | Throws with a formatted `"{label}: expected 'X' but was 'Y'."` message if not equal. |
 | `Fail(message)` | Unconditionally throws `EngineTestAssertionException`. |
@@ -224,7 +224,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 
 ### Determinism
 
-Combat rolls go through the shared `Service.Random` instance. Call `ctx.SeedRandom(someFixedSeed)`
+Combat rolls go through the shared `Domain.Foundation.Random` instance. Call `ctx.SeedRandom(someFixedSeed)`
 at the start of a test that depends on hit/crit/damage outcomes so repeated runs behave the same
 way (see `CombatPipelineEngineTests`, which seeds with a fixed integer before commanding an
 attack).

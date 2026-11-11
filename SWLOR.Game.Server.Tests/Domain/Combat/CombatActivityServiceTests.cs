@@ -177,7 +177,7 @@ public class CombatActivityServiceTests
         Stat(creature, StatType.OpeningAutoAttackIdleSeconds, openingSeconds);
     }
 
-    private static string Combat(string text) => SWLOR.Game.Server.Service.ColorToken.Combat(text);
+    private static string Combat(string text) => SWLOR.Game.Server.Domain.Foundation.ColorToken.Combat(text);
 
     // Runs every closure the engine was handed (assigned and delayed) and not run yet, in order, until none is left.
     private void RunScheduled()

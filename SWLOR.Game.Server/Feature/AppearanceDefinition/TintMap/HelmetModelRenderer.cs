@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;

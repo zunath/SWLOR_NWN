@@ -2,50 +2,32 @@
 # Recorded for information only: the guard never fails on these, and warns when this file is out of date.
 # Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build.
 
-# Abilities -> Foundation (9 edges)
-Domain/Abilities -> ColorToken | 6
-Domain/Abilities -> Domain/Foundation | 55
-Domain/Abilities -> Log | 4
-Domain/Abilities -> Random | 2
-Feature/AbilityDefinition -> ColorToken | 6
-Feature/AbilityDefinition -> Domain/Foundation | 22
-Feature/AbilityDefinition -> GameMath | 14
-Feature/AbilityDefinition -> Log | 2
-Feature/AbilityDefinition -> Random | 1
+# Abilities -> Foundation (2 edges)
+Domain/Abilities -> Domain/Foundation | 59
+Feature/AbilityDefinition -> Domain/Foundation | 38
 
-# Abilities -> Platform (9 edges)
+# Abilities -> Platform (8 edges)
 Domain/Abilities -> Platform/Composition | 12
 Domain/Abilities -> Platform/Core | 28
-Domain/Abilities -> Platform/Entity | 41
+Domain/Abilities -> Platform/Entity | 46
 Domain/Abilities -> Platform/Extension | 1
 Feature/AbilityDefinition -> Platform/Composition | 410
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
 Feature/AbilityDefinition -> Platform/Native | 1
-MimicryLoadouts -> Platform/Entity | 5
 
-# Administration -> Foundation (2 edges)
-Domain/Administration -> Domain/Foundation | 29
-Domain/Administration -> Log | 9
+# Administration -> Foundation (1 edge)
+Domain/Administration -> Domain/Foundation | 38
 
 # Administration -> Platform (2 edges)
 Domain/Administration -> Platform/Core | 1
 Domain/Administration -> Platform/Entity | 21
 
-# Character -> Foundation (13 edges)
-Domain/Character -> ColorToken | 11
-Domain/Character -> Domain/Foundation | 109
-Domain/Character -> FrameProfiler | 4
-Domain/Character -> GameMath | 1
-Domain/Character -> Log | 9
-Domain/Character -> Random | 3
-Feature/AppearanceDefinition -> Domain/Foundation | 2
-Feature/AppearanceDefinition -> Log | 2
+# Character -> Foundation (4 edges)
+Domain/Character -> Domain/Foundation | 126
+Feature/AppearanceDefinition -> Domain/Foundation | 4
 Feature/PerkDefinition -> Domain/Foundation | 1
-Feature/StatusEffectDefinition -> ColorToken | 2
-Feature/StatusEffectDefinition -> Domain/Foundation | 3
-Feature/StatusEffectDefinition -> GameMath | 6
-Feature/StatusEffectDefinition -> Random | 3
+Feature/StatusEffectDefinition -> Domain/Foundation | 14
 
 # Character -> Platform (14 edges)
 Domain/Character -> Platform/Composition | 43
@@ -63,18 +45,9 @@ Feature/StatusEffectDefinition -> Platform/Composition | 115
 Feature/StatusEffectDefinition -> Platform/Core | 4
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 
-# Combat -> Foundation (11 edges)
-Domain/Combat -> ColorToken | 39
-Domain/Combat -> Domain/Foundation | 65
+# Combat -> Foundation (2 edges)
+Domain/Combat -> Domain/Foundation | 143
 Domain/Combat -> Feature/MigrationDefinition | 2
-Domain/Combat -> FrameProfiler | 3
-Domain/Combat -> GameMath | 16
-Domain/Combat -> INamedAnimationRuntime | 1
-Domain/Combat -> Log | 9
-Domain/Combat -> Random | 22
-Domain/Combat -> Time | 1
-QueuedAttackAnimationPlayback -> Domain/Foundation | 1
-QueuedAttackAnimationPlayback -> INamedAnimationRuntime | 5
 
 # Combat -> Platform (6 edges)
 Domain/Combat -> Platform/Composition | 16
@@ -84,12 +57,8 @@ Domain/Combat -> Platform/Extension | 4
 Domain/Combat -> Platform/Native | 7
 Domain/Combat -> Platform/Root | 1
 
-# Companions -> Foundation (5 edges)
-Domain/Companions -> ColorToken | 2
-Domain/Companions -> Domain/Foundation | 14
-Domain/Companions -> Log | 2
-Domain/Companions -> Random | 22
-Domain/Companions -> Time | 1
+# Companions -> Foundation (1 edge)
+Domain/Companions -> Domain/Foundation | 38
 
 # Companions -> Platform (4 edges)
 Domain/Companions -> Platform/Composition | 16
@@ -97,12 +66,8 @@ Domain/Companions -> Platform/Core | 51
 Domain/Companions -> Platform/Entity | 45
 Domain/Companions -> Platform/Extension | 1
 
-# Crafting -> Foundation (5 edges)
-Domain/Crafting -> ColorToken | 5
-Domain/Crafting -> Domain/Foundation | 64
-Domain/Crafting -> Log | 8
-Domain/Crafting -> Random | 9
-Domain/Crafting -> Time | 1
+# Crafting -> Foundation (1 edge)
+Domain/Crafting -> Domain/Foundation | 85
 
 # Crafting -> Platform (5 edges)
 Domain/Crafting -> Platform/Composition | 67
@@ -111,13 +76,9 @@ Domain/Crafting -> Platform/Entity | 98
 Domain/Crafting -> Platform/Extension | 2
 Feature/RecipeDefinition -> Platform/Composition | 3
 
-# Creatures -> Foundation (6 edges)
-Domain/Creatures -> Domain/Foundation | 13
-Domain/Creatures -> GameMath | 1
-Domain/Creatures -> Log | 6
-Domain/Creatures -> Random | 5
-Feature/SpawnDefinition -> Domain/Foundation | 3
-Feature/SpawnDefinition -> Random | 6
+# Creatures -> Foundation (2 edges)
+Domain/Creatures -> Domain/Foundation | 24
+Feature/SpawnDefinition -> Domain/Foundation | 8
 
 # Creatures -> Platform (6 edges)
 Domain/Creatures -> Platform/Composition | 9
@@ -127,28 +88,23 @@ Domain/Creatures -> Platform/Native | 1
 Feature/AIDefinition -> Platform/Composition | 1
 Feature/SpawnDefinition -> Platform/Composition | 1
 
-# Economy -> Foundation (4 edges)
-Domain/Economy -> ColorToken | 1
-Domain/Economy -> Domain/Foundation | 29
-Domain/Economy -> Log | 3
-Domain/Economy -> Random | 2
+# Economy -> Foundation (1 edge)
+Domain/Economy -> Domain/Foundation | 30
 
-# Economy -> Platform (6 edges)
-BankItemPage -> Platform/Entity | 3
-CasinoPlayTracker -> Platform/Entity | 3
+# Economy -> Platform (4 edges)
 Domain/Economy -> Platform/Core | 7
-Domain/Economy -> Platform/Entity | 22
+Domain/Economy -> Platform/Entity | 28
 Domain/Economy -> Platform/Enumeration | 28
 Domain/Economy -> Platform/Extension | 7
 
-# Foundation -> Platform (23 edges)
+# Foundation -> Platform (17 edges)
 Domain/Foundation -> Platform/Composition | 21
-Domain/Foundation -> Platform/Core | 29
+Domain/Foundation -> Platform/Core | 31
 Domain/Foundation -> Platform/Entity | 93
-Domain/Foundation -> Platform/Enumeration | 50
-Domain/Foundation -> Platform/Extension | 7
+Domain/Foundation -> Platform/Enumeration | 52
+Domain/Foundation -> Platform/Extension | 8
 Domain/Foundation -> Platform/Native | 1
-Domain/Foundation -> Platform/Root | 6
+Domain/Foundation -> Platform/Root | 10
 Feature/DialogDefinition -> Platform/Composition | 29
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
@@ -159,68 +115,49 @@ Feature/MigrationDefinition -> Platform/Entity | 49
 Feature/MigrationDefinition -> Platform/Native | 1
 Feature/SnippetDefinition -> Platform/Composition | 23
 Feature/SnippetDefinition -> Platform/Entity | 8
-FrameProfiler -> Platform/Core | 1
-FrameProfiler -> Platform/Root | 1
-Log -> Platform/Core | 1
-Log -> Platform/Enumeration | 2
-Log -> Platform/Extension | 1
-Log -> Platform/Root | 3
 
-# Gameplay -> Foundation (52 edges)
+# Gameplay -> Foundation (38 edges)
 Feature.AchievementProgression -> Domain/Foundation | 6
 Feature.AreaConfiguration -> Domain/Foundation | 1
-Feature.AreaConfiguration -> Log | 1
 Feature.ArmorDisplay -> Domain/Foundation | 2
-Feature.Auditing -> Log | 3
+Feature.Auditing -> Domain/Foundation | 3
 Feature.BasicVibrobladeCompatibility -> Feature/MigrationDefinition | 1
-Feature.BuffTimer -> ColorToken | 2
-Feature.CZ220FlightsTerminal -> Log | 1
-Feature.ClientVersionCheck -> Log | 1
+Feature.BuffTimer -> Domain/Foundation | 2
+Feature.CZ220FlightsTerminal -> Domain/Foundation | 1
+Feature.ClientVersionCheck -> Domain/Foundation | 1
 Feature.CreatureDeathAnimation -> Domain/Foundation | 1
 Feature.DMActions -> Domain/Foundation | 1
-Feature.DMAuthorization -> Domain/Foundation | 1
-Feature.DMAuthorization -> Log | 1
-Feature.EquipmentRestrictions -> ColorToken | 1
+Feature.DMAuthorization -> Domain/Foundation | 2
+Feature.EquipmentRestrictions -> Domain/Foundation | 1
 Feature.EquipmentStats -> Domain/Foundation | 20
 Feature.EventRegistration -> Domain/Foundation | 1
-Feature.ExplorationTrigger -> ColorToken | 1
-Feature.KatarAnimationRemap -> Log | 1
-Feature.LightsaberAudio -> Log | 1
-Feature.MiniMaps -> ColorToken | 1
+Feature.ExplorationTrigger -> Domain/Foundation | 1
+Feature.KatarAnimationRemap -> Domain/Foundation | 1
+Feature.LightsaberAudio -> Domain/Foundation | 1
+Feature.MiniMaps -> Domain/Foundation | 1
 Feature.NaturalRegeneration -> Domain/Foundation | 2
 Feature.PersistentHitPoints -> Domain/Foundation | 2
 Feature.PersistentLocation -> Domain/Foundation | 2
-Feature.PersistentLocation -> Log | 1
 Feature.PersistentMapPin -> Domain/Foundation | 4
 Feature.PersistentMapProgression -> Domain/Foundation | 2
-Feature.PersistentMapProgression -> Log | 1
 Feature.PistolAnimationRemap -> Domain/Foundation | 3
-Feature.PistolAnimationRemap -> Log | 1
-Feature.PlaceableScripts -> ColorToken | 1
-Feature.PlaceableScripts -> Domain/Foundation | 1
+Feature.PlaceableScripts -> Domain/Foundation | 2
 Feature.PlayerAccountRecord -> Domain/Foundation | 1
-Feature.PlayerInitialization -> Domain/Foundation | 2
+Feature.PlayerInitialization -> Domain/Foundation | 3
 Feature.PlayerInitialization -> Feature/MigrationDefinition | 1
-Feature.PlayerInitialization -> Log | 2
 Feature.PlayerStatusWindow -> Domain/Foundation | 1
 Feature.PlayerTemporaryEffects -> Domain/Foundation | 2
-Feature.RoleplayXP -> Domain/Foundation | 3
-Feature.RoleplayXP -> Log | 4
-Feature.ServerTasks -> ColorToken | 1
-Feature.ServerTasks -> Domain/Foundation | 3
-Feature.ServerTasks -> Log | 5
-Feature.ServerTasks -> Time | 1
-Feature.StoreManagement -> ColorToken | 1
-Feature.StoreManagement -> Log | 1
+Feature.RoleplayXP -> Domain/Foundation | 7
+Feature.ServerTasks -> Domain/Foundation | 7
+Feature.StoreManagement -> Domain/Foundation | 2
 Feature.TlkOverrides -> Domain/Foundation | 1
-Feature.TrashCan -> ColorToken | 1
-Feature.TwinPistolEquipmentValidation -> ColorToken | 2
+Feature.TrashCan -> Domain/Foundation | 1
+Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 2
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
-Feature.UsePerkFeat -> ColorToken | 1
 Feature.UsePerkFeat -> Domain/Foundation | 6
-Feature.UsePerkFeat -> Log | 1
 
 # Gameplay -> Platform (142 edges)
+Domain/Gameplay -> Platform/Composition | 1
 Domain/Gameplay -> Platform/Root | 4
 Feature.AchievementProgression -> Platform/Composition | 7
 Feature.AchievementProgression -> Platform/Core | 7
@@ -362,18 +299,11 @@ Feature.UnarmedTechniqueProfile -> Platform/Composition | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
 Feature.UsePerkFeat -> Platform/Composition | 32
 Feature.UsePerkFeat -> Platform/Core | 7
-ServerRestart -> Platform/Composition | 1
 
-# Items -> Foundation (9 edges)
-Domain/Items -> ColorToken | 1
-Domain/Items -> Domain/Foundation | 27
-Domain/Items -> Log | 7
-Domain/Items -> Random | 2
-Feature/ItemDefinition -> Domain/Foundation | 8
-Feature/ItemDefinition -> GameMath | 4
-Feature/ItemDefinition -> Log | 5
-Feature/ItemDefinition -> Random | 2
-Feature/LootTableDefinition -> Random | 2
+# Items -> Foundation (3 edges)
+Domain/Items -> Domain/Foundation | 35
+Feature/ItemDefinition -> Domain/Foundation | 18
+Feature/LootTableDefinition -> Domain/Foundation | 2
 
 # Items -> Platform (9 edges)
 Domain/Items -> Platform/Composition | 2
@@ -386,21 +316,13 @@ Feature/ItemDefinition -> Platform/Entity | 5
 Feature/ItemDefinition -> Platform/Enumeration | 1
 Feature/LootTableDefinition -> Platform/Core | 1
 
-# Platform -> Foundation (8 edges)
-Platform/Core -> FrameProfiler | 5
-Platform/Core -> Log | 15
-Platform/Native -> ColorToken | 2
-Platform/Native -> Domain/Foundation | 2
+# Platform -> Foundation (3 edges)
+Platform/Core -> Domain/Foundation | 16
+Platform/Native -> Domain/Foundation | 34
 Platform/Native -> Feature/MigrationDefinition | 1
-Platform/Native -> FrameProfiler | 3
-Platform/Native -> Log | 31
-Platform/Native -> Random | 2
 
-# Quests -> Foundation (5 edges)
-Domain/Quests -> ColorToken | 6
-Domain/Quests -> Domain/Foundation | 76
-Domain/Quests -> Log | 14
-Domain/Quests -> Time | 1
+# Quests -> Foundation (2 edges)
+Domain/Quests -> Domain/Foundation | 79
 Feature/QuestDefinition -> Domain/Foundation | 44
 
 # Quests -> Platform (7 edges)
@@ -412,14 +334,9 @@ Domain/Quests -> Platform/Extension | 1
 Feature/QuestDefinition -> Platform/Composition | 145
 Feature/QuestDefinition -> Platform/Entity | 21
 
-# Social -> Foundation (7 edges)
-Domain/Social -> ColorToken | 5
-Domain/Social -> Domain/Foundation | 35
-Domain/Social -> FrameProfiler | 2
-Domain/Social -> Log | 9
-Feature/ChatCommandDefinition -> ColorToken | 16
-Feature/ChatCommandDefinition -> Domain/Foundation | 21
-Feature/ChatCommandDefinition -> Log | 8
+# Social -> Foundation (2 edges)
+Domain/Social -> Domain/Foundation | 47
+Feature/ChatCommandDefinition -> Domain/Foundation | 37
 
 # Social -> Platform (10 edges)
 Domain/Social -> Platform/Core | 35
@@ -433,13 +350,9 @@ Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 99
 Feature/ChatCommandDefinition -> Platform/Root | 6
 
-# Space -> Foundation (6 edges)
-Domain/Space -> ColorToken | 4
-Domain/Space -> Domain/Foundation | 30
-Domain/Space -> Log | 9
-Domain/Space -> Random | 1
-Feature/ShipModuleDefinition -> Domain/Foundation | 18
-Feature/ShipModuleDefinition -> Random | 14
+# Space -> Foundation (2 edges)
+Domain/Space -> Domain/Foundation | 37
+Feature/ShipModuleDefinition -> Domain/Foundation | 21
 
 # Space -> Platform (7 edges)
 Domain/Space -> Platform/Composition | 4
@@ -450,18 +363,10 @@ Feature/ShipModuleDefinition -> Platform/Composition | 21
 Feature/ShipModuleDefinition -> Platform/Core | 4
 Feature/ShipModuleDefinition -> Platform/Entity | 4
 
-# UI -> Foundation (11 edges)
-Domain/UI -> ColorToken | 6
-Domain/UI -> Domain/Foundation | 11
+# UI -> Foundation (3 edges)
+Domain/UI -> Domain/Foundation | 20
 Domain/UI -> Feature/MigrationDefinition | 1
-Domain/UI -> FrameProfiler | 2
-Domain/UI -> Log | 1
-Feature/GuiDefinition -> ColorToken | 45
-Feature/GuiDefinition -> Domain/Foundation | 295
-Feature/GuiDefinition -> GameMath | 3
-Feature/GuiDefinition -> Log | 29
-Feature/GuiDefinition -> Random | 3
-Feature/GuiDefinition -> Time | 8
+Feature/GuiDefinition -> Domain/Foundation | 341
 
 # UI -> Platform (12 edges)
 Domain/UI -> Platform/Composition | 5
@@ -477,13 +382,9 @@ Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
 
-# World -> Foundation (8 edges)
-Domain/World -> ColorToken | 16
-Domain/World -> Domain/Foundation | 110
-Domain/World -> Log | 27
-Domain/World -> Random | 4
-Domain/World -> Time | 6
-Feature/FishingLocationDefinition -> Random | 1
+# World -> Foundation (4 edges)
+Domain/World -> Domain/Foundation | 127
+Feature/FishingLocationDefinition -> Domain/Foundation | 1
 Feature/PropertyLayoutDefinition -> Domain/Foundation | 3
 Feature/TrapDefinition -> Domain/Foundation | 1
 

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 

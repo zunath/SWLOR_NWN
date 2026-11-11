@@ -1,9 +1,9 @@
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
 
 namespace SWLOR.Game.Server.Domain.Combat

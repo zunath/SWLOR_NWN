@@ -3,9 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Combat;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.Game.Server.Domain.Combat.CombatRules;
 
 namespace SWLOR.Game.Server.Domain.Combat

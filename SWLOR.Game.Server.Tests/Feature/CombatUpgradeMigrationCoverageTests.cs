@@ -188,7 +188,7 @@ public class CombatUpgradeMigrationCoverageTests
         migrationSource.Should().Contain("ItemPropertyType.Blueprint");
         migrationSource.Should().Contain("SelectBlueprintDamageEnhancements(selectedEnhancements)");
         migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
-        migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
+        migrationSource.Should().Contain("SWLOR.Game.Server.Domain.Foundation.Random.Next(elementalDamageTypes.Count)");
         migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
     }
 

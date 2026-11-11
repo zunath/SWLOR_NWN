@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
 using SWLOR.Game.Server.Domain.Character;

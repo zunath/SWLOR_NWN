@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Core.Async;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core

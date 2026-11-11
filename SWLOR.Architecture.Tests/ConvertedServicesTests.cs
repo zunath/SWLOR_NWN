@@ -66,6 +66,22 @@ public class ConvertedServicesTests
         "SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog"
     ];
 
+    /// <summary>
+    /// The static helpers P2-Z3 moved out of the namespace <c>Service</c> into their domain namespaces, which hold static
+    /// state or a boot handler on purpose: <c>Random</c>, <c>Log</c> and <c>FrameProfiler</c> stay static (the facade removal
+    /// plan), and the rest keep a constant table or a flag. The rules never reached them while each was a unit of its own in
+    /// <c>Service</c>; nothing may be added, and a line goes when its type no longer breaks a rule (the list is kept tight).
+    /// </summary>
+    private static readonly string[] StaticHelpersMovedOutOfService =
+    [
+        "SWLOR.Game.Server.Domain.Combat.RecastTimestamp",
+        "SWLOR.Game.Server.Domain.Foundation.ColorToken",
+        "SWLOR.Game.Server.Domain.Foundation.FrameProfiler",
+        "SWLOR.Game.Server.Domain.Foundation.Log",
+        "SWLOR.Game.Server.Domain.Foundation.Random",
+        "SWLOR.Game.Server.Domain.Gameplay.ServerRestart"
+    ];
+
     [Test]
     public void Each_support_type_of_an_unconverted_service_still_breaks_a_rule()
     {
@@ -73,12 +89,12 @@ public class ConvertedServicesTests
         var withState = ConvertedServiceRules.StaticMutableFields(ArchitectureProject.Facts, type => ServicesOwning(type, services, exempt: false).Count > 0);
         var withHandlers = ConvertedServiceRules.HandlersOffTheInstance(ArchitectureProject.Facts,
             type => ServicesOwning(type, services, exempt: false) is { Count: > 0 } owners ? owners.SelectMany(service => service.Pieces).Select(pieces => pieces.Instance).ToList() : null);
+        bool Breaks(string type) => withState.Concat(withHandlers).Any(problem => problem.StartsWith(type + ".", StringComparison.Ordinal));
 
-        var stale = SupportTypesOfUnconvertedServices
-            .Where(type => !withState.Concat(withHandlers).Any(problem => problem.StartsWith(type + ".", StringComparison.Ordinal)))
-            .ToList();
-
-        Fail(stale, "These types no longer hold static state or a handler: remove them from SupportTypesOfUnconvertedServices");
+        Fail(SupportTypesOfUnconvertedServices.Where(type => !Breaks(type)).ToList(),
+            "These types no longer hold static state or a handler: remove them from SupportTypesOfUnconvertedServices");
+        Fail(StaticHelpersMovedOutOfService.Where(type => !Breaks(type)).ToList(),
+            "These types no longer hold static state or a handler: remove them from StaticHelpersMovedOutOfService");
     }
 
     [Test]
@@ -149,13 +165,13 @@ public class ConvertedServicesTests
     /// <summary>
     /// The converted services a top-level type of the server belongs to: for a type in <c>Domain.&lt;Domain&gt;</c> or a topic
     /// below it, every converted service of that domain (the domain's services and their support types share the namespace,
-    /// so the rules hold for all of it, except <see cref="SupportTypesOfUnconvertedServices"/> unless
-    /// <paramref name="exempt"/> is false); for a type directly in <c>Service</c>, the converted service named like it. Empty
-    /// for other types.
+    /// so the rules hold for all of it, except <see cref="SupportTypesOfUnconvertedServices"/> and
+    /// <see cref="StaticHelpersMovedOutOfService"/> unless <paramref name="exempt"/> is false); for a type in a
+    /// <c>Service.&lt;Name&gt;Service</c> folder, the converted service named like it. Empty for other types.
     /// </summary>
     private static IReadOnlyList<ConvertedService> ServicesOwning(TypeKey type, IReadOnlyList<ConvertedService> services, bool exempt = true)
     {
-        if (exempt && SupportTypesOfUnconvertedServices.Contains(type.ToString()))
+        if (exempt && (SupportTypesOfUnconvertedServices.Contains(type.ToString()) || StaticHelpersMovedOutOfService.Contains(type.ToString())))
             return Array.Empty<ConvertedService>();
 
         return UnitClassifier.Classify(type) switch

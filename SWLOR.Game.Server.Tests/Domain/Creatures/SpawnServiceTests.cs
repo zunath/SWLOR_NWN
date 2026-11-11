@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using GameRandom = SWLOR.Game.Server.Service.Random;
+using GameRandom = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.Creatures;
 

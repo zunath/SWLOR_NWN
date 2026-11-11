@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Companions;

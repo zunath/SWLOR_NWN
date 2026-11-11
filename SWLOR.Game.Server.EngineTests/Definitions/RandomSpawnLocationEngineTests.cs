@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using NWNXLib = NWN.Native.API.NWNXLib;

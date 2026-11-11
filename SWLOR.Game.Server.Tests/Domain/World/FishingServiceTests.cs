@@ -6,14 +6,13 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Tests.Domain.World;
 

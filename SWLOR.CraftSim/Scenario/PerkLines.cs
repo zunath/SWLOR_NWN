@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CraftSim.Scenario
 {

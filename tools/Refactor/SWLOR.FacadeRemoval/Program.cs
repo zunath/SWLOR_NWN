@@ -7,7 +7,8 @@ using SWLOR.FacadeRemoval;
  * through SWLOR.Game.Server.Composition.GameServices. This tool keeps the callers in that shape, so it can run again after
  * every merge of master (it is a mechanical script, tools/Refactor/MechanicalScripts.txt):
  *   - a file that calls a removed facade (Taxi.X) gets `using static SWLOR.Game.Server.Composition.GameServices;`, or its
- *     project's GlobalUsings.cs gets the global form when it imports SWLOR.Game.Server.Service globally;
+ *     project's GlobalUsings.cs gets the global form when it imports SWLOR.Game.Server.Service globally (a project that
+ *     already imports the GameServices properties globally needs neither);
  *   - a qualified call (Service.Taxi.X) loses its qualifier; an explicit name (Combat) is written GameServices.Combat.X;
  *     a moved constant (Combat.MaximumHitRate) is read from its owner (CombatRules.MaximumHitRate); a member of a facade
  *     split over several classes (Combat) goes to the part or class its "members" line names (GameServices.CombatQueries.X,

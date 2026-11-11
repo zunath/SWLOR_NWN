@@ -4,7 +4,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using SWLOR.Game.Server.Tests.Support;

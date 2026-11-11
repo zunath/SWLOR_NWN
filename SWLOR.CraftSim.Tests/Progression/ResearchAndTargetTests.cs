@@ -2,7 +2,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;

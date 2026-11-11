@@ -308,7 +308,8 @@ function Read-HandlerRenames {
 # The namespace moves of P2-Z2 (tools/Refactor/Move-SupportNamespaces.ps1): a case-sensitive hashtable from an old full
 # namespace to its new one. Each service of SWLOR.Architecture.Tests/DomainMap.json and each retiredServiceFolders entry of
 # tools/Refactor/NamespaceMoves.json gives SWLOR.Game.Server.Service.<Name>Service -> SWLOR.Game.Server.Domain.<Domain>
-# (after the namespaceRenames), and each namespaceRenames entry its own pair. Empty when $Root lacks either file. Master's
+# (after the namespaceRenames), and each namespaceRenames entry its own pair; each type of tools/Refactor/TypeMoves.json
+# (P2-Z3) gives its old full type name -> its new one. Empty when $Root lacks DomainMap.json or NamespaceMoves.json. Master's
 # handler names pass through it (Convert-MovedName) where they meet the branch's: the sync reads them before the move and
 # the parity copy after it.
 function Read-NamespaceMoves {
@@ -338,6 +339,16 @@ function Read-NamespaceMoves {
         $moves[$server + 'Service.' + $service + 'Service'] = $server + $target
     }
     foreach ($from in @($renames.Keys)) { $moves[$server + $from] = $server + $renames[$from] }
+
+    # P2-Z3 moved single types out of Service (tools/Refactor/TypeMoves.json): Service.<Type> -> Domain.<Domain>.<Type>. A
+    # full type name is a prefix of its handler names, so Convert-MovedName maps those like a namespace.
+    $typeMovesPath = Join-Path (Join-Path (Join-Path $Root 'tools') 'Refactor') 'TypeMoves.json'
+    if (Test-Path -LiteralPath $typeMovesPath -PathType Leaf) {
+        $typeMoves = [System.IO.File]::ReadAllText($typeMovesPath) | ConvertFrom-Json
+        foreach ($entry in @($typeMoves.types)) {
+            $moves[[string]$typeMoves.from + '.' + [string]$entry.type] = [string]$entry.to + '.' + [string]$entry.type
+        }
+    }
     return $moves
 }
 

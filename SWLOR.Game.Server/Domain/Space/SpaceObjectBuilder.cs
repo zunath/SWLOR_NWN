@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Composition;
 using static SWLOR.Game.Server.Composition.GameServices;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Domain.Space
 {

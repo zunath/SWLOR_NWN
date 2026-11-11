@@ -3,7 +3,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Space;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.Testing;

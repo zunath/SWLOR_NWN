@@ -256,6 +256,19 @@ public class FacadeRemovalRunnerTests
     }
 
     [Test]
+    public void A_project_that_imports_the_accessor_globally_needs_no_using_in_its_files()
+    {
+        // Since P2-Z3 the branch's projects no longer import SWLOR.Game.Server.Service; the accessor's global import stays.
+        Write("SWLOR.Game.Server.EngineTests/GlobalUsings.cs", "global using System;\nglobal using static SWLOR.Game.Server.Composition.GameServices;\n");
+
+        Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Ok);
+
+        Text("SWLOR.Game.Server.EngineTests/Definitions/T.cs").Should().Be(EngineTest);
+        Text("SWLOR.Game.Server.EngineTests/GlobalUsings.cs").Should().Be("global using System;\nglobal using static SWLOR.Game.Server.Composition.GameServices;\n");
+        Run(RunMode.Check).Should().Be(FacadeRemovalRunner.Ok);
+    }
+
+    [Test]
     public void The_branch_is_in_the_shape_the_tool_keeps_it_in()
     {
         var root = RepositoryLocator.Find(TestContext.CurrentContext.TestDirectory)!;

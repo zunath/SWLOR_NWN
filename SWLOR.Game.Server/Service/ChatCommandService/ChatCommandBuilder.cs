@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.ChatCommandService
@@ -106,13 +105,7 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
-                AssignCommand(user, () =>
-                {
-                    // /grip borrows dodges for its activation parry; do not let /sidestep play that parry.
-                    if (animation == Animation.FireForgetDodgeSide)
-                        Grip.ReleaseActivationParryForNativeDodge(user);
-                    ActionPlayAnimation(animation);
-                });
+                AssignCommand(user, () => ActionPlayAnimation(animation));
             };
             _currentDetail.EmoteAnimation = animation;
             _currentDetail.IsEmoteLooping = false;

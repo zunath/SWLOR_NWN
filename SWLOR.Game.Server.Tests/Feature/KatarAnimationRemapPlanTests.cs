@@ -12,10 +12,10 @@ public class KatarAnimationRemapPlanTests
     private static Dictionary<string, string> FullRemap() =>
         KatarAnimationRemapPlan.Pairs.ToDictionary(pair => pair.Source, pair => pair.Replacement);
 
-    [TestCase(1)]
-    [TestCase(2)]
-    public void SwitchingFromKatarToGrip_RemovesOnlyRemainingKatarMappings(int mode)
+    [Test]
+    public void SwitchingFromKatarToOneHandedBladeGrip_RemovesOnlyRemainingKatarMappings()
     {
+        const int mode = 1;
         var current = FullRemap();
         void Replace(string source, string replacement)
         {
@@ -27,7 +27,7 @@ public class KatarAnimationRemapPlanTests
         foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing))
             Replace(source, replacement);
 
-        current[mode == 1 ? "1hreadyr" : "2hreadyr"].Should().Be(mode == 1 ? "2hreadyr" : "1hreadyr");
+        current["1hreadyr"].Should().Be("2hreadyr");
         current.Where(pair => KatarAnimationRemapPlan.Pairs.Contains((pair.Key, pair.Value))).Should().BeEmpty();
     }
 

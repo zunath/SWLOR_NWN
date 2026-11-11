@@ -54,6 +54,7 @@ public class RifleSupportAnimationCatalogTests
     [TestCase("rf-invalid")]
     [TestCase("rf_untyped")]
     [TestCase("rf267_101_r")]
+    [TestCase("rf123456789_i")]
     public void ClipNamesMustBeQualifiedNativeRifleResources(string name)
     {
         Action load = () => Load(("pfo0_handr267", "pfo0_handl267", 101, new RifleSupportPoses(name, Poses.Ready, Poses.Shot)));

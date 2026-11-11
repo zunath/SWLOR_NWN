@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,6 +29,7 @@ public static class NamedAnimation
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
+        var startedHold = AnimationWeaponHold.None;
         AssignCommand(creature, () =>
         {
             if (!Playback.CanStartEquipmentPlayback(creature, request)) return;
@@ -38,14 +40,18 @@ public static class NamedAnimation
                 // Invalidated requests leave the carrier native.
                 var hold = AbilityAnimationEquipment.ReadHold(creature);
                 var held = hold != AnimationWeaponHold.None;
+                var playbackClip = RifleSupportAnimation.ResolveAuthored(creature, clip);
                 if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
-                    token = Playback.Begin(creature, clip, duration, weaponHold: hold, equipmentRequest: request);
+                {
+                    startedHold = hold;
+                    token = Playback.Begin(creature, playbackClip, duration, weaponHold: hold, equipmentRequest: request);
+                }
                 PlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward,
-                    held ? clip.PlaybackSpeed(duration) : 1f, duration);
+                    held ? playbackClip.PlaybackSpeed(duration) : 1f, duration);
             });
             // Holds the queue for the clip, as the queued carrier action did.
             ActionWait(duration);
-            ActionDoCommand(() => Playback.Complete(creature, token));
+            ActionDoCommand(() => Playback.CompleteNaturally(creature, token, startedHold));
         });
     }
 
@@ -59,6 +65,7 @@ public static class NamedAnimation
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
+        clip = RifleSupportAnimation.ResolveAuthored(creature, clip);
         var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
             ? AbilityAnimationEquipment.ReadHold(creature) : AnimationWeaponHold.None;
         var liftInPlace = holdMode == NamedAnimationHold.LiftInPlace && nativeHold == AnimationWeaponHold.Shoulder;

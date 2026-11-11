@@ -19,6 +19,7 @@ public class RifleSupportAnimationPlaybackTests
         runtime.Maps["xbowr"].Should().Be(poses.Idle);
         runtime.Maps["xbowrdy"].Should().Be(poses.Ready);
         runtime.Maps["xbowshot"].Should().Be(poses.Shot);
+        runtime.Maps["pause1"].Should().Be(poses.BaseIdle);
         runtime.Maps["plpause1"].Should().Be("xbowr");
         runtime.Maps["dodges"].Should().Be(NamedAnimationPlayback.NoHoldName);
         playback.Apply(1, poses);
@@ -40,6 +41,7 @@ public class RifleSupportAnimationPlaybackTests
         playback.Apply(1, Poses("rf_c_"));
         runtime.Callbacks[0]();
         runtime.Maps["xbowr"].Should().Be("rf_c_i");
+        runtime.Maps["pause1"].Should().Be("rf_c_b");
         runtime.Maps["plpause1"].Should().Be("rf_a_i");
         runtime.ClearCalls.Should().Be(2);
         runtime.Callbacks[0]();
@@ -47,6 +49,7 @@ public class RifleSupportAnimationPlaybackTests
         runtime.Callbacks[1]();
         runtime.Maps["dodges"].Should().BeEmpty();
         runtime.Maps["xbowr"].Should().Be("rf_c_i");
+        runtime.Maps["pause1"].Should().Be("rf_c_b");
     }
 
     [Test]
@@ -119,6 +122,27 @@ public class RifleSupportAnimationPlaybackTests
         runtime.Maps["dodges"] = "";
         playback.Refresh(1);
         runtime.ClearCalls.Should().Be(1);
+    }
+
+    [Test]
+    public void ForeignBaseIdleDelaysFittedMappingsAndUnequipLeavesItsOwnerInControl()
+    {
+        var runtime = new FakeRifleSupportAnimationRuntime();
+        var playback = new RifleSupportAnimationPlayback(runtime);
+        runtime.Maps["pause1"] = "sw_foreign";
+        playback.Apply(1, Poses("rf_a_"));
+        runtime.Maps.Should().HaveCount(1);
+        runtime.ClearCalls.Should().Be(0);
+        runtime.Maps["pause1"] = "";
+        playback.Refresh(1);
+        runtime.Callbacks[0]();
+        runtime.Maps["pause1"].Should().Be("rf_a_b");
+        runtime.Maps["pause1"] = "sw_foreign";
+        playback.Apply(1, null);
+        runtime.Maps["pause1"].Should().Be("sw_foreign");
+        runtime.Maps["pause1"] = "";
+        playback.Refresh(1);
+        runtime.Maps.Values.Should().OnlyContain(value => value == "");
     }
 
     [Test]

@@ -144,9 +144,9 @@ public sealed class NamedAnimationPlayback
             });
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
-            _runtime.Schedule(duration + 1f, () => Complete(creature, token));
+            _runtime.Schedule(duration + 1f, () => CompleteNaturally(creature, token, weaponHold));
             if (completeAtDuration)
-                _runtime.Schedule(duration, () => Complete(creature, token));
+                _runtime.Schedule(duration, () => CompleteNaturally(creature, token, weaponHold));
             return token;
         }
         catch
@@ -190,6 +190,23 @@ public sealed class NamedAnimationPlayback
             if (IsCurrent(creature, token)) ReleaseForNativePlayback(creature);
             throw;
         }
+    }
+
+    /// <summary>Restores a finished rifle one-shot before the engine refreshes its idle hold.</summary>
+    public void CompleteNaturally(uint creature, string token, AnimationWeaponHold weaponHold)
+    {
+        if (weaponHold != AnimationWeaponHold.Rifle ||
+            !_heldPlaybackTokens.TryGetValue(creature, out var heldToken) || heldToken != token)
+        {
+            Complete(creature, token);
+            return;
+        }
+        if (!IsCurrent(creature, token)) return;
+        // The native one-shot leaves itself. A scripted idle while xbowr is still
+        // suppressed drops both arms until the deferred equipment restore runs.
+        var endingToken = EndingPrefix + token;
+        _runtime.SetToken(creature, endingToken);
+        Restore(creature, endingToken);
     }
 
     public void Complete(uint creature, string token)

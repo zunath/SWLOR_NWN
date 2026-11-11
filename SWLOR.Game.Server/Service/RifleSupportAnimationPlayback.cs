@@ -18,7 +18,7 @@ public sealed class RifleSupportAnimationPlayback
     private readonly Dictionary<uint, (long Token, string PreviousIdle)> _clearing = new();
     private readonly Dictionary<uint, string> _uncleared = new();
     private long _token;
-    private static readonly string[] Sources = { "xbowr", "xbowrdy", "xbowshot" };
+    private static readonly string[] Sources = { "xbowr", "xbowrdy", "xbowshot", "pause1" };
 
     public void Apply(uint creature, RifleSupportPoses poses)
     {
@@ -105,5 +105,5 @@ public sealed class RifleSupportAnimationPlayback
     }
 
     private static string[] Values(RifleSupportPoses poses) =>
-        poses == null ? new[] { "", "", "" } : new[] { poses.Idle, poses.Ready, poses.Shot };
+        poses == null ? new[] { "", "", "", "" } : new[] { poses.Idle, poses.Ready, poses.Shot, poses.BaseIdle };
 }

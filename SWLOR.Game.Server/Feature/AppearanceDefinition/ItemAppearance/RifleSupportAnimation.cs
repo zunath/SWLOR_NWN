@@ -34,16 +34,22 @@ public static class RifleSupportAnimation
         _registered = true;
     }
 
-    public static void Apply(uint creature)
+    public static void Apply(uint creature) => Playback.Apply(creature, CurrentPoses(creature));
+
+    public static AnimationClip ResolveAuthored(uint creature, AnimationClip clip) =>
+        clip.Name == AuthoredAnimation.AimedShot.Name
+            ? CurrentPoses(creature)?.ResolveAuthored(clip) ?? clip : clip;
+
+    private static RifleSupportPoses CurrentPoses(uint creature)
     {
-        RifleSupportPoses poses = null;
+        if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature) return null;
         var rifle = GetItemInSlot(InventorySlot.RightHand, creature);
-        if (GetIsObjectValid(rifle) && GetBaseItemType(rifle) == BaseItem.Rifle &&
-            WeaponFit.GetPart(rifle, AppearanceWeapon.Top) == 101 && WeaponFit.GetPart(rifle, AppearanceWeapon.Bottom) == 101)
-            poses = _catalog.Resolve(WeaponGripHandRenderer.GetHandModel(creature, CreaturePart.RightHand, "r"),
-                WeaponGripHandRenderer.GetHandModel(creature, CreaturePart.LeftHand, "l"),
-                WeaponFit.GetPart(rifle, AppearanceWeapon.Middle));
-        Playback.Apply(creature, poses);
+        if (!GetIsObjectValid(rifle) || GetBaseItemType(rifle) != BaseItem.Rifle ||
+            WeaponFit.GetPart(rifle, AppearanceWeapon.Top) != 101 || WeaponFit.GetPart(rifle, AppearanceWeapon.Bottom) != 101)
+            return null;
+        return _catalog.Resolve(WeaponGripHandRenderer.GetHandModel(creature, CreaturePart.RightHand, "r"),
+            WeaponGripHandRenderer.GetHandModel(creature, CreaturePart.LeftHand, "l"),
+            WeaponFit.GetPart(rifle, AppearanceWeapon.Middle));
     }
 
     [NWNEventHandler(ScriptName.OnModuleHeartbeat)]

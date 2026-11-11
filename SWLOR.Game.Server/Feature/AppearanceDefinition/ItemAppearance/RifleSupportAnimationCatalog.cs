@@ -24,7 +24,7 @@ internal sealed class RifleSupportAnimationCatalog
                 !ushort.TryParse(primary.Groups[3].Value, out var rightId) || rightId == 0 ||
                 !ushort.TryParse(support.Groups[3].Value, out var leftId) || leftId == 0 || model is < 1 or > 65535 ||
                 poses == null || new[] { poses.Idle, poses.Ready, poses.Shot }.Where((name, index) =>
-                    name == null || !Clip.IsMatch(name) || !name.EndsWith("_" + "irs"[index], StringComparison.Ordinal)).Any() ||
+                    name == null || name.Length > AnimationClip.MaxNameLength || !Clip.IsMatch(name) || !name.EndsWith("_" + "irs"[index], StringComparison.Ordinal)).Any() ||
                 !_poses.TryAdd((right.ToLowerInvariant(), left.ToLowerInvariant(), model), poses))
                 throw new ArgumentException("Invalid or duplicate rifle support animation selection.");
         }

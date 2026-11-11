@@ -81,6 +81,67 @@ public class NamedAnimationPlaybackTests
         runtime.Token.Should().BeEmpty();
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void NaturalRifleCompletionRestoresTheHoldBeforeAnyIdleRecovery(bool immediate)
+    {
+        var runtime = new Runtime();
+        var recoveries = 0;
+        var restored = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => recoveries++, creature =>
+        {
+            runtime.Token.Should().BeEmpty();
+            runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().BeEmpty();
+            runtime.Replacements[NamedAnimationPlayback.RifleHoldSource] = "rf266_318_i";
+            restored++;
+        });
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f,
+            completeAtDuration: immediate, weaponHold: AnimationWeaponHold.Rifle);
+
+        runtime.Callbacks[immediate ? 1 : 0]();
+
+        recoveries.Should().Be(0, "the completed native one-shot must leave without an unarmed idle");
+        restored.Should().Be(1);
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be("rf266_318_i");
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().BeEmpty();
+        runtime.ClearedActions.Should().Be(0);
+    }
+
+    [Test]
+    public void QueuedNaturalRifleCompletionUsesTheSameImmediateHoldRestore()
+    {
+        var runtime = new Runtime();
+        var recoveries = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => recoveries++);
+        var token = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f,
+            weaponHold: AnimationWeaponHold.Rifle);
+
+        playback.CompleteNaturally(1, token, AnimationWeaponHold.Rifle);
+
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        recoveries.Should().Be(0);
+        runtime.ClearedActions.Should().Be(0);
+    }
+
+    [Test]
+    public void OtherNaturalCompletionsRetainTheirAuthoredExitAndGrace()
+    {
+        var runtime = new Runtime();
+        var recoveries = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => recoveries++);
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2f), 2f);
+
+        playback.CompleteNaturally(1, token, AnimationWeaponHold.None);
+
+        runtime.Token.Should().Be("ending:" + token);
+        runtime.Delays[^1].Should().Be(NamedAnimationPlayback.ExitGraceSeconds);
+        recoveries.Should().Be(1);
+        runtime.Callbacks[^1]();
+        runtime.Token.Should().BeEmpty();
+    }
+
     [Test]
     public void ShoulderCarrierClearsTheExistingHoldAndSuppressesFutureHoldRefreshes()
     {

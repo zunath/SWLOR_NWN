@@ -360,7 +360,7 @@ def fit_bytes(before, role):
     if not changed <= allowed:
         raise ValueError("Interface fitting changed unrelated native metadata")
     after, _ = NativeTangentSeams.compact_model_bytes(bytes(after))
-    validate(before, after, role)
+    validate(before, after, role, {float(y) for y, entry in report.items() if entry["cap_rebuilt"]})
     return after, report
 
 
@@ -410,8 +410,10 @@ def interface_problems(meshes, role):
                 if not tubes and covered < _area(hull) * CAP_COVERAGE:
                     problems.append(f"cap at y={joint[0]} leaves part of the cut open")
             outline = hull
-        elif tubes:
+        elif tubes or caps:
             outline = _end_section(sources, joint)[0]
+            if caps and not _hull_contains(outline, positions[np.unique(np.vstack(caps))][:, [0, 2]]):
+                problems.append(f"cap at y={joint[0]} reaches past the part section")
         else:
             continue
         if tubes and not _hull_contains(outline, positions[np.unique(np.vstack(tubes))][:, [0, 2]]):
@@ -419,8 +421,9 @@ def interface_problems(meshes, role):
     return problems
 
 
-def validate(before, after, role):
-    """Source trimeshes keep every rendered corner and every interface fits its part."""
+def validate(before, after, role, rebuilt=()):
+    """Source trimeshes keep every rendered corner, caps stay as authored except at the
+    `rebuilt` joint heights, and every interface fits its part."""
     _, old_meshes = NativeTangentSeams.mesh_headers(before)
     _, new_meshes = NativeTangentSeams.mesh_headers(after)
     if len(old_meshes) != len(new_meshes):
@@ -431,18 +434,10 @@ def validate(before, after, role):
     for position, (old, new) in enumerate(zip(old_meshes, new_meshes)):
         if position != index and not np.array_equal(_corner_rows(old), _corner_rows(new)):
             raise ValueError("Interface fitting changed a source trimesh")
-    old = old_meshes[index]
-    old_positions, old_faces = old["streams"][POSITION].astype(float), old["faces"].astype(int)
-    old_kinds = classify(old_positions, old_faces, role)
-    sources = [m for i, m in enumerate(old_meshes) if i != index]
     for joint in JOINTS[role]:
-        rim = rim_points(sources, joint)
-        caps = old_faces[[kind == ("cap", joint) for kind in old_kinds]]
-        tubes_left = any(kind == ("tube", joint) for kind in classify(
-            new_meshes[index]["streams"][POSITION].astype(float), new_meshes[index]["faces"].astype(int), role))
-        if len(rim) and not tubes_left and not cap_fits(old_positions, caps, MeshyWeaponParts.convex_hull(rim.tolist())):
-            continue  # Rebuilt; interface_problems checks the new cap.
-        if not np.array_equal(_cap_rows(old, role, joint), _cap_rows(new_meshes[index], role, joint)):
+        if joint[0] in rebuilt:
+            continue  # interface_problems checks the rebuilt cap.
+        if not np.array_equal(_cap_rows(old_meshes[index], role, joint), _cap_rows(new_meshes[index], role, joint)):
             raise ValueError(f"Interface fitting changed the cut cap at y={joint[0]}")
     problems = interface_problems(new_meshes, role)
     if problems:
@@ -451,6 +446,8 @@ def validate(before, after, role):
 
 def run(sw_weapon, output, models=None):
     sw_weapon, output = Path(sw_weapon).resolve(), Path(output).resolve()
+    if not sw_weapon.is_dir():
+        raise FileNotFoundError(f"No such sw_weapon folder: {sw_weapon}")
     if output.exists() and any(output.iterdir()):
         raise FileExistsError("Use a fresh output directory")
     names = models or sorted(path.stem for path in sw_weapon.glob("*.mdl") if MODEL.fullmatch(path.stem))

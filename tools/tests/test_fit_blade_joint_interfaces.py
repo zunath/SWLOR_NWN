@@ -6,6 +6,7 @@ compiled parts with an off-axis source section, flat cut caps and centred sleeve
 import math
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 import numpy as np
@@ -157,6 +158,30 @@ class BladeJointInterfaceTests(unittest.TestCase):
         self.assertFalse(report["0.135"]["cap_rebuilt"])
         self.assertEqual([], fit.interface_problems(meshes(after), "wswls_m"))
 
+    def test_a_rebuilt_cap_validates_beside_a_kept_inner_sleeve(self):
+        positions, faces = cap(0.085, 1)
+        inner = (GRIP[0] * 0.8, GRIP[1] * 0.8)
+        before = compiled([tube(0.085, 0.135, GRIP),
+                           combine([(positions[:5], faces[:3]), cap(0.135, -1),
+                                    tube(0.085, 0.085 + DEPTH, SLEEVE, np.zeros(2), True),
+                                    tube(0.085, 0.085 + DEPTH / 2, inner, CENTRE + [0.001, 0.0], closed=True)])])
+        after, report = fit.fit_bytes(before, "wswls_m")
+        self.assertTrue(report["0.085"]["cap_rebuilt"])
+        self.assertEqual(4 * SEGMENTS, report["0.085"]["sleeve_triangles_removed"])
+        self.assertEqual([], fit.interface_problems(meshes(after), "wswls_m"))
+
+    def test_audit_reports_a_cap_wider_than_a_short_end(self):
+        grip = tube(-0.1, 0.0815, GRIP, closed=True)
+        wide = cap(0.085, -1)
+        wide = (wide[0] * [3.0, 1.0, 3.0], wide[1])
+        problems = fit.interface_problems(meshes(compiled([grip, combine([wide, tube(0.085 - DEPTH, 0.085, GRIP, closed=True)])])), "wswls_b")
+        self.assertIn("cap at y=0.085 reaches past the part section", problems)
+
+    def test_a_missing_source_folder_is_an_error(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(FileNotFoundError):
+                fit.run(Path(temporary) / "missing", Path(temporary) / "out")
+
     def test_roles_follow_the_native_part_partitions(self):
         self.assertEqual("wswls_t", fit.role_of("wswls_t_011"))
         self.assertEqual(((0.111, 1), (0.17, -1)), fit.JOINTS[fit.role_of("wswgs_m_021")])
@@ -168,8 +193,21 @@ class BladeJointInterfaceTests(unittest.TestCase):
 
 @unittest.skipUnless(WEAPONS.is_dir(), "SWLOR_Haks sw_weapon is not checked out")
 class ShippedBladeJointAuditTests(unittest.TestCase):
+    # Static parts of these families without an authored interface: blanks and whole
+    # replacement models that were never cut. A part leaving or joining this list means
+    # its interface went unrecognised (or was newly authored): check it, then update.
+    UNCUT = frozenset({
+        "wdbsw_b_015", "wdbsw_m_015", "wdbsw_m_019", "wdbsw_m_029", "wdbsw_t_015",
+        "wplss_b_017", "wplss_b_018", "wplss_b_029", "wplss_b_039", "wplss_b_049", "wplss_b_071",
+        "wplss_b_141", "wplss_b_142", "wplss_b_143", "wplss_b_181", "wplss_m_181", "wplss_t_071",
+        "wswdg_b_031", "wswdg_b_032", "wswdg_b_033", "wswdg_b_034", "wswdg_b_035", "wswdg_b_161",
+        "wswdg_b_162", "wswdg_m_161", "wswdg_m_162",
+        "wswgs_b_015", "wswgs_b_071", "wswgs_b_105", "wswgs_m_015", "wswgs_m_048", "wswgs_t_071", "wswgs_t_105",
+        "wswls_b_091", "wswls_m_016", "wswls_t_016", "wswls_t_091",
+    })
+
     def test_no_fitted_weapon_part_carries_a_stray_joint_sleeve(self):
-        checked, problems = 0, {}
+        checked, problems, uncut = 0, {}, set()
         for path in sorted(WEAPONS.glob("*.mdl")):
             if not fit.MODEL.fullmatch(path.stem):
                 continue
@@ -178,12 +216,14 @@ class ShippedBladeJointAuditTests(unittest.TestCase):
                 continue
             found = meshes(data)
             if fit.interface_index(found, fit.role_of(path.stem)) is None:
+                uncut.add(path.stem)
                 continue
             checked += 1
             issues = fit.interface_problems(found, fit.role_of(path.stem))
             if issues:
                 problems[path.stem] = issues
         self.assertGreater(checked, 350)
+        self.assertEqual(set(self.UNCUT), uncut)
         self.assertEqual({}, problems)
 
 

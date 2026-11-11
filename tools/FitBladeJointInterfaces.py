@@ -1,11 +1,12 @@
-"""Remove the stray joint sleeves from compiled vibroblade/electroblade part models.
+"""Remove the stray joint sleeves from compiled fitted composite weapon parts.
 
-`MeshyWeaponParts.py` closes every cut of a fitted longsword part with a flat cap
-and adds an elliptical sleeve (48 x 72 mm, 7 mm deep) centred on the stock weapon
-axis. The fitted parts sit 20 mm off that axis and are mostly much slimmer, so on
-every fitted part the sleeves read as metal bars sticking out of one side at each
-joint: a middle shows one at its top and one at its bottom, a top or bottom one
-where it meets the middle. The flat caps already close each cut, so the sleeves add
+`MeshyWeaponParts.py` closes every cut of a fitted part with a flat cap and adds an
+elliptical sleeve measured from the stock connectors (vibroblades: 48 x 72 mm, 7 mm
+deep, centred on the stock axis). The fitted parts sit off that axis or are slimmer,
+so on most fitted parts the sleeves read as metal bars sticking out at each joint:
+on a vibroblade middle one at its top and one at its bottom, on a top or bottom one
+where it meets the middle. Greatswords, knives, polearms, twinblades and a few
+quarterstaffs had the same. The flat caps already close each cut, so the sleeves add
 nothing but the bars.
 
 This edits only the interface trimesh of each compiled part, in place of a decompile
@@ -28,27 +29,45 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import MeshyWeaponParts
 import NativeTangentSeams
 
-# Native vibroblade roles: the middle spans Y 0.085 to 0.135, the bottom lies below
-# it and the top above. Each joint is (y, side), side +1 when the part lies above it.
-JOINTS = {
-    "t": ((0.135, 1),),
-    "m": ((0.085, 1), (0.135, -1)),
-    "b": ((0.085, -1),),
+# Native part roles per weapon family, measured from the cut caps of the fitted parts
+# (BlasterModelImport.md). Each joint is (y, side), side +1 when the part lies above it.
+# Single-blade weapons stack bottom, middle and top along +Y. Staffs and twinblades use
+# paired roles: the bottom is the central grip, the middle both adjacent bands and the
+# top both ends.
+FAMILIES = {
+    "wswls": (0.085, 0.135),  # Vibroblade and electroblade
+    "wswgs": (0.111, 0.17),  # Greatsword
+    "wswdg": (0.075, 0.098),  # Knife
+    "wplss": (-0.442, 0.746),  # Polearm
 }
-SLEEVE_DEPTH = 0.0075  # Authored interface geometry ends within this depth of a joint.
+PAIRED = {
+    "wdbqs": (-0.6, -0.3, 0.9, 1.2),  # Quarterstaff
+    "wdbsw": (-0.128, -0.0833, 0.7885, 0.8323),  # Twinblade
+}
+JOINTS = {}
+for _family, (_low, _high) in FAMILIES.items():
+    JOINTS[_family + "_t"] = ((_high, 1),)
+    JOINTS[_family + "_m"] = ((_low, 1), (_high, -1))
+    JOINTS[_family + "_b"] = ((_low, -1),)
+for _family, (_outer_low, _inner_low, _inner_high, _outer_high) in PAIRED.items():
+    JOINTS[_family + "_t"] = ((_outer_low, -1), (_outer_high, 1))
+    JOINTS[_family + "_m"] = ((_outer_low, 1), (_inner_low, -1), (_inner_high, 1), (_outer_high, -1))
+    JOINTS[_family + "_b"] = ((_inner_low, 1), (_inner_high, -1))
+SLEEVE_DEPTH = 0.0085  # Authored interface geometry ends within this depth of a joint.
 COLLAR_SAMPLE = 0.002  # A short grip's end cross-section is sampled over this length.
 FIT_TOLERANCE = 0.0005
 CAP_COVERAGE = 0.98  # Share of the cut outline a cap must fill.
 PLANE = 1e-5
 POSITION, UV, NORMAL, TANGENT, SIGN = 444, 452, 468, 488, 496
-MODEL = re.compile(r"wswls_([tmb])_\d{3}")
+MODEL = re.compile(r"(" + "|".join(sorted({*FAMILIES, *PAIRED})) + r")_([tmb])_\d{3}")
 
 
 def role_of(name):
+    """The joint key of a part model, such as wswls_m for wswls_m_021."""
     match = MODEL.fullmatch(name)
     if not match:
-        raise ValueError(f"Not a vibroblade part model: {name}")
-    return match[1]
+        raise ValueError(f"Not a fitted composite weapon part model: {name}")
+    return f"{match[1]}_{match[2]}"
 
 
 def _distance(verts, joint):
@@ -125,9 +144,20 @@ def classify(positions, faces, role):
 
 
 def interface_index(meshes, role):
-    """Index of the authored interface trimesh (caps and sleeves only), or None."""
-    found = [i for i, mesh in enumerate(meshes)
-             if classify(mesh["streams"][POSITION].astype(float), mesh["faces"].astype(int), role) is not None]
+    """Index of the authored interface trimesh (caps and sleeves only), or None.
+
+    A source material can also hold only rings that end at a joint (twinblade grip
+    bands); the authored interface is then the one that also carries the cut caps.
+    """
+    found, capped = [], []
+    for i, mesh in enumerate(meshes):
+        kinds = classify(mesh["streams"][POSITION].astype(float), mesh["faces"].astype(int), role)
+        if kinds is not None:
+            found.append(i)
+            if any(kind[0] == "cap" for kind in kinds):
+                capped.append(i)
+    if len(found) > 1 and len(capped) == 1:
+        found = capped
     if len(found) > 1:
         raise ValueError("Expected one authored interface trimesh")
     if found and len(meshes) == 1:
@@ -186,11 +216,22 @@ def collar_triangles(outline, low, high):
     return triangles
 
 
+def cap_fits(positions, caps, hull):
+    """A cut cap lies within the cut's outline and fills it."""
+    if not len(caps):
+        return False
+    corners = positions[caps][:, :, [0, 2]]
+    if not _hull_contains(hull, corners.reshape(-1, 2)):
+        return False
+    (ax, az), (bx, bz) = (corners[:, 1] - corners[:, 0]).T, (corners[:, 2] - corners[:, 0]).T
+    return float(np.sum(np.abs(ax * bz - az * bx))) / 2 >= _area(hull) * CAP_COVERAGE
+
+
 def plan(meshes, role):
     """The interface edit for a part, or None when its interfaces already fit.
 
     Returns (interface index, kept original face indices, new flat triangles (n, 3, 3),
-    report). Cut caps stay as authored. A sleeve that reaches past its cut is dropped
+    report). Cut caps stay as authored unless they leave part of the cut open. A sleeve that reaches past its cut is dropped
     (the cap closes the cut); one inside the cut stays. A sleeve on a joint the source
     stops short of becomes a collar of the source's own end outline, unless it already
     lies within it.
@@ -208,18 +249,28 @@ def plan(meshes, role):
     for joint in JOINTS[role]:
         caps = [i for i, kind in enumerate(kinds) if kind == ("cap", joint)]
         tubes = [i for i, kind in enumerate(kinds) if kind == ("tube", joint)]
-        keep.extend(caps)
-        entry = {"cap_triangles": len(caps), "sleeve_triangles_removed": 0, "collar_triangles": 0}
+        entry = {"cap_triangles": len(caps), "cap_rebuilt": False, "sleeve_triangles_removed": 0, "collar_triangles": 0}
         rim = rim_points(sources, joint)
         if len(rim):
             hull = MeshyWeaponParts.convex_hull(rim.tolist())
+            removed = []
             for label in np.unique(labels[tubes]) if tubes else []:
                 members = [i for i in tubes if labels[i] == label]
                 if _hull_contains(hull, positions[np.unique(faces[members])][:, [0, 2]]):
                     keep.extend(members)
                 else:
-                    entry["sleeve_triangles_removed"] += len(members)
+                    removed.extend(members)
+            entry["sleeve_triangles_removed"] = len(removed)
+            if not removed or cap_fits(positions, faces[caps], hull):
+                keep.extend(caps)
+            else:
+                # The sleeve was hiding a cut an earlier edit (the staff joint widening)
+                # left partly open: close it with a fresh fan over the cut, as authoring does.
+                fan = MeshyWeaponParts.cap_triangles(rim.tolist(), joint[0], -joint[1])
+                triangles.extend(fan)
+                entry.update(cap_triangles=len(fan), cap_rebuilt=True)
         elif tubes:
+            keep.extend(caps)
             outline, gap = _end_section(sources, joint)
             tube = positions[np.unique(faces[tubes])]
             if _hull_contains(outline, tube[:, [0, 2]]):
@@ -355,7 +406,8 @@ def interface_problems(meshes, role):
                     problems.append(f"cap at y={joint[0]} reaches past the cut")
                 (ax, az), (bx, bz) = (corners[:, 1] - corners[:, 0]).T, (corners[:, 2] - corners[:, 0]).T
                 covered = float(np.sum(np.abs(ax * bz - az * bx))) / 2
-                if covered < _area(hull) * CAP_COVERAGE:
+                # A kept inner sleeve sits in the cut; elsewhere the cap alone closes it.
+                if not tubes and covered < _area(hull) * CAP_COVERAGE:
                     problems.append(f"cap at y={joint[0]} leaves part of the cut open")
             outline = hull
         elif tubes:
@@ -379,8 +431,18 @@ def validate(before, after, role):
     for position, (old, new) in enumerate(zip(old_meshes, new_meshes)):
         if position != index and not np.array_equal(_corner_rows(old), _corner_rows(new)):
             raise ValueError("Interface fitting changed a source trimesh")
+    old = old_meshes[index]
+    old_positions, old_faces = old["streams"][POSITION].astype(float), old["faces"].astype(int)
+    old_kinds = classify(old_positions, old_faces, role)
+    sources = [m for i, m in enumerate(old_meshes) if i != index]
     for joint in JOINTS[role]:
-        if not np.array_equal(_cap_rows(old_meshes[index], role, joint), _cap_rows(new_meshes[index], role, joint)):
+        rim = rim_points(sources, joint)
+        caps = old_faces[[kind == ("cap", joint) for kind in old_kinds]]
+        tubes_left = any(kind == ("tube", joint) for kind in classify(
+            new_meshes[index]["streams"][POSITION].astype(float), new_meshes[index]["faces"].astype(int), role))
+        if len(rim) and not tubes_left and not cap_fits(old_positions, caps, MeshyWeaponParts.convex_hull(rim.tolist())):
+            continue  # Rebuilt; interface_problems checks the new cap.
+        if not np.array_equal(_cap_rows(old, role, joint), _cap_rows(new_meshes[index], role, joint)):
             raise ValueError(f"Interface fitting changed the cut cap at y={joint[0]}")
     problems = interface_problems(new_meshes, role)
     if problems:
@@ -391,7 +453,7 @@ def run(sw_weapon, output, models=None):
     sw_weapon, output = Path(sw_weapon).resolve(), Path(output).resolve()
     if output.exists() and any(output.iterdir()):
         raise FileExistsError("Use a fresh output directory")
-    names = models or sorted(path.stem for path in sw_weapon.glob("wswls_*.mdl") if MODEL.fullmatch(path.stem))
+    names = models or sorted(path.stem for path in sw_weapon.glob("*.mdl") if MODEL.fullmatch(path.stem))
     output.mkdir(parents=True, exist_ok=True)
     reports = {}
     for name in names:
@@ -423,10 +485,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sw-weapon", required=True, help="SWLOR_Haks/sw_weapon")
     parser.add_argument("--output", required=True, help="Fresh local output directory for the edited models")
-    parser.add_argument("models", nargs="*", help="Optional wswls_[tmb]_NNN models (default: every fitted part)")
+    parser.add_argument("models", nargs="*", help="Optional <family>_[tmb]_NNN models (default: every fitted part)")
     args = parser.parse_args()
     reports = run(args.sw_weapon, args.output, args.models)
-    print(f"Fitted joint interfaces of {len(reports)} vibroblade part models")
+    print(f"Fitted joint interfaces of {len(reports)} composite weapon part models")
 
 
 if __name__ == "__main__":

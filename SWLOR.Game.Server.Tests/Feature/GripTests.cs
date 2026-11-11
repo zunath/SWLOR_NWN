@@ -48,6 +48,25 @@ public class GripTests
         Grip.GetMode(true, null, false).Should().Be(0);
     }
 
+    [TestCase(BaseItem.Lightsaber, false, true)]
+    [TestCase(BaseItem.Electroblade, false, true)]
+    [TestCase(BaseItem.Katar, false, false)]
+    [TestCase(BaseItem.Dagger, false, false)]
+    [TestCase(BaseItem.Katar, true, false)]
+    [TestCase(BaseItem.Dagger, true, false)]
+    [TestCase(BaseItem.Lightsaber, true, false)]
+    [TestCase(BaseItem.GreatSword, false, false)]
+    public void GripCommandRejectsUnsupportedOrOccupiedHands(BaseItem mainHand, bool hasOffhand, bool canToggle)
+    {
+        Grip.CanToggleForEquipment(mainHand, hasOffhand).Should().Be(canToggle);
+    }
+
+    [Test]
+    public void GripCommandRejectsEmptyHand()
+    {
+        Grip.CanToggleForEquipment(null, false).Should().BeFalse();
+    }
+
     [Test]
     public void EnablingThenDisablingChangesOnlyOneHandedCombatAnimations()
     {

@@ -31,6 +31,15 @@ public static class Grip
         if (!GetIsPC(player) || GetIsDead(player)) return;
         var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
         if (dbPlayer == null) return;
+        var right = GetItemInSlot(InventorySlot.RightHand, player);
+        var left = GetItemInSlot(InventorySlot.LeftHand, player);
+        if (!CanToggleForEquipment(
+                GetIsObjectValid(right) ? GetBaseItemType(right) : null,
+                GetIsObjectValid(left) && left != right))
+        {
+            SendMessageToPC(player, "Grip requires a supported one-handed blade and an empty offhand. Katars and daggers are not supported.");
+            return;
+        }
         var enabled = !GetLocalBool(player, EnabledVariable);
         dbPlayer.Settings ??= new PlayerSettings();
         dbPlayer.Settings.AlternateGripEnabled = enabled;
@@ -66,6 +75,13 @@ public static class Grip
         });
         SetLocalInt(creature, ModeVariable, desired);
     }
+
+    /// <summary>
+    /// The command only accepts eligible one-handed weapons with an empty offhand.
+    /// Unsupported weapons (including katars and daggers) cannot toggle the saved preference.
+    /// </summary>
+    public static bool CanToggleForEquipment(BaseItem? rightHand, bool hasOffhand) =>
+        GetMode(true, rightHand, hasOffhand) == 1;
 
     /// <summary>Only eligible one-handed blades can use the alternate two-handed combat style.</summary>
     public static int GetMode(bool enabled, BaseItem? rightHand, bool hasOffhand) =>

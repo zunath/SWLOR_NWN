@@ -1885,8 +1885,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
-                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                        ShipSound.PlayForCrew(instance.Players, ShipSound.InteriorImpact);
                     }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
@@ -1958,8 +1957,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
-                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                        ShipSound.PlayForCrew(instance.Players, ShipSound.InteriorImpact);
                     }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;

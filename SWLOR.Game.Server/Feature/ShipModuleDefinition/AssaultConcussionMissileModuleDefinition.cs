@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // Then apply damage on target and those nearby.
                     DelayCommand(delay, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake, !isHit), target);
+                        ShipSound.Play(target, ShipSound.ImpactRumble);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summondragon, !isHit), target);
                         PerformAttack(activator, target, moduleDamage, attackBonus, isHit);
                     });

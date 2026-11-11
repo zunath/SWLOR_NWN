@@ -50,8 +50,8 @@ Facts come from the branch at `968e3338d`, `C:\Projects\NWN.Hosting` (packages `
 
 Five boot buckets hold 111 handlers since P4-8 split the mixed ones (104 before): `mod_preload` 5, `mod_content_chg` 1, `mod_cache_bef` 44,
 `mod_cache_aft` 15, `mod_load` 46. Two more scripts belong to boot and shutdown: `db_loaded` (1 handler, run by `DBService.SyncIndexes`)
-and `app_shutdown` (2). After a
-reload the module is loaded and the engine runs none of these again, so the new build runs the rerunnable ones itself.
+and `app_shutdown` (2). After a reload the module is loaded and the engine runs none of these again, so the new build runs the
+rerunnable ones itself.
 
 Classification for reload (rule: a handler reruns when it only fills its own instance state or the game assembly's own statics,
 reads the engine, Redis or resources, writes nothing persistent and creates nothing; `Scheduler` timers and static registries

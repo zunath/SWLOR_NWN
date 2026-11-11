@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NWN.Core" Version="8193.37.4" />
+    <PackageReference Include="NWN.Core" Version="8193.37.7" />
   </ItemGroup>
 
 </Project>

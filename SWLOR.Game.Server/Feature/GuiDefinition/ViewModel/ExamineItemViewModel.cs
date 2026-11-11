@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The native examine events do not run for a disabled panel, so apply their item details here.
             EquipmentRestrictions.MarkLegacyOffHandPistol(item);
             Space.ApplyExamineDetails(item);
+            PowerGlovePairLifecycle.AddPairNote(item);
 
             // A viewer-specific window avoids persisting personal stats on a shared item.
             Gui.ClosePlayerWindow(viewer, GuiWindowType.ExamineItem);
@@ -80,7 +82,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string BuildWeaponDetails(bool hasLiveItem)
         {
-            if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+            if (!_payload.IsIdentified)
+                return string.Empty;
+            if (_payload.ItemType == BaseItem.PowerGlove)
+                return WeaponDamage.PowerGloveGripDescription;
+            if (!WeaponDamage.IsSingleWeaponType(_payload.ItemType))
                 return string.Empty;
 
             var details = WeaponDamage.BuildSingleWeaponDescription(_payload.ItemDMG,

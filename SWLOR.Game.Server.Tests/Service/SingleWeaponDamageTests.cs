@@ -71,6 +71,15 @@ public class SingleWeaponDamageTests
     }
 
     [Test]
+    public void PowerGloveDescription_PointsToDualWield()
+    {
+        WeaponDamage.PowerGloveGripDescription.Should().Contain("Dual Wield perk applies")
+            .And.Contain("Single Weapon and Doublehand bonuses do not apply");
+        WeaponDamage.IsSingleWeaponType(BaseItem.PowerGlove).Should().BeFalse(
+            "the examine text must match the Single Weapon eligibility rule");
+    }
+
+    [Test]
     public void Description_OnlyEnhancesRealDamageProperties()
     {
         var fallback = WeaponDamage.BuildSingleWeaponDescription(1, 20, 40, hasItemDamage: false);

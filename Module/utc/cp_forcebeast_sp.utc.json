@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Force-Bonded Beast specialist in Dathomir - Grotto Apex Den."
+    "value": "Goad-Scarred Wyvern (Force-Bonded Beast line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Force-Bonded Beast Specialist"
+      "0": "Goad-Scarred Wyvern"
     }
   },
   "fortbonus": {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 263
+          "value": 253
         }
       },
       {

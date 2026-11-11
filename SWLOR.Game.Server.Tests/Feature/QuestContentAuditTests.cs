@@ -281,6 +281,71 @@ public sealed partial class QuestConversationTests
         session.EndReason.Should().NotBe(ConversationEndReason.RuntimeError);
     }
 
+    [TestCase(17, 18)]
+    [TestCase(15, 16)]
+    [TestCase(13, 14)]
+    [TestCase(11, 12)]
+    [TestCase(10, 12)]
+    public void RepublicAssessment_WrongAnswersRestartAndStillAllowCompletion(int wrongAnswer, int retry)
+    {
+        var graph = ReadGraphs().Single(graph => graph.Id == "rep_trdrddialog");
+        var runtime = new ConversationRuntime();
+        var advances = 0;
+        runtime.RegisterCondition("condition-on-quest-state", (_, args) =>
+            args.SequenceEqual(new[] { "joining_the_republic", "3" }));
+        runtime.RegisterAction("system.execute-owner-script", (_, _) => true);
+        runtime.RegisterAction("action-advance-quest", (_, args) =>
+        {
+            args.Should().Equal("joining_the_republic");
+            advances++;
+            return true;
+        });
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+        session.Start().Should().BeTrue();
+        Select(0);
+        Select(2);
+        if (wrongAnswer <= 13)
+        {
+            Select(3);
+            Select(4);
+        }
+        if (wrongAnswer <= 11)
+        {
+            Select(5);
+            Select(6);
+        }
+        Select(wrongAnswer);
+        Select(retry);
+        session.HasEnded.Should().BeFalse("every wrong answer must allow an in-conversation retry");
+        session.CurrentNode.Id.Should().Be("entry-00002");
+        advances.Should().Be(0, "failed attempts must not advance the quest");
+
+        foreach (var reply in new[] { 3, 4, 5, 6, 7, 8 }) Select(reply);
+        advances.Should().Be(0, "the player must explicitly finish the assessment");
+        Select(9);
+        session.HasEnded.Should().BeTrue();
+        session.EndReason.Should().Be(ConversationEndReason.Completed);
+        advances.Should().Be(1);
+
+        void Select(int reply)
+        {
+            var index = session.VisibleChoices.ToList().FindIndex(choice => choice.Id == $"reply-{reply:00000}");
+            index.Should().BeGreaterThanOrEqualTo(0, $"reply {reply} must be reachable");
+            session.SelectChoice(index);
+        }
+    }
+
+    [Test]
+    public void RepublicAssessment_CorrectAnswersAppearInDifferentPositions()
+    {
+        var graph = ReadGraphs().Single(graph => graph.Id == "rep_trdrddialog");
+        var positions = new[] { (2, 3), (4, 5), (6, 7) }.Select(pair =>
+            graph.Nodes[$"entry-{pair.Item1:00000}"].Choices.FindIndex(route =>
+                route.ChoiceId == $"reply-{pair.Item2:00000}")).ToArray();
+        positions.Should().OnlyContain(position => position >= 0);
+        positions.Should().OnlyHaveUniqueItems("the correct option must not have a predictable position");
+    }
+
     [Test]
     public void RepublicOath_IsAvailableOnNahulusAssignedConversationOnlyAtItsQuestStage()
     {

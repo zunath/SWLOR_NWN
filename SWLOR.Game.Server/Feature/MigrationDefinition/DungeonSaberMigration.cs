@@ -28,14 +28,6 @@ public static class DungeonSaberMigration
         return resref != null && Replacements.TryGetValue(resref, out replacement);
     }
 
-    [NWNEventHandler(ScriptName.OnModuleAcquire)]
-    public static void OnAcquire()
-    {
-        var owner = GetModuleItemAcquiredBy();
-        if (GetIsPC(owner) && !GetIsDM(owner))
-            MigrateObject(GetModuleItemAcquired());
-    }
-
     public static bool MigrateObject(uint obj)
     {
         using var disposal = new MigrationItemDisposal();

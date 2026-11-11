@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talan Rees gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Storm Drill Droids in the Jedi Trial Halls and recover the Saber Storm Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Hutlar_StormDrillDroid, 6)
+                    "Talan Rees gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Trial Drill Droids, the ones nearest the entrance of the Jedi Trial Halls, and recover the Saber Storm Enclave Trial Slate. Any Trial Drill Droid counts, whatever form it fights in, but only kills made after sundering their defenses.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialDrillDroids, "saber_storm", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Storm Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Storm Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Hutlar_StormDuelistDroid, 5)
+                    "Disable five Trial Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Storm Kyber Focus Shard. Any Trial Duelist Droid counts, whatever form it fights in, but only kills made after sundering their defenses.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialDuelistDroids, "saber_storm", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormKyberFocusShard)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Storm Gatekeeper Droid in the western halls of the Jedi Trial Halls on Hutlar and recover the Saber Storm Fractured Trial Sigil.")
-                .AddKillObjective(NPCGroupType.Hutlar_StormGatekeeperDroid, 1)
+                    "With at least two allies, disable the Trial Gatekeeper Droid in the western halls of the Jedi Trial Halls on Hutlar and recover the Saber Storm Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_TrialGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Storm Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Storm Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Hutlar_StormExaminerDroid, 4)
+                    "Disable four Trial Examiner Droids guarding the control systems in the west wing of the Jedi Trial Halls on Hutlar, the deepest part, and recover the Saber Storm Council Trial Chit. Any Trial Examiner Droid counts, whatever form it fights in, but only kills made after sundering their defenses.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialExaminerDroids, "saber_storm", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
                 .AddState()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miris Aven gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Guardian Patrol Droids in the Jedi Trial Halls and recover the Guardian Master Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Hutlar_GuardianPatrolDroid, 6)
+                    "Miris Aven gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Trial Drill Droids, the ones nearest the entrance of the Jedi Trial Halls, and recover the Guardian Master Enclave Trial Slate. Any Trial Drill Droid counts, whatever form it fights in, but only kills made while warded by your Saber Ward.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialDrillDroids, "guardian_master", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Guardian Bulwark Droids deeper in the Jedi Trial Halls on Hutlar and recover the Guardian Master Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Hutlar_GuardianBulwarkDroid, 5)
+                    "Disable five Trial Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Guardian Master Kyber Focus Shard. Any Trial Duelist Droid counts, whatever form it fights in, but only kills made while warded by your Saber Ward.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialDuelistDroids, "guardian_master", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterKyberFocusShard)
 
                 .AddState()
@@ -217,8 +217,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Guardian Gatekeeper Droid in the eastern halls of the Jedi Trial Halls on Hutlar and recover the Guardian Master Fractured Trial Sigil.")
-                .AddKillObjective(NPCGroupType.Hutlar_GuardianGatekeeperDroid, 1)
+                    "With at least two allies, disable the Trial Gatekeeper Droid in the eastern halls of the Jedi Trial Halls on Hutlar and recover the Guardian Master Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_TrialGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
 
                 .AddState()
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Guardian Shield Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Guardian Master Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Hutlar_GuardianShieldDroid, 4)
+                    "Disable four Trial Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar, the deepest part, and recover the Guardian Master Council Trial Chit. Any Trial Examiner Droid counts, whatever form it fights in, but only kills made while warded by your Saber Ward.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TrialExaminerDroids, "guardian_master", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
 
                 .AddState()

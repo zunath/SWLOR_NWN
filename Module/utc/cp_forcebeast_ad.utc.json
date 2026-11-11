@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Force-Bonded Beast adept in Dathomir - Grotto Apex Den."
+    "value": "Young Wyvern (Force-Bonded Beast line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -140,7 +140,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Force-Bonded Beast Adept"
+      "0": "Young Wyvern"
     }
   },
   "fortbonus": {
@@ -533,7 +533,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 262
+          "value": 252
         }
       },
       {

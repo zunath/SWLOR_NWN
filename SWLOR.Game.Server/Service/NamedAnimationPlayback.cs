@@ -26,6 +26,7 @@ public sealed class NamedAnimationPlayback
     public const string HoldCarrierSource = "dodges";
     public const string RifleHoldSource = "xbowr";
     public const string ShoulderHoldSource = "plpause1";
+    public const string TorchHoldSource = "torchl";
     public const string NoHoldName = "sw_nohold";
     // Keep the authored exit mapped while the engine leaves the custom-emote state.
     // Generated exits take 0.2 seconds; the remaining time allows a deferred script tick.
@@ -37,6 +38,7 @@ public sealed class NamedAnimationPlayback
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
     // Hold mappings match the weapon equipped at start, so any equipment change releases them.
     private readonly Dictionary<uint, string> _heldPlaybackTokens = new();
+    private readonly Dictionary<uint, string> _torchPlaybackTokens = new();
 
     /// <summary>Ownership of a restricted request, including time spent waiting in the native queue.</summary>
     public sealed class EquipmentRequest
@@ -79,8 +81,13 @@ public sealed class NamedAnimationPlayback
         _releasePose = releasePose;
     }
 
+    /// <param name="liftShoulderHoldInPlace">
+    /// With no weaponHold, keeps the looping carrier but maps the two-handed and polearm hold to no animation, for a long
+    /// loop that poses the arm itself.
+    /// </param>
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
-        AnimationWeaponHold weaponHold = AnimationWeaponHold.None, EquipmentRequest equipmentRequest = null)
+        AnimationWeaponHold weaponHold = AnimationWeaponHold.None, EquipmentRequest equipmentRequest = null,
+        bool liftShoulderHoldInPlace = false, bool liftTorchHoldInPlace = false)
     {
         ArgumentNullException.ThrowIfNull(clip);
         if (!CanStartEquipmentPlayback(creature, equipmentRequest)) return null;
@@ -89,19 +96,21 @@ public sealed class NamedAnimationPlayback
             _equipmentRequests.Remove(creature);
             _restrictedPlaybackTokens.Remove(creature);
         }
-        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration, weaponHold);
+        var liftInPlace = liftShoulderHoldInPlace && weaponHold == AnimationWeaponHold.None;
+        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration, weaponHold,
+            liftInPlace, liftTorchHoldInPlace);
         if (equipmentRequest != null)
         {
             equipmentRequest.PlaybackToken = token;
             _restrictedPlaybackTokens[creature] = token;
         }
-        if (weaponHold != AnimationWeaponHold.None) _heldPlaybackTokens[creature] = token;
+        if (weaponHold != AnimationWeaponHold.None || liftInPlace || liftTorchHoldInPlace) _heldPlaybackTokens[creature] = token;
         else _heldPlaybackTokens.Remove(creature);
         return token;
     }
 
     private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
-        AnimationWeaponHold weaponHold)
+        AnimationWeaponHold weaponHold, bool liftShoulderHoldInPlace, bool liftTorchHoldInPlace)
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
@@ -122,13 +131,24 @@ public sealed class NamedAnimationPlayback
             {
                 AnimationWeaponHold.Rifle => NoHoldName,
                 AnimationWeaponHold.Shoulder => ShoulderHoldSource,
+                AnimationWeaponHold.Torch => TorchHoldSource,
                 _ => ""
             });
+            // Torch poses overlay the left arm even on an otherwise unarmed singer. DodgeSide's
+            // xbowr removal is redirected to the existing torch layer for the opening, then only
+            // the looping no-op mapping is retained. Other callers never touch torch mappings.
+            if (weaponHold == AnimationWeaponHold.Torch || liftTorchHoldInPlace)
+            {
+                _torchPlaybackTokens[creature] = token;
+                _runtime.Replace(creature, TorchHoldSource, NoHoldName);
+            }
+            else if (_torchPlaybackTokens.Remove(creature))
+                _runtime.Replace(creature, TorchHoldSource, "");
             _runtime.Replace(creature, ShoulderHoldSource, weaponHold switch
             {
                 AnimationWeaponHold.Rifle => RifleHoldSource,
                 AnimationWeaponHold.Shoulder => NoHoldName,
-                _ => ""
+                _ => liftShoulderHoldInPlace ? NoHoldName : ""
             });
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
@@ -209,6 +229,8 @@ public sealed class NamedAnimationPlayback
         _runtime.Replace(creature, HoldCarrierSource, "");
         _runtime.Replace(creature, RifleHoldSource, "");
         _runtime.Replace(creature, ShoulderHoldSource, "");
+        if (_torchPlaybackTokens.Remove(creature))
+            _runtime.Replace(creature, TorchHoldSource, "");
         _runtime.SetToken(creature, "");
     }
 

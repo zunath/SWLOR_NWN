@@ -104,6 +104,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1855
         }
       },
@@ -572,6 +579,21 @@
         "Value": {
           "type": "cexostring",
           "value": "MUSIC_DISCS,1,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "FNOTE_THERMLANCER,10,1"
         }
       }
     ]

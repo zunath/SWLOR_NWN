@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Soul Ascension inner circle choir member in Tatooine - Forge Caverns."
+    "value": "Forgebound Overseer (Soul Ascension line) choir member in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak of the congregation's inner choir, murmuring stolen verses as he fights. A stamped clearance token hangs at his belt, and his heavy vibroblade never stops moving."
+      "0": "A Zabrak overseer of the Forgebound's inner choir, murmuring stolen verses as he fights. A stamped clearance token hangs at his belt, and his heavy vibroblade never stops moving."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Soul Ascension Inner Circle"
+      "0": "Forgebound Overseer"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 110
+          "value": 105
         }
       },
       {

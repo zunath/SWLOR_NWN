@@ -4,7 +4,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -39,9 +38,7 @@ public class FurnitureSetPlaceableTests
     [Test]
     public void RenamedDisplayPieces_EachHaveTheirOwnPlaceable()
     {
-        var renamed = FurnitureRenameMigration.RecipeRenames.Values
-            .Select(recipe => Enum.Parse<StructureType>(recipe.ToString()))
-            .ToList();
+        var renamed = DisplayPieceResrefs.Keys.ToList();
 
         renamed.Should().HaveCount(10);
         renamed.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's display piece has its own look");
@@ -49,6 +46,36 @@ public class FurnitureSetPlaceableTests
         renamed.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(DisplayPieceResrefs,
             "each name was chosen for the placeable it shows, checked in the client");
     }
+
+    [Test]
+    public void TrophyStands_EachHaveTheirOwnPlaceable()
+    {
+        var stands = Enum.GetValues<StructureType>().Where(t => t.ToString().EndsWith(TrophyStandSuffix)).ToList();
+
+        stands.Should().HaveCount(10);
+        stands.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's Trophy Stand has its own look");
+        stands.Select(ResrefOf).Should().NotContain(ResrefOf(StructureType.Pedestal),
+            "the stands used to share the plain Pedestal's look");
+        stands.Select(ResrefOf).Should().NotIntersectWith(DisplayPieceResrefs.Values,
+            "no Trophy Stand may look like any set's display piece");
+        stands.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(TrophyStandResrefs,
+            "each stand has its own Meshy model for its set's theme, checked in the client");
+    }
+
+    // Each set's Trophy Stand blueprint; the blueprint resref is also its model and placeables.2da model name.
+    private static readonly Dictionary<StructureType, string> TrophyStandResrefs = new()
+    {
+        [StructureType.AshmarkTrophyStand] = "swc_tro_ash",
+        [StructureType.GuttermarkTrophyStand] = "swc_tro_gutter",
+        [StructureType.TrailmarkTrophyStand] = "swc_tro_trail",
+        [StructureType.StonewakeTrophyStand] = "swc_tro_stone",
+        [StructureType.AegislineTrophyStand] = "swc_tro_aegis",
+        [StructureType.VeilcarvedTrophyStand] = "swc_tro_veil",
+        [StructureType.SurgewakeTrophyStand] = "swc_tro_surge",
+        [StructureType.ResonantTrophyStand] = "swc_tro_reson",
+        [StructureType.FieldlineTrophyStand] = "swc_tro_field",
+        [StructureType.CommandlineTrophyStand] = "swc_tro_cmd",
+    };
 
     // The placeable each renamed display piece was named after.
     private static readonly Dictionary<StructureType, string> DisplayPieceResrefs = new()

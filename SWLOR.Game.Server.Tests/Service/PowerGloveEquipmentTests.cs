@@ -25,6 +25,19 @@ public class PowerGloveEquipmentTests
     }
 
     [Test]
+    public void PairNoteIsAppendedOnceAndKeepsTheDescription()
+    {
+        const string existing = "A customized glove with a worn grip.";
+
+        var noted = PowerGloveEquipment.GetPairDescription(existing);
+
+        noted.Should().Be($"{existing}\n{PowerGloveEquipment.PairDescriptionNote}");
+        PowerGloveEquipment.GetPairDescription(noted).Should().Be(noted, "examining again adds nothing");
+        PowerGloveEquipment.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipment.PairDescriptionNote);
+        PowerGloveEquipment.PairDescriptionNote.Should().MatchRegex("^[\\x20-\\x7E]+$", "game text is plain ASCII");
+    }
+
+    [Test]
     public void PowerGloveUsesAnIndependentEquippedMeleeProfile()
     {
         Item.PowerGloveBaseItemTypes.Should().Equal(BaseItem.PowerGlove);
@@ -153,7 +166,7 @@ public class PowerGloveEquipmentTests
     [TestCase(BaseItem.Invalid, null, false)]
     [TestCase(null, BaseItem.PowerGlove, false)]
     [TestCase(null, null, false)]
-    public void FullTechniqueGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
+    public void UnarmedGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
         EquipmentPredicates.HasUnarmedGrip(mainHand, offHand).Should().Be(expected);
 
     [Test, NonParallelizable]

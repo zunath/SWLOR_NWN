@@ -245,6 +245,12 @@ Three engine rules shape the setup:
   A fixture that kept the flag would never be destroyed, and leftover fixtures would pile up in
   the arena during multi-case sweeps.
 
+The new record seeds strong combat values (Attack, Accuracy and Force Attack 150, Evasion 100, max FP
+and STM 10000) that no worn gear grants. Gear-fed records are rebuilt from the worn gear after every
+equip change and at login (`Readmes/CodingStandards.md`), so equipping an item that feeds one of
+them, or logging the character in, replaces the seeded value with the gear total. A test that counts
+equipment totals calls `fixture.MatchEquipmentRecordsToGear()` first, so its baseline is the gear.
+
 ### Persistence and migration coverage
 
 Converting saved data successfully does not establish that players can keep using it safely.

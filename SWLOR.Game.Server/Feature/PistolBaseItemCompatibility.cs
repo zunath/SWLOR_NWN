@@ -32,18 +32,6 @@ namespace SWLOR.Game.Server.Feature
                 "jawaaddit_wp",
             };
 
-        [NWNEventHandler(ScriptName.OnModuleAcquire)]
-        public static void OnAcquire()
-        {
-            Normalize(GetModuleItemAcquired());
-        }
-
-        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
-        public static void OnItemEquip()
-        {
-            Normalize(GetItemInSlot(InventorySlot.RightHand, OBJECT_SELF));
-        }
-
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void OnItemUnequip()
         {
@@ -68,65 +56,6 @@ namespace SWLOR.Game.Server.Feature
                 throw new InvalidOperationException("Unable to release repaired pistol ammunition on unequip.");
             nativeCreature.m_bMagicalBulletsEquipped = 0;
             DestroyObject(generatedAmmoId);
-        }
-
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void OnClientEnter()
-        {
-            var creature = GetEnteringObject();
-            if (!GetIsPC(creature) || GetIsDM(creature))
-                return;
-
-            var nativeCreature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSCreature();
-            // Generated stacks are moved by Normalize; the queued slot migration below
-            // handles only real saved ammunition that must remain in the player's inventory.
-            var equippedLegacyAmmo = (nativeCreature?.m_bMagicalArrowsEquipped ?? 0) != 0
-                ? OBJECT_INVALID
-                : GetItemInSlot(InventorySlot.Arrows, creature);
-            var equippedItemChanged = false;
-            for (var index = 0; index < NumberOfInventorySlots; index++)
-            {
-                var item = GetItemInSlot((InventorySlot)index, creature);
-                equippedItemChanged |= Normalize(item);
-            }
-
-            for (var item = GetFirstItemInInventory(creature);
-                 GetIsObjectValid(item);
-                 item = GetNextItemInInventory(creature))
-            {
-                Normalize(item);
-            }
-
-            if (equippedItemChanged)
-                RefreshEquippedItemAppearance(creature);
-
-            var normalizedLegacyAmmoType = GetIsObjectValid(equippedLegacyAmmo)
-                ? GetBaseItemType(equippedLegacyAmmo)
-                : BaseItem.Invalid;
-            if (normalizedLegacyAmmoType == BaseItem.Bullet)
-            {
-                var equippedBulletAmmo = GetItemInSlot(InventorySlot.Bullets, creature);
-                var clearOccupiedBulletSlot = ShouldClearBulletSlot(
-                    normalizedLegacyAmmoType,
-                    GetIsObjectValid(equippedBulletAmmo));
-
-                AssignCommand(
-                    creature,
-                    () =>
-                    {
-                        if (clearOccupiedBulletSlot && GetIsObjectValid(equippedBulletAmmo))
-                            ActionUnequipItem(equippedBulletAmmo);
-
-                        ActionEquipItem(equippedLegacyAmmo, InventorySlot.Bullets);
-                    });
-            }
-        }
-
-        public static bool ShouldClearBulletSlot(
-            BaseItem normalizedLegacyAmmoType,
-            bool bulletSlotOccupied)
-        {
-            return normalizedLegacyAmmoType == BaseItem.Bullet && bulletSlotOccupied;
         }
 
         public static BaseItem GetCanonicalBaseItem(BaseItem currentBaseItem, string resref)
@@ -266,16 +195,6 @@ namespace SWLOR.Game.Server.Feature
             }
 
             return false;
-        }
-
-        private static void RefreshEquippedItemAppearance(uint creature)
-        {
-            var creaturePointer = NWNXUtils.GetGameObject(creature);
-            if (creaturePointer == nint.Zero)
-                return;
-
-            var nativeCreature = CNWSCreature.FromPointer(creaturePointer);
-            nativeCreature?.UpdateAppearanceForEquippedItems();
         }
     }
 }

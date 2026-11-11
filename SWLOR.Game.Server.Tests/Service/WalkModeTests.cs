@@ -25,7 +25,7 @@ public class WalkModeTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
-            "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
+            "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -64,7 +64,8 @@ public class WalkModeTests
                 public static bool IsPlayer;
                 public const uint OBJECT_SELF = 1;
                 public static float NativeRate;
-                public static int Adjustment, Disabled, NativeSlow, BaseRateSets;
+                public static int Adjustment, Disabled, NativeSlow, BaseRateSets, OutOfCombatAdjustment;
+                public static bool InCombat;
                 public static readonly Dictionary<string, int> Ints = new();
                 public static readonly Dictionary<string, float> Floats = new();
                 public static bool GetIsObjectValid(uint creature) => creature == 1;
@@ -79,7 +80,10 @@ public class WalkModeTests
                 public static void SetLocalFloat(uint creature, string key, float value) => Floats[key] = value;
                 public static void DeleteLocalFloat(uint creature, string key) => Floats.Remove(key);
                 public static int GetStatAdjustment(uint creature, StatType type) =>
-                    type == StatType.MovementSpeedDisabled ? Disabled : Adjustment;
+                    type == StatType.MovementSpeedDisabled ? Disabled
+                    : type == StatType.OutOfCombatMovementSpeedPercentAdjustment ? OutOfCombatAdjustment
+                    : Adjustment;
+                public static bool GetIsInCombat(uint creature) => InCombat;
                 public static int GetFirstEffect(uint creature) => NativeSlow > 0 ? 1 : 0;
                 public static int GetNextEffect(uint creature) => 0;
                 public static bool GetIsEffectValid(int effect) => effect != 0;
@@ -90,7 +94,8 @@ public class WalkModeTests
                     IsDM = IsPossessed = AlwaysWalk = false;
                     IsPlayer = true;
                     NativeRate = 1.25f;
-                    Adjustment = Disabled = NativeSlow = BaseRateSets = 0;
+                    Adjustment = Disabled = NativeSlow = BaseRateSets = OutOfCombatAdjustment = 0;
+                    InCombat = false;
                     Ints.Clear(); Floats.Clear();
                 }
             }
@@ -297,6 +302,31 @@ public class WalkModeTests
         Get<float>("NativeRate").Should().Be(1.4f);
     }
 
+    [Test]
+    public void RelogWithRetainedWalkStateWalksUntilToggledOnce()
+    {
+        // A relog keeps the player's locals but starts a new creature with forced walk off.
+        Get<Dictionary<string, int>>("Ints")["WALK_TOGGLE"] = 1;
+        Invoke("RestoreWalkMode");
+        Get<bool>("AlwaysWalk").Should().BeTrue();
+        Get<float>("NativeRate").Should().Be(1f);
+        Toggle().Should().BeFalse("one toggle turns the restored walk off");
+        Get<bool>("AlwaysWalk").Should().BeFalse();
+        Get<float>("NativeRate").Should().BeApproximately(1.25f, 0.001f);
+    }
+
+    [Test]
+    public void LoginWithoutWalkStateKeepsNormalMovement()
+    {
+        Set("NativeRate", 1f);
+        Set("AlwaysWalk", true);
+        Invoke("RestoreWalkMode");
+        Get<bool>("AlwaysWalk").Should().BeFalse();
+        Get<float>("NativeRate").Should().BeApproximately(1.25f, 0.001f);
+        Toggle().Should().BeTrue("one toggle turns walk on");
+        Get<bool>("AlwaysWalk").Should().BeTrue();
+    }
+
     [TestCase(1)]
     [TestCase(10)]
     [TestCase(20)]
@@ -319,6 +349,24 @@ public class WalkModeTests
         Get<float>("NativeRate").Should().BeApproximately(0.8f, 0.001f);
         Toggle();
         Get<float>("NativeRate").Should().BeApproximately(1.05f, 0.001f);
+    }
+
+    [TestCase(10)]
+    [TestCase(15)]
+    public void OutOfCombatSpeedAppliesOnlyWhileTheCreatureIsNotInCombat(int percent)
+    {
+        Set("OutOfCombatAdjustment", percent);
+
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().BeApproximately(1.25f + percent * 0.01f, 0.001f);
+
+        Set("InCombat", true);
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().BeApproximately(1.25f, 0.001f);
+
+        Set("InCombat", false);
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().BeApproximately(1.25f + percent * 0.01f, 0.001f);
     }
 
     private bool Toggle() => (bool)Invoke("ToggleWalkMode")!;

@@ -45,7 +45,7 @@ HAKS_SUBMODULE_PATH=SWLOR_Haks
 SERVER_SERVICE=swlor-server
 # The tracked scripts/deployment/server-image.txt file is authoritative. This
 # value is a backward-compatible fallback for checkouts predating that file.
-SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-2
+SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-3
 # Must match the numeric user created by the published server image. The
 # deployer migrates only the server's required writable state to this identity;
 # artifacts and host configuration remain root-owned and non-writable.

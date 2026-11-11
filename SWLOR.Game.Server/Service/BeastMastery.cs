@@ -830,29 +830,15 @@ namespace SWLOR.Game.Server.Service
 
         private static BeastType DetermineMutation(BeastType beastType, IncubationJob job)
         {
+            if (job.IsMutationSuppressed)
+                return BeastType.Invalid;
+
             var beast = GetBeastDetail(beastType);
 
-            if (Random.Next(1000) <= job.MutationChance)
+            // Random.Next(1000) returns 0-999, so a chance of N (tenths of a percent) succeeds N times in 1000.
+            if (Random.Next(1000) < job.MutationChance)
             {
-                var possibleMutations = new List<MutationDetail>();
-
-                foreach (var mutation in beast.PossibleMutations)
-                {
-                    var meetsRequirements = true;
-                    foreach (var requirement in mutation.Requirements)
-                    {
-                        if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(job)))
-                        {
-                            meetsRequirements = false;
-                            break;
-                        }
-                    }
-
-                    if (meetsRequirements)
-                    {
-                        possibleMutations.Add(mutation);
-                    }
-                }
+                var possibleMutations = IncubationProjection.GetEligibleMutations(beast, job);
 
                 if (possibleMutations.Count > 0)
                 {

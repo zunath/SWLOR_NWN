@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. Militia command hired me to finish something quietly. When Captain Renn sealed the Veles Militia Annex on their order, a knife cadre inside kept drilling a disabling technique nobody cleared them to learn. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger.",
+          "Text": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. Militia command hired me to finish something quietly. When Captain Renn sealed the Veles Militia Annex on their order, a knife cadre inside kept drilling a disabling technique nobody cleared them to learn. Six Holdout Recruits, running it into the ground in the rooms nearest the entrance. Any Holdout Recruit counts, but only the ones you expose with Crippling Slice or drop with Backstab; a kill that was never set up is just noise. Put them down quietly, and bring me their drill ledger.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts, none of them subtle. They'll telegraph everything - the loud ones always do. That won't make them harmless. Watch the ones who go quiet when you walk in; those learned something real by accident.",
+          "Text": "Six Holdout Recruits, none of them subtle. They'll telegraph everything - the loud ones always do. That won't make them harmless. Watch the ones who go quiet when you walk in; those learned something real by accident.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts are still making noise in the Veles Militia Annex. Quiet them, then come find me.",
+          "Text": "The Recruits are still making noise in the Veles Militia Annex. Quiet them, then come find me.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Second lesson. The specialists in the annex have gotten better at Systemic Shutdown than the adepts, and better at hiding it. Five of them. Handle it the same way, quietly, and bring me the range relay they've been logging their kills through.",
+          "Text": "Second lesson. The Holdout Sergeants in the annex, deeper in, have gotten better at Systemic Shutdown than the Recruits, and better at hiding it. Five of them. Handle it the same way, quietly: any Sergeant counts, but expose each with Crippling Slice or drop him with Backstab. Bring me the range relay they've been logging their kills through.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same annex, same door, further in, past where the adepts were working. Your key still clears it. Nobody's added a second lock yet, which tells you how confident they are that nobody's watching.",
+          "Text": "Same annex, same door, further in, past where the Recruits were working. Your key still clears it. Nobody's added a second lock yet, which tells you how confident they are that nobody's watching.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists who've stopped telegraphing. They'll try to end the fight before you know it started, which is the whole discipline working as intended, just aimed at you. Don't let them finish a sentence with your name in it.",
+          "Text": "Five Holdout Sergeants who've stopped telegraphing. They'll try to end the fight before you know it started, which is the whole discipline working as intended, just aimed at you. Don't let them finish a sentence with your name in it.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still logging kills nobody authorized. Go correct the record.",
+          "Text": "Five Holdout Sergeants, still logging kills nobody authorized. Go correct the record.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden is the point of failure. He's the one who taught this to people who never should have had it, and he's kept it quiet the same way I would have. That almost earns respect. Almost. Bring two people who know how to stay quiet themselves, take his scored challenge badge, and end the lesson he's been giving.",
+          "Text": "Lieutenant Vessik Rane, the warden, is the point of failure. He's the one who taught this to people who never should have had it, and he's kept it quiet the same way I would have. That almost earns respect. Almost. Bring two people who know how to stay quiet themselves, take his scored challenge badge, and end the lesson he's been giving.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper in, past the specialists' floor, at the inner gate. Whatever happens on his ground stopped being training a long time ago. Your key opens the annex door. The rest, you make happen yourself.",
+          "Text": "Deeper in, past the Sergeants' floor, at the inner gate. Whatever happens on his ground stopped being training a long time ago. Your key opens the annex door. The rest, you make happen yourself.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Scored and cracked - his record, not yours. He taught more than adepts and specialists. There's an inner circle above him I need accounted for next, and I'd rather account for them before they notice their warden stopped answering.",
+          "Text": "Scored and cracked - his record, not yours. He taught more than Recruits and Sergeants. There's an inner circle above him I need accounted for next, and I'd rather account for them before they notice their warden stopped answering.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Housecleaning. Four instructors left running what the warden built, and every one of them knew exactly what they were teaching. Settle all four and bring me the captain's challenge chit they hold.",
+          "Text": "Housecleaning. The Holdout Honor Guards are left running what the warden built, deepest in the annex, and every one of them knew exactly what they were teaching. Settle four of them, any Honor Guard, each exposed with Crippling Slice or dropped with Backstab, and bring me the captain's challenge chit they hold.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is the source. Everything the warden taught, everything the inner circle covered for, traces back to him. I work alone because I trust exactly one person with my own exposure - myself. I'm not extending you the same rule. Bring people you'd trust with a secret that could end you, because that's what this is. When he's down, that's the last transmission this operation ever sends.",
+          "Text": "Captain Jorrik Vael, the master, is the source. Everything the warden taught, everything the inner circle covered for, traces back to him. I work alone because I trust exactly one person with my own exposure - myself. I'm not extending you the same rule. Bring people you'd trust with a secret that could end you, because that's what this is. When he's down, that's the last transmission this operation ever sends.",
           "Style": 0,
           "Color": null
         }
@@ -1396,7 +1396,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "What should I expect from the adepts?",
+        "Text": "What should I expect from the Recruits?",
         "Style": 4,
         "Color": null
       },
@@ -1543,7 +1543,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Where are the specialists working?",
+        "Text": "Where are the Sergeants working?",
         "Style": 4,
         "Color": null
       },

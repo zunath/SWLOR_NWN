@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Saber Storm warden in Hutlar - Jedi Trial Halls."
+    "value": "Trial Gatekeeper Droid (Saber Storm line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Storm Gatekeeper Droid"
+      "0": "Trial Gatekeeper Droid"
     }
   },
   "fortbonus": {

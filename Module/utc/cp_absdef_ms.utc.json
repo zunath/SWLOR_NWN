@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Absolute Defense master in Tatooine - Champion Forge."
+    "value": "Forge Master Kassrek (Absolute Defense line) in Tatooine - Champion Forge."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Trandoshan master of the hidden forge, scarred and patient behind a massive heavy vibroblade. His guard has grown old and whole, and he reads a challenger's footwork off the stone long before the first blow lands."
+      "0": "The Trandoshan forge master of the Forgebound and the hidden forge, scarred and patient behind a massive heavy vibroblade. His guard has grown old and whole, and he reads a challenger's footwork off the stone long before the first blow lands."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Absolute Defense Master"
+      "0": "Forge Master Kassrek"
     }
   },
   "fortbonus": {

@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
-                .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Canyon Drifters, the Canyon Gunhands who hold the rooms nearest the entrance, and claim the Last Word Canyon Range Tally. Any Canyon Drifter counts, but a kill only counts while your Disarming Shot weakens them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_CanyonDrifters, "last_word", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Last Word specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Last Word Sightline Calibrator.")
-                .AddKillObjective(NPCGroupType.Tatooine_LastWord_Specialist, 5)
+                    "Defeat five Canyon Sharpshooters, the Canyon Gunhands who hold the deeper rooms of the Anchorhead Canyon Range on Tatooine, and recover the Last Word Sightline Calibrator. Any Canyon Sharpshooter counts, but a kill only counts while your Disarming Shot weakens them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_CanyonSharpshooters, "last_word", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordSightlineCalibrator)
 
                 .AddState()
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Last Word warden at the trial altar in the middle of the Anchorhead Canyon Range on Tatooine and take the Last Word Shattered Range Crest.")
-                .AddKillObjective(NPCGroupType.Tatooine_LastWord_Warden, 1)
+                    "With at least two allies, defeat Range Warden Gruvo at the trial altar in the middle of the Anchorhead Canyon Range on Tatooine and take the Last Word Shattered Range Crest.")
+                .AddKillObjective(NPCGroupType.Tatooine_RangeWardenGruvo, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
+                    "You took the Last Word Shattered Range Crest from Range Warden Gruvo. Bring it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four members of the Last Word inner circle in the Anchorhead Canyon Range on Tatooine and secure the Last Word Marshal's Challenge Chit.")
-                .AddKillObjective(NPCGroupType.Tatooine_LastWord_InnerCircle, 4)
+                    "Defeat four High Table Guns, the Canyon Gunhands who guard the deepest part of the Anchorhead Canyon Range on Tatooine, and secure the Last Word Marshal's Challenge Chit. Any High Table Gun counts, but a kill only counts while your Disarming Shot weakens them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_HighTableGuns, "last_word", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordMarshalsChallengeChit)
 
                 .AddState()
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Last Word master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
-                .AddKillObjective(NPCGroupType.Tatooine_LastWord_Master, 1)
+                    "With at least two allies, defeat Range Marshal Wuun Kalo in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
+                .AddKillObjective(NPCGroupType.Tatooine_RangeMarshalWuunKalo, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word master is defeated. Report to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
+                    "Range Marshal Wuun Kalo is defeated. Report to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
-                .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Canyon Drifters, the Canyon Gunhands who hold the rooms nearest the entrance, and claim the Dead Man's Hand Canyon Range Tally. Any Canyon Drifter counts, but a kill only counts with Quick Draw, Double Shot or Fan the Hammer.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_CanyonDrifters, "dead_mans_hand", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Dead Man's Hand specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Dead Man's Hand Sightline Calibrator.")
-                .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Specialist, 5)
+                    "Defeat five Canyon Sharpshooters, the Canyon Gunhands who hold the deeper rooms of the Anchorhead Canyon Range on Tatooine, and recover the Dead Man's Hand Sightline Calibrator. Any Canyon Sharpshooter counts, but a kill only counts with Quick Draw, Double Shot or Fan the Hammer.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_CanyonSharpshooters, "dead_mans_hand", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandSightlineCalibrator)
 
                 .AddState()
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Dead Man's Hand warden at the trial altar on the east side of the Anchorhead Canyon Range on Tatooine and take the Dead Man's Hand Shattered Range Crest.")
-                .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Warden, 1)
+                    "With at least two allies, defeat Range Warden Silas Crowe at the trial altar on the east side of the Anchorhead Canyon Range on Tatooine and take the Dead Man's Hand Shattered Range Crest.")
+                .AddKillObjective(NPCGroupType.Tatooine_RangeWardenSilasCrowe, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
+                    "You took the Dead Man's Hand Shattered Range Crest from Range Warden Silas Crowe. Bring it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four members of the Dead Man's Hand inner circle in the Anchorhead Canyon Range on Tatooine and secure the Dead Man's Hand Marshal's Challenge Chit.")
-                .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_InnerCircle, 4)
+                    "Defeat four High Table Guns, the Canyon Gunhands who guard the deepest part of the Anchorhead Canyon Range on Tatooine, and secure the Dead Man's Hand Marshal's Challenge Chit. Any High Table Gun counts, but a kill only counts with Quick Draw, Double Shot or Fan the Hammer.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_HighTableGuns, "dead_mans_hand", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandMarshalsChallengeChit)
 
                 .AddState()
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Dead Man's Hand master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
-                .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Master, 1)
+                    "With at least two allies, defeat Range Marshal Jonas Harlan in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
+                .AddKillObjective(NPCGroupType.Tatooine_RangeMarshalJonasHarlan, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
+                    "Range Marshal Jonas Harlan is defeated. Report to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

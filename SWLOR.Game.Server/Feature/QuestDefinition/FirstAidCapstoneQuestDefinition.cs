@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kavi Dorn gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Adept, 6)
+                    "Kavi Dorn gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Ward Orderlies in the rooms nearest the lift (keep your allies dosed with combat stims while your party fights; any Ward Orderly the party kills while your stims are fresh counts, as they serve the whole ward) and recover the Emergency Cocktail Triage Ward Ledger.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_WardOrderlys, "emergency_cocktail", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 
                 .AddState()
@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Emergency Cocktail Specialists in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Specialist, 5)
+                    "Defeat five Ward Guards deeper in the Medical Sublevel on Mon Cala (keep your allies dosed with combat stims while your party fights; any Ward Guard the party kills while your stims are fresh counts, as they serve the whole ward) and recover the Emergency Cocktail Kolto Conduit Coupler.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_WardGuards, "emergency_cocktail", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
 
                 .AddState()
@@ -91,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With two trusted companions, defeat the Emergency Cocktail Warden in the south-west wing of the Medical Sublevel on Mon Cala. Recover the Emergency Cocktail Fractured Ward Sigil.")
-                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Warden, 1)
+                    "With two trusted companions, defeat Ward Supervisor Teno Barr in the south-west wing of the Medical Sublevel on Mon Cala. Recover the Emergency Cocktail Fractured Ward Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_WardSupervisorTenoBarr, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
 
                 .AddState()
@@ -112,8 +112,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Emergency Cocktail Inner Circle in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_InnerCircle, 4)
+                    "Defeat four Matron's Attendants in the deepest part of the Medical Sublevel on Mon Cala (keep your allies dosed with combat stims while your party fights; any Matron's Attendant the party kills while your stims are fresh counts, as they serve the whole ward) and recover the Emergency Cocktail Matron's Ward Token.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_MatronsAttendants, "emergency_cocktail", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailMatronsWardToken)
 
                 .AddState()
@@ -131,12 +131,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With companions at your side, defeat the Emergency Cocktail Master in the Protected Ward, reached from the north-east corner of the Medical Sublevel on Mon Cala. His death is the only proof Kavi Dorn needs.")
-                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Master, 1)
+                    "With companions at your side, defeat Ward Chief Koth Davin in the Protected Ward, reached from the north-east corner of the Medical Sublevel on Mon Cala. His death is the only proof Kavi Dorn needs.")
+                .AddKillObjective(NPCGroupType.MonCala_WardChiefKothDavin, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail Master is dead. Return to Kavi Dorn at the Medshed on Smuggler's Moon.")
+                    "Ward Chief Koth Davin is dead. Return to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

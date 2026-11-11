@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Absolute Defense warden in Tatooine - Forge Caverns."
+    "value": "Forge Warden Ssorrak (Absolute Defense line) in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A towering Trandoshan anvil-keeper with a shard of a cracked anvil hung at his chest. He plants his back foot and his heavy vibroblade and waits, patient as rust, for challengers to break themselves against him."
+      "0": "A towering Trandoshan forge warden of the Forgebound with a shard of a cracked anvil hung at his chest. He plants his back foot and his heavy vibroblade and waits, patient as rust, for challengers to break themselves against him."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Absolute Defense Warden"
+      "0": "Forge Warden Ssorrak"
     }
   },
   "fortbonus": {

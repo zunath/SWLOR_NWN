@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "One Shot inner circle in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Black Cell Shooter (One Shot line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in a thug's patched jacket, blaster rifle held short for close rooms. One of the four veterans who taught the range crew to spray, he clears the sealed deep lanes in a tight wheel with the others as they strip the range of optics, charge cells, and old target logs."
+      "0": "A Rodian Black Cell shooter in a thug's patched jacket, blaster rifle held short for close rooms. One of the four veterans who taught the washouts to spray, he clears the sealed deep lanes in a tight wheel with the others as they strip the range of optics, charge cells, and old target logs."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "One Shot Inner Circle"
+      "0": "Black Cell Shooter"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 170
+          "value": 165
         }
       },
       {

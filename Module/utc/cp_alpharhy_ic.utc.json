@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Alpha Rhythm inner circle member in Dathomir - Tarn Jungle Preserve."
+    "value": "Elder Kinrath (Alpha Rhythm line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the four eldest kinrath in the preserve, the first the pit-breeders ever forced to their wrong tempo. Every pack hatched since learned that beat from it, and it moves deliberately out of time with its nestmates."
+      "0": "One of the four elder kinrath in the preserve, the first the pit-breeders ever forced to their wrong tempo. Every pack hatched since learned that beat from it, and it moves deliberately out of time with its nestmates."
     }
   },
   "Dex": {
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Alpha Rhythm Inner Circle"
+      "0": "Elder Kinrath"
     }
   },
   "fortbonus": {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 250
+          "value": 240
         }
       },
       {

@@ -1,0 +1,129 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 17
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 134
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 37
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A heavy war helm crowned with a carved bone crest. It protects the head and marks the wearer as a leader of warriors."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Silvered Highcrest guard equipment with dark cloth and red livery."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 71
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 37
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "[NPC] Highcrest Guard Helm"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 164
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 121
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 9
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "hc_guard_helm"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "hc_guard_helm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 121
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  }
+}

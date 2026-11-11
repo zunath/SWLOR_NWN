@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Primal Overrun specialist in Dathomir - Grotto Apex Den."
+    "value": "Goad-Scarred Shell-Back (Primal Overrun line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Primal Overrun Specialist"
+      "0": "Goad-Scarred Shell-Back"
     }
   },
   "fortbonus": {

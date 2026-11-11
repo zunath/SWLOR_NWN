@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Count something for me. Three crates of recovery-grade throwing arms, signed out of my cage, never signed back in. Short crates mean somebody inside the Czerka Arms Test Range is arming up on my stock. The paper trail that covers those blades is still on the range floor with their so-called adepts. Put six of them down, pull the Rain of Steel Czerka Test Docket off their trial, and bring it here so my ledger stops lying to me.",
+          "Text": "Count something for me. Three crates of recovery-grade throwing arms, signed out of my cage, never signed back in. Short crates mean somebody inside the Czerka Arms Test Range is arming up on my stock. The paper trail that covers those blades is still on the range floor with the Range Washouts. Six of them hold the rooms nearest the entrance, and any Range Washout counts, but only ones you drop with Explosive Toss or Concussive Toss; a kill that never took a toss won't close my ledger. Put six down, pull the Rain of Steel Czerka Test Docket off their trial, and bring it here so my ledger stops lying to me.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then here's your issue: one key to the range. Czerka stamped it, I keep the copies. The door's in the Corporate District, a short walk south of the GSI Tower doors, marked Czerka Weapons Testing Facility, with GSI guards on it. The adepts drill past the first firing line, and half of what they're throwing was mine before it was theirs. Recover what you can. The docket comes back whole.",
+          "Text": "Then here's your issue: one key to the range. Czerka stamped it, I keep the copies. The door's in the Corporate District, a short walk south of the GSI Tower doors, marked Czerka Weapons Testing Facility, with GSI guards on it. The Range Washouts drill past the first firing line, and half of what they're throwing was mine before it was theirs. Recover what you can. The docket comes back whole.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A test crew Czerka stopped paying and forgot to disarm - Nautolan blade-hands from the recovery trials, mostly, still in their work kit. They run live trials on the range floor with my stock - my stock - and call themselves adepts of the discipline. Adepts don't leave blades in the sand. These do. That's how I know they're counterfeit.",
+          "Text": "A test crew Czerka stopped paying and forgot to disarm - Nautolan blade-hands from the recovery trials, mostly, still in their work kit. They run live trials on the range floor with my stock - my stock - and call themselves students of the discipline. Students don't leave blades in the sand. These do. That's how I know they're counterfeit.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Docket's still inside the range, and six adepts were still standing between you and it at last count. My ledger doesn't close on promises.",
+          "Text": "Docket's still inside the range, and six Range Washouts were still standing between you and it at last count. My ledger doesn't close on promises.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back with paper, so I'll trust you with hardware. The specialists on that floor pulled a regulator out of my old calibration bench - the one piece of kit that keeps a throwing lane honest. Five of them between you and it. Bring me the Rain of Steel Blast-Cell Regulator before they burn it out running hot trials.",
+          "Text": "You came back with paper, so I'll trust you with hardware. The Range Instructors on that floor, deeper in, pulled a regulator out of my old calibration bench - the one piece of kit that keeps a throwing lane honest. Five of them between you and it, and any Range Instructor counts as long as you drop him with Explosive Toss or Concussive Toss. Bring me the Rain of Steel Blast-Cell Regulator before they burn it out running hot trials.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. Same key, same gate. The specialists hold the calibration lanes past the first firing line. Don't chase strays - the regulator is the line item that matters.",
+          "Text": "Good. Same key, same gate. The Range Instructors hold the calibration lanes past the first firing line. Don't chase strays - the regulator is the line item that matters.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Adepts copy the throw. Specialists copy the system - recovery patterns, cell timing, lane discipline. Mine, all of it, learned through the fence. A thief who studies you is worth five who don't. Treat them that way.",
+          "Text": "Range Washouts copy the throw. Range Instructors copy the system - recovery patterns, cell timing, lane discipline. Mine, all of it, learned through the fence. A thief who studies you is worth five who don't. Treat them that way.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The regulator's still sitting in the calibration lanes with the specialists. Five units of trouble. My bench stays cold until it's back.",
+          "Text": "The regulator's still sitting in the calibration lanes with the Range Instructors. Five units of trouble. My bench stays cold until it's back.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the account gets expensive. The one they call the warden runs the deep range, and he wears the Rain of Steel Scored Range Crest - Czerka's old proof-of-line rating - like he earned it. He looted it. Take the crest off him and the whole counterfeit operation loses its licence to exist. But hear the quartermaster's warning before you sign: I don't issue for that fight under a three-body fireteam. Bring two you'd trust with your own kit.",
+          "Text": "Now the account gets expensive. The one they call the warden, Perrin Aldous, runs the deep range, and he wears the Rain of Steel Scored Range Crest - Czerka's old proof-of-line rating - like he earned it. He looted it. Take the crest off him and the whole counterfeit operation loses its licence to exist. But hear the quartermaster's warning before you sign: I don't issue for that fight under a three-body fireteam. Bring two you'd trust with your own kit.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four names run what's left of the operation - the inner circle, the ones who countersign every stolen crate and every hot trial. One of them carries the Rain of Steel Czerka Clearance Chit: master authorization for the entire range. While they hold it, everything they do reads legitimate on Czerka's network. Put all four down and bring me that chit. I want their whole enterprise struck from the record.",
+          "Text": "The Black Cell Shooters run what's left of the operation - the inner circle, the ones who countersign every stolen crate and every hot trial. One of them carries the Rain of Steel Czerka Clearance Chit: master authorization for the entire range. While they hold it, everything they do reads legitimate on Czerka's network. Put four of them down, each with Explosive Toss or Concussive Toss, and bring me that chit. I want their whole enterprise struck from the record.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the requisition stands, and your fireteam's issue carries over - I already logged the wear. The circle keeps to the stockrooms behind the deep range. Clear them a room at a time and count your recoveries. You'll want a full sky for the last of them.",
+          "Text": "Then the requisition stands, and your fireteam's issue carries over - I already logged the wear. The circle keeps to the deepest stockrooms behind the deep range. Clear them a room at a time and count your recoveries. You'll want a full sky for the last of them.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last entry. The master - the one who taught that crew everything they bent, and the only soul on that range who holds Rain of Steel whole. I watched him drill once, years back. Forty blades in the air and his hand was never empty. He never runs dry. You can't outlast him, so you'll out-throw him, and nobody walks off his floor alone - bring your two, and count every blade like it's your last. Bring me nothing back but the news. His fall is the only proof this fight leaves behind.",
+          "Text": "Last entry. The master, Daav Rhoun - the one who taught that crew everything they bent, and the only soul on that range who holds Rain of Steel whole. I watched him drill once, years back. Forty blades in the air and his hand was never empty. He never runs dry. You can't outlast him, so you'll out-throw him, and nobody walks off his floor alone - bring your two, and count every blade like it's your last. Bring me nothing back but the news. His fall is the only proof this fight leaves behind.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one docket. I'll sign for it.",
+        "Text": "Six Range Washouts, one docket. I'll sign for it.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. The regulator comes home.",
+        "Text": "Five Range Instructors. The regulator comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1566,7 +1566,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "What makes a specialist worse than an adept?",
+        "Text": "What makes a Range Instructor worse than a Range Washout?",
         "Style": 4,
         "Color": null
       },

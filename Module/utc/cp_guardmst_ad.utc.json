@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Guardian Master adept in Hutlar - Jedi Trial Halls."
+    "value": "Trial Drill Droid (Guardian Master line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -351,7 +351,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Guardian Patrol Droid"
+      "0": "Trial Drill Droid"
     }
   },
   "fortbonus": {
@@ -744,7 +744,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 272
+          "value": 267
         }
       },
       {

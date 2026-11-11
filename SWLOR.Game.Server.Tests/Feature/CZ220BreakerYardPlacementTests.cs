@@ -14,7 +14,15 @@ public class CZ220BreakerYardPlacementTests
     public void BreakerBayDungeon_UsesGeneratedCapstoneSpawnTable()
     {
         using var dungeon = LoadModuleJson("git", DungeonArea);
-        GetLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().Be("CAPSTONE_CZ220_BREAKER_YARD");
+        // Adepts and specialists spawn on fixed points (outer and deep halves), never at random area points,
+        // so each tier stays in its own part of the bay.
+        GetLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().BeEmpty();
+        var waypointTags = dungeon.RootElement.GetProperty("WaypointList").GetProperty("value")
+            .EnumerateArray()
+            .Select(waypoint => GetString(waypoint, "Tag"))
+            .ToArray();
+        waypointTags.Count(tag => tag == "CAPSTONE_CZ220_BREAKER_YARD").Should().Be(10);
+        waypointTags.Count(tag => tag == "CAPSTONE_CZ220_BREAKER_YARD_DEEP").Should().Be(10);
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
     }
 

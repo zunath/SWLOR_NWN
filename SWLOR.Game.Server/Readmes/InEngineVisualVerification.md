@@ -8,7 +8,7 @@ The shared procedure for NWN client evidence. Read it before verifying any chang
 - **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.
 - A change with no in-game surface (toolset app, CLI, docs, agent rules) has nothing to capture; say so in the handoff.
 
-Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Client traps · Public access · Evidence and cleanup
+Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Equipment and garment captures · Server behavior · Client traps · Public access · Evidence and cleanup
 
 ## Hard rules
 
@@ -53,9 +53,43 @@ Read source JSON in its actual encoding (the module IFO uses a legacy encoding),
 ## Capture
 
 - Set each camera after the area load settles and wait for a fresh render before emitting its marker. Timings such as camera at 4 s, marker at 7 s, overview at 10 s, marker at 13 s are examples, not proof: inspect images for loading screens, stale frames, wrong angles, and occlusion, and recapture failures.
+- For equipment studies, use `AttachCamera` on the subject instead of placing an invisible player at the same coordinates. Creature collision can displace either one and invalidate the framing. Keep that player within unobstructed sight of the subject and log `GetObjectSeen`: an attached camera can show an unseen creature translucently. Log the runtime gender, phenotype, body parts, equipped native base items and appearance parts with the capture; synchronized byte and extended blueprint fields are still required.
 - Emit each marker as the entire payload (`WriteTimestampedLogEntry("VISUAL_CLOSE_READY")`), hold the view a few seconds, and never emit two markers back-to-back. End with `VISUAL_REVIEW_COMPLETE` after the final view is held. Use the same strings in the launcher arguments.
 - Log the subject's `GetPosition` and `GetFacing` at capture and compare them with the authored data. The engine moves creatures off blocked coordinates; an adjusted spawn does not verify the requested one. Correct the source and recapture.
 - Capture at least a clear close view and a contextual overview for each moved NPC or object. Keep the native PNGs; contact sheets may resize copies but must link the originals. Do not edit away clipping or obstacles.
+
+## Equipment and garment captures
+
+Use `GarmentModelRules.md` for the required coverage and acceptance criteria.
+The capture must establish the actual rendered subject and state:
+
+- Assert expected gender, base/render phenotype, equipped base item and appearance
+  parts at every marker, with position/facing. Wait for equipment/model loading and
+  retry the fixture setup if necessary. Missing armor, a wrong part or a stale pose
+  invalidates that frame even when the launcher succeeded; exclude and recapture it.
+- Name sides anatomically, relative to the wearer. Prove an ambiguous orbit with
+  asymmetric equipment (for example left thigh 14/right thigh 1, then swap them).
+  In the verified top-down fixture at subject facing 90, `SetCameraFacing` 270 is
+  front, 180 is RIGHT, 0 is LEFT and 90 is rear. Recheck after changing facing or
+  camera mode; a filename saying "left" does not prove the visible side.
+- Initialize the fixture clock before scheduling delayed probes. `SetTime` after
+  scheduling can advance multiple capture markers together. Clear/settle action
+  queues and equip before starting the measured pose; resolve player pose labels
+  to actual API constants and inherited clips instead of inventing a missing ID.
+- Record pose start, elapsed capture time and resolved clip duration. Sample the
+  observed contact interval and nearby phases in regression tests. A fixed delay
+  or requested run is not proof of a stride or a matched animation phase: inspect
+  the native image, recapture idle/pre-stride frames, and label phase differences
+  honestly in before/after motion sheets.
+- Use the real rendering path for the claim. A manual generated-body/alias fixture
+  can check bone binding while omitting the server's hide masks or dye projection;
+  robe/skin overlap there is not proof of a good combined outfit. Full server-driven
+  projection and dye behavior require the live route below.
+
+Keep raw failed/earlier captures and a correction map if an old label was wrong.
+Link each contact-sheet crop to its native original. Reuse earlier evidence only
+when the inspected model, material, animation and relevant projection dependencies
+remain unchanged; a new Git commit alone neither invalidates nor validates it.
 
 ## Server behavior
 
@@ -66,6 +100,7 @@ Prerequisites: Docker Desktop, Python 3.12+, a Release build from your worktree 
 ```powershell
 python tools/NwnLiveClient.py up --name my-check --character <test character>.bic --play
 python tools/NwnLiveClient.py capture <run dir> in-area
+python tools/NwnLiveClient.py record <run dir> instrument-loop --seconds 30 --fps 60
 python tools/NwnLiveClient.py ui <run dir> click 742 591   # also rightclick, doubleclick, drag, move, key, type
 python tools/NwnLiveClient.py console <run dir> status      # one nwserver console line
 python tools/NwnLiveClient.py down <run dir>
@@ -79,6 +114,10 @@ python tools/NwnLiveClient.py down <run dir>
 - **Test conditions:** live areas spawn hostiles. Clear creatures from the test areas and wait until the character is out of combat before acting; log combat state with each step. The server's automated restart at 10:00 UTC boots everyone; do not span it.
 - **Lifetime and teardown:** the server and client stop themselves after `--max-minutes` (default 120), and a failed `up` tears itself down unless `--keep-on-failure`. `down` boots the character through the server console first (a killed client holds its CD key until the server's `net.udp.window.timeout`, which this stack raises from 60 seconds to 5 minutes on both server and client so a client stalled loading haks on a busy machine is not dropped), stops the client, runs `docker compose -p <project> down --volumes --remove-orphans` on its own project only, deletes the copied key, profile, and server home, and writes `evidence/cleanup.json`. It exits non-zero if any container, volume, network, key, or character copy remains.
 - **Evidence:** `<run dir>/evidence` (default run directory `%TEMP%\swlor-live\<project>`) keeps the captures, `captures.jsonl`, `ui-actions.log`, client and server logs, the containers' stdout (NWNX logs there), and `cleanup.json`. If the stack cannot start or a capture is incomplete, report the affected items as unverified with the error.
+- **Video:** `record` captures only the private NWN window, silently, for 1 to 120 seconds. It writes H.264 MP4, an FFprobe report, the encoder log, and a hashed `videos.jsonl` entry. The default is 60 fps; 15 and 30 are also supported. Inspect playback and encoder statistics: a file's frame rate alone does not establish the game's render rate. Do not interpolate frames to disguise low game performance.
+  Raw acquisition timestamps and image checksums are retained in `*.frames.md5` before lossy encoding and output frame duplication. The manifest reports acquisition cadence and identical source images separately from encoded FPS; a static pose can legitimately repeat. Verify the native FPS counter while the subject moves, raw acquisition gaps, and decoded subject motion before describing a recording as 60 fps.
+- **Motion cadence:** `up --show-render-stats` exposes NWN's own FPS counter. On Docker Desktop with a WSL2 NVIDIA GPU, `--gpu-renderer wsl-d3d12` uses the GPU while retaining the private Xvfb display and isolated input. Only the WSL driver/library directories are additionally mounted, read-only; `renderer.txt` must confirm hardware D3D12 rather than a software fallback. The default backend remains software rendering. All focus states use a 120 fps cap, and the software renderer is bounded to four worker threads.
+  `--motion-capture` reduces post-processing and disables shadows in the owned profile, retaining HDR bloom and final compositing. It preserves models and animation timing but is intended for motion checks, not lighting or material approval. When the user prioritizes cadence over resolution, `--window-size 960x600`, `800x600`, or `640x480` starts a smaller native window at UI scale 1.0; the default remains 1280x720. At 640x480, the minimum UI scale clips parts of the interface, so use it only for motion checks. Record and report the native size without upscaling. These options do not guarantee a renderer rate; measured source repeats still invalidate a sustained 60 fps claim. Never resize a running client, modify the user's profile, or stop another session's client to improve capture performance.
 
 ## Client traps
 

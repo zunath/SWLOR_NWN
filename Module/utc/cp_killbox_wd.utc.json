@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Kill Box warden in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Overseer Sskeer (Kill Box line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A broad Trandoshan in a Czerka uniform, blaster rifle settled in his claws and a scored range crest on his chest that makes him range master under Czerka's own rules. As the cell's warden he holds the proving lanes of the deep range, where he scored every angle and every scrap of cover years ago."
+      "0": "A broad Trandoshan range overseer in a Czerka uniform, blaster rifle settled in his claws and a scored range crest on his chest that makes him range master under Czerka's own rules. As the washouts' overseer he holds the proving lanes of the deep range, where he scored every angle and every scrap of cover years ago."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kill Box Warden"
+      "0": "Range Overseer Sskeer"
     }
   },
   "fortbonus": {

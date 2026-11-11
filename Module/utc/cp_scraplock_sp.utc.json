@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Scrapheap Lockdown specialist in CZ-220 - Breaker Bay."
+    "value": "Wreck Crew Rigger (Scrapheap Lockdown line) in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in a Czerka uniform, katars ready, keeping his place in a tight rotation along the rerouted junkline. His crew rewired the Breaker Yard's belts and gates into a moving stand-off, and he holds his part of it without a wasted motion."
+      "0": "An Ugnaught rigger in a Czerka uniform, katars ready, keeping his place in a tight rotation along the rerouted junkline. His crew rewired the Breaker Yard's belts and gates into a moving stand-off, and he holds his part of it without a wasted motion."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scrapheap Lockdown Specialist"
+      "0": "Wreck Crew Rigger"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 138
+          "value": 133
         }
       },
       {

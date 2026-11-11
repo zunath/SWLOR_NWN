@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Scope of work: six shooters, one enclosed fire lane, recovery of proprietary documents. Compensation follows deliverables. Now that the terms are on the table - Ressa Vale, range director, Czerka Arms. A test cell inside the Czerka Arms Test Range, our weapons testing facility in the Corporate District, has gone off-contract, and its adepts are running my kill box lanes live. Put six of them down and bring me the Kill Box Czerka Test Docket they score their trials under.",
+          "Text": "Scope of work: six shooters, one enclosed fire lane, recovery of proprietary documents. Compensation follows deliverables. Now that the terms are on the table - Ressa Vale, range director, Czerka Arms. A test cell inside the Czerka Arms Test Range, our weapons testing facility in the Corporate District, has gone off-contract, and its Range Washouts are running my kill box lanes live. Six of them hold the rooms nearest the entrance, and any Range Washout counts, but a kill is billable only while your Suppression is on him. Put six down that way and bring me the Kill Box Czerka Test Docket they score their trials under.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts and the test docket. That was the scope, and this office does not amend scope mid-contract. The gate by the GSI Tower still takes your key. Use it.",
+          "Text": "Six Range Washouts under Suppression, and the test docket. That was the scope, and this office does not amend scope mid-contract. The gate by the GSI Tower still takes your key. Use it.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your docket named five specialists - the cell's senior lane instructors. They've pulled a blast-cell regulator off my line and are overcharging the test rifles past rated tolerance. Scope of work, phase two: retire all five and return the Kill Box Blast-Cell Regulator to my bench.",
+          "Text": "Your docket named five Range Instructors - the cell's senior lane staff, who hold the deeper rooms. They've pulled a blast-cell regulator off my line and are overcharging the test rifles past rated tolerance. Scope of work, phase two: retire five Range Instructors, any of them, each while your Suppression is on him, and return the Kill Box Blast-Cell Regulator to my bench.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Efficient. The specialists hold the lanes deeper in the range, and they shoot in schedules - learn the schedule and you own the lane. Recover the regulator quickly if you can. My rifles drift hotter every hour it's gone.",
+          "Text": "Efficient. The Range Instructors hold the lanes deeper in the range, and they shoot in schedules - learn the schedule and you own the lane. Recover the regulator quickly if you can. My rifles drift hotter every hour it's gone.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts were students running drills. The specialists - Twi'lek lane instructors in militia kit - wrote the drills. Each one holds a lane and shapes it - crossfire timing, kill-zone spacing, herding angles. They will build a box around you while you admire your first shot. Don't admire. Move.",
+          "Text": "The Range Washouts were students running drills. The Range Instructors - Twi'lek lane instructors in militia kit - wrote the drills. Each one holds a lane and shapes it - crossfire timing, kill-zone spacing, herding angles. They will build a box around you while you admire your first shot. Don't admire. Move.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, one regulator, deeper in the range. My rifles drift hotter by the day, so bill me results, not progress.",
+          "Text": "Five Range Instructors, one regulator, deeper in the range. My rifles drift hotter by the day, so bill me results, not progress.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This clause I would normally read to a room of lawyers. Listen closely. The cell's warden, a Trandoshan, holds the deep range - the proving lanes where Czerka scores its production rifles - and he wears the Kill Box Scored Range Crest, which under company law makes him range master. I need that crest, which means I need him retired. Permanently. Now the fine print: my insurers will not cover deep-range work under three contractors. Two shooters better than you have gone into his box alone. I countersigned both of their final invoices.",
+          "Text": "This clause I would normally read to a room of lawyers. Listen closely. The cell's warden, Range Overseer Sskeer, a Trandoshan, holds the deep range - the proving lanes where Czerka scores its production rifles - and he wears the Kill Box Scored Range Crest, which under company law makes him range master. I need that crest, which means I need him retired. Permanently. Now the fine print: my insurers will not cover deep-range work under three contractors. Two shooters better than you have gone into his box alone. I countersigned both of their final invoices.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The phrase I wanted - names, plural. File them with my clerk before you go; one waiver covers three signatures. The deep range lies past the specialists' lanes. He'll know you're coming. Wardens always do. It's the coming back he has never had to account for.",
+          "Text": "The phrase I wanted - names, plural. File them with my clerk before you go; one waiver covers three signatures. The deep range lies past the Range Instructors' lanes. He'll know you're coming. Wardens always do. It's the coming back he has never had to account for.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's retirement has triggered what legal calls a succession dispute. Four of the cell's founders - their inner circle - have sealed the executive lanes and pooled their access into a single clearance chit. While they hold it, they can countersign their own trials in Czerka's name. Scope of work: all four, and the Kill Box Czerka Clearance Chit on this desk. This is the clause that dissolves their little company.",
+          "Text": "The warden's retirement has triggered what legal calls a succession dispute. The cell's founders - their inner circle, the Black Cell Shooters - have sealed the deepest executive lanes and pooled their access into a single clearance chit. While they hold it, they can countersign their own trials in Czerka's name. Scope of work: four Black Cell Shooters, any of them, each while your Suppression is on him, and the Kill Box Czerka Clearance Chit on this desk. This is the clause that dissolves their little company.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Founders. Czerka's original kill-box design team - four Zabrak who went from drafting the lanes to guarding them, from before they decided the doctrine was theirs and the paychecks were incidental. Each one drew a quarter of the lanes down there. Clearing them isn't just clearing the range. It's retiring the authorship.",
+          "Text": "Founders. Czerka's original kill-box design team - Zabrak who went from drafting the lanes to guarding them, from before they decided the doctrine was theirs and the paychecks were incidental. Each drew a share of the lanes down there. Clearing them isn't just clearing the range. It's retiring the authorship.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Pooled clearance means no single founder can sell out the rest - the chit only countersigns while all four live to contest it. Sentimental, for people in the killing business. It also means that when the fourth one falls, the Kill Box Czerka Clearance Chit becomes an unclaimed asset. Czerka is very good at unclaimed assets.",
+          "Text": "Pooled clearance means no single founder can sell out the rest - the chit only countersigns while their founders live to contest it. Sentimental, for people in the killing business. It also means that when the fourth Black Cell Shooter falls, the Kill Box Czerka Clearance Chit becomes an unclaimed asset. Czerka is very good at unclaimed assets.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four founders, one chit, and my executive lanes still under somebody else's law. The dispute stays open until that chit is on this desk.",
+          "Text": "Four Black Cell Shooters, one chit, and my executive lanes still under somebody else's law. The dispute stays open until that chit is on this desk.",
           "Style": 0,
           "Color": null
         }
@@ -1520,7 +1520,7 @@
     "reply-00009": {
       "Id": "reply-00009",
       "Text": {
-        "Text": "What separates a specialist from the six I cleared?",
+        "Text": "What separates a Range Instructor from the six I cleared?",
         "Style": 4,
         "Color": null
       },

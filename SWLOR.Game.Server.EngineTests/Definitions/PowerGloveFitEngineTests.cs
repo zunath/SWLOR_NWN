@@ -249,6 +249,48 @@ public static class PowerGloveFitEngineTests
         ctx.SetResultDetail("One real glove supplies both hands through native equipment events, body/armor/weapon edits, invisible reset, either-hand removal, rejected independent offhand equip, replacement and drop/acquire. Repeated refresh preserves authored appearance IDs and independent transform channels. Client pixels require separate visual verification.");
     }
 
+    [EngineTest("An unmeasured armor hand fits Power Gloves like the wearer's natural hand", Category = "PowerGloveFit", TimeoutSeconds = 60f)]
+    public static async Task UnmeasuredArmorHandUsesNaturalHandFit(EngineTestContext ctx)
+    {
+        var wearer = await CreateWearer(ctx);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        var armor = GetItemInSlot(InventorySlot.Chest, wearer);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            // Compact shells and open frames whose unknown-hand clearance is larger than the human hand fit.
+            foreach (var gender in new[] { Gender.Male, Gender.Female })
+            foreach (var appearance in new[] { 101, 104, 105, 117 })
+            {
+                SetGender(wearer, gender);
+                ChangeGlove(wearer, right, appearance);
+                ClearArmorHands(armor);
+                EquippedItemAppearance.Refresh(wearer, armor);
+                var natural = (Scale: GetObjectVisualTransform(right, ObjectVisualTransform.Scale, nScope: FitScope),
+                    Right: ReadPartTranslation(right), Left: ReadPartTranslation(left));
+                var body = gender == Gender.Female ? "pfh0" : "pmh0";
+                ctx.Assert(PowerGloveHandFitCatalog.GetScale($"{body}_handr150", appearance) > natural.Scale,
+                    $"{body} appearance {appearance}: the unmeasured hand's own clearance is larger than the natural fit");
+
+                // Either side alone used to enlarge both gloves.
+                foreach (var (armorRight, armorLeft) in new[] { (150, 0), (0, 150), (150, 150) })
+                {
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, armorRight);
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, armorLeft);
+                    EquippedItemAppearance.Refresh(wearer, armor);
+                    var label = $"{body} appearance {appearance} armor hands {armorRight}/{armorLeft}";
+                    AssertPair(ctx, right, left, natural.Scale, label);
+                    AssertVector(ctx, ReadPartTranslation(right), natural.Right, label + " right offset");
+                    AssertVector(ctx, ReadPartTranslation(left), natural.Left, label + " left offset");
+                }
+            }
+            ClearArmorHands(armor);
+            SetGender(wearer, Gender.Male);
+            ChangeGlove(wearer, right, 101);
+        });
+        ctx.SetResultDetail("An unmeasured armor hand on either side keeps the natural-hand scale and offsets for human male and female wearers across compact and open-frame gloves.");
+    }
+
     [EngineTest("Wide Power Glove wearers fit the hand resource actually available to the client", Category = "PowerGloveFit", TimeoutSeconds = 60f)]
     public static async Task WideBodyHandFallbackLifecycle(EngineTestContext ctx)
     {
@@ -315,9 +357,9 @@ public static class PowerGloveFitEngineTests
 
         void AssertSelectedHand(string expected, CreaturePart part, string side)
         {
-            var actual = (string)typeof(PowerGloveFit)
-                .GetMethod("GetHandModel", BindingFlags.Static | BindingFlags.NonPublic)!
-                .Invoke(null, new object[] { wearer, part, side })!;
+            var actual = (((string Worn, string Natural))typeof(PowerGloveFit)
+                .GetMethod("GetHandModels", BindingFlags.Static | BindingFlags.NonPublic)!
+                .Invoke(null, new object[] { wearer, part, side })!).Worn;
             ctx.AssertEqual(expected, actual, "Selected " + side + " hand resource");
         }
     }

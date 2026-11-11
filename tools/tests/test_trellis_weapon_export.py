@@ -65,6 +65,13 @@ class TrellisWeaponExportTests(unittest.TestCase):
         exporter.validate_manifest(config, self.root, self.manifest, 'export')
         return config
 
+    def test_explicit_backfaces_require_seam_preservation(self):
+        self.asset['double_sided_policy']='duplicate_backfaces'
+        with self.assertRaisesRegex(ValueError,'authored_tangent_seams'):
+            self.validate()
+        self.asset['normal_basis_policy']='authored_tangent_seams'
+        self.validate()
+
     def test_native_canvas_is_distinct_from_logical_art_area(self):
         config = self.validate()
         self.assertEqual(config['assets'][0]['_icon_art_size'], [64,160])
@@ -271,6 +278,46 @@ class TrellisWeaponExportTests(unittest.TestCase):
         asset['parts'][0]['aliases'] = ['wdbsw_m_021','wdbsw_m_021']
         with self.assertRaisesRegex(ValueError,'Repeated'): self.validate(asset)
 
+    def test_paired_native_roles_partition_both_ends_and_center(self):
+        asset=copy.deepcopy(self.asset)
+        asset['parts']=[{'model':'wdbsw_b_011','clip_ranges':[[-.1,.8]]},
+                        {'model':'wdbsw_m_011','clip_ranges':[[-.15,-.1],[.8,.85]]},
+                        {'model':'wdbsw_t_011','clip_ranges':[[None,-.15],[.85,None]]}]
+        self.validate(asset)
+        for update in ([[None,0],[0,None]], [[-.2,-.1],[.8,.85]]):
+            broken=copy.deepcopy(asset);broken['parts'][1]['clip_ranges']=update
+            with self.subTest(update=update),self.assertRaisesRegex(ValueError,'partition the Y axis'):
+                self.validate(broken)
+
+    def test_ranges_reject_overlap_invalid_bounds_and_mixed_selectors(self):
+        for ranges in ([],[[0,0]],[[2,1]],[[None,1],[0,None]],[[False,1]],[[0,float('nan')]],[[0]]):
+            with self.subTest(ranges=ranges),self.assertRaises(ValueError):
+                exporter.part_intervals({'clip_ranges':ranges})
+        with self.assertRaisesRegex(ValueError,'another split'):
+            exporter.part_intervals({'clip_ranges':[[None,0]],'clip_max_y':0})
+
+    def test_authored_node_parts_are_disjoint_and_cannot_mix_clipping(self):
+        asset=copy.deepcopy(self.asset)
+        asset['parts']=[{'model':'wdbsw_'+role+'_011','source_nodes':[role]} for role in 'bmt']
+        self.validate(asset)
+        for update in ({'source_nodes':['b']},{'clip_min_y':0},{'source_nodes':[]},{'source_nodes':['m','m']}):
+            broken=copy.deepcopy(asset);broken['parts'][1].update(update)
+            with self.subTest(update=update),self.assertRaises(ValueError):self.validate(broken)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender for material sharing across authored native nodes')
+    def test_node_selection_keeps_parts_separate_when_they_share_one_material(self):
+        asset=copy.deepcopy(self.asset)
+        asset['parts']=[{'model':'wdbsw_'+role+'_011','source_nodes':[role]} for role in 'bmt']
+        config=self.validate(asset)['assets'][0]
+        helper=exporter.load_module('node_part_writer',ROOT/'tools/ImportBlasterModel.py')
+        meshes=[([(0,y,0),(1,y,0),(0,y,1)],[(0,0),(1,0),(0,1)],[(0,1,2)],[(0,-1,0)]*3) for y in (0,1,2)]
+        material=exporter.bpy.data.materials.new('shared_node_material')
+        _,reports=exporter.write_parts(config,self.root,helper,meshes,['metal']*3,{'metal':material},mesh_sources=list('bmt'))
+        self.assertEqual([report['triangles'] for report in reports],[1,1,1])
+        self.assertEqual([report['bounds_min'][1] for report in reports],[0,1,2])
+        with self.assertRaisesRegex(ValueError,'Missing selected source node'):
+            exporter.write_parts(config,self.root,helper,meshes,['metal']*3,{'metal':material},mesh_sources=['b']*3)
+
     def test_composite_exports_require_a_complete_assembly(self):
         for parts in (None, [{'model':'wdbsw_m_011'}], self.asset['parts'][:2]):
             asset=copy.deepcopy(self.asset)
@@ -278,6 +325,13 @@ class TrellisWeaponExportTests(unittest.TestCase):
             else:asset['parts']=parts
             with self.subTest(parts=parts), self.assertRaises(ValueError):
                 self.validate(asset)
+
+    def test_partial_source_authoring_cannot_bypass_final_assembly_validation(self):
+        asset=copy.deepcopy(self.asset);asset['model']='wdbsw_b_011';asset['parts']=[{'model':'wdbsw_b_011','clip_max_y':.2}]
+        config={'schema_version':1,'assets':[asset]}
+        exporter.validate_manifest(config,self.root,self.manifest,'author')
+        with self.assertRaisesRegex(ValueError,'real bottom, middle and top'):
+            exporter.validate_manifest(config,self.root,self.manifest,'export')
 
     def test_explicit_assemblies_can_group_separate_exported_parts(self):
         assets=[]
@@ -858,6 +912,19 @@ class TrellisWeaponExportTests(unittest.TestCase):
             self.assertAlmostEqual(uv[0],(position[0]+1)/2);self.assertAlmostEqual(uv[1],(position[1]+1)/2)
             self.assertAlmostEqual(exporter.Vector(normal).length,1)
 
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for disjoint role clipping')
+    def test_paired_end_bands_keep_winding_uvs_area_and_center_gap(self):
+        mesh=([(-1,-1,0),(1,-1,0),(1,1,0),(-1,1,0)],[(0,0),(1,0),(1,1),(0,1)],[(0,1,2),(0,2,3)],[(0,0,1)]*4)
+        vertices,uvs,faces,_=exporter.clip_part_mesh(mesh,{'clip_ranges':[[-.8,-.6],[.6,.8]]})
+        area=0
+        for face in faces:
+            a,b,c=[exporter.Vector(vertices[i]) for i in face];cross=(b-a).cross(c-a)
+            self.assertGreater(cross.z,0);area+=cross.length/2
+            self.assertTrue(max(vertices[i][1] for i in face)<=-.6+1e-6 or min(vertices[i][1] for i in face)>=.6-1e-6)
+        self.assertAlmostEqual(area,.8,places=6)
+        for position,uv in zip(vertices,uvs):
+            self.assertAlmostEqual(uv[0],(position[0]+1)/2);self.assertAlmostEqual(uv[1],(position[1]+1)/2)
+
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for interpolated seam normals')
     def test_two_plane_middle_normals_match_the_independently_clipped_top(self):
         mesh=([(-1,-1,0),(1,-1,0),(0,1,0)],[(0,0),(1,0),(.5,1)],[(0,1,2)],[(.8,0,.6),(0,.6,.8),(0,0,1)])
@@ -1097,6 +1164,29 @@ class NativeWeaponNormalTests(unittest.TestCase):
         source,mesh=self.authored_fixture();source={k:np.repeat(v,2,axis=0) for k,v in source.items()};source['signs'][1]*=-1
         with self.assertRaisesRegex(ValueError,'ambiguous coincident'):
             self.helper.match_faces(source,mesh)
+
+    def test_thin_face_keeps_its_side_when_reversed_corners_fit_position_tolerance(self):
+        source,_=self.authored_fixture()
+        source['positions']=np.array([[[0.,0.,0.],[.1,0.,0.],[0.,1e-6,0.]]])
+        source['uv']=source['positions'][...,:2].copy()
+        reverse=np.array([0,2,1])
+        expanded={key:np.concatenate((value,value[:,reverse]),axis=0) for key,value in source.items()}
+        expanded['normals'][1]*=-1;expanded['tangents'][1]*=-1;expanded['signs'][1]*=-1
+        for owner in range(2):
+            target={key:value[owner:owner+1] for key,value in expanded.items()}
+            matched=self.helper.match_faces(expanded,target)
+            self.assertEqual(matched[0][0],owner)
+            np.testing.assert_array_equal(matched[0][1],np.eye(3))
+
+    def test_exact_float_corners_take_precedence_over_a_nearby_surface(self):
+        source,_=self.authored_fixture()
+        source={key:np.repeat(value,2,axis=0) for key,value in source.items()}
+        source['positions'][1]+=[0.,0.,1e-6]
+        source['tangents'][1]=[0.,1.,0.]
+        for owner in range(2):
+            target={key:value[owner:owner+1] for key,value in source.items()}
+            matched=self.helper.match_faces(source,target)
+            self.assertEqual(matched[0][0],owner)
 
     def test_authored_policy_changes_only_existing_tangent_sign_streams(self):
         from unittest.mock import patch

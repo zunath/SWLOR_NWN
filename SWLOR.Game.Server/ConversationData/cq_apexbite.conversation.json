@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Pen count's off and I know exactly why. Pit-breeders from off-world bought into the Tarn Jungle Preserve, bred scaled brutes mean for the fighting pits, then ran when the brutes broke their pens. The brutes hold the place now. Go into the preserve on Dathomir. Put down six of the young ones. Bring me the Apex Bite Tarn Hunt Tally from their pen. I need my numbers back before the surveyors come asking.",
+          "Text": "Pen count's off and I know exactly why. Pit-breeders from off-world bought into the Tarn Jungle Preserve, bred scaled brutes mean for the fighting pits, then ran when the brutes broke their pens. The brutes hold the place now. Go into the preserve on Dathomir. Put down six of the Young Scaled Brutes, the ones in the pens nearest the gate. Any Young Scaled Brute will do, the whole preserve's stock came from the same breeders. But a kill only counts after your own beast has hit the target. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party; a brute your beast never marked tells my ledger nothing. Bring me the Apex Bite Tarn Hunt Tally from their pen. I need my numbers back before the surveyors come asking.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six young brutes still sitting on my tally. Go finish the count.",
+          "Text": "Six Young Scaled Brutes still sitting on my tally, your beast's teeth on every one. Go finish the count.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The older brutes run the deeper pens. The breeders kept them on a scent mixed into the feed, angry around the clock, and those pens still reek of it. Bad for the beasts, worse for anyone who has to walk past. Go back in, put five of them down, and bring me the Apex Bite Beast-Pen Scent Vial the breeders left in their pen.",
+          "Text": "The Pen-Scarred Scaled Brutes, the older ones, run the deeper pens. The breeders kept them on a scent mixed into the feed, angry around the clock, and those pens still reek of it. Bad for the beasts, worse for anyone who has to walk past. Go back in, put five of them down after a hit from your own beast (any Pen-Scarred Scaled Brute counts), and bring me the Apex Bite Beast-Pen Scent Vial the breeders left in their pen.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five old brutes still sitting on that vial. Bring it back.",
+          "Text": "Five Pen-Scarred Scaled Brutes still sitting on that vial. Bring it back.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past the brute pens there's a warden, a tukata the breeders brought in to keep the brutes in line. Committed bite, same as the rest, except his lands, and nobody's walked away from it alone. My rule's posted at every gate for a reason: no solo entry on anything with teeth that size. Bring two more with you. Put him down. Bring me the Apex Bite Clawed Alpha Totem off his collar.",
+          "Text": "Past the brute pens there's Breeder's Tukata, a tukata the breeders brought in to keep the brutes in line. Committed bite, same as the rest, except his lands, and nobody's walked away from it alone. My rule's posted at every gate for a reason: no solo entry on anything with teeth that size. Bring two more with you. Put him down. Bring me the Apex Bite Clawed Alpha Totem off his collar.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still in there. Get your two and finish it.",
+          "Text": "Breeder's Tukata is still in there. Get your two and finish it.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. That's the breeding line back under honest management, at least on paper. I'll be filing this one myself. Rest up. The inner circle's next, and they won't like what just happened to their warden.",
+          "Text": "Whole. That's the breeding line back under honest management, at least on paper. I'll be filing this one myself. Rest up. The Elder Scaled Brutes are next, and they won't like what just happened to Breeder's Tukata.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left, the inner circle: the oldest brutes, the breeders' first brood, the ones every other pen learned its temper from. Bring your two back. Four of them together means four directions of trouble at once. Put them down. Bring me the Apex Bite Preserve Keeper's Token from the den they hold.",
+          "Text": "Four left, the Elder Scaled Brutes: the oldest brutes, the deepest part of the preserve, the breeders' first brood, the ones every other pen learned its temper from. Bring your two back. Four of them together means four directions of trouble at once. Put them down after a hit from your own beast; any Elder Scaled Brute counts. Bring me the Apex Bite Preserve Keeper's Token from the den they hold.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the deed back where it belongs. One name left in this whole file, and it's the one the warden was whelped from. You've earned the last entry.",
+          "Text": "That's the deed back where it belongs. One name left in this whole file, and it's the one Breeder's Tukata was whelped from. You've earned the last entry.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last name in the file: the master. Old tukata, the warden's sire, the first thing the breeders trained on fear. He learned the apex bite done right, then learned to land it on anything that moved. He doesn't miss and he doesn't need a second try, same discipline I logged in my own lines, aimed at the wrong things for years. Bring your two. No solo entry, not for this. There's no token this time. Him going down is the whole audit, closed for good.",
+          "Text": "Last name in the file: Old Tukata, the sire of Breeder's Tukata, the first thing the breeders trained on fear. He learned the apex bite done right, then learned to land it on anything that moved. He doesn't miss and he doesn't need a second try, same discipline I logged in my own lines, aimed at the wrong things for years. Bring your two. No solo entry, not for this. There's no token this time. Him going down is the whole audit, closed for good.",
           "Style": 0,
           "Color": null
         }
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll get two more and take the warden.",
+        "Text": "I'll get two more and take Breeder's Tukata.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is this warden to your preserve?",
+        "Text": "Who is Breeder's Tukata to your preserve?",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "What are the inner circle, exactly?",
+        "Text": "What are the Elder Scaled Brutes, exactly?",
         "Style": 4,
         "Color": null
       },

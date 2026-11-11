@@ -1,5 +1,41 @@
 # Tint-map material lighting
 
+## Keep dye colors stable
+
+Players choose dyes and expect them to look the same after every update. Shader,
+palette, mask, and material edits have each shifted existing armor colors, so
+these rules hold for every change in `SWLOR_Haks`:
+
+- **No silent dye changes.** `SWLOR_Haks/tools/CheckDyeAppearance.py` fingerprints
+  every tint material (each `sw_tint_mtr` material and any other MTR that samples
+  the dye palette: its directives and the exact content of every texture and TXI
+  it binds, tint masks included), every custom shader those materials use, the
+  palette atlas, and each existing model's rows in `tintmap.2da` and
+  `cloaktint.2da` (material and dye layers), and compares them with
+  `tools/DyeAppearanceBaseline.json`. `BuildHaks.cmd` runs it,
+  and `TestDyeAppearance.py` covers it. A failure means existing parts would take
+  dyes differently. Undo the change, or, when the change is intended, get the
+  owner's approval, capture before/after client screenshots of the affected parts
+  with the same dyes next to an unchanged part (`InEngineVisualVerification.md`),
+  run `CheckDyeAppearance.py --update`, and put the captures in the pull request.
+  New materials are additions and need no update.
+- **Dyed metal follows the palette.** A material whose mask has Metal 1 or Metal 2
+  binds no specular (`texture2`) or roughness (`texture3`) map: the engine takes
+  metal reflectance from a bound specular map instead of the palette, and dyed
+  metal turns pale and nonmetallic. Keep authored normal maps. When imported
+  armor ships such maps, add them to `PALETTE_SPECULAR_MAPS` so the generator
+  unbinds them. Maps shared with nonmetal parts use `PALETTE_SPECULAR_MASK_MAPS`
+  to opt in only the affected metal mask (forearm 30 shares its maps with the
+  cloth-only forearm 103). `tools/PaletteMetalMaterials.json` records audited
+  playable materials, their exact metal masks and original reflectance inputs.
+  Those combinations bind neither map, without changing other materials or masks
+  that share the textures.
+  Profile signatures still retain the authored inputs so aliases do not move.
+  The remaining 44 grandfathered entries are unused material variants or bindings
+  outside the playable normal-phenotype model and helmet catalogs. Keep them in
+  `legacyMetalSpecular`; `--update` never adds to it, and corrected materials leave
+  it. Active playable armor, collars, headgear and droid parts have been corrected.
+
 The generated tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
@@ -32,9 +68,10 @@ Mantle's invisible Cloth 2 preset 61. The shared material uses the opaque pass:
 `fs_cloaktint` discards palette alpha below 0.5 and keeps the remaining pixels
 opaque, independently of the wearer's material fade. This matches the repository's
 punch-through cutoff; fractional palette alpha does not request blended rendering.
-These cloaks must not acquire metal reflection from alpha. Exact RGB tints retain
-neutral-reference palette coverage for every layer on cutout cloaks; reflective
-cloaks keep nonmetal RGB opaque and use reference alpha only for metal reflection.
+These cloaks must not acquire metal reflection from alpha. Exact RGB tints take
+their nearest swatch's shading (see "Preserve exact custom RGB") but keep each
+layer's first palette row as coverage for every layer on cutout cloaks; reflective
+cloaks keep nonmetal RGB opaque and use that row's alpha only for metal reflection.
 The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
 white placeholder otherwise lets NWN suppress the cutout even when palette alpha
 is zero. The GPU regression checks composited pixels around the cutoff with
@@ -43,7 +80,11 @@ blending enabled and disabled, in both native `NO_DISCARD` modes.
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
 Helmet 101 and both human neck 12 textures have obsolete PLT atlases that differ
-from their authored diffuse artwork.
+from their authored diffuse artwork. Every playable family's neck 12 (human, elf,
+half-orc and dwarf bodies) shares one skinned respirator mesh whose UVs fit that
+artwork, so its bitmap names `pmh0_neck012`/`pfh0_neck012` and it binds the authored
+material; the male export's `pmh0_neck012.001` bitmap once left it on the unrelated
+torso-skin atlas. `TestTintMaterialProfiles` guards each model's respirator mesh.
 `GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
 retaining the full-resolution diffuse and normal/specular textures. Cloth 1
 controls helmet 101; Skin controls the necks' authored surfaces. Female left shin
@@ -110,22 +151,62 @@ selection, which could overwrite a newer edit or miss a replacement head/robe.
 
 `TintMapShaderColor.Encode` carries all 24 RGB bits through the existing scalar
 row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
-using the two float exponent ranges' 2^24 distinct values. All three shaders
-decode this value before lighting. They multiply RGB by a neutral reference
-row's luminance curve, normalized at shade128, preserving shading without
-importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
-shade-dependent environment coverage: PLT-only armor relies on this alpha for
-its reflection and specularity. Other RGB layers stay opaque. Authored normal,
-specular and roughness maps still pass through standard material lighting.
-The Toolset viewport uses the same RGB shading and metal coverage. Preset
-lookup and authored colors are unchanged.
+using the two float exponent ranges' 2^24 distinct values. Every tint shader
+(`fs_plt_tinter`, `_nm`, `fs_plt_hair_nm`, `fs_cloaktint`, `fs_hav_*`) decodes
+this value before lighting.
+
+Exact RGB is shaded with the row of its nearest palette swatch: the shade-128
+midtone the editor shows (`TintMapPaletteColors`). The result is the swatch
+row plus the color's difference from the midtone, scaled by the row's
+luminance relative to that midtone, with the row's environment coverage. A
+color equal to a swatch therefore renders exactly like that palette color,
+reflection included, on every layer. An all-black swatch row (hair row 57,
+for example) has no shading to lend, so a near-black custom color uses the
+layer's first palette row for the offset's shading instead of collapsing to
+black. Do not go back to one reference row for
+all colors: palette rows fall to black at very different rates, and row zero
+(a light blond for hair) left dark RGB hair two to four times brighter and
+flatter than the same palette color on head 053's low-shade hair (bug
+"Hair Color Palette", 2026-11).
+
+Atlas rows 1536-2047 hold the swatch lookup the shaders read: four groups
+(skin; hair; metal, shared by Metal1/Metal2; cloth, shared by leather and
+tattoo) of 128 rows, one texel per 32-level RGB cell, listing up to three
+candidate color IDs in red, green and blue. A candidate is every swatch whose
+midtone falls in the cell plus the swatches nearest the cell centre; the
+shader keeps the nearest candidate, the earlier on a tie. Equal midtones keep
+the lowest color ID, like `GetClosestColorId`, so the fully reflective black
+row 61 is never chosen. About 0.2% of other colors get a swatch a few levels
+farther than the true nearest. `GenerateTintMapAssets.py
+--refresh-palette-lookup` rewrites these rows; the asset audit rejects stale
+rows, nonempty rows 1232-1535, and shared palette blocks that diverge. Rows
+0-1231 stay the native palettes.
+
+Cloaks keep their coverage rule: cutout cloaks use each layer's first palette
+row as coverage, and reflective cloaks use it only for metal, so a custom
+color can neither cut a cloak away nor make its cloth reflective. Helmet 101's
+authored-diffuse mode keeps its luminance-only RGB and first-row metal
+coverage. Authored normal, specular and roughness maps still pass through
+standard material lighting. Preset lookup and authored colors are unchanged.
+
+The Toolset shades RGB the same way. Its area viewport (NWN.Toolset
+`AreaViewportControl`, package 0.1.0-preview.6 or later) takes the swatch row
+the host passes as `PaletteRow`; `SwlorAreaViewportMaterialProvider` passes
+`GetClosestColorId`'s exact nearest swatch, so the 0.2% of colors the atlas
+lookup resolves to a farther swatch can differ slightly from the game. The
+cloak material sets `CustomColorsUseLayerCoverage`, which keeps the reflective
+cloak coverage rule; the viewport does not model cutout cloaks.
+`TintMapTextureRenderer` (CPU previews) applies the same swatch shading.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
-and preset parity, including the RGB metal coverage curve at every shade.
+and preset parity, including every swatch sent as exact RGB against its
+installed palette row at every shade and layer. `TestPaletteSwatchLookup.py`
+checks the lookup rows without a GPU.
 `python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
 draws the Toolset's production desktop and ES shader pairs on Windows, checking
-RGB/preset coverage and lit metal reflection without normal or specular maps.
+swatch-row RGB shading and coverage, every fifth swatch sent as RGB against its
+palette row, and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak
@@ -472,38 +553,37 @@ scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement. CleanModels composes these transforms
 directly; the current adapter does not apply that legacy postcompile repair.
 
-Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
-meshes despite having zero constraints on every
-vertex, sending an immobile panel through the cloth-physics renderer. A September
-16 report showed that panel displaced above the hood; skeleton and inverse-bind
-checks alone did not cover that renderer path. The correction keeps the authored
-vertices, materials, transforms, animation IDs and skin bindings, while removing
-cloth simulation from these static panels. Both native phenotype 0/22 models and
-generated RGB body roots are covered; the elf variants were already rigid.
-`SWLOR_Haks/tools/MakeRobePanelsRigid.py --robe 236 --game-data "<NWN data>" --apply`
-recompiles and validates the affected models before installing any output. It
-reports and skips ASCII targets, whose inverse bindings cannot be preserved by
-the compiled-model audit, while continuing with compiled targets for the robe. It
-refreshes owned resource hashes and drops affected cached build proofs. Run
-`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRigidRobePanels.py"`
-to check all native and RGB variants. In-game confirmation is still required for
-the reported displacement after deploying the updated `sw_pt_robe` and
-`sw_pt_root` HAKs.
+Robe 236 (Long Duster) keeps the models released with the Combat Upgrade
+(SWLOR_NWN #2277, SWLOR_Haks `8a1ab83c7f`). After that release its torso covering
+was made rigid (#432), then skinned to the torso with the hood and belt (#455), and its
+generated skirts were re-weighted (#539, #549). Players found the result worse than
+the released robe, so it was reverted in November 2026.
+`SWLOR_Haks/tools/RestoreRobe236Release.py --apply` rebuilds the 16 native phenotype
+0/22 models from pinned release blobs and keeps three later corrections: animation part
+IDs follow the current coat animation parents; the female Ewok/Ugnaught model keeps its
+own sit and sitdown clips as `AlignRobeAnimations.py` aligned them (its released geometry
+is recompiled with the aligned clips' exact controller values, because released clips
+would fork the animation bridge shared by every female-dwarf robe); and the male
+Ewok/Ugnaught right sleeve keeps its forearm cuff weights. Then regenerate the `p??200`
+RGB roots from those models with `GenerateRobeRgbModels.py`, so normal bodies draw the released coverings:
+a cloth-physics torso panel (rigid on elves) and a hood and belt that ride the torso
+joint without skin weights. `BindRobePanels.py --all` skips robe 236, and both panel
+tools refuse `--robe 236`. `TestRobe236Release.py` checks the native bytes, part IDs,
+generated coverings and these exclusions. Accepted trade-off: the reports behind the
+reverted repairs (a September 16 report of the torso panel displaced above the hood,
+and a later one of the upper robe displaced after movement or a skill) can recur. The
+November live check on all eight bodies showed no displacement after conjure, walking
+or idle, but it did not cover every ability clip.
 
-A subsequent player report after that update still showed the upper robe
-displaced after movement or a skill. The torso covering, hood (`hood002`) and
-belt (`beltjr`) now use skin meshes with a single full torso weight, matching the
-bone-following renderer used by the sleeves and skirt. Their rigid shapes,
-materials, local transforms, animation IDs and existing sleeve/skirt inverse
-bindings are preserved. New panel inverse binds are calculated from the compiled
-world transforms rather than relying on the legacy compiler's calculation.
-This covers all 24 native and RGB models across eight body families.
-Run `SWLOR_Haks/tools/BindRobePanels.py --robe 236 --panel coat_top --panel coat_top2
---panel hood002 --panel beltjr --game-data "<NWN data>" --apply` to reproduce the
-repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePanels.py"`
-checks all 72 panel bindings and compiled vertex placement through movement,
-skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
-client's animation transitions remains an in-game check.
+The panel tools still own every other robe. `MakeRobePanelsRigid.py --robe <id>
+--game-data "<NWN data>" --apply` removes cloth simulation from static panels whose
+dangly constraints are all zero, keeping the authored vertices, materials, transforms,
+animation IDs and skin bindings; it skips ASCII targets. `BindRobePanels.py --all
+--game-data "<NWN data>" --apply` gives each static attachment in the catalog a single
+full weight on its body bone, so it uses the bone-following renderer instead of drifting
+after animation changes. New inverse binds come from the compiled world transforms.
+Run `TestRigidRobePanels.py` and `TestBoundRobePanels.py`, then rebuild `sw_pt_robe`
+and `sw_pt_root`.
 
 Normal-body robe 236 uses the generated `p??200` roots, whether or not the
 item has custom RGB. Its skirts are weighted to separate coat helpers, as in the native robe.
@@ -566,7 +646,7 @@ bridge and replays idle, walk and run on a robe wearer against the plain body. R
 
 Several chest, belt, pelvis, neck and shoulder parts carry long skirts or capes in the part
 mesh: the coat skirts of chests 028, 059, 154, 269 and 310, the skirt belts 019, 110, 112
-and 114, the skirt of pelvis 035, and the full-length capes of neck 291 and shoulders 260.
+and 114, skirts in the pelvis family, and the full-length capes of neck 291 and shoulders 260.
 Each half of a skirt or cape was weighted to its own thigh and shin, so striding pulled the
 halves apart: the back tore open and the legs showed through it. A body part only reaches
 the normal body's bones, and a least-squares fit shows no blend of them reproduces robe
@@ -586,7 +666,7 @@ the normal body's bones, and a least-squares fit shows no blend of them reproduc
   original when standing), and in a run the side panels followed the striding legs into a
   tent while the back stood out level (up to 97 degrees).
 
-`ChestSkirtBindings.py` now keeps the flap-and-pelvis back that moved like fabric and lets
+For the models it owns in `ChestSkirtBindings.json`, `ChestSkirtBindings.py` keeps the flap-and-pelvis back that moved like fabric and lets
 only a share of each side panel follow its own leg (`LEGS`, 60%). Above the hip joints a
 vertex keeps the pelvis binding. From the hips to the middle back flap joint it eases onto
 the pelvis and, away from a seam (`SEAM` to `SIDE`, 30 to 90 degrees round from the back,
@@ -614,6 +694,16 @@ Bothan female chest 310 is not rebound: its external bone table does not match t
 skeleton. Belt 226 and pelvis 198 stay as originally rigged at the test server's request;
 the manifest's `restored` list keeps them so.
 
+Human pelvis 034 has a separate owner: `PelvisSkirtBindings.py` and its pinned
+manifest. It retains the accepted 2026-10-31 released pelvis 035 rig, original rear
+panels, UVs and width, with local front/side position corrections and corresponding
+native metadata. Legacy human 035 is protected in the generic manifest's `restored`
+list. Do not reapply the generic thigh/flap weights to either human model. Canonical
+034 keeps its existing material identity and dye mapping for the 035-to-034 migration;
+matching UVs do not make their dye masks interchangeable. Its focused guard is
+`TestPelvisSkirtBindings.py`; regenerate part-skin aliases after its recipe changes.
+See `GarmentModelRules.md` for the required fit/motion and clipping acceptance checks.
+
 The engine keeps a joint that a clip does not track where the previous clip left it. SWLOR's
 custom emotes (`/paraderest` among them) carried no flap tracks, and their libraries'
 skeletons lacked the flap joints, so the flaps kept the idle's sideways lean and the
@@ -623,9 +713,11 @@ bind transforms) into the skeletons of the emote libraries `a_ba_non_combat` and
 `a_ba_non_combat2`, and gives each of their 145 custom emote clips one rest key (identity)
 on every flap joint; the engine only applies clip tracks for joints the animation model's
 skeleton carries (client-verified: tracks without the skeleton joints changed nothing). No
-other normal-phenotype part uses the flap joints: belt 226 and pelvis 198, back on their
-original leg weights, no longer do, and `TestFillEmoteFlapTracks.py` fails if any part
-but the skirts rebound above is skinned to them. So only those skirts change, and only in
+other unregistered normal-phenotype part may use these flap joints: belt 226 and pelvis
+198, back on their original leg weights, no longer do. The shared tracks also reach the
+accepted flap bindings of canonical human pelvis 034. `TestFillEmoteFlapTracks.py`
+checks consumers against both the generic and specialized recipe manifests; robe aliases
+are checked on their receiving skeletons by `TestPartSkinModels.py`. These consumers change only in
 the custom emotes; the dwarf and half-orc roots number their flaps apart and are
 unaffected. The custom emotes in the other animation libraries (`a_ba_med_weap`, whose
 point-pistol clips another tool owns, `a_ba_int`, `a_fa_int`, `a_ba_dnc`, `a_ba_casts`,
@@ -639,6 +731,10 @@ materials and UVs, keeps the hood and collar on the neck and hangs the cloak fro
 bones as above, then compiles it with CleanModels against the wearer's skeleton; every
 compiled vertex must sit where the original put it. The dwarf and half-orc bodies keep the
 dangly original.
+
+The following numerical tolerances bound specific legacy fixtures, not an acceptable
+visible clipping budget. Passing them does not clear an on-screen breakthrough;
+`GarmentModelRules.md`'s native acceptance criteria still apply.
 
 `TestChestSkirtBindings.py` measures every rebound model against its original. Over the
 walk and run clips the hem of every skirt that reaches below the knee moves against the
@@ -842,6 +938,19 @@ Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
 
+Dyed metal is the exception (see "Keep dye colors stable"): a bound specular map
+replaces the palette's metal reflectance. `PALETTE_SPECULAR_MAPS`
+(`GenerateTintMapAssets.py`) lists the maps of the two sets added in haks #529: the
+Republic Trooper (chest 99, pelvis 156, shoulders 197, biceps, forearms and hands
+101, thighs 121, shins 102, feet 186, helmet 37) and the Havoc armor (chest
+316/317, pelvis 270, shoulders 261, biceps 278, forearms 282, hands 267, thighs 269,
+shins 272, feet 272, helmet 321). They are about 0.1 to 0.3 on metal and made dyed
+metal a pale nonmetallic sheen; players reported both sets as washed out next to
+other parts with the same metal color. The generator writes `texture2 null` and
+`texture3 null` for listed maps and keeps the normal and illumination maps; material profile
+signatures still see the authored maps, so scoped alias names do not change.
+`TestPaletteSpecularMaps.py` guards the list and the checked-in materials.
+
 Match the engine's color-space ordering as well: blend the legacy reflection
 gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional
 environment-map blend in linear space. Mixing gray into already-linear RGB
@@ -869,29 +978,106 @@ engine's complete include tree for each supported shader quality. A material
 test adapter that declares extra uniforms cannot validate this contract; keep
 its numerical lighting checks separate from the production compilation checks.
 
-## Declare and enforce single-level packed textures
+## Store a full mip chain in every packed mask
 
-Each generated ATI2/BC5 DDS stores only its base level. Set
-`DDSD_MIPMAPCOUNT` and `dwMipMapCount = 1`, and ship a same-resref TXI containing
-`mipmap 0` alongside every DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2`.
-The TXI is required: the installed 89.8193.37-17 client's compressed upload
-loop derives further levels from the texture dimensions when mipmaps are
-enabled, regardless of the DDS mip count. Merely fixing the header is
-insufficient. The mask's green channel contains categorical layer IDs, so
-filtered mipmap generation is inappropriate for this texture.
+Each generated ATI2/BC5 DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2` stores
+every mip level down to 1 x 1. Set `DDSD_MIPMAPCOUNT`, set `dwMipMapCount` to
+the number of levels stored, and ship a same-resref TXI containing `mipmap 1`.
+`write_packed_dds` does this: shades are box-filtered, and an odd dimension is
+filtered by area so its last row or column still counts. A lower level whose
+layer ids BC4 cannot encode gets one placeholder id per block, because those ids
+are never read. Masks, TXIs, and generated MTRs and models come
+from the tools in `SWLOR_Haks/tools/`: change the tool and regenerate, never
+hand-edit the output.
 
-The NPC-spawn crash dump confirmed a `glCompressedTexImage2D` call requesting
-the 512 x 512 first mip (262,144 bytes) from a pointer exactly 1,048,576 bytes
-after a 1024 x 1024 BC5 base level. That DDS contained no mip payload, and the
-driver faulted reading beyond the buffer. Inspection of the installed client
-confirmed that TXI `mipmap 0` controls the condition that skips this upload loop.
+A DDS must declare exactly the levels it stores. The installed 89.8193.37-17
+client's compressed upload loop derives further levels from the texture
+dimensions when mipmaps are enabled, regardless of the DDS mip count. An
+NPC-spawn crash dump confirmed a `glCompressedTexImage2D` call requesting the
+512 x 512 first mip (262,144 bytes) from a pointer exactly 1,048,576 bytes after
+a 1024 x 1024 BC5 base level. That DDS contained no mip payload, and the driver
+faulted reading beyond the buffer. So a base-only DDS with `mipmap 1` can crash
+the client. Inspection of the installed client confirmed that TXI `mipmap 0`
+controls the condition that skips this upload loop.
+
+These textures stay single-level with `mipmap 0`:
+
+- The cloak atlas (`mipmaps=False` in `CloakTintAssets.py`). `fs_cloaktint`
+  reads it with a `-10` bias and has no far-shade blend. `CloakTintAssets.py`
+  derives that shader from `fs_plt_tinter`, restoring the base-level reads first
+  (`BASE_LEVEL_READS`). A new `texture2D(texUnit7, ...)` read in `fs_plt_tinter`
+  fails `CloakTintAssets.py --check`, which stops `BuildHaks.cmd`, until the cloak
+  shader handles it. The check does not catch a new `texelFetch` read, which would
+  sample the whole atlas, so review any such read for cloaks by hand.
+- The palette atlas `plt_palette`. Its rows are categories.
 
 Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`
-to repair existing DDS headers and create the TXIs without recompressing
-pixels. Generation, relocation, deduplication, and removal must preserve each
-DDS/TXI pair. Both the asset audit and C# corpus test require the pair; the GPU
-test rejects missing or enabled-mipmap TXIs before issuing compressed uploads.
-Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
+to rebuild the chain and TXIs for existing masks. It leaves each base level byte
+for byte the same. Generation, relocation, deduplication, and removal must
+preserve each DDS/TXI pair. `tint_dds_layout` in `TestTintShaderMaterials.py`
+and the C# corpus test both reject a base-only header, a truncated chain, a
+missing TXI, and `mipmap 0`; keep the Python negative controls. Rebuild and deploy
+all three `sw_tint*.hak` archives after this repair.
+
+`RobeRgbModels.json` hashes `GenerateTintMapAssets.py`, so any generator edit
+fails `GenerateRobeRgbModels.py --check`. Regenerate the robes, or refresh the
+hash when the change cannot reach robe output.
+
+## Sample the shade and the layer id differently
+
+A packed mask holds two channels per texel that need opposite sampling. Most
+tint bugs come from mixing them up. These rules apply to `fs_plt_tinter`,
+`fs_plt_tinter_nm`, `fs_plt_hair_nm`, and the `fs_hav_*` shaders.
+
+- **Red is the shade: average it at a distance.** Up close, read the exact
+  base-level shade with `texture2D(texUnit7, wrappedUV, -10.0).r`. Once a texel
+  is smaller than a pixel, blend to the mipmapped shade,
+  `texture2D(texUnit7, vVertexTexCoords).r`, weighted by
+  `far = clamp(max(length(dFdx(texels)), length(dFdy(texels))) - 1.0, 0.0, 1.0)`
+  with `texels = vVertexTexCoords * tintMapSize`. A base-level shade at a distance
+  picks one texel per pixel, which shows as grain and glitter. A mipmapped shade
+  up close averages across a dye border, which makes the border fizz.
+- **Green is the layer id: never filter it.** Read it with
+  `texelFetch(texUnit7, texel, 0)` under `#if __VERSION__ >= 130`. Halfway between
+  two ids is a third, wrong layer. A texel-center `texture2D` read is not enough:
+  with mipmaps present, anisotropic filtering (16x is the client default) samples
+  several texels even at level 0. Lower mip levels of the green channel are
+  never read, so they just keep one id per block.
+- **Take derivatives from unwrapped UVs.** `fract(vVertexTexCoords)` jumps at a
+  UV seam, and a mip level picked from it there is the smallest one. Sample
+  mipmapped reads with `vVertexTexCoords`; the mask repeats.
+- **`ResolveTintTexel` takes a texel center.** Fetch that texel with `texelFetch`.
+  The smoothing path blends finished colors, never ids or shades.
+
+Known limit: far away, a pixel at a dye border averages the shades on both sides
+and colors the result with one layer's ramp, so the border color can blend a
+little. It only shows once a texel is smaller than a pixel.
+
+Robes render native palette colors through `useNativePalette`, but they still run
+the tint shader, so every sampling bug above shows on them. A robe is the quickest
+place to see grain and border fizz.
+
+## Check a shader or mask change in the client
+
+1. Build the override from the shader versions the live server ships, not from
+   `master`. A shader newer than the client's haks can fail to compile and turn
+   every dyed part magenta. Find the live version by hashing the shader in the
+   client's nwsync cache against `git log` of the file.
+2. Put the changed shaders, masks, and TXIs in the game's `development` folder,
+   which outranks every hak. Keep a list of what you put there, and remove exactly
+   that list afterward.
+3. Restart the client fully. A shader change does not show otherwise.
+4. Look at a dyed robe from far away (grain), the robe collar up close (border
+   fizz), a dyed helmet, dyed hair, and a cloak.
+5. Read `logs/nwengineLog.txt` in the game's user folder. `Failed to link material
+   custom parameter` for every row uniform means the shader did not compile.
+6. Compare with the override off before blaming a change. Split the override
+   (masks only, shaders only) to find which half causes a defect.
+
+`GenerateTintMapAssets.py --check`, `GenerateRobeRgbModels.py --check`,
+`TestTintMaterialProfiles.py`, and `TestDyeAppearance.py` run anywhere.
+`TestTintShaderMaterials.py` and `TestHelmetTintFiltering.py` render through WGL
+and need Windows and `--game-data`.
 
 ## Smooth dye edges on reported materials
 
@@ -937,6 +1123,16 @@ behavior and verify the resulting binary mesh bindings as well as catalog
 rows. The GPU regression resolves the reported feet and shins through
 the catalog and checks their actual packed masks select Leather2 row 23 with
 zero environment-map coverage.
+
+A part whose meshes take different dye masks is the exception. Neck 152 binds
+its frames, lenses and collar to their own materials (`p?h0_n152fr`, `ln`, `nk`:
+Metal 1, Leather 1, Cloth 1), so the old single neck palette must not replace
+them. Their `TintMapSources.json` entries set `explicitMeshMaterial`; the generator
+then keeps each mesh's material and writes one `tintmap.2da` row per material.
+The source conversion preserves the flag. The lens materials add `transparency 1`
+and `sample_framebuffer 1` (and keep `twosided 0`) so the partly transparent
+lenses draw after the head; without them, heads with alpha-cutout hair or fur
+showed a white fill through the lenses. The generator keeps both directives.
 
 A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female

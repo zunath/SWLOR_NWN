@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Hold the Line adept in Mon Cala - Medical Sublevel."
+    "value": "Ward Orderly (Hold the Line line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian orderly in work clothes, holding a vibroblade low the way he was once taught to hold a stretcher pole. He guards the triage hall's intake as if the sick on the other side were the threat, and he will not step back from it."
+      "0": "A Rodian ward orderly in work clothes, holding a vibroblade low the way he was once taught to hold a stretcher pole. He guards the triage hall's intake as if the sick on the other side were the threat, and he will not step back from it."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hold the Line Adept"
+      "0": "Ward Orderly"
     }
   },
   "fortbonus": {

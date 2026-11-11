@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Recast(12f)
                 .CapitalClassModule()
                 .CanTargetSelf()
+                .IgnoresSelectedTarget()
                 .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
                     var bonusRecovery = activatorShipStatus.Industrial * moduleBonus;

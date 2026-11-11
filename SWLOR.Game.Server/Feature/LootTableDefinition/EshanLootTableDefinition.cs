@@ -1,0 +1,113 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.LootService;
+
+namespace SWLOR.Game.Server.Feature.LootTableDefinition
+{
+    public class EshanLootTableDefinition : ILootTableDefinition
+    {
+        private readonly LootTableBuilder _builder = new();
+
+        public Dictionary<string, LootTable> BuildLootTables()
+        {
+            _builder.Create("ESHAN_VEYLAN_GREENS")
+                .AddItem("esh_greens", 60, 3)
+                .AddItem("esh_scallion", 40, 3);
+
+            _builder.Create("ESHAN_VEYLAN_SEEDS")
+                .AddItem("esh_seeds", 50, 3);
+
+            _builder.Create("ESHAN_NEOCRUSADER")
+                .AddItem("esh_rice", 5, 3)
+                .AddItem("esh_greens", 5, 3)
+                .AddItem("esh_scallion", 5, 3)
+                .AddItem("esh_egg", 5, 3)
+                .AddGold(150, 5);
+
+            _builder.Create("ESHAN_DIRE_WOLF")
+                .AddItem("esh_wolf_meat", 10, 3);
+
+            _builder.Create("ESHAN_FROST_WOLF")
+                .AddItem("esh_wolf_meat", 10, 3);
+
+            _builder.Create("ESHAN_DIRE_WOLF_ALPHA")
+                .AddItem("esh_wolf_meat", 10, 4);
+
+            _builder.Create("ESHAN_DIRE_WOLF_ALPHA_COMP")
+                .AddItem("esh_wolf_pelt", 1)
+                .AddItem("esh_frost_fang", 1);
+
+            _builder.Create("ESHAN_GORAK_VESH_GEMS")
+                .AddItem("emerald", 100, 1, true)
+                .AddItem("chiro_shard", 50, 1, true);
+
+            _builder.Create("ESHAN_GORAK_VESH_HIDE")
+                .AddItem("esh_gorak_hide", 1, 1, true);
+
+            _builder.Create("ESHAN_THYRSIAN_EXILE")
+                .AddItem("esh_chili_oil", 5, 2)
+                .AddItem("esh_pickles", 5, 2)
+                .AddItem("esh_seeds", 5, 3)
+                .AddGold(100, 5);
+
+            _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
+                .AddItem("esh_fish", 5, 3)
+                .AddItem("esh_poultry", 5, 3)
+                .AddItem("esh_chili_oil", 3, 2)
+                .AddItem("esh_pickles", 3, 2)
+                .AddItem("esh_seeds", 3, 3)
+                .AddItem("elec_flawed", 5, 1)
+                .AddItem("elec_good", 5, 1)
+                .AddGold(100, 5);
+
+            _builder.Create("ESHAN_GORAK_VESH_RARES")
+                .IsRare()
+                .AddItem("bp_silverpelt", 1, 1, true)
+                .AddItem("bp_frostgaunt", 1, 1, true)
+                .AddItem("bp_ridgemantle", 1, 1, true);
+
+            _builder.Create("ESHAN_WARDEN_RARES")
+                .IsRare()
+                .AddItem("bp_silverpelt", 1, 1, true)
+                .AddItem("bp_frostgaunt", 1, 1, true)
+                .AddItem("bp_ridgemantle", 1, 1, true);
+
+            _builder.Create("ESHAN_WARDEN_FIBERPLAST")
+                .AddItem("fiberp_high", 1, 3);
+
+            _builder.Create("ESHAN_NEOCRUSADER_CAPTAIN_RARES")
+                .IsRare()
+                .AddItem("bp_rec_scope", 1, 1, true)
+                .AddItem("bp_rec_warhelm", 1, 1, true);
+
+            _builder.Create("ESHAN_NEOCRUSADER_CAPTAIN_COMP")
+                .AddItem("esh_mando_salv", 1)
+                .AddItem("esh_sun_insignia", 1);
+
+            _builder.Create("ESHAN_MAP_RARES")
+                .IsRare()
+                .AddItem("esh_map_orbit", 2, 1, true)
+                .AddItem("esh_map_height", 2, 1, true)
+                .AddItem("esh_map_silver", 2, 1, true)
+                .AddItem("esh_map_gate", 2, 1, true)
+                .AddItem("esh_map_peaks", 2, 1, true)
+                .AddItem("esh_map_high", 2, 1, true)
+                .AddItem("esh_map_shimmer", 2, 1, true)
+                .AddItem("esh_map_farms", 2, 1, true)
+                .AddItem("esh_map_battle", 2, 1, true)
+                .AddItem("esh_map_hearth", 2, 1, true)
+                .AddItem("esh_map_starport", 2, 1, true)
+                .AddItem("esh_map_verdant", 2, 1, true)
+                .AddItem("esh_map_river", 2, 1, true)
+                .AddItem("esh_map_marches", 2, 1, true)
+                .AddItem("esh_map_oldquart", 2, 1, true)
+                .AddItem("esh_map_groves", 2, 1, true)
+                .AddItem("esh_map_proving", 2, 1, true)
+                .AddItem("esh_map_scrap", 2, 1, true)
+                .AddItem("esh_map_tunnels", 2, 1, true)
+                .AddItem("esh_map_vein", 2, 1, true)
+                .AddItem("esh_map_scrcave", 2, 1, true);
+
+            return _builder.Build();
+        }
+    }
+}

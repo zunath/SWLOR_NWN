@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Service
@@ -118,9 +119,11 @@ namespace SWLOR.Game.Server.Service
                     GetCooldownTextureName(iconTexture ?? sourceTexture, 0) == null) return;
                 textures = new List<string> { sourceTexture };
             }
-            else if (!_texturesByRecastGroup.TryGetValue(group, out textures) || textures.Count <= 0)
+            else if (!_texturesByRecastGroup.TryGetValue(group, out textures))
             {
-                return;
+                // Abilities sharing an icon across recast groups get no native override, but extra hotbars still
+                // know which ability each slot holds, so the recharge is tracked anyway.
+                textures = new List<string>();
             }
 
             var playerId = GetObjectUUID(player);
@@ -193,6 +196,21 @@ namespace SWLOR.Game.Server.Service
             ClearRecastDelay(GetObjectUUID(player), group);
         }
 
+        /// <summary>
+        /// The recharge frame showing for a recast group, or -1 when it is not recharging.
+        /// </summary>
+        public static int GetCooldownStage(uint player, RecastGroup group)
+        {
+            if (!GetIsObjectValid(player) ||
+                !_activeVisuals.TryGetValue(GetObjectUUID(player), out var playerVisuals) ||
+                !playerVisuals.TryGetValue(group, out var state))
+            {
+                return -1;
+            }
+
+            return state.Stage;
+        }
+
         public static void ClearAllRecastDelays(uint player)
         {
             if (!GetIsObjectValid(player))
@@ -208,6 +226,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _activeVisuals.Remove(playerId);
+            Gui.PublishRefreshEvent(player, new ExtraHotbarCooldownRefreshEvent());
         }
 
         private static void CacheAbilityCooldownTextures()
@@ -225,6 +244,14 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                if (!_abilitiesByRecastGroup.TryGetValue(ability.RecastGroup, out var abilities))
+                {
+                    abilities = new List<AbilityDetail>();
+                    _abilitiesByRecastGroup[ability.RecastGroup] = abilities;
+                }
+
+                abilities.Add(ability);
+
                 var texture = Get2DAString(Feat2DA, FeatIconColumn, (int)feat);
                 if (string.IsNullOrWhiteSpace(texture) ||
                     texture == "****" ||
@@ -241,14 +268,6 @@ namespace SWLOR.Game.Server.Service
 
                 if (!textures.Contains(texture))
                     textures.Add(texture);
-
-                if (!_abilitiesByRecastGroup.TryGetValue(ability.RecastGroup, out var abilities))
-                {
-                    abilities = new List<AbilityDetail>();
-                    _abilitiesByRecastGroup[ability.RecastGroup] = abilities;
-                }
-
-                abilities.Add(ability);
 
                 if (!groupsByTexture.TryGetValue(texture, out var recastGroups))
                 {
@@ -337,6 +356,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ApplyStage(state, stage);
                 state.Stage = stage;
+                Gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
             }
 
             ScheduleNextUpdate(state, now, stage);
@@ -429,6 +449,9 @@ namespace SWLOR.Game.Server.Service
             {
                 _activeVisuals.Remove(playerId);
             }
+
+            if (GetIsObjectValid(state.Player) && GetObjectUUID(state.Player) == playerId)
+                Gui.PublishRefreshEvent(state.Player, new ExtraHotbarCooldownRefreshEvent());
         }
 
         /// <summary>Restores fitted artwork, or removes the override when the anchor supplies its own artwork.</summary>

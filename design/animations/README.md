@@ -12,8 +12,10 @@ Beast abilities are excluded because their models have separate animation sets; 
 Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
 `animation-plan.csv` now retains all 119 image references and documents every entry's
 internal name, base motion, source project, and review status.
-The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
-clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
+The installed registry and tester also include the activity clips: Fishing6, Fishing7, Fishing8,
+the crafting-revamp fishing Line, station and gathering clips (see
+[Crafting and gathering work clips](#crafting-and-gathering-work-clips)) and TwinPistolCycle. These activity
+clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have
 273 individual choreography recipes; Provoke uses stock NWN Taunt, while Throw Lightsaber
 uses the master branch's custom throw through its original animation slot in game and in the
@@ -337,6 +339,221 @@ The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, 
 bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
 playback. After installing, compile the banks and regenerate the clothing bridges as below.
 
+### Performance clips
+
+`performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
+(`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
+recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
+they end in native idle like every inventory clip. The other 42 clips are activity clips like
+Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
+`performance/recipe.json`, twenty in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+
+| Group | Clips (project Id = internal name) | Length |
+|---|---|---|
+| Routine loops | CantinaShuffle `sw_dn_shufl`, LightFeet `sw_dn_light`, PowerStep `sw_dn_power`, Quickstep `sw_dn_quick`, VigorReel `sw_dn_vigor` | See source table below |
+| Dance steps | DanceStepLeft/Up/Down/Right `sw_dn_stepl/u/d/r` | 0.6 s |
+| Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
+| Strings | StringsLoop `sw_str_loop` (5.2 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
+| Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Vocals | VocalsLoop `sw_voc_loop` (5.2 s), VocalsLow/Mid/High `sw_voc_low/mid/high` (0.5 s), VocalsFlourish `sw_voc_flour` (1.5 s) | |
+| Pipes | PipesLoop `sw_pip_loop` (5.2 s), PipesLow/Mid/High `sw_pip_low/mid/high` (0.5 s), PipesFlourish `sw_pip_flour` (1.5 s) | |
+| Violin | ViolinLoop `sw_vio_loop` (5.2 s), ViolinLow/Mid/High `sw_vio_low/mid/high` (0.5 s), ViolinFlourish `sw_vio_flour` (1.5 s) | |
+| Tambourine | TambourineLoop `sw_tam_loop` (5.2 s), TambourineLow/Mid/High `sw_tam_low/mid/high` (0.5 s), TambourineFlourish `sw_tam_flour` (1.5 s) | |
+| Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
+
+`props-recipe.json` owns the microphone, panpipes, violin and tambourine clips; their provenance
+is in `props-manifest.json`. Generate that recipe into a temporary directory with the same
+`generate` command, then copy its projects into this directory and its manifest to
+`props-manifest.json`. Install with Category `Performance` and the internal names above.
+`leftGrip` optionally aims a held left-hand prop along a world-space direction, just as `blade`
+aims the right-hand prop. Recipes without it retain their native left wrist orientation.
+`rightGripAxis` optionally identifies the prop's long axis in item-local coordinates instead
+of assuming the sword's +Y axis. The tool accounts for the native `rhand` attachment when
+aiming it along `blade`. The violin bow uses its measured diagonal axis; other recipes keep
+their prior grip and output bytes.
+`rightHandAttachment` optionally supplies a constant unit quaternion on the native `rhand`
+hook. The drum and violin bow use this to keep the wrist neutral while aiming the measured
+prop frame; it does not rotate the inventory item. `leftElbow` and `rightElbow` optionally set
+the bend planes for instrument contact. Omitted controls preserve existing recipes.
+`leftPalmFacing`, together with `leftGrip`, aims the tapping palm's native +X normal;
+forearm roll carries the twist while the wrist follows the contact angle.
+Microphones and violins occupy the left hand; a violin also requires its bow in the right.
+Violin play retains the native `torchl` hold on the left arm. Fit its bow against that
+composed hold, not the draft's hidden left-arm pose. `RefinePerformancePropMotion.py`
+pins the native carry and item models, composes their actual attachment transforms, and
+keeps playable bow hair at the string surface near the bridge. Its violin solve keys run
+at 60 Hz to preserve contact between short accent keys; this is separate from measured
+client video FPS. Check the installed male and female rigs and native front/side motion,
+including frog/tip clearance, wrist bend and elbow clearance throughout the stroke.
+
+After installing the five violin projects, run `tools/PublishViolinBowMotion.py`
+with the pre-correction asset `--baseline`, a staging `--output` and `--apply`,
+then compile `an_a_ba` and `an_a_fa`. This copies only the four bow-arm rotation
+tracks into the pinned body banks; dense solve keys must not resample body translations.
+Revise the existing robe extensions with `ExtendRobeAnimations.py --revise-rotations`
+before fitting other bodies.
+
+`SWLOR_Haks/tools/GenerateViolinBowContact.py` fits the normal E/D/O bodies and
+female Human/Droid offsets against their own static torch carry and arm lengths.
+Generate its eight `a_vio_*` banks in a staging `--output`, install and compile
+those banks, then run `--finalize`. The inheritance is body -> existing rifle bank
+-> violin bank -> original ancestor: body roots and rifle clips stay intact.
+Run `--update-robes --output <new-output> --apply` to copy only the three right-arm
+rotations into the seven affected robe extensions. The shared weapon hook and
+garment skeletons stay unchanged. Run `TestViolinBowContact.py` with `NWN_GAME_DATA`
+set to the installed KEY/BIF directory, and `ExtendRobeAnimations.py --check` with
+`--game-data`, before rebuilding the body and both animation HAKs. Confirm the
+compiled native motion on all normal body families and both genders.
+
+Singing clears the microphone's native `torchl` arm layer once at the opening, then suppresses
+its refresh on the looping carrier. The mapping is owned by the playback and restored on exit
+or equipment changes; other animation callers keep their existing torch behavior.
+Panpipes, tambourines and violin bows lift the polearm carry layer at the opening, then stay
+on the looping carrier. All clips in each new family return to their common playing hold.
+The pipes use an outer-edge grip with the row turned inward by a native item-part Z rotation,
+with Human offsets in `HornFit` checked from front and side against the default male and female heads.
+These middle-part offsets apply only while music
+plays and are removed on stop or unequip. Tambourine clips hold the upper rim near the ribs,
+with free-hand taps and small shakes.
+
+Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
+strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain
+without a seam; the installer's `_in` and `_out` phases blend to and from native idle. Strings hold
+a right-hand instrument in the engine's polearm carry grip; the free left hand plays near the
+upper soundboard or lower harp strings. The imported string loop evaluates that native carry
+layer when fitting hand contact. `NativeCarry` records the four right-arm orientation controllers
+from the reference `a_ba.plpause1` at time zero; the client still plays its native carry animation.
+Horns hold the instrument at the mouth with the bell forward and down. Both use the item
+attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
+The horn recipe uses the existing `shield` facing control to set left-forearm roll, even
+without a shield equipped. `[-120, 165, 30]` keeps the left hand upright in the note and
+flourish holds; the imported saxophone loop inherits that hold. Rotate the forearm along
+its elbow-to-wrist axis so the hand follows it without moving the wrist or instrument.
+The kloo horn only lines up once the instrument's polearm carry layer is gone. Mapping `plpause1`
+to `sw_nohold` stops the layer refreshing but cannot remove one already on the character, which
+leaves the horn on the shoulder, so its opening `PlayInstrument` clip plays once on the Dodge Side
+carrier to remove it. Later clips stay on the looping carrier.
+
+The slitherhorn keeps the carry layer: its mouthpiece reaches the lips from that pose, and sits at
+the chest without it. It is fitted in item-local coordinates from close male and female
+client views. The lower stem, grips and bell keep their original coordinates (vertices at or
+below original Y=0.04). The editable model is
+`SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to
+`SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
+`python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
+
+`HornFit` moves the held horn per body, because one playing clip serves very different heads and
+shoulders. It adds a separate middle-part Z offset to the slitherhorn on normal Human bodies:
+0.035 m for males and -0.028 m for females, including their robe variants. Each horn's other
+fits are profiles by appearance and gender, measured against the playing pose and applied only
+while music plays, so a carried horn is not tilted. Most kloo horn fits are a Y rotation at the
+grip, which keeps it in the right hand; Cathar males also slide it up the shaft and tip it back,
+since their arms hold it far out in front of the head. In item-local space +Z runs down the kloo
+horn's shaft and a negative Y rotation tips its mouth end forward; the slitherhorn keeps its carry
+layer, so the same offsets move it the other way (+Z takes its mouth end toward the face). Judge a
+fit from the side as well as the front: a horn
+held out in front of the face looks right head-on. Equipment and appearance refreshes rebase
+against the saved fit delta, preserving cosmetic transforms and removing only this offset on
+unequip. The saved delta belongs to the item's UUID, so a native `CopyItem` with copied locals and
+reset transforms starts unfitted.
+
+The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
+the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`
+and its net drift is removed, so it does not move the game object. Instrument tracks are mirrored
+and calibrated to the existing playing holds; the left hand stays on the strings or horn, and
+the horn's mouth contact is fitted from the existing horn accents. Native carry layers remain unchanged.
+
+| SWLOR clip | SWG performance | Source animation | Length |
+|---|---|---|---|
+| Cantina Shuffle | Basic 2 | `all_b_dnc_goofy_base_loop.ans` | 6.0 s |
+| Light Feet | Popular 2 | `all_f_dnc_f_gogo_loop.ans` | 6.8 s |
+| Power Step | Poplock 2 | `all_m_dnc_m_poplock_base_loop.ans` | 8.2 s |
+| Quickstep | Footloose 2 | `all_m_dnc_m_african_base_loop.ans` | 155/30 s |
+| Vigor Reel | Jazzy 2 | `all_b_dnc_tatooine_jazz_loop.ans` | 202/30 s |
+| Strings Loop | Guitar | `all_b_dnc_musician_guitar_loop.ans` | 5.2 s |
+| Horn Loop | Saxophone | `all_b_dnc_musician_sax_loop.ans` | 5.2 s |
+
+The original dance names come from SWG's [performance table](https://github.com/SWG-Source/dsrc/blob/master/sku.0/sys.shared/compiled/game/datatables/performance/performance.tab)
+and [logical animation table](https://github.com/SWG-Source/clientdata_OLD/blob/e345de3e1f963be3b70f99add04e14e660122ead/appearance/lat/all_m.lat).
+The importer reads CKAT 0001 and KFAT 0003 tracks and the common `all_b.skt` skeleton. Source file
+and skeleton hashes are mandatory; supply the provided `appearance.zip`, or a directory with the
+same `appearance/` resources. Source archives stay outside the repository.
+
+Generate the authored activity clips with the Fishing command, import the SWG loops, and install the whole group with
+`install-active` so each clip keeps its assigned internal name. The batch file only needs `Id`,
+`InternalName`, `Category` (`Performance`), `Type` and `Description`, and stays in the ignored
+`artifacts/animations/` folder:
+
+```powershell
+python -m pip install -r tools/requirements-swg-animation.txt
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/performance/recipe.json design/animations/performance --overwrite
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . artifacts/animations/performance-batch.json a_ba a_fa
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --finalize-installed --overwrite
+python -B SWLOR_Haks/tools/CompileModels.py --since HEAD --apply
+python -B SWLOR_Haks/tools/GenerateRobeRgbModels.py --game-data "C:/path/to/Neverwinter Nights/data" --apply
+python -B SWLOR_Haks/tools/PruneRobeAnimationBridges.py --apply
+```
+
+Finalization verifies float32 installation values, ignoring quaternion noise below 1e-12, before
+refreshing portable provenance hashes. Use the normal versioned robe rebuild for these clips; retained bridge
+families are immutable. The cue and flourish lengths remain 0.6/0.5/1.5 seconds.
+
+A recipe pose may add `rootYaw` (degrees): the root and every hand, foot and blade target turn together
+about the vertical axis through the root, so `DanceSpin` is authored unturned and rotated by one field.
+Poses without it generate byte-identical projects. `DanceSpin` pivots on the left foot, which sits
+under the root, and turns a full revolution.
+
+### Crafting and gathering work clips
+
+The crafting revamp adds fifteen activity clips for the playable species on the normal phenotype. They install into
+the same `a_ba` and `a_fa` chains as every other clip, have no ability definition, and appear in `/animations` under
+**Other**. The lookups that choose them are in `WorkAnimation` (`SWLOR.Game.Server/Service/AnimationService/`).
+
+| Group (folder) | Id | Internal name | Seconds | Plays |
+|---|---|---|---:|---|
+| `crafting-stations/` | `ForgeWork` | `sw_forgework` | 3.40 | Smithery: loop for the whole Plasma Forge session and quick craft |
+| | `Circuitry` | `sw_circuitry` | 2.90 | Engineering: loop for the Circuit and quick craft |
+| | `Fabricate` | `sw_fabricate` | 3.60 | Fabrication: loop for the Fabricator and quick craft |
+| | `Cooking` | `sw_cooking` | 3.20 | Cooking (Agriculture): loop for the Kitchen and quick craft |
+| | `Compound` | `sw_compound` | 3.30 | Espionage: loop for the Reaction and quick craft |
+| `gathering/` | `Survey` | `sw_survey` | 3.00 | Prospecting Survey |
+| | `Strike` | `sw_strike` | 1.90 | Prospecting Strike |
+| | `HvyStrike` | `sw_hvystrike` | 2.70 | Prospecting Heavy Strike |
+| | `Extract` | `sw_extract` | 2.80 | Prospecting Extract |
+| | `Search` | `sw_search` | 3.00 | Search: Search a spot (and Sift) |
+| | `Dig` | `sw_dig` | 3.20 | Search: Dig Deeper |
+| `fishing/` | `Reel` | `sw_reel` | 3.05 | Line: Reel |
+| | `GiveLine` | `sw_giveline` | 2.40 | Line: Give Line |
+| | `HoldRod` | `sw_holdrod` | 3.50 | Line: Hold |
+| | `LandFish` | `sw_landfish` | 3.40 | Line: the action that lands the fish |
+
+Station clips are closed loops (`"loop": true` in the recipe: the last pose equals the first, with no idle blend). The
+station session starts the clip with a ten-minute duration, so the engine repeats it natively, and the end of the station
+work stops it; a rifle or cannon holder keeps the native pose because their hold layer plays through a one-shot carrier
+(`NamedAnimation.CanLoop`). Every other clip is a one-shot that blends out of and back into the native idle, like the
+fishing cast. Set Hook has no clip.
+
+Recipes name `"activity": "Crafting"`, `"Gathering"` or `"Fishing"`. `Fishing` is an `ActivityStatusType`; the other two
+are not busy states, so the generator accepts them from `PreviewWriter.WorkActivities`. Author, install and compile
+exactly like the fishing clips:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/gathering/recipe.json design/animations/gathering --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/gathering/Strike.swlanim a_ba a_fa
+# from SWLOR_Haks:
+python -B tools/CompileModels.py --since HEAD --apply
+python -B tools/TestInheritedBoneProportions.py
+```
+
+`design/animations/verification/crafting-revamp/` holds the robe bridge audit notes and scripts. The offline renders of the installed banks
+(male and female rigs, key beats of every clip) are generated, not committed, and are regenerated from the installed banks. They are not NWN client evidence: the live-client check, with real equipment, is outstanding
+until the Closeout joint pass. The robe bridges (`sw_anim_m`, `sw_anim_f`) were regenerated with the workflow in
+[Clothing animation bridges](#clothing-animation-bridges) (HAK PR #584), so every shared robe family owns all 15 clips and
+the garment attachment joints follow them. `robe-bridges.md` in the same folder records the coverage audit
+(`robe_bridge_audit.py`) and the skeleton contact sheets (`render_robe_sheet.py`); both run from `SWLOR_Haks`. Regenerate
+the bridges again whenever a clip in the a_ba or a_fa chain changes, and deploy the male and female bridge HAKs together.
+
 ### Library layout
 
 ```text
@@ -586,6 +803,34 @@ full family. Before allowing reuse, it compares compiled models with just those 
 clips removed: the skeleton, part IDs, binds, every other animation and its events must
 remain byte-identical. An ambiguous prior family or any unrelated difference fails
 before installation. Structural changes still require the normal versioned workflow.
+
+For new clips with an unchanged rig, `ExtendRobeAnimations.py` can add a thin layer ahead
+of the installed banks. Generate a candidate stage with `GenerateRobeRgbModels.py`
+**without `--apply`**, then pass that stage, the pinned pre-change asset revision,
+and each new internal clip name to the extension tool. It includes `_in` and `_out`.
+The tool requires an identical compiled skeleton and native part IDs, verifies every
+existing body clip, and copies only the selected additions. Existing robe banks stay
+byte-identical. Each playable normal-body wearer's only change is its fixed-width
+parent name; no phenotypes, meshes, materials, dyes or tables are regenerated.
+
+```powershell
+python -B tools/ExtendRobeAnimations.py --candidate-stage <stage> --baseline <pre-change-sha> --game-data <game-data> --clip sw_voc_loop --output <new-output> --apply
+python -B tools/ExtendRobeAnimations.py --check --game-data <game-data>
+python -B tools/GenerateRobeRgbModels.py --check --game-data <game-data>
+```
+
+Repeat `--clip` for every addition. The baseline must match the current robe manifest.
+The manifest records the extension's baseline, clip list, old and new parents, wearer
+coverage and pose checks. `--check` revalidates the installed layers against those Git
+blobs, including the unchanged parent banks and every byte outside the wearer parent
+name. Package `sw_anim_m`, `sw_anim_f` and `sw_pt_root` with the changed body bank HAK.
+
+For a rotation-only correction to clips already in an extension, use
+`--revise-rotations --baseline <pre-correction-sha> --clip <internal-name> --output <new-output> --apply`
+with `--game-data`. It requires identical body nodes, channel layouts, non-rotation tracks, clip
+headers and rig data. Selected quaternion tracks may gain solve samples. The old layer's values
+must match the pinned body bank, and every unselected native component stays byte-identical.
+All extension body poses are checked again before installation. Then rerun `--check`.
 
 Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
 pruned deletions, wearable models, tables, and the generated catalog. Package and deploy

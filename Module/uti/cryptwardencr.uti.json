@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted gauntlets salvaged from Crypt Raider Nihl."
+      "0": "Crafted gauntlets salvaged from Expedition Raider Nihl."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted gauntlets salvaged from Crypt Raider Nihl."
+      "0": "Crafted gauntlets salvaged from Expedition Raider Nihl."
     }
   },
   "Identified": {

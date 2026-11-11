@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Viral Cascade adept in Viscara - Veles Militia Annex."
+    "value": "Holdout Recruit (Viral Cascade line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in dark, close-fitting clothes, one of the knife cadre that kept drilling inside the Veles Militia Annex after it was sealed. He is a quick study with sloppy technique, and he practices the rupture cut with his vibroknife on anyone who wanders in."
+      "0": "A human recruit in dark, close-fitting clothes, one of the knife cadre that kept drilling inside the Veles Militia Annex after it was sealed. He is a quick study with sloppy technique, and he practices his cuts with a vibroknife on anyone who wanders in."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viral Cascade Adept"
+      "0": "Holdout Recruit"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 77
+          "value": 72
         }
       },
       {

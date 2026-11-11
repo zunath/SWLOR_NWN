@@ -33174,7 +33174,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Warden Spawn"
+            "0": "Anchorhead Canyon Range - Range Warden Dorrim Vex Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -33237,7 +33237,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Warden Spawn"
+            "0": "Anchorhead Canyon Range - Range Warden Gruvo Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -33300,7 +33300,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Warden Spawn"
+            "0": "Anchorhead Canyon Range - Range Warden Silas Crowe Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {
@@ -33363,7 +33363,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33426,7 +33426,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33489,7 +33489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33552,7 +33552,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -33565,11 +33565,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33615,7 +33615,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -33628,11 +33628,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33678,7 +33678,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -33691,11 +33691,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33741,7 +33741,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33804,7 +33804,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33867,7 +33867,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -33930,7 +33930,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -33943,11 +33943,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33993,7 +33993,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -34006,11 +34006,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34056,7 +34056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -34069,11 +34069,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34119,7 +34119,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -34182,7 +34182,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -34245,7 +34245,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -34308,7 +34308,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -34321,11 +34321,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34371,7 +34371,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -34384,11 +34384,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34434,7 +34434,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -34447,11 +34447,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34497,7 +34497,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -34560,7 +34560,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -35001,7 +35001,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -35022,15 +35022,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 40.5
+          "value": 79.75
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 129.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35064,7 +35064,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -35085,15 +35085,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 39.0
+          "value": 69.75
         },
         "YPosition": {
           "type": "float",
-          "value": 136.5
+          "value": 129.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35127,7 +35127,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -35148,15 +35148,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 37.5
+          "value": 59.75
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 137.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35190,7 +35190,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -35211,15 +35211,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 39.0
+          "value": 99.75
         },
         "YPosition": {
           "type": "float",
-          "value": 133.5
+          "value": 120.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35253,7 +35253,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {
@@ -35274,15 +35274,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 96.5
+          "value": 21.75
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 129.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35316,7 +35316,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {
@@ -35337,15 +35337,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 21.75
         },
         "YPosition": {
           "type": "float",
-          "value": 20.5
+          "value": 139.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35379,7 +35379,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {
@@ -35400,15 +35400,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 93.5
+          "value": 21.75
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 119.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35442,7 +35442,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {
@@ -35463,15 +35463,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 28.75
         },
         "YPosition": {
           "type": "float",
-          "value": 17.5
+          "value": 111.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35505,7 +35505,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -35526,15 +35526,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 138.5
+          "value": 21.25
         },
         "YPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 75.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35568,7 +35568,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -35589,15 +35589,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 137.0
+          "value": 29.25
         },
         "YPosition": {
           "type": "float",
-          "value": 70.5
+          "value": 69.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35631,7 +35631,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -35652,15 +35652,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 135.5
+          "value": 11.25
         },
         "YPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 74.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35694,7 +35694,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+            "0": "Anchorhead Canyon Range - High Table Gun Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -35715,15 +35715,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 137.0
+          "value": 30.75
         },
         "YPosition": {
           "type": "float",
-          "value": 67.5
+          "value": 79.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Kill Box master in Smuggler's Moon - Czerka Blast-Safe Cell."
+    "value": "Range Director Krassek (Kill Box line) in Smuggler's Moon - Czerka Blast-Safe Cell."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Trandoshan in bounty hunter's armor, blaster rifle easy in his claws, waiting in the Blast-Safe Cell at the far end of the range. Czerka lost him and the doctrine he carries a decade ago, and the test cell built itself trying to copy him. Wherever he stands, every exit already seems covered."
+      "0": "A Trandoshan in bounty hunter's armor, blaster rifle easy in his claws, waiting in the Blast-Safe Cell at the far end of the range. Czerka lost him and the doctrine he carries a decade ago, and the washouts built themselves trying to copy him. Wherever he stands, every exit already seems covered."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kill Box Master"
+      "0": "Range Director Krassek"
     }
   },
   "fortbonus": {

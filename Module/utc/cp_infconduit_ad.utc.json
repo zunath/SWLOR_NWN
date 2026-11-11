@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Infinite Conduit adept in Mon Cala - Medical Sublevel."
+    "value": "Ward Orderly (Infinite Conduit line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cyborg student of the conduit form, implants laced along both arms where he tried to hold more of its current. He grips his twin electroblade too tightly, and every strike lands heavier than his frame should allow."
+      "0": "A cyborg ward orderly, implants laced along both arms where he tried to hold more current than a body should. He grips his twin electroblade too tightly, and every strike lands heavier than his frame should allow."
     }
   },
   "Dex": {
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Infinite Conduit Adept"
+      "0": "Ward Orderly"
     }
   },
   "fortbonus": {
@@ -765,7 +765,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 232
+          "value": 222
         }
       },
       {

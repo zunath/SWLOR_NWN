@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your grip rides high on the hilt - that's a throat angle, not mine. Let's see if it can be taught out of you. There's a knife cadre still inside the Veles Militia Annex, the one Captain Renn sealed when they refused to stand down, and they've been drilling Viral Cascade wrong ever since. Six adepts, sloppy work all of it. Put them down and bring me back their drill ledger, and we'll see what you have.",
+          "Text": "Your grip rides high on the hilt - that's a throat angle, not mine. Let's see if it can be taught out of you. There's a knife cadre still inside the Veles Militia Annex, the one Captain Renn sealed when they refused to stand down, and they've been drilling Viral Cascade wrong ever since. Six Holdout Recruits hold the rooms nearest the entrance, sloppy work all of it. Any Holdout Recruit counts, but only the ones who die after you apply Venom with Virulent Blade or build Infection on him; a clean cut teaches nothing. Put six down and bring me back their drill ledger, and we'll see what you have. A weapon coating alone does not prove the technique.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts in there are quick studies with dull technique. Six of them, practicing on each other and on anyone who wanders in. Don't get flattered by an easy first cut - the second one won't be.",
+          "Text": "The Recruits in there are quick studies with dull technique. Six of them, practicing on each other and on anyone who wanders in. Don't get flattered by an easy first cut - the second one won't be.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts are still standing in the Veles Militia Annex. Come back when six of them aren't.",
+          "Text": "The Recruits are still standing in the Veles Militia Annex. Come back when six of them aren't.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Pulse still even. Good, fear ruins the cut before the blade does. The annex has specialists now, five of them, refining what the adepts botched. Drop them, and bring me the range relay they've been logging kills on.",
+          "Text": "Pulse still even. Good, fear ruins the cut before the blade does. The annex has Holdout Sergeants now, deeper in, refining what the Recruits botched. Drop five, any Sergeant, each after you apply Venom with Virulent Blade or build Infection on him, and bring me the range relay they've been logging kills on.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same annex, same door, deeper in. The specialists have claimed the training floor past where you dropped the adepts. Your key still opens the way; it doesn't open sympathy.",
+          "Text": "Same annex, same door, deeper in. The Sergeants have claimed the training floor past where you dropped the Recruits. Your key still opens the way; it doesn't open sympathy.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists who've had the adepts' mistakes beaten out of them. They'll test your guard before your grip. Don't rush the count - dead is dead whether you took your time or not.",
+          "Text": "Five Holdout Sergeants who've had the Recruits' mistakes beaten out of them. They'll test your guard before your grip. Don't rush the count - dead is dead whether you took your time or not.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still breathing, still in the annex. Go finish the count.",
+          "Text": "Five Holdout Sergeants, still breathing, still in the annex. Go finish the count.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Kill counts, mostly theirs, some inflated. You're past adept work now. The annex still has a warden who thinks rank protects him from you.",
+          "Text": "Kill counts, mostly theirs, some inflated. You're past Recruit work now. The annex still has a warden who thinks rank protects him from you.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden runs live drills on students who can't say no. He's earned the title by outliving whoever the annex sent at him solo. I'm not sending you in solo either. Find two people whose blade you'd trust at your own throat, then take his scored challenge badge off him.",
+          "Text": "The warden, Korvan Tull, runs live drills on students who can't say no. He's earned the title by outliving whoever the annex sent at him solo. I'm not sending you in solo either. Find two people whose blade you'd trust at your own throat, then take his scored challenge badge off him.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper still, past the specialists' floor. You'll know his ground when the drills stop looking like drills. Your key gets you through the annex door; the rest of the way opens because you put it in.",
+          "Text": "Deeper still, past the Sergeants' floor. You'll know his ground when the drills stop looking like drills. Your key gets you through the annex door; the rest of the way opens because you put it in.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The inner circle runs what's left of the warden's operation, four instructors who liked their rank more than their students. Clean margins means nothing left ragged when you're done. Take their captain's challenge chit off whichever of them is still holding it when the others are down.",
+          "Text": "The Holdout Honor Guards run what's left of the warden's operation, instructors who liked their rank more than their students, and they hold the deepest part of the annex. Clean margins means nothing left ragged when you're done. Put four of them down, any Honor Guard, each after you apply Venom with Virulent Blade or build Infection on him, and take their captain's challenge chit off whichever of them is still holding it when the others are down.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master doesn't drill students. He performs on them, once, and once is always enough. He lets venom and infection spread before he strikes, then consumes both in a Viral Cascade. No one goes to him alone and walks back out to tell me about it. Take people you'd trust to close a wound of yours. When he's down, that's the only proof I need.",
+          "Text": "Marek Dolan, the master, doesn't drill students. He performs on them, once, and once is always enough. He lets venom and infection spread before he strikes, then consumes both in a Viral Cascade. No one goes to him alone and walks back out to tell me about it. Take people you'd trust to close a wound of yours. When he's down, that's the only proof I need.",
           "Style": 0,
           "Color": null
         }
@@ -1396,7 +1396,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "What should I expect from the adepts?",
+        "Text": "What should I expect from the Recruits?",
         "Style": 4,
         "Color": null
       },
@@ -1543,7 +1543,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Where are the specialists training?",
+        "Text": "Where are the Sergeants training?",
         "Style": 4,
         "Color": null
       },

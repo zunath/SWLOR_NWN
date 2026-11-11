@@ -33,19 +33,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Canonical player pistol attack with a shield", Category = "PistolPresentation")]
         public static Task PlayerShieldedPistol(EngineTestContext ctx) => VerifyAttack(ctx, true, true);
 
-        [EngineTest("Saved legacy player pistol attack without a shield", Category = "PistolPresentation")]
-        public static Task MigratedPlayerPistol(EngineTestContext ctx) => VerifyAttack(ctx, false, true, true);
-
-        [EngineTest("Saved legacy player pistol attack with a shield", Category = "PistolPresentation")]
-        public static Task MigratedPlayerShieldedPistol(EngineTestContext ctx) => VerifyAttack(ctx, true, true, true);
-
-        [EngineTest("Saved pistol ammunition repair survives equipment and save cycles", Category = "PistolPresentation")]
-        public static Task RepairedPistolSurvivesEquipmentAndSave(EngineTestContext ctx) => VerifyEquipmentCycles(ctx, true);
-
         [EngineTest("Canonical pistol ammunition survives equipment and save cycles", Category = "PistolPresentation")]
-        public static Task CanonicalPistolSurvivesEquipmentAndSave(EngineTestContext ctx) => VerifyEquipmentCycles(ctx, false);
+        public static Task CanonicalPistolSurvivesEquipmentAndSave(EngineTestContext ctx) => VerifyEquipmentCycles(ctx);
 
-        private static async Task VerifyEquipmentCycles(EngineTestContext ctx, bool legacy)
+        private static async Task VerifyEquipmentCycles(EngineTestContext ctx)
         {
             var original = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
@@ -54,8 +45,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(original, () => serialized = ObjectPlugin.Serialize(original));
             var creature = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(original,
-                () => creature = ObjectPlugin.Deserialize(legacy ? WithLegacyWeaponBaseItem(serialized) : serialized));
-            ctx.Assert(GetIsObjectValid(creature), "Legacy equipment fixture deserializes");
+                () => creature = ObjectPlugin.Deserialize(serialized));
+            ctx.Assert(GetIsObjectValid(creature), "Equipment fixture deserializes");
             ctx.Track(creature);
             ObjectPlugin.AddToArea(creature, ctx.Arena, GetPositionFromLocation(ctx.GetArenaLocation(0f, 0f)));
             await ctx.WaitFrameAsync();
@@ -63,11 +54,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
             await ctx.ExecuteInCreatureContextAsync(creature, () =>
             {
-                PistolBaseItemCompatibility.Normalize(weapon);
-                ctx.AssertEqual(0, native.m_bMagicalArrowsEquipped, "Repair removes legacy generated arrows");
-                ctx.AssertEqual(1, native.m_bMagicalBulletsEquipped, "Repair supplies generated bullets");
+                ctx.AssertEqual(0, native.m_bMagicalArrowsEquipped, "The pistol generates no arrows");
+                ctx.AssertEqual(1, native.m_bMagicalBulletsEquipped, "The pistol generates bullets");
                 CreaturePlugin.RunUnequip(creature, weapon);
-                ctx.Assert(GetItemInSlot(InventorySlot.RightHand, creature) != weapon, "Repaired pistol can be unequipped");
+                ctx.Assert(GetItemInSlot(InventorySlot.RightHand, creature) != weapon, "The pistol can be unequipped");
             });
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(creature, () =>
@@ -81,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             var reloaded = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(creature, () => reloaded = ObjectPlugin.Deserialize(serialized));
-            ctx.Assert(GetIsObjectValid(reloaded), "Repaired pistol save deserializes");
+            ctx.Assert(GetIsObjectValid(reloaded), "Pistol save deserializes");
             ctx.Track(reloaded);
             ObjectPlugin.AddToArea(reloaded, ctx.Arena, GetPositionFromLocation(ctx.GetArenaLocation(0f, 0f)));
             await ctx.WaitFrameAsync();
@@ -138,7 +128,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
             ctx.Assert(GetIsObjectValid(weapon), "Loaded creature retains its equipped legacy weapon");
-            ctx.AssertEqual(BaseItem.Sling, GetBaseItemType(weapon), "Normal acquire handling canonicalizes the saved legacy base");
+            ctx.AssertEqual(BaseItem.Pistol, GetBaseItemType(weapon), "The saved legacy base loads unchanged");
             var ammo = FindMarkedAmmo(creature, AmmoMarker);
             ctx.Assert(GetIsObjectValid(ammo), "The saved real bullet stack is still present");
             var ammoPointerBeforeRepair = ammo;
@@ -177,7 +167,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
-        private static async Task VerifyAttack(EngineTestContext ctx, bool shield, bool player = false, bool migrateLegacy = false)
+        private static async Task VerifyAttack(EngineTestContext ctx, bool shield, bool player = false)
         {
             ctx.SeedRandom(20260721);
             var attacker = ctx.SpawnCreature("nw_bandit001", -0.5f, 0f);
@@ -189,28 +179,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             if (shield)
                 await ctx.EquipItemAsync(attacker, "byysk_shield002", InventorySlot.LeftHand);
             var weapon = await ctx.EquipItemAsync(attacker, "exchangepistol", InventorySlot.RightHand);
-            var savedWeaponBase = GetBaseItemType(weapon);
-            if (migrateLegacy)
-            {
-                savedWeaponBase = BaseItem.Pistol;
-                var originalAttacker = attacker;
-                var serialized = string.Empty;
-                await ctx.ExecuteInCreatureContextAsync(originalAttacker,
-                    () => serialized = ObjectPlugin.Serialize(originalAttacker));
-                await ctx.ExecuteInCreatureContextAsync(originalAttacker,
-                    () => attacker = ObjectPlugin.Deserialize(WithLegacyWeaponBaseItem(serialized)));
-                ctx.Assert(GetIsObjectValid(attacker), "Legacy equipped player fixture deserializes");
-                ctx.Track(attacker);
-                ObjectPlugin.AddToArea(attacker, ctx.Arena, GetPositionFromLocation(ctx.GetArenaLocation(-0.5f, 0f)));
-                await ctx.WaitFrameAsync();
-                ctx.AssertEqual(ctx.Arena, GetArea(attacker), "Loaded player is placed in the test arena");
-                weapon = GetItemInSlot(InventorySlot.RightHand, attacker);
-                ctx.Assert(GetIsObjectValid(weapon), "Loaded player retains the equipped pistol");
-                ctx.MakeHostile(target);
-                await ctx.ExecuteInCreatureContextAsync(originalAttacker,
-                    () => DestroyObject(originalAttacker));
-                await ctx.WaitFrameAsync();
-            }
             ctx.Assert(GetIsObjectValid(weapon), "Fixture has an equipped pistol");
             ctx.AssertEqual("exchangepistol", GetResRef(weapon),
                 "Fixture uses its intended pistol blueprint");
@@ -221,29 +189,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var wasPlayer = native.m_bPlayerCharacter;
             global::NWN.Native.API.CNWSPlayer client = null;
             string playerId = null;
-            var legacyAmmoState = "n/a";
             try
             {
-                if (migrateLegacy)
-                {
-                    await ctx.ExecuteInCreatureContextAsync(attacker, () =>
-                    {
-                        legacyAmmoState = $"savedBase={(int)savedWeaponBase} loadedBase={(int)GetBaseItemType(weapon)} " +
-                                          $"arrows={native.m_bMagicalArrowsEquipped}/bullets={native.m_bMagicalBulletsEquipped}";
-                        PistolBaseItemCompatibility.Normalize(weapon);
-                    });
-                    await ctx.WaitFrameAsync();
-                    await ctx.ExecuteInCreatureContextAsync(attacker, () =>
-                    {
-                        ctx.AssertEqual(BaseItem.Sling, GetBaseItemType(weapon), "Loaded legacy pistol is canonicalized by the normal acquire pipeline");
-                        ctx.AssertEqual(0, native.m_bMagicalArrowsEquipped,
-                            $"Converted pistol clears generated legacy arrows ({legacyAmmoState}; after bullets={native.m_bMagicalBulletsEquipped})");
-                        ctx.AssertEqual(1, native.m_bMagicalBulletsEquipped,
-                            $"Converted pistol supplies native bullets ({legacyAmmoState})");
-                        ctx.Assert(!PistolBaseItemCompatibility.Normalize(weapon), "Retry leaves the repaired pistol unchanged");
-                    });
-                }
-
                 if (player)
                 {
                     playerId = GetObjectUUID(attacker);
@@ -291,7 +238,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Projectiles.All(p => p.Type >= 0 && p.Type <= 5), "Weapon projectiles pass the configured category filter");
                 ctx.SetResultDetail($"base={GetBaseItemType(weapon)} shield={shield} remap={GetLocalBool(attacker, "PISTOL_ANIM_REMAP_ACTIVE")} " +
                     $"arrows={native.m_bMagicalArrowsEquipped} bullets={native.m_bMagicalBulletsEquipped} hp={GetCurrentHitPoints(target)} " +
-                    $"pc={GetIsPC(attacker)} migratedLegacy={migrateLegacy} legacyAmmo=[{legacyAmmoState}] attacker={ObjectToString(attacker)} target={ObjectToString(target)} " +
+                    $"pc={GetIsPC(attacker)} attacker={ObjectToString(attacker)} target={ObjectToString(target)} " +
                     $"projectiles=[{string.Join(", ", Projectiles.Select(p => $"receiver={ObjectToString(p.Receiver)} type={p.Type} spell={p.SpellId} delta={p.Delta} result={p.AttackResult} path={p.Path}"))}]");
             }
             finally

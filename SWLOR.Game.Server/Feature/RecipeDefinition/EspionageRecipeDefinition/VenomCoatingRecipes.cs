@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(5)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(1, false))
                 .Component("kath_blood", 3)
-                .Component("herb_v", 2);
+                .Component("herb_v", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Brew, cycleLength: 8, peakIntensity: 1);
 
             // Venom Coating II
             _builder.Create(RecipeType.VenomCoating2, SkillType.Espionage)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(5)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(2, false))
                 .Component("raivor_blood", 3)
-                .Component("herb_m", 2);
+                .Component("herb_m", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Brew, cycleLength: 6, peakIntensity: 2);
 
             // Venom Coating III
             _builder.Create(RecipeType.VenomCoating3, SkillType.Espionage)
@@ -47,7 +49,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(5)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(3, false))
                 .Component("byysk_meat", 3)
-                .Component("herb_c", 2);
+                .Component("herb_c", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Brew, cycleLength: 5, peakIntensity: 3);
 
             // Venom Coating IV
             _builder.Create(RecipeType.VenomCoating4, SkillType.Espionage)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(5)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(4, false))
                 .Component("sanddemon_meat", 3)
-                .Component("herb_t", 2);
+                .Component("herb_t", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Brew, cycleLength: 7, peakIntensity: 4);
 
             // Venom Coating V
             _builder.Create(RecipeType.VenomCoating5, SkillType.Espionage)
@@ -71,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Quantity(5)
                 .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(5, false))
                 .Component("wild_innards", 3)
-                .Component("herb_x", 2);
+                .Component("herb_x", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Brew, cycleLength: 5, peakIntensity: 5);
 
             return _builder.Build();
         }

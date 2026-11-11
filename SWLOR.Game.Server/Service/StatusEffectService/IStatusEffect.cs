@@ -35,6 +35,10 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         bool PreservesTickScheduleOnRefresh { get; }
         float GetRemainingDurationSeconds(DateTime currentTime);
         bool PersistsOnLogout { get; }
+        /// <summary>
+        /// True when a player who has this effect switched on gets it back after a server restart.
+        /// </summary>
+        bool RestoresAfterServerRestart { get; }
         StatGroup StatGroup { get; }
         List<Type> MorePowerfulEffectTypes { get; }
         List<Type> LessPowerfulEffectTypes { get; }

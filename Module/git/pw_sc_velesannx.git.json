@@ -49203,7 +49203,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tape marks a challenge square at the inner gate, its edges scuffed down to bare duracrete. A cracked scoreboard above it still shows the warden's unbroken record. Anyone who steps in will be answered."
+            "0": "Tape marks a challenge square at the inner gate, its edges scuffed down to bare duracrete. A cracked scoreboard above it still shows the lieutenant's unbroken record. Anyone who steps in will be answered."
           }
         },
         "DisarmDC": {
@@ -50719,7 +50719,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A field-surgery tray lies bolted to the floor here, every slot holding a cleaned vibroknife. Fresh blood on the drain grate says the knife cadre's warden still takes all comers."
+            "0": "A field-surgery tray lies bolted to the floor here, every slot holding a cleaned vibroknife. Fresh blood on the drain grate says the knife cadre's lieutenant still takes all comers."
           }
         },
         "DisarmDC": {
@@ -52859,7 +52859,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Warden Spawn"
+            "0": "Veles Militia Annex - Holdout Lieutenant Sarn Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -52922,7 +52922,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Warden Spawn"
+            "0": "Veles Militia Annex - Holdout Lieutenant Korvan Tull Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -52985,7 +52985,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Warden Spawn"
+            "0": "Veles Militia Annex - Holdout Lieutenant Vessik Rane Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {
@@ -53048,7 +53048,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53111,7 +53111,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53174,7 +53174,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53237,7 +53237,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53300,7 +53300,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53363,7 +53363,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53426,7 +53426,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53489,7 +53489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53552,7 +53552,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53565,11 +53565,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53615,7 +53615,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53628,11 +53628,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53678,7 +53678,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53691,11 +53691,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53741,7 +53741,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53754,11 +53754,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53804,7 +53804,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53817,19 +53817,19 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
-          "value": 124.0
+          "value": 123.25
         },
         "YPosition": {
           "type": "float",
-          "value": 85.0
+          "value": 84.75
         },
         "ZPosition": {
           "type": "float",
@@ -53867,7 +53867,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -53880,11 +53880,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53930,7 +53930,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -53993,7 +53993,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -54056,7 +54056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -54069,11 +54069,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54119,7 +54119,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -54132,11 +54132,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54182,7 +54182,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -54195,11 +54195,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54245,7 +54245,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -54258,11 +54258,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54371,7 +54371,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -54392,15 +54392,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 98.5
+          "value": 142.75
         },
         "YPosition": {
           "type": "float",
-          "value": 131.0
+          "value": 10.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54434,7 +54434,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -54455,15 +54455,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 97.0
+          "value": 143.25
         },
         "YPosition": {
           "type": "float",
-          "value": 132.5
+          "value": 20.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54497,7 +54497,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -54518,15 +54518,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 95.5
+          "value": 132.25
         },
         "YPosition": {
           "type": "float",
-          "value": 131.0
+          "value": 10.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54560,7 +54560,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -54581,15 +54581,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 97.0
+          "value": 137.75
         },
         "YPosition": {
           "type": "float",
-          "value": 129.5
+          "value": 28.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54623,7 +54623,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -54644,15 +54644,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 20.5
+          "value": 111.25
         },
         "YPosition": {
           "type": "float",
-          "value": 74.0
+          "value": 106.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54686,7 +54686,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -54707,15 +54707,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 106.75
         },
         "YPosition": {
           "type": "float",
-          "value": 75.5
+          "value": 97.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54749,7 +54749,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -54770,15 +54770,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 17.5
+          "value": 114.25
         },
         "YPosition": {
           "type": "float",
-          "value": 74.0
+          "value": 89.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54812,7 +54812,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -54833,15 +54833,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 96.75
         },
         "YPosition": {
           "type": "float",
-          "value": 72.5
+          "value": 116.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54875,7 +54875,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {
@@ -54896,15 +54896,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 32.5
+          "value": 103.75
         },
         "YPosition": {
           "type": "float",
-          "value": 124.0
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -54938,7 +54938,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {
@@ -54959,15 +54959,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 31.0
+          "value": 94.75
         },
         "YPosition": {
           "type": "float",
-          "value": 125.5
+          "value": 143.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -55001,7 +55001,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {
@@ -55022,15 +55022,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 29.5
+          "value": 113.25
         },
         "YPosition": {
           "type": "float",
-          "value": 124.0
+          "value": 143.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -55064,7 +55064,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {
@@ -55085,15 +55085,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 31.0
+          "value": 84.75
         },
         "YPosition": {
           "type": "float",
-          "value": 122.5
+          "value": 143.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

@@ -112,10 +112,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 17,
                     RecentGuardedHitWindowSeconds = 30,
-                    ProtectedTargetHitWindowSeconds = 30,
-                    RequireRecentGuardedHitForConditionalStatus = true,
-                    ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 15
+                    RecentGuardedHitStatusEffect = typeof(DazedStatusEffect),
+                    RecentGuardedHitStatusDurationSeconds = 15
                 });
 
             return builder.Build();

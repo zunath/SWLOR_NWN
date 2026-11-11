@@ -8,6 +8,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         dotnet-apphost-pack-10.0 \
         dotnet-runtime-10.0 \
+        gdb \
+        python3-minimal \
+        tini \
     && apt-get purge -y \
         dotnet-apphost-pack-7.0 \
         dotnet-apphost-pack-8.0 \
@@ -33,5 +36,16 @@ RUN groupadd --gid "$SWLOR_RUNTIME_GID" swlor \
     && chmod -R a=rX,u+w /remote_debugger/vsdbg
 
 ENV HOME=/nwn/run
+ENV SWLOR_CRASH_CAPTURE=auto
+
+COPY server-launcher.py /usr/local/bin/swlor-server-launcher
+COPY crash-capture.py /usr/local/lib/swlor/crash-capture.py
+COPY server-exec.py /usr/local/lib/swlor/server-exec.py
+COPY run-server-crash-capture.patch /tmp/run-server-crash-capture.patch
+RUN patch --fuzz=0 /nwn/run-server.sh < /tmp/run-server-crash-capture.patch \
+    && chmod 755 /usr/local/bin/swlor-server-launcher \
+    && rm /tmp/run-server-crash-capture.patch
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/bin/bash", "/nwn/run-server.sh"]
 
 USER ${SWLOR_RUNTIME_UID}:${SWLOR_RUNTIME_GID}

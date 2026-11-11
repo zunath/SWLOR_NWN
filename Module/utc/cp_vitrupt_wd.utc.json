@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Viral Cascade warden in Viscara - Veles Militia Annex."
+    "value": "Holdout Lieutenant Korvan Tull (Viral Cascade line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in a militia uniform who trained half the annex's knife students himself and runs live drills on those who cannot refuse. He holds his vibroknife like a threat rather than a tool, and he has outlived everyone the annex sent against him alone."
+      "0": "A Zabrak lieutenant in a militia uniform who trained half the annex's knife recruits himself and runs live drills on those who cannot refuse. He holds his vibroknife like a threat rather than a tool, and he has outlived everyone the annex sent against him alone."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viral Cascade Warden"
+      "0": "Holdout Lieutenant Korvan Tull"
     }
   },
   "fortbonus": {

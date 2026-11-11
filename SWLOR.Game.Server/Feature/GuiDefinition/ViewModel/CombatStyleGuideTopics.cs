@@ -35,6 +35,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "First Aid Combat Styles", "Rifle Combat Styles"),
 
+                CraftingTopic("Engineering", "Choose Engineering perks for a Circuit that runs hot and strong, or one that runs stable and precise.",
+                    new[]
+                    {
+                        Style("Engineering - Overclocker", "Overclocker perks reward a high Load in the Circuit: more output from Wire, Tune and Discharge, with tools to survive the heat. Overclock is its style."),
+                        Style("Engineering - Technician", "Technician perks reward a steady, precise Circuit: fewer mistakes, finer calibration and a safety net. Safe Mode is its style."),
+                        Style("Choosing a style", "Engineering styles are picked in the Engineering craft window, one active at a time. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
+
                 Topic("Espionage", "Choose between evasive repositioning and delayed traps in the Espionage combat trees.",
                     new[]
                     {
@@ -42,6 +51,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Style("Espionage - Saboteur", "Saboteur places visible traps that arm after a delay and trigger damage or conditions when enemies reach them.")
                     },
                     "Perks", "Combat Basics", "Vibroknife Combat Styles", "Pistol Combat Styles"),
+
+                CraftingTopic("Fabrication", "Choose Fabrication perks to speed up or steady the Fabricator, or to improve research experiments.",
+                    new[]
+                    {
+                        Style("Fabrication - Builder", "Builder perks change the Fabricator. At Fabrication 20 you choose Production Run, which makes Run much stronger, or Fine Tolerance, which makes Precision Pass stronger and Run weaker. Other Builder perks make Retool and Service cheaper, reduce wear, build two sub-assemblies in one action, and improve Prime Feedstock and the final Assemble."),
+                        Style("Fabrication - Researcher", "Researcher perks change research experiments. At Fabrication 20 you choose Methodical, which adds trials but lowers every Test's chance, or Intuitive, which raises every Test's chance but removes a trial. Other Researcher perks add Test chance and trials, make Refine Method cheaper and stronger, and add Peer Review and Breakthrough."),
+                        Style("Choosing a style", "The Fabrication style you own is always active, and you cannot own both styles of a line. Switching costs a Perk Refund Token. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
 
                 Topic("First Aid", "Choose First Aid perks to heal allies, clear conditions, or prepare with combat consumables.",
                     new[]
@@ -99,6 +117,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Beasts & Stables", "Abilities", "Mimicry & Techniques"),
 
+                Topic("Performance", "Choose Performance to entertain an audience with dance or music and reward the players who stay to watch.",
+                    new[]
+                    {
+                        Style("Performance - Dancing", "Dancing lets you perform for nearby players. While they watch, they earn Inspired, which raises their skill XP and clears part of their XP debt. Dance routines add body bonuses, such as extra movement speed and attribute boosts."),
+                        Style("Performance - Instruments", "Playing an instrument rewards your audience the same way, with mind and crafting bonuses from your music sets. Musicians within range of each other form a band and play the band leader's song."),
+                        Style("Performance - Supported Instruments", "Equip a Guitar, Lute, Harp, Kloo Horn, Slitherhorn, Pan(toran) Pipes, or Tambourine to play. Violin (M) and Violin (F) require a Violin Bow in your right hand. Equip Microphone, Plain or Microphone, Branded to sing using your Play Instrument perks. Singers join bands and use the same music sets and audience benefits as other musicians."),
+                        Style("Performance - Singing", "Match Low, Mid, and High notes to sing melodic phrases, with breath rests between them. Vocals and pipes use single notes at every tempo. Roleplay mode lets you perform through lyrics, speech, or emotes instead of matching cues. Your audience hears the band's selected Cantina song."),
+                        Style("Performance - Songs", "Musicians play Cantina songs. You start with Cantina 1 and can choose others in the Perform window as you collect them. Other music in your collection cannot be performed.")
+                    },
+                    "Perks", "Combat Basics", "Leadership Combat Styles", "First Aid Combat Styles"),
+
                 Topic("Pistol", "Choose Pistol for shots that reward changing targets or disrupt opponents.",
                     new[]
                     {
@@ -123,7 +152,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Lightsaber Combat Styles", "Twin Blade Combat Styles"),
 
-                Topic("Spear", "Choose Spear for attacks that interrupt or burden a target, or for evasion and positional bonuses.",
+                CraftingTopic("Smithery", "Choose Smithery perks for fast, hot work in the Plasma Forge, or for slower, precise finishing.",
+                    new[]
+                    {
+                        Style("Smithery - Forgemaster", "Forgemaster perks reward fast, hot work: cheaper Thermal, a slower cooling piece, and bigger Hydro-Press gains, with a once-per-craft Red Line Press as its capstone. Hot Forging is its style."),
+                        Style("Smithery - Artisan", "Artisan perks reward careful finishing: more Stable Containment, Finish that ignores Thermal, steadier heat and a stronger Cryo-Quench. Cold Working is its style."),
+                        Style("Choosing a style", "Smithery styles are picked in the Plasma Forge window, one active at a time. You can own both and switch between them before each craft. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
+
+                Topic("Spear","Choose Spear for attacks that interrupt or burden a target, or for evasion and positional bonuses.",
                     new[]
                     {
                         Style("Spear - Vigor", "Vigor pairs attacks with evasion and includes a sweep that gains damage when you are beside or behind a target."),
@@ -164,11 +202,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
 
-                Topic("Unarmed", "Choose Unarmed for Power Glove combinations that chain setups into finishers, or for heavy strikes and counterattacks. Both gloves strike each attack, and Unarmed abilities add the DMG of both gloves.",
+                Topic("Unarmed", "Choose Unarmed for combinations that chain setups into finishers, or for heavy strikes and counterattacks.",
                     new[]
                     {
                         Style("Unarmed - Martial Artist", "Martial Artist chains Jab into Palm Strike and finishers, with setups that also help your other weapon attacks."),
-                        Style("Unarmed - Brawler", "Brawler includes pressure attacks that weaken an enemy's attacks, heavy strikes, and counterattacks earned by taking damage.")
+                        Style("Unarmed - Brawler", "Brawler includes pressure attacks that weaken an enemy's attacks, heavy strikes, and counterattacks earned by taking damage."),
+                        Style("Equipment and Cross-skilling", "Power Gloves are one owned item. Equipping one automatically fills your other hand with a matching glove; removing either hand unequips the pair. Both hands strike each attack with the item's DMG, and the item's other bonuses count once for each hand, so one Power Glove matches two identical Katars. Unarmed abilities and perks work with any weapon. With Power Gloves or two Katars, Unarmed abilities add the DMG of both hands; other weapons add one weapon's DMG.")
                     },
                     "Perks", "Combat Basics", "Katar Combat Styles", "Staff Combat Styles"),
 
@@ -205,6 +244,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return new PlayerGuideViewModel.PlayerGuideTopic(
                 $"{family} Combat Styles",
+                "Combat Styles",
+                summary,
+                family,
+                styles,
+                questions,
+                related);
+        }
+
+        /// <summary>
+        /// A crafting perk tree. The Player Guide lists it with the combat trees so a search for the tree's exact name finds it; the topic is
+        /// named for its perk lines and not for combat.
+        /// </summary>
+        private static PlayerGuideViewModel.PlayerGuideTopic CraftingTopic(
+            string family,
+            string summary,
+            IReadOnlyList<PlayerGuideViewModel.ArticleBlock> styles,
+            params string[] related)
+        {
+            var questions = new[]
+            {
+                new PlayerGuideViewModel.QuestionAnswer(
+                    $"What does {family} focus on?",
+                    summary)
+            };
+
+            return new PlayerGuideViewModel.PlayerGuideTopic(
+                $"{family} Perk Lines",
                 "Combat Styles",
                 summary,
                 family,

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unbreakable Beast inner circle member in Dathomir - Tarn Jungle Preserve."
+    "value": "Elder Plated Burrower (Unbreakable Beast line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the four oldest plated burrowers in the preserve, its plates cracked, healed and cracked again. Its kind were beaten longer than any others, until whatever they once felt was driven out of them."
+      "0": "One of the four elder plated burrowers in the preserve, its plates cracked, healed and cracked again. Its kind were beaten longer than any others, until whatever they once felt was driven out of them."
     }
   },
   "Dex": {
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unbreakable Beast Inner Circle"
+      "0": "Elder Plated Burrower"
     }
   },
   "fortbonus": {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 245
+          "value": 240
         }
       },
       {

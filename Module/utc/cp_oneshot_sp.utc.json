@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "One Shot specialist in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Instructor (One Shot line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in a thug's patched jacket, his blaster rifle running hot on an overcharged cell. He works the mid-lanes in a pair, one spotting while the other fires, and puts round after round in the air hoping one lands true."
+      "0": "A Rodian range instructor in a thug's patched jacket, his blaster rifle running hot on an overcharged cell. He works the mid-lanes in a pair, one spotting while the other fires, and puts round after round in the air hoping one lands true."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "One Shot Specialist"
+      "0": "Range Instructor"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 168
+          "value": 163
         }
       },
       {

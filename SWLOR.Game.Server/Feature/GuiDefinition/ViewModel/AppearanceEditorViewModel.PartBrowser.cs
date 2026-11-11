@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -20,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public partial class AppearanceEditorViewModel
     {
         // Palette cell geometry shared with the definition; the outline overlay is drawn in these units.
+        public const float PaletteHeaderWidth = 20f;
+        public const float PaletteHeaderHeight = 16f;
         public const float PaletteCellWidth = 20f;
         public const float PaletteCellHeight = 16f;
 
@@ -54,6 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // ---------------- selected part bindings ----------------
         public string PartPreviewImage { get => Get<string>(); set => Set(value); }
         public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
+        /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
+        public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
         public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
         public string PreviewViewText { get => Get<string>(); set => Set(value); }
 
@@ -84,10 +89,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
-            var placed = PlaceBeside(Geometry, AppearancePartBrowserDefinition.WindowWidth,
-                AppearancePartBrowserDefinition.WindowHeight, screenWidth, screenHeight, scale);
+            // Keep the size the player last gave the browser; only its position follows the editor.
+            var size = browser.Geometry;
+            var placed = PlaceBeside(Geometry,
+                size?.Width > 0f ? size.Width : AppearancePartBrowserDefinition.WindowWidth,
+                size?.Height > 0f ? size.Height : AppearancePartBrowserDefinition.WindowHeight,
+                screenWidth, screenHeight, scale);
             if (placed != null)
                 browser.Geometry = placed;
+            browser.FitGrid();
             SyncPartBrowser();
         };
 
@@ -240,8 +250,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool SelectedPartCloth2Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal1Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal2Selected { get => Get<bool>(); set => Set(value); }
+
+        // Palette code ("P4") or "RGB" over each part swatch.
+        public string SelectedPartLeather1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartLeather2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
         public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
-        public string SelectedPartColorsTitle { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
@@ -262,7 +279,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public GuiBindingList<float> PaletteSelectionPoints { get => Get<GuiBindingList<float>>(); set => Set(value); }
         public bool IsPaletteSelectionVisible { get => Get<bool>(); set => Set(value); }
-        public bool IsUseBaseEnabled { get => Get<bool>(); set => Set(value); }
 
         private void InitializePartBrowser()
         {
@@ -272,6 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PreviewViewText = _previewView.ToString();
             PartPreviewImage = string.Empty;
             PartPreviewLabel = string.Empty;
+            PartPreviewNumber = string.Empty;
             IsPartPreviewEnabled = false;
             foreach (AppearanceEditorSlot slot in Enum.GetValues(typeof(AppearanceEditorSlot)))
             {
@@ -284,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
                 Set(false, $"SelectedPart{channel}Custom");
                 Set(false, $"SelectedPart{channel}Selected");
+                Set(string.Empty, $"SelectedPart{channel}Code");
             }
             foreach (var (name, _, _) in BodyColorSwatches)
             {
@@ -295,7 +313,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPartColorsVisible = false;
             PaletteSelectionPoints = new GuiBindingList<float>();
             IsPaletteSelectionVisible = false;
-            IsUseBaseEnabled = false;
         }
 
         // ---------------- browser ----------------
@@ -310,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _browserIds = ids.ToList();
             _browserCurrent = current;
             _browserKey = key;
-            _browserLabel = label ?? (id => id.ToString());
+            _browserLabel = label ?? (id => AppearancePartNames.Get(key(id), id.ToString()));
             _browserApply = apply;
             PublishBrowser();
         }
@@ -331,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var current = _browserIds.Contains(_browserCurrent) ? _browserCurrent : -1;
             SetIfChanged(nameof(PartPreviewImage), current >= 0 ? AppearancePreview.Picture(_browserKey(current), view) : string.Empty);
             SetIfChanged(nameof(PartPreviewLabel), current >= 0 ? _browserLabel(current) : string.Empty);
+            SetIfChanged(nameof(PartPreviewNumber), current > 0 ? current.ToString() : string.Empty);
             SetIfChanged(nameof(IsPartPreviewEnabled), _browserIds.Count > 0 && _browserApply != null);
             SetIfChanged(nameof(PreviewViewText), view.ToString());
             SyncPartBrowser();
@@ -375,10 +393,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SyncSelectedPartSwatches();
                 var (options, _) = GetArmorPartBinding(part);
                 var slot = _selectedSlot;
-                var current = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)part);
+                // A retained bare style shows as the list's bare option; the item keeps it until the player picks a part.
+                var current = DisplayedArmorStyle(part,
+                    GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)part));
                 SetBrowserSource(options?.Select(option => option.Value) ?? Array.Empty<int>(), current,
                     id => AppearancePreview.ArmorPartKey(body, slot, id),
-                    id => id == 0 ? "None" : id.ToString(),
+                    id => id == 0 ? "None" : AppearancePartNames.Get(AppearancePreview.ArmorPartKey(body, slot, id), id.ToString()),
                     id => ApplyArmorPartFromBrowser(part, id));
             }
             else if (SelectedItemTypeIndex == 1)
@@ -393,8 +413,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var names = PartOptions;
                 var ids = _partIds;
-                SetBrowserSource(ids, CurrentPartId(), WeaponPictureKey(),
-                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count ? names[index] : id.ToString(),
+                var pictureKey = WeaponPictureKey();
+                // A weapon definition's own part name wins over the picture's name.
+                SetBrowserSource(ids, CurrentPartId(), pictureKey,
+                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count &&
+                          names[index] != WeaponAppearanceBaseDefinition.DefaultPartName(id)
+                        ? names[index]
+                        : AppearancePartNames.Get(pictureKey(id), id.ToString()),
                     SelectPartFromBrowser, frontOnly: true);
             }
             RefreshBodyMap();
@@ -498,6 +523,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Geometry = fitted;
         }
 
+        private int DisplayedArmorStyle(AppearanceArmor part, int style) =>
+            _armorAppearances.TryGetValue(GetAppearanceType(_target), out var definition)
+                ? ArmorAppearanceCatalog.DisplayedStyle(definition, part, style)
+                : style;
+
         // ---------------- body map ----------------
         private void RefreshBodyMap()
         {
@@ -535,7 +565,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var part = AppearancePreview.ToArmorPart(slot);
                     key = GetIsObjectValid(chest)
-                        ? AppearancePreview.ArmorPartKey(body, slot, GetItemAppearance(chest, ItemAppearanceType.ArmorModel, (int)part))
+                        ? AppearancePreview.ArmorPartKey(body, slot, DisplayedArmorStyle(part,
+                            GetItemAppearance(chest, ItemAppearanceType.ArmorModel, (int)part)))
                         : string.Empty;
                 }
                 SetIfChanged($"Map{slot}Image", AppearancePreview.Picture(key, view));
@@ -630,6 +661,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         // ---------------- colour indicators ----------------
         /// <summary>Called after a swatch's region, tint or custom flag changes.</summary>
+        /// <summary>
+        /// The code over a swatch: its palette code (P4), "RGB" for a custom colour, or nothing when
+        /// it has no colour of its own (a part using the outfit colour).
+        /// </summary>
+        internal static string SwatchCode(GuiRectangle region, bool custom)
+        {
+            if (custom)
+                return "RGB";
+            if (region == null || region.Width < ColorSize)
+                return string.Empty;
+            return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
+        }
+
         private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel)
         {
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
@@ -643,16 +687,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetIfChanged(nameof(IsPartColorsVisible), visible);
             if (!visible)
                 return;
-            SetIfChanged(nameof(SelectedPartColorsTitle), PartColorsTitle(_selectedSlot));
             foreach (var channel in SwatchChannels)
                 MirrorPartSwatch(channel);
             SyncSelectedPartSelection();
         }
-
-        /// <summary>Heads the part colour rows with the selected part's name, e.g. "Left Shoulder".</summary>
-        internal static string PartColorsTitle(AppearanceEditorSlot slot) =>
-            string.Concat(slot.ToString().Select((letter, index) =>
-                index > 0 && char.IsUpper(letter) ? " " + letter : letter.ToString()));
 
         private void MirrorPartSwatch(AppearanceArmorColor channel)
         {
@@ -662,6 +700,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(region, $"SelectedPart{channel}Region");
             Set(Get<GuiColor>(source + "Tint") ?? new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
             SetIfChanged($"SelectedPart{channel}Custom", custom);
+            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom));
         }
 
         private void SyncSelectedPartSelection()
@@ -669,7 +708,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var partTarget = ToColorTarget(_selectedSlot);
             foreach (var channel in SwatchChannels)
                 SetIfChanged($"SelectedPart{channel}Selected", _colorTarget == partTarget && _selectedColorChannel == channel);
-            SetIfChanged(nameof(IsUseBaseEnabled), IsEquipmentSelected && SelectedItemTypeIndex == 0 && _colorTarget != ColorTarget.Global);
             RefreshPaletteSelection();
         }
 
@@ -753,13 +791,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshBodySwatches();
         };
 
-        public Action OnClickUseBase() => () =>
-        {
-            if (!IsEquipmentSelected || SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
-                return;
-            ResetArmorColorToInheritance(_colorTarget, _selectedColorChannel);
-        };
-
         private void UpdatePaletteSheetForChannel()
         {
             if (!IsEquipmentSelected || SelectedItemTypeIndex != 0)
@@ -785,8 +816,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var column = (int)(region.X / ColorSize);
                 var row = (int)(region.Y / ColorSize);
-                var left = column * PaletteCellWidth + 1f;
-                var top = row * PaletteCellHeight + 1f;
+                var left = PaletteHeaderWidth + column * PaletteCellWidth + 1f;
+                var top = PaletteHeaderHeight + row * PaletteCellHeight + 1f;
                 var right = left + PaletteCellWidth - 2f;
                 var bottom = top + PaletteCellHeight - 2f;
                 points = new[] { left, top, right, top, right, bottom, left, bottom, left, top };

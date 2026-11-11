@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Guardian Master inner circle in Hutlar - Jedi Trial Halls."
+    "value": "Trial Examiner Droid (Guardian Master line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Guardian Shield Droid"
+      "0": "Trial Examiner Droid"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 275
+          "value": 270
         }
       },
       {

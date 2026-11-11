@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Emergency Cocktail warden in Mon Cala - Medical Sublevel."
+    "value": "Ward Supervisor Teno Barr (Emergency Cocktail line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A heavyset Bothan in a guard's padded coat, his fur matted with dried stabilizer. He once ran a trauma ward; now he holds the crew's clean room with a blaster pistol and a belt of injectors he doses himself from between shots."
+      "0": "A heavyset Bothan in a guard's padded coat, his fur matted with dried stabilizer. He once ran a trauma ward; now, as a ward supervisor, he holds the ward's clean room with a blaster pistol and a belt of injectors he doses himself from between shots."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Cocktail Warden"
+      "0": "Ward Supervisor Teno Barr"
     }
   },
   "fortbonus": {

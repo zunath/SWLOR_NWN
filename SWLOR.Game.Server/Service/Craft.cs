@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -557,7 +556,7 @@ namespace SWLOR.Game.Server.Service
             if (tier > 5)
                 tier = 5;
 
-            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+            return CraftRankMilestones.GetResearchTier(player) >= tier;
         }
 
         /// <summary>
@@ -939,6 +938,52 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Merges a crafted property into a list of properties by the rules <see cref="ApplyCraftedItemProperty"/> applies to an item:
+        /// a property of the same type (and subtype, when the incoming one has one) is summed into one, a weapon keeps one damage type,
+        /// and Force is never a weapon damage type. Working on a list lets a craft settle every property before any of them reaches
+        /// the item, so the item never has a property removed and re-added: a removal is not committed to the item's saved property
+        /// list until later, so a serialized form or copy taken in the same script would still carry the pre-merge property.
+        /// </summary>
+        public static void MergeCraftedItemProperty(List<ItemProperty> properties, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                if (subType == (int)CombatDamageType.Force)
+                    return;
+
+                var damageTypes = properties.Where(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType).ToList();
+                var keepExisting = damageTypes.Count > 0 &&
+                                   GetItemPropertySubType(damageTypes[0]) != subType &&
+                                   Random.D100(1) <= 50;
+                if (keepExisting)
+                    return;
+
+                properties.RemoveAll(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType);
+                properties.Add(ip);
+                return;
+            }
+
+            // The same matching as ApplyCraftedItemProperty: judged off the incoming property's subtype.
+            var amount = GetItemPropertyCostTableValue(ip);
+            var matches = properties
+                .Where(property => GetItemPropertyType(property) == type &&
+                                   (subType == -1 || GetItemPropertySubType(property) == subType))
+                .ToList();
+            foreach (var match in matches)
+            {
+                amount += GetItemPropertyCostTableValue(match);
+                properties.Remove(match);
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            properties.Add(ItemPropertyPlugin.PackIP(unpacked));
+        }
+
+        /// <summary>
         /// A weapon can only carry one damage type. If it already has a different
         /// type than the one being applied now, keep only one - chosen at random
         /// rather than always letting whichever enhancement was socketed last
@@ -983,11 +1028,10 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
-            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
 
-            if (researchLevel <= 0)
+            if (CraftRankMilestones.GetResearchTier(player) <= 0)
             {
-                SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
+                SendMessageToPC(player, $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.");
                 return;
             }
 
@@ -1018,7 +1062,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         var delta = dbJob.DateCompleted - now;
                         var completionTime = Time.GetTimeLongIntervals(delta, false);
-                        SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                        SendMessageToPC(player, $"Another player's research job is active. This job will complete in: {completionTime}.");
                     }
                     else
                     {
@@ -1207,7 +1251,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<ResearchJob>(dbJob.Id);
+                CraftService.Research.ResearchExperimentService.DeleteJob(dbJob);
             }
         }
     }

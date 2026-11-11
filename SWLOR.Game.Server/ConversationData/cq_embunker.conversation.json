@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Nobody respects a shelter drill until the roof's actually coming down. Here's why I run them: the Republic walked away from its Engineering Bunker in the Viscara swamps, and a crew moved in, sealed off my own sublevel, and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
+          "Text": "Nobody respects a shelter drill until the roof's actually coming down. Here's why I run them: the Republic walked away from its Engineering Bunker in the Viscara swamps, and a crew moved in, sealed off my own sublevel, and re-rigged it without my sign-off. Their Deserter Sappers are holding the rooms nearest the entrance: six of them. Clear them out with your Power Cell on the allies at your side; any Deserter Sapper counts, since they serve the whole company, but the kill has to land while your allies' gear is freshly charged. A wall nobody leaned on proves nothing. Then bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That docket's still sitting in my sublevel with six adepts standing on it. Western Swamplands, a short walk west of where you come in from the Eastern, door facing south. Go get it back.",
+          "Text": "That docket's still sitting in my sublevel with six sappers standing on it. Western Swamplands, a short walk west of where you come in from the Eastern, door facing south. Go get it back.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their specialists rewired a Republic shield grid relay into my load-bearing supports, which means if that relay fails, it's not just power that drops, it's the ceiling. Five specialists, same bunker. Bring the relay back before it decides gravity's opinion for everyone under it.",
+          "Text": "Their Deserter Engineers rewired a Republic shield grid relay into my load-bearing supports, which means if that relay fails, it's not just power that drops, it's the ceiling. Five Deserter Engineers, deeper in the same bunker, same condition: your allies' gear charged with Power Cell while your party fights. Any engineer counts. Bring the relay back before it decides gravity's opinion for everyone under it.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because whoever's running this operation needed something clever enough to fool an inspection and lazy enough to save them a week's work. Specialists are exactly the people who can manage both at once.",
+          "Text": "Because whoever's running this operation needed something clever enough to fool an inspection and lazy enough to save them a week's work. Engineers are exactly the people who can manage both at once.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay's still crossed with my supports down in the Viscara Republic Engineering Bunker. Five specialists guarding it. Go on.",
+          "Text": "Relay's still crossed with my supports down in the Viscara Republic Engineering Bunker. Five Deserter Engineers guarding it. Go on.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their warden's holding the deepest chamber, and I wrote my rescue protocol with a three-person minimum for exactly this kind of room: one to hold the door, one to hold the line, one to actually do the work. I'm not making an exception because you think you're sturdier than the protocol. Bring two, and get me the Cracked Command Crest off him.",
+          "Text": "Deserter Sergeant Bekko is holding the deepest chamber, and I wrote my rescue protocol with a three-person minimum for exactly this kind of room: one to hold the door, one to hold the line, one to actually do the work. I'm not making an exception because you think you're sturdier than the protocol. Bring two, and get me the Cracked Command Crest off him.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's still holding that chamber in the Viscara Republic Engineering Bunker. Bring your two before you go back down.",
+          "Text": "Bekko's still holding that chamber in the Viscara Republic Engineering Bunker. Bring your two before you go back down.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's down and the chamber's mine again. Three of you did exactly what the protocol says three should do. I wrote that protocol so I wouldn't have to write anyone's eulogy instead.",
+          "Text": "Bekko's down and the chamber's mine again. Three of you did exactly what the protocol says three should do. I wrote that protocol so I wouldn't have to write anyone's eulogy instead.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The inner circle authorized the whole re-rig, and their Quartermaster Override Chip will tell me who requisitioned the materials to do it. Four of them holding the supply chamber. Bring the chip back and let's find out whose signature I'm looking for.",
+          "Text": "The Quartermaster's Guards authorized the whole re-rig, and their Quartermaster Override Chip will tell me who requisitioned the materials to do it. Four of them in the deepest part of the bunker, holding the supply chamber. Keep your allies' gear charged with Power Cell while your party fights; any guard the party kills while it is fresh counts. Bring the chip back and let's find out whose signature I'm looking for.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep them close if you can. Four together is a heavier lift than one warden, in its own way, and I'd rather you go in with hands you already trust.",
+          "Text": "Keep them close if you can. Four guards together is a heavier lift than one sergeant, in its own way, and I'd rather you go in with hands you already trust.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chip's still in the supply chamber with four of them standing guard. Viscara Republic Engineering Bunker. Go get it.",
+          "Text": "Chip's still in the supply chamber with four guards standing over it. Viscara Republic Engineering Bunker. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's taken the deepest room I ever built and decided the walls make him patient, like waiting out a rescue crew is a virtue instead of a trap closing on him. My protocol says three, minimum, and I am not bending that rule for the one who broke every other one I wrote. Bring your two. Finish what the bunker was always meant to do: hold, and hold him inside it.",
+          "Text": "Deserter Commander Mukk Dorl has taken the deepest room I ever built and decided the walls make him patient, like waiting out a rescue crew is a virtue instead of a trap closing on him. My protocol says three, minimum, and I am not bending that rule for the one who broke every other one I wrote. Bring your two. Finish what the bunker was always meant to do: hold, and hold him inside it.",
           "Style": 0,
           "Color": null
         }
@@ -1573,7 +1573,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Why do specialists get assigned to rig something this dangerous?",
+        "Text": "Why do engineers get assigned to rig something this dangerous?",
         "Style": 4,
         "Color": null
       },
@@ -1766,7 +1766,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "What's the warden actually done to that chamber?",
+        "Text": "What has Bekko actually done to that chamber?",
         "Style": 4,
         "Color": null
       },

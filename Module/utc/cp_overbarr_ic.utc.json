@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Overload Barrage inner circle in Hutlar - Qion Test Site."
+    "value": "Site Chief's Officer (Overload Barrage line) in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak woman in armored colonist garb, blaster pistol in hand. She is one of the four who authorized the theft of a field engineer's charge tables, and her signature sits among the site's override records."
+      "0": "A Zabrak woman in armored colonist garb, blaster pistol in hand. She is one of the site chief's four officers, who authorized the theft of a field engineer's charge tables, and her signature sits among the site's override records."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Overload Barrage Inner Circle"
+      "0": "Site Chief's Officer"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 190
+          "value": 180
         }
       },
       {

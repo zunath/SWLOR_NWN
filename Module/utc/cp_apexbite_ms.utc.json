@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Apex Bite master in Dathomir - Alpha Beast Hollow."
+    "value": "Old Tukata (Apex Bite line) in Dathomir - Alpha Beast Hollow."
   },
   "Con": {
     "type": "byte",
@@ -175,7 +175,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Apex Bite Master"
+      "0": "Old Tukata"
     }
   },
   "fortbonus": {

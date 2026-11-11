@@ -654,6 +654,13 @@ internal sealed class SavedCharacter
     /// <summary>Adds or removes every stat an equipped item grants, as <see cref="Feature.EquipmentStats.ApplyItemStats"/> does.</summary>
     public void ApplyItemStats(SavedItem item, bool isAdding)
     {
+        for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem); copy++)
+            ApplyOneHandItemStats(item, isAdding);
+    }
+
+    /// <summary>Adds or removes one hand's share of an equipped item's stats; a Power Glove has two.</summary>
+    public void ApplyOneHandItemStats(SavedItem item, bool isAdding)
+    {
         if (!AppliesRecordEffects) return;
         foreach (var property in item.Properties)
             SavedEquipmentStats.Apply(this, item, property.Type, property.Subtype, property.CostValue, isAdding);
@@ -663,7 +670,8 @@ internal sealed class SavedCharacter
     public void ApplyStatAmount(SavedItem item, ItemPropertyType type, int subtype, int amount, bool isAdding)
     {
         if (!AppliesRecordEffects || amount <= 0) return;
-        SavedEquipmentStats.Apply(this, item, type, subtype, amount, isAdding);
+        for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem); copy++)
+            SavedEquipmentStats.Apply(this, item, type, subtype, amount, isAdding);
     }
 
     /// <summary>Saved-data <see cref="Stat.RefreshCombatReadinessEquipment"/>: the record holds the equipped total.</summary>
@@ -672,7 +680,7 @@ internal sealed class SavedCharacter
         if (!AppliesRecordEffects) return;
         Record.CombatReadiness = Equipped.Sum(item => item.Properties
             .Where(property => property.Type == ItemPropertyType.CombatReadiness)
-            .Sum(property => property.CostValue));
+            .Sum(property => property.CostValue) * PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem));
     }
 
     /// <summary>

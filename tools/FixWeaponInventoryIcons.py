@@ -70,6 +70,8 @@ def read_icon(codec, path):
 
 
 def write_icon(codec, path, rgba_top_down, info):
+    if info['fourcc'] != 'DXT5' or info['mips'] != 1:
+        raise ValueError(f'{path}: inventory icons must be single-level DXT5')
     rgba = bleed_transparent_color(rgba_top_down)
     codec.write_dds(path, rgba[::-1], info)
 

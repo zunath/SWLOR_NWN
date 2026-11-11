@@ -83,8 +83,9 @@ public class TrialDungeonPlacementTests
         Local(git, "PLANET_TYPE_ID").GetInt32().Should().Be(d.Planet);
         List(git, "Creature List").Should().BeEmpty();
         var spawnTag = Text(Load("utw", d.SpawnBlueprint), "Tag");
-        List(git, "WaypointList").Count(w => Text(w, "Tag") == spawnTag).Should().Be(20);
-        List(Load("git", d.Arena), "WaypointList").Should().NotContain(w => Text(w, "Tag") == spawnTag);
+        // Adepts (outer half) and specialists (_DEEP, deeper half) share the twenty general spawn points.
+        List(git, "WaypointList").Count(w => Text(w, "Tag") == spawnTag || Text(w, "Tag") == spawnTag + "_DEEP").Should().Be(20);
+        List(Load("git", d.Arena), "WaypointList").Should().NotContain(w => Text(w, "Tag") == spawnTag || Text(w, "Tag") == spawnTag + "_DEEP");
         List(git, "WaypointList").Should().ContainSingle(w => Text(w, "Tag") == "STUCK_WAYPOINT",
             $"{d.Area} needs a STUCK_WAYPOINT recovery point");
         var comments = Load("gic", d.Area);

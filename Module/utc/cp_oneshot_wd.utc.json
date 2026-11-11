@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "One Shot warden in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Overseer Callum Breck (One Shot line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human marksman in a grey captain's coat, a scored range crest on his shoulder and a blaster rifle at the ready. Czerka put him on the long lane to wear that crest for its clients, and he has worn it so long he believes he earned it. He waits with real patience for an opponent's first miss."
+      "0": "A human range overseer in a grey captain's coat, a scored range crest on his shoulder and a blaster rifle at the ready. Czerka put him on the long lane to wear that crest for its clients, and he has worn it so long he believes he earned it. He waits with real patience for an opponent's first miss."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "One Shot Warden"
+      "0": "Range Overseer Callum Breck"
     }
   },
   "fortbonus": {

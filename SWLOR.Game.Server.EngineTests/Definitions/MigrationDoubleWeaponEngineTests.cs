@@ -177,7 +177,7 @@ public static partial class MigrationEngineTests
             RemovePropertiesImmediately(weapon);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 11), weapon);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 29), weapon);
-            ctx.Assert((bool)Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateDoubleWeapons", owner), "The login/acquisition compatibility traversal finds the old item");
+            ctx.Assert((bool)Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateDoubleWeapons", owner), "The object traversal finds the old item");
             ctx.AssertEqual(9, Item.GetDMG(weapon), "Compatibility retains the basic weapon's added damage");
             ctx.AssertEqual(23, PropertyValue(weapon, ItemPropertyType.Delay), "Compatibility updates its end delay");
             ctx.Assert(!(bool)Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateDoubleWeapons", owner), "Compatibility is idempotent");

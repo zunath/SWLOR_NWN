@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Thermal Detonator adept in Hutlar - Qion Test Site."
+    "value": "Test Crew Technician (Thermal Detonator line) in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in black work coveralls, blaster pistol in hand and scorch marks on his sleeves. He is one of the crew cooking oversized charges inside the sealed Qion Test Site, with no containment casing and no logged fuze timing."
+      "0": "A human test crew technician in black work coveralls, blaster pistol in hand and scorch marks on his sleeves. He is one of the crew cooking oversized charges inside the sealed Qion Test Site, with no containment casing and no logged fuze timing."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Thermal Detonator Adept"
+      "0": "Test Crew Technician"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 182
+          "value": 177
         }
       },
       {

@@ -98,6 +98,51 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             stats = dict(GENERATOR.description_stat_entries(rows[name], base))
             self.assertEqual(magnitude, stats[stat])
 
+    def test_regeneration_makes_guard_counter_daze_the_impact_status(self):
+        rows = [row for row in GENERATOR.read_manifest()
+                if row["Tab"] == "Katar" and row["PerkName"].startswith("Guard Counter ")]
+        self.assertEqual(3, len(rows))
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            with (patch.object(GENERATOR, "ROOT", output_root),
+                  patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                  patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                GENERATOR.generate_ability_definitions(rows, feats, {})
+            path = "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/GuardCounterAbilityDefinition.cs"
+            # The guarded Daze must stay the impact's own status so Control perks count it.
+            for root in (output_root, ROOT):
+                with self.subTest(root=str(root)):
+                    ability = (root / path).read_text()
+                    self.assertEqual(1, ability.count("RecentGuardedHitStatusEffect = typeof(DazedStatusEffect)"))
+                    self.assertEqual(1, ability.count("RecentGuardedHitStatusDurationSeconds = 15"))
+                    self.assertNotIn("ConditionalTargetStatus", ability)
+                    self.assertNotIn("RequireRecentGuardedHit", ability)
+
+    def test_breaker_reversal_bonus_requires_a_control_ability(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["Tab"] == "Katar" and row["PerkName"] == "Breaker Reversal")
+        self.assertIn("next control ability", row["Description"].lower())
+        stats = dict(GENERATOR.description_stat_entries(row, row["PerkName"]))
+        self.assertEqual("(int)StatusEffectCategory.Control", stats["DamageTakenNextSkillAbilityRequiredCategory"])
+        committed = (ROOT / "SWLOR.Game.Server/Feature/PerkDefinition/KatarPerkDefinition.cs").read_text()
+        self.assertEqual(1, committed.count(
+            ".IncreasesStat(StatType.DamageTakenNextSkillAbilityRequiredCategory, (int)StatusEffectCategory.Control)"))
+
+    def test_redirecting_guard_enmity_targets_a_controlled_enemy_attacking_an_ally(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["Tab"] == "Katar" and row["PerkName"] == "Redirecting Guard")
+        self.assertIn("control a target attacking an ally", row["Description"].lower())
+        self.assertIn("enmity toward that target", row["Description"].lower())
+        stats = dict(GENERATOR.description_stat_entries(row, row["PerkName"]))
+        self.assertEqual("(int)StatusEffectCategory.Control", stats["StatusAppliedRequiredCategory"])
+        self.assertEqual("15", stats["StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment"])
+        self.assertEqual("30", stats["StatusAppliedTargetAttackingAllyEnmityDurationSeconds"])
+        self.assertNotIn("StatusAppliedSelfEnmityPercentAdjustment", stats)
+        self.assertNotIn("StatusAppliedSelfDurationSeconds", stats)
+
     def test_regeneration_preserves_steel_shoulder_ally_only_target_selection(self):
         rows = [row for row in GENERATOR.read_manifest()
                 if row["PerkName"] in {"Steel Shoulder", "Gambler Stance"}]
@@ -157,6 +202,23 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                 self.assertEqual(["                    .UsesImmediateAuthoredAnimation()"],
                     GENERATOR.authored_animation_builder_lines(skill, {"Type": "Stance"}, False))
 
+    def test_ordnance_and_flurry_stances_emit_every_description_clause(self):
+        rows = {row["PerkName"]: row for row in GENERATOR.read_manifest()
+                if row["PerkName"] in ("Ordnance Stance", "Flurry Stance")}
+        ordnance = dict(GENERATOR.stance_stat_entries(rows["Ordnance Stance"]))
+        flurry = dict(GENERATOR.stance_stat_entries(rows["Flurry Stance"]))
+
+        self.assertEqual({"ThrowingAreaAbilityDamagePercentAdjustment": "10",
+                          "ThrowingSingleTargetDamagePercentAdjustment": "-10"}, ordnance)
+        # Flurry's Haste is conditional on a bleeding target, never creature-wide Haste.
+        self.assertEqual({"ThrowingAttackDelayReductionToBleedingTargetPercent": "10",
+                          "DefensePercentAdjustment": "-10"}, flurry)
+        for name, stats in (("Ordnance", ordnance), ("Flurry", flurry)):
+            generated = (ROOT / f"SWLOR.Game.Server/Feature/StatusEffectDefinition/{name}StanceStatusEffect.cs").read_text()
+            self.assertEqual(len(stats), generated.count("StatGroup.Stats["))
+            for stat, value in stats.items():
+                self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
+
     def test_scope_calibration_reads_minimum_range_from_description(self):
         properties = dict(GENERATOR.description_stat_entries(
             {
@@ -168,6 +230,19 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             "Scope Calibration"))
 
         self.assertEqual("12", properties["RangedAbilityLongRangeMinimumRangeMeters"])
+
+    def test_sniper_stance_emits_long_range_damage_with_its_own_threshold(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["PerkName"] == "Sniper Stance")
+        stats = dict(GENERATOR.stance_stat_entries(row))
+
+        # The Bible's +15% long-range damage was dropped before; only the delay penalty shipped.
+        self.assertEqual("15", stats["RangedAbilityLongRangeDamagePercentAdjustment"])
+        self.assertEqual("10", stats["RangedAbilityLongRangeMinimumRangeMeters"])
+        self.assertEqual("-15", stats["AttackDelayReductionPercent"])
+        generated = (ROOT / "SWLOR.Game.Server/Feature/StatusEffectDefinition/SniperStanceStatusEffect.cs").read_text()
+        for stat, value in stats.items():
+            self.assertIn(GENERATOR.format_status_stat_line(stat, value), generated)
 
     def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
         row = {

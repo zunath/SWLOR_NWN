@@ -56,24 +56,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .LevelNote("Ambient CR ~2 (Nar Shaddaa Thief/Black Serpent/Arena Fighter); boss CR 7 (Command Droid).")
 
                 // Tier 2 — gang enforcers guarding the backroom stairs (CR ~8 ambient). Boss:
-                // Crippling Defense Adept (CR 50), the fight club's opening-round champion.
+                // Stable Brawler (CR 50), the fight club's opening-round champion.
                 .Tier(2)
                 .AddCreature("nar_redblade", 40)
                 .AddCreature("nar_pirate", 40)
                 .CreaturesPerRoom(2, 3)
                 .Boss("cp_cripdef_ad")
                 .Treasure("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_LESSON_LOOT", 3)
-                .LevelNote("Ambient CR ~8 (Red Blade/Nar Shaddaa Pirate); boss CR 50 (Crippling Defense Adept).")
+                .LevelNote("Ambient CR ~8 (Red Blade/Nar Shaddaa Pirate); boss CR 50 (Stable Brawler).")
 
-                // Tier 3 — the fight club's ranked circle (CR ~50-52 ambient). Boss: Crippling
-                // Defense Master (CR 60), the backroom champion.
+                // Tier 3 — the fight club's ranked circle (CR ~50-52 ambient). Boss: Stable
+                // Champion Thrask (CR 60), the backroom champion.
                 .Tier(3)
                 .AddCreature("cp_cripdef_sp", 40)
                 .AddCreature("cp_cripdef_ic", 30)
                 .CreaturesPerRoom(2, 4)
                 .Boss("cp_cripdef_ms")
                 .Treasure("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_BOSS_LOOT", 4)
-                .LevelNote("Ambient CR ~50-52 (Crippling Defense Specialist/Inner Circle); boss CR 60 (Crippling Defense Master).");
+                .LevelNote("Ambient CR ~50-52 (Stable Pit Fighter/Stable Promoter); boss CR 60 (Stable Champion Thrask).");
 
             return _builder.Build();
         }

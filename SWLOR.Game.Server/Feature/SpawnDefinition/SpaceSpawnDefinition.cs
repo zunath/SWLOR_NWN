@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TatooineOrbit();
             KorribanOrbit();
             DathomirOrbit();
+            EshanOrbit();
             DantooineOrbit();
 
             return _builder.Build();
@@ -463,6 +464,95 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DathomirOrbit()
         {
             _builder.Create("SPACE_DATHOMIR_ORBIT", "Space - Dathomir Orbit")
+                .AddSpawn(ObjectType.Creature, "t5bomber")
+                .WithFrequency(96)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5cargo")
+                .WithFrequency(2400)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5platform")
+                .WithFrequency(2400)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5fighter")
+                .WithFrequency(38400)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5gunship")
+                .WithFrequency(3840)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5interceptor")
+                .WithFrequency(19200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5capital")
+                .WithFrequency(960)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap1")
+                .WithFrequency(96)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap2")
+                .WithFrequency(48)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap3")
+                .WithFrequency(12)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap4")
+                .WithFrequency(12)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap5")
+                .WithFrequency(6)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap6")
+                .WithFrequency(2)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithcap7")
+                .WithFrequency(1)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mandocap1")
+                .WithFrequency(12)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mandocap2")
+                .WithFrequency(2)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mandocap3")
+                .WithFrequency(1)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void EshanOrbit()
+        {
+            _builder.Create("SPACE_ESHAN_ORBIT", "Space - Eshan Orbit")
                 .AddSpawn(ObjectType.Creature, "t5bomber")
                 .WithFrequency(96)
                 .RandomlyWalks()

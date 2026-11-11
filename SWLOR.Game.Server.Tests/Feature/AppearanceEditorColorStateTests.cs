@@ -167,13 +167,13 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
-    public void GeometryUpdatesNeverRebuildTheFixedSizeEditor()
+    public void GeometryUpdatesNeverRebuildTheEditor()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
 
         FindMethod(root, "OnClientPropertyUpdated").ToString().Should().NotContain("nameof(Geometry)",
-            "the editor has a fixed size, so a move or saved size changes nothing");
+            "the panels follow a resize on their own, so a move or resize rebuilds nothing");
         browser.ToString().Should().NotContain("ChangePartialView(",
             "the part pictures moved to their own window; the editor swaps only its tab panels");
         foreach (var source in new[] { root, browser })

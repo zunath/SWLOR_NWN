@@ -6,6 +6,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class CurrenciesDefinition: IGuiWindowDefinition
     {
+        private const float UseCellWidth = 60f;
+
         private readonly GuiWindowBuilder<CurrenciesViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -13,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Currencies)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 420f, 340f)
+                .SetInitialGeometry(0, 0, 480f, 340f)
                 .SetTitle("Currencies")
 
                 .AddColumn(col =>
@@ -29,6 +31,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Currency")
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                        row.AddSpacer()
+                            .SetWidth(UseCellWidth);
 
                         row.AddLabel()
                             .SetText("Balance")
@@ -70,6 +75,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindTooltip(model => model.CurrencyDescriptions)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetWidth(UseCellWidth);
+                                cell.SetIsVariable(false);
+
+                                // The group takes the list's row visibility so the button keeps its own.
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddButton()
+                                        .SetText("Use")
+                                        .SetWidth(52f)
+                                        .SetHeight(28f)
+                                        .SetMargin(0f)
+                                        .SetTooltip("Spend a Language Token to master a language.")
+                                        .BindIsVisible(model => model.CurrencyHasUse)
+                                        .BindIsEnabled(model => model.CurrencyCanUse)
+                                        .BindOnClicked(model => model.OnClickUse());
+                                })
+                                    .SetShowBorder(false)
+                                    .SetScrollbars(NuiScrollbars.None)
+                                    .SetPadding(0f);
                             });
 
                             template.AddCell(cell =>

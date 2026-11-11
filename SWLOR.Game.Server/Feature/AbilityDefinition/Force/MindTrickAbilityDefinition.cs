@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 playImpactAnimation: false);
         }
 
-        private static int CalculateMindTrickDuration(uint activator, uint target)
+        internal static int CalculateMindTrickDuration(uint activator, uint target)
         {
             var casterWillpower = GetAbilityScore(activator, AbilityType.Willpower);
             var targetWillpower = GetAbilityScore(target, AbilityType.Willpower);
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 : Math.Clamp(duration, BaseConfusionDurationSeconds, MaximumConfusionDurationSeconds);
         }
 
-        private static bool IsNonMechanical(uint target)
+        internal static bool IsNonMechanical(uint target)
         {
             var racialType = GetRacialType(target);
             return racialType != RacialType.Construct &&
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                    racialType != RacialType.Droid;
         }
 
-        private static string ValidateNonMechanicalTarget(uint target)
+        internal static string ValidateNonMechanicalTarget(uint target)
         {
             return IsNonMechanical(target)
                 ? string.Empty

@@ -38929,6 +38929,28 @@
                       "type": "resref",
                       "value": "mkt_visc_term"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veylan Greens Patch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silverwood Seed Bush"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_seed"
+                    }
                   }
                 ]
               },
@@ -49933,6 +49955,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "swlor_0838"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashmark Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_ash"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guttermark Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_gutter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trailmark Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_trail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stonewake Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_stone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aegisline Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_aegis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veilcarved Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_veil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Surgewake Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_surge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Resonant Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_reson"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fieldline Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_field"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Commandline Trophy Stand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_tro_cmd"
                     }
                   },
                   {

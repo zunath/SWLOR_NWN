@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Saber Cyclone master in Hutlar - Saber Trial Chamber."
+    "value": "Vortex Training Engine (Saber Cyclone line) in Hutlar - Saber Trial Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The tall droid that drives the Saber Cyclone drills, its blade sweeping in long, unbroken arcs. From the Saber Trial Chamber it keeps every damaged routine in the halls turning at full power."
+      "0": "The tall droid that drives the halls' spinning drills, its blade sweeping in long, unbroken arcs. From the Saber Trial Chamber it keeps every damaged routine in the halls turning at full power."
     }
   },
   "Dex": {

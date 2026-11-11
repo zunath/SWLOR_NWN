@@ -29,7 +29,7 @@ internal static class BulkMotionAuthor
         var category = motion.Category;
         var gripPrefix = motion.EquipmentRequirement switch
         {
-            "OneHanded" or "WeaponAndShield" or "Pistol" => "1h",
+            "OneHanded" or "OneHandedWithOffHand" or "WeaponAndShield" or "Pistol" or "PistolWithOffHand" => "1h",
             "TwoHanded" => "2h",
             "Polearm" => "pl",
             "DualWield" => "2w",

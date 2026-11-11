@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Crippling Defense inner circle member in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Promoter (Crippling Defense line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crippling Defense Inner Circle"
+      "0": "Stable Promoter"
     }
   },
   "fortbonus": {

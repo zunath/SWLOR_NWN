@@ -205,11 +205,11 @@ public static partial class MigrationEngineTests
             record.Version = 23;
             DB.Set(record);
             SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
-            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Single(),
-                "The last released character checkpoint schedules exactly one combined item migration");
+            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).First(),
+                "The last released character checkpoint schedules the combined item migration next");
             upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
             ctx.Assert(upgraded != null, "The character upgrade converts the legacy items");
-            ctx.AssertEqual(24, upgraded.Record.Version, "The player record checkpoint advances");
+            ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The player record checkpoint advances");
             var character = SavedCharacterMigration.Load(ctx, upgraded);
             var migratedArmor = GetItemInSlot(InventorySlot.Chest, character);
             ctx.AssertEqual("ark_armor", GetResRef(migratedArmor), "The revised breastplate stays equipped");
@@ -288,7 +288,12 @@ public static partial class MigrationEngineTests
     internal static void StampLegacyAppearance(EngineTestContext ctx, uint item)
     {
         var revision = ItemAppearanceCatalogMigration.Revisions[GetResRef(item)];
-        ctx.AssertEqual(string.Join(",", revision.Current), string.Join(",", AppearanceParts(item)),
+        // A later release's revision (GaderffiiAppearanceMigration) moves a blueprint on from where this one ended.
+        var blueprint = GaderffiiAppearanceMigration.Revisions.TryGetValue(GetResRef(item), out var later) &&
+                        later.Previous.SequenceEqual(revision.Current)
+            ? later.Current
+            : revision.Current;
+        ctx.AssertEqual(string.Join(",", blueprint), string.Join(",", AppearanceParts(item)),
             $"{GetResRef(item)} blueprint reads as its catalog appearance");
         for (var index = 0; index < revision.Previous.Length; index++)
             switch (revision.Previous.Length)

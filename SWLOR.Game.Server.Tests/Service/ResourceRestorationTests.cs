@@ -24,7 +24,7 @@ public class ResourceRestorationTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
-                or "GetCurrentFP" or "GetCurrentStamina");
+                or "GetCurrentFP" or "GetCurrentStamina" or "IsStaminaRestorationBlocked");
         var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable =>
                 variable.Identifier.ValueText is "FPPerWillpower" or "StaminaPerTwoMight"));
@@ -66,6 +66,7 @@ public class ResourceRestorationTests
                 private static bool GetIsPC(uint creature) => IsPC;
                 private static bool GetIsDM(uint creature) => IsDM;
                 private static bool GetIsDMPossessed(uint creature) => IsPossessed;
+                private static bool GetActionMode(uint creature, ActionMode mode) => false;
                 private static string GetObjectUUID(uint creature) => "test-player";
                 private static int GetAbilityScore(uint creature, AbilityType ability) => 10;
                 private static int GetStatAdjustment(uint creature, StatType type) => 0;

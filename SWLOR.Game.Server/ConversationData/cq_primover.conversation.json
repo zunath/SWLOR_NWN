@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "So you did not flinch. Good, flinching gets you killed twice as fast in there. My clan lost the Grotto Apex Den three generations back to off-world handlers who broke every beast they touched instead of binding it. The handlers are bones now, but the shell-backs they bred still hold the den, bred to charge anything that moves. Go into the den on Dathomir, put down six of the young ones, and bring me the Primal Overrun Grotto Track Slate from their nest. It still reads clan trails.",
+          "Text": "So you did not flinch. Good, flinching gets you killed twice as fast in there. My clan lost the Grotto Apex Den three generations back to off-world handlers who broke every beast they touched instead of binding it. The handlers are bones now, but the shell-backs they bred still hold the den, bred to charge anything that moves. Go into the den on Dathomir, put down six of the Young Shell-Backs, the ones holding the chambers nearest the way in, and bring me the Primal Overrun Grotto Track Slate from their nest. Any Young Shell-Back will do, every shell-back in that den answers to the same handlers' lessons. But a kill only teaches you something after your own beast has hit the target. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party. Kills that never felt your beast's weight prove nothing. It still reads clan trails.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The den has not finished with you. Six of the young shell-backs, and my slate out of their nest.",
+          "Text": "The den has not finished with you. Six Young Shell-Backs, struck by your own beast before they fall, and my slate out of their nest.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Slate came back clean. That is one debt closer to paid. The older shell-backs are worse; the handlers drove them so long they charge before anything gives the word. Put down five of them in the Grotto Apex Den and bring me the Primal Overrun Resonant Fang Charm. One of them still wears it on the collar the handlers bolted on.",
+          "Text": "Slate came back clean. That is one debt closer to paid. The Goad-Scarred Shell-Backs, the older ones deeper in, are worse; the handlers drove them so long they charge before anything gives the word. Put down five of them in the Grotto Apex Den, again after a hit from your own beast; any Goad-Scarred Shell-Back counts. Then bring me the Primal Overrun Resonant Fang Charm. One of them still wears it on the collar the handlers bolted on.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You have done more in that den than most clan-born manage. Past the shell-backs is the warden, a bull rancor the handlers raised from a calf and taught to shove instead of bond. He has killed alone before, and he will kill you alone too. Do not go at him by yourself; bring two you would trust to carry your beast out if you cannot. Put him down and bring me the Primal Overrun Cracked Apex Totem that hangs from his harness.",
+          "Text": "You have done more in that den than most clan-born manage. Past the shell-backs is Handler's Rancor, a bull rancor the handlers raised from a calf and taught to shove instead of bond. He has killed alone before, and he will kill you alone too. Do not go at him by yourself; bring two you would trust to carry your beast out if you cannot. Put him down and bring me the Primal Overrun Cracked Apex Totem that hangs from his harness.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gate. The ground past it is not the same; the warden does not wait for you to be ready, so do not wait either. Go in together, come out together.",
+          "Text": "Same gate. The ground past it is not the same; Handler's Rancor does not wait for you to be ready, so do not wait either. Go in together, come out together.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden is still down there teaching the wrong lesson. Go finish him, with company, like I said.",
+          "Text": "Handler's Rancor is still down there teaching the wrong lesson. Go finish him, with company, like I said.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four are left that matter: the inner circle, the oldest shell-backs in the den, the first of their kind the handlers ever broke. Every charge the young ones throw, these four threw first. They hold the deep floor together, not alone, so you do not go alone either. Put all four down and bring me the Primal Overrun Den-Mother's Fang Token from the deep nest they guard.",
+          "Text": "Four are left that matter: the Den Elder Shell-Backs, the oldest in the den, the first of their kind the handlers ever broke. Every charge the young ones throw, these four threw first. They hold the deep floor together, not alone, so you do not go alone either. Put all four down in the deepest part of the den, after your own beast has struck each one, and bring me the Primal Overrun Den-Mother's Fang Token from the deep nest they guard. Any Den Elder Shell-Back counts.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gate. They will have felt the warden fall by now, so expect them ready. Go in together, stay together; that is not a suggestion with four of them.",
+          "Text": "Same gate. They will have felt Handler's Rancor fall by now, so expect them ready. Go in together, stay together; that is not a suggestion with four of them.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last one. The master is the old bull, the warden's sire, the last rancor my clan ever bonded. The handlers spent years teaching him to charge on their word, and when they were gone he kept charging on his own. Every shove in that den started with him. Bring your two back; his overrun does not slow down for numbers, and one hunter alone just becomes one more body the den has to explain. The den keeps no token for this. His fall is the proof, all of it.",
+          "Text": "Last one. Old Rancor is the old bull, the sire of Handler's Rancor, the last rancor my clan ever bonded. The handlers spent years teaching him to charge on their word, and when they were gone he kept charging on his own. Every shove in that den started with him. Bring your two back; his overrun does not slow down for numbers, and one hunter alone just becomes one more body the den has to explain. The den keeps no token for this. His fall is the proof, all of it.",
           "Style": 0,
           "Color": null
         }
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring company and take the warden down.",
+        "Text": "I'll bring company and take Handler's Rancor down.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is this warden to you?",
+        "Text": "Who is Handler's Rancor to you?",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "What are the inner circle?",
+        "Text": "Who are the Den Elder Shell-Backs?",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "We're going in for the master.",
+        "Text": "We're going in for Old Rancor.",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "What makes him different from the warden and the circle?",
+        "Text": "What makes him different from Handler's Rancor and the Den Elders?",
         "Style": 4,
         "Color": null
       },

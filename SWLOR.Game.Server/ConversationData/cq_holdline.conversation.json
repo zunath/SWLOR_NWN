@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came. Good. The Medical Sublevel beneath the Coral Isles Facility on Mon Cala was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
+          "Text": "You came. Good. The Medical Sublevel beneath the Coral Isles Facility on Mon Cala was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their Ward Orderlies run the intake now, in the rooms nearest the lift. Put them down while your Cleanse Order or Rousing Shout is steadying your party; any orderly counts, they all serve the same ward, but a kill your party made without that steadying teaches you nothing about holding people. Then bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The triage hall is still theirs. Six adepts, and my ledger on the desk between them. Do not let the ward wait longer than it must.",
+          "Text": "The triage hall is still theirs. Six Ward Orderlies, and my ledger on the desk between them. Steady your party while they fall. Do not let the ward wait longer than it must.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger told me what they are doing for supplies. They cut the kolto feeds to the upper wards and run the pressure down to their own barricades. My recovery patients are healing on bandages and patience. Their specialists hold the conduit junctions - five of them, and they were the best I ever trained at standing still. Clear the junctions and bring me the Kolto Conduit Coupler. Without it they cannot starve my wards again, and with it I can restore the flow the same day.",
+          "Text": "The ledger told me what they are doing for supplies. They cut the kolto feeds to the upper wards and run the pressure down to their own barricades. My recovery patients are healing on bandages and patience. Their Ward Guards hold the conduit junctions - five of them, and they were the best I ever trained at standing still. Clear the junctions with your party steadied by Cleanse Order or Rousing Shout; any guard counts, and only while the order or shout is fresh. Then bring me the Kolto Conduit Coupler. Without it they cannot starve my wards again, and with it I can restore the flow the same day.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. The junctions are deeper in, past where the adepts stood - follow the pipes and the cold. The specialists will not chase you. They will wait where the conduits meet and make you come to them. That patience is the lesson, if you live through it.",
+          "Text": "Good. The junctions are deeper in, past where the orderlies stood - follow the pipes and the cold. The Ward Guards will not chase you. They will wait where the conduits meet and make you come to them. That patience is the lesson, if you live through it.",
           "Style": 0,
           "Color": null
         }
@@ -536,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Denn is one of them, I would wager. He once stood a whole night at a quarantine door while people screamed at him from both sides, and he never raised his voice. That is what a specialist is - someone who has decided in advance that they will not move. If Denn is there, do not talk to him. He is better at waiting than you are.",
+          "Text": "Denn is one of them, I would wager. He once stood a whole night at a quarantine door while people screamed at him from both sides, and he never raised his voice. That is what a Ward Guard is - someone who has decided in advance that they will not move. If Denn is there, do not talk to him. He is better at waiting than you are.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cold, first - they shut the heat off around the junctions. Then quiet. The specialists do not drill and do not shout. You will walk into a room that looks empty, and it will not be. If you bring anyone, keep them talking, and if you hear nothing back, you have found the enemy.",
+          "Text": "Cold, first - they shut the heat off around the junctions. Then quiet. The Ward Guards do not drill and do not shout. You will walk into a room that looks empty, and it will not be. If you bring anyone, keep them talking, and if you hear nothing back, you have found the enemy.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the part I have put off. The recovery ward at the heart of the sublevel is barred, and the one who holds it is their warden - Tavik, the Bothan charge nurse I gave the night shift to, once. He has stood post so long the others believe that ward cannot open while he lives. Perhaps they are right. So you will not go alone. Bring shoulders on both sides of yours, two at least, people you would trust with a stretcher in a corridor fire. Put the warden down and bring me the Fractured Ward Sigil he wears. It was the ward's seal of care before they made it a lock.",
+          "Text": "Now the part I have put off. The recovery ward at the heart of the sublevel is barred, and the one who holds it is Ward Supervisor Aron Meel, the Bothan charge nurse I gave the night shift to, once. He has stood post so long the others believe that ward cannot open while he lives. Perhaps they are right. So you will not go alone. Bring shoulders on both sides of yours, two at least, people you would trust with a stretcher in a corridor fire. Put Meel down and bring me the Fractured Ward Sigil he wears. It was the ward's seal of care before they made it a lock.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Tavik. I taught him that a door held is a life saved, and he learned it too well. When the doctrine curdled he was the first to stand post and the last who will ever leave it. If I went down there he would open the door for me - and then close it behind me forever. That is why it must be you.",
+          "Text": "Aron Meel. I taught him that a door held is a life saved, and he learned it too well. When the doctrine curdled he was the first to stand post and the last who will ever leave it. If I went down there he would open the door for me - and then close it behind me forever. That is why it must be you.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was cast when the sublevel opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Tavik wears it fractured, like a wound he is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
+          "Text": "The sigil was cast when the sublevel opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Meel wears it fractured, like a wound he is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Tavik still holds the recovery ward, and I still want the sigil he wears. Do not go back down until there are shoulders on both sides of yours.",
+          "Text": "Meel still holds the recovery ward, and I still want the sigil he wears. Do not go back down until there are shoulders on both sides of yours.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fractured, but whole enough. I will have it cast again when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Tavik. So did I. What is left below is the circle he answered to, and then the one who taught them all.",
+          "Text": "Fractured, but whole enough. I will have it cast again when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Meel. So did I. What is left below are the Matron's Attendants he answered to, and then the one who taught them all.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them left, before the last door. Two were my senior staff, who sat with me when the ward charter was read and knew every name I knew; the other two came up after my time. They call themselves the inner circle now. They have had implants fitted so they never sleep a shift away from their posts, and they hold what is left of the ward as if patients were a siege. One of them carries the Matron's Ward Token. It was mine, and they took it to make their mutiny look like succession. Defeat all four and bring my token home.",
+          "Text": "Four of them left, before the last door. Two were my senior staff, who sat with me when the ward charter was read and knew every name I knew; the other two came up after my time. They call themselves the Matron's Attendants now, and they hold the deepest part of the sublevel. They have had implants fitted so they never sleep a shift away from their posts, and they hold what is left of the ward as if patients were a siege. One of them carries the Matron's Ward Token. It was mine, and they took it to make their mutiny look like succession. Defeat all four while your Cleanse Order or Rousing Shout is steadying your party - any attendant counts, and only while the steadying is fresh - and bring my token home.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "What is left of the ward is a maze of privacy screens and overturned beds - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Tavik's door; a floor like that punishes anyone who clears it alone, and I would rather you inherit my token than my regrets.",
+          "Text": "What is left of the ward is a maze of privacy screens and overturned beds - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Meel's door; a floor like that punishes anyone who clears it alone, and I would rather you inherit my token than my regrets.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last door, in the north-east corner, opens into the Protected Ward. Behind it is the one who wrote their doctrine - the master, an old Bothan the staff only ever called the Anchor. He held this sublevel through the outbreak year, longer than anyone believed a person could stand, and it saved every soul on the floor. Then the crisis ended and he refused to stop holding. Everything you have fought down there grew in his shadow. There is no relic to bring back. His stand ending is the proof. And hear me: his ward has yet to discharge anyone who went in without help. Do not walk in alone.",
+          "Text": "The last door, in the north-east corner, opens into the Protected Ward. Behind it is the one who wrote their doctrine - Ward Chief Anchor, an old Bothan the staff only ever called the Anchor. He held this sublevel through the outbreak year, longer than anyone believed a person could stand, and it saved every soul on the floor. Then the crisis ended and he refused to stop holding. Everything you have fought down there grew in his shadow. There is no relic to bring back. His stand ending is the proof. And hear me: his ward has yet to discharge anyone who went in without help. Do not walk in alone.",
           "Style": 0,
           "Color": null
         }
@@ -1163,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He held the line for the wrong reason, in the end. Not for the patients - for the holding itself. Somewhere in the outbreak year the stand stopped being a means and became the man. That is the failure I have been vaccinating you against with every errand. The ledger, the kolto, Tavik's door, my token: you hold for the names behind you. The moment you hold for your own legend, you are him.",
+          "Text": "He held the line for the wrong reason, in the end. Not for the patients - for the holding itself. Somewhere in the outbreak year the stand stopped being a means and became the man. That is the failure I have been vaccinating you against with every errand. The ledger, the kolto, Meel's door, my token: you hold for the names behind you. The moment you hold for your own legend, you are him.",
           "Style": 0,
           "Color": null
         }
@@ -1667,7 +1667,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "About the warden's door again.",
+        "Text": "About Meel's door again.",
         "Style": 4,
         "Color": null
       },
@@ -1720,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is the warden to you?",
+        "Text": "Who is Aron Meel to you?",
         "Style": 4,
         "Color": null
       },
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Tell me about the circle again.",
+        "Text": "Tell me about the attendants again.",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the inner circle?",
+        "Text": "Who are the Matron's Attendants?",
         "Style": 4,
         "Color": null
       },

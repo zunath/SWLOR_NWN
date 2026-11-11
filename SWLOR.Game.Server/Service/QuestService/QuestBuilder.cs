@@ -185,6 +185,22 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds the skill XP a guild task gives for the item it collects (<see cref="GuildTaskXpReward"/>). The reward is nothing for a guild whose
+        /// tasks give no XP.
+        /// </summary>
+        /// <param name="guild">The guild the task belongs to.</param>
+        /// <param name="resref">The resref of the item the task collects.</param>
+        /// <param name="quantity">How many the task collects.</param>
+        /// <param name="playerProduced">True when the task asks for a player-crafted item, so its level is the recipe's; false for raw goods such as fish.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddGuildTaskXpReward(GuildType guild, string resref, int quantity, bool playerProduced)
+        {
+            _activeQuest.Rewards.Add(new GuildTaskXpReward(guild, resref, quantity, playerProduced));
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a faction standing reward for completing this quest.
         /// </summary>
         /// <param name="faction">The type of faction to use.</param>
@@ -331,11 +347,39 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="group">The NPC group Id</param>
         /// <param name="amount">The number of NPCs in this group required to kill to complete the objective.</param>
+        /// <param name="maximumCreditDistance">The maximum distance from the defeated NPC for kill credit.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddKillObjective(NPCGroupType group, int amount)
+        public QuestBuilder AddKillObjective(NPCGroupType group, int amount, float maximumCreditDistance = 50f)
         {
-            var killObjective = new KillTargetObjective(group, amount);
+            var killObjective = new KillTargetObjective(group, amount, maximumCreditDistance);
             _activeState.AddObjective(killObjective);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a capstone kill objective: kills of any enemy in the group's dungeon tier count once the player has used
+        /// the capstone's mechanic on it.
+        /// </summary>
+        /// <param name="group">The line's own NPC group, which holds the progress.</param>
+        /// <param name="proofKey">The capstone proof the player must show on each enemy.</param>
+        /// <param name="amount">The number of kills needed.</param>
+        public QuestBuilder AddCapstoneProofKillObjective(NPCGroupType group, string proofKey, int amount)
+        {
+            var killObjective = new CapstoneProofKillObjective(group, proofKey, amount);
+            _activeState.AddObjective(killObjective);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a kill objective that counts only enemies a beast owned by the player hit before they died.
+        /// </summary>
+        /// <param name="group">The NPC group to hunt.</param>
+        /// <param name="amount">The number of kills needed.</param>
+        public QuestBuilder AddBeastAssistedKillObjective(NPCGroupType group, int amount)
+        {
+            _activeState.AddObjective(new BeastAssistedKillObjective(group, amount));
 
             return this;
         }

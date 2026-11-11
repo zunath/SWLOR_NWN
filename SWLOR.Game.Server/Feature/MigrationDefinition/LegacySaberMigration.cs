@@ -218,23 +218,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             SetLocalInt(item, SaberTierVariable, profile.Tier);
         }
 
-        /// <summary>
-        /// Login sweep for the live player object. Normalizes legacy sabers in
-        /// equipped slots, carried inventory, nested containers, and constructed
-        /// droids, then tells the player what happened.
-        /// </summary>
-        public static void MigratePlayer(uint player)
-        {
-            var normalized = NormalizeSabersOnObject(player);
-            if (normalized <= 0)
-                return;
-
-            var saberText = normalized == 1 ? "lightsaber has" : "lightsabers have";
-            SendMessageToPC(player, $"Your {saberText} been recalibrated to current crafting limits, retaining supported bonuses and previously applied Chiro upgrades.");
-
-            Log.Write(LogGroup.Migration, $"Recalibrated {normalized} legacy saber(s) to current crafting limits for {GetName(player)} ({GetObjectUUID(player)}).");
-        }
-
         private static int NormalizeSabersOnObject(uint obj)
         {
             if (!GetIsObjectValid(obj))

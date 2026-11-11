@@ -1,7 +1,8 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
@@ -370,6 +371,78 @@ public class CapstoneQuestDefinitionTests
     }
 
     [Test]
+    public void KillSteps_HuntTheDungeonTierWithTheLinesOwnProof()
+    {
+        var quests = BuildCapstoneQuests();
+        var proofKeys = CapstoneProofDefinitions.All.Select(proof => proof.Key).ToArray();
+        proofKeys.Should().OnlyHaveUniqueItems();
+
+        foreach (var line in CapstoneQuestDefinitionTestData.Lines)
+        {
+            var proofKey = ToProofKey(line.DisplayName);
+            proofKeys.Should().Contain(proofKey, $"{line.DisplayName} needs a capstone proof");
+            var areaLines = CapstoneQuestDefinitionTestData.Lines.Where(other => other.AreaGroup == line.AreaGroup).ToArray();
+
+            foreach (var step in CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Concat(CapstoneQuestDefinitionTestData.FixedSpawnSteps))
+            {
+                // Every line in the dungeon hunts the same tier, proving its own mechanic on each kill.
+                var objective = quests[line.GetQuestId(step)].States[1].GetObjectives()
+                    .OfType<CapstoneProofKillObjective>()
+                    .Should().ContainSingle($"{line.GetQuestId(step)} is a capstone proof kill step").Subject;
+                objective.Group.Should().Be(line.NpcGroups[step]);
+                objective.ProofKey.Should().Be(proofKey);
+                areaLines.Select(other => other.NpcGroups[step]).Should().AllBeEquivalentTo(line.NpcGroups[step]);
+            }
+
+            foreach (var step in CapstoneQuestDefinitionTestData.OnDemandEncounterSteps)
+            {
+                quests[line.GetQuestId(step)].States[1].GetObjectives().OfType<CapstoneProofKillObjective>()
+                    .Should().BeEmpty($"{line.GetQuestId(step)} is a boss encounter");
+            }
+        }
+    }
+
+    [Test]
+    public void CapstoneProofs_NeverCountTheCapstoneItself()
+    {
+        // The quest chain unlocks the capstone, so its own ability or status can never be the proof.
+        foreach (var proof in CapstoneProofDefinitions.All)
+        {
+            var capstone = string.Concat(proof.Key.Split('_').Select(word => char.ToUpperInvariant(word[0]) + word[1..]));
+            var names = proof.EnemyStatusEffects.Concat(proof.SupportStatusEffects).Select(type => type.Name)
+                .Concat(proof.AbilityHits.Concat(proof.SupportAbilityHits).Select(feat => feat.ToString()));
+            names.Should().NotContain(name => name.StartsWith(capstone, StringComparison.OrdinalIgnoreCase),
+                $"proof '{proof.Key}' must not count its own capstone");
+        }
+    }
+
+    [Test]
+    public void CapstoneProofs_CountEveryRankOfTheirAbilities()
+    {
+        // Upgrading an ability removes its lower rank, so proofs must count every rank players can own.
+        var abilitySources = string.Concat(Directory.GetFiles(
+            Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition"), "*.cs",
+            SearchOption.AllDirectories).Select(File.ReadAllText));
+        var named = Regex.Matches(abilitySources, @"FeatType\.(\w+)").Select(match => match.Groups[1].Value).ToHashSet();
+        var registered = Enum.GetValues<FeatType>().Where(feat => named.Contains(feat.ToString())).ToArray();
+
+        foreach (var proof in CapstoneProofDefinitions.All)
+        {
+            var feats = proof.AbilityHits.Concat(proof.SupportAbilityHits).ToArray();
+            var families = feats.Select(feat => Regex.Replace(feat.ToString(), "[0-9]+$", string.Empty)).Distinct();
+            foreach (var family in families)
+            {
+                var ranks = registered.Where(feat => Regex.Replace(feat.ToString(), "[0-9]+$", string.Empty) == family &&
+                                                     Regex.IsMatch(feat.ToString(), "[0-9]+$"));
+                feats.Should().Contain(ranks, $"proof '{proof.Key}' must count every rank of {family}");
+            }
+        }
+    }
+
+    private static string ToProofKey(string displayName) =>
+        Regex.Replace(displayName.ToLowerInvariant().Replace("'", string.Empty), "[^a-z0-9]+", "_").Trim('_');
+
+    [Test]
     public void FinalQuests_UseFinalBossGroupAndGrantLineAchievement()
     {
         var quests = BuildCapstoneQuests();
@@ -735,25 +808,19 @@ public class CapstoneQuestDefinitionTests
 
         foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
         {
-            var tableId = areaGroup.SpawnTableId;
-            spawnTables.Should().ContainKey(tableId);
-
-            var spawnResrefs = spawnTables[tableId]
-                .Spawns
-                .Select(spawn => spawn.Resref)
-                .ToArray();
             var areaLines = CapstoneQuestDefinitionTestData.Lines.Where(line => line.AreaGroup == areaGroup).ToArray();
-            var expectedGeneralResrefs = areaLines
-                .SelectMany(line => CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Select(step =>
-                    line.EnemyResrefs[step]))
-                .ToArray();
-            var excludedOnDemandResrefs = areaLines
-                .SelectMany(line => CapstoneQuestDefinitionTestData.OnDemandEncounterSteps.Select(step =>
-                    line.EnemyResrefs[step]))
-                .ToArray();
+            foreach (var step in CapstoneQuestDefinitionTestData.GeneralSpawnSteps)
+            {
+                // Each general step has its own table: adepts near the entrance, specialists deeper in.
+                var tableId = areaGroup.GetGeneralSpawnTableId(step);
+                spawnTables.Should().ContainKey(tableId);
 
-            spawnResrefs.Should().BeEquivalentTo(expectedGeneralResrefs);
-            spawnResrefs.Should().NotContain(excludedOnDemandResrefs);
+                spawnTables[tableId]
+                    .Spawns
+                    .Select(spawn => spawn.Resref)
+                    .Should()
+                    .BeEquivalentTo(areaLines.Select(line => line.EnemyResrefs[step]), $"{tableId} holds only step {step} enemies");
+            }
         }
     }
 
@@ -784,14 +851,17 @@ public class CapstoneQuestDefinitionTests
         var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
         var lineSteps = CapstoneQuestDefinitionTestData.Lines
             .SelectMany(line => line.NpcGroups.Select((group, step) => (group, line, step)))
-            .ToDictionary(entry => entry.group, entry => (entry.line, entry.step));
+            .GroupBy(entry => entry.group)
+            .ToDictionary(group => group.Key, group => group.Select(entry => (entry.line, entry.step)).ToArray());
 
         foreach (var quest in quests.Values)
         {
             foreach (var objective in quest.States.Values.SelectMany(state => state.GetObjectives()).OfType<KillTargetObjective>())
             {
                 lineSteps.Should().ContainKey(objective.Group, $"{quest.QuestId} kills a group this spawn audit does not cover");
-                var (line, step) = lineSteps[objective.Group];
+                // A dungeon tier's group is shared by every line in the dungeon, so its spawns are all of theirs.
+                var sharing = lineSteps[objective.Group];
+                var (line, step) = sharing[0];
                 var areaResref = line.AreaGroup.DungeonAreaResref;
                 using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaResref}.git.json")));
                 var waypointTags = git.RootElement.GetProperty("WaypointList").GetProperty("value")
@@ -802,15 +872,15 @@ public class CapstoneQuestDefinitionTests
                 if (CapstoneQuestDefinitionTestData.FixedSpawnSteps.Contains(step))
                 {
                     // Fixed spawns guarantee the whole kill count is standing in the dungeon at once.
-                    waypointTags.Count(tag => tag == line.EncounterSpawnWaypointTags[step])
+                    waypointTags.Count(tag => sharing.Any(entry => entry.line.EncounterSpawnWaypointTags[entry.step] == tag))
                         .Should()
                         .BeGreaterThanOrEqualTo(objective.Amount, $"{quest.QuestId} needs {objective.Amount} fixed spawns in {areaResref}");
                 }
                 else if (CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Contains(step))
                 {
-                    // General steps roll from the shared table; at least one of the group is expected at any time
+                    // General steps roll from their tier's table; at least one of the group is expected at any time
                     // and later kills come from respawns.
-                    var tableId = line.AreaGroup.SpawnTableId;
+                    var tableId = line.AreaGroup.GetGeneralSpawnTableId(step);
                     var spawnPoints = waypointTags.Count(tag => tag == tableId);
                     if (HasLocal(git.RootElement, "CREATURE_SPAWN_TABLE_ID") &&
                         GetLocalString(git.RootElement, "CREATURE_SPAWN_TABLE_ID") == tableId)
@@ -819,13 +889,111 @@ public class CapstoneQuestDefinitionTests
                     }
 
                     var spawns = spawnTables[tableId].Spawns;
-                    var weight = spawns.Where(spawn => spawn.Resref == line.EnemyResrefs[step]).Sum(spawn => spawn.Weight);
+                    var weight = spawns.Where(spawn => sharing.Any(entry => entry.line.EnemyResrefs[entry.step] == spawn.Resref))
+                        .Sum(spawn => spawn.Weight);
                     var expected = spawnPoints * weight / (double)spawns.Sum(spawn => spawn.Weight);
                     expected.Should().BeGreaterThanOrEqualTo(1, $"{quest.QuestId} needs its enemies to be present in {areaResref}");
                 }
                 else
                 {
                     objective.Amount.Should().Be(1, $"{quest.QuestId} is an on-demand encounter that spawns a single boss");
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void SpawnPoints_StandApartInTheirDungeon()
+    {
+        // The random spawn bake (Walkmesh.BakeArea) keeps spawn points 6 m clear of creatures, and the general
+        // capstone spawn points were laid out at that spacing. Inner circle guards never wander from their fixed
+        // spawns, so they keep a wider gap from every other spawn point to stay spread out.
+        const double MinimumSpacingMeters = 6.0;
+        const double InnerCircleSpacingMeters = 10.0;
+        var spawnTables = BuildSpawnTables();
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
+
+        foreach (var areaResref in CapstoneQuestDefinitionTestData.AreaGroups.Select(group => group.DungeonAreaResref).Distinct())
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaResref}.git.json")));
+            var spawnPoints = git.RootElement.GetProperty("WaypointList").GetProperty("value")
+                .EnumerateArray()
+                .Select(waypoint => (
+                    Tag: GetTypedValue(waypoint, "Tag"),
+                    X: waypoint.GetProperty("XPosition").GetProperty("value").GetDouble(),
+                    Y: waypoint.GetProperty("YPosition").GetProperty("value").GetDouble()))
+                .Where(waypoint => spawnTables.ContainsKey(waypoint.Tag) || waypoint.Tag.EndsWith("_WD_SPAWN") || waypoint.Tag.EndsWith("_MS_SPAWN"))
+                .ToArray();
+
+            spawnPoints.Should().Contain(point => point.Tag.EndsWith("_IC_SPAWN"), $"{areaResref} has inner circle spawn points");
+            for (var i = 0; i < spawnPoints.Length; i++)
+            {
+                for (var j = i + 1; j < spawnPoints.Length; j++)
+                {
+                    var (a, b) = (spawnPoints[i], spawnPoints[j]);
+                    var distance = Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+                    var minimum = a.Tag.EndsWith("_IC_SPAWN") || b.Tag.EndsWith("_IC_SPAWN")
+                        ? InnerCircleSpacingMeters
+                        : MinimumSpacingMeters;
+                    distance.Should().BeGreaterThanOrEqualTo(minimum,
+                        $"{areaResref} {a.Tag} ({a.X:0.0},{a.Y:0.0}) and {b.Tag} ({b.X:0.0},{b.Y:0.0}) are too close");
+                }
+            }
+
+            // Inner circle guards also keep clear of the warden altars (appearance 2174) and their activators.
+            const int WardenAltarAppearance = 2174;
+            var altars = git.RootElement.GetProperty("Placeable List").GetProperty("value")
+                .EnumerateArray()
+                .Where(placeable => placeable.GetProperty("Appearance").GetProperty("value").GetInt32() == WardenAltarAppearance ||
+                                    GetTypedValue(placeable, "Tag").EndsWith("_wd_call"))
+                .Select(placeable => (
+                    Tag: GetTypedValue(placeable, "Tag"),
+                    X: placeable.GetProperty("X").GetProperty("value").GetDouble(),
+                    Y: placeable.GetProperty("Y").GetProperty("value").GetDouble()))
+                .ToArray();
+            altars.Should().NotBeEmpty($"{areaResref} has warden altars");
+            foreach (var guard in spawnPoints.Where(point => point.Tag.EndsWith("_IC_SPAWN")))
+            {
+                foreach (var altar in altars)
+                {
+                    Math.Sqrt(Math.Pow(guard.X - altar.X, 2) + Math.Pow(guard.Y - altar.Y, 2)).Should().BeGreaterThanOrEqualTo(InnerCircleSpacingMeters,
+                        $"{areaResref} {guard.Tag} ({guard.X:0.0},{guard.Y:0.0}) is too close to warden altar {altar.Tag} ({altar.X:0.0},{altar.Y:0.0})");
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void GeneralSpawnPoints_KeepEachRoomToOneTier()
+    {
+        // Adepts hold the rooms nearest the entrance and specialists the deeper ones (the walk order is checked
+        // in engine by CapstoneTierSpawnDepthEngineTests); points within 12 m share a room and never mix tiers.
+        const double RoomMeters = 12.0;
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
+
+        foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaGroup.DungeonAreaResref}.git.json")));
+            var points = git.RootElement.GetProperty("WaypointList").GetProperty("value")
+                .EnumerateArray()
+                .Select(waypoint => (
+                    Tag: GetTypedValue(waypoint, "Tag"),
+                    X: waypoint.GetProperty("XPosition").GetProperty("value").GetDouble(),
+                    Y: waypoint.GetProperty("YPosition").GetProperty("value").GetDouble()))
+                .ToArray();
+            var adepts = points.Where(point => point.Tag == areaGroup.SpawnTableId).ToArray();
+            // Inner circle guards stand deep as well, never in an adept room.
+            var deepPoints = points.Where(point => point.Tag == areaGroup.DeepSpawnTableId || point.Tag.EndsWith("_IC_SPAWN")).ToArray();
+
+            (adepts.Length + deepPoints.Count(point => point.Tag == areaGroup.DeepSpawnTableId)).Should().Be(20, $"{areaGroup.DungeonAreaResref} has twenty general spawn points");
+            adepts.Should().NotBeEmpty();
+            deepPoints.Should().NotBeEmpty();
+            foreach (var adept in adepts)
+            {
+                foreach (var deepPoint in deepPoints)
+                {
+                    Math.Sqrt(Math.Pow(adept.X - deepPoint.X, 2) + Math.Pow(adept.Y - deepPoint.Y, 2)).Should().BeGreaterThan(RoomMeters,
+                        $"{areaGroup.DungeonAreaResref} adept point ({adept.X:0.0},{adept.Y:0.0}) shares a room with {deepPoint.Tag} point ({deepPoint.X:0.0},{deepPoint.Y:0.0})");
                 }
             }
         }
@@ -901,15 +1069,21 @@ public class CapstoneQuestDefinitionTests
 
         foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
         {
-            var waypointResref = areaGroup.GeneralWaypointResref;
-            var waypointPath = Path.Combine(modulePath, "utw", $"{waypointResref}.utw.json");
+            foreach (var (waypointResref, tableId) in new[]
+                     {
+                         (areaGroup.GeneralWaypointResref, areaGroup.SpawnTableId),
+                         (areaGroup.DeepWaypointResref, areaGroup.DeepSpawnTableId),
+                     })
+            {
+                var waypointPath = Path.Combine(modulePath, "utw", $"{waypointResref}.utw.json");
 
-            File.Exists(waypointPath).Should().BeTrue($"{areaGroup.Name} needs a general spawn waypoint blueprint");
-            paletteResrefs.Should().Contain(waypointResref);
+                File.Exists(waypointPath).Should().BeTrue($"{areaGroup.Name} needs a {tableId} spawn waypoint blueprint");
+                paletteResrefs.Should().Contain(waypointResref);
 
-            using var waypointJson = JsonDocument.Parse(File.ReadAllText(waypointPath));
-            GetTypedValue(waypointJson.RootElement, "Tag").Should().Be(areaGroup.SpawnTableId);
-            GetTypedValue(waypointJson.RootElement, "TemplateResRef").Should().Be(waypointResref);
+                using var waypointJson = JsonDocument.Parse(File.ReadAllText(waypointPath));
+                GetTypedValue(waypointJson.RootElement, "Tag").Should().Be(tableId);
+                GetTypedValue(waypointJson.RootElement, "TemplateResRef").Should().Be(waypointResref);
+            }
         }
 
         foreach (var line in CapstoneQuestDefinitionTestData.Lines)

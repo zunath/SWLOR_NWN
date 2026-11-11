@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -138,7 +139,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
                 var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
-                var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+                var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(
+                    activator,
+                    abilitySkillType,
+                    ability.ResolveImpactStatusCategories?.Invoke(activator) ?? StatusEffectCategory.None);
                 var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
                     activator,
                     abilitySkillType);
@@ -542,6 +546,18 @@ namespace SWLOR.Game.Server.Service
             return recipient => PlaySuccessfulImpactVisualEffect(visuals, recipient);
         }
 
+        /// <summary>
+        /// Shows an instant visual effect on <paramref name="target"/> to one player only, so feedback
+        /// for a hidden creature never marks its position for anyone else.
+        /// </summary>
+        public static void ShowVisualEffectToPlayer(uint player, uint target, VisualEffect visualEffect)
+        {
+            if (visualEffect == VisualEffect.None || !GetIsObjectValid(target) || !GetIsPC(player) || GetIsDM(player))
+                return;
+
+            PlayerPlugin.ApplyInstantVisualEffectToObject(player, target, visualEffect);
+        }
+
         /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
         public static VisualEffect GetSuccessfulImpactVisualEffect(uint activator)
         {
@@ -552,6 +568,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (visuals == null || !GetIsObjectValid(recipient) || !visuals.TryRecordRecipient(recipient))
                 return;
+
+            if (Stealth.IsConcealed(recipient))
+            {
+                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);
+                return;
+            }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
         }
@@ -730,6 +752,21 @@ namespace SWLOR.Game.Server.Service
         private static string _lastActivationDenial = string.Empty;
 
         /// <summary>
+        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
+        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
+        /// Espionage powers).
+        /// </summary>
+        public static bool IsForcePower(uint activator, AbilityDetail ability)
+        {
+            return IsForcePower(ability.IsForcePower, Combat.GetAbilitySkillType(activator, ability));
+        }
+
+        public static bool IsForcePower(bool flaggedForcePower, SkillType abilitySkillType)
+        {
+            return flaggedForcePower || abilitySkillType == SkillType.Force;
+        }
+
+        /// <summary>
         /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
         /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
         /// test harness reads this to report WHY an activation was rejected. Cleared at the
@@ -826,7 +863,7 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
             }
 
-            if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
+            if (IsForcePower(activator, ability) &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
                 return Deny("You cannot use Force abilities right now.");
@@ -1661,7 +1698,7 @@ namespace SWLOR.Game.Server.Service
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1795,7 +1832,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1992,7 +2029,8 @@ namespace SWLOR.Game.Server.Service
                 flashDuration,
                 true,
                 geometry.Shape,
-                null);
+                null,
+                isImpactFlash: true);
         }
 
         private static int ApplyCombatImpactInShape(
@@ -2014,7 +2052,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
-            Action<uint> beforeSuccessfulImpactRiders,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -2099,7 +2137,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
-            Action<uint> beforeSuccessfulImpactRiders,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -2243,7 +2281,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -2628,12 +2666,14 @@ namespace SWLOR.Game.Server.Service
             VisualEffect targetVisualEffect = VisualEffect.None,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+            // Read before this hit's damage and enmity can turn the target onto the activator.
+            var targetWasAttackingAlly = Combat.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
                 trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
@@ -2705,7 +2745,15 @@ namespace SWLOR.Game.Server.Service
                 ApplyDarkForceCastConversion(activator, target);
             }
 
-            beforeSuccessfulImpactRiders?.Invoke(target);
+            // Statuses the hook applies on this hit (conditional statuses) count like the impact's own
+            // status, so category-keyed perks such as "after you apply a control effect" see them.
+            if (beforeSuccessfulImpactRiders?.Invoke(target) is { } riderStatusCategories)
+            {
+                statusApplied = true;
+                appliedStatusCategories |= riderStatusCategories;
+            }
+
+            CapstoneProof.RecordAbilityImpact(activator, target, trackedImpact?.Ability);
 
             Combat.ApplySuccessfulAbilityImpactRiders(
                 activator,
@@ -2720,7 +2768,8 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories,
-                allowsHitProcs);
+                allowsHitProcs,
+                targetWasAttackingAlly);
 
             if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
                 impactAbility.DamageImpactVisualEffect != VisualEffect.None)
@@ -2811,7 +2860,7 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -2953,7 +3002,7 @@ namespace SWLOR.Game.Server.Service
             return trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon;
         }
 
-        private static StatusEffectCategory GetCombatImpactStatusCategories(
+        public static StatusEffectCategory GetCombatImpactStatusCategories(
             Type statusEffect,
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory)
@@ -3017,7 +3066,8 @@ namespace SWLOR.Game.Server.Service
                     ability.Name,
                     attackResultType,
                     hitRate),
-                60f);
+                60f,
+                activator);
         }
 
         private static void SendCombatImpactNoTargetsMessage(

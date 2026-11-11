@@ -186,16 +186,17 @@ public class AppearanceEditorLayoutTests
         var content = rows.Last();
         ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
-        var groups = content.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
+        var columns = content.Elements.ToArray();
         var expectedWidths = partialName == AppearanceEditorViewModel.EditorWeaponPartial
-            ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, AppearanceEditorDefinition.PreviewColumnWidth + 32f }
-            : new[] { AppearanceEditorDefinition.MapWidth, AppearanceEditorDefinition.ColoursWidth };
-        groups.Select(group => Width(group)).Should().Equal(expectedWidths, "the editor's columns have fixed widths");
+            ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, 0f }
+            : new[] { AppearanceEditorDefinition.MapWidth, 0f };
+        columns.Select(column => Width(column)).Should().Equal(expectedWidths,
+            "the first column is fixed and the last takes the width a resized window gives it");
         Slots(partial).Should().BeEmpty("the part pictures are browsed in their own window");
         Walk(partial).Should().NotContain(widget => widget.Id != null && widget.Id.StartsWith("ae_tile_"));
 
         var preview = Walk(partial).Single(widget => widget.Id == "ae_part_preview");
-        PathTo(partial, preview).Should().Contain(groups.Last(), "the part picture sits in the last column");
+        PathTo(partial, preview).Should().Contain(columns.Last(), "the part picture sits in the last column");
     }
 
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
@@ -271,7 +272,7 @@ public class AppearanceEditorLayoutTests
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
     [TestCase(AppearanceEditorViewModel.EditorWeaponPartial)]
-    public void EditorsFitTheFixedSizeWindow(string partialName)
+    public void EditorsFitTheDefaultWindow(string partialName)
     {
         var initial = _window.InitialGeometry;
         initial.Width.Should().Be(AppearanceEditorDefinition.EditorWidth);
@@ -285,10 +286,9 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void TheEditorIsNotResizable()
+    public void TheEditorIsResizable()
     {
-        IsResizable(new AppearanceEditorDefinition()).Should().BeFalse(
-            "a fixed size means a large saved size from the old layout never applies");
+        IsResizable(new AppearanceEditorDefinition()).Should().BeTrue("players size the editor to suit their screen");
     }
 
     // ------------------------------------------------------------------ body map
@@ -335,12 +335,30 @@ public class AppearanceEditorLayoutTests
         }
     }
 
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    public void ANarrowWindowScrollsTheColoursSideways(string partialName)
+    {
+        var partial = _partials[partialName];
+        var preview = Walk(partial).Single(widget => widget.Id == "ae_part_preview");
+        var colours = PathTo(partial, preview).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        Width(colours).Should().Be(0f, "the colour pane takes the width a resized window gives it");
+        ReadProperty<NuiScrollbars>(colours, "Scrollbars").Should().Be(NuiScrollbars.Auto,
+            "a pane narrower than its swatches and palette scrolls instead of cutting them off");
+    }
+
     [Test]
     public void QuickOutfitRowIsOnlyOnTheEquipmentMap()
     {
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
         var combo = Walk(armor).Single(widget => widget.Id == "ae_quick_outfit");
         ReadProperty<string>(combo, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.QuickOutfitValue));
+        PathTo(armor, combo).OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Should().OnlyContain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
+                "a combo box inside a scrolled group does not open in the client");
+        Width(combo).Should().Be(AppearanceEditorDefinition.QuickOutfitWidth, "the outfit combo spans the body map");
+        ReadProperty<string>(combo, "Tooltip").Should().BeNullOrEmpty(
+            "its tooltip pops up on the click instead of the list, so the combo never opens");
         foreach (var (id, method, enabled) in new[]
                  {
                      ("ae_quick_wear", nameof(AppearanceEditorViewModel.OnClickQuickWear), nameof(AppearanceEditorViewModel.IsQuickWearEnabled)),
@@ -413,7 +431,7 @@ public class AppearanceEditorLayoutTests
 
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    public void PaletteHas176CroppedButtonsWithoutHeaders(string partialName)
+    public void PaletteHas176CroppedButtonsUnderLetteredAndNumberedHeaders(string partialName)
     {
         var palette = Walk(_partials[partialName]).Single(widget => widget.Id == "ae_color_palette");
         palette.Should().BeOfType<GuiGroup<AppearanceEditorViewModel>>();
@@ -421,10 +439,12 @@ public class AppearanceEditorLayoutTests
         ReadProperty<NuiScrollbars>(palette, "Scrollbars").Should().Be(NuiScrollbars.None);
         palette.Events.Should().BeEmpty("each palette button supplies its own preset index");
 
+        const float headerWidth = AppearanceEditorViewModel.PaletteHeaderWidth;
+        const float headerHeight = AppearanceEditorViewModel.PaletteHeaderHeight;
         const float cellWidth = AppearanceEditorViewModel.PaletteCellWidth;
         const float cellHeight = AppearanceEditorViewModel.PaletteCellHeight;
-        Width(palette).Should().Be(16 * cellWidth);
-        palette.DeclaredHeight.Should().Be(11 * cellHeight);
+        Width(palette).Should().Be(headerWidth + 16 * cellWidth);
+        palette.DeclaredHeight.Should().Be(headerHeight + 11 * cellHeight);
 
         // The selection outline is one bound polyline drawn over the whole palette.
         var outline = DrawItems(palette).Should().ContainSingle().Which
@@ -434,16 +454,31 @@ public class AppearanceEditorLayoutTests
         ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
 
         var rows = palette.Elements.Should().ContainSingle().Which.Elements;
-        rows.Should().HaveCount(11, "eleven palette rows with no letter or number headers");
+        rows.Should().HaveCount(12, "one letter header and eleven palette rows");
         rows.Should().OnlyContain(row => row.DeclaredMargin == 0f);
+
+        // Header: a spacer the width of the row numbers, then letters A-P over the cells.
+        var header = rows[0];
+        header.DeclaredHeight.Should().Be(headerHeight);
+        header.Elements[0].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+        Width(header.Elements[0]).Should().Be(headerWidth);
+        var letters = header.Elements.Skip(1).ToArray();
+        letters.Should().AllBeOfType<GuiLabel<AppearanceEditorViewModel>>();
+        letters.Select(label => ReadProperty<string>(label, "Text"))
+            .Should().Equal(Enumerable.Range(0, 16).Select(column => ((char)('A' + column)).ToString()));
+        letters.Should().OnlyContain(label => Width(label) == cellWidth && label.DeclaredMargin == 0f);
 
         var buttons = new List<GuiButton<AppearanceEditorViewModel>>();
         for (var y = 0; y < 11; y++)
         {
-            var row = rows[y];
+            var row = rows[y + 1];
             row.DeclaredHeight.Should().Be(cellHeight);
-            row.Elements.Should().HaveCount(16);
-            buttons.AddRange(row.Elements.Cast<GuiButton<AppearanceEditorViewModel>>());
+            row.Elements.Should().HaveCount(17);
+            var number = row.Elements[0].Should().BeOfType<GuiLabel<AppearanceEditorViewModel>>().Which;
+            ReadProperty<string>(number, "Text").Should().Be((y + 1).ToString());
+            Width(number).Should().Be(headerWidth, "row numbers fill the header column the outline offsets by");
+            number.DeclaredMargin.Should().Be(0f);
+            buttons.AddRange(row.Elements.Skip(1).Cast<GuiButton<AppearanceEditorViewModel>>());
         }
 
         buttons.Should().HaveCount(176);
@@ -550,16 +585,18 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void UseBaseSitsOnThePartColourRowAndClearsOnlyPartColours()
+    public void PartColoursClearWithRightClickInsteadOfAButton()
     {
         var partial = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        var useBase = Walk(partial).Single(widget => widget.Id == "ae_use_base");
-        PathTo(partial, useBase).Should().Contain(ancestor =>
-            ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPartColorsVisible));
-        ReadProperty<string>(useBase, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsUseBaseEnabled));
-        AssertSingleHandler(useBase, "click", nameof(AppearanceEditorViewModel.OnClickUseBase));
-        Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == "ae_use_base",
-            "body colours have no part colours to clear");
+        Walk(partial).Should().NotContain(widget => widget.Id == "ae_use_base",
+            "right-clicking a part swatch already puts it back to the outfit colour");
+        typeof(AppearanceEditorViewModel).GetMethod("OnClickUseBase").Should().BeNull();
+        foreach (var channel in Channels)
+        {
+            var part = Walk(partial).Single(widget => widget.Id == $"ae_part_swatch_{channel}");
+            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownPartSwatch),
+                (typeof(AppearanceArmorColor), channel));
+        }
     }
 
     // ------------------------------------------------------------------ RGB picker
@@ -609,10 +646,20 @@ public class AppearanceEditorLayoutTests
 
     // ------------------------------------------------------------------ part browser window
 
+    private static IEnumerable<(int Columns, int Rows)> BrowserGrids() =>
+        Enumerable.Range(AppearancePartBrowserViewModel.MinColumns,
+                AppearancePartBrowserViewModel.MaxColumns - AppearancePartBrowserViewModel.MinColumns + 1)
+            .SelectMany(columns => Enumerable.Range(1, AppearancePartBrowserViewModel.MaxRows)
+                .Select(rows => (columns, rows)));
+
+    private static IEnumerable<string> BrowserGridNames() =>
+        BrowserGrids().Select(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows));
+
     [Test]
-    public void ThePartBrowserOffersViewsPagerAndPartNumber()
+    public void EveryBrowserGridOffersViewsPagerAndPartNumber([ValueSource(nameof(BrowserGridNames))] string gridName)
     {
-        var browser = AppearancePartBrowserDefinition.BuildBrowserColumn();
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var browser = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
         var views = Walk(browser).Where(widget => widget.Id?.StartsWith("ae_view_") == true).ToArray();
         views.Select(view => view.Id).Should().Equal(
             Enum.GetValues<AppearancePreviewView>().Select(view => $"ae_view_{view}"));
@@ -626,6 +673,9 @@ public class AppearanceEditorLayoutTests
                 (typeof(AppearancePreviewView), (AppearancePreviewView)index));
 
         var pager = Walk(browser).Single(widget => widget.GetType().Name.StartsWith("GuiComboBox"));
+        PathTo(browser, pager).Where(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal))
+            .Should().OnlyContain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
+                "a combo box inside a scrolled group does not open in the client");
         ReadProperty<string>(pager, "OptionsBindName").Should().Be(nameof(AppearancePartBrowserViewModel.PageOptions));
         ReadProperty<string>(pager, "SelectedIndexBindName").Should().Be(nameof(AppearancePartBrowserViewModel.PageIndex));
         AssertBrowserHandler(Walk(browser).Single(widget => widget.Id == "ae_browser_previous"),
@@ -640,17 +690,22 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ThePartBrowserHasFiveByThreeBoundTiles()
+    public void EveryBrowserGridHasItsRowsOfBoundTiles([ValueSource(nameof(BrowserGridNames))] string gridName)
     {
-        var browser = AppearancePartBrowserDefinition.BuildBrowserColumn();
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var browser = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.None);
         var tiles = Walk(browser).Where(widget => widget.Id?.StartsWith("ae_tile_") == true).ToArray();
-        tiles.Should().HaveCount(AppearancePartBrowserViewModel.PageSize);
-        AppearancePartBrowserViewModel.Columns.Should().Be(5);
-        AppearancePartBrowserViewModel.Rows.Should().Be(3);
-        var tileRows = browser.Elements.Where(row => Walk(row).Any(widget => widget.Id?.StartsWith("ae_tile_") == true)).ToArray();
-        tileRows.Should().HaveCount(AppearancePartBrowserViewModel.Rows);
+        tiles.Should().HaveCount(columns * rows);
+        var pictures = Walk(browser).Single(widget => widget.Id == AppearancePartBrowserDefinition.PicturesGroupId);
+        ReadProperty<NuiScrollbars>(pictures, "Scrollbars").Should().Be(NuiScrollbars.Auto,
+            "a window smaller than the smallest grid scrolls the pictures instead of cutting them off");
+        tiles.Should().OnlyContain(tile => PathTo(browser, tile).Contains(pictures));
+        var tileRows = ((GuiGroup<AppearancePartBrowserViewModel>)pictures).Elements.Single().Elements
+            .Where(row => Walk(row).Any(widget => widget.Id?.StartsWith("ae_tile_") == true)).ToArray();
+        tileRows.Should().HaveCount(rows);
         foreach (var row in tileRows)
-            Walk(row).Count(widget => widget.Id?.StartsWith("ae_tile_") == true).Should().Be(AppearancePartBrowserViewModel.Columns);
+            Walk(row).Count(widget => widget.Id?.StartsWith("ae_tile_") == true).Should().Be(columns);
 
         for (var tile = 0; tile < tiles.Length; tile++)
         {
@@ -670,33 +725,63 @@ public class AppearanceEditorLayoutTests
             button.DeclaredHeight.Should().Be(AppearanceEditorDefinition.TileSize);
             AssertBrowserHandler(button, nameof(AppearancePartBrowserViewModel.OnClickTile), (typeof(int), tile));
         }
-        typeof(AppearancePartBrowserViewModel).GetProperty($"Tile{AppearancePartBrowserViewModel.PageSize}Image")
-            .Should().BeNull("the browser binds exactly one page of tiles");
-
-        NaturalWidth(browser).Should().BeLessThanOrEqualTo(AppearancePartBrowserDefinition.WindowWidth - 40f,
-            "five pictures fit the browser window");
-        NaturalHeight(browser).Should().BeLessThanOrEqualTo(AppearancePartBrowserDefinition.WindowHeight - 60f,
-            "three rows and the pager fit below the title bar");
+        typeof(AppearancePartBrowserViewModel).GetProperty($"Tile{AppearancePartBrowserViewModel.TileCount}Image")
+            .Should().BeNull("the largest grid binds every tile");
     }
 
     [Test]
-    public void ThePartBrowserWindowIsAFixedSizeWithNoLayoutFindings()
+    public void EachBrowserGridFitsTheSmallestWindowThatChoosesIt([ValueSource(nameof(BrowserGridNames))] string gridName)
+    {
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var grid = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
+        var width = Enumerable.Range(1, 4000).Select(value => (float)value)
+            .First(value => BrowserColumns(value) == columns);
+        var height = Enumerable.Range(1, 4000).Select(value => (float)value)
+            .First(value => BrowserRows(value, columns) == rows);
+        if (columns > AppearancePartBrowserViewModel.MinColumns)
+            NaturalWidth(grid).Should().BeLessThanOrEqualTo(width - 40f, $"{columns} columns are chosen from {width}px");
+        if (rows > 1)
+            NaturalHeight(grid).Should().BeLessThanOrEqualTo(height - 60f, $"{rows} rows are chosen from {height}px");
+    }
+
+    [Test]
+    public void TheDefaultBrowserWindowHoldsFiveByThree()
+    {
+        var columns = BrowserColumns(AppearancePartBrowserDefinition.WindowWidth);
+        columns.Should().Be(5);
+        BrowserRows(AppearancePartBrowserDefinition.WindowHeight, columns).Should().Be(3);
+    }
+
+    [Test]
+    public void ThePartBrowserWindowIsResizableWithNoLayoutFindings()
     {
         using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();
         var window = new AppearancePartBrowserDefinition().BuildWindow();
         window.LayoutFindings.Should().BeEmpty();
         window.InitialGeometry.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
         window.InitialGeometry.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
-        IsResizable(new AppearancePartBrowserDefinition()).Should().BeFalse();
+        IsResizable(new AppearancePartBrowserDefinition()).Should().BeTrue();
 
-        // A screen smaller than the window (low resolution, high GUI scale) scrolls the content.
+        // The grid partial fills the window; only its pictures scroll (checked per grid above).
         var authored = AuthoredWindow(new AppearancePartBrowserDefinition());
-        var content = ((IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
-            .GetValue(authored)!)[WindowMain];
-        var tile = Walk(content).Single(widget => widget.Id == "ae_tile_0");
-        PathTo(content, tile).Should().Contain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
-            ReadProperty<NuiScrollbars>(widget, "Scrollbars") == NuiScrollbars.Auto);
+        var partials = (IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
+            .GetValue(authored)!;
+        var content = partials[WindowMain];
+        var slot = Walk(content).Single(widget => widget.Id == AppearancePartBrowserViewModel.GridElement);
+        PathTo(content, slot).Should().NotContain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
+            ReadProperty<NuiScrollbars>(widget, "Scrollbars") != NuiScrollbars.None, "the pager inside the grid must not scroll");
+        partials.Keys.Should().Contain(BrowserGridNames());
     }
+
+    private static int BrowserColumns(float width) =>
+        (int)typeof(AppearancePartBrowserViewModel)
+            .GetMethod("ColumnsForWidth", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { width })!;
+
+    private static int BrowserRows(float height, int columns) =>
+        (int)typeof(AppearancePartBrowserViewModel)
+            .GetMethod("RowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { height, columns })!;
 
     // ------------------------------------------------------------------ settings
 
@@ -752,8 +837,6 @@ public class AppearanceEditorLayoutTests
                      ("Selected", typeof(bool))
                  })
             typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
-        typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
-            "the palette outline shows the selected colour, so swatches have no code labels");
 
         swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
         ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
@@ -775,7 +858,24 @@ public class AppearanceEditorLayoutTests
 
         var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
         row.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>()
-            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "swatch rows carry no palette code labels");
+            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "codes sit over the swatches, not beside them");
+        if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
+        {
+            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
+                "only part swatches show codes; the item and body rows stay compact");
+            return;
+        }
+
+        // The palette code (P4) or "RGB" is in the row over the swatch, in the swatch's column.
+        typeof(AppearanceEditorViewModel).GetProperty(name + "Code")!.PropertyType.Should().Be(typeof(string));
+        var column = PathTo(root, row).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
+        var codeRow = column.Elements[column.Elements.IndexOf(row) - 1];
+        var codes = codeRow.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>().ToArray();
+        var position = row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().ToList().IndexOf((GuiButton<AppearanceEditorViewModel>)swatch);
+        ReadProperty<string>(codes[position], "TextBindName").Should().Be(name + "Code");
+        Width(codes[position]).Should().Be(Width(swatch) + 4f, "the code is centred over its swatch");
+        ReadProperty<string>(codeRow, "IsVisibleBindName").Should().Be(ReadProperty<string>(row, "IsVisibleBindName"),
+            "a code row shows and hides with its swatch row");
     }
 
     private static string[] OutlineBindings(IGuiWidget widget) => DrawItems(widget)

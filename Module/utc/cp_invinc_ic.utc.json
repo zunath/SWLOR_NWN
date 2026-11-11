@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Invincible inner circle member in Viscara - Veles Militia Annex."
+    "value": "Holdout Honor Guard (Invincible line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the four Trandoshans Captain Renn promoted into her inner circle before they chose the annex over the stand-down order. They hold the last floor as one unit, vibroblades raised and guards overlapping like plate."
+      "0": "One of the four Trandoshans Captain Renn promoted into her honor guard before they chose the annex over the stand-down order. They hold the last floor as one unit, vibroblades raised and guards overlapping like plate."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Invincible Inner Circle"
+      "0": "Holdout Honor Guard"
     }
   },
   "fortbonus": {

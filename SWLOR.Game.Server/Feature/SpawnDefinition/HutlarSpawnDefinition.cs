@@ -275,14 +275,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void HutlarQionTestSite()
         {
-            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE", "Hutlar Qion Test Site - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE", "Hutlar Qion Test Site - Test Crew Technician (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_thermdet_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_thermdet_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -291,13 +288,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
+                .AddSpawn(ObjectType.Creature, "cp_perflurry_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP", "Hutlar Qion Test Site - Test Crew Demolitionist (Capstone Specialists)")
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_perflurry_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -308,17 +311,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_THERMDET_IC_SPAWN", "Hutlar Qion Test Site - Thermal Detonator Inner Circle")
+            _builder.Create("CAPSTONE_THERMDET_IC_SPAWN", "Hutlar Qion Test Site - Site Chief's Officer (Thermal Detonator line)")
                 .AddSpawn(ObjectType.Creature, "cp_thermdet_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_OVERBARR_IC_SPAWN", "Hutlar Qion Test Site - Overload Barrage Inner Circle")
+            _builder.Create("CAPSTONE_OVERBARR_IC_SPAWN", "Hutlar Qion Test Site - Site Chief's Officer (Overload Barrage line)")
                 .AddSpawn(ObjectType.Creature, "cp_overbarr_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_PERFLURRY_IC_SPAWN", "Hutlar Qion Test Site - Perfect Flurry Inner Circle")
+            _builder.Create("CAPSTONE_PERFLURRY_IC_SPAWN", "Hutlar Qion Test Site - Site Chief's Officer (Perfect Flurry line)")
                 .AddSpawn(ObjectType.Creature, "cp_perflurry_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

@@ -102,15 +102,14 @@ public class IncubationPerkRegressionTests
         var incubator = ReadSource("Feature", "GuiDefinition", "ViewModel", "IncubatorViewModel.cs");
         var bonus = ExtractMethod(incubator, "private int GetErraticGeniusBonus()");
         var startJob = ExtractMethod(incubator, "private void StartJob(IncubationJob job)");
+        var projectedChance = ExtractMethod(incubator, "private int GetProjectedMutationChance(IncubationJob job, bool hasPendingStage)");
 
-        bonus.Should().Contain("case 1:");
-        bonus.Should().Contain("mutationBonus = 2;");
-        bonus.Should().Contain("case 2:");
-        bonus.Should().Contain("mutationBonus = 4;");
-        bonus.Should().Contain("case 3:");
-        bonus.Should().Contain("mutationBonus = 8;");
-        startJob.Should().Contain("job.CurrentStage <= 0 && IsErraticGeniusChecked");
-        startJob.Should().Contain("GetErraticGeniusBonus() : 0) * 10");
+        bonus.Should().Contain("1 => 2,");
+        bonus.Should().Contain("2 => 4,");
+        bonus.Should().Contain("3 => 8,");
+        // Erratic Genius applies only while the job has not started (no job yet, or stage 0).
+        startJob.Should().Contain("GetProjectedMutationChance(job.CurrentStage <= 0 ? null : job");
+        projectedChance.Should().Contain("job == null && IsErraticGeniusChecked ? GetErraticGeniusBonus() * 10 : 0");
     }
 
     [Test]
@@ -140,8 +139,10 @@ public class IncubationPerkRegressionTests
             var refresh = ExtractMethod(incubator, signature);
             refresh.Should().Contain("LoadPlayerStats();");
             refresh.Should().Contain("RefreshAllStats();");
-            refresh.Should().Contain("RefreshIncubationTime();");
         }
+
+        // LoadPlayerStats refreshes the stage time, so perk changes update it too.
+        ExtractMethod(incubator, "private void LoadPlayerStats()").Should().Contain("RefreshIncubationTime();");
     }
 
     private static int CalculateLegacyStageDurationSeconds(int incubationProcessingRank, int socialScore)

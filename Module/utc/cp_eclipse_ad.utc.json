@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Eclipse of Resolve adept in Mon Cala - Sith Crypt Depths."
+    "value": "Expedition Raider (Eclipse of Resolve line) in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian gunhand in rough street clothes who scouts the passages of the Sith Crypt Depths for the Umbral Raiders. He tries to frighten intruders off before he shoots them."
+      "0": "A Rodian raider in rough street clothes who scouts the passages of the Sith Crypt Depths for the expedition's Umbral Raider crew. He tries to frighten intruders off before he shoots them."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Umbral Raider Scout"
+      "0": "Expedition Raider"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 292
+          "value": 282
         }
       },
       {

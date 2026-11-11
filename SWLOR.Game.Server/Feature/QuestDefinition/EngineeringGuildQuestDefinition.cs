@@ -145,7 +145,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.EngineeringGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.EngineeringGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.EngineeringGuild, resref, amount, true);
         }
     }
 }

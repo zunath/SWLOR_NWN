@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 515
       },
       "VarTable": {
         "type": "list",

@@ -33,41 +33,6 @@ public static class BasicVibrobladeCompatibility
         new(BaseItem.TwoBladedSword, "twinblade_b", SkillType.TwinBlade, 5, 23),
     };
 
-    [NWNEventHandler(ScriptName.OnModuleEnter)]
-    public static void OnEnter()
-    {
-        var player = GetEnteringObject();
-        if (GetIsPC(player)) NormalizeInventory(player);
-    }
-
-    [NWNEventHandler(ScriptName.OnModuleAcquire)]
-    public static void OnAcquire() => NormalizeInventory(GetModuleItemAcquired());
-
-    public static bool NormalizeInventory(uint obj)
-    {
-        var visited = new HashSet<uint>();
-        bool Visit(uint current)
-        {
-            if (!GetIsObjectValid(current) || !visited.Add(current)) return false;
-            var changed = false;
-            if (GetObjectType(current) == ObjectType.Item) changed |= Normalize(current);
-            if (GetObjectType(current) == ObjectType.Creature)
-                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                    changed |= Visit(GetItemInSlot((InventorySlot)slot, current));
-            if (GetHasInventory(current))
-                for (var item = GetFirstItemInInventory(current); GetIsObjectValid(item); item = GetNextItemInInventory(current))
-                    changed |= Visit(item);
-            return changed;
-        }
-        return Visit(obj);
-    }
-
-    public static bool IsBasicVibroblade(BaseItem baseItem, string resref) =>
-        TryGetProfile(baseItem, resref, out var profile) && profile.Skill == SkillType.Vibroblade;
-
-    public static bool IsBasicVibroknife(BaseItem baseItem, string resref) =>
-        TryGetProfile(baseItem, resref, out var profile) && profile.Skill == SkillType.Vibroknife;
-
     public static IReadOnlyList<(ItemPropertyType Type, int Subtype, int Value)> GetMissingProperties(
         BaseItem baseItem,
         string resref,

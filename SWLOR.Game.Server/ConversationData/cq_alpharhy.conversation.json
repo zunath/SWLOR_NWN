@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There it is again, that wrong beat. The pit-breeders who bought into the Tarn Jungle Preserve drove its kinrath to a rhythm that isn't theirs, then ran when the packs turned. The kinrath still keep that beat. Go into the preserve on Dathomir. Put down six of the young ones. Bring me back the Alpha Rhythm Tarn Hunt Tally from their nest; it's got the true count scratched into it somewhere under all that noise.",
+          "Text": "There it is again, that wrong beat. The pit-breeders who bought into the Tarn Jungle Preserve drove its kinrath to a rhythm that isn't theirs, then ran when the packs turned. The kinrath still keep that beat. Go into the preserve on Dathomir. Put down six of the Young Kinrath, the pack nearest the gate. Any Young Kinrath will do, the whole preserve keeps the same beat, but it only counts after your own beast has hit the target. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party; a kinrath your beast never struck is just noise. Bring me back the Alpha Rhythm Tarn Hunt Tally from their nest; it's got the true count scratched into it somewhere under all that noise.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Every true count this preserve ever kept got scratched onto that tally. The breeders used it to fake a rhythm they never earned, and the young kinrath nest on it now. Bring it back and the true count's mine to read again, not theirs to counterfeit.",
+          "Text": "Every true count this preserve ever kept got scratched onto that tally. The breeders used it to fake a rhythm they never earned, and the Young Kinrath nest on it now. Bring it back and the true count's mine to read again, not theirs to counterfeit.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six young kinrath still keeping that wrong beat. Tally's still with them.",
+          "Text": "Six Young Kinrath still keeping that wrong beat. Your own beast must hit every one before it falls. Tally's still with them.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five older kinrath past the young ones, still dosed on the scent the breeders poured into the pens to force a tempo they couldn't refuse. That's not leading a pack. That's playing a drum nobody agreed to march to. Go put the five down. Bring me the Alpha Rhythm Beast-Pen Scent Vial from their pen.",
+          "Text": "Five Pen-Scarred Kinrath past the young ones, deeper in, still dosed on the scent the breeders poured into the pens to force a tempo they couldn't refuse. That's not leading a pack. That's playing a drum nobody agreed to march to. Go put the five down after a hit from your own beast; any Pen-Scarred Kinrath counts. Bring me the Alpha Rhythm Beast-Pen Scent Vial from their pen.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five older kinrath still forcing that beat. Bring the vial back.",
+          "Text": "Five Pen-Scarred Kinrath still forcing that beat. Bring the vial back.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden holds the deep pens, an iriaz bull the breeders set over the kinrath to force the beat on them. His rhythm's fast, and it's alone, and a single hunter just gets swept along by it instead of matching it. Bring two more hunters of your own; a pack answers a rhythm better than one dancer ever could. Put him down. Bring me the Alpha Rhythm Clawed Alpha Totem off his harness.",
+          "Text": "Breeder's Iriaz Bull holds the deep pens, an iriaz bull the breeders set over the kinrath to force the beat on them. His rhythm's fast, and it's alone, and a single hunter just gets swept along by it instead of matching it. Bring two more hunters of your own; a pack answers a rhythm better than one dancer ever could. Put him down. Bring me the Alpha Rhythm Clawed Alpha Totem off his harness.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's beat is still fast, still alone. Gather your pack and answer it.",
+          "Text": "Breeder's Iriaz Bull's beat is still fast, still alone. Gather your pack and answer it.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left, the inner circle: the eldest kinrath, the first the breeders forced the wrong tempo into. Every pack since learned the beat from them. Bring your pack back in; four beats at once, out of sync with each other on purpose, is worse than one fast soloist. Put them down. Bring me the Alpha Rhythm Preserve Keeper's Token from their nest.",
+          "Text": "Four left, the Elder Kinrath, in the deepest part of the preserve: the eldest kinrath, the first the breeders forced the wrong tempo into. Every pack since learned the beat from them. Bring your pack back in; four beats at once, out of sync with each other on purpose, is worse than one fast soloist. Put them down after a hit from your own beast; any Elder Kinrath counts. Bring me the Alpha Rhythm Preserve Keeper's Token from their nest.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last rhythm. The master is the old iriaz bull the warden learned his beat from. His tempo is seductive, and that's the danger of it: it sounds almost like a true lead's, close enough that a whole pack will follow it without noticing the wrongness until it's too late. Bring your whole pack. One hunter following that beat alone gets pulled all the way in before they know which rhythm they're keeping. There's no token this time. His rhythm breaking, for good, is the whole proof.",
+          "Text": "Last rhythm. Old Iriaz Bull is the sire Breeder's Iriaz Bull learned his beat from. His tempo is seductive, and that's the danger of it: it sounds almost like a true lead's, close enough that a whole pack will follow it without noticing the wrongness until it's too late. Bring your whole pack. One hunter following that beat alone gets pulled all the way in before they know which rhythm they're keeping. There's no token this time. His rhythm breaking, for good, is the whole proof.",
           "Style": 0,
           "Color": null
         }

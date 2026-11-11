@@ -438,10 +438,10 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-preview.3",
-        "contentHash": "lYCHAunRGZlVJutYdsYAmWyAZIy1mAsUCwEToIf5A94SIHZcNDhmVRPyAt+JpVVOdEHE+2+vafPtJp51nSOIWA==",
+        "resolved": "0.1.0-preview.6",
+        "contentHash": "uqAqp2XNkx3hjifuB34TFRYTWAiswJXYUUulgNqNelCCghiKLLlldP5S3EP32qwJCyLUuOE2vPKQla3/XY6d0Q==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-preview.3"
+          "Nwn.Formats": "0.1.0-preview.6"
         }
       },
       "NWN.Core": {
@@ -454,8 +454,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-preview.3",
-        "contentHash": "DaJiOqlhVuXEX4nege+cLZDFatESnOoSet+E8UWjKYb1SYX/TBt6rifiqw6ZZS8M2i1uTmqe4k07UpEYr1h77Q=="
+        "resolved": "0.1.0-preview.6",
+        "contentHash": "pxPc7jfYqbiDK1hD5hWjbOnueQXi+7N3Vpumo+cK1La0Ufg/pAUF7cl8sOhx+KZfD3T+A9iX1RNW1ViX3ey3Lg=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -467,17 +467,17 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-preview.3",
-        "contentHash": "2WbPlNOg5/BZKvPZhHjips3/+ApIBi8whhLgb0vEa4p8bqpYO9DE5FFM2QI+4B+E0piW5bTfkiKfez2YFK1olQ==",
+        "resolved": "0.1.0-preview.6",
+        "contentHash": "dLIgSWs1iQ1wiTHFhuw2POqLZQkFqRImIbO6QbXs/IoqZuH/sTgyTnG5t4MH2No3PA+al8/hsewDnccGHVkqIg==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-preview.3",
-          "Nwn.Formats": "0.1.0-preview.3"
+          "Nwn.Authoring": "0.1.0-preview.6",
+          "Nwn.Formats": "0.1.0-preview.6"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-preview.3",
-        "contentHash": "qdProFev6WBnyQj04lTjdY9pEJ3KNohpqZI9Pb7Pc46V49rh/4F09Looyi+jYlRscPahftRzsPJuzgSqzUV3gw==",
+        "resolved": "0.1.0-preview.6",
+        "contentHash": "93zvyUWETtTegOLm7FpynpiHZrmcQxDmVjP3CpwbIk7peaq1J7EEXB8B14yukJGnhH8Jt63uDK0fN039FuHt3Q==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -485,8 +485,8 @@
           "Dock.Avalonia": "11.3.12.1",
           "Dock.Avalonia.Themes.Fluent": "11.3.12.1",
           "Dock.Model.Mvvm": "11.3.12.1",
-          "Nwn.Authoring": "0.1.0-preview.3",
-          "Nwn.Preview": "0.1.0-preview.3",
+          "Nwn.Authoring": "0.1.0-preview.6",
+          "Nwn.Preview": "0.1.0-preview.6",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -664,7 +664,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-preview.3, )"
+          "Nwn.Formats": "[0.1.0-preview.6, )"
         }
       },
       "swlor.toolset": {
@@ -683,8 +683,8 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-preview.3, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-preview.3, )",
+          "Nwn.Authoring": "[0.1.0-preview.6, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-preview.6, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
@@ -694,9 +694,9 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-preview.3, )",
-          "Nwn.Formats": "[0.1.0-preview.3, )",
-          "Nwn.Preview": "[0.1.0-preview.3, )",
+          "Nwn.Authoring": "[0.1.0-preview.6, )",
+          "Nwn.Formats": "[0.1.0-preview.6, )",
+          "Nwn.Preview": "[0.1.0-preview.6, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

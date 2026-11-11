@@ -13,7 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
-/// Saved-data <see cref="LegacySaberMigration.MigratePlayer"/>: recalibrates custom legacy sabers worn, carried,
+/// Saved-data <see cref="LegacySaberMigration.MigrateStoredObject"/>: recalibrates custom legacy sabers worn, carried,
 /// in containers and in saved droids to current tier and crafting budgets.
 /// </summary>
 internal static class SavedLegacySaberMigration

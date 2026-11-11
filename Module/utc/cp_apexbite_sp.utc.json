@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Apex Bite specialist in Dathomir - Tarn Jungle Preserve."
+    "value": "Pen-Scarred Scaled Brute (Apex Bite line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Apex Bite Specialist"
+      "0": "Pen-Scarred Scaled Brute"
     }
   },
   "fortbonus": {

@@ -99,7 +99,8 @@ public class CharacterSheetCombatUpgradeTests
         viewModel.Should().Contain("public int ForceAccuracy");
         viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
         viewModel.Should().Contain("public string OffHandAccuracy");
-        viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))");
+        viewModel.Should().Contain("return GetIsObjectValid(weapon) && Item.IsAttackWeaponType(GetBaseItemType(weapon)) ? weapon : OBJECT_INVALID;");
+        viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon);");
         viewModel.Should().Contain("OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : \"-\";", "an empty off-hand, inactive companion or shield must display a dash");
         viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
@@ -128,6 +129,62 @@ public class CharacterSheetCombatUpgradeTests
         refresh.Should().NotContain("Consume");
         ExtractMethod(source, "private static AbilityType GetEquipmentDamageAbility(")
             .Should().Contain("ItemPropertyType.DamageStat");
+    }
+
+    [Test]
+    public void OffHandWeapon_AddsItsValuesToTheExistingAttackDelayAndCriticalRateFields()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
+        var definition = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "CharacterSheetDefinition.cs"));
+
+        var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
+        refresh.Should().Contain("var offhandAttackWeapon = GetOffhandAttackWeapon();");
+        refresh.Should().Contain("AttackTooltip = FormatOffHandTooltip(AttackDescription, hasOffhandAttack");
+        refresh.Should().Contain("Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),");
+        refresh.Should().Contain("Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()");
+        ExtractMethod(source, "private uint GetOffhandAttackWeapon()")
+            .Should().Contain("TwinPistolEquipment.GetCompanionWeapon(_target)")
+            .And.Contain("EquipmentPredicates.GetOffhandAttackWeapon(_target)");
+        var stats = ExtractMethod(source, "private void RefreshCharacterStatsList()");
+        stats.Should().Contain("AddStat(\"Critical Rate\", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(");
+        stats.Should().Contain("GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null");
+        stats.Should().NotContain("AddStat(\"Off-hand", "off-hand values join the existing rows instead of adding rows");
+        ExtractMethod(source, "private (string Value, string Tooltip) GetAttackDelayInfo()")
+            .Should().Contain("if (mainHandDelay > 0 && offHandDelay > 0)");
+
+        definition.Should().Contain("\"Attack\", model => model.Attack, CharacterSheetViewModel.AttackDescription, model => model.AttackTooltip");
+    }
+
+    [Test]
+    public void CombatPanel_KeepsItsExistingRowsInOrder()
+    {
+        var definition = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "CharacterSheetDefinition.cs"));
+        var labels = System.Text.RegularExpressions.Regex.Matches(definition, "AddBoundValueRow\\(combatCol, \"([^\"]+)\"")
+            .Select(match => match.Groups[1].Value);
+
+        labels.Should().Equal("Main Hand", "Off Hand", "Atk Delay", "Attack", "Force Attack", "Main-hand Acc.",
+            "Off-hand Acc.", "Force Acc.", "Evasion", "Physical DEF", "Force DEF");
+    }
+
+    [TestCase("Increases crits.", "7%", "Increases crits. Off hand: 7%.")]
+    [TestCase("Increases crits.", null, "Increases crits.")]
+    [TestCase("Increases crits.", "", "Increases crits.")]
+    public void OffHandTooltip_AppendsTheOffHandValueOnlyWhenThereIsOne(string description, string offHand, string expected)
+    {
+        CharacterSheetViewModel.FormatOffHandTooltip(description, offHand).Should().Be(expected);
+    }
+
+    [TestCase(220, 220, 0, 3833, " | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)")]
+    [TestCase(230, 220, 30, 3258, " | 2 attacks per cycle, about 1.63s each (Delay 230 main + 220 off, off hand -30%)")]
+    public void PairedDelayTooltip_ShowsEachHandAndTheTimePerAttack(int main, int off, int haste, int effective, string expected)
+    {
+        var tooltip = CharacterSheetViewModel.FormatPairedDelay(main, off, haste, effective);
+        tooltip.Should().Be(expected);
+        tooltip.Should().NotContain("\n", "NUI tooltips render a line break as a question mark");
     }
 
     [Test]

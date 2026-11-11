@@ -6,6 +6,7 @@ Sections: Semantic Color · Every Applied Status Effect Carries an Icon · Stat-
 
 Required for every icon change:
 
+- Check every new, changed, or reused icon for the correct direction before handoff (see Orientation under Framing). An upside-down icon is a defect even when the art is otherwise right.
 - Icon resrefs are meaningful abbreviations of at most 16 characters, with no hash or generator suffixes.
 - After changing an icon referenced by `feat.2da` or `spells.2da`, run `tools/GenerateCooldownIcons.ps1 -Force`.
 - After changing any gameplay icon or manifest entry, run `tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
@@ -127,7 +128,16 @@ Final exported icons must not include contact-sheet gutters, stray outer margins
 
 Production gameplay TGA files must use bottom-left TGA origin (`image descriptor` bit 5 clear, descriptor `8` for 32-bit alpha TGAs). NUI rendering honors TGA origin metadata, while the classic NWN hotbar and feat icon paths render these gameplay resources upright when they match the legacy bottom-left icon layout. ImageMagick previews can make this look inverted unless the export flips the pixel rows while writing the bottom-left origin metadata.
 
+Orientation: the origin flag only says which way the rows are stored. It does not prove the art is upright. The legacy `ife_` art was drawn upside down, and a May 2026 pass changed the flag without flipping the image, so more than 1,250 icons showed upside down until November 2026. For every icon you add, change, regenerate, or newly assign to a perk, feat, spell, or status effect:
+
+- Decode it honoring the origin flag (Pillow does, as does `CraftingPerkIconOrientationTests.DecodeTopRowFirst`), enlarge it, and confirm the subject is upright: figures and creatures stand on their feet, text and symbols such as `?` read normally, and lighting and drop shadows match the rest of the set.
+- Confirm it upright in the NWN client in an NUI view (such as the Perks window) and a classic view (hotbar, feat list, or status bar). Include the capture in the pull request.
+- If it is upside down, flip the pixel rows and keep descriptor `0x08` (bottom-left). Do not change only the origin flag, and do not run `tools/NormalizeGameplayTgaOrigin.ps1` to fix direction; it preserves the decoded image. Regenerate its cooldown variants.
+- `CraftingPerkIconOrientationTests` and `LegacyIconOrientationTests` fail when a fixed icon goes back to its upside-down pixels. Add a hash there when you fix another one.
+
 Inventory item TGAs use transparent backgrounds and transparent outer borders, matching native NWN inventory art. Do not stamp semantic frames or dark mattes into 64x64 inventory resources. The opacity and semantic-frame requirements below apply to 32x32 action/status icons.
+
+New and replaced inventory and currency icons keep their artwork in DDS: single-level DXT5, rows stored bottom-up, no TXI. Encode them with `write_icon` in `tools/FixWeaponInventoryIcons.py`. Icons drawn only by NUI, such as currencies (`cur_*`), ship as DDS alone; delete any old TGA of the same name so it cannot shadow the DDS. Native inventory icons also need the same-named 8x8 TGA registration stub (`FixWeaponInventoryIcons.py stubs`, see `BlasterModelImport.md`) in place of a full-size TGA. The TGA rules for feat, spell, ability, and status-effect icons above are unchanged.
 
 Production action/status gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
 
@@ -217,6 +227,7 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 The pipeline requirement itself (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests) is enforced at authoring and code review, not by the automated icon audit: source-model provenance is not recoverable from a final flattened TGA, so the audit validates the observable properties above (semantic frame color, resource presence, uniqueness, TGA origin/opacity, rank-badge rules, and artwork quality) rather than the generation tool.
 - Icon artwork extending outside the frame or overlapping the outer border.
 - Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
+- Final TGA whose decoded image is upside down, whatever its origin flag.
 - Final TGA with transparent or partially transparent pixels.
 - Primitive, placeholder-quality, or unclear central artwork.
 - Incorrect anatomy, including extra or missing fingers, malformed hands, incoherent claws, or broken creature/humanoid appendages.

@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             //MoveDoor();
             EnmityDebugger();
             NuiGallery();
+            PerformanceWindows();
+            KitchenTester();
+            CasinoPreview();
             AnimationTester();
             GetObjectId();
             ResetBeast();
@@ -99,6 +105,68 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
+                });
+        }
+
+        // Opens each Performance window on its own, without a performance running, to check its layout in the client.
+        private void PerformanceWindows()
+        {
+            AddPerformanceWindowCommand("perfwindowfootwork", "Footwork", GuiWindowType.PerformanceFootwork);
+            AddPerformanceWindowCommand("perfwindowsession", "Session", GuiWindowType.PerformanceSession);
+            AddPerformanceWindowCommand("perfwindowperform", "Perform", GuiWindowType.PerformanceOptions);
+            AddPerformanceWindowCommand("perfwindowwatching", "Watching", GuiWindowType.PerformanceWatching);
+        }
+
+        private void AddPerformanceWindowCommand(string command, string windowName, GuiWindowType window)
+        {
+            _builder.Create(command)
+                .Description($"Opens the Performance {windowName} window for layout checks")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, window);
+                });
+        }
+
+        private void KitchenTester()
+        {
+            _builder.Create("kitchen")
+                .Description("Opens the Kitchen window on a cooking recipe, such as /kitchen MynockMeatBall")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    var recipe = RecipeType.MynockMeatBall;
+                    if (args.Length > 0 &&
+                        (!Enum.TryParse(args[0], true, out recipe) ||
+                         !Enum.IsDefined(recipe) ||
+                         recipe == RecipeType.Invalid))
+                    {
+                        SendMessageToPC(user, $"{args[0]} is not a recipe.");
+                        return;
+                    }
+
+                    if (Craft.GetRecipe(recipe).Skill != SkillType.Agriculture)
+                    {
+                        SendMessageToPC(user, "The Kitchen cooks Agriculture recipes only.");
+                        return;
+                    }
+
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Kitchen, new CraftPayload(recipe, OBJECT_INVALID));
+                });
+        }
+
+        private void CasinoPreview()
+        {
+            _builder.Create("casinopreview")
+                .Description("Opens the casino window artwork preview.")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CasinoSlot,
+                        new SWLOR.Game.Server.Feature.GuiDefinition.Payload.CasinoSlotPayload(OBJECT_INVALID));
                 });
         }
 

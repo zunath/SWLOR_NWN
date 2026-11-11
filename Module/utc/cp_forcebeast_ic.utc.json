@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Force-Bonded Beast inner circle member in Dathomir - Grotto Apex Den."
+    "value": "Den Elder Wyvern (Force-Bonded Beast line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the four eldest wyverns in the den, the first of their kind the handlers ever forced. Their bonds were braided into a single cord, and it moves in eerie unison with the other three."
+      "0": "One of the four den elder wyverns, the eldest in the den, the first of their kind the handlers ever forced. Their bonds were braided into a single cord, and it moves in eerie unison with the other three."
     }
   },
   "Dex": {
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Force-Bonded Beast Inner Circle"
+      "0": "Den Elder Wyvern"
     }
   },
   "fortbonus": {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 265
+          "value": 255
         }
       },
       {

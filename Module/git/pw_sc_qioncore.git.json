@@ -99,7 +99,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A target wall of solid plating is pierced through by dozens of throwing blades, all grouped tight. The master who threw them answers any challenge."
+            "0": "A target wall of solid plating is pierced through by dozens of throwing blades, all grouped tight. The site chief who threw them answers any challenge."
           }
         },
         "DisarmDC": {
@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A sealed detonation cradle at the heart of the Overload Chamber, its charges primed and humming. The site's master demolitionist keeps it ready."
+            "0": "A sealed detonation cradle at the heart of the Overload Chamber, its charges primed and humming. The site chief keeps it ready."
           }
         },
         "DisarmDC": {
@@ -10972,7 +10972,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Perfect Flurry Master Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief Veshan Dru Spawn (Perfect Flurry line)"
           }
         },
         "MapNote": {
@@ -11043,7 +11043,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Master Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief Ssorgan Spawn (Thermal Detonator line)"
           }
         },
         "MapNote": {
@@ -11114,7 +11114,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - Overload Barrage Master Spawn"
+            "0": "Hutlar Qion Test Site - Site Chief Ansel Pryor Spawn (Overload Barrage line)"
           }
         },
         "MapNote": {

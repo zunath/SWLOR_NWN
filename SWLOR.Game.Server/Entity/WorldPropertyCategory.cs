@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using SWLOR.Game.Server.Feature.MigrationDefinition;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -18,7 +16,6 @@ namespace SWLOR.Game.Server.Entity
         public string Name { get; set; }
 
         public Dictionary<string, WorldPropertyItem> Items { get; set; }
-
     }
 
     public class WorldPropertyItem
@@ -30,10 +27,5 @@ namespace SWLOR.Game.Server.Entity
         public int Quantity { get; set; }
 
         public string Data { get; set; }
-
-        /// <summary>Shows the renamed default name of a former Display Plinth restored after the release migration.</summary>
-        [OnDeserialized]
-        internal void RenameFormerFurniture(StreamingContext context) =>
-            Name = FurnitureRenameMigration.GetRenamedItemText(Resref, Name);
     }
 }

@@ -1,0 +1,12 @@
+--- run-server.sh
++++ run-server.sh
+@@ -106,7 +106,6 @@
+ set +e
+-export LD_PRELOAD=$NWN_LD_PRELOAD
+-export LD_LIBRARY_PATH=$NWN_LD_LIBRARY_PATH
+-exec ./nwserver \
++unset LD_PRELOAD LD_LIBRARY_PATH
++exec /usr/local/bin/swlor-server-launcher ./nwserver \
+   $NWN_EXTRA_ARGS \
+   -port ${NWN_PORT:-5121} \
+   -interactive \

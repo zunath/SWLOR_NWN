@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -76,8 +77,8 @@ public class GripTests
 
         Grip.ApplyTransition(0, 1, false, Replace);
         mappings.Should().HaveCount(4);
-        mappings.Should().ContainKey("dodges").WhoseValue.Should().Be("custom_dodge");
-        mappings.Should().ContainKey("plpause1").WhoseValue.Should().Be("native_hold");
+        mappings["dodges"].Should().Be("custom_dodge");
+        mappings["plpause1"].Should().Be("native_hold");
     }
 
     [Test]

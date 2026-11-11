@@ -583,6 +583,12 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnCombatAttackOfOpportunityAfter);
         }
 
+        /// <summary>Runs when the process exits: tells the engine's event system the application is shutting down.</summary>
+        private static void SignalApplicationShutdown()
+        {
+            EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
+        }
+
         /// <summary>
         /// Hooks all application-specific scripts.
         /// </summary>
@@ -610,10 +616,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void StartServerEvents()
         {
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
-            };
+            ServerManager.Bootstrapper.ProcessEvents.SubscribeProcessExit(SignalApplicationShutdown);
 
             Scheduler.ScheduleRepeating(() =>
             {

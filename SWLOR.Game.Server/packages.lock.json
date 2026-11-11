@@ -37,18 +37,18 @@
       },
       "NWN.Core": {
         "type": "Direct",
-        "requested": "[8193.37.4, )",
-        "resolved": "8193.37.4",
-        "contentHash": "EFHDt//HyNY+WEUnvYLDNCtEMS7tFTVolBJw4OP5VTl6u8qIbXZ59dcsT/38x+zzaebK6/6w9uWx3eZ9ep8JDA==",
+        "requested": "[8193.37.7, )",
+        "resolved": "8193.37.7",
+        "contentHash": "Hnci3l2SM3TDRLel+QRTXj1Qg0M4UwjRDjPx1YVEGTaGF9wJ21eZIZgNghjG8GDJJe+RSkDiiB6G1PHw98zb2A==",
         "dependencies": {
           "NWNX.NET": "1.0.3"
         }
       },
       "NWN.Native": {
         "type": "Direct",
-        "requested": "[8193.37.4, )",
-        "resolved": "8193.37.4",
-        "contentHash": "skuiV/mZS6r/ONCKaIfoM8on3usG9EAq+9ygnf6lPug/ofVfkafoX9R6aC7ptmwqGS9eeUPu+dzvx7nRk/PaEw==",
+        "requested": "[8193.37.8, )",
+        "resolved": "8193.37.8",
+        "contentHash": "kOdhv6iulf1SHf1VKD257KEwImI6uOra6GWZpg8kpGVuPrWYy8RnT8huueaRqRYkdMraz4vP3e/WKU0cRYF/IA==",
         "dependencies": {
           "NWNX.NET": "1.0.3"
         }
@@ -119,7 +119,7 @@
       "swlor.nwn.api": {
         "type": "Project",
         "dependencies": {
-          "NWN.Core": "[8193.37.4, )"
+          "NWN.Core": "[8193.37.7, )"
         }
       }
     }

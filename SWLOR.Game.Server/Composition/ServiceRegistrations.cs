@@ -31,6 +31,12 @@ namespace SWLOR.Game.Server.Composition
             // Lazy<IXService> for a constructor parameter that would otherwise make a cycle (LazyDependencyCycleTests).
             services.AddSingleton(typeof(Lazy<>), typeof(ContainerLazy<>));
 
+            // Server process: the process-wide event subscriptions and the teardown that lets go of them (P4-5)
+            services.AddSingleton<IProcessEventSource, AppDomainProcessEventSource>();
+            services.AddSingleton<IProcessEventSubscriptions, ProcessEventSubscriptions>();
+            services.AddSingleton<IServerStaticState, ServerStaticState>();
+            services.AddSingleton<IServerTeardown, ServerTeardown>();
+
             // Core
             // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).
             services.AddSingleton<IRedisConnectionSource, RedisConnectionSource>();

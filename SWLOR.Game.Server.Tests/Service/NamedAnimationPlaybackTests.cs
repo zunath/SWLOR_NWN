@@ -11,6 +11,42 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class NamedAnimationPlaybackTests
 {
     [Test]
+    public void MicrophoneOpeningClearsThePhysicalTorchAndLoopKeepsItSuppressed()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var opening = playback.Begin(1, new AnimationClip("sw_voc_loop", 5.2f), 5.2f, weaponHold: AnimationWeaponHold.Torch);
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().Be("sw_voc_loop");
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be(NamedAnimationPlayback.TorchHoldSource);
+        runtime.Replacements[NamedAnimationPlayback.TorchHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        playback.Complete(1, opening);
+        var stale = runtime.Callbacks.ToArray();
+        var loop = playback.Begin(1, new AnimationClip("sw_voc_loop", 5.2f), 600f, liftTorchHoldInPlace: true);
+        foreach (var callback in stale) callback();
+        playback.IsCurrent(1, loop).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.TorchHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        playback.InvalidateEquipmentPlayback(1).Should().BeTrue();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+
+    [Test]
+    public void RegularPlaybackOnlyClearsATorchMappingThatItPreviouslyOwned()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_wave", 2f), 2f);
+        runtime.Replacements.Should().NotContainKey(NamedAnimationPlayback.TorchHoldSource);
+        playback.Begin(1, new AnimationClip("sw_voc_loop", 5.2f), 600f, liftTorchHoldInPlace: true);
+        var stale = runtime.Callbacks.ToArray();
+        var next = playback.Begin(1, new AnimationClip("sw_wave", 2f), 2f);
+        foreach (var callback in stale) callback();
+        playback.IsCurrent(1, next).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.TorchHoldSource].Should().BeEmpty();
+    }
+
+    [Test]
     public void LiftingTheShoulderHoldInPlaceKeepsTheLoopingCarrierAndRestoresTheHoldAfterwards()
     {
         var runtime = new Runtime();
@@ -487,6 +523,21 @@ public class NamedAnimationPlaybackTests
         runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
         runtime.ClearedActions.Should().Be(0);
+    }
+
+    [Test]
+    public void LoginDiscardsTorchOwnershipBeforeAnotherOwnerRestoresItsMapping()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_sing", 2), 2, weaponHold: AnimationWeaponHold.Torch);
+
+        playback.ResetOnLogin(1);
+        runtime.Replacements.Clear();
+        runtime.Replacements[NamedAnimationPlayback.TorchHoldSource] = "equipment_torch";
+        playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+
+        runtime.Replacements[NamedAnimationPlayback.TorchHoldSource].Should().Be("equipment_torch");
     }
 
     private sealed class Runtime : INamedAnimationRuntime

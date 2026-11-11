@@ -10,10 +10,10 @@ nothing but the bars.
 
 This edits only the interface trimesh of each compiled part, in place of a decompile
 round trip (which would average the authored tangent seams of the source surfaces):
-sleeves on cut joints are dropped and the cut caps stay exactly as authored. A few
-bottoms stop 3.5 mm short of the joint and have no cut there; their sleeve is the
-only thing closing that slot, so it is refitted to a collar of the grip's own end
-section instead of being removed. Source trimeshes stay byte-identical.
+sleeves that reach past their cut are dropped and the cut caps stay exactly as
+authored. A few bottoms stop 3.5 mm short of the joint and have no cut there; their
+sleeve is the only thing closing that slot, so it is rebuilt as a collar of the
+grip's own end outline instead of being removed. Source trimeshes stay byte-identical.
 """
 import argparse
 import json
@@ -38,6 +38,7 @@ JOINTS = {
 SLEEVE_DEPTH = 0.0075  # Authored interface geometry ends within this depth of a joint.
 COLLAR_SAMPLE = 0.002  # A short grip's end cross-section is sampled over this length.
 FIT_TOLERANCE = 0.0005
+CAP_COVERAGE = 0.98  # Share of the cut outline a cap must fill.
 PLANE = 1e-5
 POSITION, UV, NORMAL, TANGENT, SIGN = 444, 452, 468, 488, 496
 MODEL = re.compile(r"wswls_([tmb])_\d{3}")
@@ -148,33 +149,51 @@ def rim_points(sources, joint):
 
 def _hull_contains(hull, points, tolerance=FIT_TOLERANCE):
     """True when every (x, z) point lies inside the convex polygon `hull`, within tolerance."""
-    hull = np.asarray(hull)
-    area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(hull, np.roll(hull, -1, axis=0)))
-    sign = 1 if area > 0 else -1
-    for a, b in zip(hull, np.roll(hull, -1, axis=0)):
-        edge = b - a
-        length = np.linalg.norm(edge)
-        cross = sign * (edge[0] * (points[:, 1] - a[1]) - edge[1] * (points[:, 0] - a[0])) / length
-        if (cross < -tolerance).any():
-            return False
-    return True
+    return MeshyWeaponParts.inside_convex(hull, points, tolerance)
+
+
+def _area(polygon):
+    polygon = np.asarray(polygon, dtype=float)
+    following = np.roll(polygon, -1, axis=0)
+    return abs(float(np.sum(polygon[:, 0] * following[:, 1] - following[:, 0] * polygon[:, 1]))) / 2
 
 
 def _end_section(sources, joint):
-    """Centre and half extents (x, z) of the source surfaces' end nearest a joint they stop short of."""
+    """Convex outline (x, z) of the source surfaces' end nearest a joint they stop short of,
+    and that end's distance from the joint."""
     verts = np.vstack([m["streams"][POSITION][np.unique(m["faces"])] for m in sources]).astype(float)
     d = _distance(verts, joint)
     end = verts[d <= d.min() + COLLAR_SAMPLE]
-    low, high = end[:, [0, 2]].min(axis=0), end[:, [0, 2]].max(axis=0)
-    return (low + high) / 2, (high - low) / 2, float(d.min())
+    return np.asarray(MeshyWeaponParts.convex_hull(end[:, [0, 2]].tolist())), float(d.min())
+
+
+def collar_triangles(outline, low, high):
+    """Closed prism of a convex outline between two heights, faces wound outward."""
+    outline = np.asarray(outline, dtype=float)
+    centre = np.array([outline[:, 0].mean(), (low + high) / 2, outline[:, 1].mean()])
+    ring = [np.column_stack([outline[:, 0], np.full(len(outline), y), outline[:, 1]]) for y in (low, high)]
+    triangles = []
+    for i in range(len(outline)):
+        j = (i + 1) % len(outline)
+        triangles += [[ring[0][i], ring[0][j], ring[1][i]], [ring[0][j], ring[1][j], ring[1][i]]]
+    for y, r in ((low, ring[0]), (high, ring[1])):
+        middle = np.array([centre[0], y, centre[2]])
+        triangles += [[middle, r[i], r[(i + 1) % len(r)]] for i in range(len(r))]
+    triangles = np.asarray(triangles)
+    normals = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    inward = np.sum(normals * (triangles.mean(axis=1) - centre), axis=1) < 0
+    triangles[inward] = triangles[inward][:, ::-1]
+    return triangles
 
 
 def plan(meshes, role):
     """The interface edit for a part, or None when its interfaces already fit.
 
     Returns (interface index, kept original face indices, new flat triangles (n, 3, 3),
-    report). Cut caps stay as authored; sleeves on cut joints are dropped; a sleeve on
-    a joint the source stops short of becomes a collar of the source's own end.
+    report). Cut caps stay as authored. A sleeve that reaches past its cut is dropped
+    (the cap closes the cut); one inside the cut stays. A sleeve on a joint the source
+    stops short of becomes a collar of the source's own end outline, unless it already
+    lies within it.
     """
     index = interface_index(meshes, role)
     if index is None:
@@ -184,27 +203,32 @@ def plan(meshes, role):
     positions = interface["streams"][POSITION].astype(float)
     faces = interface["faces"].astype(int)
     kinds = classify(positions, faces, role)
+    labels = components(positions, faces)
     keep, triangles, report = [], [], {}
     for joint in JOINTS[role]:
         caps = [i for i, kind in enumerate(kinds) if kind == ("cap", joint)]
         tubes = [i for i, kind in enumerate(kinds) if kind == ("tube", joint)]
         keep.extend(caps)
         entry = {"cap_triangles": len(caps), "sleeve_triangles_removed": 0, "collar_triangles": 0}
-        if len(rim_points(sources, joint)):
-            entry["sleeve_triangles_removed"] = len(tubes)
+        rim = rim_points(sources, joint)
+        if len(rim):
+            hull = MeshyWeaponParts.convex_hull(rim.tolist())
+            for label in np.unique(labels[tubes]) if tubes else []:
+                members = [i for i in tubes if labels[i] == label]
+                if _hull_contains(hull, positions[np.unique(faces[members])][:, [0, 2]]):
+                    keep.extend(members)
+                else:
+                    entry["sleeve_triangles_removed"] += len(members)
         elif tubes:
-            centre, half, gap = _end_section(sources, joint)
-            tube = positions[np.unique(faces[tubes])][:, [0, 2]]
-            if np.all(np.abs(tube - centre) <= half + FIT_TOLERANCE):
+            outline, gap = _end_section(sources, joint)
+            tube = positions[np.unique(faces[tubes])]
+            if _hull_contains(outline, tube[:, [0, 2]]):
                 keep.extend(tubes)
             else:
-                low, high = tube.min(axis=0), tube.max(axis=0)
-                t_centre, t_half = (low + high) / 2, (high - low) / 2
-                for face in faces[tubes]:
-                    tri = positions[face].copy()
-                    tri[:, [0, 2]] = centre + (tri[:, [0, 2]] - t_centre) / t_half * half
-                    triangles.append(tri)
-                entry["collar_triangles"] = len(tubes)
+                collar = collar_triangles(outline, tube[:, 1].min(), tube[:, 1].max())
+                triangles.extend(collar)
+                entry["sleeve_triangles_removed"] = len(tubes)
+                entry["collar_triangles"] = len(collar)
             entry["source_end_gap_mm"] = round(gap * 1000, 2)
         elif caps:
             raise ValueError(f"Cut cap at {joint[0]} without a source rim")
@@ -304,9 +328,9 @@ def _cap_rows(info, role, joint):
 def interface_problems(meshes, role):
     """Interface geometry that does not fit its own part; empty when every interface fits.
 
-    Every cut joint is closed by a flat cap within the cut's rim; a tube (sleeve or
-    collar) may only bridge a source end that stops short of its joint, within that
-    end's own cross-section.
+    Every cut joint is closed by a flat cap that fills the cut's outline and stays
+    within it, and any tube (sleeve or collar) lies within the part's own section:
+    the cut's outline, or the end outline of a source that stops short of its joint.
     """
     index = interface_index(meshes, role)
     if index is None:
@@ -322,18 +346,24 @@ def interface_problems(meshes, role):
         caps = [faces[i] for i, kind in enumerate(kinds) if kind == ("cap", joint)]
         tubes = [faces[i] for i, kind in enumerate(kinds) if kind == ("tube", joint)]
         if len(rim):
+            hull = MeshyWeaponParts.convex_hull(rim.tolist())
             if not caps:
                 problems.append(f"cut at y={joint[0]} is not capped")
-            elif not _hull_contains(MeshyWeaponParts.convex_hull(rim),
-                                    positions[np.unique(np.vstack(caps))][:, [0, 2]]):
-                problems.append(f"cap at y={joint[0]} reaches past the cut")
-            if tubes:
-                problems.append(f"sleeve at y={joint[0]} on a cut joint")
+            else:
+                corners = positions[np.vstack(caps)][:, :, [0, 2]]
+                if not _hull_contains(hull, corners.reshape(-1, 2)):
+                    problems.append(f"cap at y={joint[0]} reaches past the cut")
+                (ax, az), (bx, bz) = (corners[:, 1] - corners[:, 0]).T, (corners[:, 2] - corners[:, 0]).T
+                covered = float(np.sum(np.abs(ax * bz - az * bx))) / 2
+                if covered < _area(hull) * CAP_COVERAGE:
+                    problems.append(f"cap at y={joint[0]} leaves part of the cut open")
+            outline = hull
         elif tubes:
-            centre, half, _ = _end_section(sources, joint)
-            tube = positions[np.unique(np.vstack(tubes))][:, [0, 2]]
-            if (np.abs(tube - centre) > half + FIT_TOLERANCE).any():
-                problems.append(f"collar at y={joint[0]} is wider than the source end")
+            outline = _end_section(sources, joint)[0]
+        else:
+            continue
+        if tubes and not _hull_contains(outline, positions[np.unique(np.vstack(tubes))][:, [0, 2]]):
+            problems.append(f"sleeve at y={joint[0]} reaches past the part section")
     return problems
 
 

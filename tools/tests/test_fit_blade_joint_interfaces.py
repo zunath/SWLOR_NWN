@@ -127,7 +127,25 @@ class BladeJointInterfaceTests(unittest.TestCase):
                                                  cap(0.135, -1)])])
         problems = fit.interface_problems(meshes(sleeve_only), "m")
         self.assertIn("cut at y=0.085 is not capped", problems)
-        self.assertIn("sleeve at y=0.085 on a cut joint", problems)
+        self.assertIn("sleeve at y=0.085 reaches past the part section", problems)
+
+    def test_audit_reports_a_cap_that_leaves_the_cut_open(self):
+        positions, faces = cap(0.085, 1)
+        partial = compiled([tube(0.085, 0.135, GRIP), combine([(positions[:5], faces[:3]), cap(0.135, -1)])])
+        self.assertIn("cap at y=0.085 leaves part of the cut open", fit.interface_problems(meshes(partial), "m"))
+
+    def test_a_sleeve_inside_its_cut_stays(self):
+        inner = (GRIP[0] * 0.8, GRIP[1] * 0.8)
+        before = compiled([tube(0.085, 0.135, GRIP),
+                           combine([cap(0.085, 1), cap(0.135, -1),
+                                    # Off the cap's centre, as authored sleeves are, so the two stay apart.
+                                    tube(0.085, 0.085 + DEPTH, inner, CENTRE + [0.001, 0.0], closed=True),
+                                    tube(0.135 - DEPTH, 0.135, SLEEVE, np.zeros(2), True)])])
+        after, report = fit.fit_bytes(before, "m")
+        self.assertEqual(0, report["0.085"]["sleeve_triangles_removed"])
+        self.assertEqual(4 * SEGMENTS, report["0.135"]["sleeve_triangles_removed"])
+        self.assertEqual([], fit.interface_problems(meshes(after), "m"))
+        self.assertLess(interface_positions(after, "m")[:, 1].min(), 0.085 + DEPTH + 1e-6)
 
     def test_roles_follow_the_native_vibroblade_partition(self):
         self.assertEqual("t", fit.role_of("wswls_t_011"))

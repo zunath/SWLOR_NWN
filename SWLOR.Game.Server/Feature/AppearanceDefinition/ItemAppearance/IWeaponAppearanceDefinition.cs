@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         int[] MiddleParts { get; }
 
         int[] BottomParts { get; }
+
+        /// <summary>Whether a weapon of this type keeps a part missing from these lists as its own (see <see cref="WeaponOriginalParts"/>).</summary>
+        bool KeepsOwnParts { get; }
         string GetPartName(AppearanceWeapon part, int partId);
     }
 }

@@ -33,6 +33,8 @@ public class EchaniTempleMonksTests
             var npc = placed.Single(npc => Value(npc, "Tag").GetString() == tag);
             foreach (var creature in new[] { blueprint, npc })
             {
+                Value(creature, "Description").GetProperty("0").GetString().Should()
+                    .Contain("grey").And.NotContain("white").And.NotContain("blue");
                 Variables(creature)["ECHANI_MONK"].GetInt32().Should().Be(1);
                 Variables(creature)["AI_FLAGS"].GetInt32().Should().Be(0);
                 Variables(creature)["VISIBILITY_OBJECT_ID"].GetString().Should().Be(tag.ToUpperInvariant(),
@@ -119,7 +121,7 @@ public class EchaniTempleMonksTests
             Value(armor, "ArmorPart_RBicep").GetInt32().Should().Be(1);
             Value(armor, "ArmorPart_LShoul").GetInt32().Should().Be(0);
             Value(armor, "ArmorPart_RShoul").GetInt32().Should().Be(0);
-            Value(armor, "ArmorPart_Torso").GetInt32().Should().Be(name == "master" ? 21 : 55);
+            Value(armor, "ArmorPart_Torso").GetInt32().Should().Be(name == "master" ? 21 : 50);
             silhouettes.Add(string.Join(",", parts.Keys.Select(part => Value(armor, "ArmorPart_" + part).GetInt32())))
                 .Should().BeTrue("each monk has a distinct outfit combination");
         }

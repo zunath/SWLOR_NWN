@@ -2983,7 +2983,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "An Echani temple master in a white wrap tunic, split martial panels and a blue sash, with linen leg wraps and a broad hood."
+            "0": "A hooded Echani temple master in dark grey travel clothes with lighter grey trim."
           }
         },
         "Dex": {
@@ -4191,7 +4191,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "An Echani temple disciple in a sleeveless white-and-blue training coat, with a hood, cloth wrist wraps and soft trousers."
+            "0": "An Echani temple disciple in grey training clothes with dark grey trim and a matching hood."
           }
         },
         "Dex": {
@@ -4284,7 +4284,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 55
+                "value": 50
               },
               "BaseItem": {
                 "type": "int",
@@ -4479,7 +4479,7 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 55
+                "value": 50
               }
             },
             {
@@ -5399,7 +5399,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "An Echani temple disciple in a sleeveless white-and-blue training coat, with a slim hood, wrapped bracers and soft trousers."
+            "0": "An Echani temple disciple in grey training clothes with dark grey trim and a slim matching hood."
           }
         },
         "Dex": {
@@ -5492,7 +5492,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 55
+                "value": 50
               },
               "BaseItem": {
                 "type": "int",
@@ -5687,7 +5687,7 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 55
+                "value": 50
               }
             },
             {

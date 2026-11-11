@@ -60,6 +60,30 @@ def sleeve_triangles(joint,bound,outward,segments=32):
     return result
 
 
+SECTION_TOLERANCE=.0005
+END_SAMPLE=.002
+
+
+def end_section(groups,bound,outward):
+    """(x, z) points of a part's end nearest a cut its surfaces stop short of."""
+    points=np.vstack([clipped['positions'].reshape(-1,3) for _,clipped in groups])
+    distance=outward*(bound-points[:,1])
+    return points[distance<=distance.min()+END_SAMPLE][:,[0,2]].tolist()
+
+
+def sleeve_fits(joint,section):
+    """A joint sleeve must stay within the part's own cross-section at that joint.
+
+    A sleeve wider than, or off the axis of, the fitted part reads as a metal bar
+    (the November 2026 vibroblades); FitBladeJointInterfaces.py repairs shipped parts.
+    """
+    section=np.asarray(section,dtype=float).reshape(-1,2)
+    if not len(section):return False
+    low,high=section.min(axis=0)-SECTION_TOLERANCE,section.max(axis=0)+SECTION_TOLERANCE
+    centre=np.asarray(joint['center_xz'],dtype=float);radii=np.asarray(joint['radii_xz'],dtype=float)
+    return bool(np.all(centre-radii>=low) and np.all(centre+radii<=high))
+
+
 def flat_basis(triangles):
     positions=np.asarray(triangles,dtype=float)
     edge=positions[:,1]-positions[:,0]
@@ -190,6 +214,9 @@ def author(manifest,output,repo):
                 interfaces.extend(cap_triangles(points,bound,outward))
                 joint=next((joint for joint in joints if abs(joint['y']-bound)<1e-9),None)
                 if joint is None:raise ValueError('Missing reviewed joint envelope at '+str(bound))
+                section=points or end_section(groups,bound,outward)
+                if not sleeve_fits(joint,section):
+                    raise ValueError(part['model']+': joint envelope at '+str(bound)+' reaches past the part section and would show as a bar')
                 interfaces.extend(sleeve_triangles(joint,bound,outward))
             if interfaces:groups.append((cap_material,flat_basis(interfaces)))
             mesh_groups.append((part['model'],groups))

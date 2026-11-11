@@ -25,7 +25,8 @@ except ImportError:
 
 
 class MeshyWeaponPartsTests(unittest.TestCase):
-    joint={'y':.1,'center_xz':[.01,-.02],'radii_xz':[.022,.027],'depth':.007}
+    # Fits inside the test source's cut sections at y=-0.1 and 0.1.
+    joint={'y':.1,'center_xz':[.01,.04],'radii_xz':[.02,.03],'depth':.007}
 
     def test_author_binds_parsed_bytes_to_the_validated_source_snapshot(self):
         for change_before_parse in (True,False):
@@ -104,6 +105,22 @@ class MeshyWeaponPartsTests(unittest.TestCase):
         self.assertTrue(np.all(result['positions'][...,1]<=.7+1e-12))
         cross=np.cross(result['positions'][:,1]-result['positions'][:,0],result['positions'][:,2]-result['positions'][:,0])
         self.assertTrue(np.all(cross[:,2]>0))
+
+    def test_joint_sleeves_must_stay_within_the_part_section(self):
+        section=[[-.03,-.013],[-.01,-.013],[-.01,.013],[-.03,.013]]
+        inner={'y':.085,'center_xz':[-.02,0],'radii_xz':[.009,.012],'depth':.007}
+        self.assertTrue(parts.sleeve_fits(inner,section))
+        # The November 2026 vibroblade envelope: centred on the stock axis, 20 mm off the part.
+        stock={'y':.085,'center_xz':[0,0],'radii_xz':[.024,.036],'depth':.007}
+        self.assertFalse(parts.sleeve_fits(stock,section))
+        self.assertFalse(parts.sleeve_fits({**inner,'radii_xz':[.012,.012]},section))
+        self.assertFalse(parts.sleeve_fits(inner,[]))
+
+    def test_a_short_end_section_comes_from_the_surfaces_nearest_the_cut(self):
+        grip=parts.flat_basis([[[-.01,-.1,0],[.01,.0815,-.012],[.01,.0815,.012]]])
+        points=np.asarray(parts.end_section([(0,grip)],.085,1))
+        np.testing.assert_allclose(points[:,1].min(),-.012);np.testing.assert_allclose(points[:,1].max(),.012)
+        self.assertFalse(np.any(np.isclose(points[:,0],-.01)))
 
     def test_shared_plane_faces_belong_to_the_above_part(self):
         source=parts.flat_basis([[[0,.25,0],[0,.25,1],[1,.25,0]]])

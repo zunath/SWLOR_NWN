@@ -1,0 +1,160 @@
+"""Vibroblade parts must not carry joint sleeves that stick out as bars.
+
+The asset audit needs the SWLOR_Haks sw_weapon folder; the edit tests use synthetic
+compiled parts with an off-axis source section, flat cut caps and centred sleeves.
+"""
+import math
+from pathlib import Path
+import sys
+import unittest
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import FitBladeJointInterfaces as fit
+import NativeTangentSeams as seams
+from test_repair_staff_joint_transitions import compiled
+
+WEAPONS = ROOT / "SWLOR_Haks/sw_weapon"
+SEGMENTS = 16
+CENTRE = np.array([-0.02, 0.0])  # Fitted parts sit 20 mm off the stock axis.
+GRIP = (0.01, 0.012)
+SLEEVE = (0.024, 0.036)
+DEPTH = 0.007
+
+
+def ring(y, radii, centre=CENTRE):
+    angles = 2 * math.pi * np.arange(SEGMENTS) / SEGMENTS
+    return np.column_stack([centre[0] + radii[0] * np.cos(angles), np.full(SEGMENTS, y),
+                            centre[1] + radii[1] * np.sin(angles)])
+
+
+def tube(low, high, radii, centre=CENTRE, closed=False):
+    positions = np.vstack([ring(low, radii, centre), ring(high, radii, centre)])
+    faces = []
+    for i in range(SEGMENTS):
+        a, b = i, (i + 1) % SEGMENTS
+        faces += [[a, a + SEGMENTS, b], [b, a + SEGMENTS, b + SEGMENTS]]
+    if closed:
+        positions = np.vstack([positions, [[centre[0], low, centre[1]], [centre[0], high, centre[1]]]])
+        for i in range(SEGMENTS):
+            j = (i + 1) % SEGMENTS
+            faces += [[2 * SEGMENTS, j, i], [2 * SEGMENTS + 1, SEGMENTS + i, SEGMENTS + j]]
+    return positions, np.asarray(faces)
+
+
+def cap(y, side):
+    """Flat cut cap on the source rim, facing out of the part."""
+    rim = ring(y, GRIP)
+    positions = np.vstack([[CENTRE[0], y, CENTRE[1]], rim])
+    faces = [[0, 1 + i, 1 + (i + 1) % SEGMENTS] if side > 0 else [0, 1 + (i + 1) % SEGMENTS, 1 + i]
+             for i in range(SEGMENTS)]
+    return positions, np.asarray(faces)
+
+
+def combine(parts):
+    positions, faces = [], []
+    for p, f in parts:
+        faces.append(f + sum(len(x) for x in positions))
+        positions.append(p)
+    return np.vstack(positions), np.vstack(faces)
+
+
+def middle():
+    source = tube(0.085, 0.135, GRIP)
+    interface = combine([cap(0.085, 1), cap(0.135, -1),
+                         tube(0.085, 0.085 + DEPTH, SLEEVE, np.zeros(2), True),
+                         tube(0.135 - DEPTH, 0.135, SLEEVE, np.zeros(2), True)])
+    return compiled([source, interface])
+
+
+def short_bottom():
+    """A grip that stops 3.5 mm below the joint; its sleeve is all that closes the slot."""
+    source = tube(-0.1, 0.0815, GRIP, closed=True)
+    interface = tube(0.085 - DEPTH, 0.085, SLEEVE, np.zeros(2), True)
+    return compiled([source, interface])
+
+
+def meshes(data):
+    return seams.mesh_headers(data)[1]
+
+
+def interface_positions(data, role):
+    found = meshes(data)
+    return found[fit.interface_index(found, role)]["streams"][fit.POSITION]
+
+
+class BladeJointInterfaceTests(unittest.TestCase):
+    def test_sleeves_leave_and_caps_stay(self):
+        before = middle()
+        self.assertTrue(fit.interface_problems(meshes(before), "m"))
+        after, report = fit.fit_bytes(before, "m")
+        self.assertEqual(4 * SEGMENTS, report["0.085"]["sleeve_triangles_removed"])
+        self.assertEqual(4 * SEGMENTS, report["0.135"]["sleeve_triangles_removed"])
+        self.assertEqual([], fit.interface_problems(meshes(after), "m"))
+        old, new = meshes(before), meshes(after)
+        index = fit.interface_index(old, "m")
+        source = 1 - index
+        self.assertTrue(np.array_equal(fit._corner_rows(old[source]), fit._corner_rows(new[source])))
+        for joint in fit.JOINTS["m"]:
+            self.assertTrue(np.array_equal(fit._cap_rows(old[index], "m", joint),
+                                           fit._cap_rows(new[index], "m", joint)))
+        positions = interface_positions(after, "m")
+        self.assertLessEqual(positions[:, 0].max(), CENTRE[0] + GRIP[0] + 1e-6)
+
+    def test_fitting_is_idempotent(self):
+        after, _ = fit.fit_bytes(middle(), "m")
+        self.assertEqual((after, None), fit.fit_bytes(after, "m"))
+
+    def test_a_short_grip_keeps_a_collar_of_its_own_section(self):
+        before = short_bottom()
+        after, report = fit.fit_bytes(before, "b")
+        self.assertEqual(3.5, report["0.085"]["source_end_gap_mm"])
+        self.assertEqual([], fit.interface_problems(meshes(after), "b"))
+        collar = interface_positions(after, "b")
+        self.assertAlmostEqual(0.085, collar[:, 1].max(), places=5)
+        self.assertLessEqual(collar[:, 1].min(), 0.0815)
+        for axis, (centre, radius) in enumerate(zip(CENTRE, GRIP)):
+            values = collar[:, [0, 2][axis]]
+            self.assertAlmostEqual(centre - radius, values.min(), places=4)
+            self.assertAlmostEqual(centre + radius, values.max(), places=4)
+
+    def test_audit_reports_a_bar_and_an_uncapped_cut(self):
+        source = tube(0.085, 0.135, GRIP)
+        sleeve_only = compiled([source, combine([tube(0.085, 0.085 + DEPTH, SLEEVE, np.zeros(2), True),
+                                                 cap(0.135, -1)])])
+        problems = fit.interface_problems(meshes(sleeve_only), "m")
+        self.assertIn("cut at y=0.085 is not capped", problems)
+        self.assertIn("sleeve at y=0.085 on a cut joint", problems)
+
+    def test_roles_follow_the_native_vibroblade_partition(self):
+        self.assertEqual("t", fit.role_of("wswls_t_011"))
+        with self.assertRaises(ValueError):
+            fit.role_of("wswgs_m_021")
+
+
+@unittest.skipUnless(WEAPONS.is_dir(), "SWLOR_Haks sw_weapon is not checked out")
+class ShippedBladeJointAuditTests(unittest.TestCase):
+    def test_no_vibroblade_part_carries_a_stray_joint_sleeve(self):
+        checked, problems = 0, {}
+        for path in sorted(WEAPONS.glob("wswls_*.mdl")):
+            if not fit.MODEL.fullmatch(path.stem):
+                continue
+            data = path.read_bytes()
+            if not fit.supported(data):
+                continue
+            found = meshes(data)
+            if fit.interface_index(found, fit.role_of(path.stem)) is None:
+                continue
+            checked += 1
+            issues = fit.interface_problems(found, fit.role_of(path.stem))
+            if issues:
+                problems[path.stem] = issues
+        self.assertGreater(checked, 100)
+        self.assertEqual({}, problems)
+
+
+if __name__ == "__main__":
+    unittest.main()

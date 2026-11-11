@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
 /// <summary>
-/// Moves a held horn so its mouth end reaches each body's mouth. One playing clip serves very different heads and
+/// Moves held wind instruments so their mouth ends reach each body's mouth. One playing clip serves different heads and
 /// shoulders, and each species' fit is measured in the client while it plays.
 /// </summary>
 public static class HornFit
@@ -22,6 +22,7 @@ public static class HornFit
     private const string AppliedXVariable = "HORN_FIT_X";
     private const string AppliedYVariable = "HORN_FIT_Y";
     private const string AppliedRotateYVariable = "HORN_FIT_ROTATE_Y";
+    private const string AppliedRotateZVariable = "HORN_FIT_ROTATE_Z";
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -30,8 +31,12 @@ public static class HornFit
     {
         const string kloo = "kloo_horn";
         const string slitherhorn = "slitherhorn";
+        const string panpipes = "panpipes";
         var fits = new Dictionary<(string, AppearanceType, Gender), HornFitOffset>
         {
+            // Native front/side checks against Human head 1: turn the row inward, then fit mouth contact.
+            [(panpipes, AppearanceType.Human, Gender.Male)] = new(.02f, 0f, 0f, 0f, 180f),
+            [(panpipes, AppearanceType.Human, Gender.Female)] = new(.025f, -.025f, 0f, 0f, 180f),
             [(kloo, AppearanceType.MonCalamari, Gender.Male)] = new(0f, 0f, 0f, -8f),
             [(kloo, AppearanceType.MonCalamari, Gender.Female)] = new(0f, 0f, 0f, -10f),
             [(kloo, AppearanceType.Wookiee, Gender.Male)] = new(0f, 0f, 0f, -8f),
@@ -168,6 +173,10 @@ public static class HornFit
             };
         }
 
+        // The row must face inward for every normal playing body; head fits add small translations.
+        if (key == "panpipes" && performing && (gender == Gender.Male || gender == Gender.Female))
+            return _playingFits.GetValueOrDefault((key, appearance, gender), new HornFitOffset(0f, 0f, 0f, 0f, 180f));
+
         return performing ? _playingFits.GetValueOrDefault((key, appearance, gender)) : default;
     }
 
@@ -186,7 +195,8 @@ public static class HornFit
     private static void ApplyFit(uint item, HornFitOffset fit)
     {
         var saved = new HornFitOffset(GetLocalFloat(item, AppliedXVariable), GetLocalFloat(item, AppliedYVariable),
-            GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable));
+            GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable),
+            GetLocalFloat(item, AppliedRotateZVariable));
         if (saved == default && fit == default)
             return;
         // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
@@ -196,6 +206,7 @@ public static class HornFit
         ApplyChannel(item, ObjectVisualTransform.TranslateY, previous.TranslateY, fit.TranslateY);
         ApplyChannel(item, ObjectVisualTransform.TranslateZ, previous.TranslateZ, fit.TranslateZ);
         ApplyChannel(item, ObjectVisualTransform.RotateY, previous.RotateY, fit.RotateY);
+        ApplyChannel(item, ObjectVisualTransform.RotateZ, previous.RotateZ, fit.RotateZ);
         // The fit and its owner persist on the item, so reloading cannot compound the fit.
         if (fit == default)
         {
@@ -203,6 +214,7 @@ public static class HornFit
             DeleteLocalFloat(item, AppliedYVariable);
             DeleteLocalFloat(item, AppliedZVariable);
             DeleteLocalFloat(item, AppliedRotateYVariable);
+            DeleteLocalFloat(item, AppliedRotateZVariable);
             DeleteLocalString(item, FittedItemVariable);
         }
         else
@@ -211,6 +223,7 @@ public static class HornFit
             SetLocalFloat(item, AppliedYVariable, fit.TranslateY);
             SetLocalFloat(item, AppliedZVariable, fit.TranslateZ);
             SetLocalFloat(item, AppliedRotateYVariable, fit.RotateY);
+            SetLocalFloat(item, AppliedRotateZVariable, fit.RotateZ);
             SetLocalString(item, FittedItemVariable, identity);
         }
     }

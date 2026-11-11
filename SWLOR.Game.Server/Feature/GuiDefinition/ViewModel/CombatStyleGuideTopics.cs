@@ -132,7 +132,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         Style("Performance - Dancing", "Dancing lets you perform for nearby players. While they watch, they earn Inspired, which raises their skill XP and clears part of their XP debt. Dance routines add body bonuses, such as extra movement speed and attribute boosts."),
                         Style("Performance - Instruments", "Playing an instrument rewards your audience the same way, with mind and crafting bonuses from your music sets. Musicians within range of each other form a band and play the band leader's song."),
-                        Style("Performance - Supported Instruments", "Equip a Guitar, Lute, Harp, Kloo Horn, or Slitherhorn to play. Other held items, including Pan(toran) Pipes and Tambourines, cannot be used for Performance yet."),
+                        Style("Performance - Supported Instruments", "Equip a Guitar, Lute, Harp, Kloo Horn, Slitherhorn, Pan(toran) Pipes, or Tambourine to play. Violin (M) and Violin (F) require a Violin Bow in your right hand. Equip Microphone, Plain or Microphone, Branded to sing using your Play Instrument perks. Singers join bands and use the same music sets and audience benefits as other musicians."),
+                        Style("Performance - Singing", "Match Low, Mid, and High notes to sing melodic phrases, with breath rests between them. Vocals and pipes use single notes at every tempo. Roleplay mode lets you perform through lyrics, speech, or emotes instead of matching cues. Your audience hears the band's selected Cantina song."),
                         Style("Performance - Songs", "Musicians play Cantina songs. You start with Cantina 1 and can choose others in the Perform window as you collect them. Other music in your collection cannot be performed.")
                     },
                     "Perks", "Combat Basics", "Leadership Combat Styles", "First Aid Combat Styles"),

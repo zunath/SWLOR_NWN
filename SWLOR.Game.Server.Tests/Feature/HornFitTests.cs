@@ -27,6 +27,8 @@ public class HornFitTests
     [TestCase("kloo_horn", AppearanceType.Rodian, Gender.Male)]
     [TestCase("kloo_horn", AppearanceType.MonCalamari, Gender.Female)]
     [TestCase("slitherhorn", AppearanceType.Cathar, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Human, Gender.Male)]
+    [TestCase("PANPIPES", AppearanceType.Human, Gender.Female)]
     public void BodiesTheClipMissesAreFittedOnlyWhilePlaying(string resref, AppearanceType appearance, Gender gender)
     {
         Fit(resref, appearance, 0, gender, true).Should().NotBe(default(HornFitOffset));
@@ -44,10 +46,26 @@ public class HornFitTests
     [TestCase("slitherhorn", AppearanceType.Human, 0, Gender.None)]
     [TestCase("bandfill", AppearanceType.Human, 0, Gender.Female)]
     [TestCase("guitar", AppearanceType.Cathar, 0, Gender.Male)]
+    [TestCase("tambourine", AppearanceType.Human, 0, Gender.Female)]
+    [TestCase("tambourine", AppearanceType.Cathar, 0, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Human, 2, Gender.Female)]
+    [TestCase("panpipes", AppearanceType.Human, 0, Gender.None)]
     [TestCase("", AppearanceType.Human, 0, Gender.Male)]
     public void BodiesThatAlreadyLineUpAndOtherItemsKeepTheirAuthoredTransform(string resref,
         AppearanceType appearance, int phenotype, Gender gender) =>
         Fit(resref, appearance, phenotype, gender, true).Should().Be(default(HornFitOffset));
+
+    [Test]
+    public void PanpipeRowFacesInwardForEveryPlayableBodyOnlyWhilePlaying()
+    {
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            Fit("panpipes", appearance, 0, gender, true).RotateZ.Should().Be(180f, appearance.ToString());
+            Fit("panpipes", appearance, 0, gender, true).RotateY.Should().Be(0f);
+            Fit("panpipes", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
+        }
+    }
 
     [Test]
     public void EveryPlayableSpeciesWithAMouthOnAFemaleBodyIsDecidedForTheKlooHorn()

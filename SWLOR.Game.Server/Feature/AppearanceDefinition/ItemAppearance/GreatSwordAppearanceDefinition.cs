@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             501, // Color #5
             // Color #6
             // Color #7
-            // Color #8
+            802, // Color #8
             // Color #9
         };
         public override int[] BottomParts { get; } =
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             501, // Color #5
             // Color #6
             // Color #7
-            // Color #8
+            802, // Color #8
             // Color #9
         };
     }

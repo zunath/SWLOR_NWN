@@ -40,7 +40,8 @@ public class ItemAppearanceCatalogTests
 
     private sealed record Catalogs(
         IReadOnlyList<BaseArmorAppearanceDefinition> Armor,
-        IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> Weapons);
+        IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> Weapons,
+        IReadOnlySet<string> Obtainable);
 
     [Test]
     public void PlayerItemBlueprints_UseOnlyAppearancesFromTheAppearanceEditorCatalog()
@@ -56,6 +57,9 @@ public class ItemAppearanceCatalogTests
 
         foreach (var required in new[] { BaseItem.Armor, BaseItem.Helmet, BaseItem.Cloak, BaseItem.ShortSpear, BaseItem.Longsword })
             checkedCounts.Should().ContainKey(required, "blueprints of every audited kind must be discovered");
+        // Rare loot carries NO_ECONOMY to stay off the markets, but players own it and restyle it.
+        IsExcluded(JObject.Parse(File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "Module", "uti", "invinc_l2.uti.json"))),
+            BaseItem.Longsword, catalogs.Obtainable, out _).Should().BeFalse("the Muster Line Edge is a rare loot drop");
 
         FailOnViolations("blueprints", checkedCounts, violations);
     }
@@ -98,7 +102,7 @@ public class ItemAppearanceCatalogTests
         {
             var blueprint = JObject.Parse(File.ReadAllText(file));
             var baseItem = (BaseItem)(blueprint["BaseItem"]?["value"]?.Value<int>() ?? -1);
-            if (IsCoveredByEditor(baseItem, catalogs.Weapons) && !IsExcluded(blueprint, baseItem, out _))
+            if (IsCoveredByEditor(baseItem, catalogs.Weapons) && !IsExcluded(blueprint, baseItem, catalogs.Obtainable, out _))
                 resrefs.Add(Path.GetFileName(file).Replace(".uti.json", ""));
         }
 
@@ -131,7 +135,7 @@ public class ItemAppearanceCatalogTests
         SortedDictionary<BaseItem, List<string>> violations)
     {
         var baseItem = (BaseItem)(item["BaseItem"]?["value"]?.Value<int>() ?? -1);
-        if (!IsCoveredByEditor(baseItem, catalogs.Weapons) || IsExcluded(item, baseItem, out var name))
+        if (!IsCoveredByEditor(baseItem, catalogs.Weapons) || IsExcluded(item, baseItem, catalogs.Obtainable, out var name))
             return;
 
         var problems = baseItem switch
@@ -168,16 +172,20 @@ public class ItemAppearanceCatalogTests
     private static bool IsCoveredByEditor(BaseItem baseItem, IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> weapons) =>
         baseItem is BaseItem.Armor or BaseItem.Helmet or BaseItem.Cloak || weapons.ContainsKey(baseItem);
 
-    private static bool IsExcluded(JObject blueprint, BaseItem baseItem, out string name)
+    private static bool IsExcluded(JObject blueprint, BaseItem baseItem, IReadOnlySet<string> obtainable, out string name)
     {
         var noEconomy = (blueprint["VarTable"]?["value"] as JArray)?.Any(variable =>
             variable["Name"]?["value"]?.Value<string>() == Item.NoEconomyVariable &&
             variable["Type"]?["value"]?.Value<int>() == 1 &&
             variable["Value"]?["value"]?.Value<int>() == 1) == true;
         name = blueprint["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty;
+        // NO_ECONOMY only hides an item from the markets. Rare loot and capstone rewards carry it too, so it
+        // marks an NPC-only item only when no player source hands the item out.
+        var resref = blueprint["TemplateResRef"]?["value"]?.Value<string>() ?? string.Empty;
+        var npcOnly = noEconomy && !obtainable.Contains(resref.ToLowerInvariant());
 
         // The editor refuses plot and cursed items, so they are never customized by players.
-        return Item.IsEconomyRestricted(baseItem, name, noEconomy, hasInventoryIcon: true) ||
+        return Item.IsEconomyRestricted(baseItem, name, npcOnly, hasInventoryIcon: true) ||
                blueprint["Plot"]?["value"]?.Value<int>() == 1 ||
                blueprint["Cursed"]?["value"]?.Value<int>() == 1;
     }
@@ -252,7 +260,8 @@ public class ItemAppearanceCatalogTests
         blueprint["x" + (field.Length > 15 ? field[..15] : field)]?["value"]?.Value<int>() ??
         blueprint[field]?["value"]?.Value<int>() ?? 0;
 
-    private static Catalogs LoadCatalogs() => new(LoadArmorCatalogs(), LoadWeaponCatalogs());
+    private static Catalogs LoadCatalogs() => new(LoadArmorCatalogs(), LoadWeaponCatalogs(),
+        EconomyObtainabilityCoverageTests.ReadObtainableResrefs(FindRepositoryRoot().FullName));
 
     private static IReadOnlyList<BaseArmorAppearanceDefinition> LoadArmorCatalogs()
     {

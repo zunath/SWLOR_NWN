@@ -236,6 +236,10 @@ public class ItemAppearanceCatalogTests
             return problems;
         }
 
+        // A weapon of a type that keeps its own parts (WeaponOriginalParts) may use a part missing from the list.
+        if (appearance.KeepsOwnParts)
+            return problems;
+
         // ModelPart1 is the bottom piece, ModelPart2 the middle, ModelPart3 the top.
         var parts = new[]
         {

@@ -12,6 +12,21 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class PerformanceWindowViewTests
 {
+    [Test]
+    public void Session_SingingLabelsResetWhenReturningToAnInstrument()
+    {
+        var model = new PerformanceSessionViewModel();
+        model.ShowSetup(new PerformerSetup { InstrumentFamily = PerformanceInstrumentFamily.Vocals });
+        model.SessionTitle.Should().Be("Singing");
+        model.InstrumentHeading.Should().Be("VOCALS");
+        var pushed = Track(model);
+        model.ShowSetup(new PerformerSetup { InstrumentFamily = PerformanceInstrumentFamily.Vocals });
+        pushed.Should().BeEmpty();
+        model.ShowSetup(new PerformerSetup { InstrumentFamily = PerformanceInstrumentFamily.Strings });
+        model.SessionTitle.Should().Be("Session");
+        model.InstrumentHeading.Should().Be("INSTRUMENT");
+    }
+
     private static readonly DateTime Start = new(2026, 10, 29, 12, 0, 0, DateTimeKind.Utc);
 
     private static PerformanceSession CreateSession(PerformanceKind kind, int seed = 7)

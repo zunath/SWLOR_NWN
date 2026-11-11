@@ -23,12 +23,22 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 143' INT TERM
 
-Xvfb :99 -screen 0 1280x720x24 -nolisten tcp > /verify/xvfb.log 2>&1 &
+# The display server advertises software GLX visuals; the game can use a separate GPU context.
+GALLIUM_DRIVER=llvmpipe LIBGL_ALWAYS_SOFTWARE=true mesa_glthread=false Xvfb :99 -screen 0 1280x720x24 -nolisten tcp > /verify/xvfb.log 2>&1 &
 display_pid=$!
 for _ in $(seq 1 50); do
     xdotool getdisplaygeometry > /dev/null 2>&1 && break
     sleep 0.2
 done
+
+timeout --signal=TERM --kill-after=5 30 glxinfo -B > /verify/renderer.txt 2>&1
+if [ "${SWLOR_LIVE_GPU_RENDERER:-}" = wsl-d3d12 ]; then
+    grep -q 'OpenGL renderer string: D3D12 (' /verify/renderer.txt || { cat /verify/renderer.txt >&2; exit 1; }
+    if grep -q 'Basic Render Driver' /verify/renderer.txt; then
+        echo "The requested GPU backend fell back to software" >&2
+        exit 1
+    fi
+fi
 
 server_ip=$(getent hosts "$SWLOR_LIVE_SERVER_HOST" | awk '{print $1; exit}')
 if [ -z "$server_ip" ]; then

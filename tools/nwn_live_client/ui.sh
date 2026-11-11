@@ -21,7 +21,7 @@ coordinate() {
     [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -lt "$2" ] || die "Coordinate $1 is outside 0..$(($2 - 1))"
 }
 
-point() { coordinate "$1" 1280; coordinate "$2" 720; }
+point() { coordinate "$1" "${SWLOR_LIVE_WINDOW_WIDTH:-1280}"; coordinate "$2" "${SWLOR_LIVE_WINDOW_HEIGHT:-720}"; }
 
 press() {
     local w=$1 x=$2 y=$3 button=$4

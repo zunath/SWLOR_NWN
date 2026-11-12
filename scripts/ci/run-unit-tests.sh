@@ -12,10 +12,12 @@
 # overall or per-area line coverage drops below tools/Refactor/CoverageFloors.json (Readmes/EngineTesting.md, "Coverage
 # floors"). --no-coverage skips the check, and so does naming projects (a partial run cannot meet whole-solution floors).
 #
-# It does not build (build the solution once first). It needs SWLOR_Haks checked out with at least sw_2da, sw_tlk
-# and sw_ability (Readmes/AgentEnvironment.md). Every project runs even when an earlier one fails; the exit code is
-# 0 only when all of them pass. Results go to <out>/<project>/ (TRX), <out>/<project>.log and, with coverage,
-# <out>/coverage/<project>.cobertura.xml.
+# It does not build (build the solution once first), with one exception: SWLOR.Game.Host.Tests loads the Release build
+# of the game from its build output (RealBuildReloadTests), so when that project runs and the solution build was not
+# Release, or the Release output is missing, the script builds the game and SWLOR.NWN.API.Testing in Release first.
+# It needs SWLOR_Haks checked out with at least sw_2da, sw_tlk and sw_ability (Readmes/AgentEnvironment.md). Every
+# project runs even when an earlier one fails; the exit code is 0 only when all of them pass. Results go to
+# <out>/<project>/ (TRX), <out>/<project>.log and, with coverage, <out>/coverage/<project>.cobertura.xml.
 #
 # Exclusions are VSTest filter terms, listed per project below as "Class" (the whole class) or "Class.Method"
 # (every case of the method). Add a term only with the reason next to it, and remove it when the cause is fixed.
@@ -180,6 +182,19 @@ uninstrumented_for() {
     esac
 }
 
+# Environment variables for one project's test process, one VAR=value per line. A project's own runsettings sets them
+# for a plain dotnet test; a coverage pass gives coverlet.runsettings instead, which replaces those, so they are set here.
+environment_for() {
+    case "$1" in
+    SWLOR.Game.Host.Tests)
+        # RealBuildReloadTests loads the game into a collectible context 25 times. The runtime never tiers collectible code,
+        # so every method would be compiled fully optimized at its first call (about 25 s of JIT per generation); MinOpts
+        # compiles it as tier 0 would. It only keeps locals alive longer, so it cannot hide a leak.
+        echo "DOTNET_JITMinOpts=1"
+        ;;
+    esac
+}
+
 # Reads terms on stdin, one per line. "Class" matches the whole class, "Class.Method" every case of the method.
 # $1 = exclude builds FullyQualifiedName!~.Term terms joined with &, $1 = include builds FullyQualifiedName~.Term terms
 # joined with |.
@@ -214,7 +229,9 @@ run_pass() {
 
     echo "::group::dotnet test $label ($terms filter terms)"
     local start=$SECONDS
-    dotnet "${args[@]}" 2>&1 | tee "$OUT/$project$suffix.log"
+    local environment=()
+    mapfile -t environment < <(environment_for "$project")
+    env "${environment[@]}" dotnet "${args[@]}" 2>&1 | tee "$OUT/$project$suffix.log"
     local code=${PIPESTATUS[0]}
     echo "::endgroup::"
     # NUnit still runs the OneTimeSetUp of a fixture whose tests were all filtered out, and dotnet test then exits 1
@@ -247,9 +264,27 @@ run_pass() {
     return 0
 }
 
+# SWLOR.Game.Host.Tests (RealBuildReloadTests) reloads the Release build of the game, copied from its build output, with
+# the Release engine fakes inside each generation; neither is a project reference of the test project. A Release solution
+# build leaves both; any other run builds them here. The test fails, naming the build command, when they are missing.
+ensure_release_game_build() {
+    if [ "$CONFIGURATION" = Release ] &&
+       [ -f SWLOR.Game.Server/bin/Release/net10.0/SWLOR.Game.Server.dll ] &&
+       [ -f SWLOR.NWN.API.Testing/bin/Release/net10.0/SWLOR.NWN.API.Testing.dll ]; then
+        return 0
+    fi
+    echo "::group::dotnet build SWLOR.Game.Server and SWLOR.NWN.API.Testing (Release, for SWLOR.Game.Host.Tests)"
+    local project
+    for project in SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.NWN.API.Testing/SWLOR.NWN.API.Testing.csproj; do
+        dotnet build "$project" -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly || echo "Release build of $project failed."
+    done
+    echo "::endgroup::"
+}
+
 failed=()
 summary_rows=()
 for project in "${PROJECTS[@]}"; do
+    [ "$project" = SWLOR.Game.Host.Tests ] && ensure_release_game_build
     exclusions="$(exclusions_for "$project")"
     EXCLUDED_CLASSES="$(grep -v '\.' <<< "$exclusions" || true)"
     uninstrumented="$(uninstrumented_for "$project")"

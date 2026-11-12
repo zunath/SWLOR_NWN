@@ -6,7 +6,10 @@ namespace SWLOR.Game.Contracts;
 /// </summary>
 public interface IHostLifecycle
 {
-    /// <summary>True once the engine has loaded the module (the <c>mod_load</c> boot scripts have started).</summary>
+    /// <summary>
+    /// True once the engine has loaded the module: NWNX signalled <c>ON_MODULE_LOAD_FINISH</c>, after the boot scripts ran.
+    /// A generation activated after that is a reload: the engine runs neither the boot scripts nor that signal again.
+    /// </summary>
     bool ModuleLoaded { get; }
 
     /// <summary>The server environment: <c>Production</c>, <c>Test</c> or <c>Development</c>.</summary>

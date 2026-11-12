@@ -37,7 +37,16 @@ public class GameGenerationTests
                 throw ActivationFailure;
         }
 
+        public void ResumeAfterModuleLoad() => Calls.Add("resume");
+
         public void Retire() => Calls.Add("retire");
+    }
+
+    private sealed class Lifecycle : IHostLifecycle
+    {
+        public bool ModuleLoaded { get; init; }
+        public string Environment => "Test";
+        public bool ReloadEnabled => true;
     }
 
     private sealed class Services : IHostServices
@@ -103,6 +112,51 @@ public class GameGenerationTests
         generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
         generation.MainLoop.Should().BeOfType<HostedMainLoop>();
         callbacks.Bound.Should().BeOfType<HostedSignalHandler>();
+    }
+
+    [Test]
+    public async Task A_generation_activated_before_the_module_loads_is_a_boot_and_logs_nothing()
+    {
+        var boot = new RecordingBoot();
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        boot.Calls.Should().Equal(new[] { "activate" }, "the engine signals the module load to generation 1 itself");
+        log.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task A_generation_activated_after_the_module_loaded_rebuilds_the_container_and_dispatch_only_and_says_so()
+    {
+        var boot = new RecordingBoot();
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, callbacks, hooks) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true });
+
+        await generation.ActivateAsync(new GenerationActivation(3, null, null, null, services), CancellationToken.None);
+
+        boot.Calls.Should().Equal(new[] { "activate", "resume" },
+            "the engine does not signal the module load again, so the new build takes it after its boot steps");
+        hooks.Calls.Should().Equal(new[] { "bind" });
+        generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
+        generation.MainLoop.Should().BeOfType<HostedMainLoop>();
+        callbacks.Bound.Should().BeOfType<HostedSignalHandler>();
+        log.Should().ContainSingle().Which.Should()
+            .MatchRegex(@"^Generation 3 activated by a reload in \d+ ms: rebuilt the service container and the script dispatch only; " +
+                        "no boot handler reran and nothing was adopted\\.$");
+    }
+
+    [Test]
+    public void A_generation_needs_a_log()
+    {
+        var create = () => new GameGeneration(new RecordingBoot(), null);
+
+        create.Should().Throw<ArgumentNullException>();
     }
 
     [Test]

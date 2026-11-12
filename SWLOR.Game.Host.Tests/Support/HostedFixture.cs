@@ -12,20 +12,33 @@ namespace SWLOR.Game.Host.Tests.Support;
 /// </summary>
 internal sealed class HostedFixture
 {
-    public HostedFixture(string gameAssemblyPath, bool collectible = true)
+    /// <param name="gameAssemblyPath">The build the host loads as generation 1.</param>
+    /// <param name="collectible">Whether the build loads into a collectible context.</param>
+    /// <param name="variables">More settings the host reads (the environment, the reload switch).</param>
+    /// <param name="hostDirectory">The host's own folder (relative settings resolve against it); the build's folder when null.</param>
+    /// <param name="reloadPollInterval">How often the reload trigger looks at the signal file.</param>
+    public HostedFixture(
+        string gameAssemblyPath,
+        bool collectible = true,
+        IReadOnlyDictionary<string, string?>? variables = null,
+        string? hostDirectory = null,
+        TimeSpan? reloadPollInterval = null)
     {
         Scheduler = new RecordingClosureScheduler();
         CoreFunctions = new CoreFunctionHandler(Environment.CurrentManagedThreadId, null, Scheduler, RejectedClosureHandling.Drop);
-        var variables = new Dictionary<string, string?>
+        var settings = new Dictionary<string, string?>
         {
             [HostSettings.GameAssemblyVariable] = gameAssemblyPath,
             [HostSettings.CollectibleVariable] = collectible ? "true" : "false",
             [HostSettings.RedisHostVariable] = "redis:6379"
         };
-        Settings = HostSettings.Read(name => variables.GetValueOrDefault(name), Path.GetDirectoryName(gameAssemblyPath)!);
+        foreach (var (name, value) in variables ?? new Dictionary<string, string?>())
+            settings[name] = value;
+        Settings = HostSettings.Read(name => settings.GetValueOrDefault(name), hostDirectory ?? Path.GetDirectoryName(gameAssemblyPath)!);
         Redis = new FakeRedisConnectionSource();
         Hooks = new NativeHookTable();
-        Mode = new SwlorHostMode(CoreFunctions, Settings, Redis, Hooks, (category, message) => Log.Enqueue($"{category} {message}"));
+        Mode = new SwlorHostMode(CoreFunctions, Settings, Redis, Hooks, (category, message) => Log.Enqueue($"{category} {message}"),
+            reloadPollInterval ?? TimeSpan.FromSeconds(1));
         Mode.Services.Add(Record);
     }
 

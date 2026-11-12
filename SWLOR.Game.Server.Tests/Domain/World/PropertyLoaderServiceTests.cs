@@ -1268,6 +1268,66 @@ public class PropertyLoaderServiceTests
         reloaded.Scheduled.Should().BeEmpty();
     }
 
+    [Test]
+    public void A_reload_puts_back_what_a_layout_keeps_outside_the_world_and_a_layout_that_fails_stops_nothing()
+    {
+        var small = _world.StoreApartment();
+        var medium = _world.StoreApartment(PropertyLayoutType.ApartmentMediumStyle1);
+        RequestEntry(small);
+        RequestEntry(medium);
+        Loader.RunAllBatches();
+        var areas = _world.Areas.Instances.ToList();
+        var adopted = new List<uint>();
+        _world.Catalog.GetLayoutByType(small.Layout).OnReloadAdoptAction = area => adopted.Add(area);
+        _world.Catalog.GetLayoutByType(medium.Layout).OnReloadAdoptAction = _ => throw new InvalidOperationException("dock");
+        LiveWorld(areas.ToDictionary(area => area, _ => new List<uint>()));
+
+        Loader.CarryLoadState();
+        var reloaded = new PropertyWorld.LoaderUnderTest(Db, _world.Areas, _world.Recorded);
+        reloaded.AdoptLiveProperties();
+
+        adopted.Should().ContainSingle().Which.Should().Be(reloaded.TryGetLoadedInstance(small.Id, out var instance) ? instance.Area : 0);
+        reloaded.TryGetLoadedInstance(medium.Id, out _).Should().BeTrue("a layout whose adoption throws is still registered");
+    }
+
+    [Test]
+    public void A_reload_keeps_the_players_waiting_for_a_load_and_loads_again_an_area_that_was_lost()
+    {
+        _world.AddPlayer(Player, PlayerId);
+        var apartment = _world.StoreApartment();
+        StoreStructure(apartment.Id);
+        RequestEntry(apartment);
+        Loader.RunNextBatch().Should().BeTrue("the first batch creates the area");
+        LiveWorld(new Dictionary<uint, List<uint>>());
+
+        Loader.CarryLoadState();
+        var reloaded = new PropertyWorld.LoaderUnderTest(Db, _world.Areas, _world.Recorded);
+        reloaded.AdoptLiveProperties();
+        reloaded.RunAllBatches();
+
+        _world.Areas.Created.Should().HaveCount(2, "the area the old build created is gone, so the load starts over");
+        reloaded.GetPropertyLoadState(apartment.Id).Should().Be(PropertyLoadState.Loaded);
+        _world.MessagesTo(Player).Should().Contain("Apartment is ready. Please try entering again.",
+            "the player who asked before the reload is still told");
+    }
+
+    [Test]
+    public void The_property_service_carries_and_adopts_through_its_loader()
+    {
+        var apartment = _world.StoreApartment();
+        RequestEntry(apartment);
+        Loader.RunAllBatches();
+        LiveWorld(_world.Areas.Instances.ToDictionary(area => area, _ => new List<uint>()));
+        var before = AdoptedDigest(Loader);
+
+        _world.Service.CarryProperties();
+        _world.Locals.Has(PropertyWorld.Module, ReloadCarry.VariablePrefix + "properties").Should().BeTrue();
+        _world.Service.AdoptProperties();
+
+        _world.Locals.Has(PropertyWorld.Module, ReloadCarry.VariablePrefix + "properties").Should().BeFalse("the adoption takes the carry");
+        AdoptedDigest(Loader).Should().Be(before);
+    }
+
     /// <summary>The areas the engine iterates and the objects in each, in order.</summary>
     private void LiveWorld(Dictionary<uint, List<uint>> world)
     {

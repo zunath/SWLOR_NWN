@@ -27,6 +27,7 @@ public class HostedMainLoopTests
     [Test]
     public void A_tick_runs_the_main_loop_for_the_hosts_frame_and_records_it_as_the_server_frame()
     {
+        var before = ServerFrame.Current;
         var host = new RecordingHostCallbacks { Frame = 777 };
         var frames = new List<ulong>();
         var serverFrameDuring = 0ul;
@@ -36,13 +37,21 @@ public class HostedMainLoopTests
             serverFrameDuring = ServerFrame.Current;
         });
 
-        loop.Tick();
-        host.Frame = 778;
-        loop.Tick();
+        try
+        {
+            loop.Tick();
+            host.Frame = 778;
+            loop.Tick();
 
-        frames.Should().Equal(777ul, 778ul);
-        serverFrameDuring.Should().Be(778ul);
-        ServerFrame.Current.Should().Be(778ul);
+            frames.Should().Equal(777ul, 778ul);
+            serverFrameDuring.Should().Be(778ul);
+            ServerFrame.Current.Should().Be(778ul);
+        }
+        finally
+        {
+            // ServerFrame is process-wide; other tests read its default.
+            new HostedMainLoop(new RecordingHostCallbacks { Frame = before }, _ => { }).Tick();
+        }
     }
 
     [Test]

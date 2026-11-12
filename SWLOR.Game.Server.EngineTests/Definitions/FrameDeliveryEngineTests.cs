@@ -9,51 +9,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// (<see cref="Scheduler"/>, <c>NwTask</c>) inside NWNX's main-loop callback with <c>OBJECT_SELF</c> invalid, from the first
 /// frame, and NWNX refuses a closure aimed at that invalid object, which is then dropped without an exception. The host
 /// entry (<c>SWLOR.Game.Host</c>) must do the same: the package's inline frame delivery and dropped rejected closures.
-/// The probes below record, at boot and again during the run, what scheduled work sees; the test passes on both entries,
-/// and its detail line gives the boot frame numbers, which match between the two entries' runs.
+/// The probes record what scheduled work sees, at boot (<c>mod_load</c>, started by <see cref="EngineTest"/>) and during
+/// the run; the tests pass on both entries, and the boot test's detail line gives the frame numbers, which match between
+/// the two entries' runs.
 /// </summary>
 public static class FrameDeliveryEngineTests
 {
-    private static readonly BootProbe PreloadProbe = new("mod_preload");
-    private static readonly BootProbe LoadProbe = new("mod_load");
+    private static readonly Probe BootProbe = new();
 
-    /// <summary>Scheduled at <c>mod_preload</c>, before the module starts loading: frames during the load run it.</summary>
-    [NWNEventHandler(ScriptName.OnModulePreload)]
-    public static void ScheduleFromModulePreload() => PreloadProbe.Schedule();
-
-    /// <summary>Scheduled at <c>mod_load</c>, while the module finishes loading.</summary>
-    [NWNEventHandler(ScriptName.OnModuleLoad)]
-    public static void ScheduleFromModuleLoad() => LoadProbe.Schedule();
+    /// <summary>
+    /// Schedules the boot probe's work. <see cref="EngineTest.ScheduleEngineTests"/> calls it from <c>mod_load</c>, while
+    /// the module finishes loading.
+    /// </summary>
+    internal static void StartBootProbe() => BootProbe.Schedule();
 
     [EngineTest("Boot-time scheduled work runs on the next frame with OBJECT_SELF invalid, and its DelayCommand is dropped", Category = "FrameDelivery", TimeoutSeconds = 30f)]
     public static async Task BootScheduledWorkMatchesTheNativeEntry(EngineTestContext ctx)
     {
-        foreach (var probe in new[] { PreloadProbe, LoadProbe })
-        {
-            ctx.Assert(probe.Scheduled, $"The {probe.Script} probe scheduled its work at boot.");
-            ctx.Assert(probe.Ran, $"The work {probe.Script} scheduled at frame {probe.ScheduledFrame} ran.");
-            ctx.AssertEqual(OBJECT_INVALID, probe.ObjectSelf, $"OBJECT_SELF seen by the work {probe.Script} scheduled");
-            ctx.AssertEqual(null, probe.DelayException, $"Exception from DelayCommand on OBJECT_SELF in the work {probe.Script} scheduled");
-            ctx.Assert(probe.RunFrame - probe.ScheduledFrame <= 1,
-                $"The work {probe.Script} scheduled at frame {probe.ScheduledFrame} ran at frame {probe.RunFrame}: frame work runs from the " +
-                "first frame after it is scheduled, also while the module is still loading.");
-        }
+        ctx.Assert(BootProbe.Scheduled, "The engine-test boot handler scheduled the probe's work at mod_load.");
+        ctx.Assert(BootProbe.Ran, $"The work scheduled at mod_load (frame {BootProbe.ScheduledFrame}) ran.");
 
-        // The refused closures would have run within a frame or two; give them far longer.
+        // The refused closure would have run within a frame or two; give it far longer.
         await ctx.DelaySecondsAsync(1f);
-        foreach (var probe in new[] { PreloadProbe, LoadProbe })
-            ctx.Assert(!probe.DelayedRan, $"The DelayCommand on OBJECT_SELF from the work {probe.Script} scheduled never ran: NWNX refused it.");
 
+        BootProbe.AssertMatchesTheNativeEntry(ctx, "the work scheduled at mod_load");
         ctx.SetResultDetail(
-            $"mod_preload scheduled at frame {PreloadProbe.ScheduledFrame}, ran at {PreloadProbe.RunFrame}; " +
-            $"mod_load scheduled at frame {LoadProbe.ScheduledFrame}, ran at {LoadProbe.RunFrame}; " +
-            "OBJECT_SELF invalid in both; each DelayCommand on OBJECT_SELF dropped without an exception.");
+            $"mod_load ran at frame {BootProbe.ScheduledFrame} (the frame NWNX last delivered before the module finished loading); " +
+            $"its scheduled work ran at frame {BootProbe.RunFrame} with OBJECT_SELF invalid; DelayCommand on OBJECT_SELF dropped without an exception.");
     }
 
     [EngineTest("Scheduled work during the run sees OBJECT_SELF invalid, its DelayCommand is dropped, and a module closure still runs", Category = "FrameDelivery", TimeoutSeconds = 30f)]
     public static async Task RunTimeScheduledWorkMatchesTheNativeEntry(EngineTestContext ctx)
     {
-        var probe = new BootProbe("run");
+        var probe = new Probe();
         var moduleClosureRan = false;
         probe.Schedule();
         AssignCommand(GetModule(), () => DelayCommand(0.1f, () => moduleClosureRan = true));
@@ -61,23 +49,15 @@ public static class FrameDeliveryEngineTests
         await ctx.WaitUntilAsync(() => probe.Ran && moduleClosureRan, 10f, "the scheduled work and the module closure");
         await ctx.DelaySecondsAsync(1f);
 
-        ctx.AssertEqual(OBJECT_INVALID, probe.ObjectSelf, "OBJECT_SELF seen by scheduled work");
-        ctx.AssertEqual(null, probe.DelayException, "Exception from DelayCommand on OBJECT_SELF in scheduled work");
-        ctx.Assert(!probe.DelayedRan, "The DelayCommand on OBJECT_SELF from scheduled work never ran: NWNX refused it.");
-        ctx.Assert(probe.RunFrame - probe.ScheduledFrame <= 1,
-            $"Work scheduled at frame {probe.ScheduledFrame} ran at frame {probe.RunFrame}.");
-        ctx.SetResultDetail("Scheduled work ran on the next frame with OBJECT_SELF invalid; its DelayCommand was dropped; a closure assigned to the module ran.");
+        probe.AssertMatchesTheNativeEntry(ctx, "scheduled work");
+        ctx.SetResultDetail(
+            $"Work scheduled at frame {probe.ScheduledFrame} ran at frame {probe.RunFrame} with OBJECT_SELF invalid; its DelayCommand was dropped; " +
+            "a closure assigned to the module ran.");
     }
 
     /// <summary>Schedules one <see cref="Scheduler"/> item and records what it sees when it runs.</summary>
-    private sealed class BootProbe
+    private sealed class Probe
     {
-        public BootProbe(string script)
-        {
-            Script = script;
-        }
-
-        public string Script { get; }
         public bool Scheduled { get; private set; }
         public ulong ScheduledFrame { get; private set; }
         public bool Ran { get; private set; }
@@ -94,6 +74,17 @@ public static class FrameDeliveryEngineTests
             Scheduled = true;
             ScheduledFrame = ServerFrame.Current;
             Scheduler.Schedule(Run, TimeSpan.Zero);
+        }
+
+        public void AssertMatchesTheNativeEntry(EngineTestContext ctx, string what)
+        {
+            ctx.Assert(Ran, $"{what} ran.");
+            ctx.AssertEqual(OBJECT_INVALID, ObjectSelf, $"OBJECT_SELF seen by {what}");
+            ctx.AssertEqual(null, DelayException, $"Exception from DelayCommand on OBJECT_SELF in {what}");
+            ctx.Assert(!DelayedRan, $"The DelayCommand on OBJECT_SELF from {what} never ran: NWNX refused it.");
+            ctx.Assert(RunFrame >= ScheduledFrame && RunFrame - ScheduledFrame <= 1,
+                $"{what} was scheduled at frame {ScheduledFrame} and ran at frame {RunFrame}: frame work runs on the first frame " +
+                "after it is scheduled.");
         }
 
         private void Run()

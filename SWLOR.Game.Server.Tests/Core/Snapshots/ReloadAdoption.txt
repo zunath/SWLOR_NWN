@@ -1,7 +1,9 @@
 # SWLOR reload decisions: what a hot reload runs in place of each boot-only handler, and the state it adopts.
 # Boot-only handlers in manifest order: adopt <step> [carry <step>] = the reload bootstrap runs the adoption step after
 # the rerun handlers (and the old build ran the carry step while it quiesced); nothing = why a reload needs nothing.
+# Rerun handlers with an adoption step: it puts back, after the reruns, what the rerun rolled anew.
 # Adopted state: the fields marked [ReloadState(ReloadStateKind.Adopted)], compared with the old build's at quiescence.
+# Rerolled state: the fields marked [ReloadState(ReloadStateKind.Rerolled)], rolled again by a reload and not compared.
 # The rule is in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md sections 2 and 3.
 # Regenerate (build first): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ReloadAdoptionTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)
 
@@ -45,6 +47,10 @@ mod_load SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
 mod_load SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
   nothing: The TLK overrides stay in the engine.
 
+== RERUN HANDLERS WITH AN ADOPTION STEP ==
+mod_cache_bef SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
+  adopt AdoptGuildTasks carry CarryGuildTasks
+
 == ADOPTED STATE ==
 SWLOR.Game.Server.Domain.Creatures.SpawnService._activeSpawnsByArea
 SWLOR.Game.Server.Domain.Creatures.SpawnService._allSpawnsByArea
@@ -53,6 +59,9 @@ SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedResourceDespawns
 SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawns
 SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawnsByArea
 SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns
+SWLOR.Game.Server.Domain.Economy.GuildService.<DateTasksLoaded>k__BackingField
+SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasks
+SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasksByRank
 SWLOR.Game.Server.Domain.Space.SpaceService._dockPoints
 SWLOR.Game.Server.Domain.World.PropertyLoaderService._completedInstanceSpawnActions
 SWLOR.Game.Server.Domain.World.PropertyLoaderService._completedStartupPropertyLoadIds
@@ -70,3 +79,8 @@ SWLOR.Game.Server.Domain.World.WeatherService._areas
 SWLOR.Game.Server.Domain.World.WeatherService._pattern
 SWLOR.Game.Server.Domain.World.WeatherService._regions
 SWLOR.Game.Server.Feature.StoreManagement._stores
+
+== REROLLED STATE ==
+SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables
+SWLOR.Game.Server.Domain.World.FishingService._fishResrefsByLocation
+SWLOR.Game.Server.Domain.World.FishingService._fishingLocations

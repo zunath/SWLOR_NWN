@@ -93,6 +93,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly List<ResourceDespawn> _queuedResourceDespawns = new();
+        // Some tables roll their respawn delays at random as they load; the spawns keep the delays the boot copied into them.
+        [ReloadState(ReloadStateKind.Rerolled)]
         private readonly Dictionary<string, SpawnTable> _spawnTables = new();
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();

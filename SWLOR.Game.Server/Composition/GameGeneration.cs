@@ -41,8 +41,6 @@ namespace SWLOR.Game.Server.Composition
         private bool _bootStarted;
         private long _generation;
         private bool _reloadEnabled;
-        private bool _activatedByReload;
-        private bool _bootDigestScheduled;
 
         /// <summary>The generation the host loads: the server's own boot.</summary>
         public GameGeneration()
@@ -123,7 +121,6 @@ namespace SWLOR.Game.Server.Composition
             var activationTime = reload ? Stopwatch.StartNew() : null;
             _generation = activation.Generation;
             _reloadEnabled = lifecycle is { ReloadEnabled: true };
-            _activatedByReload = reload;
 
             _sinks = NativeSinkFactory.Create();
             _sinkBinding = sinkBinding;
@@ -149,9 +146,13 @@ namespace SWLOR.Game.Server.Composition
                 }
             }
 
-            Scripts = scripts;
+            // With hot reload on, the boot logs its cache digests at the frame after the module's load script has run (every boot
+            // script has run by then; NWNX signals the module load before them).
+            Scripts = !reload && _reloadEnabled
+                ? new ModuleLoadedScriptDispatcher(scripts, () => _boot.RunNextFrame(() => LogDigests(BootPhase, _boot.DescribeCaches)))
+                : scripts;
             MainLoop = new HostedMainLoop(hostCallbacks);
-            _signals = new HostedSignalHandler(OnSignal);
+            _signals = new HostedSignalHandler(_boot.ProcessSignal);
             hostCallbacks.BindSignals(_signals);
             _hostCallbacks = hostCallbacks;
 
@@ -246,20 +247,6 @@ namespace SWLOR.Game.Server.Composition
             return versions.Count == 0
                 ? MigrationService.RetiredServerMigrationVersion
                 : Math.Max(versions.Max(), MigrationService.RetiredServerMigrationVersion);
-        }
-
-        /// <summary>
-        /// The signal callback: the server's own handling (<see cref="IGenerationBoot.ProcessSignal"/>), then, for the boot of a
-        /// server with hot reload on, the boot's cache digests at the frame after the module has loaded.
-        /// </summary>
-        private void OnSignal(string signal)
-        {
-            _boot.ProcessSignal(signal);
-            if (signal != HostedServerBoot.ModuleLoadFinishSignal || !_reloadEnabled || _activatedByReload || _bootDigestScheduled)
-                return;
-
-            _bootDigestScheduled = true;
-            _boot.RunNextFrame(() => LogDigests(BootPhase, _boot.DescribeCaches));
         }
 
         /// <summary>

@@ -264,7 +264,7 @@ public class GameGenerationTests
     }
 
     [Test]
-    public async Task The_boot_of_a_server_with_hot_reload_on_logs_its_cache_digests_the_frame_after_the_module_loads()
+    public async Task The_boot_of_a_server_with_hot_reload_on_logs_its_cache_digests_the_frame_after_the_module_load_script()
     {
         var boot = new RecordingBoot();
         var log = new List<string>();
@@ -276,20 +276,15 @@ public class GameGenerationTests
         // The signal handler counts the managed entry through the combat recorder, a facade.
         using var container = new FacadeContainer();
         using var scope = container.Install();
-        callbacks.Bound.OnSignal("SOME_OTHER_SIGNAL");
-        boot.NextFrame.Should().BeEmpty();
-
-        callbacks.Bound.OnSignal(HostedServerBoot.ModuleLoadFinishSignal);
         callbacks.Bound.OnSignal(HostedServerBoot.ModuleLoadFinishSignal);
 
-        boot.Signals.Should().Equal("SOME_OTHER_SIGNAL", HostedServerBoot.ModuleLoadFinishSignal, HostedServerBoot.ModuleLoadFinishSignal);
-        boot.NextFrame.Should().ContainSingle("the boot's digests are scheduled once");
-        boot.NextFrame[0]();
-        log.Should().Contain("SWLOR_RELOAD_DIGEST generation=1 phase=boot kind=cache name=Cache.Owner count=3 hash=00000000000000aa");
+        boot.Signals.Should().Equal(HostedServerBoot.ModuleLoadFinishSignal);
+        boot.NextFrame.Should().BeEmpty("NWNX signals the module load before the boot scripts run");
+        generation.Scripts.Should().BeOfType<ModuleLoadedScriptDispatcher>();
     }
 
     [Test]
-    public async Task The_boot_of_a_server_with_hot_reload_off_schedules_no_digest()
+    public async Task The_boot_of_a_server_with_hot_reload_off_dispatches_scripts_as_before_and_schedules_no_digest()
     {
         var boot = new RecordingBoot();
         var generation = new GameGeneration(boot, _ => { });
@@ -302,6 +297,7 @@ public class GameGenerationTests
         using var scope = container.Install();
         callbacks.Bound.OnSignal("SOME_OTHER_SIGNAL");
 
+        generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
         boot.NextFrame.Should().BeEmpty();
         boot.Calls.Should().Equal("activate");
     }

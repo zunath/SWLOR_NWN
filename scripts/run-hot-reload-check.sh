@@ -113,6 +113,17 @@ native_path() {
     fi
 }
 
+# Docker is a Windows program under Git Bash too: the host paths it gets are in Windows form with forward slashes, and
+# compose() keeps Git Bash from rewriting the container paths it is given (/bin/bash, /nwn/home/...) into Windows ones.
+# Elsewhere both are no-ops.
+docker_path() {
+    if command -v cygpath > /dev/null 2>&1; then
+        cygpath -m "$1"
+    else
+        printf '%s\n' "$1"
+    fi
+}
+
 if [ "$SKIP_BUILD" -eq 0 ]; then
     section "Building the game, the host and SWLOR.CLI (Release)"
     for project in SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.Game.Host/SWLOR.Game.Host.csproj SWLOR.CLI/SWLOR.CLI.csproj; do
@@ -141,7 +152,8 @@ if ! mkdir -p "$DOTNET_DIR/game" "$RELOAD_DIR/receipts" ||
     exit 1
 fi
 
-export SWLOR_ENGINE_TEST_HOME="$SERVER_HOME"
+SWLOR_ENGINE_TEST_HOME="$(docker_path "$SERVER_HOME")"
+export SWLOR_ENGINE_TEST_HOME
 export SWLOR_ENGINE_TEST_HOT_RELOAD=true
 export SWLOR_ENGINE_TEST_SHUTDOWN=false
 export SWLOR_ENGINE_TEST_DOTNET_ENTRY=host
@@ -164,9 +176,14 @@ if [ -z "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ] && ! ls "$SERVER_HOME"/hak/*.hak > /d
         exit 1
     fi
 fi
+if [ -n "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ]; then
+    SWLOR_ENGINE_TEST_HAK_DIR="$(docker_path "$SWLOR_ENGINE_TEST_HAK_DIR")"
+    export SWLOR_ENGINE_TEST_HAK_DIR
+fi
 
 compose() {
-    docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" "$@"
+    MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' MSYS2_ENV_CONV_EXCL='*' \
+        docker compose -p "$COMPOSE_PROJECT" -f "$(docker_path "$COMPOSE_FILE")" "$@"
 }
 
 # The SWLOR_RELOAD_DIGEST lines the server logged, one per line as "<generation> <phase> <kind> <name> <count> <hash>".

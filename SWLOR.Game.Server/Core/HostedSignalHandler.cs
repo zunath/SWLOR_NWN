@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Core
         }
 
         /// <summary>
-        /// <paramref name="processSignal"/> handles the signal: a test's stand-in, or <c>GameGeneration</c>'s, which runs
-        /// <see cref="NativeInteropManager.ProcessSignal"/> and, with hot reload on, schedules the boot's reload digests.
+        /// <paramref name="processSignal"/> handles the signal: a test's stand-in, or <c>GameGeneration</c>'s
+        /// (<c>IGenerationBoot.ProcessSignal</c>, which is <see cref="NativeInteropManager.ProcessSignal"/>).
         /// </summary>
         public HostedSignalHandler(Action<string> processSignal)
         {

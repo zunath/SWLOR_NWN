@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -280,6 +281,57 @@ public class GuildServiceTests
         _service.RefreshGuildTasks();
 
         _service.DateTasksLoaded.Should().Be(first);
+    }
+
+    // ---- hot reload: the tasks the old build picked are carried, not rolled again
+
+    [Test]
+    public void A_reload_keeps_the_picked_tasks_and_the_time_they_were_picked_and_drops_a_quest_the_new_build_lacks()
+    {
+        _ = new LocalVariables(_engine.Engine);
+        _engine.Engine.SetReturn("GetModule", 1u);
+        var quest = new QuestDetail { QuestId = "reload_guild_task", GuildType = GuildType.HuntersGuild, GuildRank = 0 };
+        Quest.RegisterRuntimeQuest(quest);
+        _service.RefreshGuildTasks();
+        Pick(_service, GuildType.HuntersGuild, 0, quest, new QuestDetail { QuestId = "retired_guild_task" });
+        var picked = _service.DateTasksLoaded;
+
+        _service.CarryGuildTasks();
+        var reloaded = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
+        reloaded.LoadData();
+        reloaded.RefreshGuildTasks();
+        reloaded.AdoptGuildTasks();
+
+        reloaded.DateTasksLoaded.Should().Be(picked, "the tasks completed since then stay hidden");
+        reloaded.GetActiveGuildTasksByRank(GuildType.HuntersGuild, 0).Select(task => task.QuestId).Should().Equal("reload_guild_task");
+        reloaded.GetAllActiveGuildTasks(GuildType.HuntersGuild).Keys.Should().Equal("reload_guild_task");
+        _db.Saved.Should().BeEmpty("adopting writes nothing");
+
+        var again = new GuildService(_db, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuestService>());
+        again.LoadData();
+        again.AdoptGuildTasks();
+        again.DateTasksLoaded.Should().BeNull("the carry was taken; without one the new roll stays");
+    }
+
+    [Test]
+    public void Nothing_is_carried_before_the_tasks_are_picked()
+    {
+        var locals = new LocalVariables(_engine.Engine);
+        _engine.Engine.SetReturn("GetModule", 1u);
+
+        _service.CarryGuildTasks();
+
+        locals.Has(1, ReloadCarry.VariablePrefix + "guildTasks").Should().BeFalse();
+    }
+
+    /// <summary>Sets the tasks of one guild rank as a roll would have picked them.</summary>
+    private static void Pick(GuildService service, GuildType guild, int rank, params QuestDetail[] tasks)
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var byRank = (Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>)typeof(GuildService).GetField("_activeGuildTasksByRank", flags)!.GetValue(service)!;
+        var all = (Dictionary<GuildType, Dictionary<string, QuestDetail>>)typeof(GuildService).GetField("_activeGuildTasks", flags)!.GetValue(service)!;
+        byRank[guild][rank] = tasks.ToList();
+        all[guild] = tasks.ToDictionary(task => task.QuestId);
     }
 
     [Test]

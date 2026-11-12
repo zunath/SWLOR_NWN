@@ -76,6 +76,29 @@ public class ReloadBootstrapTests
         public void Carry() => Calls.Add($"{Name} carry");
     }
 
+    private static class RerunOwner
+    {
+        [BootPhase(BootReload.Rerun, AdoptedBy = nameof(Adopt), CarriedBy = nameof(Carry))]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public static void Load() => Calls.Add("rerun load");
+
+        public static void Adopt() => Calls.Add("rerun adopt");
+
+        public static void Carry() => Calls.Add("rerun carry");
+    }
+
+    [Test]
+    public void A_rerun_handler_with_an_adoption_step_reruns_and_then_adopts_and_its_carry_is_a_carry_step()
+    {
+        var registry = new ScriptRegistry();
+        registry.LoadHandlers(typeof(RerunOwner).GetMethods(), ScriptHandlerManifest.Empty);
+
+        ReloadBootstrap.Run(ReloadBootstrap.Plan(registry), action => action());
+        ReloadBootstrap.Run(ReloadBootstrap.CarryPlan(registry), action => action());
+
+        Calls.Should().Equal("rerun load", "rerun adopt", "rerun carry");
+    }
+
     private sealed class Misnamed
     {
         [BootPhase(BootReload.BootOnly, AdoptedBy = "NoSuchMethod")]
@@ -202,6 +225,7 @@ public class ReloadBootstrapTests
         plan.Count(step => step.Kind == ReloadStepKind.Rerun).Should().Be(reruns);
         plan.Where(step => step.Kind == ReloadStepKind.Adopt).Select(step => step.Name).Should().Equal(
             "SWLOR.Game.Server.Domain.Foundation.DBService.CheckIndexes",
+            "SWLOR.Game.Server.Domain.Economy.GuildService.AdoptGuildTasks",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService.AdoptSpawns",
             "SWLOR.Game.Server.Domain.Foundation.MigrationService.CheckCharacterVersion",
             "SWLOR.Game.Server.Domain.World.PropertyService.AdoptProperties",
@@ -209,6 +233,7 @@ public class ReloadBootstrapTests
             "SWLOR.Game.Server.Domain.World.WeatherService.AdoptWeather",
             "SWLOR.Game.Server.Feature.StoreManagement.AdoptStores");
         carry.Select(step => step.Name).Should().Equal(
+            "SWLOR.Game.Server.Domain.Economy.GuildService.CarryGuildTasks",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService.CarrySpawns",
             "SWLOR.Game.Server.Domain.World.PropertyService.CarryProperties",
             "SWLOR.Game.Server.Domain.World.WeatherService.CarryWeather");

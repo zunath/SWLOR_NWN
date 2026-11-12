@@ -20,8 +20,11 @@ namespace SWLOR.Game.Server.Domain.Foundation
     public class WalkmeshService : IWalkmeshService
     {
         private readonly IDBService _db;
+        // Working state of the boot-only bake (LoadWalkmeshes); nothing reads it after the bake.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<ushort, bool> _placeableHasWalkmesh = new();
         private readonly (float X, float Y)[] _stepDirections =
         {

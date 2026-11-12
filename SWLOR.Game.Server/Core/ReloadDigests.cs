@@ -6,10 +6,11 @@ namespace SWLOR.Game.Server.Core
 {
     /// <summary>
     /// The digests a hot reload is checked with (MaintainabilityRefactorHotReload.md, P4-14), each a count and a content hash
-    /// (<see cref="ReloadDigestHasher"/>). Cache: one per class that owns a rerun boot handler, over its fields except those marked
-    /// <see cref="ReloadStateAttribute"/>; after a reload each must equal the boot's. Adopted: one per class with fields marked
-    /// <see cref="ReloadStateKind.Adopted"/>, over those fields; after a reload each must equal the old build's at quiescence.
-    /// The world digests (<see cref="WorldDigest"/>) complete them. The server logs them only when hot reload is on;
+    /// (<see cref="ReloadDigestHasher"/>) of one field, named <c>Namespace.Class.field</c>. Cache: every field of each class that
+    /// owns a rerun boot handler or a handler of a script those run, except the fields marked <see cref="ReloadStateAttribute"/>
+    /// and those that hold another service; after a reload each must equal the boot's. Adopted: every field marked
+    /// <see cref="ReloadStateKind.Adopted"/>; after a reload each must equal the old build's at quiescence. The world digests
+    /// (<see cref="WorldDigest"/>) complete them. The server logs them only when hot reload is on;
     /// <c>scripts/run-hot-reload-check.sh</c> compares them (<see cref="Compare"/> is the same rule).
     /// </summary>
     public static class ReloadDigests
@@ -19,9 +20,10 @@ namespace SWLOR.Game.Server.Core
         public const string WorldKind = "world";
 
         /// <summary>
-        /// One cache digest per class that declares a rerun handler of the boot scripts or a handler of a script those handlers
-        /// run (<see cref="ReloadBootstrap.NestedScripts"/>), in the order of its first handler, over its static fields and, for an
-        /// instance handler, the instance's fields, without the fields marked <see cref="ReloadStateAttribute"/>.
+        /// The cache digests: for each class that declares a rerun handler of the boot scripts or a handler of a script those
+        /// handlers run (<see cref="ReloadBootstrap.NestedScripts"/>), in the order of its first handler, one digest per static
+        /// field and, for an instance handler, per field of the instance, without the fields marked
+        /// <see cref="ReloadStateAttribute"/> and those that hold another service.
         /// </summary>
         public static IReadOnlyList<ReloadDigestLine> Cache(ScriptRegistry registry)
         {
@@ -38,31 +40,17 @@ namespace SWLOR.Game.Server.Core
                 .ToArray();
 
             var hasher = new ReloadDigestHasher(typeof(ReloadDigests).Assembly);
-            return owners
-                .Select(owner => Describe(hasher, CacheKind, owner.Type, owner.Instance, field => ReloadDigestHasher.StateOf(field) == null))
-                .ToArray();
+            var lines = new List<ReloadDigestLine>();
+            foreach (var (type, instance) in owners)
+                lines.AddRange(DescribeFields(hasher, CacheKind, type, instance, field => ReloadDigestHasher.StateOf(field) == null));
+
+            return lines;
         }
 
         /// <summary>
-        /// One digest, or a line that never matches (<see cref="ReloadDigestLine.Matches"/>) naming the exception when reading the
-        /// class failed (a static initializer that throws, say), so one class cannot hide the others' digests.
-        /// </summary>
-        private static ReloadDigestLine Describe(ReloadDigestHasher hasher, string kind, Type type, object instance, Func<FieldInfo, bool> include)
-        {
-            try
-            {
-                return hasher.Describe(kind, type.FullName, type, instance, include);
-            }
-            catch (Exception exception)
-            {
-                return new ReloadDigestLine(kind, type.FullName, -1, ReloadDigestLine.ErrorHashPrefix + exception.GetBaseException().GetType().Name);
-            }
-        }
-
-        /// <summary>
-        /// One adopted digest per class of the game assembly that has fields marked <see cref="ReloadStateKind.Adopted"/>, over
-        /// those fields, in the order of the class names. An instance field is read from <paramref name="resolveOwner"/>'s instance
-        /// of the class (the container's singleton); a class it cannot resolve gets a digest that never matches.
+        /// The adopted digests: one per field marked <see cref="ReloadStateKind.Adopted"/> of the classes of the game assembly, in
+        /// the order of the class names. An instance field is read from <paramref name="resolveOwner"/>'s instance of the class (the
+        /// container's singleton); a class it cannot resolve gets one digest that never matches.
         /// </summary>
         public static IReadOnlyList<ReloadDigestLine> Adopted(Func<Type, object> resolveOwner)
         {
@@ -97,11 +85,68 @@ namespace SWLOR.Game.Server.Core
                     }
                 }
 
-                lines.Add(Describe(hasher, AdoptedKind, type, instance,
+                lines.AddRange(DescribeFields(hasher, AdoptedKind, type, instance,
                     field => field.DeclaringType == type && ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted));
             }
 
             return lines;
+        }
+
+        /// <summary>
+        /// The digest of each field of <paramref name="type"/> that <paramref name="include"/> selects, skipping those that hold
+        /// another service. A field whose value cannot be read (a static initializer that throws, say) gets a digest that never
+        /// matches (<see cref="ReloadDigestLine.Matches"/>) naming the exception, so it cannot hide the other fields' digests.
+        /// </summary>
+        private static IEnumerable<ReloadDigestLine> DescribeFields(ReloadDigestHasher hasher, string kind, Type type, object instance,
+            Func<FieldInfo, bool> include)
+        {
+            List<FieldInfo> fields;
+            try
+            {
+                fields = ReloadDigestHasher.RootFields(type, instance)
+                    .Where(field => include(field) && !ReloadDigestHasher.IsDependency(field.FieldType))
+                    .ToList();
+            }
+            catch (Exception exception)
+            {
+                return new[] { Failed(kind, type.FullName, exception) };
+            }
+
+            var lines = new List<ReloadDigestLine>(fields.Count);
+            foreach (var field in fields)
+            {
+                var name = FieldName(type, field);
+                try
+                {
+                    lines.Add(hasher.Describe(kind, name, type, instance, candidate => candidate == field));
+                }
+                catch (Exception exception)
+                {
+                    lines.Add(Failed(kind, name, exception));
+                }
+            }
+
+            return lines;
+        }
+
+        /// <summary>
+        /// <c>Namespace.Class.field</c>, with an auto-property's backing field shown as the property and a field of a base class
+        /// prefixed with that class's name.
+        /// </summary>
+        private static string FieldName(Type type, FieldInfo field)
+        {
+            var name = field.Name;
+            if (name.StartsWith("<", StringComparison.Ordinal) && name.EndsWith(">k__BackingField", StringComparison.Ordinal))
+                name = name.Substring(1, name.Length - "<>k__BackingField".Length);
+
+            return field.DeclaringType == type || field.DeclaringType == null
+                ? $"{type.FullName}.{name}"
+                : $"{type.FullName}.{field.DeclaringType.Name}.{name}";
+        }
+
+        private static ReloadDigestLine Failed(string kind, string name, Exception exception)
+        {
+            return new ReloadDigestLine(kind, name, -1, ReloadDigestLine.ErrorHashPrefix + exception.GetBaseException().GetType().Name);
         }
 
         /// <summary>

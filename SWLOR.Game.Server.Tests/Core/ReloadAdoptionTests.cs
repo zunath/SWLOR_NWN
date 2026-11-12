@@ -52,16 +52,20 @@ public class ReloadAdoptionTests
     }
 
     [Test]
-    public void Only_a_boot_only_handler_with_an_adoption_step_has_reload_decisions_or_a_carry_step()
+    public void Only_boot_only_and_rerun_handlers_have_adoption_steps_and_a_carry_step_only_feeds_one()
     {
         var problems = Handlers(LoadRegistry())
-            .Where(handler => handler.Phase.Reload != BootReload.BootOnly
-                ? handler.Phase.AdoptedBy != null || handler.Phase.CarriedBy != null || handler.Phase.NothingToAdopt != null
-                : handler.Phase.CarriedBy != null && handler.Phase.AdoptedBy == null)
+            .Where(handler => handler.Phase.Reload switch
+            {
+                BootReload.BootOnly => handler.Phase.CarriedBy != null && handler.Phase.AdoptedBy == null,
+                // A rerun handler's adoption step puts back what the rerun rolled anew; it has no NothingToAdopt.
+                BootReload.Rerun => handler.Phase.NothingToAdopt != null || (handler.Phase.CarriedBy != null && handler.Phase.AdoptedBy == null),
+                _ => handler.Phase.AdoptedBy != null || handler.Phase.CarriedBy != null || handler.Phase.NothingToAdopt != null,
+            })
             .Select(handler => ScriptHandlerManifest.HandlerName(handler.Method))
             .ToArray();
 
-        problems.Should().BeEmpty("a rerun, native hook or retire handler has no adoption step, and a carry only feeds an adoption step");
+        problems.Should().BeEmpty("a native hook or retire handler has no adoption step, and a carry only feeds an adoption step");
     }
 
     [Test]
@@ -92,7 +96,9 @@ public class ReloadAdoptionTests
         text.Append("# SWLOR reload decisions: what a hot reload runs in place of each boot-only handler, and the state it adopts.\n");
         text.Append("# Boot-only handlers in manifest order: adopt <step> [carry <step>] = the reload bootstrap runs the adoption step after\n");
         text.Append("# the rerun handlers (and the old build ran the carry step while it quiesced); nothing = why a reload needs nothing.\n");
+        text.Append("# Rerun handlers with an adoption step: it puts back, after the reruns, what the rerun rolled anew.\n");
         text.Append("# Adopted state: the fields marked [ReloadState(ReloadStateKind.Adopted)], compared with the old build's at quiescence.\n");
+        text.Append("# Rerolled state: the fields marked [ReloadState(ReloadStateKind.Rerolled)], rolled again by a reload and not compared.\n");
         text.Append("# The rule is in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md sections 2 and 3.\n");
         text.Append("# Regenerate (build first): " + RegenerateCommand + "\n");
 
@@ -113,18 +119,34 @@ public class ReloadAdoptionTests
             }
         }
 
+        text.Append("\n== RERUN HANDLERS WITH AN ADOPTION STEP ==\n");
+        foreach (var (script, method, phase) in Handlers(LoadRegistry()).Where(handler => handler.Phase.Reload == BootReload.Rerun && handler.Phase.AdoptedBy != null))
+        {
+            text.Append(script).Append(' ').Append(ScriptHandlerManifest.HandlerName(method)).Append('\n');
+            text.Append("  adopt ").Append(phase.AdoptedBy);
+            if (phase.CarriedBy != null)
+                text.Append(" carry ").Append(phase.CarriedBy);
+            text.Append('\n');
+        }
+
         text.Append("\n== ADOPTED STATE ==\n");
         foreach (var field in AdoptedFields().OrderBy(field => field.DeclaringType.FullName, StringComparer.Ordinal).ThenBy(field => field.Name, StringComparer.Ordinal))
+            text.Append(field.DeclaringType.FullName).Append('.').Append(field.Name).Append('\n');
+
+        text.Append("\n== REROLLED STATE ==\n");
+        foreach (var field in FieldsOf(ReloadStateKind.Rerolled).OrderBy(field => field.DeclaringType.FullName, StringComparer.Ordinal).ThenBy(field => field.Name, StringComparer.Ordinal))
             text.Append(field.DeclaringType.FullName).Append('.').Append(field.Name).Append('\n');
 
         SnapshotComparison.AssertMatches(Snapshot, text.ToString(), RegenerateCommand);
     }
 
-    private static IEnumerable<FieldInfo> AdoptedFields()
+    private static IEnumerable<FieldInfo> AdoptedFields() => FieldsOf(ReloadStateKind.Adopted);
+
+    private static IEnumerable<FieldInfo> FieldsOf(ReloadStateKind kind)
     {
         const BindingFlags flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         return ScriptHandlerTestSupport.GameAssembly.GetTypes()
             .SelectMany(type => type.GetFields(flags))
-            .Where(field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+            .Where(field => ReloadDigestHasher.StateOf(field) == kind);
     }
 }

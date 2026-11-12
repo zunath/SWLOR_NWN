@@ -175,11 +175,19 @@ public class ReloadDigestTests
 
         first.Select(line => line.Name).Should().OnlyHaveUniqueItems().And.Contain(new[]
         {
-            "SWLOR.Game.Server.Domain.Foundation.CacheService",
-            "SWLOR.Game.Server.Domain.UI.GuiService",
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService",
-            "SWLOR.Game.Server.Domain.Crafting.CraftService",
+            "SWLOR.Game.Server.Domain.Foundation.CacheService.ItemNamesByResref",
+            "SWLOR.Game.Server.Domain.UI.GuiService._windowTemplates",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTablesLoaded",
+            "SWLOR.Game.Server.Domain.Crafting.CraftService._recipes",
+            "SWLOR.Game.Server.Domain.Economy.GuildService._activeGuilds",
         });
+        first.Select(line => line.Name).Should().NotContain(new[]
+        {
+            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables",
+            "SWLOR.Game.Server.Domain.UI.GuiService._playerWindows",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnService._ai",
+        }, "adopted, rerolled and runtime state and other services have no cache digest");
         first.Should().OnlyContain(line => line.Kind == ReloadDigests.CacheKind && line.IsTaken);
         ReloadDigests.Compare(first, second).Should().BeEmpty();
     }
@@ -193,11 +201,11 @@ public class ReloadDigestTests
         var lines = ReloadDigests.Cache(registry);
 
         lines.Should().HaveCount(2);
-        var failed = lines.Single(line => line.Name == typeof(ThrowingOwner).FullName);
+        var failed = lines.Single(line => line.Name == typeof(ThrowingOwner).FullName + ".Value");
         failed.Hash.Should().Be(ReloadDigestLine.ErrorHashPrefix + nameof(InvalidOperationException));
         failed.IsTaken.Should().BeFalse();
         failed.Matches(failed).Should().BeFalse("a digest that was not taken cannot show that a reload kept anything");
-        lines.Single(line => line.Name == typeof(PlainOwner).FullName).IsTaken.Should().BeTrue();
+        lines.Single(line => line.Name == typeof(PlainOwner).FullName + ".Names").IsTaken.Should().BeTrue();
         ReloadDigests.Compare(lines, lines).Should().ContainSingle().Which.Should().StartWith("cache " + typeof(ThrowingOwner).FullName);
     }
 
@@ -226,13 +234,20 @@ public class ReloadDigestTests
     {
         var lines = ReloadDigests.Adopted(ScriptHandlerTestSupport.ServerContainer.ResolveHandlerOwner);
 
-        lines.Select(line => line.Name).Should().Equal(
+        lines.Select(line => line.Name.Substring(0, line.Name.LastIndexOf('.'))).Distinct().Should().Equal(
             "SWLOR.Game.Server.Domain.Creatures.SpawnService",
+            "SWLOR.Game.Server.Domain.Economy.GuildService",
             "SWLOR.Game.Server.Domain.Space.SpaceService",
             "SWLOR.Game.Server.Domain.World.PropertyLoaderService",
             "SWLOR.Game.Server.Domain.World.ShuttleService",
             "SWLOR.Game.Server.Domain.World.WeatherService",
             "SWLOR.Game.Server.Feature.StoreManagement");
+        lines.Select(line => line.Name).Should().Contain(new[]
+        {
+            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns",
+            "SWLOR.Game.Server.Domain.Economy.GuildService.DateTasksLoaded",
+            "SWLOR.Game.Server.Feature.StoreManagement._stores",
+        });
         lines.Should().OnlyContain(line => line.Kind == ReloadDigests.AdoptedKind && line.Hash != "unresolved");
     }
 

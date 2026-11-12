@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Core
     /// What a game build does instead of the boot scripts when it activates after the module has loaded (a hot reload on a
     /// development or test server, MaintainabilityRefactorHotReload.md section 3): the engine runs no boot script for it, so it
     /// reruns the <see cref="BootReload.Rerun"/> handlers of the boot scripts in manifest order, then runs the adoption step of
-    /// each boot-only handler that has one (<see cref="BootPhaseAttribute.AdoptedBy"/>) in the order of those handlers. Boot-only
-    /// and native hook handlers never run. When a reload quiesces the running build, the carry steps
+    /// each handler that has one (<see cref="BootPhaseAttribute.AdoptedBy"/>: a boot-only handler's stands in for it, a rerun
+    /// handler's puts back what the rerun rolled anew) in the order of those handlers. Boot-only and native hook handlers never run. When a reload quiesces the running build, the carry steps
     /// (<see cref="BootPhaseAttribute.CarriedBy"/>) leave what the adoption steps cannot read from the world on the module.
     /// Generation 1 never gets here: the engine runs its boot scripts as it always did.
     /// </summary>
@@ -38,19 +38,21 @@ namespace SWLOR.Game.Server.Core
         };
 
         /// <summary>
-        /// The scripts a rerun boot handler runs through the engine while it runs: the skill cache signals that it has loaded,
-        /// and the crafting cache fills on that event. The engine hands them to the activating build
+        /// The scripts a rerun boot handler runs through the engine while it runs: the skill cache signals that it has loaded
+        /// (the crafting cache fills on that event) and the quest cache runs the quests-registered script (the guilds roll their
+        /// tasks and the contract board registers its quests). The engine hands them to the activating build
         /// (<c>IHostCallbacks.BindActivationScripts</c>), so their handlers rerun inside the rerun handler that runs them, as at
         /// boot; they are not steps of the plan. <see cref="ReloadDigests.Cache"/> digests their owners too.
         /// </summary>
         public static IReadOnlyList<string> NestedScripts { get; } = new[]
         {
             ScriptName.OnSWLORCacheSkillsLoaded,
+            ScriptName.OnQuestsRegistered,
         };
 
         /// <summary>
         /// The steps of a reload: every rerun handler of <see cref="BootScripts"/> in the registry's (manifest) order, then every
-        /// adoption step in the order of the boot-only handlers they stand in for. Handlers without a
+        /// adoption step in the order of the boot-only or rerun handlers they belong to. Handlers without a
         /// <see cref="BootPhaseAttribute"/> (the engine-test assembly's) are left out.
         /// </summary>
         public static IReadOnlyList<ReloadStep> Plan(ScriptRegistry registry)
@@ -65,21 +67,21 @@ namespace SWLOR.Game.Server.Core
                 var name = ScriptHandlerManifest.HandlerName(handler.Method);
                 if (phase.Reload == BootReload.Rerun)
                     reruns.Add(new ReloadStep(ReloadStepKind.Rerun, script, name, handler.Method, handler));
-                else if (phase.Reload == BootReload.BootOnly && !string.IsNullOrEmpty(phase.AdoptedBy))
+                if (IsAdoptable(phase.Reload) && !string.IsNullOrEmpty(phase.AdoptedBy))
                     adoptions.Add(Bind(ReloadStepKind.Adopt, script, name, handler, phase.AdoptedBy));
             }
 
             return reruns.Concat(adoptions).ToArray();
         }
 
-        /// <summary>The carry steps (<see cref="BootPhaseAttribute.CarriedBy"/>), in the order of the boot-only handlers they belong to.</summary>
+        /// <summary>The carry steps (<see cref="BootPhaseAttribute.CarriedBy"/>), in the order of the handlers they belong to.</summary>
         public static IReadOnlyList<ReloadStep> CarryPlan(ScriptRegistry registry)
         {
             if (registry == null)
                 throw new ArgumentNullException(nameof(registry));
 
             return BootHandlers(registry)
-                .Where(entry => entry.Phase.Reload == BootReload.BootOnly && !string.IsNullOrEmpty(entry.Phase.CarriedBy))
+                .Where(entry => IsAdoptable(entry.Phase.Reload) && !string.IsNullOrEmpty(entry.Phase.CarriedBy))
                 .Select(entry => Bind(ReloadStepKind.Carry, entry.Script, ScriptHandlerManifest.HandlerName(entry.Handler.Method),
                     entry.Handler, entry.Phase.CarriedBy))
                 .ToArray();
@@ -140,6 +142,12 @@ namespace SWLOR.Game.Server.Core
             if (failed.Length > 0)
                 text.Append(" failedSteps=").Append(string.Join(",", failed));
             return text.ToString();
+        }
+
+        /// <summary>The classes whose handlers can have an adoption and a carry step: boot-only and rerun.</summary>
+        private static bool IsAdoptable(BootReload reload)
+        {
+            return reload is BootReload.BootOnly or BootReload.Rerun;
         }
 
         /// <summary>Every action handler of the boot scripts that carries a <see cref="BootPhaseAttribute"/>, in manifest order.</summary>

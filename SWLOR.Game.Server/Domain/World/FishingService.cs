@@ -28,7 +28,10 @@ namespace SWLOR.Game.Server.Domain.World
 
         private readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
+        // The special fish go to a random spot with a random bait as the spots load, and the fish shown per spot follow them.
+        [ReloadState(ReloadStateKind.Rerolled)]
         private readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
+        [ReloadState(ReloadStateKind.Rerolled)]
         private readonly Dictionary<FishingLocationType, List<string>> _fishResrefsByLocation = new();
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";

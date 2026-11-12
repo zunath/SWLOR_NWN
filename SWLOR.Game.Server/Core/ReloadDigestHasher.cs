@@ -80,7 +80,11 @@ namespace SWLOR.Game.Server.Core
             return field.GetCustomAttribute<ReloadStateAttribute>(false)?.Kind;
         }
 
-        private static IEnumerable<FieldInfo> RootFields(Type type, object instance)
+        /// <summary>
+        /// The fields <see cref="Describe"/> reads of <paramref name="type"/>: its own static fields (not constants) and, when
+        /// <paramref name="instance"/> is given, the instance fields of its class and base classes, in a fixed order.
+        /// </summary>
+        public static IEnumerable<FieldInfo> RootFields(Type type, object instance)
         {
             var fields = type
                 .GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
@@ -263,7 +267,7 @@ namespace SWLOR.Game.Server.Core
         /// A field that holds another service (an interface that is not a collection, or a <see cref="Lazy{T}"/> of one): its
         /// content belongs to that service's own digest, so only its declared type counts here.
         /// </summary>
-        private static bool IsDependency(Type declared)
+        public static bool IsDependency(Type declared)
         {
             if (declared.IsGenericType && declared.GetGenericTypeDefinition() == typeof(Lazy<>))
                 declared = declared.GetGenericArguments()[0];

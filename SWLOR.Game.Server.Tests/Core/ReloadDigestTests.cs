@@ -178,6 +178,7 @@ public class ReloadDigestTests
             "SWLOR.Game.Server.Domain.Foundation.CacheService",
             "SWLOR.Game.Server.Domain.UI.GuiService",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService",
+            "SWLOR.Game.Server.Domain.Crafting.CraftService",
         });
         first.Should().OnlyContain(line => line.Kind == ReloadDigests.CacheKind && line.IsTaken);
         ReloadDigests.Compare(first, second).Should().BeEmpty();

@@ -131,14 +131,25 @@ namespace SWLOR.Game.Server.Composition
 
             _bootStarted = true;
             _boot.Activate(new HostedBoot(closures, redisConnection, hookControl, _sourceDirectory));
+            var scripts = new HostedScriptDispatcher();
             IReadOnlyList<ReloadStepResult> rebuilt = null;
             if (reload)
             {
-                _boot.ResumeAfterModuleLoad();
-                rebuilt = _boot.RebuildAfterReload();
+                // The package makes this generation active only once the activation returns; until then the scripts the engine
+                // runs from the reload bootstrap (the skill cache's loaded event, say) come here, as they reach the build at boot.
+                hostCallbacks.BindActivationScripts(scripts);
+                try
+                {
+                    _boot.ResumeAfterModuleLoad();
+                    rebuilt = _boot.RebuildAfterReload();
+                }
+                finally
+                {
+                    hostCallbacks.UnbindActivationScripts(scripts);
+                }
             }
 
-            Scripts = new HostedScriptDispatcher();
+            Scripts = scripts;
             MainLoop = new HostedMainLoop(hostCallbacks);
             _signals = new HostedSignalHandler(OnSignal);
             hostCallbacks.BindSignals(_signals);

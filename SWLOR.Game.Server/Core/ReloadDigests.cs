@@ -19,15 +19,19 @@ namespace SWLOR.Game.Server.Core
         public const string WorldKind = "world";
 
         /// <summary>
-        /// One cache digest per class that declares a rerun handler of the boot scripts, in the order of its first handler, over its
-        /// static fields and, for an instance handler, the instance's fields, without the fields marked
-        /// <see cref="ReloadStateAttribute"/>.
+        /// One cache digest per class that declares a rerun handler of the boot scripts or a handler of a script those handlers
+        /// run (<see cref="ReloadBootstrap.NestedScripts"/>), in the order of its first handler, over its static fields and, for an
+        /// instance handler, the instance's fields, without the fields marked <see cref="ReloadStateAttribute"/>.
         /// </summary>
         public static IReadOnlyList<ReloadDigestLine> Cache(ScriptRegistry registry)
         {
+            var nested = ReloadBootstrap.NestedScripts
+                .SelectMany(script => registry.GetActionScripts(script))
+                .Select(handler => (Type: handler.Action.Method.DeclaringType, Instance: handler.Action.Target));
             var owners = ReloadBootstrap.Plan(registry)
                 .Where(step => step.Kind == ReloadStepKind.Rerun)
                 .Select(step => (Type: step.Method.DeclaringType, Instance: step.Run.Target))
+                .Concat(nested)
                 .Where(owner => owner.Type != null)
                 .GroupBy(owner => owner.Type)
                 .Select(group => group.First())

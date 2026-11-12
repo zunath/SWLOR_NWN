@@ -247,8 +247,35 @@ public sealed class SwlorHostMode : IHostMode
     public bool OnRunScript(string script, uint objectSelf) => OnRunScriptResult(script, objectSelf) != NativeHost.ScriptNotHandled;
 
     /// <inheritdoc/>
-    public int OnRunScriptResult(string script, uint objectSelf) =>
-        _reloadHost?.DispatchScriptResult(script, objectSelf) ?? NativeHost.ScriptNotHandled;
+    /// <remarks>
+    /// While a generation activating by a reload has bound its dispatcher (<see cref="IHostCallbacks.BindActivationScripts"/>),
+    /// the package has no active generation, and every script goes to that dispatcher: the engine runs it from inside the
+    /// new build's reload bootstrap, as it runs it from a boot handler at boot.
+    /// </remarks>
+    public int OnRunScriptResult(string script, uint objectSelf)
+    {
+        if (_callbacks.ActivationScripts is { } activating)
+            return DispatchToActivatingGeneration(activating, script, objectSelf);
+
+        return _reloadHost?.DispatchScriptResult(script, objectSelf) ?? NativeHost.ScriptNotHandled;
+    }
+
+    /// <summary>The package's dispatch rules for the activating generation: its conditional result, and a throw is unhandled.</summary>
+    private int DispatchToActivatingGeneration(Nwn.Hosting.Contracts.Generations.IScriptDispatcher dispatcher, string script, uint objectSelf)
+    {
+        try
+        {
+            if (!dispatcher.TryHandle(script, objectSelf, out var conditionalResult))
+                return NativeHost.ScriptNotHandled;
+
+            return conditionalResult ? NativeHost.ScriptConditionTrue : NativeHost.ScriptHandled;
+        }
+        catch (Exception exception)
+        {
+            _log("script-dispatch-failure", $"{script} (activating generation): {exception}");
+            return NativeHost.ScriptNotHandled;
+        }
+    }
 
     /// <inheritdoc/>
     /// <remarks>

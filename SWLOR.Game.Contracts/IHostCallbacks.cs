@@ -1,3 +1,5 @@
+using Nwn.Hosting.Contracts.Generations;
+
 namespace SWLOR.Game.Contracts;
 
 /// <summary>
@@ -22,4 +24,15 @@ public interface IHostCallbacks
 
     /// <summary>Stops delivering signals to <paramref name="handler"/> when it is the bound one.</summary>
     void UnbindSignals(IHostSignalHandler handler);
+
+    /// <summary>
+    /// While a generation activates after the module has loaded (a hot reload), the hosting package has no active generation,
+    /// so a script the engine runs from inside the activating build's own code (an event its reload bootstrap signals, as a
+    /// boot handler signals it at boot) would not be handled. Until <see cref="UnbindActivationScripts"/>, the host hands every
+    /// script it is asked to run to <paramref name="dispatcher"/> instead. One is bound at a time, only during an activation.
+    /// </summary>
+    void BindActivationScripts(IScriptDispatcher dispatcher);
+
+    /// <summary>Stops handing scripts to <paramref name="dispatcher"/> when it is the bound one.</summary>
+    void UnbindActivationScripts(IScriptDispatcher dispatcher);
 }

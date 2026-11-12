@@ -38,6 +38,17 @@ namespace SWLOR.Game.Server.Core
         };
 
         /// <summary>
+        /// The scripts a rerun boot handler runs through the engine while it runs: the skill cache signals that it has loaded,
+        /// and the crafting cache fills on that event. The engine hands them to the activating build
+        /// (<c>IHostCallbacks.BindActivationScripts</c>), so their handlers rerun inside the rerun handler that runs them, as at
+        /// boot; they are not steps of the plan. <see cref="ReloadDigests.Cache"/> digests their owners too.
+        /// </summary>
+        public static IReadOnlyList<string> NestedScripts { get; } = new[]
+        {
+            ScriptName.OnSWLORCacheSkillsLoaded,
+        };
+
+        /// <summary>
         /// The steps of a reload: every rerun handler of <see cref="BootScripts"/> in the registry's (manifest) order, then every
         /// adoption step in the order of the boot-only handlers they stand in for. Handlers without a
         /// <see cref="BootPhaseAttribute"/> (the engine-test assembly's) are left out.

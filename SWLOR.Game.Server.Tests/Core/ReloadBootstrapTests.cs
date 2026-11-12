@@ -214,6 +214,11 @@ public class ReloadBootstrapTests
             "SWLOR.Game.Server.Domain.World.WeatherService.CarryWeather");
         plan.Where(step => !step.Method.IsStatic).Should().OnlyContain(step => step.Run.Target != null,
             "an instance step runs on the container's singleton, as its handler does");
+        plan.Select(step => step.Name).Should().NotContain("SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData",
+            "the crafting cache fills on the event the rerun skill cache signals, through the activation dispatch, not as a step");
+        ReloadBootstrap.NestedScripts.SelectMany(script => registry.GetActionScripts(script))
+            .Select(handler => ScriptHandlerManifest.HandlerName(handler.Action.Method))
+            .Should().Contain("SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData");
     }
 
     [Test]

@@ -21,9 +21,11 @@ namespace SWLOR.Game.Server.Core
     public static class ReloadBootstrap
     {
         /// <summary>
-        /// The boot scripts in the order the server reaches them. <c>db_loaded</c> runs inside <c>mod_preload</c> and
-        /// <c>mod_content_chg</c>, <c>mod_cache_bef</c> and <c>mod_cache_aft</c> inside its last handlers, which are boot only, so
-        /// the rerun handlers of <c>mod_preload</c> (which run before them) come first and the nested scripts follow in this order.
+        /// The boot scripts in the order the server reaches them. At boot <c>db_loaded</c> runs inside <c>mod_preload</c>'s
+        /// <c>SyncIndexes</c>, and <c>mod_content_chg</c>, <c>mod_cache_bef</c> and <c>mod_cache_aft</c> inside its
+        /// <c>OnModulePreload</c>, all boot only; a reload runs the rerun handlers of each script whole, in this order, so a
+        /// rerun handler of <c>mod_preload</c> listed after those two runs before the nested scripts' (today <c>db_loaded</c> has
+        /// no rerun handler, and the <c>mod_preload</c> ones do not read what the nested scripts fill).
         /// </summary>
         public static IReadOnlyList<string> BootScripts { get; } = new[]
         {

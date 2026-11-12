@@ -14,7 +14,7 @@ internal static class RifleGripFits
     {
         fit = WeaponGripFit.Identity;
         if (string.IsNullOrEmpty(hand) || string.IsNullOrEmpty(supportHand) ||
-            hand.Length < 11 || supportHand.Length < 11 || hand[9] != 'r' || supportHand[9] != 'l' ||
+            hand.Length < 11 || supportHand.Length < 11 || char.ToLowerInvariant(hand[9]) != 'r' || char.ToLowerInvariant(supportHand[9]) != 'l' ||
             !hand.AsSpan(0, 4).Equals(supportHand.AsSpan(0, 4), StringComparison.OrdinalIgnoreCase)) return false;
 
         if (WeaponGripPlacements.TryGet(hand, model,

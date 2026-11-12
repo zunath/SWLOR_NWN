@@ -135,14 +135,20 @@ public static class WeaponFit
         bool rifleReady = false)
     {
         if (!GetIsObjectValid(item)) return;
-        var fit = WeaponGripFits.GetPlacement(GetBaseItemType(item), GetPart(item, AppearanceWeapon.Middle),
-            GetPart(item, AppearanceWeapon.Top), GetPart(item, AppearanceWeapon.Bottom), hand, supportHand);
-        if (GetBaseItemType(item) == BaseItem.Rifle && GetPart(item, AppearanceWeapon.Top) == 101 &&
-            GetPart(item, AppearanceWeapon.Bottom) == 101)
-            RifleGripFits.TryGetPosePlacement(GetPart(item, AppearanceWeapon.Middle), hand, supportHand,
-                rifleReady, out fit);
+        var fit = GetHandPlacement(GetBaseItemType(item), GetPart(item, AppearanceWeapon.Middle),
+            GetPart(item, AppearanceWeapon.Top), GetPart(item, AppearanceWeapon.Bottom), hand, supportHand, rifleReady);
         ApplyPlacement(item, fit);
         if (fit != WeaponGripFit.Identity) SetLocalObject(creature, variable, item);
+    }
+
+    private static WeaponGripFit GetHandPlacement(BaseItem type, int middle, int top, int bottom,
+        string hand, string supportHand, bool rifleReady)
+    {
+        var fit = WeaponGripFits.GetPlacement(type, middle, top, bottom, hand, supportHand);
+        if (type == BaseItem.Rifle && top == 101 && bottom == 101 &&
+            RifleGripFits.TryGetPosePlacement(middle, hand, supportHand, rifleReady, out var posed))
+            fit = posed;
+        return fit;
     }
 
     internal static int GetPart(uint item, AppearanceWeapon part) =>

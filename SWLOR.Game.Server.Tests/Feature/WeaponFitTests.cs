@@ -83,6 +83,29 @@ public class WeaponFitTests
     }
 
     [Test]
+    public void MissingReadyPlacementRetainsTheAvailableIdlePlacement()
+    {
+        var assembly = typeof(WeaponFit).Assembly;
+        var placements = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacements")!;
+        var row = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacementRow")!;
+        var hold = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripHold")!;
+        var catalog = assembly.GetType("SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponGripPlacementCatalog")!;
+        var field = placements.GetField("_catalog", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var previous = field.GetValue(null);
+        var idle = new WeaponGripFit(new FitVector(.01f, .02f, -.03f), FitVector.Zero, 1);
+        var rows = Array.CreateInstance(row, 1);
+        rows.SetValue(Activator.CreateInstance(row, "pmh0_handr999", 999, Enum.Parse(hold, "RifleIdle"), idle), 0);
+        try
+        {
+            field.SetValue(null, catalog.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Single().Invoke(new object[] { rows }));
+            Invoke<WeaponGripFit>(typeof(WeaponFit), "GetHandPlacement", BaseItem.Rifle, 999, 101, 101,
+                "pmh0_handr999", "pmh0_handl999", true).Should().Be(idle);
+        }
+        finally { field.SetValue(null, previous); }
+    }
+
+    [Test]
     public void EveryPistolAndNativeNormalHandHasAnExplicitMeasurementAtAuthoredSize()
     {
         var root = RepositoryRoot();

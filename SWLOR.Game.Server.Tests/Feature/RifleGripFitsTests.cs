@@ -35,6 +35,12 @@ public class RifleGripFitsTests
         ready.Rotation.Length().Should().Be(0);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RenderedHandIdentifiersAreCaseInsensitive(bool ready) =>
+        Placement(101, "PMO0_HANDR30153", "pmo0_HANDL153", ready)
+            .Should().Be(Placement(101, "pmo0_handr30153", "pmo0_handl153", ready));
+
     [TestCase(0, false)]
     [TestCase(1, true)]
     [TestCase(9, true)]

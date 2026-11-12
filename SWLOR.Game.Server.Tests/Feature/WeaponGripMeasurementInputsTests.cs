@@ -75,8 +75,27 @@ public class WeaponGripMeasurementInputsTests
 
         resources.Keys.Should().BeEquivalentTo(paths);
         resources.Values.Should().OnlyContain(bytes => bytes.Length > 0);
-        foreach (var path in paths.Where(path => File.Exists(Path.Combine(haks, path))).Take(3))
-            resources[path].Should().Equal(File.ReadAllBytes(Path.Combine(haks, path)));
+        foreach (var path in paths.Take(3))
+            resources[path].Should().Equal(ReadCommittedBlob(haks, path));
+    }
+
+    private static byte[] ReadCommittedBlob(string haks, string path)
+    {
+        var tracked = TrackedPaths(haks, new[] { path })[path];
+        var start = new ProcessStartInfo("git")
+        {
+            WorkingDirectory = haks, RedirectStandardOutput = true,
+            RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true
+        };
+        start.ArgumentList.Add("show");
+        start.ArgumentList.Add("HEAD:" + tracked);
+        using var process = Process.Start(start)!;
+        var errors = process.StandardError.ReadToEndAsync();
+        using var output = new MemoryStream();
+        process.StandardOutput.BaseStream.CopyTo(output);
+        process.WaitForExit();
+        process.ExitCode.Should().Be(0, errors.GetAwaiter().GetResult());
+        return output.ToArray();
     }
 
     private static string[] RifleBankInputs(string haks)

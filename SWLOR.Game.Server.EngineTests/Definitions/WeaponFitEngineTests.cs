@@ -35,6 +35,7 @@ public static class WeaponFitEngineTests
             EquippedItemAppearance.Refresh(wearer, outfit);
         });
         var rifle = await ctx.EquipItemAsync(wearer, "b_rifle", InventorySlot.RightHand);
+        var observedReady = false;
         await ctx.ExecuteInCreatureContextAsync(wearer, () =>
         {
             SetAppearance(rifle, 101);
@@ -53,12 +54,42 @@ public static class WeaponFitEngineTests
             {
                 native.SetAnimation(animation);
                 var actualAnimation = native.m_nAnimation;
+                observedReady |= actualAnimation is 1 or 9;
                 AssertVector(ctx, ReadTranslation(rifle), authored + (actualAnimation is 1 or 9 ? ready : idle),
                     $"The actual native hold {actualAnimation} after request {animation} refreshes without accumulating an offset");
                 ctx.AssertEqual(1.03f, GetObjectVisualTransform(rifle, ObjectVisualTransform.Scale),
                     "Native hold changes preserve the authored gun size");
             }
         });
+        // Some native requests are coerced to idle outside combat. Exercise real
+        // gameplay if necessary so the ready branch cannot silently go unchecked.
+        if (!observedReady)
+        {
+            var target = ctx.SpawnCreature("civilian", 4f);
+            ctx.MakeHostile(target);
+            SetImmortal(target, true);
+            SetCommandable(false, target);
+            await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+            {
+                SetCommandable(true, wearer);
+                SetAILevel(wearer, AILevel.Medium);
+                ClearAllActions(true);
+                ActionAttack(target);
+            });
+            await ctx.WaitUntilAsync(() =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(wearer);
+                if (native.m_nAnimation is not (1 or 9)) return false;
+                observedReady = true;
+                AssertVector(ctx, ReadTranslation(rifle), new FitVector(.02f, -.03f, .01f) +
+                    new FitVector(-.13350788f, -.04168537f, -.06223492f),
+                    "A real native ready/firing hold seats the grip without a manual refresh");
+                return true;
+            }, 15f, "a real native ready or firing animation");
+            await ctx.ExecuteInCreatureContextAsync(wearer, () => ClearAllActions(true));
+        }
+        ctx.Assert(observedReady, "At least one retained native ready/firing hold was verified");
+        ctx.SetResultDetail("Observed and verified a retained native ready/firing hold, including coerced-request checks.");
     }
 
     [EngineTest("A delayed old-wearer refresh cannot strip the new wearer's shared fit", Category = "WeaponFit", TimeoutSeconds = 60f)]

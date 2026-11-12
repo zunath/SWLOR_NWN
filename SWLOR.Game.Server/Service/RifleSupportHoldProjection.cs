@@ -12,19 +12,37 @@ public sealed class RifleSupportHoldProjection
         public long Started;
         public string PhysicalIdle;
         public bool Cancelled;
+        public bool Attacking;
         public readonly Dictionary<uint, long> Cleared = new();
         public readonly HashSet<uint> Restored = new();
+        public readonly HashSet<uint> PendingRestore = new();
     }
     private readonly Dictionary<uint, Request> _requests = new();
 
-    public void Begin(uint creature, string physicalIdle, long now) =>
-        _requests[creature] = new Request { Started = now, PhysicalIdle = physicalIdle };
+    public void Begin(uint creature, string physicalIdle, long now)
+    {
+        var next = new Request { Started = now, PhysicalIdle = physicalIdle };
+        if (_requests.TryGetValue(creature, out var previous))
+            next.PendingRestore.UnionWith(previous.Cleared.Keys.Concat(previous.PendingRestore)
+                .Where(observer => !previous.Restored.Contains(observer)));
+        _requests[creature] = next;
+    }
+
+    // Forward native attack 9 immediately; observers not yet cleared can wait for its return.
+    public void ObserveAnimation(uint creature, int animation)
+    {
+        if (_requests.TryGetValue(creature, out var request)) request.Attacking = animation == 9;
+    }
 
     public RifleSupportHoldStage Current(uint creature, uint observer, long now)
     {
         if (!_requests.TryGetValue(creature, out var request) || request.Restored.Contains(observer)) return RifleSupportHoldStage.None;
+        if (request.Attacking)
+            return request.Cleared.ContainsKey(observer) || request.PendingRestore.Contains(observer)
+                ? RifleSupportHoldStage.Restore : RifleSupportHoldStage.None;
         if (!request.Cleared.TryGetValue(observer, out var sent))
-            return !request.Cancelled && now - request.Started < 10000 ? RifleSupportHoldStage.Clear : RifleSupportHoldStage.None;
+            return !request.Cancelled && now - request.Started < 10000 ? RifleSupportHoldStage.Clear :
+                request.PendingRestore.Contains(observer) ? RifleSupportHoldStage.Restore : RifleSupportHoldStage.None;
         // Keep the clear through the mapping owner's network grace, and ensure a late
         // observer receives distinct clear/restore updates rather than one collapsed packet.
         return !request.Cancelled && (now - request.Started < 600 || now - sent < 200) ? RifleSupportHoldStage.Hold : RifleSupportHoldStage.Restore;

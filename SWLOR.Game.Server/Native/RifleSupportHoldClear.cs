@@ -45,7 +45,9 @@ internal static unsafe class RifleSupportHoldClear
         var updates = original(message, player, obj, last, playerObject);
         try
         {
-            var actor = CNWSObject.FromPointer(obj).m_idSelf;
+            var native = CNWSObject.FromPointer(obj);
+            var actor = native.m_idSelf;
+            Projection.ObserveAnimation(actor, native.m_nAnimation);
             var stage = Projection.Current(actor, CNWSPlayer.FromPointer(player).m_nPlayerID, Environment.TickCount64);
             if (stage is RifleSupportHoldStage.Clear or RifleSupportHoldStage.Restore)
                 updates |= AnimationUpdate | ReplacementUpdate;
@@ -65,6 +67,7 @@ internal static unsafe class RifleSupportHoldClear
             var actor = native.m_idSelf;
             var observer = CNWSPlayer.FromPointer(player).m_nPlayerID;
             var now = Environment.TickCount64;
+            Projection.ObserveAnimation(actor, native.m_nAnimation);
             var stage = Projection.Current(actor, observer, now);
             Dictionary<string, string> mappings = null;
             if (stage != RifleSupportHoldStage.None)

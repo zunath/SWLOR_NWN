@@ -47,6 +47,58 @@ public class RifleSupportHoldProjectionTests
         state.Current(1, 10, 10).Should().Be(Stage.Clear);
     }
 
+    [TestCase(1)]
+    [TestCase(3)]
+    public void ReplacedRequestsRetainUnrestoredObserversWhenCancelled(int replacements)
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.Sent(1, 10, Stage.Clear, 0);
+        state.Sent(1, 11, Stage.Clear, 0);
+        state.Sent(1, 11, Stage.Restore, 600);
+        for (var i = 0; i < replacements; i++) state.Begin(1, "rf_new_i", 700 + i);
+        state.Cancel(1);
+        state.Current(1, 10, 710).Should().Be(Stage.Restore);
+        state.Current(1, 11, 710).Should().Be(Stage.None);
+        state.Current(1, 12, 710).Should().Be(Stage.None);
+        state.Sent(1, 10, Stage.Restore, 710);
+        state.Current(1, 10, 711).Should().Be(Stage.None);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void AnImmediateNativeShotIsNeverSuppressedByTheClearGrace(bool clearSent)
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        if (clearSent) state.Sent(1, 10, Stage.Clear, 0);
+        state.ObserveAnimation(1, 9);
+        state.Current(1, 10, 1).Should().Be(clearSent ? Stage.Restore : Stage.None);
+        state.Current(1, 11, 1).Should().Be(Stage.None);
+    }
+
+    [Test]
+    public void AnUnsentClearWaitsForTheShotToReturnInsteadOfBeingLost()
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.ObserveAnimation(1, 9);
+        state.Current(1, 10, 1).Should().Be(Stage.None);
+        state.ObserveAnimation(1, 0);
+        state.Current(1, 10, 200).Should().Be(Stage.Clear);
+    }
+
+    [TestCase(0)]
+    [TestCase(1)]
+    public void RestingOrReadyAnimationsRetainTheClearGrace(int animation)
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.Sent(1, 10, Stage.Clear, 0);
+        state.ObserveAnimation(1, animation);
+        state.Current(1, 10, 1).Should().Be(Stage.Hold);
+    }
+
     [Test]
     public void ExpiredRequestsDoNotClearNewObserversAndDestroyedObjectsAreForgotten()
     {
